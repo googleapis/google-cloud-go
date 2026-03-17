@@ -131,6 +131,32 @@ func ExampleCatalogClient_ListEntryTypes_all() {
 	}
 }
 
+func ExampleCatalogClient_ListMetadataFeeds_all() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataplex.NewCatalogClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataplexpb.ListMetadataFeedsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#ListMetadataFeedsRequest.
+	}
+	for resp, err := range c.ListMetadataFeeds(ctx, req).All() {
+		if err != nil {
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
 func ExampleCatalogClient_ListMetadataJobs_all() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -149,6 +175,32 @@ func ExampleCatalogClient_ListMetadataJobs_all() {
 		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#ListMetadataJobsRequest.
 	}
 	for resp, err := range c.ListMetadataJobs(ctx, req).All() {
+		if err != nil {
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleCatalogClient_LookupEntryLinks_all() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataplex.NewCatalogClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataplexpb.LookupEntryLinksRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#LookupEntryLinksRequest.
+	}
+	for resp, err := range c.LookupEntryLinks(ctx, req).All() {
 		if err != nil {
 			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}

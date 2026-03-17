@@ -275,8 +275,7 @@ func (c *UserClient) CreateUser(ctx context.Context, req *accountspb.CreateUserR
 
 // DeleteUser deletes a Merchant Center account user. Executing this method requires
 // admin access. The user to be deleted can’t be the last admin user of that
-// account. Also a user is protected from deletion if it
-// is managed by Business Manager"
+// account.
 func (c *UserClient) DeleteUser(ctx context.Context, req *accountspb.DeleteUserRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteUser(ctx, req, opts...)
 }
@@ -694,8 +693,7 @@ func (c *userRESTClient) CreateUser(ctx context.Context, req *accountspb.CreateU
 
 // DeleteUser deletes a Merchant Center account user. Executing this method requires
 // admin access. The user to be deleted can’t be the last admin user of that
-// account. Also a user is protected from deletion if it
-// is managed by Business Manager"
+// account.
 func (c *userRESTClient) DeleteUser(ctx context.Context, req *accountspb.DeleteUserRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

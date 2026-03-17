@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ const _ = grpc.SupportPackageIsVersion7
 const (
 	AccountsService_GetAccount_FullMethodName                = "/google.shopping.merchant.accounts.v1.AccountsService/GetAccount"
 	AccountsService_CreateAndConfigureAccount_FullMethodName = "/google.shopping.merchant.accounts.v1.AccountsService/CreateAndConfigureAccount"
+	AccountsService_CreateTestAccount_FullMethodName         = "/google.shopping.merchant.accounts.v1.AccountsService/CreateTestAccount"
 	AccountsService_DeleteAccount_FullMethodName             = "/google.shopping.merchant.accounts.v1.AccountsService/DeleteAccount"
 	AccountsService_UpdateAccount_FullMethodName             = "/google.shopping.merchant.accounts.v1.AccountsService/UpdateAccount"
 	AccountsService_ListAccounts_FullMethodName              = "/google.shopping.merchant.accounts.v1.AccountsService/ListAccounts"
@@ -54,6 +55,21 @@ type AccountsServiceClient interface {
 	// Creates a Merchant Center account with additional configuration. Adds the
 	// user that makes the request as an admin for the new account.
 	CreateAndConfigureAccount(ctx context.Context, in *CreateAndConfigureAccountRequest, opts ...grpc.CallOption) (*Account, error)
+	// Creates a Merchant Center test account.
+	//
+	// Test accounts are intended for development and testing purposes, such as
+	// validating API integrations or new feature behavior.
+	//
+	// Key characteristics and limitations of test accounts:
+	//   - Immutable Type: A test account cannot be converted into a regular
+	//     (live) Merchant Center account. Likewise, a regular account cannot be
+	//     converted into a test account.
+	//   - Non-Serving Products: Any products, offers, or data created within a
+	//     test account will not be published or made visible to end-users on any
+	//     Google surfaces. They are strictly for testing environments.
+	//   - Separate Environment: Test accounts operate in a sandbox-like manner,
+	//     isolated from live serving and real user traffic.
+	CreateTestAccount(ctx context.Context, in *CreateTestAccountRequest, opts ...grpc.CallOption) (*Account, error)
 	// Deletes the specified account regardless of its type: standalone, advanced
 	// account or sub-account. Deleting an advanced account leads to the deletion
 	// of all of its sub-accounts. This also deletes the account's [developer
@@ -107,6 +123,15 @@ func (c *accountsServiceClient) CreateAndConfigureAccount(ctx context.Context, i
 	return out, nil
 }
 
+func (c *accountsServiceClient) CreateTestAccount(ctx context.Context, in *CreateTestAccountRequest, opts ...grpc.CallOption) (*Account, error) {
+	out := new(Account)
+	err := c.cc.Invoke(ctx, AccountsService_CreateTestAccount_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *accountsServiceClient) DeleteAccount(ctx context.Context, in *DeleteAccountRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, AccountsService_DeleteAccount_FullMethodName, in, out, opts...)
@@ -154,6 +179,21 @@ type AccountsServiceServer interface {
 	// Creates a Merchant Center account with additional configuration. Adds the
 	// user that makes the request as an admin for the new account.
 	CreateAndConfigureAccount(context.Context, *CreateAndConfigureAccountRequest) (*Account, error)
+	// Creates a Merchant Center test account.
+	//
+	// Test accounts are intended for development and testing purposes, such as
+	// validating API integrations or new feature behavior.
+	//
+	// Key characteristics and limitations of test accounts:
+	//   - Immutable Type: A test account cannot be converted into a regular
+	//     (live) Merchant Center account. Likewise, a regular account cannot be
+	//     converted into a test account.
+	//   - Non-Serving Products: Any products, offers, or data created within a
+	//     test account will not be published or made visible to end-users on any
+	//     Google surfaces. They are strictly for testing environments.
+	//   - Separate Environment: Test accounts operate in a sandbox-like manner,
+	//     isolated from live serving and real user traffic.
+	CreateTestAccount(context.Context, *CreateTestAccountRequest) (*Account, error)
 	// Deletes the specified account regardless of its type: standalone, advanced
 	// account or sub-account. Deleting an advanced account leads to the deletion
 	// of all of its sub-accounts. This also deletes the account's [developer
@@ -190,6 +230,9 @@ func (UnimplementedAccountsServiceServer) GetAccount(context.Context, *GetAccoun
 }
 func (UnimplementedAccountsServiceServer) CreateAndConfigureAccount(context.Context, *CreateAndConfigureAccountRequest) (*Account, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAndConfigureAccount not implemented")
+}
+func (UnimplementedAccountsServiceServer) CreateTestAccount(context.Context, *CreateTestAccountRequest) (*Account, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateTestAccount not implemented")
 }
 func (UnimplementedAccountsServiceServer) DeleteAccount(context.Context, *DeleteAccountRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteAccount not implemented")
@@ -247,6 +290,24 @@ func _AccountsService_CreateAndConfigureAccount_Handler(srv interface{}, ctx con
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AccountsServiceServer).CreateAndConfigureAccount(ctx, req.(*CreateAndConfigureAccountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AccountsService_CreateTestAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateTestAccountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountsServiceServer).CreateTestAccount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AccountsService_CreateTestAccount_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountsServiceServer).CreateTestAccount(ctx, req.(*CreateTestAccountRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -337,6 +398,10 @@ var AccountsService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateAndConfigureAccount",
 			Handler:    _AccountsService_CreateAndConfigureAccount_Handler,
+		},
+		{
+			MethodName: "CreateTestAccount",
+			Handler:    _AccountsService_CreateTestAccount_Handler,
 		},
 		{
 			MethodName: "DeleteAccount",

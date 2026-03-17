@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -385,10 +385,11 @@ type CheckoutSettings struct {
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// URI settings for cart or checkout URL.
 	UriSettings *UriSettings `protobuf:"bytes,2,opt,name=uri_settings,json=uriSettings,proto3,oneof" json:"uri_settings,omitempty"`
-	// Optional. The destinations (also known as [Marketing
+	// Optional. Required for the create operation. The destinations (also known
+	// as [Marketing
 	// methods](https://support.google.com/merchants/answer/15130232)) to which
-	// the checkout program applies, valid destination values are `SHOPPING_ADS`,
-	// `FREE_LISTINGS`
+	// the checkout program applies. Valid destination values are `SHOPPING_ADS`
+	// and `FREE_LISTINGS`.
 	EligibleDestinations []typepb.Destination_DestinationEnum `protobuf:"varint,8,rep,packed,name=eligible_destinations,json=eligibleDestinations,proto3,enum=google.shopping.type.Destination_DestinationEnum" json:"eligible_destinations,omitempty"`
 	// Output only. Reflects the merchant enrollment state in `Checkout` program.
 	EnrollmentState *CheckoutSettings_CheckoutEnrollmentState `protobuf:"varint,3,opt,name=enrollment_state,json=enrollmentState,proto3,enum=google.shopping.merchant.accounts.v1.CheckoutSettings_CheckoutEnrollmentState,oneof" json:"enrollment_state,omitempty"`

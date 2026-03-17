@@ -147,6 +147,11 @@
                 "CreateAndConfigureAccount"
               ]
             },
+            "CreateTestAccount": {
+              "methods": [
+                "CreateTestAccount"
+              ]
+            },
             "DeleteAccount": {
               "methods": [
                 "DeleteAccount"
@@ -180,6 +185,11 @@
             "CreateAndConfigureAccount": {
               "methods": [
                 "CreateAndConfigureAccount"
+              ]
+            },
+            "CreateTestAccount": {
+              "methods": [
+                "CreateTestAccount"
               ]
             },
             "DeleteAccount": {

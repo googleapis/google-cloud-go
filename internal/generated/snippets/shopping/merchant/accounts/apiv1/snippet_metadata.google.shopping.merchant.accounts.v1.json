@@ -471,6 +471,52 @@
       ]
     },
     {
+      "regionTag": "merchantapi_v1_generated_AccountsService_CreateTestAccount_sync",
+      "title": "merchantapi CreateTestAccount Sample",
+      "description": "CreateTestAccount creates a Merchant Center test account.\n\nTest accounts are intended for development and testing purposes, such as\nvalidating API integrations or new feature behavior.\n\nKey characteristics and limitations of test accounts: \n- Immutable Type: A test account cannot be converted into a regular\n(live) Merchant Center account. Likewise, a regular account cannot be\nconverted into a test account.\n- Non-Serving Products: Any products, offers, or data created within a\ntest account will not be published or made visible to end-users on any\nGoogle surfaces. They are strictly for testing environments.\n- Separate Environment: Test accounts operate in a sandbox-like manner,\nisolated from live serving and real user traffic.",
+      "file": "Client/CreateTestAccount/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateTestAccount",
+        "fullName": "google.shopping.merchant.accounts.v1.Client.CreateTestAccount",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.CreateTestAccountRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.Account",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.shopping.merchant.accounts.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateTestAccount",
+          "fullName": "google.shopping.merchant.accounts.v1.AccountsService.CreateTestAccount",
+          "service": {
+            "shortName": "AccountsService",
+            "fullName": "google.shopping.merchant.accounts.v1.AccountsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "merchantapi_v1_generated_AccountsService_DeleteAccount_sync",
       "title": "merchantapi DeleteAccount Sample",
       "description": "DeleteAccount deletes the specified account regardless of its type: standalone, advanced\naccount or sub-account. Deleting an advanced account leads to the deletion\nof all of its sub-accounts. This also deletes the account's [developer\nregistration\nentity](/merchant/api/reference/rest/accounts_v1/accounts.developerRegistration)\nand any associated GCP project to the account. Executing this method\nrequires admin access. The deletion succeeds only if the account does not\nprovide services to any other account and has no processed offers. You can\nuse the `force` parameter to override this.",
@@ -3227,7 +3273,7 @@
     {
       "regionTag": "merchantapi_v1_generated_UserService_DeleteUser_sync",
       "title": "merchantapi DeleteUser Sample",
-      "description": "DeleteUser deletes a Merchant Center account user. Executing this method requires\nadmin access. The user to be deleted can't be the last admin user of that\naccount. Also a user is protected from deletion if it\nis managed by Business Manager\"",
+      "description": "DeleteUser deletes a Merchant Center account user. Executing this method requires\nadmin access. The user to be deleted can't be the last admin user of that\naccount.",
       "file": "UserClient/DeleteUser/main.go",
       "language": "GO",
       "clientMethod": {

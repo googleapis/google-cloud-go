@@ -27,6 +27,7 @@ import (
 	"time"
 
 	dataplexpb "cloud.google.com/go/dataplex/apiv1/dataplexpb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
@@ -47,45 +48,42 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	CreateLake        []gax.CallOption
-	UpdateLake        []gax.CallOption
-	DeleteLake        []gax.CallOption
-	ListLakes         []gax.CallOption
-	GetLake           []gax.CallOption
-	ListLakeActions   []gax.CallOption
-	CreateZone        []gax.CallOption
-	UpdateZone        []gax.CallOption
-	DeleteZone        []gax.CallOption
-	ListZones         []gax.CallOption
-	GetZone           []gax.CallOption
-	ListZoneActions   []gax.CallOption
-	CreateAsset       []gax.CallOption
-	UpdateAsset       []gax.CallOption
-	DeleteAsset       []gax.CallOption
-	ListAssets        []gax.CallOption
-	GetAsset          []gax.CallOption
-	ListAssetActions  []gax.CallOption
-	CreateTask        []gax.CallOption
-	UpdateTask        []gax.CallOption
-	DeleteTask        []gax.CallOption
-	ListTasks         []gax.CallOption
-	GetTask           []gax.CallOption
-	ListJobs          []gax.CallOption
-	RunTask           []gax.CallOption
-	GetJob            []gax.CallOption
-	CancelJob         []gax.CallOption
-	CreateEnvironment []gax.CallOption
-	UpdateEnvironment []gax.CallOption
-	DeleteEnvironment []gax.CallOption
-	ListEnvironments  []gax.CallOption
-	GetEnvironment    []gax.CallOption
-	ListSessions      []gax.CallOption
-	GetLocation       []gax.CallOption
-	ListLocations     []gax.CallOption
-	CancelOperation   []gax.CallOption
-	DeleteOperation   []gax.CallOption
-	GetOperation      []gax.CallOption
-	ListOperations    []gax.CallOption
+	CreateLake         []gax.CallOption
+	UpdateLake         []gax.CallOption
+	DeleteLake         []gax.CallOption
+	ListLakes          []gax.CallOption
+	GetLake            []gax.CallOption
+	ListLakeActions    []gax.CallOption
+	CreateZone         []gax.CallOption
+	UpdateZone         []gax.CallOption
+	DeleteZone         []gax.CallOption
+	ListZones          []gax.CallOption
+	GetZone            []gax.CallOption
+	ListZoneActions    []gax.CallOption
+	CreateAsset        []gax.CallOption
+	UpdateAsset        []gax.CallOption
+	DeleteAsset        []gax.CallOption
+	ListAssets         []gax.CallOption
+	GetAsset           []gax.CallOption
+	ListAssetActions   []gax.CallOption
+	CreateTask         []gax.CallOption
+	UpdateTask         []gax.CallOption
+	DeleteTask         []gax.CallOption
+	ListTasks          []gax.CallOption
+	GetTask            []gax.CallOption
+	ListJobs           []gax.CallOption
+	RunTask            []gax.CallOption
+	GetJob             []gax.CallOption
+	CancelJob          []gax.CallOption
+	GetLocation        []gax.CallOption
+	ListLocations      []gax.CallOption
+	GetIamPolicy       []gax.CallOption
+	SetIamPolicy       []gax.CallOption
+	TestIamPermissions []gax.CallOption
+	CancelOperation    []gax.CallOption
+	DeleteOperation    []gax.CallOption
+	GetOperation       []gax.CallOption
+	ListOperations     []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -301,46 +299,15 @@ func defaultCallOptions() *CallOptions {
 		CancelJob: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
-		CreateEnvironment: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-		},
-		UpdateEnvironment: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-		},
-		DeleteEnvironment: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-		},
-		ListEnvironments: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        10000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		GetEnvironment: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        10000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		ListSessions:    []gax.CallOption{},
-		GetLocation:     []gax.CallOption{},
-		ListLocations:   []gax.CallOption{},
-		CancelOperation: []gax.CallOption{},
-		DeleteOperation: []gax.CallOption{},
-		GetOperation:    []gax.CallOption{},
-		ListOperations:  []gax.CallOption{},
+		GetLocation:        []gax.CallOption{},
+		ListLocations:      []gax.CallOption{},
+		GetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
+		DeleteOperation:    []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
+		ListOperations:     []gax.CallOption{},
 	}
 }
 
@@ -529,44 +496,15 @@ func defaultRESTCallOptions() *CallOptions {
 		CancelJob: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
-		CreateEnvironment: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-		},
-		UpdateEnvironment: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-		},
-		DeleteEnvironment: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-		},
-		ListEnvironments: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        10000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable)
-			}),
-		},
-		GetEnvironment: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        10000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable)
-			}),
-		},
-		ListSessions:    []gax.CallOption{},
-		GetLocation:     []gax.CallOption{},
-		ListLocations:   []gax.CallOption{},
-		CancelOperation: []gax.CallOption{},
-		DeleteOperation: []gax.CallOption{},
-		GetOperation:    []gax.CallOption{},
-		ListOperations:  []gax.CallOption{},
+		GetLocation:        []gax.CallOption{},
+		ListLocations:      []gax.CallOption{},
+		GetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
+		DeleteOperation:    []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
+		ListOperations:     []gax.CallOption{},
 	}
 }
 
@@ -614,17 +552,11 @@ type internalClient interface {
 	RunTask(context.Context, *dataplexpb.RunTaskRequest, ...gax.CallOption) (*dataplexpb.RunTaskResponse, error)
 	GetJob(context.Context, *dataplexpb.GetJobRequest, ...gax.CallOption) (*dataplexpb.Job, error)
 	CancelJob(context.Context, *dataplexpb.CancelJobRequest, ...gax.CallOption) error
-	CreateEnvironment(context.Context, *dataplexpb.CreateEnvironmentRequest, ...gax.CallOption) (*CreateEnvironmentOperation, error)
-	CreateEnvironmentOperation(name string) *CreateEnvironmentOperation
-	UpdateEnvironment(context.Context, *dataplexpb.UpdateEnvironmentRequest, ...gax.CallOption) (*UpdateEnvironmentOperation, error)
-	UpdateEnvironmentOperation(name string) *UpdateEnvironmentOperation
-	DeleteEnvironment(context.Context, *dataplexpb.DeleteEnvironmentRequest, ...gax.CallOption) (*DeleteEnvironmentOperation, error)
-	DeleteEnvironmentOperation(name string) *DeleteEnvironmentOperation
-	ListEnvironments(context.Context, *dataplexpb.ListEnvironmentsRequest, ...gax.CallOption) *EnvironmentIterator
-	GetEnvironment(context.Context, *dataplexpb.GetEnvironmentRequest, ...gax.CallOption) (*dataplexpb.Environment, error)
-	ListSessions(context.Context, *dataplexpb.ListSessionsRequest, ...gax.CallOption) *SessionIterator
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
 	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
@@ -885,63 +817,48 @@ func (c *Client) CancelJob(ctx context.Context, req *dataplexpb.CancelJobRequest
 	return c.internalClient.CancelJob(ctx, req, opts...)
 }
 
-// CreateEnvironment create an environment resource.
-func (c *Client) CreateEnvironment(ctx context.Context, req *dataplexpb.CreateEnvironmentRequest, opts ...gax.CallOption) (*CreateEnvironmentOperation, error) {
-	return c.internalClient.CreateEnvironment(ctx, req, opts...)
-}
-
-// CreateEnvironmentOperation returns a new CreateEnvironmentOperation from a given name.
-// The name must be that of a previously created CreateEnvironmentOperation, possibly from a different process.
-func (c *Client) CreateEnvironmentOperation(name string) *CreateEnvironmentOperation {
-	return c.internalClient.CreateEnvironmentOperation(name)
-}
-
-// UpdateEnvironment update the environment resource.
-func (c *Client) UpdateEnvironment(ctx context.Context, req *dataplexpb.UpdateEnvironmentRequest, opts ...gax.CallOption) (*UpdateEnvironmentOperation, error) {
-	return c.internalClient.UpdateEnvironment(ctx, req, opts...)
-}
-
-// UpdateEnvironmentOperation returns a new UpdateEnvironmentOperation from a given name.
-// The name must be that of a previously created UpdateEnvironmentOperation, possibly from a different process.
-func (c *Client) UpdateEnvironmentOperation(name string) *UpdateEnvironmentOperation {
-	return c.internalClient.UpdateEnvironmentOperation(name)
-}
-
-// DeleteEnvironment delete the environment resource. All the child resources must have been
-// deleted before environment deletion can be initiated.
-func (c *Client) DeleteEnvironment(ctx context.Context, req *dataplexpb.DeleteEnvironmentRequest, opts ...gax.CallOption) (*DeleteEnvironmentOperation, error) {
-	return c.internalClient.DeleteEnvironment(ctx, req, opts...)
-}
-
-// DeleteEnvironmentOperation returns a new DeleteEnvironmentOperation from a given name.
-// The name must be that of a previously created DeleteEnvironmentOperation, possibly from a different process.
-func (c *Client) DeleteEnvironmentOperation(name string) *DeleteEnvironmentOperation {
-	return c.internalClient.DeleteEnvironmentOperation(name)
-}
-
-// ListEnvironments lists environments under the given lake.
-func (c *Client) ListEnvironments(ctx context.Context, req *dataplexpb.ListEnvironmentsRequest, opts ...gax.CallOption) *EnvironmentIterator {
-	return c.internalClient.ListEnvironments(ctx, req, opts...)
-}
-
-// GetEnvironment get environment resource.
-func (c *Client) GetEnvironment(ctx context.Context, req *dataplexpb.GetEnvironmentRequest, opts ...gax.CallOption) (*dataplexpb.Environment, error) {
-	return c.internalClient.GetEnvironment(ctx, req, opts...)
-}
-
-// ListSessions lists session resources in an environment.
-func (c *Client) ListSessions(ctx context.Context, req *dataplexpb.ListSessionsRequest, opts ...gax.CallOption) *SessionIterator {
-	return c.internalClient.ListSessions(ctx, req, opts...)
-}
-
 // GetLocation gets information about a location.
 func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
 }
 
 // ListLocations lists information about the supported locations for this service.
+// This method can be called in two ways:
+//
+//	List all public locations: Use the path GET /v1/locations.
+//
+//	List project-visible locations: Use the path
+//	GET /v1/projects/{project_id}/locations. This may include public
+//	locations as well as private or other locations specifically visible
+//	to the project.
 func (c *Client) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
+}
+
+// GetIamPolicy gets the access control policy for a resource. Returns an empty policy
+// if the resource exists and does not have a policy set.
+func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.GetIamPolicy(ctx, req, opts...)
+}
+
+// SetIamPolicy sets the access control policy on the specified resource. Replaces
+// any existing policy.
+//
+// Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED
+// errors.
+func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.SetIamPolicy(ctx, req, opts...)
+}
+
+// TestIamPermissions returns permissions that a caller has on the specified resource. If the
+// resource does not exist, this will return an empty set of
+// permissions, not a NOT_FOUND error.
+//
+// Note: This operation is designed to be used for building
+// permission-aware UIs and command-line tools, not for authorization
+// checking. This operation may “fail open” without warning.
+func (c *Client) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
 // CancelOperation is a utility method from google.longrunning.Operations.
@@ -984,6 +901,8 @@ type gRPCClient struct {
 
 	operationsClient longrunningpb.OperationsClient
 
+	iamPolicyClient iampb.IAMPolicyClient
+
 	locationsClient locationpb.LocationsClient
 
 	// The x-goog-* metadata to be sent with each request.
@@ -1022,6 +941,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		CallOptions:      &client.CallOptions,
 		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
+		iamPolicyClient:  iampb.NewIAMPolicyClient(connPool),
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -1892,176 +1812,6 @@ func (c *gRPCClient) CancelJob(ctx context.Context, req *dataplexpb.CancelJobReq
 	return err
 }
 
-func (c *gRPCClient) CreateEnvironment(ctx context.Context, req *dataplexpb.CreateEnvironmentRequest, opts ...gax.CallOption) (*CreateEnvironmentOperation, error) {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).CreateEnvironment[0:len((*c.CallOptions).CreateEnvironment):len((*c.CallOptions).CreateEnvironment)], opts...)
-	var resp *longrunningpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = executeRPC(ctx, c.client.CreateEnvironment, req, settings.GRPC, c.logger, "CreateEnvironment")
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &CreateEnvironmentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
-	}, nil
-}
-
-func (c *gRPCClient) UpdateEnvironment(ctx context.Context, req *dataplexpb.UpdateEnvironmentRequest, opts ...gax.CallOption) (*UpdateEnvironmentOperation, error) {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "environment.name", url.QueryEscape(req.GetEnvironment().GetName()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).UpdateEnvironment[0:len((*c.CallOptions).UpdateEnvironment):len((*c.CallOptions).UpdateEnvironment)], opts...)
-	var resp *longrunningpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = executeRPC(ctx, c.client.UpdateEnvironment, req, settings.GRPC, c.logger, "UpdateEnvironment")
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &UpdateEnvironmentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
-	}, nil
-}
-
-func (c *gRPCClient) DeleteEnvironment(ctx context.Context, req *dataplexpb.DeleteEnvironmentRequest, opts ...gax.CallOption) (*DeleteEnvironmentOperation, error) {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).DeleteEnvironment[0:len((*c.CallOptions).DeleteEnvironment):len((*c.CallOptions).DeleteEnvironment)], opts...)
-	var resp *longrunningpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = executeRPC(ctx, c.client.DeleteEnvironment, req, settings.GRPC, c.logger, "DeleteEnvironment")
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &DeleteEnvironmentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
-	}, nil
-}
-
-func (c *gRPCClient) ListEnvironments(ctx context.Context, req *dataplexpb.ListEnvironmentsRequest, opts ...gax.CallOption) *EnvironmentIterator {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).ListEnvironments[0:len((*c.CallOptions).ListEnvironments):len((*c.CallOptions).ListEnvironments)], opts...)
-	it := &EnvironmentIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListEnvironmentsRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.Environment, string, error) {
-		resp := &dataplexpb.ListEnvironmentsResponse{}
-		if pageToken != "" {
-			req.PageToken = pageToken
-		}
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else if pageSize != 0 {
-			req.PageSize = int32(pageSize)
-		}
-		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			var err error
-			resp, err = executeRPC(ctx, c.client.ListEnvironments, req, settings.GRPC, c.logger, "ListEnvironments")
-			return err
-		}, opts...)
-		if err != nil {
-			return nil, "", err
-		}
-
-		it.Response = resp
-		return resp.GetEnvironments(), resp.GetNextPageToken(), nil
-	}
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.GetPageSize())
-	it.pageInfo.Token = req.GetPageToken()
-
-	return it
-}
-
-func (c *gRPCClient) GetEnvironment(ctx context.Context, req *dataplexpb.GetEnvironmentRequest, opts ...gax.CallOption) (*dataplexpb.Environment, error) {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).GetEnvironment[0:len((*c.CallOptions).GetEnvironment):len((*c.CallOptions).GetEnvironment)], opts...)
-	var resp *dataplexpb.Environment
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = executeRPC(ctx, c.client.GetEnvironment, req, settings.GRPC, c.logger, "GetEnvironment")
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (c *gRPCClient) ListSessions(ctx context.Context, req *dataplexpb.ListSessionsRequest, opts ...gax.CallOption) *SessionIterator {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).ListSessions[0:len((*c.CallOptions).ListSessions):len((*c.CallOptions).ListSessions)], opts...)
-	it := &SessionIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListSessionsRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.Session, string, error) {
-		resp := &dataplexpb.ListSessionsResponse{}
-		if pageToken != "" {
-			req.PageToken = pageToken
-		}
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else if pageSize != 0 {
-			req.PageSize = int32(pageSize)
-		}
-		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			var err error
-			resp, err = executeRPC(ctx, c.client.ListSessions, req, settings.GRPC, c.logger, "ListSessions")
-			return err
-		}, opts...)
-		if err != nil {
-			return nil, "", err
-		}
-
-		it.Response = resp
-		return resp.GetSessions(), resp.GetNextPageToken(), nil
-	}
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.GetPageSize())
-	it.pageInfo.Token = req.GetPageToken()
-
-	return it
-}
-
 func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -2124,6 +1874,60 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
+	var resp *iampb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
+	var resp *iampb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
+	var resp *iampb.TestIamPermissionsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
@@ -3964,409 +3768,6 @@ func (c *restClient) CancelJob(ctx context.Context, req *dataplexpb.CancelJobReq
 	}, opts...)
 }
 
-// CreateEnvironment create an environment resource.
-func (c *restClient) CreateEnvironment(ctx context.Context, req *dataplexpb.CreateEnvironmentRequest, opts ...gax.CallOption) (*CreateEnvironmentOperation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
-	body := req.GetEnvironment()
-	jsonReq, err := m.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return nil, err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1/%v/environments", req.GetParent())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-	params.Add("environmentId", fmt.Sprintf("%v", req.GetEnvironmentId()))
-	if req.GetValidateOnly() {
-		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
-	}
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	hds = append(hds, "Content-Type", "application/json")
-	headers := gax.BuildHeaders(ctx, hds...)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &longrunningpb.Operation{}
-	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateEnvironment")
-		if err != nil {
-			return err
-		}
-		if err := unm.Unmarshal(buf, resp); err != nil {
-			return err
-		}
-
-		return nil
-	}, opts...)
-	if e != nil {
-		return nil, e
-	}
-
-	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	return &CreateEnvironmentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
-		pollPath: override,
-	}, nil
-}
-
-// UpdateEnvironment update the environment resource.
-func (c *restClient) UpdateEnvironment(ctx context.Context, req *dataplexpb.UpdateEnvironmentRequest, opts ...gax.CallOption) (*UpdateEnvironmentOperation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
-	body := req.GetEnvironment()
-	jsonReq, err := m.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return nil, err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetEnvironment().GetName())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-	if req.GetUpdateMask() != nil {
-		field, err := protojson.Marshal(req.GetUpdateMask())
-		if err != nil {
-			return nil, err
-		}
-		params.Add("updateMask", string(field[1:len(field)-1]))
-	}
-	if req.GetValidateOnly() {
-		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
-	}
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "environment.name", url.QueryEscape(req.GetEnvironment().GetName()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	hds = append(hds, "Content-Type", "application/json")
-	headers := gax.BuildHeaders(ctx, hds...)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &longrunningpb.Operation{}
-	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateEnvironment")
-		if err != nil {
-			return err
-		}
-		if err := unm.Unmarshal(buf, resp); err != nil {
-			return err
-		}
-
-		return nil
-	}, opts...)
-	if e != nil {
-		return nil, e
-	}
-
-	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	return &UpdateEnvironmentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
-		pollPath: override,
-	}, nil
-}
-
-// DeleteEnvironment delete the environment resource. All the child resources must have been
-// deleted before environment deletion can be initiated.
-func (c *restClient) DeleteEnvironment(ctx context.Context, req *dataplexpb.DeleteEnvironmentRequest, opts ...gax.CallOption) (*DeleteEnvironmentOperation, error) {
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return nil, err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	hds = append(hds, "Content-Type", "application/json")
-	headers := gax.BuildHeaders(ctx, hds...)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &longrunningpb.Operation{}
-	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteEnvironment")
-		if err != nil {
-			return err
-		}
-		if err := unm.Unmarshal(buf, resp); err != nil {
-			return err
-		}
-
-		return nil
-	}, opts...)
-	if e != nil {
-		return nil, e
-	}
-
-	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	return &DeleteEnvironmentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
-		pollPath: override,
-	}, nil
-}
-
-// ListEnvironments lists environments under the given lake.
-func (c *restClient) ListEnvironments(ctx context.Context, req *dataplexpb.ListEnvironmentsRequest, opts ...gax.CallOption) *EnvironmentIterator {
-	it := &EnvironmentIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListEnvironmentsRequest)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.Environment, string, error) {
-		resp := &dataplexpb.ListEnvironmentsResponse{}
-		if pageToken != "" {
-			req.PageToken = pageToken
-		}
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else if pageSize != 0 {
-			req.PageSize = int32(pageSize)
-		}
-		baseUrl, err := url.Parse(c.endpoint)
-		if err != nil {
-			return nil, "", err
-		}
-		baseUrl.Path += fmt.Sprintf("/v1/%v/environments", req.GetParent())
-
-		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
-		if req.GetFilter() != "" {
-			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
-		}
-		if req.GetOrderBy() != "" {
-			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
-		}
-		if req.GetPageSize() != 0 {
-			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
-		}
-		if req.GetPageToken() != "" {
-			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-
-		baseUrl.RawQuery = params.Encode()
-
-		// Build HTTP headers from client and context metadata.
-		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
-		headers := gax.BuildHeaders(ctx, hds...)
-		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			if settings.Path != "" {
-				baseUrl.Path = settings.Path
-			}
-			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-			if err != nil {
-				return err
-			}
-			httpReq.Header = headers
-
-			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListEnvironments")
-			if err != nil {
-				return err
-			}
-			if err := unm.Unmarshal(buf, resp); err != nil {
-				return err
-			}
-
-			return nil
-		}, opts...)
-		if e != nil {
-			return nil, "", e
-		}
-		it.Response = resp
-		return resp.GetEnvironments(), resp.GetNextPageToken(), nil
-	}
-
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.GetPageSize())
-	it.pageInfo.Token = req.GetPageToken()
-
-	return it
-}
-
-// GetEnvironment get environment resource.
-func (c *restClient) GetEnvironment(ctx context.Context, req *dataplexpb.GetEnvironmentRequest, opts ...gax.CallOption) (*dataplexpb.Environment, error) {
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return nil, err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	hds = append(hds, "Content-Type", "application/json")
-	headers := gax.BuildHeaders(ctx, hds...)
-	opts = append((*c.CallOptions).GetEnvironment[0:len((*c.CallOptions).GetEnvironment):len((*c.CallOptions).GetEnvironment)], opts...)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &dataplexpb.Environment{}
-	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetEnvironment")
-		if err != nil {
-			return err
-		}
-
-		if err := unm.Unmarshal(buf, resp); err != nil {
-			return err
-		}
-
-		return nil
-	}, opts...)
-	if e != nil {
-		return nil, e
-	}
-	return resp, nil
-}
-
-// ListSessions lists session resources in an environment.
-func (c *restClient) ListSessions(ctx context.Context, req *dataplexpb.ListSessionsRequest, opts ...gax.CallOption) *SessionIterator {
-	it := &SessionIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListSessionsRequest)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.Session, string, error) {
-		resp := &dataplexpb.ListSessionsResponse{}
-		if pageToken != "" {
-			req.PageToken = pageToken
-		}
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else if pageSize != 0 {
-			req.PageSize = int32(pageSize)
-		}
-		baseUrl, err := url.Parse(c.endpoint)
-		if err != nil {
-			return nil, "", err
-		}
-		baseUrl.Path += fmt.Sprintf("/v1/%v/sessions", req.GetParent())
-
-		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
-		if req.GetFilter() != "" {
-			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
-		}
-		if req.GetPageSize() != 0 {
-			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
-		}
-		if req.GetPageToken() != "" {
-			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-
-		baseUrl.RawQuery = params.Encode()
-
-		// Build HTTP headers from client and context metadata.
-		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
-		headers := gax.BuildHeaders(ctx, hds...)
-		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			if settings.Path != "" {
-				baseUrl.Path = settings.Path
-			}
-			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-			if err != nil {
-				return err
-			}
-			httpReq.Header = headers
-
-			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSessions")
-			if err != nil {
-				return err
-			}
-			if err := unm.Unmarshal(buf, resp); err != nil {
-				return err
-			}
-
-			return nil
-		}, opts...)
-		if e != nil {
-			return nil, "", e
-		}
-		it.Response = resp
-		return resp.GetSessions(), resp.GetNextPageToken(), nil
-	}
-
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.GetPageSize())
-	it.pageInfo.Token = req.GetPageToken()
-
-	return it
-}
-
 // GetLocation gets information about a location.
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -4418,6 +3819,14 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 }
 
 // ListLocations lists information about the supported locations for this service.
+// This method can be called in two ways:
+//
+//	List all public locations: Use the path GET /v1/locations.
+//
+//	List project-visible locations: Use the path
+//	GET /v1/projects/{project_id}/locations. This may include public
+//	locations as well as private or other locations specifically visible
+//	to the project.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
@@ -4496,6 +3905,182 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// GetIamPolicy gets the access control policy for a resource. Returns an empty policy
+// if the resource exists and does not have a policy set.
+func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetOptions().GetRequestedPolicyVersion() != 0 {
+		params.Add("options.requestedPolicyVersion", fmt.Sprintf("%v", req.GetOptions().GetRequestedPolicyVersion()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &iampb.Policy{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetIamPolicy")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// SetIamPolicy sets the access control policy on the specified resource. Replaces
+// any existing policy.
+//
+// Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED
+// errors.
+func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &iampb.Policy{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// TestIamPermissions returns permissions that a caller has on the specified resource. If the
+// resource does not exist, this will return an empty set of
+// permissions, not a NOT_FOUND error.
+//
+// Note: This operation is designed to be used for building
+// permission-aware UIs and command-line tools, not for authorization
+// checking. This operation may “fail open” without warning.
+func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &iampb.TestIamPermissionsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // CancelOperation is a utility method from google.longrunning.Operations.
@@ -4726,24 +4311,6 @@ func (c *restClient) CreateAssetOperation(name string) *CreateAssetOperation {
 	}
 }
 
-// CreateEnvironmentOperation returns a new CreateEnvironmentOperation from a given name.
-// The name must be that of a previously created CreateEnvironmentOperation, possibly from a different process.
-func (c *gRPCClient) CreateEnvironmentOperation(name string) *CreateEnvironmentOperation {
-	return &CreateEnvironmentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
-	}
-}
-
-// CreateEnvironmentOperation returns a new CreateEnvironmentOperation from a given name.
-// The name must be that of a previously created CreateEnvironmentOperation, possibly from a different process.
-func (c *restClient) CreateEnvironmentOperation(name string) *CreateEnvironmentOperation {
-	override := fmt.Sprintf("/v1/%s", name)
-	return &CreateEnvironmentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
-		pollPath: override,
-	}
-}
-
 // CreateLakeOperation returns a new CreateLakeOperation from a given name.
 // The name must be that of a previously created CreateLakeOperation, possibly from a different process.
 func (c *gRPCClient) CreateLakeOperation(name string) *CreateLakeOperation {
@@ -4816,24 +4383,6 @@ func (c *restClient) DeleteAssetOperation(name string) *DeleteAssetOperation {
 	}
 }
 
-// DeleteEnvironmentOperation returns a new DeleteEnvironmentOperation from a given name.
-// The name must be that of a previously created DeleteEnvironmentOperation, possibly from a different process.
-func (c *gRPCClient) DeleteEnvironmentOperation(name string) *DeleteEnvironmentOperation {
-	return &DeleteEnvironmentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
-	}
-}
-
-// DeleteEnvironmentOperation returns a new DeleteEnvironmentOperation from a given name.
-// The name must be that of a previously created DeleteEnvironmentOperation, possibly from a different process.
-func (c *restClient) DeleteEnvironmentOperation(name string) *DeleteEnvironmentOperation {
-	override := fmt.Sprintf("/v1/%s", name)
-	return &DeleteEnvironmentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
-		pollPath: override,
-	}
-}
-
 // DeleteLakeOperation returns a new DeleteLakeOperation from a given name.
 // The name must be that of a previously created DeleteLakeOperation, possibly from a different process.
 func (c *gRPCClient) DeleteLakeOperation(name string) *DeleteLakeOperation {
@@ -4901,24 +4450,6 @@ func (c *gRPCClient) UpdateAssetOperation(name string) *UpdateAssetOperation {
 func (c *restClient) UpdateAssetOperation(name string) *UpdateAssetOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateAssetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
-		pollPath: override,
-	}
-}
-
-// UpdateEnvironmentOperation returns a new UpdateEnvironmentOperation from a given name.
-// The name must be that of a previously created UpdateEnvironmentOperation, possibly from a different process.
-func (c *gRPCClient) UpdateEnvironmentOperation(name string) *UpdateEnvironmentOperation {
-	return &UpdateEnvironmentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
-	}
-}
-
-// UpdateEnvironmentOperation returns a new UpdateEnvironmentOperation from a given name.
-// The name must be that of a previously created UpdateEnvironmentOperation, possibly from a different process.
-func (c *restClient) UpdateEnvironmentOperation(name string) *UpdateEnvironmentOperation {
-	override := fmt.Sprintf("/v1/%s", name)
-	return &UpdateEnvironmentOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

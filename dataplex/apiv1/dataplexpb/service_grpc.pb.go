@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,39 +36,33 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	DataplexService_CreateLake_FullMethodName        = "/google.cloud.dataplex.v1.DataplexService/CreateLake"
-	DataplexService_UpdateLake_FullMethodName        = "/google.cloud.dataplex.v1.DataplexService/UpdateLake"
-	DataplexService_DeleteLake_FullMethodName        = "/google.cloud.dataplex.v1.DataplexService/DeleteLake"
-	DataplexService_ListLakes_FullMethodName         = "/google.cloud.dataplex.v1.DataplexService/ListLakes"
-	DataplexService_GetLake_FullMethodName           = "/google.cloud.dataplex.v1.DataplexService/GetLake"
-	DataplexService_ListLakeActions_FullMethodName   = "/google.cloud.dataplex.v1.DataplexService/ListLakeActions"
-	DataplexService_CreateZone_FullMethodName        = "/google.cloud.dataplex.v1.DataplexService/CreateZone"
-	DataplexService_UpdateZone_FullMethodName        = "/google.cloud.dataplex.v1.DataplexService/UpdateZone"
-	DataplexService_DeleteZone_FullMethodName        = "/google.cloud.dataplex.v1.DataplexService/DeleteZone"
-	DataplexService_ListZones_FullMethodName         = "/google.cloud.dataplex.v1.DataplexService/ListZones"
-	DataplexService_GetZone_FullMethodName           = "/google.cloud.dataplex.v1.DataplexService/GetZone"
-	DataplexService_ListZoneActions_FullMethodName   = "/google.cloud.dataplex.v1.DataplexService/ListZoneActions"
-	DataplexService_CreateAsset_FullMethodName       = "/google.cloud.dataplex.v1.DataplexService/CreateAsset"
-	DataplexService_UpdateAsset_FullMethodName       = "/google.cloud.dataplex.v1.DataplexService/UpdateAsset"
-	DataplexService_DeleteAsset_FullMethodName       = "/google.cloud.dataplex.v1.DataplexService/DeleteAsset"
-	DataplexService_ListAssets_FullMethodName        = "/google.cloud.dataplex.v1.DataplexService/ListAssets"
-	DataplexService_GetAsset_FullMethodName          = "/google.cloud.dataplex.v1.DataplexService/GetAsset"
-	DataplexService_ListAssetActions_FullMethodName  = "/google.cloud.dataplex.v1.DataplexService/ListAssetActions"
-	DataplexService_CreateTask_FullMethodName        = "/google.cloud.dataplex.v1.DataplexService/CreateTask"
-	DataplexService_UpdateTask_FullMethodName        = "/google.cloud.dataplex.v1.DataplexService/UpdateTask"
-	DataplexService_DeleteTask_FullMethodName        = "/google.cloud.dataplex.v1.DataplexService/DeleteTask"
-	DataplexService_ListTasks_FullMethodName         = "/google.cloud.dataplex.v1.DataplexService/ListTasks"
-	DataplexService_GetTask_FullMethodName           = "/google.cloud.dataplex.v1.DataplexService/GetTask"
-	DataplexService_ListJobs_FullMethodName          = "/google.cloud.dataplex.v1.DataplexService/ListJobs"
-	DataplexService_RunTask_FullMethodName           = "/google.cloud.dataplex.v1.DataplexService/RunTask"
-	DataplexService_GetJob_FullMethodName            = "/google.cloud.dataplex.v1.DataplexService/GetJob"
-	DataplexService_CancelJob_FullMethodName         = "/google.cloud.dataplex.v1.DataplexService/CancelJob"
-	DataplexService_CreateEnvironment_FullMethodName = "/google.cloud.dataplex.v1.DataplexService/CreateEnvironment"
-	DataplexService_UpdateEnvironment_FullMethodName = "/google.cloud.dataplex.v1.DataplexService/UpdateEnvironment"
-	DataplexService_DeleteEnvironment_FullMethodName = "/google.cloud.dataplex.v1.DataplexService/DeleteEnvironment"
-	DataplexService_ListEnvironments_FullMethodName  = "/google.cloud.dataplex.v1.DataplexService/ListEnvironments"
-	DataplexService_GetEnvironment_FullMethodName    = "/google.cloud.dataplex.v1.DataplexService/GetEnvironment"
-	DataplexService_ListSessions_FullMethodName      = "/google.cloud.dataplex.v1.DataplexService/ListSessions"
+	DataplexService_CreateLake_FullMethodName       = "/google.cloud.dataplex.v1.DataplexService/CreateLake"
+	DataplexService_UpdateLake_FullMethodName       = "/google.cloud.dataplex.v1.DataplexService/UpdateLake"
+	DataplexService_DeleteLake_FullMethodName       = "/google.cloud.dataplex.v1.DataplexService/DeleteLake"
+	DataplexService_ListLakes_FullMethodName        = "/google.cloud.dataplex.v1.DataplexService/ListLakes"
+	DataplexService_GetLake_FullMethodName          = "/google.cloud.dataplex.v1.DataplexService/GetLake"
+	DataplexService_ListLakeActions_FullMethodName  = "/google.cloud.dataplex.v1.DataplexService/ListLakeActions"
+	DataplexService_CreateZone_FullMethodName       = "/google.cloud.dataplex.v1.DataplexService/CreateZone"
+	DataplexService_UpdateZone_FullMethodName       = "/google.cloud.dataplex.v1.DataplexService/UpdateZone"
+	DataplexService_DeleteZone_FullMethodName       = "/google.cloud.dataplex.v1.DataplexService/DeleteZone"
+	DataplexService_ListZones_FullMethodName        = "/google.cloud.dataplex.v1.DataplexService/ListZones"
+	DataplexService_GetZone_FullMethodName          = "/google.cloud.dataplex.v1.DataplexService/GetZone"
+	DataplexService_ListZoneActions_FullMethodName  = "/google.cloud.dataplex.v1.DataplexService/ListZoneActions"
+	DataplexService_CreateAsset_FullMethodName      = "/google.cloud.dataplex.v1.DataplexService/CreateAsset"
+	DataplexService_UpdateAsset_FullMethodName      = "/google.cloud.dataplex.v1.DataplexService/UpdateAsset"
+	DataplexService_DeleteAsset_FullMethodName      = "/google.cloud.dataplex.v1.DataplexService/DeleteAsset"
+	DataplexService_ListAssets_FullMethodName       = "/google.cloud.dataplex.v1.DataplexService/ListAssets"
+	DataplexService_GetAsset_FullMethodName         = "/google.cloud.dataplex.v1.DataplexService/GetAsset"
+	DataplexService_ListAssetActions_FullMethodName = "/google.cloud.dataplex.v1.DataplexService/ListAssetActions"
+	DataplexService_CreateTask_FullMethodName       = "/google.cloud.dataplex.v1.DataplexService/CreateTask"
+	DataplexService_UpdateTask_FullMethodName       = "/google.cloud.dataplex.v1.DataplexService/UpdateTask"
+	DataplexService_DeleteTask_FullMethodName       = "/google.cloud.dataplex.v1.DataplexService/DeleteTask"
+	DataplexService_ListTasks_FullMethodName        = "/google.cloud.dataplex.v1.DataplexService/ListTasks"
+	DataplexService_GetTask_FullMethodName          = "/google.cloud.dataplex.v1.DataplexService/GetTask"
+	DataplexService_ListJobs_FullMethodName         = "/google.cloud.dataplex.v1.DataplexService/ListJobs"
+	DataplexService_RunTask_FullMethodName          = "/google.cloud.dataplex.v1.DataplexService/RunTask"
+	DataplexService_GetJob_FullMethodName           = "/google.cloud.dataplex.v1.DataplexService/GetJob"
+	DataplexService_CancelJob_FullMethodName        = "/google.cloud.dataplex.v1.DataplexService/CancelJob"
 )
 
 // DataplexServiceClient is the client API for DataplexService service.
@@ -132,19 +126,6 @@ type DataplexServiceClient interface {
 	GetJob(ctx context.Context, in *GetJobRequest, opts ...grpc.CallOption) (*Job, error)
 	// Cancel jobs running for the task resource.
 	CancelJob(ctx context.Context, in *CancelJobRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// Create an environment resource.
-	CreateEnvironment(ctx context.Context, in *CreateEnvironmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-	// Update the environment resource.
-	UpdateEnvironment(ctx context.Context, in *UpdateEnvironmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-	// Delete the environment resource. All the child resources must have been
-	// deleted before environment deletion can be initiated.
-	DeleteEnvironment(ctx context.Context, in *DeleteEnvironmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-	// Lists environments under the given lake.
-	ListEnvironments(ctx context.Context, in *ListEnvironmentsRequest, opts ...grpc.CallOption) (*ListEnvironmentsResponse, error)
-	// Get environment resource.
-	GetEnvironment(ctx context.Context, in *GetEnvironmentRequest, opts ...grpc.CallOption) (*Environment, error)
-	// Lists session resources in an environment.
-	ListSessions(ctx context.Context, in *ListSessionsRequest, opts ...grpc.CallOption) (*ListSessionsResponse, error)
 }
 
 type dataplexServiceClient struct {
@@ -398,60 +379,6 @@ func (c *dataplexServiceClient) CancelJob(ctx context.Context, in *CancelJobRequ
 	return out, nil
 }
 
-func (c *dataplexServiceClient) CreateEnvironment(ctx context.Context, in *CreateEnvironmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
-	out := new(longrunningpb.Operation)
-	err := c.cc.Invoke(ctx, DataplexService_CreateEnvironment_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *dataplexServiceClient) UpdateEnvironment(ctx context.Context, in *UpdateEnvironmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
-	out := new(longrunningpb.Operation)
-	err := c.cc.Invoke(ctx, DataplexService_UpdateEnvironment_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *dataplexServiceClient) DeleteEnvironment(ctx context.Context, in *DeleteEnvironmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
-	out := new(longrunningpb.Operation)
-	err := c.cc.Invoke(ctx, DataplexService_DeleteEnvironment_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *dataplexServiceClient) ListEnvironments(ctx context.Context, in *ListEnvironmentsRequest, opts ...grpc.CallOption) (*ListEnvironmentsResponse, error) {
-	out := new(ListEnvironmentsResponse)
-	err := c.cc.Invoke(ctx, DataplexService_ListEnvironments_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *dataplexServiceClient) GetEnvironment(ctx context.Context, in *GetEnvironmentRequest, opts ...grpc.CallOption) (*Environment, error) {
-	out := new(Environment)
-	err := c.cc.Invoke(ctx, DataplexService_GetEnvironment_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *dataplexServiceClient) ListSessions(ctx context.Context, in *ListSessionsRequest, opts ...grpc.CallOption) (*ListSessionsResponse, error) {
-	out := new(ListSessionsResponse)
-	err := c.cc.Invoke(ctx, DataplexService_ListSessions_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // DataplexServiceServer is the server API for DataplexService service.
 // All implementations should embed UnimplementedDataplexServiceServer
 // for forward compatibility
@@ -513,19 +440,6 @@ type DataplexServiceServer interface {
 	GetJob(context.Context, *GetJobRequest) (*Job, error)
 	// Cancel jobs running for the task resource.
 	CancelJob(context.Context, *CancelJobRequest) (*emptypb.Empty, error)
-	// Create an environment resource.
-	CreateEnvironment(context.Context, *CreateEnvironmentRequest) (*longrunningpb.Operation, error)
-	// Update the environment resource.
-	UpdateEnvironment(context.Context, *UpdateEnvironmentRequest) (*longrunningpb.Operation, error)
-	// Delete the environment resource. All the child resources must have been
-	// deleted before environment deletion can be initiated.
-	DeleteEnvironment(context.Context, *DeleteEnvironmentRequest) (*longrunningpb.Operation, error)
-	// Lists environments under the given lake.
-	ListEnvironments(context.Context, *ListEnvironmentsRequest) (*ListEnvironmentsResponse, error)
-	// Get environment resource.
-	GetEnvironment(context.Context, *GetEnvironmentRequest) (*Environment, error)
-	// Lists session resources in an environment.
-	ListSessions(context.Context, *ListSessionsRequest) (*ListSessionsResponse, error)
 }
 
 // UnimplementedDataplexServiceServer should be embedded to have forward compatible implementations.
@@ -612,24 +526,6 @@ func (UnimplementedDataplexServiceServer) GetJob(context.Context, *GetJobRequest
 }
 func (UnimplementedDataplexServiceServer) CancelJob(context.Context, *CancelJobRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CancelJob not implemented")
-}
-func (UnimplementedDataplexServiceServer) CreateEnvironment(context.Context, *CreateEnvironmentRequest) (*longrunningpb.Operation, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateEnvironment not implemented")
-}
-func (UnimplementedDataplexServiceServer) UpdateEnvironment(context.Context, *UpdateEnvironmentRequest) (*longrunningpb.Operation, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateEnvironment not implemented")
-}
-func (UnimplementedDataplexServiceServer) DeleteEnvironment(context.Context, *DeleteEnvironmentRequest) (*longrunningpb.Operation, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteEnvironment not implemented")
-}
-func (UnimplementedDataplexServiceServer) ListEnvironments(context.Context, *ListEnvironmentsRequest) (*ListEnvironmentsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListEnvironments not implemented")
-}
-func (UnimplementedDataplexServiceServer) GetEnvironment(context.Context, *GetEnvironmentRequest) (*Environment, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetEnvironment not implemented")
-}
-func (UnimplementedDataplexServiceServer) ListSessions(context.Context, *ListSessionsRequest) (*ListSessionsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListSessions not implemented")
 }
 
 // UnsafeDataplexServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -1129,114 +1025,6 @@ func _DataplexService_CancelJob_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
-func _DataplexService_CreateEnvironment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateEnvironmentRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(DataplexServiceServer).CreateEnvironment(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: DataplexService_CreateEnvironment_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataplexServiceServer).CreateEnvironment(ctx, req.(*CreateEnvironmentRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _DataplexService_UpdateEnvironment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateEnvironmentRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(DataplexServiceServer).UpdateEnvironment(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: DataplexService_UpdateEnvironment_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataplexServiceServer).UpdateEnvironment(ctx, req.(*UpdateEnvironmentRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _DataplexService_DeleteEnvironment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteEnvironmentRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(DataplexServiceServer).DeleteEnvironment(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: DataplexService_DeleteEnvironment_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataplexServiceServer).DeleteEnvironment(ctx, req.(*DeleteEnvironmentRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _DataplexService_ListEnvironments_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListEnvironmentsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(DataplexServiceServer).ListEnvironments(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: DataplexService_ListEnvironments_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataplexServiceServer).ListEnvironments(ctx, req.(*ListEnvironmentsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _DataplexService_GetEnvironment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetEnvironmentRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(DataplexServiceServer).GetEnvironment(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: DataplexService_GetEnvironment_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataplexServiceServer).GetEnvironment(ctx, req.(*GetEnvironmentRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _DataplexService_ListSessions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListSessionsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(DataplexServiceServer).ListSessions(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: DataplexService_ListSessions_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataplexServiceServer).ListSessions(ctx, req.(*ListSessionsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // DataplexService_ServiceDesc is the grpc.ServiceDesc for DataplexService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1351,30 +1139,6 @@ var DataplexService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CancelJob",
 			Handler:    _DataplexService_CancelJob_Handler,
-		},
-		{
-			MethodName: "CreateEnvironment",
-			Handler:    _DataplexService_CreateEnvironment_Handler,
-		},
-		{
-			MethodName: "UpdateEnvironment",
-			Handler:    _DataplexService_UpdateEnvironment_Handler,
-		},
-		{
-			MethodName: "DeleteEnvironment",
-			Handler:    _DataplexService_DeleteEnvironment_Handler,
-		},
-		{
-			MethodName: "ListEnvironments",
-			Handler:    _DataplexService_ListEnvironments_Handler,
-		},
-		{
-			MethodName: "GetEnvironment",
-			Handler:    _DataplexService_GetEnvironment_Handler,
-		},
-		{
-			MethodName: "ListSessions",
-			Handler:    _DataplexService_ListSessions_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
