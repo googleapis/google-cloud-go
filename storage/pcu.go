@@ -47,7 +47,9 @@ const (
 type ParallelUploadConfig struct {
 
 	// PartSize is the size of each part to be uploaded in parallel.
-	// Defaults to 16MiB. Must be a multiple of 256KiB and more than 5MiB.
+	// Defaults to 16MiB. If a value less than 5MiB is provided, it will be
+	// automatically increased to 5MiB. The value is automatically rounded up
+	// to the nearest multiple of 256KiB.
 	PartSize int
 
 	// MaxConcurrency is the number of goroutines to use for uploading parts in parallel.

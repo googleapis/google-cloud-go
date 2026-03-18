@@ -170,6 +170,10 @@ type Writer struct {
 	// then ProgressFunc will be invoked after each call with the number of bytes of
 	// content copied so far.
 	//
+	// For parallel uploads, progress is reported when each part is successfully uploaded.
+	// Therefore, the progress may be delayed relative to the standard upload,
+	// and jump in increments of PartSize (e.g. 16MiB).
+	//
 	// ProgressFunc should return quickly without blocking.
 	ProgressFunc func(int64)
 
@@ -258,9 +262,11 @@ func (w *Writer) Write(p []byte) (n int, err error) {
 	// First time initialization: freeze the configuration to either PCU or standard.
 	if w.EnableParallelUpload {
 		w.mu.Lock()
-		if err := w.initPCU(w.ctx); err != nil {
-			w.mu.Unlock()
-			return 0, err
+		if w.pcu == nil {
+			if err := w.initPCU(w.ctx); err != nil {
+				w.mu.Unlock()
+				return 0, err
+			}
 		}
 		pcu = w.pcu
 		w.mu.Unlock()

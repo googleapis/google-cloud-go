@@ -102,7 +102,7 @@ func TestParallelUploadConfig_defaults(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			cfg := tt.in
 			cfg.defaults()
-			if diff := cmp.Diff(tt.want, cfg, cmp.AllowUnexported(ParallelUploadConfig{})); diff != "" {
+			if diff := cmp.Diff(tt.want, cfg); diff != "" {
 				t.Errorf("defaults() mismatch (-want +got):\n%s", diff)
 			}
 		})

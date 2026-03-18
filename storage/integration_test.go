@@ -8876,3 +8876,73 @@ func TestIntegration_ParallelUploadConcurrency(t *testing.T) {
 		}
 	})
 }
+
+func TestIntegration_ParallelUpload_ChecksumValidation(t *testing.T) {
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		h := testHelper{t}
+
+		content := bytes.Repeat([]byte("z"), 12<<20) // 12 MiB
+		correctCRC := crc32.Checksum(content, crc32cTable)
+
+		testCases := []struct {
+			name        string
+			crc32c      uint32
+			expectError bool
+		}{
+			{
+				name:        "correct checksum",
+				crc32c:      correctCRC,
+				expectError: false,
+			},
+			{
+				name:        "incorrect checksum",
+				crc32c:      correctCRC + 1,
+				expectError: true,
+			},
+		}
+
+		for _, tc := range testCases {
+			t.Run(tc.name, func(t *testing.T) {
+				objName := "pcu-crc32c-" + uidSpaceObjects.New()
+				obj := client.Bucket(bucket).Object(objName)
+				t.Cleanup(func() {
+					h.mustDeleteObject(obj)
+				})
+
+				w := obj.NewWriter(ctx)
+				w.EnableParallelUpload = true
+				w.ParallelUploadConfig = ParallelUploadConfig{PartSize: 5 << 20, MaxConcurrency: 2}
+				w.SendCRC32C = true
+				w.CRC32C = tc.crc32c
+
+				if _, err := w.Write(content); err != nil {
+					t.Fatalf("Writer.Write: %v", err)
+				}
+
+				err := w.Close()
+				if tc.expectError {
+					if err == nil {
+						t.Fatalf("expected error due to incorrect checksum, got nil")
+					}
+					// It should fail in compose since user-provided CRC32C is evaluated there.
+					if !errorIsStatusCode(err, http.StatusBadRequest, codes.InvalidArgument) {
+						t.Fatalf("expected an InvalidArgument error for incorrect checksum, but got %v", err)
+					}
+				} else {
+					if err != nil {
+						t.Fatalf("Writer.Close: %v", err)
+					}
+
+					attrs, err := obj.Attrs(ctx)
+					if err != nil {
+						t.Fatalf("obj.Attrs: %v", err)
+					}
+					if attrs.CRC32C != tc.crc32c {
+						t.Errorf("Object CRC32C mismatch: got %d, want %d", attrs.CRC32C, tc.crc32c)
+					}
+				}
+			})
+		}
+	})
+}
