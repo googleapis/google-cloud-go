@@ -368,6 +368,14 @@ func TestFriendlyAPIName(t *testing.T) {
 			},
 			want: "PubSub API", // Should NOT find v2's metadata, should find fallback.
 		},
+		{
+			importPath: "cloud.google.com/go/nonexistent",
+			module: &packages.Module{
+				Path: "cloud.google.com/go/nonexistent",
+				Dir:  t.TempDir(), // An empty dir with no metadata
+			},
+			want: "", // Should return empty string and no error
+		},
 	}
 
 	for _, test := range tests {
