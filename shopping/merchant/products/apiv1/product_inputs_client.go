@@ -186,11 +186,11 @@ func (c *ProductInputsClient) Connection() *grpc.ClientConn {
 }
 
 // InsertProductInput Uploads a product input to your Merchant Center
-// account (at /merchant/api/guides/products/overview#upload-product-input). You
+// account (at /merchant/api/guides/products/add-manage#add_a_product). You
 // must have a products data
-// source (at /merchant/api/guides/data-sources/overview) to be able to insert a
-// product. The unique identifier of the data source is passed as a query
-// parameter in the request URL.
+// source (at /merchant/api/guides/data-sources/api-sources#create-primary-data-source)
+// to be able to insert a product. The unique identifier of the data source is
+// passed as a query parameter in the request URL.
 //
 // If a product input with the same contentLanguage, offerId, and dataSource
 // already exists, then the product input inserted by this method replaces
@@ -203,6 +203,8 @@ func (c *ProductInputsClient) InsertProductInput(ctx context.Context, req *produ
 }
 
 // UpdateProductInput updates the existing product input in your Merchant Center account.
+// The name of the product input to update is taken from the name field
+// within the ProductInput resource.
 //
 // After inserting, updating, or deleting a product input, it may take several
 // minutes before the processed product can be retrieved.
@@ -422,11 +424,11 @@ func (c *productInputsGRPCClient) DeleteProductInput(ctx context.Context, req *p
 }
 
 // InsertProductInput Uploads a product input to your Merchant Center
-// account (at /merchant/api/guides/products/overview#upload-product-input). You
+// account (at /merchant/api/guides/products/add-manage#add_a_product). You
 // must have a products data
-// source (at /merchant/api/guides/data-sources/overview) to be able to insert a
-// product. The unique identifier of the data source is passed as a query
-// parameter in the request URL.
+// source (at /merchant/api/guides/data-sources/api-sources#create-primary-data-source)
+// to be able to insert a product. The unique identifier of the data source is
+// passed as a query parameter in the request URL.
 //
 // If a product input with the same contentLanguage, offerId, and dataSource
 // already exists, then the product input inserted by this method replaces
@@ -492,6 +494,8 @@ func (c *productInputsRESTClient) InsertProductInput(ctx context.Context, req *p
 }
 
 // UpdateProductInput updates the existing product input in your Merchant Center account.
+// The name of the product input to update is taken from the name field
+// within the ProductInput resource.
 //
 // After inserting, updating, or deleting a product input, it may take several
 // minutes before the processed product can be retrieved.

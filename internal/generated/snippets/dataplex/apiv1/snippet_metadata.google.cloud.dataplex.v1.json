@@ -514,6 +514,52 @@
       ]
     },
     {
+      "regionTag": "dataplex_v1_generated_BusinessGlossaryService_GetIamPolicy_sync",
+      "title": "dataplex GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "BusinessGlossaryClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "BusinessGlossaryClient",
+          "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dataplex_v1_generated_BusinessGlossaryService_GetLocation_sync",
       "title": "dataplex GetLocation Sample",
       "description": "GetLocation gets information about a location.",
@@ -746,7 +792,7 @@
     {
       "regionTag": "dataplex_v1_generated_BusinessGlossaryService_ListLocations_sync",
       "title": "dataplex ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "BusinessGlossaryClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -831,6 +877,98 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_BusinessGlossaryService_SetIamPolicy_sync",
+      "title": "dataplex SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "BusinessGlossaryClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "BusinessGlossaryClient",
+          "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_BusinessGlossaryService_TestIamPermissions_sync",
+      "title": "dataplex TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "BusinessGlossaryClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "BusinessGlossaryClient",
+          "fullName": "google.cloud.dataplex.v1.BusinessGlossaryClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1294,6 +1432,52 @@
       ]
     },
     {
+      "regionTag": "dataplex_v1_generated_CatalogService_CreateMetadataFeed_sync",
+      "title": "dataplex CreateMetadataFeed Sample",
+      "description": "CreateMetadataFeed creates a MetadataFeed.",
+      "file": "CatalogClient/CreateMetadataFeed/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateMetadataFeed",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.CreateMetadataFeed",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.CreateMetadataFeedRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateMetadataFeedOperation",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "CreateMetadataFeed",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.CreateMetadataFeed",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dataplex_v1_generated_CatalogService_CreateMetadataJob_sync",
       "title": "dataplex CreateMetadataJob Sample",
       "description": "CreateMetadataJob creates a metadata job. For example, use a metadata job to import metadata\nfrom a third-party system into Dataplex Universal Catalog.",
@@ -1570,6 +1754,52 @@
       ]
     },
     {
+      "regionTag": "dataplex_v1_generated_CatalogService_DeleteMetadataFeed_sync",
+      "title": "dataplex DeleteMetadataFeed Sample",
+      "description": "DeleteMetadataFeed deletes a MetadataFeed.",
+      "file": "CatalogClient/DeleteMetadataFeed/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteMetadataFeed",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.DeleteMetadataFeed",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.DeleteMetadataFeedRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteMetadataFeedOperation",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "DeleteMetadataFeed",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.DeleteMetadataFeed",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dataplex_v1_generated_CatalogService_DeleteOperation_sync",
       "title": "dataplex DeleteOperation Sample",
       "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
@@ -1663,7 +1893,7 @@
     {
       "regionTag": "dataplex_v1_generated_CatalogService_GetEntry_sync",
       "title": "dataplex GetEntry Sample",
-      "description": "GetEntry gets an Entry.\nCaution: The Vertex AI, Bigtable, Spanner, Pub/Sub, Dataform, and Dataproc\nMetastore metadata that is stored in Dataplex Universal Catalog is\nchanging. For more information, see [Changes to metadata stored in\nDataplex Universal\nCatalog](https: //cloud.google.com/dataplex/docs/metadata-changes).",
+      "description": "GetEntry gets an Entry.",
       "file": "CatalogClient/GetEntry/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1845,6 +2075,52 @@
       ]
     },
     {
+      "regionTag": "dataplex_v1_generated_CatalogService_GetIamPolicy_sync",
+      "title": "dataplex GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "CatalogClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dataplex_v1_generated_CatalogService_GetLocation_sync",
       "title": "dataplex GetLocation Sample",
       "description": "GetLocation gets information about a location.",
@@ -1878,6 +2154,52 @@
           "service": {
             "shortName": "Locations",
             "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_GetMetadataFeed_sync",
+      "title": "dataplex GetMetadataFeed Sample",
+      "description": "GetMetadataFeed gets a MetadataFeed.",
+      "file": "CatalogClient/GetMetadataFeed/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetMetadataFeed",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.GetMetadataFeed",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.GetMetadataFeedRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.MetadataFeed",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "GetMetadataFeed",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.GetMetadataFeed",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
           }
         }
       },
@@ -2031,7 +2353,7 @@
     {
       "regionTag": "dataplex_v1_generated_CatalogService_ListEntries_sync",
       "title": "dataplex ListEntries Sample",
-      "description": "ListEntries lists Entries within an EntryGroup.\nCaution: The Vertex AI, Bigtable, Spanner, Pub/Sub, Dataform, and Dataproc\nMetastore metadata that is stored in Dataplex Universal Catalog is\nchanging. For more information, see [Changes to metadata stored in\nDataplex Universal\nCatalog](https: //cloud.google.com/dataplex/docs/metadata-changes).",
+      "description": "ListEntries lists Entries within an EntryGroup.",
       "file": "CatalogClient/ListEntries/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2169,7 +2491,7 @@
     {
       "regionTag": "dataplex_v1_generated_CatalogService_ListLocations_sync",
       "title": "dataplex ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "CatalogClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2200,6 +2522,52 @@
           "service": {
             "shortName": "Locations",
             "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_ListMetadataFeeds_sync",
+      "title": "dataplex ListMetadataFeeds Sample",
+      "description": "ListMetadataFeeds retrieve a list of MetadataFeeds.",
+      "file": "CatalogClient/ListMetadataFeeds/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListMetadataFeeds",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.ListMetadataFeeds",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.ListMetadataFeedsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "MetadataFeedIterator",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "ListMetadataFeeds",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.ListMetadataFeeds",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
           }
         }
       },
@@ -2305,9 +2673,55 @@
       ]
     },
     {
+      "regionTag": "dataplex_v1_generated_CatalogService_LookupContext_sync",
+      "title": "dataplex LookupContext Sample",
+      "description": "LookupContext looks up LLM Context for the specified resources.",
+      "file": "CatalogClient/LookupContext/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "LookupContext",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.LookupContext",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.LookupContextRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.LookupContextResponse",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "LookupContext",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.LookupContext",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dataplex_v1_generated_CatalogService_LookupEntry_sync",
       "title": "dataplex LookupEntry Sample",
-      "description": "LookupEntry looks up an entry by name using the permission on the source system.\nCaution: The Vertex AI, Bigtable, Spanner, Pub/Sub, Dataform, and Dataproc\nMetastore metadata that is stored in Dataplex Universal Catalog is\nchanging. For more information, see [Changes to metadata stored in\nDataplex Universal\nCatalog](https: //cloud.google.com/dataplex/docs/metadata-changes).",
+      "description": "LookupEntry looks up an entry by name using the permission on the source system.",
       "file": "CatalogClient/LookupEntry/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2346,6 +2760,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_LookupEntryLinks_sync",
+      "title": "dataplex LookupEntryLinks Sample",
+      "description": "LookupEntryLinks looks up Entry Links referencing the specified Entry.",
+      "file": "CatalogClient/LookupEntryLinks/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "LookupEntryLinks",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.LookupEntryLinks",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.LookupEntryLinksRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "EntryLinkIterator",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "LookupEntryLinks",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.LookupEntryLinks",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2392,6 +2852,98 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_SetIamPolicy_sync",
+      "title": "dataplex SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "CatalogClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_TestIamPermissions_sync",
+      "title": "dataplex TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "CatalogClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -2535,6 +3087,52 @@
       ]
     },
     {
+      "regionTag": "dataplex_v1_generated_CatalogService_UpdateEntryLink_sync",
+      "title": "dataplex UpdateEntryLink Sample",
+      "description": "UpdateEntryLink updates an Entry Link.",
+      "file": "CatalogClient/UpdateEntryLink/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateEntryLink",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.UpdateEntryLink",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.UpdateEntryLinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.EntryLink",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "UpdateEntryLink",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.UpdateEntryLink",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dataplex_v1_generated_CatalogService_UpdateEntryType_sync",
       "title": "dataplex UpdateEntryType Sample",
       "description": "UpdateEntryType updates an EntryType.",
@@ -2565,6 +3163,52 @@
         "method": {
           "shortName": "UpdateEntryType",
           "fullName": "google.cloud.dataplex.v1.CatalogService.UpdateEntryType",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_UpdateMetadataFeed_sync",
+      "title": "dataplex UpdateMetadataFeed Sample",
+      "description": "UpdateMetadataFeed updates a MetadataFeed.",
+      "file": "CatalogClient/UpdateMetadataFeed/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateMetadataFeed",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.UpdateMetadataFeed",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.UpdateMetadataFeedRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateMetadataFeedOperation",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "UpdateMetadataFeed",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.UpdateMetadataFeed",
           "service": {
             "shortName": "CatalogService",
             "fullName": "google.cloud.dataplex.v1.CatalogService"
@@ -2809,6 +3453,52 @@
       ]
     },
     {
+      "regionTag": "dataplex_v1_generated_CmekService_GetIamPolicy_sync",
+      "title": "dataplex GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "CmekClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.dataplex.v1.CmekClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "CmekClient",
+          "fullName": "google.cloud.dataplex.v1.CmekClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dataplex_v1_generated_CmekService_GetLocation_sync",
       "title": "dataplex GetLocation Sample",
       "description": "GetLocation gets information about a location.",
@@ -2949,7 +3639,7 @@
     {
       "regionTag": "dataplex_v1_generated_CmekService_ListLocations_sync",
       "title": "dataplex ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "CmekClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3034,6 +3724,98 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CmekService_SetIamPolicy_sync",
+      "title": "dataplex SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "CmekClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.dataplex.v1.CmekClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "CmekClient",
+          "fullName": "google.cloud.dataplex.v1.CmekClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CmekService_TestIamPermissions_sync",
+      "title": "dataplex TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "CmekClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.dataplex.v1.CmekClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "CmekClient",
+          "fullName": "google.cloud.dataplex.v1.CmekClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -3130,97 +3912,6 @@
       ]
     },
     {
-      "regionTag": "dataplex_v1_generated_ContentService_CreateContent_sync",
-      "title": "dataplex CreateContent Sample",
-      "description": "CreateContent create a content.",
-      "file": "ContentClient/CreateContent/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateContent",
-        "fullName": "google.cloud.dataplex.v1.ContentClient.CreateContent",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "dataplexpb.CreateContentRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*dataplexpb.Content",
-        "client": {
-          "shortName": "ContentClient",
-          "fullName": "google.cloud.dataplex.v1.ContentClient"
-        },
-        "method": {
-          "shortName": "CreateContent",
-          "fullName": "google.cloud.dataplex.v1.ContentService.CreateContent",
-          "service": {
-            "shortName": "ContentService",
-            "fullName": "google.cloud.dataplex.v1.ContentService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "dataplex_v1_generated_ContentService_DeleteContent_sync",
-      "title": "dataplex DeleteContent Sample",
-      "description": "DeleteContent delete a content.",
-      "file": "ContentClient/DeleteContent/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteContent",
-        "fullName": "google.cloud.dataplex.v1.ContentClient.DeleteContent",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "dataplexpb.DeleteContentRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "ContentClient",
-          "fullName": "google.cloud.dataplex.v1.ContentClient"
-        },
-        "method": {
-          "shortName": "DeleteContent",
-          "fullName": "google.cloud.dataplex.v1.ContentService.DeleteContent",
-          "service": {
-            "shortName": "ContentService",
-            "fullName": "google.cloud.dataplex.v1.ContentService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 51,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
       "regionTag": "dataplex_v1_generated_ContentService_DeleteOperation_sync",
       "title": "dataplex DeleteOperation Sample",
       "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
@@ -3266,55 +3957,9 @@
       ]
     },
     {
-      "regionTag": "dataplex_v1_generated_ContentService_GetContent_sync",
-      "title": "dataplex GetContent Sample",
-      "description": "GetContent get a content resource.",
-      "file": "ContentClient/GetContent/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "GetContent",
-        "fullName": "google.cloud.dataplex.v1.ContentClient.GetContent",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "dataplexpb.GetContentRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*dataplexpb.Content",
-        "client": {
-          "shortName": "ContentClient",
-          "fullName": "google.cloud.dataplex.v1.ContentClient"
-        },
-        "method": {
-          "shortName": "GetContent",
-          "fullName": "google.cloud.dataplex.v1.ContentService.GetContent",
-          "service": {
-            "shortName": "ContentService",
-            "fullName": "google.cloud.dataplex.v1.ContentService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
       "regionTag": "dataplex_v1_generated_ContentService_GetIamPolicy_sync",
       "title": "dataplex GetIamPolicy Sample",
-      "description": "GetIamPolicy gets the access control policy for a contentitem resource. A `NOT_FOUND`\nerror is returned if the resource does not exist. An empty policy is\nreturned if the resource exists but does not have a policy set on it.\n\nCaller must have Google IAM `dataplex.content.getIamPolicy` permission\non the resource.",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
       "file": "ContentClient/GetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3341,10 +3986,10 @@
         },
         "method": {
           "shortName": "GetIamPolicy",
-          "fullName": "google.cloud.dataplex.v1.ContentService.GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
           "service": {
-            "shortName": "ContentService",
-            "fullName": "google.cloud.dataplex.v1.ContentService"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -3450,55 +4095,9 @@
       ]
     },
     {
-      "regionTag": "dataplex_v1_generated_ContentService_ListContent_sync",
-      "title": "dataplex ListContent Sample",
-      "description": "ListContent list content.",
-      "file": "ContentClient/ListContent/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "ListContent",
-        "fullName": "google.cloud.dataplex.v1.ContentClient.ListContent",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "dataplexpb.ListContentRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "ContentIterator",
-        "client": {
-          "shortName": "ContentClient",
-          "fullName": "google.cloud.dataplex.v1.ContentClient"
-        },
-        "method": {
-          "shortName": "ListContent",
-          "fullName": "google.cloud.dataplex.v1.ContentService.ListContent",
-          "service": {
-            "shortName": "ContentService",
-            "fullName": "google.cloud.dataplex.v1.ContentService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 66,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
       "regionTag": "dataplex_v1_generated_ContentService_ListLocations_sync",
       "title": "dataplex ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "ContentClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3590,7 +4189,7 @@
     {
       "regionTag": "dataplex_v1_generated_ContentService_SetIamPolicy_sync",
       "title": "dataplex SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the access control policy on the specified contentitem resource.\nReplaces any existing policy.\n\nCaller must have Google IAM `dataplex.content.setIamPolicy` permission\non the resource.",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
       "file": "ContentClient/SetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3617,10 +4216,10 @@
         },
         "method": {
           "shortName": "SetIamPolicy",
-          "fullName": "google.cloud.dataplex.v1.ContentService.SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
           "service": {
-            "shortName": "ContentService",
-            "fullName": "google.cloud.dataplex.v1.ContentService"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -3636,7 +4235,7 @@
     {
       "regionTag": "dataplex_v1_generated_ContentService_TestIamPermissions_sync",
       "title": "dataplex TestIamPermissions Sample",
-      "description": "TestIamPermissions returns the caller's permissions on a resource.\nIf the resource does not exist, an empty set of\npermissions is returned (a `NOT_FOUND` error is not returned).\n\nA caller is not required to have Google IAM permission to make this\nrequest.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning.",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
       "file": "ContentClient/TestIamPermissions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3663,10 +4262,10 @@
         },
         "method": {
           "shortName": "TestIamPermissions",
-          "fullName": "google.cloud.dataplex.v1.ContentService.TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
           "service": {
-            "shortName": "ContentService",
-            "fullName": "google.cloud.dataplex.v1.ContentService"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -3680,21 +4279,21 @@
       ]
     },
     {
-      "regionTag": "dataplex_v1_generated_ContentService_UpdateContent_sync",
-      "title": "dataplex UpdateContent Sample",
-      "description": "UpdateContent update a content. Only supports full resource update.",
-      "file": "ContentClient/UpdateContent/main.go",
+      "regionTag": "dataplex_v1_generated_DataProductService_CancelOperation_sync",
+      "title": "dataplex CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataProductClient/CancelOperation/main.go",
       "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateContent",
-        "fullName": "google.cloud.dataplex.v1.ContentClient.UpdateContent",
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.dataplex.v1.DataProductClient.CancelOperation",
         "parameters": [
           {
             "type": "context.Context",
             "name": "ctx"
           },
           {
-            "type": "dataplexpb.UpdateContentRequest",
+            "type": "longrunningpb.CancelOperationRequest",
             "name": "req"
           },
           {
@@ -3702,17 +4301,291 @@
             "name": "opts"
           }
         ],
-        "resultType": "*dataplexpb.Content",
         "client": {
-          "shortName": "ContentClient",
-          "fullName": "google.cloud.dataplex.v1.ContentClient"
+          "shortName": "DataProductClient",
+          "fullName": "google.cloud.dataplex.v1.DataProductClient"
         },
         "method": {
-          "shortName": "UpdateContent",
-          "fullName": "google.cloud.dataplex.v1.ContentService.UpdateContent",
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "ContentService",
-            "fullName": "google.cloud.dataplex.v1.ContentService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataProductService_CreateDataAsset_sync",
+      "title": "dataplex CreateDataAsset Sample",
+      "description": "CreateDataAsset creates a data asset.",
+      "file": "DataProductClient/CreateDataAsset/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDataAsset",
+        "fullName": "google.cloud.dataplex.v1.DataProductClient.CreateDataAsset",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.CreateDataAssetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateDataAssetOperation",
+        "client": {
+          "shortName": "DataProductClient",
+          "fullName": "google.cloud.dataplex.v1.DataProductClient"
+        },
+        "method": {
+          "shortName": "CreateDataAsset",
+          "fullName": "google.cloud.dataplex.v1.DataProductService.CreateDataAsset",
+          "service": {
+            "shortName": "DataProductService",
+            "fullName": "google.cloud.dataplex.v1.DataProductService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataProductService_CreateDataProduct_sync",
+      "title": "dataplex CreateDataProduct Sample",
+      "description": "CreateDataProduct creates a data product.",
+      "file": "DataProductClient/CreateDataProduct/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDataProduct",
+        "fullName": "google.cloud.dataplex.v1.DataProductClient.CreateDataProduct",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.CreateDataProductRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateDataProductOperation",
+        "client": {
+          "shortName": "DataProductClient",
+          "fullName": "google.cloud.dataplex.v1.DataProductClient"
+        },
+        "method": {
+          "shortName": "CreateDataProduct",
+          "fullName": "google.cloud.dataplex.v1.DataProductService.CreateDataProduct",
+          "service": {
+            "shortName": "DataProductService",
+            "fullName": "google.cloud.dataplex.v1.DataProductService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataProductService_DeleteDataAsset_sync",
+      "title": "dataplex DeleteDataAsset Sample",
+      "description": "DeleteDataAsset deletes a data asset.",
+      "file": "DataProductClient/DeleteDataAsset/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDataAsset",
+        "fullName": "google.cloud.dataplex.v1.DataProductClient.DeleteDataAsset",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.DeleteDataAssetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteDataAssetOperation",
+        "client": {
+          "shortName": "DataProductClient",
+          "fullName": "google.cloud.dataplex.v1.DataProductClient"
+        },
+        "method": {
+          "shortName": "DeleteDataAsset",
+          "fullName": "google.cloud.dataplex.v1.DataProductService.DeleteDataAsset",
+          "service": {
+            "shortName": "DataProductService",
+            "fullName": "google.cloud.dataplex.v1.DataProductService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataProductService_DeleteDataProduct_sync",
+      "title": "dataplex DeleteDataProduct Sample",
+      "description": "DeleteDataProduct deletes a data product. The deletion will fail if the data product is not\nempty (i.e. contains at least one data asset).",
+      "file": "DataProductClient/DeleteDataProduct/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDataProduct",
+        "fullName": "google.cloud.dataplex.v1.DataProductClient.DeleteDataProduct",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.DeleteDataProductRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteDataProductOperation",
+        "client": {
+          "shortName": "DataProductClient",
+          "fullName": "google.cloud.dataplex.v1.DataProductClient"
+        },
+        "method": {
+          "shortName": "DeleteDataProduct",
+          "fullName": "google.cloud.dataplex.v1.DataProductService.DeleteDataProduct",
+          "service": {
+            "shortName": "DataProductService",
+            "fullName": "google.cloud.dataplex.v1.DataProductService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataProductService_DeleteOperation_sync",
+      "title": "dataplex DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataProductClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.dataplex.v1.DataProductClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "DataProductClient",
+          "fullName": "google.cloud.dataplex.v1.DataProductClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataProductService_GetDataAsset_sync",
+      "title": "dataplex GetDataAsset Sample",
+      "description": "GetDataAsset gets a data asset.",
+      "file": "DataProductClient/GetDataAsset/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDataAsset",
+        "fullName": "google.cloud.dataplex.v1.DataProductClient.GetDataAsset",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.GetDataAssetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.DataAsset",
+        "client": {
+          "shortName": "DataProductClient",
+          "fullName": "google.cloud.dataplex.v1.DataProductClient"
+        },
+        "method": {
+          "shortName": "GetDataAsset",
+          "fullName": "google.cloud.dataplex.v1.DataProductService.GetDataAsset",
+          "service": {
+            "shortName": "DataProductService",
+            "fullName": "google.cloud.dataplex.v1.DataProductService"
           }
         }
       },
@@ -3721,6 +4594,558 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataProductService_GetDataProduct_sync",
+      "title": "dataplex GetDataProduct Sample",
+      "description": "GetDataProduct gets a data product.",
+      "file": "DataProductClient/GetDataProduct/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDataProduct",
+        "fullName": "google.cloud.dataplex.v1.DataProductClient.GetDataProduct",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.GetDataProductRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.DataProduct",
+        "client": {
+          "shortName": "DataProductClient",
+          "fullName": "google.cloud.dataplex.v1.DataProductClient"
+        },
+        "method": {
+          "shortName": "GetDataProduct",
+          "fullName": "google.cloud.dataplex.v1.DataProductService.GetDataProduct",
+          "service": {
+            "shortName": "DataProductService",
+            "fullName": "google.cloud.dataplex.v1.DataProductService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataProductService_GetIamPolicy_sync",
+      "title": "dataplex GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "DataProductClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.dataplex.v1.DataProductClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "DataProductClient",
+          "fullName": "google.cloud.dataplex.v1.DataProductClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataProductService_GetLocation_sync",
+      "title": "dataplex GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "DataProductClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.dataplex.v1.DataProductClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "DataProductClient",
+          "fullName": "google.cloud.dataplex.v1.DataProductClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataProductService_GetOperation_sync",
+      "title": "dataplex GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataProductClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.dataplex.v1.DataProductClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "DataProductClient",
+          "fullName": "google.cloud.dataplex.v1.DataProductClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataProductService_ListDataAssets_sync",
+      "title": "dataplex ListDataAssets Sample",
+      "description": "ListDataAssets lists data assets for a given data product.",
+      "file": "DataProductClient/ListDataAssets/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDataAssets",
+        "fullName": "google.cloud.dataplex.v1.DataProductClient.ListDataAssets",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.ListDataAssetsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DataAssetIterator",
+        "client": {
+          "shortName": "DataProductClient",
+          "fullName": "google.cloud.dataplex.v1.DataProductClient"
+        },
+        "method": {
+          "shortName": "ListDataAssets",
+          "fullName": "google.cloud.dataplex.v1.DataProductService.ListDataAssets",
+          "service": {
+            "shortName": "DataProductService",
+            "fullName": "google.cloud.dataplex.v1.DataProductService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataProductService_ListDataProducts_sync",
+      "title": "dataplex ListDataProducts Sample",
+      "description": "ListDataProducts lists data products for a given project.",
+      "file": "DataProductClient/ListDataProducts/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDataProducts",
+        "fullName": "google.cloud.dataplex.v1.DataProductClient.ListDataProducts",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.ListDataProductsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DataProductIterator",
+        "client": {
+          "shortName": "DataProductClient",
+          "fullName": "google.cloud.dataplex.v1.DataProductClient"
+        },
+        "method": {
+          "shortName": "ListDataProducts",
+          "fullName": "google.cloud.dataplex.v1.DataProductService.ListDataProducts",
+          "service": {
+            "shortName": "DataProductService",
+            "fullName": "google.cloud.dataplex.v1.DataProductService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataProductService_ListLocations_sync",
+      "title": "dataplex ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
+      "file": "DataProductClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.dataplex.v1.DataProductClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "DataProductClient",
+          "fullName": "google.cloud.dataplex.v1.DataProductClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataProductService_ListOperations_sync",
+      "title": "dataplex ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "DataProductClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.dataplex.v1.DataProductClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "DataProductClient",
+          "fullName": "google.cloud.dataplex.v1.DataProductClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataProductService_SetIamPolicy_sync",
+      "title": "dataplex SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "DataProductClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.dataplex.v1.DataProductClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "DataProductClient",
+          "fullName": "google.cloud.dataplex.v1.DataProductClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataProductService_TestIamPermissions_sync",
+      "title": "dataplex TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "DataProductClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.dataplex.v1.DataProductClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "DataProductClient",
+          "fullName": "google.cloud.dataplex.v1.DataProductClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataProductService_UpdateDataAsset_sync",
+      "title": "dataplex UpdateDataAsset Sample",
+      "description": "UpdateDataAsset updates a data asset.",
+      "file": "DataProductClient/UpdateDataAsset/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDataAsset",
+        "fullName": "google.cloud.dataplex.v1.DataProductClient.UpdateDataAsset",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.UpdateDataAssetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateDataAssetOperation",
+        "client": {
+          "shortName": "DataProductClient",
+          "fullName": "google.cloud.dataplex.v1.DataProductClient"
+        },
+        "method": {
+          "shortName": "UpdateDataAsset",
+          "fullName": "google.cloud.dataplex.v1.DataProductService.UpdateDataAsset",
+          "service": {
+            "shortName": "DataProductService",
+            "fullName": "google.cloud.dataplex.v1.DataProductService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataProductService_UpdateDataProduct_sync",
+      "title": "dataplex UpdateDataProduct Sample",
+      "description": "UpdateDataProduct updates a data product.",
+      "file": "DataProductClient/UpdateDataProduct/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDataProduct",
+        "fullName": "google.cloud.dataplex.v1.DataProductClient.UpdateDataProduct",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.UpdateDataProductRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateDataProductOperation",
+        "client": {
+          "shortName": "DataProductClient",
+          "fullName": "google.cloud.dataplex.v1.DataProductClient"
+        },
+        "method": {
+          "shortName": "UpdateDataProduct",
+          "fullName": "google.cloud.dataplex.v1.DataProductService.UpdateDataProduct",
+          "service": {
+            "shortName": "DataProductService",
+            "fullName": "google.cloud.dataplex.v1.DataProductService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -4046,6 +5471,52 @@
       ]
     },
     {
+      "regionTag": "dataplex_v1_generated_DataScanService_GetIamPolicy_sync",
+      "title": "dataplex GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "DataScanClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.dataplex.v1.DataScanClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "DataScanClient",
+          "fullName": "google.cloud.dataplex.v1.DataScanClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dataplex_v1_generated_DataScanService_GetLocation_sync",
       "title": "dataplex GetLocation Sample",
       "description": "GetLocation gets information about a location.",
@@ -4232,7 +5703,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataScanService_ListLocations_sync",
       "title": "dataplex ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "DataScanClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -4355,6 +5826,98 @@
           "service": {
             "shortName": "DataScanService",
             "fullName": "google.cloud.dataplex.v1.DataScanService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataScanService_SetIamPolicy_sync",
+      "title": "dataplex SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "DataScanClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.dataplex.v1.DataScanClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "DataScanClient",
+          "fullName": "google.cloud.dataplex.v1.DataScanClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataScanService_TestIamPermissions_sync",
+      "title": "dataplex TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "DataScanClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.dataplex.v1.DataScanClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "DataScanClient",
+          "fullName": "google.cloud.dataplex.v1.DataScanClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -4918,6 +6481,52 @@
       ]
     },
     {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_GetIamPolicy_sync",
+      "title": "dataplex GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "DataTaxonomyClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dataplex_v1_generated_DataTaxonomyService_GetLocation_sync",
       "title": "dataplex GetLocation Sample",
       "description": "GetLocation gets information about a location.",
@@ -5150,7 +6759,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataTaxonomyService_ListLocations_sync",
       "title": "dataplex ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "DataTaxonomyClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -5235,6 +6844,98 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_SetIamPolicy_sync",
+      "title": "dataplex SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "DataTaxonomyClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_TestIamPermissions_sync",
+      "title": "dataplex TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "DataTaxonomyClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -5514,52 +7215,6 @@
       ]
     },
     {
-      "regionTag": "dataplex_v1_generated_DataplexService_CreateEnvironment_sync",
-      "title": "dataplex CreateEnvironment Sample",
-      "description": "CreateEnvironment create an environment resource.",
-      "file": "Client/CreateEnvironment/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateEnvironment",
-        "fullName": "google.cloud.dataplex.v1.Client.CreateEnvironment",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "dataplexpb.CreateEnvironmentRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "CreateEnvironmentOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.dataplex.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateEnvironment",
-          "fullName": "google.cloud.dataplex.v1.DataplexService.CreateEnvironment",
-          "service": {
-            "shortName": "DataplexService",
-            "fullName": "google.cloud.dataplex.v1.DataplexService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 58,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
       "regionTag": "dataplex_v1_generated_DataplexService_CreateLake_sync",
       "title": "dataplex CreateLake Sample",
       "description": "CreateLake creates a lake resource.",
@@ -5728,52 +7383,6 @@
         "method": {
           "shortName": "DeleteAsset",
           "fullName": "google.cloud.dataplex.v1.DataplexService.DeleteAsset",
-          "service": {
-            "shortName": "DataplexService",
-            "fullName": "google.cloud.dataplex.v1.DataplexService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 56,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "dataplex_v1_generated_DataplexService_DeleteEnvironment_sync",
-      "title": "dataplex DeleteEnvironment Sample",
-      "description": "DeleteEnvironment delete the environment resource. All the child resources must have been\ndeleted before environment deletion can be initiated.",
-      "file": "Client/DeleteEnvironment/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteEnvironment",
-        "fullName": "google.cloud.dataplex.v1.Client.DeleteEnvironment",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "dataplexpb.DeleteEnvironmentRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "DeleteEnvironmentOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.dataplex.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteEnvironment",
-          "fullName": "google.cloud.dataplex.v1.DataplexService.DeleteEnvironment",
           "service": {
             "shortName": "DataplexService",
             "fullName": "google.cloud.dataplex.v1.DataplexService"
@@ -6019,21 +7628,21 @@
       ]
     },
     {
-      "regionTag": "dataplex_v1_generated_DataplexService_GetEnvironment_sync",
-      "title": "dataplex GetEnvironment Sample",
-      "description": "GetEnvironment get environment resource.",
-      "file": "Client/GetEnvironment/main.go",
+      "regionTag": "dataplex_v1_generated_DataplexService_GetIamPolicy_sync",
+      "title": "dataplex GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "Client/GetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
-        "shortName": "GetEnvironment",
-        "fullName": "google.cloud.dataplex.v1.Client.GetEnvironment",
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.dataplex.v1.Client.GetIamPolicy",
         "parameters": [
           {
             "type": "context.Context",
             "name": "ctx"
           },
           {
-            "type": "dataplexpb.GetEnvironmentRequest",
+            "type": "iampb.GetIamPolicyRequest",
             "name": "req"
           },
           {
@@ -6041,17 +7650,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "*dataplexpb.Environment",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataplex.v1.Client"
         },
         "method": {
-          "shortName": "GetEnvironment",
-          "fullName": "google.cloud.dataplex.v1.DataplexService.GetEnvironment",
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
           "service": {
-            "shortName": "DataplexService",
-            "fullName": "google.cloud.dataplex.v1.DataplexService"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -6433,52 +8042,6 @@
       ]
     },
     {
-      "regionTag": "dataplex_v1_generated_DataplexService_ListEnvironments_sync",
-      "title": "dataplex ListEnvironments Sample",
-      "description": "ListEnvironments lists environments under the given lake.",
-      "file": "Client/ListEnvironments/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "ListEnvironments",
-        "fullName": "google.cloud.dataplex.v1.Client.ListEnvironments",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "dataplexpb.ListEnvironmentsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "EnvironmentIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.dataplex.v1.Client"
-        },
-        "method": {
-          "shortName": "ListEnvironments",
-          "fullName": "google.cloud.dataplex.v1.DataplexService.ListEnvironments",
-          "service": {
-            "shortName": "DataplexService",
-            "fullName": "google.cloud.dataplex.v1.DataplexService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 66,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
       "regionTag": "dataplex_v1_generated_DataplexService_ListJobs_sync",
       "title": "dataplex ListJobs Sample",
       "description": "ListJobs lists Jobs under the given task.",
@@ -6619,7 +8182,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataplexService_ListLocations_sync",
       "title": "dataplex ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "Client/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -6696,52 +8259,6 @@
           "service": {
             "shortName": "Operations",
             "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 66,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "dataplex_v1_generated_DataplexService_ListSessions_sync",
-      "title": "dataplex ListSessions Sample",
-      "description": "ListSessions lists session resources in an environment.",
-      "file": "Client/ListSessions/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "ListSessions",
-        "fullName": "google.cloud.dataplex.v1.Client.ListSessions",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "dataplexpb.ListSessionsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "SessionIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.dataplex.v1.Client"
-        },
-        "method": {
-          "shortName": "ListSessions",
-          "fullName": "google.cloud.dataplex.v1.DataplexService.ListSessions",
-          "service": {
-            "shortName": "DataplexService",
-            "fullName": "google.cloud.dataplex.v1.DataplexService"
           }
         }
       },
@@ -6939,6 +8456,98 @@
       ]
     },
     {
+      "regionTag": "dataplex_v1_generated_DataplexService_SetIamPolicy_sync",
+      "title": "dataplex SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "Client/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.dataplex.v1.Client.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataplex.v1.Client"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataplexService_TestIamPermissions_sync",
+      "title": "dataplex TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "Client/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.dataplex.v1.Client.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataplex.v1.Client"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dataplex_v1_generated_DataplexService_UpdateAsset_sync",
       "title": "dataplex UpdateAsset Sample",
       "description": "UpdateAsset updates an asset resource.",
@@ -6969,52 +8578,6 @@
         "method": {
           "shortName": "UpdateAsset",
           "fullName": "google.cloud.dataplex.v1.DataplexService.UpdateAsset",
-          "service": {
-            "shortName": "DataplexService",
-            "fullName": "google.cloud.dataplex.v1.DataplexService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 58,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "dataplex_v1_generated_DataplexService_UpdateEnvironment_sync",
-      "title": "dataplex UpdateEnvironment Sample",
-      "description": "UpdateEnvironment update the environment resource.",
-      "file": "Client/UpdateEnvironment/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "UpdateEnvironment",
-        "fullName": "google.cloud.dataplex.v1.Client.UpdateEnvironment",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "dataplexpb.UpdateEnvironmentRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "UpdateEnvironmentOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.dataplex.v1.Client"
-        },
-        "method": {
-          "shortName": "UpdateEnvironment",
-          "fullName": "google.cloud.dataplex.v1.DataplexService.UpdateEnvironment",
           "service": {
             "shortName": "DataplexService",
             "fullName": "google.cloud.dataplex.v1.DataplexService"
@@ -7487,6 +9050,52 @@
       ]
     },
     {
+      "regionTag": "dataplex_v1_generated_MetadataService_GetIamPolicy_sync",
+      "title": "dataplex GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "MetadataClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.dataplex.v1.MetadataClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "MetadataClient",
+          "fullName": "google.cloud.dataplex.v1.MetadataClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dataplex_v1_generated_MetadataService_GetLocation_sync",
       "title": "dataplex GetLocation Sample",
       "description": "GetLocation gets information about a location.",
@@ -7673,7 +9282,7 @@
     {
       "regionTag": "dataplex_v1_generated_MetadataService_ListLocations_sync",
       "title": "dataplex ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "MetadataClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -7804,6 +9413,98 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_MetadataService_SetIamPolicy_sync",
+      "title": "dataplex SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "MetadataClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.dataplex.v1.MetadataClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "MetadataClient",
+          "fullName": "google.cloud.dataplex.v1.MetadataClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_MetadataService_TestIamPermissions_sync",
+      "title": "dataplex TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "MetadataClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.dataplex.v1.MetadataClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "MetadataClient",
+          "fullName": "google.cloud.dataplex.v1.MetadataClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]

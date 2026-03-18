@@ -47,7 +47,7 @@ func (it *AssetIterator) All() iter.Seq2[*dataplexpb.Asset, error] {
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
-func (it *ContentIterator) All() iter.Seq2[*dataplexpb.Content, error] {
+func (it *DataAssetIterator) All() iter.Seq2[*dataplexpb.DataAsset, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 
@@ -60,6 +60,12 @@ func (it *DataAttributeBindingIterator) All() iter.Seq2[*dataplexpb.DataAttribut
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *DataAttributeIterator) All() iter.Seq2[*dataplexpb.DataAttribute, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DataProductIterator) All() iter.Seq2[*dataplexpb.DataProduct, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 
@@ -107,13 +113,13 @@ func (it *EntryIterator) All() iter.Seq2[*dataplexpb.Entry, error] {
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
-func (it *EntryTypeIterator) All() iter.Seq2[*dataplexpb.EntryType, error] {
+func (it *EntryLinkIterator) All() iter.Seq2[*dataplexpb.EntryLink, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
-func (it *EnvironmentIterator) All() iter.Seq2[*dataplexpb.Environment, error] {
+func (it *EntryTypeIterator) All() iter.Seq2[*dataplexpb.EntryType, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 
@@ -155,6 +161,12 @@ func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *MetadataFeedIterator) All() iter.Seq2[*dataplexpb.MetadataFeed, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *MetadataJobIterator) All() iter.Seq2[*dataplexpb.MetadataJob, error] {
 	return iterator.RangeAdapter(it.Next)
 }
@@ -174,12 +186,6 @@ func (it *PartitionIterator) All() iter.Seq2[*dataplexpb.Partition, error] {
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *SearchEntriesResultIterator) All() iter.Seq2[*dataplexpb.SearchEntriesResult, error] {
-	return iterator.RangeAdapter(it.Next)
-}
-
-// All returns an iterator. If an error is returned by the iterator, the
-// iterator will stop after that iteration.
-func (it *SessionIterator) All() iter.Seq2[*dataplexpb.Session, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 

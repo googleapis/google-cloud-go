@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,35 +36,43 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	CatalogService_CreateEntryType_FullMethodName   = "/google.cloud.dataplex.v1.CatalogService/CreateEntryType"
-	CatalogService_UpdateEntryType_FullMethodName   = "/google.cloud.dataplex.v1.CatalogService/UpdateEntryType"
-	CatalogService_DeleteEntryType_FullMethodName   = "/google.cloud.dataplex.v1.CatalogService/DeleteEntryType"
-	CatalogService_ListEntryTypes_FullMethodName    = "/google.cloud.dataplex.v1.CatalogService/ListEntryTypes"
-	CatalogService_GetEntryType_FullMethodName      = "/google.cloud.dataplex.v1.CatalogService/GetEntryType"
-	CatalogService_CreateAspectType_FullMethodName  = "/google.cloud.dataplex.v1.CatalogService/CreateAspectType"
-	CatalogService_UpdateAspectType_FullMethodName  = "/google.cloud.dataplex.v1.CatalogService/UpdateAspectType"
-	CatalogService_DeleteAspectType_FullMethodName  = "/google.cloud.dataplex.v1.CatalogService/DeleteAspectType"
-	CatalogService_ListAspectTypes_FullMethodName   = "/google.cloud.dataplex.v1.CatalogService/ListAspectTypes"
-	CatalogService_GetAspectType_FullMethodName     = "/google.cloud.dataplex.v1.CatalogService/GetAspectType"
-	CatalogService_CreateEntryGroup_FullMethodName  = "/google.cloud.dataplex.v1.CatalogService/CreateEntryGroup"
-	CatalogService_UpdateEntryGroup_FullMethodName  = "/google.cloud.dataplex.v1.CatalogService/UpdateEntryGroup"
-	CatalogService_DeleteEntryGroup_FullMethodName  = "/google.cloud.dataplex.v1.CatalogService/DeleteEntryGroup"
-	CatalogService_ListEntryGroups_FullMethodName   = "/google.cloud.dataplex.v1.CatalogService/ListEntryGroups"
-	CatalogService_GetEntryGroup_FullMethodName     = "/google.cloud.dataplex.v1.CatalogService/GetEntryGroup"
-	CatalogService_CreateEntry_FullMethodName       = "/google.cloud.dataplex.v1.CatalogService/CreateEntry"
-	CatalogService_UpdateEntry_FullMethodName       = "/google.cloud.dataplex.v1.CatalogService/UpdateEntry"
-	CatalogService_DeleteEntry_FullMethodName       = "/google.cloud.dataplex.v1.CatalogService/DeleteEntry"
-	CatalogService_ListEntries_FullMethodName       = "/google.cloud.dataplex.v1.CatalogService/ListEntries"
-	CatalogService_GetEntry_FullMethodName          = "/google.cloud.dataplex.v1.CatalogService/GetEntry"
-	CatalogService_LookupEntry_FullMethodName       = "/google.cloud.dataplex.v1.CatalogService/LookupEntry"
-	CatalogService_SearchEntries_FullMethodName     = "/google.cloud.dataplex.v1.CatalogService/SearchEntries"
-	CatalogService_CreateMetadataJob_FullMethodName = "/google.cloud.dataplex.v1.CatalogService/CreateMetadataJob"
-	CatalogService_GetMetadataJob_FullMethodName    = "/google.cloud.dataplex.v1.CatalogService/GetMetadataJob"
-	CatalogService_ListMetadataJobs_FullMethodName  = "/google.cloud.dataplex.v1.CatalogService/ListMetadataJobs"
-	CatalogService_CancelMetadataJob_FullMethodName = "/google.cloud.dataplex.v1.CatalogService/CancelMetadataJob"
-	CatalogService_CreateEntryLink_FullMethodName   = "/google.cloud.dataplex.v1.CatalogService/CreateEntryLink"
-	CatalogService_DeleteEntryLink_FullMethodName   = "/google.cloud.dataplex.v1.CatalogService/DeleteEntryLink"
-	CatalogService_GetEntryLink_FullMethodName      = "/google.cloud.dataplex.v1.CatalogService/GetEntryLink"
+	CatalogService_CreateEntryType_FullMethodName    = "/google.cloud.dataplex.v1.CatalogService/CreateEntryType"
+	CatalogService_UpdateEntryType_FullMethodName    = "/google.cloud.dataplex.v1.CatalogService/UpdateEntryType"
+	CatalogService_DeleteEntryType_FullMethodName    = "/google.cloud.dataplex.v1.CatalogService/DeleteEntryType"
+	CatalogService_ListEntryTypes_FullMethodName     = "/google.cloud.dataplex.v1.CatalogService/ListEntryTypes"
+	CatalogService_GetEntryType_FullMethodName       = "/google.cloud.dataplex.v1.CatalogService/GetEntryType"
+	CatalogService_CreateAspectType_FullMethodName   = "/google.cloud.dataplex.v1.CatalogService/CreateAspectType"
+	CatalogService_UpdateAspectType_FullMethodName   = "/google.cloud.dataplex.v1.CatalogService/UpdateAspectType"
+	CatalogService_DeleteAspectType_FullMethodName   = "/google.cloud.dataplex.v1.CatalogService/DeleteAspectType"
+	CatalogService_ListAspectTypes_FullMethodName    = "/google.cloud.dataplex.v1.CatalogService/ListAspectTypes"
+	CatalogService_GetAspectType_FullMethodName      = "/google.cloud.dataplex.v1.CatalogService/GetAspectType"
+	CatalogService_CreateEntryGroup_FullMethodName   = "/google.cloud.dataplex.v1.CatalogService/CreateEntryGroup"
+	CatalogService_UpdateEntryGroup_FullMethodName   = "/google.cloud.dataplex.v1.CatalogService/UpdateEntryGroup"
+	CatalogService_DeleteEntryGroup_FullMethodName   = "/google.cloud.dataplex.v1.CatalogService/DeleteEntryGroup"
+	CatalogService_ListEntryGroups_FullMethodName    = "/google.cloud.dataplex.v1.CatalogService/ListEntryGroups"
+	CatalogService_GetEntryGroup_FullMethodName      = "/google.cloud.dataplex.v1.CatalogService/GetEntryGroup"
+	CatalogService_CreateEntry_FullMethodName        = "/google.cloud.dataplex.v1.CatalogService/CreateEntry"
+	CatalogService_UpdateEntry_FullMethodName        = "/google.cloud.dataplex.v1.CatalogService/UpdateEntry"
+	CatalogService_DeleteEntry_FullMethodName        = "/google.cloud.dataplex.v1.CatalogService/DeleteEntry"
+	CatalogService_ListEntries_FullMethodName        = "/google.cloud.dataplex.v1.CatalogService/ListEntries"
+	CatalogService_GetEntry_FullMethodName           = "/google.cloud.dataplex.v1.CatalogService/GetEntry"
+	CatalogService_LookupEntry_FullMethodName        = "/google.cloud.dataplex.v1.CatalogService/LookupEntry"
+	CatalogService_SearchEntries_FullMethodName      = "/google.cloud.dataplex.v1.CatalogService/SearchEntries"
+	CatalogService_CreateMetadataJob_FullMethodName  = "/google.cloud.dataplex.v1.CatalogService/CreateMetadataJob"
+	CatalogService_GetMetadataJob_FullMethodName     = "/google.cloud.dataplex.v1.CatalogService/GetMetadataJob"
+	CatalogService_ListMetadataJobs_FullMethodName   = "/google.cloud.dataplex.v1.CatalogService/ListMetadataJobs"
+	CatalogService_CancelMetadataJob_FullMethodName  = "/google.cloud.dataplex.v1.CatalogService/CancelMetadataJob"
+	CatalogService_CreateEntryLink_FullMethodName    = "/google.cloud.dataplex.v1.CatalogService/CreateEntryLink"
+	CatalogService_UpdateEntryLink_FullMethodName    = "/google.cloud.dataplex.v1.CatalogService/UpdateEntryLink"
+	CatalogService_DeleteEntryLink_FullMethodName    = "/google.cloud.dataplex.v1.CatalogService/DeleteEntryLink"
+	CatalogService_LookupEntryLinks_FullMethodName   = "/google.cloud.dataplex.v1.CatalogService/LookupEntryLinks"
+	CatalogService_LookupContext_FullMethodName      = "/google.cloud.dataplex.v1.CatalogService/LookupContext"
+	CatalogService_GetEntryLink_FullMethodName       = "/google.cloud.dataplex.v1.CatalogService/GetEntryLink"
+	CatalogService_CreateMetadataFeed_FullMethodName = "/google.cloud.dataplex.v1.CatalogService/CreateMetadataFeed"
+	CatalogService_GetMetadataFeed_FullMethodName    = "/google.cloud.dataplex.v1.CatalogService/GetMetadataFeed"
+	CatalogService_ListMetadataFeeds_FullMethodName  = "/google.cloud.dataplex.v1.CatalogService/ListMetadataFeeds"
+	CatalogService_DeleteMetadataFeed_FullMethodName = "/google.cloud.dataplex.v1.CatalogService/DeleteMetadataFeed"
+	CatalogService_UpdateMetadataFeed_FullMethodName = "/google.cloud.dataplex.v1.CatalogService/UpdateMetadataFeed"
 )
 
 // CatalogServiceClient is the client API for CatalogService service.
@@ -108,25 +116,10 @@ type CatalogServiceClient interface {
 	// Deletes an Entry.
 	DeleteEntry(ctx context.Context, in *DeleteEntryRequest, opts ...grpc.CallOption) (*Entry, error)
 	// Lists Entries within an EntryGroup.
-	// Caution: The Vertex AI, Bigtable, Spanner, Pub/Sub, Dataform, and Dataproc
-	// Metastore metadata that is stored in Dataplex Universal Catalog is
-	// changing. For more information, see [Changes to metadata stored in
-	// Dataplex Universal
-	// Catalog](https://cloud.google.com/dataplex/docs/metadata-changes).
 	ListEntries(ctx context.Context, in *ListEntriesRequest, opts ...grpc.CallOption) (*ListEntriesResponse, error)
 	// Gets an Entry.
-	// Caution: The Vertex AI, Bigtable, Spanner, Pub/Sub, Dataform, and Dataproc
-	// Metastore metadata that is stored in Dataplex Universal Catalog is
-	// changing. For more information, see [Changes to metadata stored in
-	// Dataplex Universal
-	// Catalog](https://cloud.google.com/dataplex/docs/metadata-changes).
 	GetEntry(ctx context.Context, in *GetEntryRequest, opts ...grpc.CallOption) (*Entry, error)
 	// Looks up an entry by name using the permission on the source system.
-	// Caution: The Vertex AI, Bigtable, Spanner, Pub/Sub, Dataform, and Dataproc
-	// Metastore metadata that is stored in Dataplex Universal Catalog is
-	// changing. For more information, see [Changes to metadata stored in
-	// Dataplex Universal
-	// Catalog](https://cloud.google.com/dataplex/docs/metadata-changes).
 	LookupEntry(ctx context.Context, in *LookupEntryRequest, opts ...grpc.CallOption) (*Entry, error)
 	// Searches for Entries matching the given query and scope.
 	SearchEntries(ctx context.Context, in *SearchEntriesRequest, opts ...grpc.CallOption) (*SearchEntriesResponse, error)
@@ -146,10 +139,26 @@ type CatalogServiceClient interface {
 	CancelMetadataJob(ctx context.Context, in *CancelMetadataJobRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Creates an Entry Link.
 	CreateEntryLink(ctx context.Context, in *CreateEntryLinkRequest, opts ...grpc.CallOption) (*EntryLink, error)
+	// Updates an Entry Link.
+	UpdateEntryLink(ctx context.Context, in *UpdateEntryLinkRequest, opts ...grpc.CallOption) (*EntryLink, error)
 	// Deletes an Entry Link.
 	DeleteEntryLink(ctx context.Context, in *DeleteEntryLinkRequest, opts ...grpc.CallOption) (*EntryLink, error)
+	// Looks up Entry Links referencing the specified Entry.
+	LookupEntryLinks(ctx context.Context, in *LookupEntryLinksRequest, opts ...grpc.CallOption) (*LookupEntryLinksResponse, error)
+	// Looks up LLM Context for the specified resources.
+	LookupContext(ctx context.Context, in *LookupContextRequest, opts ...grpc.CallOption) (*LookupContextResponse, error)
 	// Gets an Entry Link.
 	GetEntryLink(ctx context.Context, in *GetEntryLinkRequest, opts ...grpc.CallOption) (*EntryLink, error)
+	// Creates a MetadataFeed.
+	CreateMetadataFeed(ctx context.Context, in *CreateMetadataFeedRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Gets a MetadataFeed.
+	GetMetadataFeed(ctx context.Context, in *GetMetadataFeedRequest, opts ...grpc.CallOption) (*MetadataFeed, error)
+	// Retrieve a list of MetadataFeeds.
+	ListMetadataFeeds(ctx context.Context, in *ListMetadataFeedsRequest, opts ...grpc.CallOption) (*ListMetadataFeedsResponse, error)
+	// Deletes a MetadataFeed.
+	DeleteMetadataFeed(ctx context.Context, in *DeleteMetadataFeedRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Updates a MetadataFeed.
+	UpdateMetadataFeed(ctx context.Context, in *UpdateMetadataFeedRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type catalogServiceClient struct {
@@ -403,6 +412,15 @@ func (c *catalogServiceClient) CreateEntryLink(ctx context.Context, in *CreateEn
 	return out, nil
 }
 
+func (c *catalogServiceClient) UpdateEntryLink(ctx context.Context, in *UpdateEntryLinkRequest, opts ...grpc.CallOption) (*EntryLink, error) {
+	out := new(EntryLink)
+	err := c.cc.Invoke(ctx, CatalogService_UpdateEntryLink_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *catalogServiceClient) DeleteEntryLink(ctx context.Context, in *DeleteEntryLinkRequest, opts ...grpc.CallOption) (*EntryLink, error) {
 	out := new(EntryLink)
 	err := c.cc.Invoke(ctx, CatalogService_DeleteEntryLink_FullMethodName, in, out, opts...)
@@ -412,9 +430,72 @@ func (c *catalogServiceClient) DeleteEntryLink(ctx context.Context, in *DeleteEn
 	return out, nil
 }
 
+func (c *catalogServiceClient) LookupEntryLinks(ctx context.Context, in *LookupEntryLinksRequest, opts ...grpc.CallOption) (*LookupEntryLinksResponse, error) {
+	out := new(LookupEntryLinksResponse)
+	err := c.cc.Invoke(ctx, CatalogService_LookupEntryLinks_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *catalogServiceClient) LookupContext(ctx context.Context, in *LookupContextRequest, opts ...grpc.CallOption) (*LookupContextResponse, error) {
+	out := new(LookupContextResponse)
+	err := c.cc.Invoke(ctx, CatalogService_LookupContext_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *catalogServiceClient) GetEntryLink(ctx context.Context, in *GetEntryLinkRequest, opts ...grpc.CallOption) (*EntryLink, error) {
 	out := new(EntryLink)
 	err := c.cc.Invoke(ctx, CatalogService_GetEntryLink_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *catalogServiceClient) CreateMetadataFeed(ctx context.Context, in *CreateMetadataFeedRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, CatalogService_CreateMetadataFeed_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *catalogServiceClient) GetMetadataFeed(ctx context.Context, in *GetMetadataFeedRequest, opts ...grpc.CallOption) (*MetadataFeed, error) {
+	out := new(MetadataFeed)
+	err := c.cc.Invoke(ctx, CatalogService_GetMetadataFeed_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *catalogServiceClient) ListMetadataFeeds(ctx context.Context, in *ListMetadataFeedsRequest, opts ...grpc.CallOption) (*ListMetadataFeedsResponse, error) {
+	out := new(ListMetadataFeedsResponse)
+	err := c.cc.Invoke(ctx, CatalogService_ListMetadataFeeds_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *catalogServiceClient) DeleteMetadataFeed(ctx context.Context, in *DeleteMetadataFeedRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, CatalogService_DeleteMetadataFeed_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *catalogServiceClient) UpdateMetadataFeed(ctx context.Context, in *UpdateMetadataFeedRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, CatalogService_UpdateMetadataFeed_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -462,25 +543,10 @@ type CatalogServiceServer interface {
 	// Deletes an Entry.
 	DeleteEntry(context.Context, *DeleteEntryRequest) (*Entry, error)
 	// Lists Entries within an EntryGroup.
-	// Caution: The Vertex AI, Bigtable, Spanner, Pub/Sub, Dataform, and Dataproc
-	// Metastore metadata that is stored in Dataplex Universal Catalog is
-	// changing. For more information, see [Changes to metadata stored in
-	// Dataplex Universal
-	// Catalog](https://cloud.google.com/dataplex/docs/metadata-changes).
 	ListEntries(context.Context, *ListEntriesRequest) (*ListEntriesResponse, error)
 	// Gets an Entry.
-	// Caution: The Vertex AI, Bigtable, Spanner, Pub/Sub, Dataform, and Dataproc
-	// Metastore metadata that is stored in Dataplex Universal Catalog is
-	// changing. For more information, see [Changes to metadata stored in
-	// Dataplex Universal
-	// Catalog](https://cloud.google.com/dataplex/docs/metadata-changes).
 	GetEntry(context.Context, *GetEntryRequest) (*Entry, error)
 	// Looks up an entry by name using the permission on the source system.
-	// Caution: The Vertex AI, Bigtable, Spanner, Pub/Sub, Dataform, and Dataproc
-	// Metastore metadata that is stored in Dataplex Universal Catalog is
-	// changing. For more information, see [Changes to metadata stored in
-	// Dataplex Universal
-	// Catalog](https://cloud.google.com/dataplex/docs/metadata-changes).
 	LookupEntry(context.Context, *LookupEntryRequest) (*Entry, error)
 	// Searches for Entries matching the given query and scope.
 	SearchEntries(context.Context, *SearchEntriesRequest) (*SearchEntriesResponse, error)
@@ -500,10 +566,26 @@ type CatalogServiceServer interface {
 	CancelMetadataJob(context.Context, *CancelMetadataJobRequest) (*emptypb.Empty, error)
 	// Creates an Entry Link.
 	CreateEntryLink(context.Context, *CreateEntryLinkRequest) (*EntryLink, error)
+	// Updates an Entry Link.
+	UpdateEntryLink(context.Context, *UpdateEntryLinkRequest) (*EntryLink, error)
 	// Deletes an Entry Link.
 	DeleteEntryLink(context.Context, *DeleteEntryLinkRequest) (*EntryLink, error)
+	// Looks up Entry Links referencing the specified Entry.
+	LookupEntryLinks(context.Context, *LookupEntryLinksRequest) (*LookupEntryLinksResponse, error)
+	// Looks up LLM Context for the specified resources.
+	LookupContext(context.Context, *LookupContextRequest) (*LookupContextResponse, error)
 	// Gets an Entry Link.
 	GetEntryLink(context.Context, *GetEntryLinkRequest) (*EntryLink, error)
+	// Creates a MetadataFeed.
+	CreateMetadataFeed(context.Context, *CreateMetadataFeedRequest) (*longrunningpb.Operation, error)
+	// Gets a MetadataFeed.
+	GetMetadataFeed(context.Context, *GetMetadataFeedRequest) (*MetadataFeed, error)
+	// Retrieve a list of MetadataFeeds.
+	ListMetadataFeeds(context.Context, *ListMetadataFeedsRequest) (*ListMetadataFeedsResponse, error)
+	// Deletes a MetadataFeed.
+	DeleteMetadataFeed(context.Context, *DeleteMetadataFeedRequest) (*longrunningpb.Operation, error)
+	// Updates a MetadataFeed.
+	UpdateMetadataFeed(context.Context, *UpdateMetadataFeedRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedCatalogServiceServer should be embedded to have forward compatible implementations.
@@ -591,11 +673,35 @@ func (UnimplementedCatalogServiceServer) CancelMetadataJob(context.Context, *Can
 func (UnimplementedCatalogServiceServer) CreateEntryLink(context.Context, *CreateEntryLinkRequest) (*EntryLink, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateEntryLink not implemented")
 }
+func (UnimplementedCatalogServiceServer) UpdateEntryLink(context.Context, *UpdateEntryLinkRequest) (*EntryLink, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateEntryLink not implemented")
+}
 func (UnimplementedCatalogServiceServer) DeleteEntryLink(context.Context, *DeleteEntryLinkRequest) (*EntryLink, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteEntryLink not implemented")
 }
+func (UnimplementedCatalogServiceServer) LookupEntryLinks(context.Context, *LookupEntryLinksRequest) (*LookupEntryLinksResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LookupEntryLinks not implemented")
+}
+func (UnimplementedCatalogServiceServer) LookupContext(context.Context, *LookupContextRequest) (*LookupContextResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LookupContext not implemented")
+}
 func (UnimplementedCatalogServiceServer) GetEntryLink(context.Context, *GetEntryLinkRequest) (*EntryLink, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetEntryLink not implemented")
+}
+func (UnimplementedCatalogServiceServer) CreateMetadataFeed(context.Context, *CreateMetadataFeedRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateMetadataFeed not implemented")
+}
+func (UnimplementedCatalogServiceServer) GetMetadataFeed(context.Context, *GetMetadataFeedRequest) (*MetadataFeed, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMetadataFeed not implemented")
+}
+func (UnimplementedCatalogServiceServer) ListMetadataFeeds(context.Context, *ListMetadataFeedsRequest) (*ListMetadataFeedsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListMetadataFeeds not implemented")
+}
+func (UnimplementedCatalogServiceServer) DeleteMetadataFeed(context.Context, *DeleteMetadataFeedRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteMetadataFeed not implemented")
+}
+func (UnimplementedCatalogServiceServer) UpdateMetadataFeed(context.Context, *UpdateMetadataFeedRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateMetadataFeed not implemented")
 }
 
 // UnsafeCatalogServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -1095,6 +1201,24 @@ func _CatalogService_CreateEntryLink_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CatalogService_UpdateEntryLink_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateEntryLinkRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CatalogServiceServer).UpdateEntryLink(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CatalogService_UpdateEntryLink_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CatalogServiceServer).UpdateEntryLink(ctx, req.(*UpdateEntryLinkRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _CatalogService_DeleteEntryLink_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteEntryLinkRequest)
 	if err := dec(in); err != nil {
@@ -1113,6 +1237,42 @@ func _CatalogService_DeleteEntryLink_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CatalogService_LookupEntryLinks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LookupEntryLinksRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CatalogServiceServer).LookupEntryLinks(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CatalogService_LookupEntryLinks_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CatalogServiceServer).LookupEntryLinks(ctx, req.(*LookupEntryLinksRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CatalogService_LookupContext_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LookupContextRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CatalogServiceServer).LookupContext(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CatalogService_LookupContext_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CatalogServiceServer).LookupContext(ctx, req.(*LookupContextRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _CatalogService_GetEntryLink_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetEntryLinkRequest)
 	if err := dec(in); err != nil {
@@ -1127,6 +1287,96 @@ func _CatalogService_GetEntryLink_Handler(srv interface{}, ctx context.Context, 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CatalogServiceServer).GetEntryLink(ctx, req.(*GetEntryLinkRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CatalogService_CreateMetadataFeed_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateMetadataFeedRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CatalogServiceServer).CreateMetadataFeed(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CatalogService_CreateMetadataFeed_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CatalogServiceServer).CreateMetadataFeed(ctx, req.(*CreateMetadataFeedRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CatalogService_GetMetadataFeed_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetMetadataFeedRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CatalogServiceServer).GetMetadataFeed(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CatalogService_GetMetadataFeed_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CatalogServiceServer).GetMetadataFeed(ctx, req.(*GetMetadataFeedRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CatalogService_ListMetadataFeeds_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListMetadataFeedsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CatalogServiceServer).ListMetadataFeeds(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CatalogService_ListMetadataFeeds_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CatalogServiceServer).ListMetadataFeeds(ctx, req.(*ListMetadataFeedsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CatalogService_DeleteMetadataFeed_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteMetadataFeedRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CatalogServiceServer).DeleteMetadataFeed(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CatalogService_DeleteMetadataFeed_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CatalogServiceServer).DeleteMetadataFeed(ctx, req.(*DeleteMetadataFeedRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CatalogService_UpdateMetadataFeed_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateMetadataFeedRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CatalogServiceServer).UpdateMetadataFeed(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CatalogService_UpdateMetadataFeed_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CatalogServiceServer).UpdateMetadataFeed(ctx, req.(*UpdateMetadataFeedRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1247,12 +1497,44 @@ var CatalogService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _CatalogService_CreateEntryLink_Handler,
 		},
 		{
+			MethodName: "UpdateEntryLink",
+			Handler:    _CatalogService_UpdateEntryLink_Handler,
+		},
+		{
 			MethodName: "DeleteEntryLink",
 			Handler:    _CatalogService_DeleteEntryLink_Handler,
 		},
 		{
+			MethodName: "LookupEntryLinks",
+			Handler:    _CatalogService_LookupEntryLinks_Handler,
+		},
+		{
+			MethodName: "LookupContext",
+			Handler:    _CatalogService_LookupContext_Handler,
+		},
+		{
 			MethodName: "GetEntryLink",
 			Handler:    _CatalogService_GetEntryLink_Handler,
+		},
+		{
+			MethodName: "CreateMetadataFeed",
+			Handler:    _CatalogService_CreateMetadataFeed_Handler,
+		},
+		{
+			MethodName: "GetMetadataFeed",
+			Handler:    _CatalogService_GetMetadataFeed_Handler,
+		},
+		{
+			MethodName: "ListMetadataFeeds",
+			Handler:    _CatalogService_ListMetadataFeeds_Handler,
+		},
+		{
+			MethodName: "DeleteMetadataFeed",
+			Handler:    _CatalogService_DeleteMetadataFeed_Handler,
+		},
+		{
+			MethodName: "UpdateMetadataFeed",
+			Handler:    _CatalogService_UpdateMetadataFeed_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

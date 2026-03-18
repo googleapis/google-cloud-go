@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -54,8 +54,7 @@ type UserServiceClient interface {
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*User, error)
 	// Deletes a Merchant Center account user. Executing this method requires
 	// admin access. The user to be deleted can't be the last admin user of that
-	// account. Also a user is protected from deletion if it
-	// is managed by Business Manager"
+	// account.
 	DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Updates a Merchant Center account user. Executing this method requires
 	// admin access.
@@ -140,8 +139,7 @@ type UserServiceServer interface {
 	CreateUser(context.Context, *CreateUserRequest) (*User, error)
 	// Deletes a Merchant Center account user. Executing this method requires
 	// admin access. The user to be deleted can't be the last admin user of that
-	// account. Also a user is protected from deletion if it
-	// is managed by Business Manager"
+	// account.
 	DeleteUser(context.Context, *DeleteUserRequest) (*emptypb.Empty, error)
 	// Updates a Merchant Center account user. Executing this method requires
 	// admin access.

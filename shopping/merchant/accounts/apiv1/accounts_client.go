@@ -45,6 +45,7 @@ var newClientHook clientHook
 type CallOptions struct {
 	GetAccount                []gax.CallOption
 	CreateAndConfigureAccount []gax.CallOption
+	CreateTestAccount         []gax.CallOption
 	DeleteAccount             []gax.CallOption
 	UpdateAccount             []gax.CallOption
 	ListAccounts              []gax.CallOption
@@ -81,6 +82,18 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		CreateAndConfigureAccount: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateTestAccount: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -167,6 +180,17 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		CreateTestAccount: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		DeleteAccount: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -221,6 +245,7 @@ type internalClient interface {
 	Connection() *grpc.ClientConn
 	GetAccount(context.Context, *accountspb.GetAccountRequest, ...gax.CallOption) (*accountspb.Account, error)
 	CreateAndConfigureAccount(context.Context, *accountspb.CreateAndConfigureAccountRequest, ...gax.CallOption) (*accountspb.Account, error)
+	CreateTestAccount(context.Context, *accountspb.CreateTestAccountRequest, ...gax.CallOption) (*accountspb.Account, error)
 	DeleteAccount(context.Context, *accountspb.DeleteAccountRequest, ...gax.CallOption) error
 	UpdateAccount(context.Context, *accountspb.UpdateAccountRequest, ...gax.CallOption) (*accountspb.Account, error)
 	ListAccounts(context.Context, *accountspb.ListAccountsRequest, ...gax.CallOption) *AccountIterator
@@ -273,6 +298,27 @@ func (c *Client) GetAccount(ctx context.Context, req *accountspb.GetAccountReque
 // user that makes the request as an admin for the new account.
 func (c *Client) CreateAndConfigureAccount(ctx context.Context, req *accountspb.CreateAndConfigureAccountRequest, opts ...gax.CallOption) (*accountspb.Account, error) {
 	return c.internalClient.CreateAndConfigureAccount(ctx, req, opts...)
+}
+
+// CreateTestAccount creates a Merchant Center test account.
+//
+// Test accounts are intended for development and testing purposes, such as
+// validating API integrations or new feature behavior.
+//
+// Key characteristics and limitations of test accounts:
+//
+//	Immutable Type: A test account cannot be converted into a regular
+//	(live) Merchant Center account. Likewise, a regular account cannot be
+//	converted into a test account.
+//
+//	Non-Serving Products: Any products, offers, or data created within a
+//	test account will not be published or made visible to end-users on any
+//	Google surfaces. They are strictly for testing environments.
+//
+//	Separate Environment: Test accounts operate in a sandbox-like manner,
+//	isolated from live serving and real user traffic.
+func (c *Client) CreateTestAccount(ctx context.Context, req *accountspb.CreateTestAccountRequest, opts ...gax.CallOption) (*accountspb.Account, error) {
+	return c.internalClient.CreateTestAccount(ctx, req, opts...)
 }
 
 // DeleteAccount deletes the specified account regardless of its type: standalone, advanced
@@ -498,6 +544,24 @@ func (c *gRPCClient) CreateAndConfigureAccount(ctx context.Context, req *account
 	return resp, nil
 }
 
+func (c *gRPCClient) CreateTestAccount(ctx context.Context, req *accountspb.CreateTestAccountRequest, opts ...gax.CallOption) (*accountspb.Account, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateTestAccount[0:len((*c.CallOptions).CreateTestAccount):len((*c.CallOptions).CreateTestAccount)], opts...)
+	var resp *accountspb.Account
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateTestAccount, req, settings.GRPC, c.logger, "CreateTestAccount")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *gRPCClient) DeleteAccount(ctx context.Context, req *accountspb.DeleteAccountRequest, opts ...gax.CallOption) error {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -709,6 +773,79 @@ func (c *restClient) CreateAndConfigureAccount(ctx context.Context, req *account
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateAndConfigureAccount")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateTestAccount creates a Merchant Center test account.
+//
+// Test accounts are intended for development and testing purposes, such as
+// validating API integrations or new feature behavior.
+//
+// Key characteristics and limitations of test accounts:
+//
+//	Immutable Type: A test account cannot be converted into a regular
+//	(live) Merchant Center account. Likewise, a regular account cannot be
+//	converted into a test account.
+//
+//	Non-Serving Products: Any products, offers, or data created within a
+//	test account will not be published or made visible to end-users on any
+//	Google surfaces. They are strictly for testing environments.
+//
+//	Separate Environment: Test accounts operate in a sandbox-like manner,
+//	isolated from live serving and real user traffic.
+func (c *restClient) CreateTestAccount(ctx context.Context, req *accountspb.CreateTestAccountRequest, opts ...gax.CallOption) (*accountspb.Account, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetAccount()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v:createTestAccount", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateTestAccount[0:len((*c.CallOptions).CreateTestAccount):len((*c.CallOptions).CreateTestAccount)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &accountspb.Account{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateTestAccount")
 		if err != nil {
 			return err
 		}
