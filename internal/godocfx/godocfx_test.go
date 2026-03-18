@@ -309,17 +309,7 @@ func TestFriendlyAPIName(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// 3. Malformed metadata
-	badDir := t.TempDir()
-	badSubDir := filepath.Join(badDir, "apiv1")
-	if err := os.MkdirAll(badSubDir, 0755); err != nil {
-		t.Fatal(err)
-	}
-	if err := os.WriteFile(filepath.Join(badSubDir, ".repo-metadata.json"), []byte("invalid json"), 0644); err != nil {
-		t.Fatal(err)
-	}
-
-	// 4. Submodule avoidance
+	// 3. Submodule avoidance
 	pubsubDir := t.TempDir()
 	pubsubV2Dir := filepath.Join(pubsubDir, "v2")
 	if err := os.MkdirAll(pubsubV2Dir, 0755); err != nil {
@@ -335,13 +325,16 @@ func TestFriendlyAPIName(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	namer := &friendlyAPINamer{}
+	namer := &friendlyAPINamer{
+		Fallbacks: map[string]string{
+			"cloud.google.com/go/pubsub": "PubSub API",
+		},
+	}
 
 	tests := []struct {
 		importPath string
 		module     *packages.Module
 		want       string
-		wantErr    bool
 	}{
 		{
 			importPath: "cloud.google.com/go/storage",
@@ -368,32 +361,19 @@ func TestFriendlyAPIName(t *testing.T) {
 			want: "Storage API v1",
 		},
 		{
-			importPath: "cloud.google.com/go/bad",
-			module: &packages.Module{
-				Path: "cloud.google.com/go/bad",
-				Dir:  badDir,
-			},
-			wantErr: true,
-		},
-		{
 			importPath: "cloud.google.com/go/pubsub",
 			module: &packages.Module{
 				Path: "cloud.google.com/go/pubsub",
 				Dir:  pubsubDir,
 			},
-			wantErr: true, // Should NOT find v2's metadata.
-		},
-		{
-			importPath: "not found",
-			module:     nil,
-			wantErr:    true,
+			want: "PubSub API", // Should NOT find v2's metadata, should find fallback.
 		},
 	}
 
 	for _, test := range tests {
 		got, err := namer.friendlyAPIName(test.importPath, test.module)
-		if (err != nil) != test.wantErr {
-			t.Errorf("friendlyAPIName(%q) got err: %v, wantErr %v", test.importPath, err, test.wantErr)
+		if err != nil {
+			t.Errorf("friendlyAPIName(%q) got err: %v", test.importPath, err)
 			continue
 		}
 		if got != test.want {

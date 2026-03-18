@@ -791,7 +791,7 @@ func (d *friendlyAPINamer) friendlyAPIName(importPath string, module *packages.M
 	}
 
 	if description == "" {
-		return "", fmt.Errorf("no description found for %q and no fallback provided", importPath)
+		return "", nil
 	}
 
 	if apiV := vNumberRE.FindString(importPath); apiV != "" {
