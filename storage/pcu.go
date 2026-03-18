@@ -152,9 +152,6 @@ func (w *Writer) initPCU(ctx context.Context) error {
 	if len(w.MD5) > 0 {
 		return errors.New("storage: MD5 checksums are not supported with parallel uploads")
 	}
-	if w.SendCRC32C && w.CRC32C != 0 {
-		return errors.New("storage: user-provided CRC32C checksums are not supported with parallel uploads")
-	}
 
 	// Sanity check: If these are nil, something has gone fundamentally wrong in the Writer lifecycle.
 	if w.o == nil || w.o.c == nil || w.o.bucket == "" {
