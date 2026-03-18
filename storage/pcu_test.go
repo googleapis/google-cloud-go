@@ -168,8 +168,15 @@ func TestPCUState_SetError(t *testing.T) {
 
 func TestPCUState_ResultCollector(t *testing.T) {
 	pCtx, cancel := context.WithCancel(context.Background())
+	var progressSize int64
+	w := &Writer{
+		ProgressFunc: func(size int64) {
+			progressSize = size
+		},
+	}
 	state := &pcuState{
 		ctx:      pCtx,
+		w:        w,
 		cancel:   cancel,
 		resultCh: make(chan uploadResult, 2),
 		partMap:  make(map[int]*ObjectHandle),
@@ -180,7 +187,7 @@ func TestPCUState_ResultCollector(t *testing.T) {
 
 	// Successful result.
 	objHandle1 := &ObjectHandle{object: "part1"}
-	state.resultCh <- uploadResult{partNumber: 1, handle: objHandle1, err: nil}
+	state.resultCh <- uploadResult{partNumber: 1, handle: objHandle1, err: nil, size: 50}
 
 	// Error result.
 	errResult := fmt.Errorf("upload failed")
@@ -188,6 +195,10 @@ func TestPCUState_ResultCollector(t *testing.T) {
 
 	close(state.resultCh)
 	state.collectorWG.Wait()
+
+	if progressSize != 50 {
+		t.Errorf("resultCollector: progressSize got %d, want 50", progressSize)
+	}
 
 	if handle, ok := state.partMap[1]; !ok || handle.object != objHandle1.object {
 		t.Errorf("resultCollector: partMap[1] got (%v, %v), want (%v, true)", handle, ok, objHandle1)

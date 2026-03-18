@@ -141,11 +141,19 @@ type uploadResult struct {
 	obj        *ObjectAttrs
 	handle     *ObjectHandle
 	err        error
+	size       int64
 }
 
 func (w *Writer) initPCU(ctx context.Context) error {
 	if !w.EnableParallelUpload {
 		return nil
+	}
+
+	if len(w.MD5) > 0 {
+		return errors.New("storage: MD5 checksums are not supported with parallel uploads")
+	}
+	if w.SendCRC32C && w.CRC32C != 0 {
+		return errors.New("storage: user-provided CRC32C checksums are not supported with parallel uploads")
 	}
 
 	// Sanity check: If these are nil, something has gone fundamentally wrong in the Writer lifecycle.
@@ -243,7 +251,7 @@ func (s *pcuState) worker() {
 				}
 				select {
 				// Always send a result to the collector if the context is not cancelled.
-				case s.resultCh <- uploadResult{partNumber: t.partNumber, obj: attrs, handle: handle, err: err}:
+				case s.resultCh <- uploadResult{partNumber: t.partNumber, obj: attrs, handle: handle, err: err, size: t.size}:
 				case <-s.ctx.Done():
 				}
 			}(task)
@@ -274,6 +282,7 @@ func (s *pcuState) uploadPart(task uploadTask) (*ObjectHandle, *ObjectAttrs, err
 
 func (s *pcuState) resultCollector() {
 	defer s.collectorWG.Done()
+	var cumulativeSize int64
 	for result := range s.resultCh {
 		if result.err != nil {
 			s.setError(result.err)
@@ -281,6 +290,9 @@ func (s *pcuState) resultCollector() {
 			s.mu.Lock()
 			s.partMap[result.partNumber] = result.handle
 			s.mu.Unlock()
+
+			cumulativeSize += result.size
+			s.w.progress(cumulativeSize)
 		} else {
 			// Both are nil: this is an impossible state that indicates a logical error.
 			// Setting an error to prevent silent data corruption.
