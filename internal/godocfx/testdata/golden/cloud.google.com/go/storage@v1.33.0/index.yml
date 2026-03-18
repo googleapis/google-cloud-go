@@ -131,7 +131,7 @@ items:
         }
         </pre>
         <p>Objects are listed lexicographically by name. To filter objects
-        lexicographically, <a href="#Query.StartOffset">Query.StartOffset</a> and/or <a href="#Query.EndOffset">Query.EndOffset</a> can be used:
+        lexicographically, [Query.StartOffset] and/or [Query.EndOffset] can be used:
         <pre class="prettyprint">query := &amp;storage.Query{
             Prefix: &quot;&quot;,
             StartOffset: &quot;bar/&quot;,  // Only list objects lexicographically &gt;= &quot;bar/&quot;
