@@ -1,5 +1,7 @@
 # Changes
 
+## [2.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/webrisk%2Fv2.0.0) (2026-03-19)
+
 ## [1.11.2](https://github.com/googleapis/google-cloud-go/compare/webrisk/v1.11.1...webrisk/v1.11.2) (2025-09-22)
 
 

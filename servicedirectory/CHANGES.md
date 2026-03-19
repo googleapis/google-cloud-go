@@ -1,5 +1,7 @@
 # Changes
 
+## [2.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/servicedirectory%2Fv2.0.0) (2026-03-19)
+
 ## [1.12.7](https://github.com/googleapis/google-cloud-go/compare/servicedirectory/v1.12.6...servicedirectory/v1.12.7) (2025-09-22)
 
 

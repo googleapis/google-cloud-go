@@ -1,5 +1,7 @@
 # Changes
 
+## [2.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/accesscontextmanager%2Fv2.0.0) (2026-03-19)
+
 ## [1.9.7](https://github.com/googleapis/google-cloud-go/compare/accesscontextmanager/v1.9.6...accesscontextmanager/v1.9.7) (2025-10-07)
 
 

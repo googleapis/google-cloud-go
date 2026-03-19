@@ -1,6 +1,8 @@
 # Changes
 
 
+## [2.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/workflows%2Fv2.0.0) (2026-03-19)
+
 ## [1.14.3](https://github.com/googleapis/google-cloud-go/compare/workflows/v1.14.2...workflows/v1.14.3) (2025-09-22)
 
 

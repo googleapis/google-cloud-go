@@ -1,6 +1,8 @@
 # Changes
 
 
+## [2.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/batch%2Fv2.0.0) (2026-03-19)
+
 ## [1.14.0](https://github.com/googleapis/google-cloud-go/releases/tag/batch%2Fv1.14.0) (2025-12-04)
 
 ### Features

@@ -1,6 +1,8 @@
 # Changes
 
 
+## [2.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/apikeys%2Fv2.0.0) (2026-03-19)
+
 ## [1.2.7](https://github.com/googleapis/google-cloud-go/compare/apikeys/v1.2.6...apikeys/v1.2.7) (2025-06-04)
 
 

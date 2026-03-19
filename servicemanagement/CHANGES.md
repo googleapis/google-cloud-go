@@ -1,5 +1,7 @@
 # Changes
 
+## [2.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/servicemanagement%2Fv2.0.0) (2026-03-19)
+
 ## [1.10.7](https://github.com/googleapis/google-cloud-go/compare/servicemanagement/v1.10.6...servicemanagement/v1.10.7) (2025-10-15)
 
 

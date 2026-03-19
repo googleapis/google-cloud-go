@@ -1,6 +1,8 @@
 # Changes
 
 
+## [2.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/orchestration%2Fv2.0.0) (2026-03-19)
+
 ## [1.11.10](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.11.9...orchestration/v1.11.10) (2025-09-18)
 
 

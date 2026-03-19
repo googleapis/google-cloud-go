@@ -2,6 +2,8 @@
 
 
 
+## [2.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/gkebackup%2Fv2.0.0) (2026-03-19)
+
 ## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/gkebackup/v1.8.0...gkebackup/v1.8.1) (2025-09-18)
 
 

@@ -1,5 +1,7 @@
 # Changes
 
+## [3.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/dataproc%2Fv3.0.0) (2026-03-19)
+
 ## [2.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/dataproc%2Fv2.16.0) (2026-02-19)
 
 ### Features

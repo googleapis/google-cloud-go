@@ -1,6 +1,8 @@
 # Changes
 
 
+## [2.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/video%2Fv2.0.0) (2026-03-19)
+
 ## [1.27.1](https://github.com/googleapis/google-cloud-go/compare/video/v1.27.0...video/v1.27.1) (2025-09-22)
 
 

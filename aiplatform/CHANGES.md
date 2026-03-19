@@ -1,6 +1,14 @@
 # Changes
 
 
+## [2.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/aiplatform%2Fv2.0.0) (2026-03-19)
+
+### Features
+
+* Add new `embed_content_config` to message `EmbedContentRequest` ([790bab5](https://github.com/googleapis/google-cloud-go/commit/790bab51084e22725bdb2daaa2870d862dc453c6))
+* add `VALIDATED` Function Calling mode to v1 ([790bab5](https://github.com/googleapis/google-cloud-go/commit/790bab51084e22725bdb2daaa2870d862dc453c6))
+* update the schema proto for the RagChunk with file_id and chunk_id to align with the vertex_rag_data.proto ([790bab5](https://github.com/googleapis/google-cloud-go/commit/790bab51084e22725bdb2daaa2870d862dc453c6))
+
 ## [1.120.0](https://github.com/googleapis/google-cloud-go/releases/tag/aiplatform%2Fv1.120.0) (2026-03-12)
 
 ### Features

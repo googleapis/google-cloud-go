@@ -1,6 +1,8 @@
 # Changes
 
 
+## [2.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/language%2Fv2.0.0) (2026-03-19)
+
 ## [1.14.6](https://github.com/googleapis/google-cloud-go/compare/language/v1.14.5...language/v1.14.6) (2025-10-07)
 
 

@@ -1,5 +1,7 @@
 # Changes
 
+## [2.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/retail%2Fv2.0.0) (2026-03-19)
+
 ## [1.26.0](https://github.com/googleapis/google-cloud-go/releases/tag/retail%2Fv1.26.0) (2026-01-29)
 
 ### Features

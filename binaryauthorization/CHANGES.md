@@ -1,6 +1,8 @@
 # Changes
 
 
+## [2.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/binaryauthorization%2Fv2.0.0) (2026-03-19)
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/releases/tag/binaryauthorization%2Fv1.10.0) (2025-10-10)
 
 ### Features

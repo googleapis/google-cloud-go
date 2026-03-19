@@ -1,5 +1,7 @@
 # Changes
 
+## [2.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/redis%2Fv2.0.0) (2026-03-19)
+
 ## [1.18.3](https://github.com/googleapis/google-cloud-go/compare/redis/v1.18.2...redis/v1.18.3) (2025-09-22)
 
 

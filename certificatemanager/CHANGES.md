@@ -1,5 +1,7 @@
 # Changes
 
+## [2.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/certificatemanager%2Fv2.0.0) (2026-03-19)
+
 ## [1.9.6](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.9.5...certificatemanager/v1.9.6) (2025-10-15)
 
 

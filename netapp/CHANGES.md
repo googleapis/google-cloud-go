@@ -1,6 +1,8 @@
 # Changes
 
 
+## [2.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/netapp%2Fv2.0.0) (2026-03-19)
+
 ## [1.12.0](https://github.com/googleapis/google-cloud-go/releases/tag/netapp%2Fv1.12.0) (2026-01-15)
 
 ### Features

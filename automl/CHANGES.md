@@ -1,5 +1,7 @@
 # Changes
 
+## [2.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/automl%2Fv2.0.0) (2026-03-19)
+
 ## [1.15.0](https://github.com/googleapis/google-cloud-go/releases/tag/automl%2Fv1.15.0) (2025-10-10)
 
 ### Features
