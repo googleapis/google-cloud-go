@@ -209,6 +209,7 @@ func (sc *sessionClient) executeCreateMultiplexedSession(ctx context.Context, cl
 	if closed {
 		err := spannerErrorf(codes.Canceled, "Session client closed")
 		trace.TracePrintf(ctx, nil, "Session client closed while creating a multiplexed session: %v", err)
+		consumer.sessionCreationFailed(ctx, err)
 		return
 	}
 	if ctx.Err() != nil {

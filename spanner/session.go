@@ -224,9 +224,11 @@ var DefaultSessionPoolConfig = SessionPoolConfig{
 	MultiplexSessionCheckInterval: 10 * time.Minute,
 }
 
-type muxSessionCreateRequest struct {
-	ctx   context.Context
-	force bool
+type multiplexedSessionCreation struct {
+	done   chan struct{}
+	cancel context.CancelFunc
+	once   sync.Once
+	err    error
 }
 
 // sessionManager manages multiplexed sessions for a database.
@@ -235,12 +237,10 @@ type sessionManager struct {
 	valid bool
 	sc    *sessionClient
 
-	multiplexSessionClientCounter   int
-	clientPool                      []spannerClient
-	multiplexedSession              *session
-	multiplexedSessionReq           chan muxSessionCreateRequest
-	mayGetMultiplexedSession        chan bool
-	multiplexedSessionCreationError error
+	multiplexSessionClientCounter int
+	clientPool                    []spannerClient
+	multiplexedSession            *session
+	multiplexedSessionCreation    *multiplexedSessionCreation
 
 	// locationRouter is set when the experimental location API is enabled.
 	// It is used to wrap round-robin clients with location-aware routing.
@@ -263,14 +263,12 @@ func newSessionManager(sc *sessionClient, config SessionPoolConfig) (*sessionMan
 	}
 
 	sm := &sessionManager{
-		sc:                       sc,
-		valid:                    true,
-		mayGetMultiplexedSession: make(chan bool),
-		multiplexedSessionReq:    make(chan muxSessionCreateRequest),
-		SessionPoolConfig:        config,
-		rand:                     rand.New(rand.NewSource(time.Now().UnixNano())),
-		otConfig:                 sc.otConfig,
-		done:                     make(chan struct{}),
+		sc:                sc,
+		valid:             true,
+		SessionPoolConfig: config,
+		rand:              rand.New(rand.NewSource(time.Now().UnixNano())),
+		otConfig:          sc.otConfig,
+		done:              make(chan struct{}),
 	}
 
 	_, instance, database, err := parseDatabaseName(sc.database)
@@ -288,21 +286,9 @@ func newSessionManager(sc *sessionClient, config SessionPoolConfig) (*sessionMan
 	}
 	sm.tagMap = tag.FromContext(ctx)
 
-	// Start the multiplexed session creation goroutine
-	go sm.createMultiplexedSession()
-
-	// Create the initial multiplexed session
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-	sm.multiplexedSessionReq <- muxSessionCreateRequest{force: true, ctx: ctx}
-	go func() {
-		select {
-		case <-ctx.Done():
-			cancel()
-			return
-		case <-sm.mayGetMultiplexedSession:
-			cancel()
-		}
-	}()
+	sm.mu.Lock()
+	sm.ensureMultiplexedSessionCreationLocked(true)
+	sm.mu.Unlock()
 
 	// Start the multiplexed session refresh worker
 	go sm.multiplexSessionWorker()
@@ -342,73 +328,72 @@ func (p *sessionManager) recordOTStat(ctx context.Context, m metric.Int64Counter
 	}
 }
 
-func (p *sessionManager) createMultiplexedSession() {
-	for c := range p.multiplexedSessionReq {
+func (p *sessionManager) ensureMultiplexedSessionCreationLocked(force bool) *multiplexedSessionCreation {
+	if p.multiplexedSessionCreation != nil {
+		return p.multiplexedSessionCreation
+	}
+	if !force && p.multiplexedSession != nil {
+		return nil
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	creation := &multiplexedSessionCreation{
+		done:   make(chan struct{}),
+		cancel: cancel,
+	}
+	p.multiplexedSessionCreation = creation
+	go p.runMultiplexedSessionCreation(ctx, creation)
+	return creation
+}
+
+func (p *sessionManager) runMultiplexedSessionCreation(ctx context.Context, creation *multiplexedSessionCreation) {
+	defer creation.cancel()
+
+	p.mu.Lock()
+	p.sc.mu.Lock()
+	client, err := p.sc.nextClient()
+	p.sc.mu.Unlock()
+	p.mu.Unlock()
+	if err != nil {
+		p.finishMultiplexedSessionCreation(creation, nil, err)
+		return
+	}
+
+	p.sc.executeCreateMultiplexedSession(ctx, client, p.sc.md, &multiplexedSessionCreationConsumer{
+		manager:  p,
+		creation: creation,
+	})
+}
+
+func (p *sessionManager) finishMultiplexedSessionCreation(creation *multiplexedSessionCreation, s *session, err error) {
+	creation.once.Do(func() {
 		p.mu.Lock()
-		sess := p.multiplexedSession
-		p.mu.Unlock()
-		if c.force || sess == nil {
-			p.mu.Lock()
-			p.sc.mu.Lock()
-			client, err := p.sc.nextClient()
-			p.sc.mu.Unlock()
-			p.mu.Unlock()
-			if err != nil {
-				p.mu.Lock()
-				p.multiplexedSessionCreationError = err
-				p.mu.Unlock()
-				select {
-				case p.mayGetMultiplexedSession <- true:
-				case <-c.ctx.Done():
-				}
-				continue
+		if p.multiplexedSessionCreation == creation {
+			p.multiplexedSessionCreation = nil
+			if p.valid && s != nil {
+				s.sm = p
+				p.multiplexedSession = s
+				p.recordStat(context.Background(), OpenSessionCount, int64(1), tag.Tag{Key: tagKeyIsMultiplexed, Value: "true"})
+				p.recordStat(context.Background(), SessionsCount, 1, tagNumSessions, tag.Tag{Key: tagKeyIsMultiplexed, Value: "true"})
 			}
-			p.sc.executeCreateMultiplexedSession(c.ctx, client, p.sc.md, p)
-			continue
 		}
-		select {
-		case p.mayGetMultiplexedSession <- true:
-		case <-c.ctx.Done():
-			return
-		}
-	}
+		p.mu.Unlock()
+
+		creation.err = err
+		close(creation.done)
+	})
 }
 
-// sessionReady is called when a session has been created and is ready for use.
-func (p *sessionManager) sessionReady(ctx context.Context, s *session) {
-	p.mu.Lock()
-	defer p.mu.Unlock()
-	s.sm = p
-	p.multiplexedSession = s
-	p.multiplexedSessionCreationError = nil
-	p.recordStat(context.Background(), OpenSessionCount, int64(1), tag.Tag{Key: tagKeyIsMultiplexed, Value: "true"})
-	p.recordStat(context.Background(), SessionsCount, 1, tagNumSessions, tag.Tag{Key: tagKeyIsMultiplexed, Value: "true"})
-	select {
-	case p.mayGetMultiplexedSession <- true:
-	case <-ctx.Done():
-	}
+type multiplexedSessionCreationConsumer struct {
+	manager  *sessionManager
+	creation *multiplexedSessionCreation
 }
 
-// sessionCreationFailed is called when session creation fails.
-func (p *sessionManager) sessionCreationFailed(ctx context.Context, err error) {
-	p.mu.Lock()
-	defer p.mu.Unlock()
-	if p.multiplexedSession != nil {
-		p.multiplexedSessionCreationError = nil
-		select {
-		case p.mayGetMultiplexedSession <- true:
-		case <-ctx.Done():
-			return
-		}
-		return
-	}
-	p.recordStat(context.Background(), OpenSessionCount, int64(0), tag.Tag{Key: tagKeyIsMultiplexed, Value: "true"})
-	p.multiplexedSessionCreationError = err
-	select {
-	case p.mayGetMultiplexedSession <- true:
-	case <-ctx.Done():
-		return
-	}
+func (c *multiplexedSessionCreationConsumer) sessionReady(_ context.Context, s *session) {
+	c.manager.finishMultiplexedSessionCreation(c.creation, s, nil)
+}
+
+func (c *multiplexedSessionCreationConsumer) sessionCreationFailed(_ context.Context, err error) {
+	c.manager.finishMultiplexedSessionCreation(c.creation, nil, err)
 }
 
 // isValid checks if the session pool is still valid.
@@ -438,9 +423,14 @@ func (p *sessionManager) close(ctx context.Context) {
 			logf(p.sc.logger, "Failed to unregister callback from the OpenTelemetry meter, error : %v", err)
 		}
 	}
-	p.mu.Unlock()
 	p.once.Do(func() { close(p.done) })
-	close(p.multiplexedSessionReq)
+	creation := p.multiplexedSessionCreation
+	p.multiplexedSessionCreation = nil
+	p.mu.Unlock()
+	if creation != nil {
+		creation.cancel()
+		p.finishMultiplexedSessionCreation(creation, nil, errInvalidSession)
+	}
 }
 
 // errInvalidSession is the error for using an invalid session.
@@ -495,6 +485,7 @@ func (p *sessionManager) takeMultiplexed(ctx context.Context) (*sessionHandle, e
 	trace.TracePrintf(ctx, nil, "Acquiring a multiplexed session")
 	for {
 		var s *session
+		var creation *multiplexedSessionCreation
 		p.mu.Lock()
 		if !p.valid {
 			p.mu.Unlock()
@@ -508,9 +499,8 @@ func (p *sessionManager) takeMultiplexed(ctx context.Context) (*sessionHandle, e
 			p.incNumMultiplexedInUse(ctx)
 			return p.newSessionHandle(s), nil
 		}
-		mayGetSession := p.mayGetMultiplexedSession
+		creation = p.ensureMultiplexedSessionCreationLocked(false)
 		p.mu.Unlock()
-		p.multiplexedSessionReq <- muxSessionCreateRequest{force: false, ctx: ctx}
 		select {
 		case <-ctx.Done():
 			trace.TracePrintf(ctx, nil, "Context done waiting for multiplexed session")
@@ -519,15 +509,11 @@ func (p *sessionManager) takeMultiplexed(ctx context.Context) (*sessionHandle, e
 				p.recordOTStat(ctx, p.otConfig.getSessionTimeoutsCount, 1, recordOTStatOption{attr: p.otConfig.attributeMapWithMultiplexed})
 			}
 			return nil, p.errGetSessionTimeout(ctx)
-		case <-mayGetSession:
-			p.mu.Lock()
-			if p.multiplexedSessionCreationError != nil {
-				trace.TracePrintf(ctx, nil, "Error creating multiplexed session: %v", p.multiplexedSessionCreationError)
-				err := p.multiplexedSessionCreationError
-				p.mu.Unlock()
-				return nil, err
+		case <-creation.done:
+			if creation.err != nil {
+				trace.TracePrintf(ctx, nil, "Error creating multiplexed session: %v", creation.err)
+				return nil, creation.err
 			}
-			p.mu.Unlock()
 		}
 	}
 }
@@ -562,19 +548,18 @@ func (p *sessionManager) multiplexSessionWorker() {
 		}
 		p.mu.Unlock()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 		if createTime.Add(multiplexSessionRefreshInterval).Before(time.Now()) {
 			// Multiplexed session is idle for more than 7 days, replace it.
-			p.multiplexedSessionReq <- muxSessionCreateRequest{force: true, ctx: ctx}
+			p.mu.Lock()
+			creation := p.ensureMultiplexedSessionCreationLocked(true)
+			p.mu.Unlock()
 			// wait for the new multiplexed session to be created.
 			select {
-			case <-p.mayGetMultiplexedSession:
+			case <-creation.done:
 			case <-p.done:
-				cancel()
 				return
 			}
 		}
-		cancel()
 
 		// Sleep for a while to avoid burning CPU.
 		select {
