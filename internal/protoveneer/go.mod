@@ -8,7 +8,7 @@ require (
 	github.com/googleapis/gax-go/v2 v2.18.0
 	google.golang.org/genproto v0.0.0-20260217215200-42d3e9bedb6d
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260316180232-0b37fe3546d5
-	google.golang.org/grpc v1.79.2
+	google.golang.org/grpc v1.79.3
 	google.golang.org/protobuf v1.36.11
 	gopkg.in/yaml.v3 v3.0.1
 )

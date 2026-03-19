@@ -5,7 +5,7 @@ go 1.25.0
 require (
 	github.com/google/go-cmp v0.7.0
 	golang.org/x/tools v0.43.0
-	google.golang.org/grpc v1.79.2
+	google.golang.org/grpc v1.79.3
 )
 
 require (
