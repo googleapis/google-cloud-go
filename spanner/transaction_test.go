@@ -728,6 +728,57 @@ func TestReadWriteStmtBasedTransaction_CommitAbortedErrorReturned(t *testing.T) 
 	}
 }
 
+// When a commit is aborted and the retry fails because the context is
+// cancelled, calling Rollback on the transaction should not panic even
+// though the session handle has been set to nil.
+func TestReadWriteStmtBasedTransaction_RollbackAfterAbortedCommitWithNilSessionHandle(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	// Make the commit return an Aborted error.
+	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
+		SimulatedExecutionTime{
+			Errors: []error{status.Errorf(codes.Aborted, "Transaction aborted")},
+		})
+
+	txn, err := NewReadWriteStmtBasedTransaction(ctx, client)
+	if err != nil {
+		t.Fatalf("got an error: %v", err)
+	}
+	// Commit should return Aborted. This also sets txn.sh = nil internally.
+	_, err = txn.Commit(ctx)
+	if status.Code(err) != codes.Aborted {
+		t.Fatalf("got an incorrect error: %v", err)
+	}
+	if txn.sh != nil {
+		t.Fatal("expected aborted commit cleanup to clear the session handle")
+	}
+
+	// Try to reset for retry with a cancelled context, simulating the
+	// scenario where the caller's context has been cancelled (e.g. by
+	// errgroup). This will fail because session acquisition needs a
+	// valid context.
+	cancelledCtx, cancel := context.WithCancel(ctx)
+	cancel()
+	_, err = txn.ResetForRetry(cancelledCtx)
+	if g, w := ErrCode(err), codes.Canceled; g != w {
+		t.Fatalf("ResetForRetry error code mismatch\n Got: %v\nWant: %v", g, w)
+	}
+
+	// Rollback should not panic even though txn.sh is nil.
+	var recovered any
+	func() {
+		defer func() {
+			recovered = recover()
+		}()
+		txn.Rollback(context.Background())
+	}()
+	if recovered != nil {
+		t.Fatalf("Rollback panicked after failed retry reset: %v", recovered)
+	}
+}
+
 // When a non-aborted error happens during a commit, it kicks off a rollback.
 func TestReadWriteStmtBasedTransaction_CommitNonAbortedErrorReturned(t *testing.T) {
 	t.Parallel()
