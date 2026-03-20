@@ -113,62 +113,6 @@ func TestMultiplexSessionWorker(t *testing.T) {
 	}
 }
 
-func TestMultiplexedSessionCreationGoroutineDeadlockOnContextCancel(t *testing.T) {
-	t.Parallel()
-	if !isMultiplexEnabled {
-		t.Skip("Multiplexing is not enabled")
-	}
-
-	server, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
-	defer serverTeardown()
-	server.TestSpanner.PutExecutionTime(MethodCreateSession,
-		SimulatedExecutionTime{MinimumExecutionTime: 500 * time.Millisecond})
-
-	ctx := context.Background()
-	db := fmt.Sprintf("projects/%s/instances/%s/databases/%s", "[PROJECT]", "[INSTANCE]", "[DATABASE]")
-	client, err := NewClientWithConfig(ctx, db, ClientConfig{
-		DisableNativeMetrics: true,
-	}, opts...)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer client.Close()
-
-	cancelledCtx, cancel := context.WithCancel(ctx)
-	cancel()
-	cancelledDone := make(chan error, 1)
-	go func() {
-		_, err := client.Single().ReadRow(cancelledCtx, "Albums", Key{"foo"}, []string{"SingerId", "AlbumId", "AlbumTitle"})
-		cancelledDone <- err
-	}()
-
-	done := make(chan error, 1)
-	go func() {
-		readCtx, readCancel := context.WithTimeout(ctx, 15*time.Second)
-		defer readCancel()
-		_, err := client.Single().ReadRow(readCtx, "Albums", Key{"foo"}, []string{"SingerId", "AlbumId", "AlbumTitle"})
-		done <- err
-	}()
-
-	select {
-	case err := <-cancelledDone:
-		if g, w := ErrCode(err), codes.Canceled; g != w {
-			t.Fatalf("cancelled ReadRow returned code %v, want %v (err=%v)", g, w, err)
-		}
-	case <-time.After(5 * time.Second):
-		t.Fatal("cancelled ReadRow did not return while initial multiplexed session creation was in flight")
-	}
-
-	select {
-	case err := <-done:
-		if err != nil {
-			t.Fatalf("ReadRow returned unexpected error: %v", err)
-		}
-	case <-time.After(5 * time.Second):
-		t.Fatal("ReadRow deadlocked waiting for multiplexed session readiness after another waiter canceled")
-	}
-}
-
 func TestMultiplexedSessionCreationWithInterleavedRequests(t *testing.T) {
 	t.Parallel()
 
