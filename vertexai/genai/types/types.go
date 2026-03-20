@@ -2554,6 +2554,10 @@ type EventMetadata struct {
 	// Optional. Indicates whether the response from the model is complete. Only used for
 	// streaming mode.
 	TurnComplete *bool `json:"turnComplete,omitempty"`
+	// Optional. Audio transcription of user input.
+	InputTranscription *genai_types.Transcription `json:"inputTranscription,omitempty"`
+	// Optional. Audio transcription of model output.
+	OutputTranscription *genai_types.Transcription `json:"outputTranscription,omitempty"`
 }
 
 // Config for appending agent engine session event.
@@ -2792,6 +2796,58 @@ type AgentEngineConfig struct {
 	ImageSpec *ReasoningEngineSpecSourceCodeSpecImageSpec `json:"imageSpec,omitempty"`
 	// Optional. The agent config source for the Agent Engine.
 	AgentConfigSource *ReasoningEngineSpecSourceCodeSpecAgentConfigSource `json:"agentConfigSource,omitempty"`
+}
+
+// Config for checking a query job on an agent engine.
+type RunQueryJobAgentEngineConfig struct {
+	// Optional. Used to override HTTP request options.
+	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
+	// The query to send to the agent engine.
+	Query string `json:"query,omitempty"`
+	// The GCS bucket to use for the query.
+	GCSBucket string `json:"gcsBucket,omitempty"`
+}
+
+// Result of running a query job.
+type RunQueryJobResult struct {
+	// Optional. Used to override HTTP request options.
+	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
+	// Optional. Name of the agent engine operation to later check for status.
+	JobName string `json:"jobName,omitempty"`
+	// Optional. The GCS URI of the input file.
+	InputGCSURI string `json:"inputGcsUri,omitempty"`
+	// Optional. The GCS URI of the output file.
+	OutputGCSURI string `json:"outputGcsUri,omitempty"`
+}
+
+// Config for async querying agent engines.
+type CheckQueryJobAgentEngineConfig struct {
+	// Optional. Used to override HTTP request options.
+	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
+	// Optional. Whether to retrieve the results of the query job.
+	RetrieveResult bool `json:"retrieveResult,omitempty"`
+}
+
+// Result of checking a query job.
+type CheckQueryJobResult struct {
+	// Optional. Used to override HTTP request options.
+	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
+	// Optional. Name of the agent engine operation.
+	OperationName string `json:"operationName,omitempty"`
+	// Optional. The GCS URI of the output file.
+	OutputGCSURI string `json:"outputGcsUri,omitempty"`
+	// Optional. Status of the operation.
+	Status string `json:"status,omitempty"`
+	// Optional. JSON result of the operation.
+	Result string `json:"result,omitempty"`
+}
+
+// Response from LRO.
+type CheckQueryJobResponse struct {
+	// Optional. Used to override HTTP request options.
+	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
+	// Optional. The GCS URI of the output file.
+	OutputGCSURI string `json:"outputGcsUri,omitempty"`
 }
 
 // A linked resource attached to the application by the user.

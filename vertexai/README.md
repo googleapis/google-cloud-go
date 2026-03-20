@@ -6,9 +6,9 @@
 > New users are encouraged to use the Google GenAI Go SDK available at [google.golang.org/genai](http://pkg.go.dev/google.golang.org/genai)
 > For information about migrating to the Google Gen AI SDK, see [Vertex AI SDK migration guide](https://cloud.google.com/vertex-ai/generative-ai/docs/deprecations/genai-vertexai-sdk).
 
-The Vertex AI Go SDK enables developers to use Google's state-of-the-art 
-generative AI models (like Gemini) to build AI-powered features and applications.
-
+The Vertex AI Go SDK enables developers to use Google's state-of-the-art
+generative AI models (like Gemini) to build AI-powered features and
+applications.
 
 This SDK supports use cases like:
 - Generate text from text-only input
