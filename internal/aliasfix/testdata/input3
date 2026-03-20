@@ -1,5 +1,0 @@
-package golden
-
-import "net"
-
-func Bar3(addr net.Addr) {}
