@@ -19,6 +19,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"sync"
 	"time"
 	"unicode/utf8"
@@ -261,25 +262,33 @@ func (w *Writer) Write(p []byte) (n int, err error) {
 
 	// First time initialization: freeze the configuration to either PCU or standard.
 	if w.EnableParallelUpload {
-		w.mu.Lock()
-		if w.pcu == nil {
-			if err := w.initPCU(w.ctx); err != nil {
-				w.mu.Unlock()
-				return 0, err
-			}
-		}
-		pcu = w.pcu
-		w.mu.Unlock()
-		n, err = pcu.write(p)
-		if err != nil {
+		if _, isGRPC := w.o.c.tc.(*grpcStorageClient); !isGRPC {
+			// PCU only supported for gRPC.
+			// Nullify the config and proceed with standard upload.
+			// Log prominent warning.
+			log.Println("storage: ParallelUploadConfig is ignored because Parallel Uploads are only supported for gRPC clients. Proceeding with standard upload.")
+			w.EnableParallelUpload = false
+		} else {
 			w.mu.Lock()
-			werr := w.err
-			w.mu.Unlock()
-			if errors.Is(werr, context.Canceled) || errors.Is(werr, context.DeadlineExceeded) {
-				return n, werr
+			if w.pcu == nil {
+				if err := w.initPCU(w.ctx); err != nil {
+					w.mu.Unlock()
+					return 0, err
+				}
 			}
+			pcu = w.pcu
+			w.mu.Unlock()
+			n, err = pcu.write(p)
+			if err != nil {
+				w.mu.Lock()
+				werr := w.err
+				w.mu.Unlock()
+				if errors.Is(werr, context.Canceled) || errors.Is(werr, context.DeadlineExceeded) {
+					return n, werr
+				}
+			}
+			return n, err
 		}
-		return n, err
 	}
 
 	if err := w.openWriter(); err != nil {
@@ -359,25 +368,30 @@ func (w *Writer) Close() error {
 	}
 
 	if pcu != nil || (!w.opened && w.EnableParallelUpload) {
-		w.mu.Lock()
-		if w.pcu == nil {
-			if err := w.initPCU(w.ctx); err != nil {
-				w.mu.Unlock()
-				return err
+		if _, isGRPC := w.o.c.tc.(*grpcStorageClient); !isGRPC && pcu == nil {
+			log.Println("storage: ParallelUploadConfig is ignored because Parallel Uploads are only supported for gRPC clients. Proceeding with standard upload.")
+			w.EnableParallelUpload = false
+		} else {
+			w.mu.Lock()
+			if w.pcu == nil {
+				if err := w.initPCU(w.ctx); err != nil {
+					w.mu.Unlock()
+					return err
+				}
 			}
-		}
-		pcu = w.pcu
-		w.mu.Unlock()
+			pcu = w.pcu
+			w.mu.Unlock()
 
-		err := pcu.close()
-		w.mu.Lock()
-		defer w.mu.Unlock()
-		w.closed = true
-		if w.err == nil && err != nil {
-			w.err = err
+			err := pcu.close()
+			w.mu.Lock()
+			defer w.mu.Unlock()
+			w.closed = true
+			if w.err == nil && err != nil {
+				w.err = err
+			}
+			endSpan(w.ctx, w.err)
+			return w.err
 		}
-		endSpan(w.ctx, w.err)
-		return w.err
 	}
 
 	if !w.opened {

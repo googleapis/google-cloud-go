@@ -8943,7 +8943,7 @@ func TestIntegration_ParallelUpload_ChecksumValidation(t *testing.T) {
 						t.Fatalf("expected error due to incorrect checksum, got nil")
 					}
 					// It should fail in compose since user-provided CRC32C is evaluated there.
-					if !errorIsStatusCode(err, http.StatusBadRequest, codes.InvalidArgument) {
+						if !errorIsStatusCode(err, http.StatusBadRequest, codes.InvalidArgument) && !errorIsStatusCode(err, 0, codes.InvalidArgument) {
 						t.Fatalf("expected an InvalidArgument error for incorrect checksum, but got %v", err)
 					}
 				} else {
