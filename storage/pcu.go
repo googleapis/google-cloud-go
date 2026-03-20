@@ -161,6 +161,13 @@ func (w *Writer) initPCU(ctx context.Context) error {
 		return fmt.Errorf("upload requires a non-nil ObjectHandle with a bucket name and a client")
 	}
 
+	if err := w.validateWriteAttrs(); err != nil {
+		return err
+	}
+	if w.o.gen != defaultGen {
+		return fmt.Errorf("storage: generation supported on Writer for appendable objects only, got %v", w.o.gen)
+	}
+
 	cfg := &w.ParallelUploadConfig
 	cfg.defaults()
 

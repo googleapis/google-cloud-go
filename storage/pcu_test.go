@@ -113,7 +113,7 @@ func TestNewPCUSettings(t *testing.T) {
 	MaxConcurrency := 8
 	settings := newPCUSettings(MaxConcurrency)
 
-	// Verify derived values
+	// Verify derived values.
 	wantBufferPoolSize := MaxConcurrency + 1
 	if settings.bufferPoolSize != wantBufferPoolSize {
 		t.Errorf("bufferPoolSize = %d; want %d", settings.bufferPoolSize, wantBufferPoolSize)

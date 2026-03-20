@@ -8777,7 +8777,7 @@ func TestIntegration_ParallelUpload(t *testing.T) {
 					t.Fatalf("Writer.Close: %v", err)
 				}
 
-				// Verify object size and existence
+				// Verify object size and existence.
 				attrs, err := obj.Attrs(ctx)
 				if err != nil {
 					t.Fatalf("obj.Attrs: %v", err)
@@ -8786,7 +8786,7 @@ func TestIntegration_ParallelUpload(t *testing.T) {
 					t.Errorf("Object size mismatch: got %d, want %d", attrs.Size, tc.expected)
 				}
 
-				// Verify cleanup of intermediate/part objects
+				// Verify cleanup of intermediate/part objects.
 				it := client.Bucket(bucket).Objects(ctx, &Query{Prefix: tmpObjectPrefix})
 				count := 0
 				for {
@@ -8797,18 +8797,18 @@ func TestIntegration_ParallelUpload(t *testing.T) {
 					if err != nil {
 						t.Fatalf("iterator.Next: %v", err)
 					}
-					// Only count temporary chunks belonging to THIS specific test object to avoid test flakes
+					// Only count temporary chunks belonging to this specific test object to avoid test flakes.
 					if strings.Contains(attrsObj.Name, objName) {
 						count++
 					}
 				}
-				// Cleanup might take some time, but we expect 0 if it's synchronously deleting everything,
-				// or we should retry a bit. PCU close does wg.Wait() on doCleanup(), so they should be gone.
+
+				// Verify no temporary chunks were left behind.
 				if count != 0 {
 					t.Errorf("found %d temporary objects after PCU, expected 0", count)
 				}
 
-				// Verify contents
+				// Verify contents.
 				r, err := obj.NewReader(ctx)
 				if err != nil {
 					t.Fatalf("NewReader failed: %v", err)
@@ -8863,7 +8863,7 @@ func TestIntegration_ParallelUploadConcurrency(t *testing.T) {
 					return
 				}
 
-				// Verify object size
+				// Verify object size.
 				attrs, err := obj.Attrs(ctx)
 				if err != nil {
 					errs <- fmt.Errorf("obj.Attrs failed: %v", err)
