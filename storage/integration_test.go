@@ -2281,7 +2281,11 @@ func TestIntegration_WriterCRC32CValidation(t *testing.T) {
 					t.Fatalf("ReadAll failed: %v", err)
 				}
 				if !bytes.Equal(gotContent, tc.content) {
-					t.Errorf("content mismatch: got %d bytes, want %d bytes", len(gotContent), len(tc.content))
+					if len(gotContent) == len(tc.content) {
+						t.Errorf("content mismatch: lengths match (%d bytes) but bytes differ", len(gotContent))
+					} else {
+						t.Errorf("content mismatch: got %d bytes, want %d bytes", len(gotContent), len(tc.content))
+					}
 				}
 			})
 		}
@@ -8815,7 +8819,11 @@ func TestIntegration_ParallelUpload(t *testing.T) {
 					t.Fatalf("ReadAll failed: %v", err)
 				}
 				if !bytes.Equal(gotContent, tc.content) {
-					t.Errorf("content mismatch: got %d bytes, want %d bytes", len(gotContent), len(tc.content))
+					if len(gotContent) == len(tc.content) {
+						t.Errorf("content mismatch: lengths match (%d bytes) but bytes differ", len(gotContent))
+					} else {
+						t.Errorf("content mismatch: got %d bytes, want %d bytes", len(gotContent), len(tc.content))
+					}
 				}
 			})
 		}

@@ -111,6 +111,7 @@ type pcuState struct {
 	partNum         int
 	currentBuffer   []byte
 	bytesBuffered   int64
+	buffersAlloc    int
 
 	bufferCh    chan []byte
 	uploadCh    chan uploadTask
@@ -193,10 +194,6 @@ func (w *Writer) initPCU(ctx context.Context) error {
 	}
 	w.pcu = state
 
-	for i := 0; i < s.bufferPoolSize; i++ {
-		state.bufferCh <- make([]byte, cfg.PartSize)
-	}
-
 	state.workerWG.Add(cfg.MaxConcurrency)
 	for i := 0; i < cfg.MaxConcurrency; i++ {
 		go state.worker()
@@ -206,12 +203,10 @@ func (w *Writer) initPCU(ctx context.Context) error {
 	go state.resultCollector()
 
 	// Handle to get the first buffer.
-	select {
-	case <-state.ctx.Done():
-		return state.ctx.Err()
-	case state.currentBuffer = <-state.bufferCh:
-		state.bytesBuffered = 0
-	}
+	state.currentBuffer = make([]byte, cfg.PartSize)
+	state.buffersAlloc = 1
+	state.bytesBuffered = 0
+
 	state.started = true
 	return nil
 }
@@ -342,6 +337,19 @@ func (s *pcuState) write(p []byte) (int, error) {
 				return total - len(p), s.ctx.Err()
 			case s.currentBuffer = <-s.bufferCh:
 				s.bytesBuffered = 0
+			default:
+				if s.buffersAlloc < s.settings.bufferPoolSize {
+					s.currentBuffer = make([]byte, s.config.PartSize)
+					s.buffersAlloc++
+					s.bytesBuffered = 0
+				} else {
+					select {
+					case <-s.ctx.Done():
+						return total - len(p), s.ctx.Err()
+					case s.currentBuffer = <-s.bufferCh:
+						s.bytesBuffered = 0
+					}
+				}
 			}
 		}
 
