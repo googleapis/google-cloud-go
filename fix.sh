@@ -1,1 +1,0 @@
-sed -i 's/if !errorIsStatusCode(err, http.StatusBadRequest, codes.InvalidArgument) \&\& !errorIsStatusCode(err, 0, codes.InvalidArgument) {/if !errorIsStatusCode(err, http.StatusBadRequest, codes.InvalidArgument) {/g' storage/integration_test.go
