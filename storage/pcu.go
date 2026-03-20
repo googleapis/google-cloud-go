@@ -57,7 +57,7 @@ type ParallelUploadConfig struct {
 	MaxConcurrency int
 }
 
-// defaults fills in values for the eventually-public configuration options.
+// defaults fills in values for the configuration options.
 func (c *ParallelUploadConfig) defaults() {
 	if c.PartSize == 0 {
 		c.PartSize = defaultPartSize
