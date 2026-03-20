@@ -931,6 +931,7 @@ func TestPCUState_Close(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
+			var mu sync.Mutex
 			composeCalled := false
 			cleanupCalled := false
 			ctx := context.Background()
@@ -958,7 +959,9 @@ func TestPCUState_Close(t *testing.T) {
 					return nil
 				},
 				doCleanupFn: func(s *pcuState) {
+					mu.Lock()
 					cleanupCalled = true
+					mu.Unlock()
 				},
 			}
 
@@ -983,9 +986,14 @@ func TestPCUState_Close(t *testing.T) {
 			if composeCalled != tc.expectCompose {
 				t.Errorf("expectCompose %v, but composeCalled was %v", tc.expectCompose, composeCalled)
 			}
+
+			// Wait for background cleanup to execute
+			time.Sleep(10 * time.Millisecond)
+			mu.Lock()
 			if !cleanupCalled {
 				t.Errorf("cleanup logic was not executed")
 			}
+			mu.Unlock()
 		})
 	}
 }

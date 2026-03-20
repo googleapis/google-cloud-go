@@ -8787,25 +8787,34 @@ func TestIntegration_ParallelUpload(t *testing.T) {
 				}
 
 				// Verify cleanup of intermediate/part objects.
-				it := client.Bucket(bucket).Objects(ctx, &Query{Prefix: tmpObjectPrefix})
-				count := 0
-				for {
-					attrsObj, err := it.Next()
-					if err == iterator.Done {
-						break
+				// Since cleanup runs in the background, we retry for a few seconds.
+				var count int
+				err = retry(ctx, func() error {
+					it := client.Bucket(bucket).Objects(ctx, &Query{Prefix: tmpObjectPrefix})
+					count = 0
+					for {
+						attrsObj, err := it.Next()
+						if err == iterator.Done {
+							break
+						}
+						if err != nil {
+							return err
+						}
+						// Only count temporary chunks belonging to this specific test object to avoid test flakes.
+						if strings.Contains(attrsObj.Name, objName) {
+							count++
+						}
 					}
-					if err != nil {
-						t.Fatalf("iterator.Next: %v", err)
+					if count != 0 {
+						return fmt.Errorf("found %d temporary objects after Parallel Upload, expected 0", count)
 					}
-					// Only count temporary chunks belonging to this specific test object to avoid test flakes.
-					if strings.Contains(attrsObj.Name, objName) {
-						count++
-					}
-				}
+					return nil
+				}, func() error {
+					return nil
+				})
 
-				// Verify no temporary chunks were left behind.
-				if count != 0 {
-					t.Errorf("found %d temporary objects after PCU, expected 0", count)
+				if err != nil {
+					t.Error(err)
 				}
 
 				// Verify contents.

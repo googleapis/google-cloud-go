@@ -433,8 +433,10 @@ func (s *pcuState) close() error {
 		close(s.resultCh)
 		s.collectorWG.Wait()
 
-		// Cleanup is always attempted.
-		defer s.doCleanupFn(s)
+		// Cleanup is always attempted. We do it in the background to not block returning.
+		defer func() {
+			go s.doCleanupFn(s)
+		}()
 
 		s.mu.Lock()
 		err = s.firstErr
