@@ -335,7 +335,7 @@ func (p *sessionManager) ensureMultiplexedSessionCreationLocked(force bool) *mul
 	if !force && p.multiplexedSession != nil {
 		return nil
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithCancel(context.Background())
 	creation := &multiplexedSessionCreation{
 		done:   make(chan struct{}),
 		cancel: cancel,
