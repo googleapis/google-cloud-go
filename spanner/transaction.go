@@ -1932,14 +1932,18 @@ func (t *ReadWriteTransaction) rollback(ctx context.Context) {
 		t.mu.Unlock()
 		return
 	}
+	sh := t.sh
 	t.mu.Unlock()
 	// In case that sessionHandle was destroyed but transaction body fails to
 	// report it.
-	sid, client := t.sh.getID(), t.sh.getClient()
+	if sh == nil {
+		return
+	}
+	sid, client := sh.getID(), sh.getClient()
 	if sid == "" || client == nil {
 		return
 	}
-	_ = client.Rollback(contextWithOutgoingMetadata(ctx, t.sh.getMetadata(), t.disableRouteToLeader), &sppb.RollbackRequest{
+	_ = client.Rollback(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), &sppb.RollbackRequest{
 		Session:       sid,
 		TransactionId: t.tx,
 	})
