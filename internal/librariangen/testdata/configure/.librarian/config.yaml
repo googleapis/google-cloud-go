@@ -1,3 +1,0 @@
-global_files_allowlist:
-  - path: "internal/generated/snippets/go.mod"
-    permissions: "read-write"

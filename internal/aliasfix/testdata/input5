@@ -1,9 +1,0 @@
-package golden
-
-import (
-	"net"
-
-	blah "example.com/old/foo/v1"
-)
-
-func Bar2(baz blah.Baz, addr net.Addr) {}

@@ -1,5 +1,0 @@
-package golden
-
-import foopb "example.com/old/foo/v1"
-
-func Bar4(baz foopb.Baz) {}
