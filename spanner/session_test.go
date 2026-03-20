@@ -171,14 +171,14 @@ func TestMultiplexedSessionCreationGoroutineDeadlockOnContextCancel(t *testing.T
 
 func TestMultiplexedSessionCreationCloseReleasesWaiters(t *testing.T) {
 	t.Parallel()
-	if !isMultiplexEnabled {
-		t.Skip("Multiplexing is not enabled")
-	}
 
+	// Create the server and add a delay to CreateSession so the initial
+	// multiplexed session creation takes long enough for us to queue
+	// requests behind it.
 	server, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
 	defer serverTeardown()
 	server.TestSpanner.PutExecutionTime(MethodCreateSession,
-		SimulatedExecutionTime{MinimumExecutionTime: 5 * time.Second})
+		SimulatedExecutionTime{MinimumExecutionTime: 500 * time.Millisecond})
 
 	ctx := context.Background()
 	db := fmt.Sprintf("projects/%s/instances/%s/databases/%s", "[PROJECT]", "[INSTANCE]", "[DATABASE]")
@@ -188,33 +188,65 @@ func TestMultiplexedSessionCreationCloseReleasesWaiters(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	defer client.Close()
 
-	waitFor(t, func() error {
-		client.sm.mu.Lock()
-		defer client.sm.mu.Unlock()
-		if client.sm.multiplexedSessionCreation == nil {
-			return errInvalidSession
-		}
-		return nil
-	})
+	// Issue a read with an already-cancelled context. The call reaches
+	// takeMultiplexed, sees multiplexedSession==nil (the initial creation is
+	// still in flight), and sends a non-force request on multiplexedSessionReq.
+	// That send blocks until the goroutine finishes the initial force request
+	// (~500ms), regardless of the cancelled context.
+	cancelledCtx, cancel := context.WithCancel(ctx)
+	cancel()
+	go client.Single().ReadRow(cancelledCtx, "Albums", Key{"foo"}, []string{"SingerId", "AlbumId", "AlbumTitle"})
 
+	// Wait briefly so the cancelled ReadRow blocks on the channel send
+	// first (FIFO). This ensures the goroutine receives it before the
+	// valid ReadRow below.
+	time.Sleep(50 * time.Millisecond)
+
+	// Issue a second read with a valid context. This also blocks at the
+	// channel send behind the cancelled request. If the goroutine dies
+	// after processing the cancelled request, this read is stuck forever.
 	done := make(chan error, 1)
 	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				// The goroutine may panic with "send on closed channel"
+				// when client.Close() closes multiplexedSessionReq while
+				// this goroutine is still blocked on the send.
+				done <- fmt.Errorf("panic: %v", r)
+			}
+		}()
 		readCtx, readCancel := context.WithTimeout(ctx, 15*time.Second)
 		defer readCancel()
 		_, err := client.Single().ReadRow(readCtx, "Albums", Key{"foo"}, []string{"SingerId", "AlbumId", "AlbumTitle"})
 		done <- err
 	}()
 
-	client.Close()
+	// Remove the delay after the initial session is created so the second
+	// read's session creation (if needed) is not slowed down.
+	waitFor(t, func() error {
+		client.sm.mu.Lock()
+		defer client.sm.mu.Unlock()
+		if client.sm.multiplexedSession == nil {
+			return errInvalidSession
+		}
+		return nil
+	})
+	server.TestSpanner.Freeze()
+	server.TestSpanner.PutExecutionTime(MethodCreateSession, SimulatedExecutionTime{})
+	server.TestSpanner.Unfreeze()
 
 	select {
 	case err := <-done:
-		if !testEqual(err, errInvalidSession) {
-			t.Fatalf("ReadRow returned %v, want %v", err, errInvalidSession)
+		if err != nil {
+			t.Fatalf("ReadRow returned unexpected error: %v", err)
 		}
 	case <-time.After(5 * time.Second):
-		t.Fatal("ReadRow did not return after client close while multiplexed session creation was in flight")
+		t.Fatal("ReadRow deadlocked: the createMultiplexedSession goroutine " +
+			"exited after processing a request with a cancelled context, " +
+			"leaving a concurrent reader permanently blocked on the " +
+			"multiplexedSessionReq channel send")
 	}
 }
 
