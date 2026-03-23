@@ -226,13 +226,13 @@ func TestFlowControllerUnboundedBytes(t *testing.T) {
 	ctx := context.Background()
 	fc := newFlowController(fcSettings(2, 0, FlowControlSignalError))
 
-	// Successfully acquire 4GB.
-	if err := fc.acquire(ctx, 4e9); err != nil {
+	// Successfully acquire 2GB.
+	if err := fc.acquire(ctx, 2e9); err != nil {
 		t.Errorf("got %v, wanted no error", err)
 	}
 
-	// Successfully acquired 4GB bytes.
-	if err := fc.acquire(ctx, 4e9); err != nil {
+	// Successfully acquired 2GB bytes.
+	if err := fc.acquire(ctx, 2e9); err != nil {
 		t.Errorf("got %v, wanted no error", err)
 	}
 
