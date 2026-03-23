@@ -1,6 +1,28 @@
 # Changes
 
 
+## [1.29.0](https://github.com/googleapis/google-cloud-go/releases/tag/dataplex%2Fv1.29.0) (2026-03-23)
+
+### Features
+
+* add DataProductService to manage data products and underlying data assets ([790bab5](https://github.com/googleapis/google-cloud-go/commit/790bab51084e22725bdb2daaa2870d862dc453c6))
+* add LookupContext to CatalogService for LLM-generated resource context ([790bab5](https://github.com/googleapis/google-cloud-go/commit/790bab51084e22725bdb2daaa2870d862dc453c6))
+* add MetadataFeed to CatalogService for tracking metadata changes ([790bab5](https://github.com/googleapis/google-cloud-go/commit/790bab51084e22725bdb2daaa2870d862dc453c6))
+* add SKIPPED state to DataScan catalog publishing status ([790bab5](https://github.com/googleapis/google-cloud-go/commit/790bab51084e22725bdb2daaa2870d862dc453c6))
+* add UpdateEntryLink and LookupEntryLinks methods to CatalogService ([790bab5](https://github.com/googleapis/google-cloud-go/commit/790bab51084e22725bdb2daaa2870d862dc453c6))
+* add debug query support to Data Quality rules ([790bab5](https://github.com/googleapis/google-cloud-go/commit/790bab51084e22725bdb2daaa2870d862dc453c6))
+* add support for attaching aspects to EntryLinks ([790bab5](https://github.com/googleapis/google-cloud-go/commit/790bab51084e22725bdb2daaa2870d862dc453c6))
+* allow selective generation scope for Data Documentation scans ([790bab5](https://github.com/googleapis/google-cloud-go/commit/790bab51084e22725bdb2daaa2870d862dc453c6))
+* support OneTime triggers for DataScan operations ([790bab5](https://github.com/googleapis/google-cloud-go/commit/790bab51084e22725bdb2daaa2870d862dc453c6))
+
+### Bug Fixes
+
+* remove deprecated Explore-related methods and messages from public client libraries Breaking Changes: - Removed ContentService and all associated methods (CreateContent, UpdateContent, DeleteContent, GetContent, ListContent, etc.) and request/response messages. - Removed Environment and Session management methods from DataplexService (CreateEnvironment, UpdateEnvironment, DeleteEnvironment, ListEnvironments, GetEnvironment, ListSessions) and their associated messages. ([790bab5](https://github.com/googleapis/google-cloud-go/commit/790bab51084e22725bdb2daaa2870d862dc453c6))
+
+### Documentation
+
+* remove deprecated metadata change warnings in Dataplex Catalog The DataProductService provides APIs to curate and manage collections of data assets as data products, enabling more organized sharing and usage for specific business cases. MetadataFeeds allow users to monitor metadata changes (CREATE, UPDATE, DELETE) within a specified scope (organization, project, or entry group) and publish them to Pub/Sub. CatalogService now includes a LookupContext API to provide LLM-generated context for resources, and enhanced EntryLink management, including the ability to attach aspects. DataScan operations now support a OneTime trigger for single-run scans, and Data Quality rules support DebugQueries to help investigate rule failures by returning diagnostic values. ([790bab5](https://github.com/googleapis/google-cloud-go/commit/790bab51084e22725bdb2daaa2870d862dc453c6))
+
 ## [1.28.0](https://github.com/googleapis/google-cloud-go/releases/tag/dataplex%2Fv1.28.0) (2025-11-06)
 
 ### Features

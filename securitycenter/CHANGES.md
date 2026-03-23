@@ -1,5 +1,11 @@
 # Changes
 
+## [1.39.0](https://github.com/googleapis/google-cloud-go/releases/tag/securitycenter%2Fv1.39.0) (2026-03-23)
+
+### Features
+
+* Support Chokepoint and external exposure in findings Proto ([790bab5](https://github.com/googleapis/google-cloud-go/commit/790bab51084e22725bdb2daaa2870d862dc453c6))
+
 ## [1.38.1](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.38.0...securitycenter/v1.38.1) (2025-09-22)
 
 

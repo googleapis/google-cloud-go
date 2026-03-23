@@ -1,6 +1,12 @@
 # Changes
 
 
+## [1.43.0](https://github.com/googleapis/google-cloud-go/releases/tag/documentai%2Fv1.43.0) (2026-03-23)
+
+### Features
+
+* Add a field for upgrading previous processor version when fine tuning ([790bab5](https://github.com/googleapis/google-cloud-go/commit/790bab51084e22725bdb2daaa2870d862dc453c6))
+
 ## [1.42.0](https://github.com/googleapis/google-cloud-go/releases/tag/documentai%2Fv1.42.0) (2026-03-05)
 
 ### Features

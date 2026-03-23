@@ -1,5 +1,12 @@
 # Changes
 
+## [0.6.0](https://github.com/googleapis/google-cloud-go/releases/tag/vectorsearch%2Fv0.6.0) (2026-03-23)
+
+### Features
+
+* Add support for ExportDataObjects ([790bab5](https://github.com/googleapis/google-cloud-go/commit/790bab51084e22725bdb2daaa2870d862dc453c6))
+* Mark Vector Search v1 API as GA ([790bab5](https://github.com/googleapis/google-cloud-go/commit/790bab51084e22725bdb2daaa2870d862dc453c6))
+
 ## [0.5.0](https://github.com/googleapis/google-cloud-go/releases/tag/vectorsearch%2Fv0.5.0) (2026-03-12)
 
 ### Features

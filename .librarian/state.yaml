@@ -137,7 +137,7 @@ libraries:
       - internal/generated/snippets/ai/
     tag_format: '{id}/v{version}'
   - id: aiplatform
-    version: 1.120.0
+    version: 1.121.0
     last_generated_commit: ebfdba37e54d9cd3e78380d226c2c4ab5a5f7fd4
     apis:
       - path: google/cloud/aiplatform/v1
@@ -703,7 +703,7 @@ libraries:
       - internal/generated/snippets/assuredworkloads/
     tag_format: '{id}/v{version}'
   - id: auditmanager
-    version: 0.1.0
+    version: 0.2.0
     last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
     apis:
       - path: google/cloud/auditmanager/v1
@@ -2138,7 +2138,7 @@ libraries:
       - ^datamanager/apiv1/datamanagerpb/.*$
     tag_format: '{id}/v{version}'
   - id: dataplex
-    version: 1.28.0
+    version: 1.29.0
     last_generated_commit: ebfdba37e54d9cd3e78380d226c2c4ab5a5f7fd4
     apis:
       - path: google/cloud/dataplex/v1
@@ -2496,7 +2496,7 @@ libraries:
       - ^dlp/apiv2/\.repo-metadata\.json$
     tag_format: '{id}/v{version}'
   - id: documentai
-    version: 1.42.0
+    version: 1.43.0
     last_generated_commit: ebfdba37e54d9cd3e78380d226c2c4ab5a5f7fd4
     apis:
       - path: google/cloud/documentai/v1
@@ -3143,7 +3143,7 @@ libraries:
       - internal/generated/snippets/iam/
     tag_format: '{id}/v{version}'
   - id: iap
-    version: 1.11.3
+    version: 1.12.0
     last_generated_commit: ebfdba37e54d9cd3e78380d226c2c4ab5a5f7fd4
     apis:
       - path: google/cloud/iap/v1
@@ -5134,7 +5134,7 @@ libraries:
       - internal/generated/snippets/security/
     tag_format: '{id}/v{version}'
   - id: securitycenter
-    version: 1.38.1
+    version: 1.39.0
     last_generated_commit: ebfdba37e54d9cd3e78380d226c2c4ab5a5f7fd4
     apis:
       - path: google/cloud/securitycenter/settings/v1beta1
@@ -5419,7 +5419,7 @@ libraries:
       - internal/generated/snippets/shell/
     tag_format: '{id}/v{version}'
   - id: shopping
-    version: 1.5.0
+    version: 1.6.0
     last_generated_commit: ebfdba37e54d9cd3e78380d226c2c4ab5a5f7fd4
     apis:
       - path: google/shopping/css/v1
@@ -6239,7 +6239,7 @@ libraries:
       - internal/generated/snippets/translate/
     tag_format: '{id}/v{version}'
   - id: vectorsearch
-    version: 0.5.0
+    version: 0.6.0
     last_generated_commit: ebfdba37e54d9cd3e78380d226c2c4ab5a5f7fd4
     apis:
       - path: google/cloud/vectorsearch/v1beta
