@@ -1,6 +1,8 @@
 # Changes
 
 
+## [2.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/gkemulticloud%2Fv2.0.0) (2026-03-23)
+
 ## [1.6.0](https://github.com/googleapis/google-cloud-go/releases/tag/gkemulticloud%2Fv1.6.0) (2025-12-04)
 
 ### Features

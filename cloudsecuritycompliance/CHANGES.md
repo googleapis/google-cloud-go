@@ -1,5 +1,7 @@
 # Changes
 
+## [0.2.0](https://github.com/googleapis/google-cloud-go/releases/tag/cloudsecuritycompliance%2Fv0.2.0) (2026-03-23)
+
 ## [0.1.0](https://github.com/googleapis/google-cloud-go/releases/tag/cloudsecuritycompliance%2Fv0.1.0) (2026-01-29)
 
 ### Features

@@ -1,5 +1,7 @@
 # Changes
 
+## [2.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/apigeeconnect%2Fv2.0.0) (2026-03-23)
+
 ## [1.7.7](https://github.com/googleapis/google-cloud-go/compare/apigeeconnect/v1.7.6...apigeeconnect/v1.7.7) (2025-06-04)
 
 

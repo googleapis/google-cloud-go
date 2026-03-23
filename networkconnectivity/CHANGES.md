@@ -1,5 +1,7 @@
 # Changes
 
+## [2.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkconnectivity%2Fv2.0.0) (2026-03-23)
+
 ## [1.21.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkconnectivity%2Fv1.21.0) (2026-03-12)
 
 ### Features

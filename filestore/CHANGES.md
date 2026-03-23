@@ -1,6 +1,8 @@
 # Changes
 
 
+## [2.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/filestore%2Fv2.0.0) (2026-03-23)
+
 ## [1.10.3](https://github.com/googleapis/google-cloud-go/compare/filestore/v1.10.2...filestore/v1.10.3) (2025-09-18)
 
 

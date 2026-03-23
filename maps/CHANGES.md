@@ -2,6 +2,8 @@
 
 
 
+## [2.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/maps%2Fv2.0.0) (2026-03-23)
+
 ## [1.29.0](https://github.com/googleapis/google-cloud-go/releases/tag/maps%2Fv1.29.0) (2026-03-12)
 
 ### Features

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/contactcenterinsights/apiv1",
-    "version": "1.17.4",
+    "version": "2.0.0",
     "language": "GO",
     "apis": [
       {

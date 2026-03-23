@@ -1,5 +1,7 @@
 # Changes
 
+## [2.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/recommender%2Fv2.0.0) (2026-03-23)
+
 ## [1.13.6](https://github.com/googleapis/google-cloud-go/compare/recommender/v1.13.5...recommender/v1.13.6) (2025-09-22)
 
 

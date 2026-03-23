@@ -1,5 +1,7 @@
 # Changes
 
+## [2.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/datafusion%2Fv2.0.0) (2026-03-23)
+
 ## [1.8.7](https://github.com/googleapis/google-cloud-go/compare/datafusion/v1.8.6...datafusion/v1.8.7) (2025-09-16)
 
 

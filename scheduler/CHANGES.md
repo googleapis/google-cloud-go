@@ -1,5 +1,7 @@
 # Changes
 
+## [2.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/scheduler%2Fv2.0.0) (2026-03-23)
+
 ## [1.11.8](https://github.com/googleapis/google-cloud-go/compare/scheduler/v1.11.7...scheduler/v1.11.8) (2025-09-22)
 
 

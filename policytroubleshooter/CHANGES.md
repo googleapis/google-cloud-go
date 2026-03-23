@@ -2,6 +2,8 @@
 
 
 
+## [2.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/policytroubleshooter%2Fv2.0.0) (2026-03-23)
+
 ## [1.11.7](https://github.com/googleapis/google-cloud-go/compare/policytroubleshooter/v1.11.6...policytroubleshooter/v1.11.7) (2025-09-18)
 
 

@@ -1,6 +1,8 @@
 # Changes
 
 
+## [2.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/osconfig%2Fv2.0.0) (2026-03-23)
+
 ## [1.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/osconfig%2Fv1.16.0) (2026-02-05)
 
 ### Features

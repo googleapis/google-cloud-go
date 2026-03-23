@@ -1,5 +1,7 @@
 # Changes
 
+## [2.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/appengine%2Fv2.0.0) (2026-03-23)
+
 ## [1.9.7](https://github.com/googleapis/google-cloud-go/compare/appengine/v1.9.6...appengine/v1.9.7) (2025-06-04)
 
 
