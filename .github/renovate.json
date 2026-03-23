@@ -23,7 +23,8 @@
             "matchPackagePatterns": [
                 "^github.com/google/go-github/v",
                 "^github.com/apache/arrow/go/v",
-                "^github.com/cloudprober/cloudprober"
+                "^github.com/cloudprober/cloudprober",
+                "^go.einride.tech/aip",
             ],
             "enabled": false
         },
