@@ -122,7 +122,7 @@ var DefaultPublishSettings = PublishSettings{
 	CountThreshold:    100,
 	ByteThreshold:     1e6,
 	Timeout:           7 * 24 * time.Hour,
-	BufferedByteLimit: 1e10,
+	BufferedByteLimit: 1e9,
 	EnableIdempotence: true,
 }
 
