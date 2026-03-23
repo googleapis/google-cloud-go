@@ -8722,7 +8722,7 @@ func crc32c(b []byte) uint32 {
 }
 
 func TestIntegration_ParallelUpload(t *testing.T) {
-	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
+	ctx := skipExtraReadAPIs(skipHTTP("PCU only supported for gRPC"), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		h := testHelper{t}
 
@@ -8840,7 +8840,7 @@ func TestIntegration_ParallelUpload(t *testing.T) {
 }
 
 func TestIntegration_ParallelUploadConcurrency(t *testing.T) {
-	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
+	ctx := skipExtraReadAPIs(skipHTTP("PCU only supported for gRPC"), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		h := testHelper{t}
 
@@ -8895,7 +8895,7 @@ func TestIntegration_ParallelUploadConcurrency(t *testing.T) {
 }
 
 func TestIntegration_ParallelUpload_ChecksumValidation(t *testing.T) {
-	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
+	ctx := skipExtraReadAPIs(skipHTTP("PCU only supported for gRPC"), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		h := testHelper{t}
 
@@ -8942,9 +8942,9 @@ func TestIntegration_ParallelUpload_ChecksumValidation(t *testing.T) {
 					if err == nil {
 						t.Fatalf("expected error due to incorrect checksum, got nil")
 					}
-					// It should fail in compose since user-provided CRC32C is evaluated there.
-					if !errorIsStatusCode(err, http.StatusBadRequest, codes.InvalidArgument) && !errorIsStatusCode(err, 0, codes.InvalidArgument) {
-						t.Fatalf("expected an InvalidArgument error for incorrect checksum, but got %v", err)
+					// User provided CRC32C is verified client-side after compose returns.
+					if !strings.Contains(err.Error(), "does not match the expected CRC32C") {
+						t.Fatalf("expected a CRC32C mismatch error, but got %v", err)
 					}
 				} else {
 					if err != nil {

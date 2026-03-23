@@ -41,6 +41,8 @@ const (
 
 // ParallelUploadConfig holds configuration for Parallel Uploads.
 // Setting this config and EnableParallelUpload flag on Writer enables parallel uploads.
+// Supported exclusively for gRPC clients. If used with a JSON client, the
+// configuration is ignored and a standard upload is performed.
 //
 // **Note:** This feature is currently experimental and its API surface may change
 // in future releases. It is not yet recommended for production use.
@@ -551,6 +553,12 @@ func (s *pcuState) composeParts() error {
 	if err != nil {
 		return err
 	}
+
+	// Perform client-side CRC32C validation if a user-provided checksum was specified
+	if s.w.SendCRC32C && s.w.CRC32C != 0 && attrs.CRC32C != s.w.CRC32C {
+		return fmt.Errorf("storage: object was uploaded, but its CRC32C (%d) does not match the expected CRC32C (%d)", attrs.CRC32C, s.w.CRC32C)
+	}
+
 	s.w.obj = attrs
 	return nil
 }

@@ -180,14 +180,17 @@ type Writer struct {
 
 	// EnableParallelUpload enables the parallel upload feature.
 	// This feature splits a large object into multiple parts and uploads them in
-	// parallel.
+	// parallel. Supported exclusively for gRPC clients. If used with a JSON
+	// client, the configuration is ignored and a standard upload is performed.
 	//
 	// **Note:** This feature is currently experimental and its API surface may change
 	// in future releases. It is not yet recommended for production use.
 	EnableParallelUpload bool
 
 	// ParallelUploadConfig holds configuration for Parallel Uploads.
-	// This only takes effect if EnableParallelUpload is true.
+	// This only takes effect if EnableParallelUpload is true. Supported
+	// exclusively for gRPC clients. If used with a JSON client, the configuration
+	// is ignored and a standard upload is performed.
 	//
 	// **Note:** This feature is currently experimental and its API surface may change
 	// in future releases. It is not yet recommended for production use.
