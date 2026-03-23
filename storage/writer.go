@@ -213,6 +213,38 @@ type Writer struct {
 	setTakeoverOffset func(int64)
 }
 
+func (w *Writer) wrapWriteError(n int, err error) (int, error) {
+	if err == nil {
+		return n, nil
+	}
+	w.mu.Lock()
+	werr := w.err
+	w.mu.Unlock()
+	// Preserve existing functionality that when context is canceled, Write will return
+	// context.Canceled instead of "io: read/write on closed pipe". This hides the
+	// pipe implementation detail from users and makes Write seem as though it's an RPC.
+	if errors.Is(werr, context.Canceled) || errors.Is(werr, context.DeadlineExceeded) {
+		return n, werr
+	}
+	return n, err
+}
+
+func (w *Writer) isGRPCClient() bool {
+	_, ok := w.o.c.tc.(*grpcStorageClient)
+	return ok
+}
+
+func (w *Writer) getOrInitPCU() (*pcuState, error) {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	if w.pcu == nil {
+		if err := w.initPCU(w.ctx); err != nil {
+			return nil, err
+		}
+	}
+	return w.pcu, nil
+}
+
 // Write appends to w. It implements the io.Writer interface.
 //
 // Since writes happen asynchronously, Write may return a nil
@@ -222,12 +254,11 @@ type Writer struct {
 //
 // Writes will be retried on transient errors from the server, unless
 // Writer.ChunkSize has been set to zero.
-func (w *Writer) Write(p []byte) (n int, err error) {
+func (w *Writer) Write(p []byte) (int, error) {
 	w.mu.Lock()
-	werr := w.err
-	closed := w.closed
-	pcu := w.pcu
+	werr, closed, pcu := w.err, w.closed, w.pcu
 	w.mu.Unlock()
+
 	if werr != nil {
 		return 0, werr
 	}
@@ -235,81 +266,33 @@ func (w *Writer) Write(p []byte) (n int, err error) {
 		return 0, fmt.Errorf("storage: Writer is closed")
 	}
 
-	if pcu != nil {
-		n, err = pcu.write(p)
-		if err != nil {
-			w.mu.Lock()
-			werr := w.err
-			w.mu.Unlock()
-			if errors.Is(werr, context.Canceled) || errors.Is(werr, context.DeadlineExceeded) {
-				return n, werr
-			}
-		}
-		return n, err
-	}
-	if w.opened {
-		n, err = w.iw.Write(p)
-		if err != nil {
-			w.mu.Lock()
-			werr := w.err
-			w.mu.Unlock()
-			// Preserve existing functionality that when context is canceled, Write will return
-			// context.Canceled instead of "io: read/write on closed pipe". This hides the
-			// pipe implementation detail from users and makes Write seem as though it's an RPC.
-			if errors.Is(werr, context.Canceled) || errors.Is(werr, context.DeadlineExceeded) {
-				return n, werr
-			}
-		}
-		return n, err
-	}
-
-	// First time initialization: freeze the configuration to either PCU or standard.
-	if w.EnableParallelUpload {
-		if _, isGRPC := w.o.c.tc.(*grpcStorageClient); !isGRPC {
-			// PCU only supported for gRPC.
-			// Nullify the config and proceed with standard upload.
-			// Log prominent warning.
-			log.Println("storage: ParallelUploadConfig is ignored because Parallel Uploads are only supported for gRPC clients. Proceeding with standard upload.")
-			w.EnableParallelUpload = false
-		} else {
-			w.mu.Lock()
-			if w.pcu == nil {
-				if err := w.initPCU(w.ctx); err != nil {
-					w.mu.Unlock()
+	if pcu == nil && !w.opened {
+		// First time initialization: freeze the configuration to either PCU or standard.
+		if w.EnableParallelUpload {
+			if !w.isGRPCClient() {
+				// PCU only supported for gRPC.
+				// Nullify the config and proceed with standard upload.
+				// Log prominent warning.
+				log.Println("storage: ParallelUploadConfig is ignored because Parallel Uploads are only supported for gRPC clients. Proceeding with standard upload.")
+				w.EnableParallelUpload = false
+			} else {
+				var err error
+				if pcu, err = w.getOrInitPCU(); err != nil {
 					return 0, err
 				}
 			}
-			pcu = w.pcu
-			w.mu.Unlock()
-			n, err = pcu.write(p)
-			if err != nil {
-				w.mu.Lock()
-				werr := w.err
-				w.mu.Unlock()
-				if errors.Is(werr, context.Canceled) || errors.Is(werr, context.DeadlineExceeded) {
-					return n, werr
-				}
+		}
+		if pcu == nil {
+			if err := w.openWriter(); err != nil {
+				return 0, err
 			}
-			return n, err
 		}
 	}
 
-	if err := w.openWriter(); err != nil {
-		return 0, err
+	if pcu != nil {
+		return w.wrapWriteError(pcu.write(p))
 	}
-	n, err = w.iw.Write(p)
-	if err != nil {
-		w.mu.Lock()
-		werr := w.err
-		w.mu.Unlock()
-		// Preserve existing functionality that when context is canceled, Write will return
-		// context.Canceled instead of "io: read/write on closed pipe". This hides the
-		// pipe implementation detail from users and makes Write seem as though it's an RPC.
-		if errors.Is(werr, context.Canceled) || errors.Is(werr, context.DeadlineExceeded) {
-			return n, werr
-		}
-	}
-	return n, err
+	return w.wrapWriteError(w.iw.Write(p))
 }
 
 // Flush syncs all bytes currently in the Writer's buffer to Cloud Storage.
@@ -360,32 +343,24 @@ func (w *Writer) Flush() (int64, error) {
 // can be retrieved by calling Attrs.
 func (w *Writer) Close() error {
 	w.mu.Lock()
-	closed := w.closed
-	pcu := w.pcu
+	closed, werr, pcu := w.closed, w.err, w.pcu
 	w.mu.Unlock()
 
 	if closed {
-		w.mu.Lock()
-		defer w.mu.Unlock()
-		return w.err
+		return werr
 	}
 
 	if pcu != nil || (!w.opened && w.EnableParallelUpload) {
-		if _, isGRPC := w.o.c.tc.(*grpcStorageClient); !isGRPC && pcu == nil {
+		if w.EnableParallelUpload && !w.isGRPCClient() && pcu == nil {
 			log.Println("storage: ParallelUploadConfig is ignored because Parallel Uploads are only supported for gRPC clients. Proceeding with standard upload.")
 			w.EnableParallelUpload = false
 		} else {
-			w.mu.Lock()
-			if w.pcu == nil {
-				if err := w.initPCU(w.ctx); err != nil {
-					w.mu.Unlock()
-					return err
-				}
+			var err error
+			if pcu, err = w.getOrInitPCU(); err != nil {
+				return err
 			}
-			pcu = w.pcu
-			w.mu.Unlock()
 
-			err := pcu.close()
+			err = pcu.close()
 			w.mu.Lock()
 			defer w.mu.Unlock()
 			w.closed = true
@@ -408,9 +383,9 @@ func (w *Writer) Close() error {
 	}
 
 	<-w.donec
-	w.closed = true
 	w.mu.Lock()
 	defer w.mu.Unlock()
+	w.closed = true
 	endSpan(w.ctx, w.err)
 	return w.err
 }
