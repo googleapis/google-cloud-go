@@ -17,7 +17,9 @@ limitations under the License.
 package bigtable
 
 import (
+	"encoding/base64"
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -31,6 +33,7 @@ const (
 	defaultCluster = "<unspecified>"
 	defaultZone    = "global"
 	defaultTable   = "<unspecified>"
+	peerInfoMDKey  = "bigtable-peer-info"
 )
 
 // get GFE latency in ms from response metadata
@@ -95,6 +98,36 @@ func extractLocation(headerMD metadata.MD, trailerMD metadata.MD) (string, strin
 	}
 
 	return responseParams.GetClusterId(), responseParams.GetZoneId(), nil
+}
+
+func extractPeerInfo(headerMD metadata.MD, trailerMD metadata.MD) (*btpb.PeerInfo, error) {
+	var peerInfoData []string
+
+	// Check whether peer info metadata is available in response header metadata
+	if headerMD != nil {
+		peerInfoData = headerMD.Get(peerInfoMDKey)
+	}
+
+	// If none found in header, check trailer metadata
+	if len(peerInfoData) == 0 && trailerMD != nil {
+		peerInfoData = trailerMD.Get(peerInfoMDKey)
+	}
+
+	// If it's still empty, there's no PeerInfo to process
+	if len(peerInfoData) == 0 || peerInfoData[0] == "" {
+		return nil, nil
+	}
+
+	decoded, err := base64.RawURLEncoding.DecodeString(peerInfoData[0])
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode %s from header: %w", peerInfoMDKey, err)
+	}
+	var peerInfo btpb.PeerInfo
+	if err := proto.Unmarshal(decoded, &peerInfo); err != nil {
+		return nil, fmt.Errorf("failed to parse %s protobuf: %w", peerInfoMDKey, err)
+	}
+	return &peerInfo, nil
 }
 
 func convertToMs(d time.Duration) float64 {
