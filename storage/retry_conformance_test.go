@@ -707,18 +707,21 @@ var methods = map[string][]retryFunc{
 		},
 	},
 	"storage.objects.insert": {
-		// Single-shot upload with ChunkSize = 0 (bufferless/one-shot).
-		// This tests the zero-copy optimization path in gRPC and ensures the
-		// client can retry correctly when the internal buffer is disabled.
+		// Single-shot upload with ChunkSize = 0 (bufferless/one-shot) for gRPC.
+		// This tests the zero-copy optimization path in gRPC.
+		// For HTTP, we fallback to default buffering to allow retries.
 		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
 			obj := c.Bucket(fs.bucket.Name).Object("new-object-oneshot.txt")
-
 			if preconditions {
 				obj = obj.If(Conditions{DoesNotExist: true})
 			}
 
 			objW := obj.NewWriter(ctx)
-			objW.ChunkSize = 0
+
+			// Only set ChunkSize = 0 for gRPC, as HTTP cannot retry without a buffer.
+			if _, ok := c.tc.(*grpcStorageClient); ok {
+				objW.ChunkSize = 0
+			}
 
 			// Using a 3 MiB object to ensure the upload spans several 2 MiB
 			// gRPC messages, testing retries across message boundaries.
