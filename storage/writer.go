@@ -266,7 +266,11 @@ func (w *Writer) Write(p []byte) (int, error) {
 		return 0, fmt.Errorf("storage: Writer is closed")
 	}
 
-	if pcu == nil && !w.opened {
+	if pcu != nil {
+		return w.wrapWriteError(pcu.write(p))
+	}
+
+	if !w.opened {
 		// First time initialization: freeze the configuration to either PCU or standard.
 		if w.EnableParallelUpload {
 			if !w.isGRPCClient() {
@@ -280,18 +284,16 @@ func (w *Writer) Write(p []byte) (int, error) {
 				if pcu, err = w.getOrInitPCU(); err != nil {
 					return 0, err
 				}
+				if pcu != nil {
+					return w.wrapWriteError(pcu.write(p))
+				}
 			}
 		}
-		if pcu == nil {
-			if err := w.openWriter(); err != nil {
-				return 0, err
-			}
+		if err := w.openWriter(); err != nil {
+			return 0, err
 		}
 	}
 
-	if pcu != nil {
-		return w.wrapWriteError(pcu.write(p))
-	}
 	return w.wrapWriteError(w.iw.Write(p))
 }
 
@@ -352,7 +354,6 @@ func (w *Writer) Close() error {
 
 	if pcu != nil || (!w.opened && w.EnableParallelUpload) {
 		if w.EnableParallelUpload && !w.isGRPCClient() && pcu == nil {
-			log.Println("storage: ParallelUploadConfig is ignored because Parallel Uploads are only supported for gRPC clients. Proceeding with standard upload.")
 			w.EnableParallelUpload = false
 		} else {
 			var err error
