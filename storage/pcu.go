@@ -187,7 +187,7 @@ func (w *Writer) initPCU(ctx context.Context) error {
 		config:          cfg,
 		settings:        s,
 		bufferCh:        make(chan []byte, s.bufferPoolSize),
-		uploadCh:        make(chan uploadTask, cfg.MaxConcurrency), // Buffered to prevent worker starvation
+		uploadCh:        make(chan uploadTask, cfg.MaxConcurrency), // Buffered to prevent worker starvation.
 		resultCh:        make(chan uploadResult),
 		partMap:         make(map[int]*ObjectHandle),
 		intermediateMap: make(map[string]*ObjectHandle),
@@ -543,7 +543,7 @@ func (s *pcuState) composeParts() error {
 		finalComps = nextLevel
 	}
 
-	// Final Compose
+	// Final Compose.
 	composer := s.w.o.ComposerFrom(finalComps...)
 	composer.ObjectAttrs = s.w.ObjectAttrs
 	composer.KMSKeyName = s.w.ObjectAttrs.KMSKeyName
@@ -578,7 +578,7 @@ func (s *pcuState) doCleanup() {
 		sem <- struct{}{}
 		defer func() { <-sem }()
 
-		// Use WithoutCancel to ensure cleanup isn't killed by parent context cancellation
+		// Use WithoutCancel to ensure cleanup isn't killed by parent context cancellation.
 		// Ignore cleanup errors here since its best effort and will rely on bucket
 		// lifecycle policies if cleanup fails.
 		_ = s.deleteFn(context.WithoutCancel(s.ctx), h)
