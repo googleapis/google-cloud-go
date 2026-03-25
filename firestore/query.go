@@ -482,7 +482,7 @@ func (q Query) Deserialize(bytes []byte) (Query, error) {
 	return q.fromProto(&runQueryRequest)
 }
 
-func (q Query) toRunQueryRequestProto() (*pb.RunQueryRequest, error) {
+func (q *Query) toRunQueryRequestProto() (*pb.RunQueryRequest, error) {
 	structuredQuery, err := q.toProto()
 	if err != nil {
 		return nil, err
@@ -762,7 +762,7 @@ func (q Query) endCursorSpecified() bool {
 	return len(q.endVals) != 0 || q.endDoc != nil
 }
 
-func (q Query) toProto() (*pb.StructuredQuery, error) {
+func (q *Query) toProto() (*pb.StructuredQuery, error) {
 	if q.err != nil {
 		return nil, q.err
 	}
@@ -811,6 +811,9 @@ func (q Query) toProto() (*pb.StructuredQuery, error) {
 	orders := q.orders
 	if q.startDoc != nil || q.endDoc != nil || (q.c != nil && q.c.alwaysUseImplicitOrderBy) {
 		orders = q.adjustOrders()
+	}
+	if q.err != nil {
+		return nil, q.err
 	}
 	for _, ord := range orders {
 		po, err := ord.toProto()
@@ -878,13 +881,18 @@ func (q *Query) getInequalityFilterFields() []FieldPath {
 	var extract func(filters []*pb.StructuredQuery_Filter)
 	extract = func(filters []*pb.StructuredQuery_Filter) {
 		for _, f := range filters {
+			if q.err != nil {
+				return
+			}
 			if ff := f.GetFieldFilter(); ff != nil {
 				if isInequalityFilter(ff.Op) {
 					fp, err := fieldPathFromFieldRef(ff.Field)
-					if err == nil {
-						// Store string representation to deduplicate
-						fieldMap[strings.Join(fp, "\x00")] = fp
+					if err != nil {
+						q.err = err
+						return
 					}
+					// Store string representation to deduplicate
+					fieldMap[strings.Join(fp, "\x00")] = fp
 				}
 			} else if cf := f.GetCompositeFilter(); cf != nil {
 				extract(cf.Filters)

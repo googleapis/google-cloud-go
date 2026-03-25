@@ -421,9 +421,9 @@ func TestPipeline_CreateFromQuery(t *testing.T) {
 	}
 
 	stages := req.GetStructuredPipeline().GetPipeline().GetStages()
-	// Should have 1 stage: collection
-	if len(stages) != 1 {
-		t.Fatalf("Expected 1 stage in proto, got %d", len(stages))
+	// Should have 2 stages: collection and sort
+	if len(stages) != 2 {
+		t.Fatalf("Expected 2 stages in proto, got %v", stages)
 	}
 
 	wantCollStage := &pb.Pipeline_Stage{
