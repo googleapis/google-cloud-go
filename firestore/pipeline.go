@@ -528,6 +528,16 @@ func WithUnnestIndexField(indexField any) UnnestOption {
 	})
 }
 
+func processUnnestOptions(opts ...UnnestOption) *unnestSettings {
+	settings := &unnestSettings{}
+	for _, opt := range opts {
+		if opt != nil {
+			opt.apply(settings)
+		}
+	}
+	return settings
+}
+
 // Unnest produces a document for each element in an array field.
 // For each input document, this stage outputs zero or more documents.
 // Each output document is a copy of the input document, but the array field is replaced by an element from the array.
@@ -540,12 +550,7 @@ func (p *Pipeline) Unnest(field Selectable, opts ...UnnestOption) *Pipeline {
 	if p.err != nil {
 		return p
 	}
-	settings := &unnestSettings{}
-	for _, opt := range opts {
-		if opt != nil {
-			opt.apply(settings)
-		}
-	}
+	settings := processUnnestOptions(opts...)
 	stage, err := newUnnestStage("Unnest", field, settings)
 	if err != nil {
 		p.err = err
@@ -575,12 +580,7 @@ func (p *Pipeline) UnnestWithAlias(fieldpath any, alias string, opts ...UnnestOp
 		return p
 	}
 
-	settings := &unnestSettings{}
-	for _, opt := range opts {
-		if opt != nil {
-			opt.apply(settings)
-		}
-	}
+	settings := processUnnestOptions(opts...)
 	stage, err := newUnnestStage("UnnestWithAlias", fieldExpr.As(alias), settings)
 	if err != nil {
 		p.err = err
