@@ -100,15 +100,22 @@ func (f *channelFinder) findServerBeginTransaction(ctx context.Context, req *spp
 	if req == nil || req.GetMutationKey() == nil {
 		return nil
 	}
-	target := f.recipeCache.mutationToTargetRange(req.GetMutationKey())
-	if target == nil {
+	hint := ensureBeginTransactionRoutingHint(req)
+	if !f.recipeCache.computeMutationKeys(hint, req.GetMutationKey()) {
 		return nil
 	}
-	hint := &sppb.RoutingHint{Key: append([]byte(nil), target.start...)}
-	if len(target.limit) > 0 {
-		hint.LimitKey = append([]byte(nil), target.limit...)
-	}
 	return f.fillRoutingHint(ctx, preferLeaderFromTransactionOptions(req.GetOptions()), rangeModeCoveringSplit, &sppb.DirectedReadOptions{}, hint)
+}
+
+func (f *channelFinder) fillCommitRoutingHint(ctx context.Context, req *sppb.CommitRequest) {
+	if req == nil || len(req.GetMutations()) == 0 {
+		return
+	}
+	hint := ensureCommitRoutingHint(req)
+	if !f.recipeCache.computeMutationKeys(hint, req.GetMutations()[0]) {
+		return
+	}
+	_ = f.fillRoutingHint(ctx, true, rangeModeCoveringSplit, &sppb.DirectedReadOptions{}, hint)
 }
 
 func (f *channelFinder) fillRoutingHint(ctx context.Context, preferLeader bool, mode rangeMode, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint) channelEndpoint {

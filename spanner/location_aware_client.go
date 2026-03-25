@@ -229,6 +229,7 @@ func (c *locationAwareSpannerClient) BeginTransaction(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	c.router.observeTransaction(resp)
 	if len(resp.GetId()) > 0 {
 		if isReadOnly, readOnlyStrong := readOnlyBeginFromTransactionOptions(req.GetOptions()); isReadOnly {
 			c.router.trackReadOnlyTransaction(string(resp.GetId()), readOnlyStrong)
@@ -242,8 +243,10 @@ func (c *locationAwareSpannerClient) BeginTransaction(ctx context.Context, req *
 // --- Affinity RPCs ---
 
 func (c *locationAwareSpannerClient) Commit(ctx context.Context, req *spannerpb.CommitRequest, opts ...gax.CallOption) (*spannerpb.CommitResponse, error) {
+	c.router.prepareCommitRequest(ctx, req)
 	client := c.affinityClient(req.GetTransactionId())
 	resp, err := client.Commit(ctx, req, opts...)
+	c.router.observeCommitResponse(resp)
 	c.router.clearTransactionAffinity(string(req.GetTransactionId()))
 	return resp, err
 }

@@ -90,6 +90,13 @@ func (r *locationRouter) prepareBeginTransactionRequest(ctx context.Context, req
 	return r.finder.findServerBeginTransaction(ctx, req)
 }
 
+func (r *locationRouter) prepareCommitRequest(ctx context.Context, req *sppb.CommitRequest) {
+	if r == nil || req == nil {
+		return
+	}
+	r.finder.fillCommitRoutingHint(ctx, req)
+}
+
 func (r *locationRouter) observePartialResultSet(prs *sppb.PartialResultSet) {
 	if r == nil || prs == nil || prs.GetCacheUpdate() == nil {
 		return
@@ -102,6 +109,20 @@ func (r *locationRouter) observeResultSet(rs *sppb.ResultSet) {
 		return
 	}
 	r.finder.update(rs.GetCacheUpdate())
+}
+
+func (r *locationRouter) observeTransaction(tx *sppb.Transaction) {
+	if r == nil || tx == nil || tx.GetCacheUpdate() == nil {
+		return
+	}
+	r.finder.update(tx.GetCacheUpdate())
+}
+
+func (r *locationRouter) observeCommitResponse(resp *sppb.CommitResponse) {
+	if r == nil || resp == nil || resp.GetCacheUpdate() == nil {
+		return
+	}
+	r.finder.update(resp.GetCacheUpdate())
 }
 
 func (r *locationRouter) setTransactionAffinity(txID string, ep channelEndpoint) {
