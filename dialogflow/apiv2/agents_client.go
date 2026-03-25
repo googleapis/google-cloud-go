@@ -532,6 +532,22 @@ func (c *AgentsClient) GetLocation(ctx context.Context, req *locationpb.GetLocat
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)] field:
+//
+//	Global locations: If name is empty, the method lists the
+//	public locations available to all projects. * Project-specific
+//	locations: If name follows the format
+//	projects/{project}, the method lists locations visible to that
+//	specific project. This includes public, private, or other
+//	project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *AgentsClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -1731,6 +1747,22 @@ func (c *agentsRESTClient) GetLocation(ctx context.Context, req *locationpb.GetL
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)] field:
+//
+//	Global locations: If name is empty, the method lists the
+//	public locations available to all projects. * Project-specific
+//	locations: If name follows the format
+//	projects/{project}, the method lists locations visible to that
+//	specific project. This includes public, private, or other
+//	project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *agentsRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)

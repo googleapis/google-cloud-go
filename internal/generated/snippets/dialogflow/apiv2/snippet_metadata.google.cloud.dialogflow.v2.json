@@ -380,7 +380,7 @@
     {
       "regionTag": "dialogflow_v2_generated_Agents_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "AgentsClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -839,7 +839,7 @@
     {
       "regionTag": "dialogflow_v2_generated_AnswerRecords_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "AnswerRecordsClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1342,7 +1342,7 @@
     {
       "regionTag": "dialogflow_v2_generated_Contexts_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "ContextsClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1847,7 +1847,7 @@
     {
       "regionTag": "dialogflow_v2_generated_ConversationDatasets_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "ConversationDatasetsClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2444,7 +2444,7 @@
     {
       "regionTag": "dialogflow_v2_generated_ConversationModels_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "ConversationModelsClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2948,7 +2948,7 @@
     {
       "regionTag": "dialogflow_v2_generated_ConversationProfiles_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "ConversationProfilesClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3637,7 +3637,7 @@
     {
       "regionTag": "dialogflow_v2_generated_Conversations_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "ConversationsClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -4280,7 +4280,7 @@
     {
       "regionTag": "dialogflow_v2_generated_Documents_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "DocumentsClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -4693,7 +4693,7 @@
     {
       "regionTag": "dialogflow_v2_generated_EncryptionSpecService_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "EncryptionSpecClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -5335,7 +5335,7 @@
     {
       "regionTag": "dialogflow_v2_generated_EntityTypes_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "EntityTypesClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -5839,7 +5839,7 @@
     {
       "regionTag": "dialogflow_v2_generated_Environments_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "EnvironmentsClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -6160,7 +6160,7 @@
     {
       "regionTag": "dialogflow_v2_generated_Fulfillments_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "FulfillmentsClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -6618,7 +6618,7 @@
     {
       "regionTag": "dialogflow_v2_generated_GeneratorEvaluations_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "GeneratorEvaluationsClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -7030,7 +7030,7 @@
     {
       "regionTag": "dialogflow_v2_generated_Generators_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "GeneratorsClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -7580,7 +7580,7 @@
     {
       "regionTag": "dialogflow_v2_generated_Intents_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "IntentsClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -8038,7 +8038,7 @@
     {
       "regionTag": "dialogflow_v2_generated_KnowledgeBases_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "KnowledgeBasesClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -8451,7 +8451,7 @@
     {
       "regionTag": "dialogflow_v2_generated_Participants_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "ParticipantsClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -9135,7 +9135,7 @@
     {
       "regionTag": "dialogflow_v2_generated_SessionEntityTypes_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "SessionEntityTypesClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -9502,7 +9502,7 @@
     {
       "regionTag": "dialogflow_v2_generated_Sessions_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "SessionsClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -9910,7 +9910,7 @@
     {
       "regionTag": "dialogflow_v2_generated_SipTrunks_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "SipTrunksClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -10368,7 +10368,7 @@
     {
       "regionTag": "dialogflow_v2_generated_Tools_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "ToolsClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -10826,7 +10826,7 @@
     {
       "regionTag": "dialogflow_v2_generated_Versions_ListLocations_sync",
       "title": "dialogflow ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "VersionsClient/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {

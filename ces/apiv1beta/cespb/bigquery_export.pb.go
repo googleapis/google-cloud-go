@@ -44,13 +44,13 @@ type BigQueryExportSettings struct {
 
 	// Optional. Indicates whether the BigQuery export is enabled.
 	Enabled bool `protobuf:"varint,1,opt,name=enabled,proto3" json:"enabled,omitempty"`
-	// Optional. The project ID of the BigQuery dataset to export the data to.
+	// Optional. The **project ID** of the BigQuery dataset to export the data to.
 	//
 	// Note: If the BigQuery dataset is in a different project from the app,
 	// you should grant `roles/bigquery.admin` role to the CES service agent
 	// `service-<PROJECT-NUMBER>@gcp-sa-ces.iam.gserviceaccount.com`.
 	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
-	// Optional. The BigQuery dataset to export the data to.
+	// Optional. The BigQuery **dataset ID** to export the data to.
 	Dataset string `protobuf:"bytes,3,opt,name=dataset,proto3" json:"dataset,omitempty"`
 }
 
