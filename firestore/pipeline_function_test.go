@@ -40,8 +40,8 @@ func TestTruncFunctions(t *testing.T) {
 			}},
 		},
 		{
-			desc: "TruncWithPlaces",
-			expr: TruncPlaces("field", 2),
+			desc: "TruncToPrecision",
+			expr: TruncToPrecision("field", 2),
 			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
 				FunctionValue: &pb.Function{
 					Name: "trunc",
@@ -65,8 +65,8 @@ func TestTruncFunctions(t *testing.T) {
 			}},
 		},
 		{
-			desc: "baseExpression TruncWithPlaces",
-			expr: FieldOf("field").TruncWithPlaces(3),
+			desc: "baseExpression TruncToPrecision",
+			expr: FieldOf("field").TruncToPrecision(3),
 			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
 				FunctionValue: &pb.Function{
 					Name: "trunc",
@@ -561,8 +561,8 @@ func TestStringFunctions(t *testing.T) {
 			}},
 		},
 		{
-			desc: "LTrimWithValues",
-			expr: LTrimWithValues("field", "abc"),
+			desc: "LTrimValue",
+			expr: LTrimValue("field", "abc"),
 			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
 				FunctionValue: &pb.Function{
 					Name: "ltrim",
@@ -598,8 +598,8 @@ func TestStringFunctions(t *testing.T) {
 			}},
 		},
 		{
-			desc: "RTrimWithValues",
-			expr: RTrimWithValues("field", "abc"),
+			desc: "RTrimValue",
+			expr: RTrimValue("field", "abc"),
 			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
 				FunctionValue: &pb.Function{
 					Name: "rtrim",
@@ -1040,14 +1040,14 @@ func TestArrayFunctions(t *testing.T) {
 		},
 		{
 			desc: "ArrayIndexOf",
-			expr: ArrayIndexOf("field", "search", "forward"),
+			expr: ArrayIndexOf("field", "search"),
 			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
 				FunctionValue: &pb.Function{
 					Name: "array_index_of",
 					Args: []*pb.Value{
 						{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "field"}},
 						{ValueType: &pb.Value_StringValue{StringValue: "search"}},
-						{ValueType: &pb.Value_StringValue{StringValue: "forward"}},
+						{ValueType: &pb.Value_StringValue{StringValue: "first"}},
 					},
 				},
 			}},

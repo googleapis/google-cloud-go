@@ -96,10 +96,10 @@ type Expression interface {
 	Round() Expression
 	// Trunc creates an expression that truncates a number to an integer.
 	Trunc() Expression
-	// TruncWithPlaces creates an expression that truncates a number to a specified number of decimal places.
+	// TruncToPrecision creates an expression that truncates a number to a specified number of decimal places.
 	//
 	// The parameter 'places' is the number of decimal places to truncate to. It can be an int, int32, int64 or [Expression].
-	TruncWithPlaces(places any) Expression
+	TruncToPrecision(places any) Expression
 
 	// Sqrt creates an expression that is the square root of the input field or expression.
 	Sqrt() Expression
@@ -182,11 +182,15 @@ type Expression interface {
 	//
 	// The parameter 'search' is the value to search for. It can be a constant or [Expression].
 	// The parameter 'direction' is the search direction. It can be "first", "last" or [Expression].
-	ArrayIndexOf(search, direction any) Expression
+	ArrayIndexOf(search any) Expression
 	// ArrayIndexOfAll creates an expression that returns the indices of all occurrences of a search value in an array.
 	//
 	// The parameter 'search' is the value to search for. It can be a constant or [Expression].
 	ArrayIndexOfAll(search any) Expression
+	// ArrayLastIndexOf creates an expression that returns the last index of a search value in an array.
+	//
+	// The parameter 'search' is the value to search for. It can be a constant or [Expression].
+	ArrayLastIndexOf(search any) Expression
 	// First returns the value of the expression for the first document in the group.
 	First() AggregateFunction
 	// Last returns the value of the expression for the last document in the group.
@@ -206,6 +210,10 @@ type Expression interface {
 	// The parameter 'param' is the name of the parameter to use in the body expression.
 	// The parameter 'body' is the expression to evaluate for each element of the array.
 	ArrayFilter(param string, body BooleanExpression) Expression
+	// LogicalMaximum returns the maximum value of the expression and the specified values.
+	LogicalMaximum(others ...any) Expression
+	// LogicalMinimum returns the minimum value of the expression and the specified values.
+	LogicalMinimum(others ...any) Expression
 
 	// Timestamp operations
 	// TimestampAdd creates an expression that adds a specified amount of time to a timestamp.
@@ -315,6 +323,14 @@ type Expression interface {
 	//
 	// The parameter 'catchExprOrValue' is the expression or value to return if the receiver expression errors.
 	IfError(catchExprOrValue any) Expression
+	// IsError returns a boolean expression that checks if the expression evaluates to an error.
+	IsError() BooleanExpression
+	// FieldExists returns a boolean expression that checks if the field exists.
+	FieldExists() BooleanExpression
+	// Exists is an alias for FieldExists.
+	Exists() BooleanExpression
+	// IsAbsent returns a boolean expression that checks if the field is absent.
+	IsAbsent() BooleanExpression
 	// IfAbsent creates an expression that returns a default value if an expression evaluates to an absent value.
 	//
 	// The parameter 'catchExprOrValue' is the value to return if the expression is absent.
@@ -360,6 +376,12 @@ type Expression interface {
 	Average() AggregateFunction
 	// Count creates an aggregate function that counts the number of documents.
 	Count() AggregateFunction
+	// CountDistinct creates an aggregate function that counts the distinct values of the expression.
+	CountDistinct() AggregateFunction
+	// Maximum creates an aggregate function that finds the maximum value of the expression.
+	Maximum() AggregateFunction
+	// Minimum creates an aggregate function that finds the minimum value of the expression.
+	Minimum() AggregateFunction
 
 	// String functions
 	// ByteLength creates an expression that calculates the length of a string represented by a field or [Expression] in UTF-8
@@ -440,16 +462,16 @@ type Expression interface {
 	ToUpper() Expression
 	// Trim creates an expression that removes leading and trailing whitespace from a string.
 	Trim() Expression
-	// TrimWithValues creates an expression that removes leading and trailing whitespace or specified characters from a string.
-	TrimWithValues(valuesToTrim any) Expression
+	// TrimValue creates an expression that removes leading and trailing whitespace or specified characters from a string.
+	TrimValue(valuesToTrim any) Expression
 	// LTrim creates an expression that removes leading whitespace from a string.
 	LTrim() Expression
-	// LTrimWithValues creates an expression that removes leading whitespace or specified characters from a string.
-	LTrimWithValues(valuesToTrim any) Expression
+	// LTrimValue creates an expression that removes leading whitespace or specified characters from a string.
+	LTrimValue(valuesToTrim any) Expression
 	// RTrim creates an expression that removes trailing whitespace from a string.
 	RTrim() Expression
-	// RTrimWithValues creates an expression that removes trailing whitespace or specified characters from a string.
-	RTrimWithValues(valuesToTrim any) Expression
+	// RTrimValue creates an expression that removes trailing whitespace or specified characters from a string.
+	RTrimValue(valuesToTrim any) Expression
 	// Split creates an expression that splits a string by a delimiter.
 	//
 	// The parameter 'delimiter' can be a string constant or an [Expression] that evaluates to a string.
@@ -515,8 +537,8 @@ func (b *baseExpression) Mod(other any) Expression      { return Mod(b, other) }
 func (b *baseExpression) Pow(other any) Expression      { return Pow(b, other) }
 func (b *baseExpression) Round() Expression             { return Round(b) }
 func (b *baseExpression) Trunc() Expression             { return Trunc(b) }
-func (b *baseExpression) TruncWithPlaces(places any) Expression {
-	return TruncPlaces(b, places)
+func (b *baseExpression) TruncToPrecision(places any) Expression {
+	return TruncToPrecision(b, places)
 }
 func (b *baseExpression) Sqrt() Expression         { return Sqrt(b) }
 func (b *baseExpression) Cmp(other any) Expression { return Cmp(b, other) }
@@ -550,11 +572,14 @@ func (b *baseExpression) ArraySlice(offset any) Expression { return ArraySlice(b
 func (b *baseExpression) ArraySliceWithLength(offset, length any) Expression {
 	return ArraySliceLength(b, offset, length)
 }
-func (b *baseExpression) ArrayIndexOf(search, direction any) Expression {
-	return ArrayIndexOf(b, search, direction)
+func (b *baseExpression) ArrayIndexOf(search any) Expression {
+	return ArrayIndexOf(b, search)
 }
 func (b *baseExpression) ArrayIndexOfAll(search any) Expression {
 	return ArrayIndexOfAll(b, search)
+}
+func (b *baseExpression) ArrayLastIndexOf(search any) Expression {
+	return ArrayLastIndexOf(b, search)
 }
 func (b *baseExpression) First() AggregateFunction            { return First(b) }
 func (b *baseExpression) Last() AggregateFunction             { return Last(b) }
@@ -562,6 +587,12 @@ func (b *baseExpression) ArrayAgg() AggregateFunction         { return ArrayAgg(
 func (b *baseExpression) ArrayAggDistinct() AggregateFunction { return ArrayAggDistinct(b) }
 func (b *baseExpression) ArrayFilter(param string, body BooleanExpression) Expression {
 	return ArrayFilter(b, param, body)
+}
+func (b *baseExpression) LogicalMaximum(others ...any) Expression {
+	return LogicalMaximum(b, others...)
+}
+func (b *baseExpression) LogicalMinimum(others ...any) Expression {
+	return LogicalMinimum(b, others...)
 }
 
 // Timestamp functions
@@ -617,6 +648,20 @@ func (b *baseExpression) GetDocumentID() Expression   { return GetDocumentID(b) 
 // Logical functions
 func (b *baseExpression) IfError(catchExprOrValue any) Expression {
 	return IfError(b, catchExprOrValue)
+}
+func (b *baseExpression) IsError() BooleanExpression {
+	return IsError(b)
+}
+func (b *baseExpression) FieldExists() BooleanExpression {
+	return FieldExists(b)
+}
+
+func (b *baseExpression) Exists() BooleanExpression {
+	return FieldExists(b)
+}
+
+func (b *baseExpression) IsAbsent() BooleanExpression {
+	return IsAbsent(b)
 }
 func (b *baseExpression) IfAbsent(catchExprOrValue any) Expression {
 	return IfAbsent(b, catchExprOrValue)
@@ -686,16 +731,16 @@ func (b *baseExpression) Substring(index, offset any) Expression { return Substr
 func (b *baseExpression) ToLower() Expression                    { return ToLower(b) }
 func (b *baseExpression) ToUpper() Expression                    { return ToUpper(b) }
 func (b *baseExpression) Trim() Expression                       { return Trim(b) }
-func (b *baseExpression) TrimWithValues(valuesToTrim any) Expression {
-	return TrimWithValues(b, valuesToTrim)
+func (b *baseExpression) TrimValue(valuesToTrim any) Expression {
+	return TrimValue(b, valuesToTrim)
 }
 func (b *baseExpression) LTrim() Expression { return LTrim(b) }
-func (b *baseExpression) LTrimWithValues(valuesToTrim any) Expression {
-	return LTrimWithValues(b, valuesToTrim)
+func (b *baseExpression) LTrimValue(valuesToTrim any) Expression {
+	return LTrimValue(b, valuesToTrim)
 }
 func (b *baseExpression) RTrim() Expression { return RTrim(b) }
-func (b *baseExpression) RTrimWithValues(valuesToTrim any) Expression {
-	return RTrimWithValues(b, valuesToTrim)
+func (b *baseExpression) RTrimValue(valuesToTrim any) Expression {
+	return RTrimValue(b, valuesToTrim)
 }
 func (b *baseExpression) Split(delimiter any) Expression { return Split(b, delimiter) }
 

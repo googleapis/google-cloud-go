@@ -1436,13 +1436,18 @@ func arrayFuncs(t *testing.T) {
 		},
 		{
 			name:     "ArrayIndexOf",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(ArrayIndexOf("a", 2, "first").As("index")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(ArrayIndexOf("a", 2).As("index")),
 			want:     map[string]interface{}{"index": int64(1)},
 		},
 		{
 			name:     "ArrayIndexOfAll",
 			pipeline: client.Pipeline().Collection(coll.ID).Select(ArrayIndexOfAll(Array(1, 2, 1), 1).As("indices")),
 			want:     map[string]interface{}{"indices": []interface{}{int64(0), int64(2)}},
+		},
+		{
+			name:     "ArrayLastIndexOf",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(ArrayLastIndexOf(Array(1, 2, 1), 1).As("lastIndex")),
+			want:     map[string]interface{}{"lastIndex": int64(2)},
 		},
 		// Array filter conditions
 		{
@@ -1586,8 +1591,8 @@ func stringFuncs(t *testing.T) {
 			want:     map[string]interface{}{"trimmed_name": "John Doe"},
 		},
 		{
-			name:     "TrimWithValues",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(TrimWithValues("name", " eD").As("trimmed_name_values")),
+			name:     "TrimValue",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(TrimValue("name", " eD").As("trimmed_name_values")),
 			want:     map[string]interface{}{"trimmed_name_values": "John Do"},
 		},
 		{
@@ -1596,8 +1601,8 @@ func stringFuncs(t *testing.T) {
 			want:     map[string]interface{}{"ltrimmed_name": "John Doe  "},
 		},
 		{
-			name:     "LTrimWithValues",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(LTrimWithValues("name", " J").As("ltrimmed_name_values")),
+			name:     "LTrimValue",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(LTrimValue("name", " J").As("ltrimmed_name_values")),
 			want:     map[string]interface{}{"ltrimmed_name_values": "ohn Doe  "},
 		},
 		{
@@ -1606,8 +1611,8 @@ func stringFuncs(t *testing.T) {
 			want:     map[string]interface{}{"rtrimmed_name": "  John Doe"},
 		},
 		{
-			name:     "RTrimWithValues",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(RTrimWithValues("name", " eD").As("rtrimmed_name_values")),
+			name:     "RTrimValue",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(RTrimValue("name", " eD").As("rtrimmed_name_values")),
 			want:     map[string]interface{}{"rtrimmed_name_values": "  John Do"},
 		},
 		{
@@ -2165,8 +2170,8 @@ func arithmeticFuncs(t *testing.T) {
 			want:     map[string]interface{}{"trunc": float64(4)},
 		},
 		{
-			name:     "TruncWithPlaces",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(TruncPlaces("d", 1).As("trunc_places")),
+			name:     "TruncToPrecision",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(TruncToPrecision("d", 1).As("trunc_places")),
 			want:     map[string]interface{}{"trunc_places": float64(4.5)},
 		},
 	}

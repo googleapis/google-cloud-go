@@ -209,13 +209,13 @@ func Trunc(numericExprOrFieldPath any) Expression {
 	return newBaseFunction("trunc", []Expression{asFieldExpr(numericExprOrFieldPath)})
 }
 
-// TruncPlaces creates an expression that truncates a number to a specified number of decimal places.
+// TruncToPrecision creates an expression that truncates a number to a specified number of decimal places.
 // - numericExprOrFieldPath can be a field path string, [FieldPath] or an [Expression] that returns a number when evaluated.
 // - places can be an int, int32, int64 or [Expression].
 //
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
-func TruncPlaces(numericExprOrFieldPath any, places any) Expression {
+func TruncToPrecision(numericExprOrFieldPath any, places any) Expression {
 	return newBaseFunction("trunc", []Expression{asFieldExpr(numericExprOrFieldPath), asInt64Expr(places)})
 }
 
@@ -576,12 +576,21 @@ func ArrayFilter(array any, param string, body BooleanExpression) Expression {
 // ArrayIndexOf creates an expression that returns the index of a search value in an array.
 // - exprOrFieldPath can be a field path string, [FieldPath] or an [Expression] that evaluates to an array.
 // - search is the value to search for. It can be a constant or [Expression].
-// - direction is the search direction. It can be "first", "last" or [Expression].
 //
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
-func ArrayIndexOf(exprOrFieldPath any, search any, direction any) Expression {
-	return newBaseFunction("array_index_of", []Expression{asFieldExpr(exprOrFieldPath), toExprOrConstant(search), toExprOrConstant(direction)})
+func ArrayIndexOf(exprOrFieldPath any, search any) Expression {
+	return newBaseFunction("array_index_of", []Expression{asFieldExpr(exprOrFieldPath), toExprOrConstant(search), toExprOrConstant("first")})
+}
+
+// ArrayLastIndexOf creates an expression that returns the last index of a search value in an array.
+// - exprOrFieldPath can be a field path string, [FieldPath] or an [Expression] that evaluates to an array.
+// - search is the value to search for. It can be a constant or [Expression].
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func ArrayLastIndexOf(exprOrFieldPath any, search any) Expression {
+	return newBaseFunction("array_index_of", []Expression{asFieldExpr(exprOrFieldPath), toExprOrConstant(search), toExprOrConstant("last")})
 }
 
 // ArrayIndexOfAll creates an expression that returns the indices of all occurrences of a search value in an array.
@@ -722,13 +731,13 @@ func Trim(exprOrFieldPath any) Expression {
 	return newBaseFunction("trim", []Expression{asFieldExpr(exprOrFieldPath)})
 }
 
-// TrimWithValues creates an expression that removes leading and trailing whitespace or specified characters from a string.
+// TrimValue creates an expression that removes leading and trailing whitespace or specified characters from a string.
 // - exprOrFieldPath can be a field path string, [FieldPath] or an [Expression] that evaluates to a string.
 // - valuesToTrim is a string constant or [Expression] specifying characters to remove.
 //
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
-func TrimWithValues(exprOrFieldPath any, valuesToTrim any) Expression {
+func TrimValue(exprOrFieldPath any, valuesToTrim any) Expression {
 	return newBaseFunction("trim", []Expression{asFieldExpr(exprOrFieldPath), asStringExpr(valuesToTrim)})
 }
 
@@ -741,13 +750,13 @@ func LTrim(exprOrFieldPath any) Expression {
 	return newBaseFunction("ltrim", []Expression{asFieldExpr(exprOrFieldPath)})
 }
 
-// LTrimWithValues creates an expression that removes leading whitespace or specified characters from a string.
+// LTrimValue creates an expression that removes leading whitespace or specified characters from a string.
 // - exprOrFieldPath can be a field path string, [FieldPath] or an [Expression] that evaluates to a string.
 // - valuesToTrim is a string constant or [Expression] specifying characters to remove.
 //
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
-func LTrimWithValues(exprOrFieldPath any, valuesToTrim any) Expression {
+func LTrimValue(exprOrFieldPath any, valuesToTrim any) Expression {
 	return newBaseFunction("ltrim", []Expression{asFieldExpr(exprOrFieldPath), asStringExpr(valuesToTrim)})
 }
 
@@ -760,13 +769,13 @@ func RTrim(exprOrFieldPath any) Expression {
 	return newBaseFunction("rtrim", []Expression{asFieldExpr(exprOrFieldPath)})
 }
 
-// RTrimWithValues creates an expression that removes trailing whitespace or specified characters from a string.
+// RTrimValue creates an expression that removes trailing whitespace or specified characters from a string.
 // - exprOrFieldPath can be a field path string, [FieldPath] or an [Expression] that evaluates to a string.
 // - valuesToTrim is a string constant or [Expression] specifying characters to remove.
 //
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
-func RTrimWithValues(exprOrFieldPath any, valuesToTrim any) Expression {
+func RTrimValue(exprOrFieldPath any, valuesToTrim any) Expression {
 	return newBaseFunction("rtrim", []Expression{asFieldExpr(exprOrFieldPath), asStringExpr(valuesToTrim)})
 }
 
