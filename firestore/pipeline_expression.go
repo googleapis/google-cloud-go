@@ -326,8 +326,6 @@ type Expression interface {
 	IsError() BooleanExpression
 	// FieldExists returns a boolean expression that checks if the field exists.
 	FieldExists() BooleanExpression
-	// Exists is an alias for FieldExists.
-	Exists() BooleanExpression
 	// IsAbsent returns a boolean expression that checks if the field is absent.
 	IsAbsent() BooleanExpression
 	// IfAbsent creates an expression that returns a default value if an expression evaluates to an absent value.
@@ -652,10 +650,6 @@ func (b *baseExpression) IsError() BooleanExpression {
 	return IsError(b)
 }
 func (b *baseExpression) FieldExists() BooleanExpression {
-	return FieldExists(b)
-}
-
-func (b *baseExpression) Exists() BooleanExpression {
 	return FieldExists(b)
 }
 
