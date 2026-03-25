@@ -32,8 +32,8 @@ type baseStage struct {
 func (s *baseStage) name() string                         { return s.stageName }
 func (s *baseStage) toProto() (*pb.Pipeline_Stage, error) { return s.stagePb, nil }
 
-func errInvalidArg(v any, expected ...string) error {
-	return fmt.Errorf("firestore: invalid argument type: %T, expected one of: [%s]", v, strings.Join(expected, ", "))
+func errInvalidArg(stageName string, v any, expected ...string) error {
+	return fmt.Errorf("firestore: invalid argument type for stage %s: %T, expected one of: [%s]", stageName, v, strings.Join(expected, ", "))
 }
 
 const (
@@ -263,7 +263,7 @@ func newFindNearestStage(vectorField any, queryVector any, measure PipelineDista
 	case Expression:
 		propertyExpr = v
 	default:
-		return nil, errInvalidArg(vectorField, "string", "FieldPath", "Expression")
+		return nil, errInvalidArg("FindNearest", vectorField, "string", "FieldPath", "Expression")
 	}
 	propPb, err := propertyExpr.toProto()
 	if err != nil {
@@ -347,8 +347,10 @@ func newRemoveFieldsStage(fieldpaths ...any) (*removeFieldsStage, error) {
 			fields[i] = FieldOf(v)
 		case FieldPath:
 			fields[i] = FieldOf(v)
+		case *field:
+			fields[i] = v
 		default:
-			return nil, errInvalidArg(fp, "string", "FieldPath")
+			return nil, errInvalidArg("RemoveFields", fp, "string", "FieldPath", "expression obtained by calling FieldOf")
 		}
 	}
 	args := make([]*pb.Value, len(fields))
@@ -382,7 +384,7 @@ func newReplaceWithStage(fieldpathOrExpr any) (*replaceWithStage, error) {
 	case Expression:
 		expr = v
 	default:
-		return nil, errInvalidArg(fieldpathOrExpr, "string", "FieldPath", "Expression")
+		return nil, errInvalidArg("ReplaceWith", fieldpathOrExpr, "string", "FieldPath", "Expression")
 	}
 	exprPb, err := expr.toProto()
 	if err != nil {
@@ -401,9 +403,9 @@ type sampleStage struct {
 	baseStage
 }
 
-func newSampleStage(spec *SampleSpec) (*sampleStage, error) {
+func newSampleStage(sampler *Sampler) (*sampleStage, error) {
 	var sizePb *pb.Value
-	switch v := spec.Size.(type) {
+	switch v := sampler.Size.(type) {
 	case int:
 		sizePb = &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(v)}}
 	case int64:
@@ -411,9 +413,9 @@ func newSampleStage(spec *SampleSpec) (*sampleStage, error) {
 	case float64:
 		sizePb = &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: v}}
 	default:
-		return nil, fmt.Errorf("firestore: invalid type for sample size: %T", spec.Size)
+		return nil, fmt.Errorf("firestore: invalid type for sample size: %T", sampler.Size)
 	}
-	modePb := &pb.Value{ValueType: &pb.Value_StringValue{StringValue: string(spec.Mode)}}
+	modePb := &pb.Value{ValueType: &pb.Value_StringValue{StringValue: string(sampler.Mode)}}
 	return &sampleStage{baseStage{
 		stageName: stageNameSample,
 		stagePb: &pb.Pipeline_Stage{
@@ -495,8 +497,9 @@ type unnestStage struct {
 	baseStage
 }
 
-func newUnnestStage(fieldExpr Expression, alias string, opts *UnnestOptions) (*unnestStage, error) {
-	exprPb, err := fieldExpr.toProto()
+func newUnnestStage(callerName string, field Selectable, opts *unnestSettings) (*unnestStage, error) {
+	alias, expr := field.getSelectionDetails()
+	exprPb, err := expr.toProto()
 	if err != nil {
 		return nil, err
 	}
@@ -513,7 +516,7 @@ func newUnnestStage(fieldExpr Expression, alias string, opts *UnnestOptions) (*u
 		case string:
 			indexFieldExpr = FieldOf(v)
 		default:
-			return nil, errInvalidArg(opts.IndexField, "string", "FieldPath")
+			return nil, errInvalidArg(callerName, opts.IndexField, "string", "FieldPath")
 		}
 		indexPb, err := indexFieldExpr.toProto()
 		if err != nil {
@@ -530,11 +533,6 @@ func newUnnestStage(fieldExpr Expression, alias string, opts *UnnestOptions) (*u
 			Options: optionsPb,
 		},
 	}}, nil
-}
-
-func newUnnestStageFromSelectable(field Selectable, opts *UnnestOptions) (*unnestStage, error) {
-	alias, expr := field.getSelectionDetails()
-	return newUnnestStage(expr, alias, opts)
 }
 
 type whereStage struct {
@@ -567,48 +565,15 @@ func newWhereStage(condition BooleanExpression) (*whereStage, error) {
 // regardless of any other documented package stability guarantees.
 type RawStageOptions map[string]any
 
-// RawStage is a generic stage in the pipeline.
-// It provides a flexible way to extend the pipeline's functionality by adding custom
-// stages. It also allows the users to call the stages that are supported by the Firestore backend
-// but not yet available in the current SDK version.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
-type RawStage struct {
+type rawStage struct {
 	stageName string
 	args      []any
 	options   RawStageOptions
 }
 
-// NewRawStage creates a new RawStage with the given name.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
-func NewRawStage(name string) *RawStage {
-	return &RawStage{stageName: name}
-}
+func (s *rawStage) name() string { return s.stageName }
 
-// WithArguments sets the arguments for the RawStage.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
-func (s *RawStage) WithArguments(args ...any) *RawStage {
-	s.args = args
-	return s
-}
-
-// WithOptions sets the options for the RawStage.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
-func (s *RawStage) WithOptions(options RawStageOptions) *RawStage {
-	s.options = options
-	return s
-}
-
-func (s *RawStage) name() string { return s.stageName }
-
-func (s *RawStage) toProto() (*pb.Pipeline_Stage, error) {
+func (s *rawStage) toProto() (*pb.Pipeline_Stage, error) {
 	argsPb := make([]*pb.Value, len(s.args))
 	for i, arg := range s.args {
 		val, _, err := toProtoValue(reflect.ValueOf(arg))

@@ -377,14 +377,15 @@ func (p *Pipeline) AddFields(selectables ...Selectable) *Pipeline {
 }
 
 // RemoveFields removes fields from outputs from previous stages.
+// fieldpaths can be a string or a [FieldPath] or an expression obtained by calling [FieldOf].
 //
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
-func (p *Pipeline) RemoveFields(fieldpaths ...any) *Pipeline {
+func (p *Pipeline) RemoveFields(fields ...any) *Pipeline {
 	if p.err != nil {
 		return p
 	}
-	stage, err := newRemoveFieldsStage(fieldpaths...)
+	stage, err := newRemoveFieldsStage(fields...)
 	if err != nil {
 		p.err = err
 		return p
@@ -487,13 +488,41 @@ func (p *Pipeline) AggregateWithSpec(spec *AggregateSpec) *Pipeline {
 	return p.append(aggStage)
 }
 
-// UnnestOptions holds the configuration for the Unnest stage.
+// unnestSettings holds the configuration for the Unnest stage.
+type unnestSettings struct {
+	IndexField any
+}
+
+// UnnestOption is an option for executing a pipeline unnest stage.
 //
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
-type UnnestOptions struct {
-	// IndexField specifies the name of the field to store the array index of the unnested element.
-	IndexField any
+type UnnestOption interface {
+	apply(*unnestSettings)
+}
+
+type funcUnnestOption struct {
+	f func(*unnestSettings)
+}
+
+func (fuo *funcUnnestOption) apply(uo *unnestSettings) {
+	fuo.f(uo)
+}
+
+func newFuncUnnestOption(f func(*unnestSettings)) *funcUnnestOption {
+	return &funcUnnestOption{
+		f: f,
+	}
+}
+
+// WithUnnestIndexField specifies the name of the field to store the array index of the unnested element.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func WithUnnestIndexField(indexField any) UnnestOption {
+	return newFuncUnnestOption(func(uo *unnestSettings) {
+		uo.IndexField = indexField
+	})
 }
 
 // Unnest produces a document for each element in an array field.
@@ -504,11 +533,17 @@ type UnnestOptions struct {
 //
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
-func (p *Pipeline) Unnest(field Selectable, opts *UnnestOptions) *Pipeline {
+func (p *Pipeline) Unnest(field Selectable, opts ...UnnestOption) *Pipeline {
 	if p.err != nil {
 		return p
 	}
-	stage, err := newUnnestStageFromSelectable(field, opts)
+	settings := &unnestSettings{}
+	for _, opt := range opts {
+		if opt != nil {
+			opt.apply(settings)
+		}
+	}
+	stage, err := newUnnestStage("Unnest", field, settings)
 	if err != nil {
 		p.err = err
 		return p
@@ -521,7 +556,7 @@ func (p *Pipeline) Unnest(field Selectable, opts *UnnestOptions) *Pipeline {
 //
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
-func (p *Pipeline) UnnestWithAlias(fieldpath any, alias string, opts *UnnestOptions) *Pipeline {
+func (p *Pipeline) UnnestWithAlias(fieldpath any, alias string, opts ...UnnestOption) *Pipeline {
 	if p.err != nil {
 		return p
 	}
@@ -533,11 +568,17 @@ func (p *Pipeline) UnnestWithAlias(fieldpath any, alias string, opts *UnnestOpti
 	case FieldPath:
 		fieldExpr = FieldOf(v)
 	default:
-		p.err = errInvalidArg(fieldpath, "string", "FieldPath")
+		p.err = errInvalidArg("UnnestWithAlias", fieldpath, "string", "FieldPath")
 		return p
 	}
 
-	stage, err := newUnnestStage(fieldExpr, alias, opts)
+	settings := &unnestSettings{}
+	for _, opt := range opts {
+		if opt != nil {
+			opt.apply(settings)
+		}
+	}
+	stage, err := newUnnestStage("UnnestWithAlias", fieldExpr.As(alias), settings)
 	if err != nil {
 		p.err = err
 		return p
@@ -584,43 +625,51 @@ const (
 	SampleModePercent SampleMode = "percent"
 )
 
-// SampleSpec is used to define a sample operation.
+// Sampler is used to define a sample operation.
 //
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
-type SampleSpec struct {
+type Sampler struct {
 	Size any
 	Mode SampleMode
 }
 
-// SampleByDocuments creates a SampleSpec for sampling a fixed number of documents.
+// ByDocuments creates a Sampler for sampling a fixed number of documents.
 //
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
-func SampleByDocuments(limit int) *SampleSpec {
-	return &SampleSpec{Size: limit, Mode: SampleModeDocuments}
+func ByDocuments(limit int) *Sampler {
+	return &Sampler{Size: limit, Mode: SampleModeDocuments}
+}
+
+// ByPercentage creates a Sampler for sampling a percentage of documents.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func ByPercentage(percentage float64) *Sampler {
+	return &Sampler{Size: percentage, Mode: SampleModePercent}
 }
 
 // Sample performs a pseudo-random sampling of the documents from the previous stage.
 //
-// This stage will filter documents pseudo-randomly. The behavior is defined by the SampleSpec.
-// Use SampleByDocuments or SampleByPercentage to create a SampleSpec.
+// This stage will filter documents pseudo-randomly. The behavior is defined by the Sampler.
+// Use ByDocuments or ByPercentage to create a Sampler.
 //
 // Example:
 //
 //	// Sample 10 books, if available.
-//	client.Pipeline().Collection("books").Sample(SampleByDocuments(10))
+//	client.Pipeline().Collection("books").Sample(ByDocuments(10))
 //
 //	// Sample 50% of books.
-//	client.Pipeline().Collection("books").Sample(&SampleSpec{Size: 0.5, Mode: SampleModePercent})
+//	client.Pipeline().Collection("books").Sample(ByPercentage(0.5))
 //
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
-func (p *Pipeline) Sample(spec *SampleSpec) *Pipeline {
+func (p *Pipeline) Sample(sampler *Sampler) *Pipeline {
 	if p.err != nil {
 		return p
 	}
-	stage, err := newSampleStage(spec)
+	stage, err := newSampleStage(sampler)
 	if err != nil {
 		p.err = err
 		return p
@@ -709,19 +758,30 @@ func (p *Pipeline) FindNearest(vectorField any, queryVector any, measure Pipelin
 //
 //	// Assume we don't have a built-in "where" stage
 //	client.Pipeline().Collection("books").
-//		RawStage(
-//			NewRawStage("where").
-//				WithArguments(
-//					LessThan(FieldOf("published"), 1900),
-//				),
-//		).
+//		RawStage("where", []any{LessThan(FieldOf("published"), 1900)}).
 //		Select("title", "author")
 //
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
-func (p *Pipeline) RawStage(stage *RawStage) *Pipeline {
+func (p *Pipeline) RawStage(name string, args []any, opts ...RawStageOptions) *Pipeline {
 	if p.err != nil {
 		return p
+	}
+
+	var mergedOptions RawStageOptions
+	if len(opts) > 0 {
+		mergedOptions = make(RawStageOptions)
+		for _, opt := range opts {
+			for k, v := range opt {
+				mergedOptions[k] = v
+			}
+		}
+	}
+
+	stage := &rawStage{
+		stageName: name,
+		args:      args,
+		options:   mergedOptions,
 	}
 	return p.append(stage)
 }

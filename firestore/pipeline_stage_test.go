@@ -347,7 +347,7 @@ func TestReplaceStage(t *testing.T) {
 }
 
 func TestSampleStage(t *testing.T) {
-	spec := SampleByDocuments(100)
+	spec := ByDocuments(100)
 	stage, err := newSampleStage(spec)
 	if err != nil {
 		t.Fatalf("newSampleStage() failed: %v", err)
@@ -405,7 +405,7 @@ func TestUnionStage(t *testing.T) {
 }
 
 func TestUnnestStage(t *testing.T) {
-	stage, err := newUnnestStage(FieldOf("tags"), "tag", &UnnestOptions{IndexField: "index"})
+	stage, err := newUnnestStage("Unnest", FieldOf("tags").As("tag"), &unnestSettings{IndexField: "index"})
 	if err != nil {
 		t.Fatalf("newUnnestStage() failed: %v", err)
 	}
