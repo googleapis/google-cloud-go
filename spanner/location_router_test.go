@@ -130,6 +130,21 @@ func TestLocationRouter_PrepareExecuteSQLRequest_FromObservedPartialResultSetUpd
 	}
 }
 
+func TestLocationRouter_PrepareCommitRequest_MutationNotInCache(t *testing.T) {
+	router := newLocationRouter(nil)
+	req := &sppb.CommitRequest{
+		Mutations: []*sppb.Mutation{createInsertMutation("b")},
+	}
+
+	endpoint := router.prepareCommitRequest(context.Background(), req)
+	if endpoint != nil {
+		t.Fatalf("expected no endpoint for commit mutation cache miss, got %v", endpoint)
+	}
+	if hint := req.GetRoutingHint(); hint != nil && len(hint.GetKey()) > 0 {
+		t.Fatalf("expected no encoded commit key for cache miss, got %v", hint.GetKey())
+	}
+}
+
 func TestLocationRouter_NilSafety(t *testing.T) {
 	var router *locationRouter
 	router.prepareReadRequest(context.Background(), nil)
