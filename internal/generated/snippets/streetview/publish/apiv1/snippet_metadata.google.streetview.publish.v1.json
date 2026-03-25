@@ -1,657 +1,657 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/streetview/publish/apiv1",
-    "version": "0.2.6",
-    "language": "GO",
     "apis": [
       {
         "id": "google.streetview.publish.v1",
         "version": "v1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/streetview/publish/apiv1",
+    "version": "0.2.6"
   },
   "snippets": [
     {
-      "regionTag": "streetviewpublish_v1_generated_StreetViewPublishService_BatchDeletePhotos_sync",
-      "title": "streetviewpublish BatchDeletePhotos Sample",
-      "description": "BatchDeletePhotos deletes a list of [Photos][google.streetview.publish.v1.Photo] and their\nmetadata.\n\nNote that if\n[BatchDeletePhotos][google.streetview.publish.v1.StreetViewPublishService.BatchDeletePhotos]\nfails, either critical fields are missing or there is an authentication\nerror. Even if\n[BatchDeletePhotos][google.streetview.publish.v1.StreetViewPublishService.BatchDeletePhotos]\nsucceeds, individual photos in the batch may have failures.\nThese failures are specified in each\n[PhotoResponse.status][google.streetview.publish.v1.PhotoResponse.status]\nin\n[BatchDeletePhotosResponse.results][google.streetview.publish.v1.BatchDeletePhotosResponse.status].\nSee\n[DeletePhoto][google.streetview.publish.v1.StreetViewPublishService.DeletePhoto]\nfor specific failures that can occur per photo.",
-      "file": "StreetViewPublishClient/BatchDeletePhotos/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "BatchDeletePhotos",
+        "client": {
+          "fullName": "google.streetview.publish.v1.StreetViewPublishClient",
+          "shortName": "StreetViewPublishClient"
+        },
         "fullName": "google.streetview.publish.v1.StreetViewPublishClient.BatchDeletePhotos",
+        "method": {
+          "fullName": "google.streetview.publish.v1.StreetViewPublishService.BatchDeletePhotos",
+          "service": {
+            "fullName": "google.streetview.publish.v1.StreetViewPublishService",
+            "shortName": "StreetViewPublishService"
+          },
+          "shortName": "BatchDeletePhotos"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "publishpb.BatchDeletePhotosRequest",
-            "name": "req"
+            "name": "req",
+            "type": "publishpb.BatchDeletePhotosRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*publishpb.BatchDeletePhotosResponse",
-        "client": {
-          "shortName": "StreetViewPublishClient",
-          "fullName": "google.streetview.publish.v1.StreetViewPublishClient"
-        },
-        "method": {
-          "shortName": "BatchDeletePhotos",
-          "fullName": "google.streetview.publish.v1.StreetViewPublishService.BatchDeletePhotos",
-          "service": {
-            "shortName": "StreetViewPublishService",
-            "fullName": "google.streetview.publish.v1.StreetViewPublishService"
-          }
-        }
+        "shortName": "BatchDeletePhotos"
       },
+      "description": "BatchDeletePhotos deletes a list of [Photos][google.streetview.publish.v1.Photo] and their\nmetadata.\n\nNote that if\n[BatchDeletePhotos][google.streetview.publish.v1.StreetViewPublishService.BatchDeletePhotos]\nfails, either critical fields are missing or there is an authentication\nerror. Even if\n[BatchDeletePhotos][google.streetview.publish.v1.StreetViewPublishService.BatchDeletePhotos]\nsucceeds, individual photos in the batch may have failures.\nThese failures are specified in each\n[PhotoResponse.status][google.streetview.publish.v1.PhotoResponse.status]\nin\n[BatchDeletePhotosResponse.results][google.streetview.publish.v1.BatchDeletePhotosResponse.status].\nSee\n[DeletePhoto][google.streetview.publish.v1.StreetViewPublishService.DeletePhoto]\nfor specific failures that can occur per photo.",
+      "file": "StreetViewPublishClient/BatchDeletePhotos/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "streetviewpublish_v1_generated_StreetViewPublishService_BatchDeletePhotos_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "streetviewpublish BatchDeletePhotos Sample"
     },
     {
-      "regionTag": "streetviewpublish_v1_generated_StreetViewPublishService_BatchGetPhotos_sync",
-      "title": "streetviewpublish BatchGetPhotos Sample",
-      "description": "BatchGetPhotos gets the metadata of the specified\n[Photo][google.streetview.publish.v1.Photo] batch.\n\nNote that if\n[BatchGetPhotos][google.streetview.publish.v1.StreetViewPublishService.BatchGetPhotos]\nfails, either critical fields are missing or there is an authentication\nerror. Even if\n[BatchGetPhotos][google.streetview.publish.v1.StreetViewPublishService.BatchGetPhotos]\nsucceeds, individual photos in the batch may have failures.\nThese failures are specified in each\n[PhotoResponse.status][google.streetview.publish.v1.PhotoResponse.status]\nin\n[BatchGetPhotosResponse.results][google.streetview.publish.v1.BatchGetPhotosResponse.results].\nSee\n[GetPhoto][google.streetview.publish.v1.StreetViewPublishService.GetPhoto]\nfor specific failures that can occur per photo.",
-      "file": "StreetViewPublishClient/BatchGetPhotos/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "BatchGetPhotos",
+        "client": {
+          "fullName": "google.streetview.publish.v1.StreetViewPublishClient",
+          "shortName": "StreetViewPublishClient"
+        },
         "fullName": "google.streetview.publish.v1.StreetViewPublishClient.BatchGetPhotos",
+        "method": {
+          "fullName": "google.streetview.publish.v1.StreetViewPublishService.BatchGetPhotos",
+          "service": {
+            "fullName": "google.streetview.publish.v1.StreetViewPublishService",
+            "shortName": "StreetViewPublishService"
+          },
+          "shortName": "BatchGetPhotos"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "publishpb.BatchGetPhotosRequest",
-            "name": "req"
+            "name": "req",
+            "type": "publishpb.BatchGetPhotosRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*publishpb.BatchGetPhotosResponse",
-        "client": {
-          "shortName": "StreetViewPublishClient",
-          "fullName": "google.streetview.publish.v1.StreetViewPublishClient"
-        },
-        "method": {
-          "shortName": "BatchGetPhotos",
-          "fullName": "google.streetview.publish.v1.StreetViewPublishService.BatchGetPhotos",
-          "service": {
-            "shortName": "StreetViewPublishService",
-            "fullName": "google.streetview.publish.v1.StreetViewPublishService"
-          }
-        }
+        "shortName": "BatchGetPhotos"
       },
+      "description": "BatchGetPhotos gets the metadata of the specified\n[Photo][google.streetview.publish.v1.Photo] batch.\n\nNote that if\n[BatchGetPhotos][google.streetview.publish.v1.StreetViewPublishService.BatchGetPhotos]\nfails, either critical fields are missing or there is an authentication\nerror. Even if\n[BatchGetPhotos][google.streetview.publish.v1.StreetViewPublishService.BatchGetPhotos]\nsucceeds, individual photos in the batch may have failures.\nThese failures are specified in each\n[PhotoResponse.status][google.streetview.publish.v1.PhotoResponse.status]\nin\n[BatchGetPhotosResponse.results][google.streetview.publish.v1.BatchGetPhotosResponse.results].\nSee\n[GetPhoto][google.streetview.publish.v1.StreetViewPublishService.GetPhoto]\nfor specific failures that can occur per photo.",
+      "file": "StreetViewPublishClient/BatchGetPhotos/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "streetviewpublish_v1_generated_StreetViewPublishService_BatchGetPhotos_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "streetviewpublish BatchGetPhotos Sample"
     },
     {
-      "regionTag": "streetviewpublish_v1_generated_StreetViewPublishService_BatchUpdatePhotos_sync",
-      "title": "streetviewpublish BatchUpdatePhotos Sample",
-      "description": "BatchUpdatePhotos updates the metadata of [Photos][google.streetview.publish.v1.Photo], such\nas pose, place association, connections, etc. Changing the pixels of photos\nis not supported.\n\nNote that if\n[BatchUpdatePhotos][google.streetview.publish.v1.StreetViewPublishService.BatchUpdatePhotos]\nfails, either critical fields are missing or there is an authentication\nerror. Even if\n[BatchUpdatePhotos][google.streetview.publish.v1.StreetViewPublishService.BatchUpdatePhotos]\nsucceeds, individual photos in the batch may have failures.\nThese failures are specified in each\n[PhotoResponse.status][google.streetview.publish.v1.PhotoResponse.status]\nin\n[BatchUpdatePhotosResponse.results][google.streetview.publish.v1.BatchUpdatePhotosResponse.results].\nSee\n[UpdatePhoto][google.streetview.publish.v1.StreetViewPublishService.UpdatePhoto]\nfor specific failures that can occur per photo.\n\nOnly the fields specified in\n[updateMask][google.streetview.publish.v1.UpdatePhotoRequest.update_mask]\nfield are used. If `updateMask` is not present, the update applies to all\nfields.\n\nThe number of\n[UpdatePhotoRequest][google.streetview.publish.v1.UpdatePhotoRequest]\nmessages in a\n[BatchUpdatePhotosRequest][google.streetview.publish.v1.BatchUpdatePhotosRequest]\nmust not exceed 20.\n\n> Note: To update\n[Pose.altitude][google.streetview.publish.v1.Pose.altitude],\n[Pose.latLngPair][google.streetview.publish.v1.Pose.lat_lng_pair] has to be\nfilled as well. Otherwise, the request will fail.",
-      "file": "StreetViewPublishClient/BatchUpdatePhotos/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "BatchUpdatePhotos",
+        "client": {
+          "fullName": "google.streetview.publish.v1.StreetViewPublishClient",
+          "shortName": "StreetViewPublishClient"
+        },
         "fullName": "google.streetview.publish.v1.StreetViewPublishClient.BatchUpdatePhotos",
+        "method": {
+          "fullName": "google.streetview.publish.v1.StreetViewPublishService.BatchUpdatePhotos",
+          "service": {
+            "fullName": "google.streetview.publish.v1.StreetViewPublishService",
+            "shortName": "StreetViewPublishService"
+          },
+          "shortName": "BatchUpdatePhotos"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "publishpb.BatchUpdatePhotosRequest",
-            "name": "req"
+            "name": "req",
+            "type": "publishpb.BatchUpdatePhotosRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*publishpb.BatchUpdatePhotosResponse",
-        "client": {
-          "shortName": "StreetViewPublishClient",
-          "fullName": "google.streetview.publish.v1.StreetViewPublishClient"
-        },
-        "method": {
-          "shortName": "BatchUpdatePhotos",
-          "fullName": "google.streetview.publish.v1.StreetViewPublishService.BatchUpdatePhotos",
-          "service": {
-            "shortName": "StreetViewPublishService",
-            "fullName": "google.streetview.publish.v1.StreetViewPublishService"
-          }
-        }
+        "shortName": "BatchUpdatePhotos"
       },
+      "description": "BatchUpdatePhotos updates the metadata of [Photos][google.streetview.publish.v1.Photo], such\nas pose, place association, connections, etc. Changing the pixels of photos\nis not supported.\n\nNote that if\n[BatchUpdatePhotos][google.streetview.publish.v1.StreetViewPublishService.BatchUpdatePhotos]\nfails, either critical fields are missing or there is an authentication\nerror. Even if\n[BatchUpdatePhotos][google.streetview.publish.v1.StreetViewPublishService.BatchUpdatePhotos]\nsucceeds, individual photos in the batch may have failures.\nThese failures are specified in each\n[PhotoResponse.status][google.streetview.publish.v1.PhotoResponse.status]\nin\n[BatchUpdatePhotosResponse.results][google.streetview.publish.v1.BatchUpdatePhotosResponse.results].\nSee\n[UpdatePhoto][google.streetview.publish.v1.StreetViewPublishService.UpdatePhoto]\nfor specific failures that can occur per photo.\n\nOnly the fields specified in\n[updateMask][google.streetview.publish.v1.UpdatePhotoRequest.update_mask]\nfield are used. If `updateMask` is not present, the update applies to all\nfields.\n\nThe number of\n[UpdatePhotoRequest][google.streetview.publish.v1.UpdatePhotoRequest]\nmessages in a\n[BatchUpdatePhotosRequest][google.streetview.publish.v1.BatchUpdatePhotosRequest]\nmust not exceed 20.\n\n> Note: To update\n[Pose.altitude][google.streetview.publish.v1.Pose.altitude],\n[Pose.latLngPair][google.streetview.publish.v1.Pose.lat_lng_pair] has to be\nfilled as well. Otherwise, the request will fail.",
+      "file": "StreetViewPublishClient/BatchUpdatePhotos/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "streetviewpublish_v1_generated_StreetViewPublishService_BatchUpdatePhotos_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "streetviewpublish BatchUpdatePhotos Sample"
     },
     {
-      "regionTag": "streetviewpublish_v1_generated_StreetViewPublishService_CreatePhoto_sync",
-      "title": "streetviewpublish CreatePhoto Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.streetview.publish.v1.StreetViewPublishClient",
+          "shortName": "StreetViewPublishClient"
+        },
+        "fullName": "google.streetview.publish.v1.StreetViewPublishClient.CreatePhoto",
+        "method": {
+          "fullName": "google.streetview.publish.v1.StreetViewPublishService.CreatePhoto",
+          "service": {
+            "fullName": "google.streetview.publish.v1.StreetViewPublishService",
+            "shortName": "StreetViewPublishService"
+          },
+          "shortName": "CreatePhoto"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "publishpb.CreatePhotoRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*publishpb.Photo",
+        "shortName": "CreatePhoto"
+      },
       "description": "CreatePhoto after the client finishes uploading the photo with the returned\n[UploadRef][google.streetview.publish.v1.UploadRef],\n[CreatePhoto][google.streetview.publish.v1.StreetViewPublishService.CreatePhoto]\npublishes the uploaded [Photo][google.streetview.publish.v1.Photo] to\nStreet View on Google Maps.\n\nCurrently, the only way to set heading, pitch, and roll in CreatePhoto is\nthrough the [Photo Sphere XMP\nmetadata](https: //developers.google.com/streetview/spherical-metadata) in\nthe photo bytes. CreatePhoto ignores the  `pose.heading`, `pose.pitch`,\n`pose.roll`, `pose.altitude`, and `pose.level` fields in Pose.\n\nThis method returns the following error codes: \n\n* [google.rpc.Code.INVALID_ARGUMENT][google.rpc.Code.INVALID_ARGUMENT] if\nthe request is malformed or if the uploaded photo is not a 360 photo.\n* [google.rpc.Code.NOT_FOUND][google.rpc.Code.NOT_FOUND] if the upload\nreference does not exist.\n* [google.rpc.Code.RESOURCE_EXHAUSTED][google.rpc.Code.RESOURCE_EXHAUSTED]\nif the account has reached the storage limit.",
       "file": "StreetViewPublishClient/CreatePhoto/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreatePhoto",
-        "fullName": "google.streetview.publish.v1.StreetViewPublishClient.CreatePhoto",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "publishpb.CreatePhotoRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*publishpb.Photo",
-        "client": {
-          "shortName": "StreetViewPublishClient",
-          "fullName": "google.streetview.publish.v1.StreetViewPublishClient"
-        },
-        "method": {
-          "shortName": "CreatePhoto",
-          "fullName": "google.streetview.publish.v1.StreetViewPublishService.CreatePhoto",
-          "service": {
-            "shortName": "StreetViewPublishService",
-            "fullName": "google.streetview.publish.v1.StreetViewPublishService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "streetviewpublish_v1_generated_StreetViewPublishService_CreatePhoto_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "streetviewpublish CreatePhoto Sample"
     },
     {
-      "regionTag": "streetviewpublish_v1_generated_StreetViewPublishService_CreatePhotoSequence_sync",
-      "title": "streetviewpublish CreatePhotoSequence Sample",
-      "description": "CreatePhotoSequence after the client finishes uploading the\n[PhotoSequence][google.streetview.publish.v1.PhotoSequence] with the\nreturned [UploadRef][google.streetview.publish.v1.UploadRef],\n[CreatePhotoSequence][google.streetview.publish.v1.StreetViewPublishService.CreatePhotoSequence]\nextracts a sequence of 360 photos from a video or Extensible Device\nMetadata (XDM, http: //www.xdm.org/) to be published to Street View on\nGoogle Maps.\n\n`CreatePhotoSequence` returns an [Operation][google.longrunning.Operation],\nwith the [PhotoSequence][google.streetview.publish.v1.PhotoSequence] Id set\nin the `Operation.name` field.\n\nThis method returns the following error codes: \n\n* [google.rpc.Code.INVALID_ARGUMENT][google.rpc.Code.INVALID_ARGUMENT] if\nthe request is malformed.\n* [google.rpc.Code.NOT_FOUND][google.rpc.Code.NOT_FOUND] if the upload\nreference does not exist.",
-      "file": "StreetViewPublishClient/CreatePhotoSequence/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreatePhotoSequence",
+        "client": {
+          "fullName": "google.streetview.publish.v1.StreetViewPublishClient",
+          "shortName": "StreetViewPublishClient"
+        },
         "fullName": "google.streetview.publish.v1.StreetViewPublishClient.CreatePhotoSequence",
+        "method": {
+          "fullName": "google.streetview.publish.v1.StreetViewPublishService.CreatePhotoSequence",
+          "service": {
+            "fullName": "google.streetview.publish.v1.StreetViewPublishService",
+            "shortName": "StreetViewPublishService"
+          },
+          "shortName": "CreatePhotoSequence"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "publishpb.CreatePhotoSequenceRequest",
-            "name": "req"
+            "name": "req",
+            "type": "publishpb.CreatePhotoSequenceRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreatePhotoSequenceOperation",
-        "client": {
-          "shortName": "StreetViewPublishClient",
-          "fullName": "google.streetview.publish.v1.StreetViewPublishClient"
-        },
-        "method": {
-          "shortName": "CreatePhotoSequence",
-          "fullName": "google.streetview.publish.v1.StreetViewPublishService.CreatePhotoSequence",
-          "service": {
-            "shortName": "StreetViewPublishService",
-            "fullName": "google.streetview.publish.v1.StreetViewPublishService"
-          }
-        }
+        "shortName": "CreatePhotoSequence"
       },
+      "description": "CreatePhotoSequence after the client finishes uploading the\n[PhotoSequence][google.streetview.publish.v1.PhotoSequence] with the\nreturned [UploadRef][google.streetview.publish.v1.UploadRef],\n[CreatePhotoSequence][google.streetview.publish.v1.StreetViewPublishService.CreatePhotoSequence]\nextracts a sequence of 360 photos from a video or Extensible Device\nMetadata (XDM, http: //www.xdm.org/) to be published to Street View on\nGoogle Maps.\n\n`CreatePhotoSequence` returns an [Operation][google.longrunning.Operation],\nwith the [PhotoSequence][google.streetview.publish.v1.PhotoSequence] Id set\nin the `Operation.name` field.\n\nThis method returns the following error codes: \n\n* [google.rpc.Code.INVALID_ARGUMENT][google.rpc.Code.INVALID_ARGUMENT] if\nthe request is malformed.\n* [google.rpc.Code.NOT_FOUND][google.rpc.Code.NOT_FOUND] if the upload\nreference does not exist.",
+      "file": "StreetViewPublishClient/CreatePhotoSequence/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "streetviewpublish_v1_generated_StreetViewPublishService_CreatePhotoSequence_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "streetviewpublish CreatePhotoSequence Sample"
     },
     {
-      "regionTag": "streetviewpublish_v1_generated_StreetViewPublishService_DeletePhoto_sync",
-      "title": "streetviewpublish DeletePhoto Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.streetview.publish.v1.StreetViewPublishClient",
+          "shortName": "StreetViewPublishClient"
+        },
+        "fullName": "google.streetview.publish.v1.StreetViewPublishClient.DeletePhoto",
+        "method": {
+          "fullName": "google.streetview.publish.v1.StreetViewPublishService.DeletePhoto",
+          "service": {
+            "fullName": "google.streetview.publish.v1.StreetViewPublishService",
+            "shortName": "StreetViewPublishService"
+          },
+          "shortName": "DeletePhoto"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "publishpb.DeletePhotoRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeletePhoto"
+      },
       "description": "DeletePhoto deletes a [Photo][google.streetview.publish.v1.Photo] and its metadata.\n\nThis method returns the following error codes: \n\n* [google.rpc.Code.PERMISSION_DENIED][google.rpc.Code.PERMISSION_DENIED] if\nthe requesting user did not create the requested photo.\n* [google.rpc.Code.NOT_FOUND][google.rpc.Code.NOT_FOUND] if the photo ID\ndoes not exist.",
       "file": "StreetViewPublishClient/DeletePhoto/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeletePhoto",
-        "fullName": "google.streetview.publish.v1.StreetViewPublishClient.DeletePhoto",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "publishpb.DeletePhotoRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "StreetViewPublishClient",
-          "fullName": "google.streetview.publish.v1.StreetViewPublishClient"
-        },
-        "method": {
-          "shortName": "DeletePhoto",
-          "fullName": "google.streetview.publish.v1.StreetViewPublishService.DeletePhoto",
-          "service": {
-            "shortName": "StreetViewPublishService",
-            "fullName": "google.streetview.publish.v1.StreetViewPublishService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "streetviewpublish_v1_generated_StreetViewPublishService_DeletePhoto_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "streetviewpublish DeletePhoto Sample"
     },
     {
-      "regionTag": "streetviewpublish_v1_generated_StreetViewPublishService_DeletePhotoSequence_sync",
-      "title": "streetviewpublish DeletePhotoSequence Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.streetview.publish.v1.StreetViewPublishClient",
+          "shortName": "StreetViewPublishClient"
+        },
+        "fullName": "google.streetview.publish.v1.StreetViewPublishClient.DeletePhotoSequence",
+        "method": {
+          "fullName": "google.streetview.publish.v1.StreetViewPublishService.DeletePhotoSequence",
+          "service": {
+            "fullName": "google.streetview.publish.v1.StreetViewPublishService",
+            "shortName": "StreetViewPublishService"
+          },
+          "shortName": "DeletePhotoSequence"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "publishpb.DeletePhotoSequenceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeletePhotoSequence"
+      },
       "description": "DeletePhotoSequence deletes a [PhotoSequence][google.streetview.publish.v1.PhotoSequence] and\nits metadata.\n\nThis method returns the following error codes: \n\n* [google.rpc.Code.PERMISSION_DENIED][google.rpc.Code.PERMISSION_DENIED] if\nthe requesting user did not create the requested photo sequence.\n* [google.rpc.Code.NOT_FOUND][google.rpc.Code.NOT_FOUND] if the photo\nsequence ID does not exist.\n* [google.rpc.Code.FAILED_PRECONDITION][google.rpc.Code.FAILED_PRECONDITION] if the photo sequence ID is not\nyet finished processing.",
       "file": "StreetViewPublishClient/DeletePhotoSequence/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeletePhotoSequence",
-        "fullName": "google.streetview.publish.v1.StreetViewPublishClient.DeletePhotoSequence",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "publishpb.DeletePhotoSequenceRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "StreetViewPublishClient",
-          "fullName": "google.streetview.publish.v1.StreetViewPublishClient"
-        },
-        "method": {
-          "shortName": "DeletePhotoSequence",
-          "fullName": "google.streetview.publish.v1.StreetViewPublishService.DeletePhotoSequence",
-          "service": {
-            "shortName": "StreetViewPublishService",
-            "fullName": "google.streetview.publish.v1.StreetViewPublishService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "streetviewpublish_v1_generated_StreetViewPublishService_DeletePhotoSequence_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "streetviewpublish DeletePhotoSequence Sample"
     },
     {
-      "regionTag": "streetviewpublish_v1_generated_StreetViewPublishService_GetPhoto_sync",
-      "title": "streetviewpublish GetPhoto Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.streetview.publish.v1.StreetViewPublishClient",
+          "shortName": "StreetViewPublishClient"
+        },
+        "fullName": "google.streetview.publish.v1.StreetViewPublishClient.GetPhoto",
+        "method": {
+          "fullName": "google.streetview.publish.v1.StreetViewPublishService.GetPhoto",
+          "service": {
+            "fullName": "google.streetview.publish.v1.StreetViewPublishService",
+            "shortName": "StreetViewPublishService"
+          },
+          "shortName": "GetPhoto"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "publishpb.GetPhotoRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*publishpb.Photo",
+        "shortName": "GetPhoto"
+      },
       "description": "GetPhoto gets the metadata of the specified\n[Photo][google.streetview.publish.v1.Photo].\n\nThis method returns the following error codes: \n\n* [google.rpc.Code.PERMISSION_DENIED][google.rpc.Code.PERMISSION_DENIED] if\nthe requesting user did not create the requested\n[Photo][google.streetview.publish.v1.Photo].\n* [google.rpc.Code.NOT_FOUND][google.rpc.Code.NOT_FOUND] if the requested\n[Photo][google.streetview.publish.v1.Photo] does not exist.\n* [google.rpc.Code.UNAVAILABLE][google.rpc.Code.UNAVAILABLE] if the\nrequested [Photo][google.streetview.publish.v1.Photo] is still being\nindexed.",
       "file": "StreetViewPublishClient/GetPhoto/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetPhoto",
-        "fullName": "google.streetview.publish.v1.StreetViewPublishClient.GetPhoto",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "publishpb.GetPhotoRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*publishpb.Photo",
-        "client": {
-          "shortName": "StreetViewPublishClient",
-          "fullName": "google.streetview.publish.v1.StreetViewPublishClient"
-        },
-        "method": {
-          "shortName": "GetPhoto",
-          "fullName": "google.streetview.publish.v1.StreetViewPublishService.GetPhoto",
-          "service": {
-            "shortName": "StreetViewPublishService",
-            "fullName": "google.streetview.publish.v1.StreetViewPublishService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "streetviewpublish_v1_generated_StreetViewPublishService_GetPhoto_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "streetviewpublish GetPhoto Sample"
     },
     {
-      "regionTag": "streetviewpublish_v1_generated_StreetViewPublishService_GetPhotoSequence_sync",
-      "title": "streetviewpublish GetPhotoSequence Sample",
-      "description": "GetPhotoSequence gets the metadata of the specified\n[PhotoSequence][google.streetview.publish.v1.PhotoSequence] via the\n[Operation][google.longrunning.Operation] interface.\n\nThis method returns the following three types of responses: \n\n* `Operation.done` = false, if the processing of\n[PhotoSequence][google.streetview.publish.v1.PhotoSequence] is not\nfinished yet.\n* `Operation.done` = true and `Operation.error` is populated, if there was\nan error in processing.\n* `Operation.done` = true and `Operation.response` is poulated, which\ncontains a [PhotoSequence][google.streetview.publish.v1.PhotoSequence]\nmessage.\n\nThis method returns the following error codes: \n\n* [google.rpc.Code.PERMISSION_DENIED][google.rpc.Code.PERMISSION_DENIED] if\nthe requesting user did not create the requested\n[PhotoSequence][google.streetview.publish.v1.PhotoSequence].\n* [google.rpc.Code.NOT_FOUND][google.rpc.Code.NOT_FOUND] if the requested\n[PhotoSequence][google.streetview.publish.v1.PhotoSequence] does not exist.",
-      "file": "StreetViewPublishClient/GetPhotoSequence/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetPhotoSequence",
+        "client": {
+          "fullName": "google.streetview.publish.v1.StreetViewPublishClient",
+          "shortName": "StreetViewPublishClient"
+        },
         "fullName": "google.streetview.publish.v1.StreetViewPublishClient.GetPhotoSequence",
+        "method": {
+          "fullName": "google.streetview.publish.v1.StreetViewPublishService.GetPhotoSequence",
+          "service": {
+            "fullName": "google.streetview.publish.v1.StreetViewPublishService",
+            "shortName": "StreetViewPublishService"
+          },
+          "shortName": "GetPhotoSequence"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "publishpb.GetPhotoSequenceRequest",
-            "name": "req"
+            "name": "req",
+            "type": "publishpb.GetPhotoSequenceRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "GetPhotoSequenceOperation",
-        "client": {
-          "shortName": "StreetViewPublishClient",
-          "fullName": "google.streetview.publish.v1.StreetViewPublishClient"
-        },
-        "method": {
-          "shortName": "GetPhotoSequence",
-          "fullName": "google.streetview.publish.v1.StreetViewPublishService.GetPhotoSequence",
-          "service": {
-            "shortName": "StreetViewPublishService",
-            "fullName": "google.streetview.publish.v1.StreetViewPublishService"
-          }
-        }
+        "shortName": "GetPhotoSequence"
       },
+      "description": "GetPhotoSequence gets the metadata of the specified\n[PhotoSequence][google.streetview.publish.v1.PhotoSequence] via the\n[Operation][google.longrunning.Operation] interface.\n\nThis method returns the following three types of responses: \n\n* `Operation.done` = false, if the processing of\n[PhotoSequence][google.streetview.publish.v1.PhotoSequence] is not\nfinished yet.\n* `Operation.done` = true and `Operation.error` is populated, if there was\nan error in processing.\n* `Operation.done` = true and `Operation.response` is poulated, which\ncontains a [PhotoSequence][google.streetview.publish.v1.PhotoSequence]\nmessage.\n\nThis method returns the following error codes: \n\n* [google.rpc.Code.PERMISSION_DENIED][google.rpc.Code.PERMISSION_DENIED] if\nthe requesting user did not create the requested\n[PhotoSequence][google.streetview.publish.v1.PhotoSequence].\n* [google.rpc.Code.NOT_FOUND][google.rpc.Code.NOT_FOUND] if the requested\n[PhotoSequence][google.streetview.publish.v1.PhotoSequence] does not exist.",
+      "file": "StreetViewPublishClient/GetPhotoSequence/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "streetviewpublish_v1_generated_StreetViewPublishService_GetPhotoSequence_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "streetviewpublish GetPhotoSequence Sample"
     },
     {
-      "regionTag": "streetviewpublish_v1_generated_StreetViewPublishService_ListPhotoSequences_sync",
-      "title": "streetviewpublish ListPhotoSequences Sample",
-      "description": "ListPhotoSequences lists all the [PhotoSequences][google.streetview.publish.v1.PhotoSequence]\nthat belong to the user, in descending CreatePhotoSequence timestamp order.",
-      "file": "StreetViewPublishClient/ListPhotoSequences/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListPhotoSequences",
+        "client": {
+          "fullName": "google.streetview.publish.v1.StreetViewPublishClient",
+          "shortName": "StreetViewPublishClient"
+        },
         "fullName": "google.streetview.publish.v1.StreetViewPublishClient.ListPhotoSequences",
+        "method": {
+          "fullName": "google.streetview.publish.v1.StreetViewPublishService.ListPhotoSequences",
+          "service": {
+            "fullName": "google.streetview.publish.v1.StreetViewPublishService",
+            "shortName": "StreetViewPublishService"
+          },
+          "shortName": "ListPhotoSequences"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "publishpb.ListPhotoSequencesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "publishpb.ListPhotoSequencesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "OperationIterator",
-        "client": {
-          "shortName": "StreetViewPublishClient",
-          "fullName": "google.streetview.publish.v1.StreetViewPublishClient"
-        },
-        "method": {
-          "shortName": "ListPhotoSequences",
-          "fullName": "google.streetview.publish.v1.StreetViewPublishService.ListPhotoSequences",
-          "service": {
-            "shortName": "StreetViewPublishService",
-            "fullName": "google.streetview.publish.v1.StreetViewPublishService"
-          }
-        }
+        "shortName": "ListPhotoSequences"
       },
+      "description": "ListPhotoSequences lists all the [PhotoSequences][google.streetview.publish.v1.PhotoSequence]\nthat belong to the user, in descending CreatePhotoSequence timestamp order.",
+      "file": "StreetViewPublishClient/ListPhotoSequences/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "streetviewpublish_v1_generated_StreetViewPublishService_ListPhotoSequences_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "streetviewpublish ListPhotoSequences Sample"
     },
     {
-      "regionTag": "streetviewpublish_v1_generated_StreetViewPublishService_ListPhotos_sync",
-      "title": "streetviewpublish ListPhotos Sample",
-      "description": "ListPhotos lists all the [Photos][google.streetview.publish.v1.Photo] that belong to\nthe user.\n\n> Note: Recently created photos that are still\nbeing indexed are not returned in the response.",
-      "file": "StreetViewPublishClient/ListPhotos/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListPhotos",
+        "client": {
+          "fullName": "google.streetview.publish.v1.StreetViewPublishClient",
+          "shortName": "StreetViewPublishClient"
+        },
         "fullName": "google.streetview.publish.v1.StreetViewPublishClient.ListPhotos",
+        "method": {
+          "fullName": "google.streetview.publish.v1.StreetViewPublishService.ListPhotos",
+          "service": {
+            "fullName": "google.streetview.publish.v1.StreetViewPublishService",
+            "shortName": "StreetViewPublishService"
+          },
+          "shortName": "ListPhotos"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "publishpb.ListPhotosRequest",
-            "name": "req"
+            "name": "req",
+            "type": "publishpb.ListPhotosRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "PhotoIterator",
-        "client": {
-          "shortName": "StreetViewPublishClient",
-          "fullName": "google.streetview.publish.v1.StreetViewPublishClient"
-        },
-        "method": {
-          "shortName": "ListPhotos",
-          "fullName": "google.streetview.publish.v1.StreetViewPublishService.ListPhotos",
-          "service": {
-            "shortName": "StreetViewPublishService",
-            "fullName": "google.streetview.publish.v1.StreetViewPublishService"
-          }
-        }
+        "shortName": "ListPhotos"
       },
+      "description": "ListPhotos lists all the [Photos][google.streetview.publish.v1.Photo] that belong to\nthe user.\n\n> Note: Recently created photos that are still\nbeing indexed are not returned in the response.",
+      "file": "StreetViewPublishClient/ListPhotos/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "streetviewpublish_v1_generated_StreetViewPublishService_ListPhotos_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "streetviewpublish ListPhotos Sample"
     },
     {
-      "regionTag": "streetviewpublish_v1_generated_StreetViewPublishService_StartPhotoSequenceUpload_sync",
-      "title": "streetviewpublish StartPhotoSequenceUpload Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.streetview.publish.v1.StreetViewPublishClient",
+          "shortName": "StreetViewPublishClient"
+        },
+        "fullName": "google.streetview.publish.v1.StreetViewPublishClient.StartPhotoSequenceUpload",
+        "method": {
+          "fullName": "google.streetview.publish.v1.StreetViewPublishService.StartPhotoSequenceUpload",
+          "service": {
+            "fullName": "google.streetview.publish.v1.StreetViewPublishService",
+            "shortName": "StreetViewPublishService"
+          },
+          "shortName": "StartPhotoSequenceUpload"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "emptypb.Empty"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*publishpb.UploadRef",
+        "shortName": "StartPhotoSequenceUpload"
+      },
       "description": "StartPhotoSequenceUpload creates an upload session to start uploading photo sequence data.\nThe upload URL of the returned\n[UploadRef][google.streetview.publish.v1.UploadRef] is used to upload the\ndata for the `photoSequence`.\n\nAfter the upload is complete, the\n[UploadRef][google.streetview.publish.v1.UploadRef] is used with\n[CreatePhotoSequence][google.streetview.publish.v1.StreetViewPublishService.CreatePhotoSequence]\nto create the [PhotoSequence][google.streetview.publish.v1.PhotoSequence]\nobject entry.",
       "file": "StreetViewPublishClient/StartPhotoSequenceUpload/main.go",
       "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "streetviewpublish_v1_generated_StreetViewPublishService_StartPhotoSequenceUpload_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "streetviewpublish StartPhotoSequenceUpload Sample"
+    },
+    {
       "clientMethod": {
-        "shortName": "StartPhotoSequenceUpload",
-        "fullName": "google.streetview.publish.v1.StreetViewPublishClient.StartPhotoSequenceUpload",
+        "client": {
+          "fullName": "google.streetview.publish.v1.StreetViewPublishClient",
+          "shortName": "StreetViewPublishClient"
+        },
+        "fullName": "google.streetview.publish.v1.StreetViewPublishClient.StartUpload",
+        "method": {
+          "fullName": "google.streetview.publish.v1.StreetViewPublishService.StartUpload",
+          "service": {
+            "fullName": "google.streetview.publish.v1.StreetViewPublishService",
+            "shortName": "StreetViewPublishService"
+          },
+          "shortName": "StartUpload"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "emptypb.Empty",
-            "name": "req"
+            "name": "req",
+            "type": "emptypb.Empty"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*publishpb.UploadRef",
-        "client": {
-          "shortName": "StreetViewPublishClient",
-          "fullName": "google.streetview.publish.v1.StreetViewPublishClient"
-        },
-        "method": {
-          "shortName": "StartPhotoSequenceUpload",
-          "fullName": "google.streetview.publish.v1.StreetViewPublishService.StartPhotoSequenceUpload",
-          "service": {
-            "shortName": "StreetViewPublishService",
-            "fullName": "google.streetview.publish.v1.StreetViewPublishService"
-          }
-        }
+        "shortName": "StartUpload"
       },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "streetviewpublish_v1_generated_StreetViewPublishService_StartUpload_sync",
-      "title": "streetviewpublish StartUpload Sample",
       "description": "StartUpload creates an upload session to start uploading photo bytes.  The method uses\nthe upload URL of the returned\n[UploadRef][google.streetview.publish.v1.UploadRef] to upload the bytes for\nthe [Photo][google.streetview.publish.v1.Photo].\n\nIn addition to the photo requirements shown in\nhttps: //support.google.com/maps/answer/7012050?ref_topic=6275604,\nthe photo must meet the following requirements: \n\n* Photo Sphere XMP metadata must be included in the photo metadata. See\nhttps: //developers.google.com/streetview/spherical-metadata for the\nrequired fields.\n* The pixel size of the photo must meet the size requirements listed in\nhttps: //support.google.com/maps/answer/7012050?ref_topic=6275604, and\nthe photo must be a full 360 horizontally.\n\nAfter the upload completes, the method uses\n[UploadRef][google.streetview.publish.v1.UploadRef] with\n[CreatePhoto][google.streetview.publish.v1.StreetViewPublishService.CreatePhoto]\nto create the [Photo][google.streetview.publish.v1.Photo] object entry.",
       "file": "StreetViewPublishClient/StartUpload/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "StartUpload",
-        "fullName": "google.streetview.publish.v1.StreetViewPublishClient.StartUpload",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "emptypb.Empty",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*publishpb.UploadRef",
-        "client": {
-          "shortName": "StreetViewPublishClient",
-          "fullName": "google.streetview.publish.v1.StreetViewPublishClient"
-        },
-        "method": {
-          "shortName": "StartUpload",
-          "fullName": "google.streetview.publish.v1.StreetViewPublishService.StartUpload",
-          "service": {
-            "shortName": "StreetViewPublishService",
-            "fullName": "google.streetview.publish.v1.StreetViewPublishService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "streetviewpublish_v1_generated_StreetViewPublishService_StartUpload_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "streetviewpublish StartUpload Sample"
     },
     {
-      "regionTag": "streetviewpublish_v1_generated_StreetViewPublishService_UpdatePhoto_sync",
-      "title": "streetviewpublish UpdatePhoto Sample",
-      "description": "UpdatePhoto updates the metadata of a [Photo][google.streetview.publish.v1.Photo], such\nas pose, place association, connections, etc. Changing the pixels of a\nphoto is not supported.\n\nOnly the fields specified in the\n[updateMask][google.streetview.publish.v1.UpdatePhotoRequest.update_mask]\nfield are used. If `updateMask` is not present, the update applies to all\nfields.\n\nThis method returns the following error codes: \n\n* [google.rpc.Code.PERMISSION_DENIED][google.rpc.Code.PERMISSION_DENIED] if\nthe requesting user did not create the requested photo.\n* [google.rpc.Code.INVALID_ARGUMENT][google.rpc.Code.INVALID_ARGUMENT] if\nthe request is malformed.\n* [google.rpc.Code.NOT_FOUND][google.rpc.Code.NOT_FOUND] if the requested\nphoto does not exist.\n* [google.rpc.Code.UNAVAILABLE][google.rpc.Code.UNAVAILABLE] if the\nrequested [Photo][google.streetview.publish.v1.Photo] is still being\nindexed.",
-      "file": "StreetViewPublishClient/UpdatePhoto/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdatePhoto",
+        "client": {
+          "fullName": "google.streetview.publish.v1.StreetViewPublishClient",
+          "shortName": "StreetViewPublishClient"
+        },
         "fullName": "google.streetview.publish.v1.StreetViewPublishClient.UpdatePhoto",
+        "method": {
+          "fullName": "google.streetview.publish.v1.StreetViewPublishService.UpdatePhoto",
+          "service": {
+            "fullName": "google.streetview.publish.v1.StreetViewPublishService",
+            "shortName": "StreetViewPublishService"
+          },
+          "shortName": "UpdatePhoto"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "publishpb.UpdatePhotoRequest",
-            "name": "req"
+            "name": "req",
+            "type": "publishpb.UpdatePhotoRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*publishpb.Photo",
-        "client": {
-          "shortName": "StreetViewPublishClient",
-          "fullName": "google.streetview.publish.v1.StreetViewPublishClient"
-        },
-        "method": {
-          "shortName": "UpdatePhoto",
-          "fullName": "google.streetview.publish.v1.StreetViewPublishService.UpdatePhoto",
-          "service": {
-            "shortName": "StreetViewPublishService",
-            "fullName": "google.streetview.publish.v1.StreetViewPublishService"
-          }
-        }
+        "shortName": "UpdatePhoto"
       },
+      "description": "UpdatePhoto updates the metadata of a [Photo][google.streetview.publish.v1.Photo], such\nas pose, place association, connections, etc. Changing the pixels of a\nphoto is not supported.\n\nOnly the fields specified in the\n[updateMask][google.streetview.publish.v1.UpdatePhotoRequest.update_mask]\nfield are used. If `updateMask` is not present, the update applies to all\nfields.\n\nThis method returns the following error codes: \n\n* [google.rpc.Code.PERMISSION_DENIED][google.rpc.Code.PERMISSION_DENIED] if\nthe requesting user did not create the requested photo.\n* [google.rpc.Code.INVALID_ARGUMENT][google.rpc.Code.INVALID_ARGUMENT] if\nthe request is malformed.\n* [google.rpc.Code.NOT_FOUND][google.rpc.Code.NOT_FOUND] if the requested\nphoto does not exist.\n* [google.rpc.Code.UNAVAILABLE][google.rpc.Code.UNAVAILABLE] if the\nrequested [Photo][google.streetview.publish.v1.Photo] is still being\nindexed.",
+      "file": "StreetViewPublishClient/UpdatePhoto/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "streetviewpublish_v1_generated_StreetViewPublishService_UpdatePhoto_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "streetviewpublish UpdatePhoto Sample"
     }
   ]
 }

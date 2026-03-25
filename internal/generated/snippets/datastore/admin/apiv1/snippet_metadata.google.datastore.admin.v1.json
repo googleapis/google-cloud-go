@@ -1,473 +1,473 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/datastore/admin/apiv1",
-    "version": "1.22.0",
-    "language": "GO",
     "apis": [
       {
         "id": "google.datastore.admin.v1",
         "version": "v1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/datastore/admin/apiv1",
+    "version": "1.22.0"
   },
   "snippets": [
     {
-      "regionTag": "datastore_v1_generated_DatastoreAdmin_CancelOperation_sync",
-      "title": "datastore CancelOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.datastore.admin.v1.DatastoreAdminClient",
+          "shortName": "DatastoreAdminClient"
+        },
+        "fullName": "google.datastore.admin.v1.DatastoreAdminClient.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
       "file": "DatastoreAdminClient/CancelOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CancelOperation",
-        "fullName": "google.datastore.admin.v1.DatastoreAdminClient.CancelOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.CancelOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "DatastoreAdminClient",
-          "fullName": "google.datastore.admin.v1.DatastoreAdminClient"
-        },
-        "method": {
-          "shortName": "CancelOperation",
-          "fullName": "google.longrunning.Operations.CancelOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "datastore_v1_generated_DatastoreAdmin_CancelOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datastore CancelOperation Sample"
     },
     {
-      "regionTag": "datastore_v1_generated_DatastoreAdmin_CreateIndex_sync",
-      "title": "datastore CreateIndex Sample",
-      "description": "CreateIndex creates the specified index.\nA newly created index's initial state is `CREATING`. On completion of the\nreturned [google.longrunning.Operation][google.longrunning.Operation], the\nstate will be `READY`. If the index already exists, the call will return an\n`ALREADY_EXISTS` status.\n\nDuring index creation, the process could result in an error, in which\ncase the index will move to the `ERROR` state. The process can be recovered\nby fixing the data that caused the error, removing the index with\n[delete][google.datastore.admin.v1.DatastoreAdmin.DeleteIndex], then\nre-creating the index with [create]\n[google.datastore.admin.v1.DatastoreAdmin.CreateIndex].\n\nIndexes with a single property cannot be created.",
-      "file": "DatastoreAdminClient/CreateIndex/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateIndex",
+        "client": {
+          "fullName": "google.datastore.admin.v1.DatastoreAdminClient",
+          "shortName": "DatastoreAdminClient"
+        },
         "fullName": "google.datastore.admin.v1.DatastoreAdminClient.CreateIndex",
+        "method": {
+          "fullName": "google.datastore.admin.v1.DatastoreAdmin.CreateIndex",
+          "service": {
+            "fullName": "google.datastore.admin.v1.DatastoreAdmin",
+            "shortName": "DatastoreAdmin"
+          },
+          "shortName": "CreateIndex"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "adminpb.CreateIndexRequest",
-            "name": "req"
+            "name": "req",
+            "type": "adminpb.CreateIndexRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateIndexOperation",
-        "client": {
-          "shortName": "DatastoreAdminClient",
-          "fullName": "google.datastore.admin.v1.DatastoreAdminClient"
-        },
-        "method": {
-          "shortName": "CreateIndex",
-          "fullName": "google.datastore.admin.v1.DatastoreAdmin.CreateIndex",
-          "service": {
-            "shortName": "DatastoreAdmin",
-            "fullName": "google.datastore.admin.v1.DatastoreAdmin"
-          }
-        }
+        "shortName": "CreateIndex"
       },
+      "description": "CreateIndex creates the specified index.\nA newly created index's initial state is `CREATING`. On completion of the\nreturned [google.longrunning.Operation][google.longrunning.Operation], the\nstate will be `READY`. If the index already exists, the call will return an\n`ALREADY_EXISTS` status.\n\nDuring index creation, the process could result in an error, in which\ncase the index will move to the `ERROR` state. The process can be recovered\nby fixing the data that caused the error, removing the index with\n[delete][google.datastore.admin.v1.DatastoreAdmin.DeleteIndex], then\nre-creating the index with [create]\n[google.datastore.admin.v1.DatastoreAdmin.CreateIndex].\n\nIndexes with a single property cannot be created.",
+      "file": "DatastoreAdminClient/CreateIndex/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "datastore_v1_generated_DatastoreAdmin_CreateIndex_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datastore CreateIndex Sample"
     },
     {
-      "regionTag": "datastore_v1_generated_DatastoreAdmin_DeleteIndex_sync",
-      "title": "datastore DeleteIndex Sample",
-      "description": "DeleteIndex deletes an existing index.\nAn index can only be deleted if it is in a `READY` or `ERROR` state. On\nsuccessful execution of the request, the index will be in a `DELETING`\n[state][google.datastore.admin.v1.Index.State]. And on completion of the\nreturned [google.longrunning.Operation][google.longrunning.Operation], the\nindex will be removed.\n\nDuring index deletion, the process could result in an error, in which\ncase the index will move to the `ERROR` state. The process can be recovered\nby fixing the data that caused the error, followed by calling\n[delete][google.datastore.admin.v1.DatastoreAdmin.DeleteIndex] again.",
-      "file": "DatastoreAdminClient/DeleteIndex/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteIndex",
+        "client": {
+          "fullName": "google.datastore.admin.v1.DatastoreAdminClient",
+          "shortName": "DatastoreAdminClient"
+        },
         "fullName": "google.datastore.admin.v1.DatastoreAdminClient.DeleteIndex",
+        "method": {
+          "fullName": "google.datastore.admin.v1.DatastoreAdmin.DeleteIndex",
+          "service": {
+            "fullName": "google.datastore.admin.v1.DatastoreAdmin",
+            "shortName": "DatastoreAdmin"
+          },
+          "shortName": "DeleteIndex"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "adminpb.DeleteIndexRequest",
-            "name": "req"
+            "name": "req",
+            "type": "adminpb.DeleteIndexRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteIndexOperation",
-        "client": {
-          "shortName": "DatastoreAdminClient",
-          "fullName": "google.datastore.admin.v1.DatastoreAdminClient"
-        },
-        "method": {
-          "shortName": "DeleteIndex",
-          "fullName": "google.datastore.admin.v1.DatastoreAdmin.DeleteIndex",
-          "service": {
-            "shortName": "DatastoreAdmin",
-            "fullName": "google.datastore.admin.v1.DatastoreAdmin"
-          }
-        }
+        "shortName": "DeleteIndex"
       },
+      "description": "DeleteIndex deletes an existing index.\nAn index can only be deleted if it is in a `READY` or `ERROR` state. On\nsuccessful execution of the request, the index will be in a `DELETING`\n[state][google.datastore.admin.v1.Index.State]. And on completion of the\nreturned [google.longrunning.Operation][google.longrunning.Operation], the\nindex will be removed.\n\nDuring index deletion, the process could result in an error, in which\ncase the index will move to the `ERROR` state. The process can be recovered\nby fixing the data that caused the error, followed by calling\n[delete][google.datastore.admin.v1.DatastoreAdmin.DeleteIndex] again.",
+      "file": "DatastoreAdminClient/DeleteIndex/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "datastore_v1_generated_DatastoreAdmin_DeleteIndex_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datastore DeleteIndex Sample"
     },
     {
-      "regionTag": "datastore_v1_generated_DatastoreAdmin_DeleteOperation_sync",
-      "title": "datastore DeleteOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.datastore.admin.v1.DatastoreAdminClient",
+          "shortName": "DatastoreAdminClient"
+        },
+        "fullName": "google.datastore.admin.v1.DatastoreAdminClient.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
       "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
       "file": "DatastoreAdminClient/DeleteOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteOperation",
-        "fullName": "google.datastore.admin.v1.DatastoreAdminClient.DeleteOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.DeleteOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "DatastoreAdminClient",
-          "fullName": "google.datastore.admin.v1.DatastoreAdminClient"
-        },
-        "method": {
-          "shortName": "DeleteOperation",
-          "fullName": "google.longrunning.Operations.DeleteOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "datastore_v1_generated_DatastoreAdmin_DeleteOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datastore DeleteOperation Sample"
     },
     {
-      "regionTag": "datastore_v1_generated_DatastoreAdmin_ExportEntities_sync",
-      "title": "datastore ExportEntities Sample",
-      "description": "ExportEntities exports a copy of all or a subset of entities from Google Cloud Datastore\nto another storage system, such as Google Cloud Storage. Recent updates to\nentities may not be reflected in the export. The export occurs in the\nbackground and its progress can be monitored and managed via the\nOperation resource that is created. The output of an export may only be\nused once the associated operation is done. If an export operation is\ncancelled before completion it may leave partial data behind in Google\nCloud Storage.",
-      "file": "DatastoreAdminClient/ExportEntities/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ExportEntities",
+        "client": {
+          "fullName": "google.datastore.admin.v1.DatastoreAdminClient",
+          "shortName": "DatastoreAdminClient"
+        },
         "fullName": "google.datastore.admin.v1.DatastoreAdminClient.ExportEntities",
+        "method": {
+          "fullName": "google.datastore.admin.v1.DatastoreAdmin.ExportEntities",
+          "service": {
+            "fullName": "google.datastore.admin.v1.DatastoreAdmin",
+            "shortName": "DatastoreAdmin"
+          },
+          "shortName": "ExportEntities"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "adminpb.ExportEntitiesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "adminpb.ExportEntitiesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ExportEntitiesOperation",
-        "client": {
-          "shortName": "DatastoreAdminClient",
-          "fullName": "google.datastore.admin.v1.DatastoreAdminClient"
-        },
-        "method": {
-          "shortName": "ExportEntities",
-          "fullName": "google.datastore.admin.v1.DatastoreAdmin.ExportEntities",
-          "service": {
-            "shortName": "DatastoreAdmin",
-            "fullName": "google.datastore.admin.v1.DatastoreAdmin"
-          }
-        }
+        "shortName": "ExportEntities"
       },
+      "description": "ExportEntities exports a copy of all or a subset of entities from Google Cloud Datastore\nto another storage system, such as Google Cloud Storage. Recent updates to\nentities may not be reflected in the export. The export occurs in the\nbackground and its progress can be monitored and managed via the\nOperation resource that is created. The output of an export may only be\nused once the associated operation is done. If an export operation is\ncancelled before completion it may leave partial data behind in Google\nCloud Storage.",
+      "file": "DatastoreAdminClient/ExportEntities/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "datastore_v1_generated_DatastoreAdmin_ExportEntities_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datastore ExportEntities Sample"
     },
     {
-      "regionTag": "datastore_v1_generated_DatastoreAdmin_GetIndex_sync",
-      "title": "datastore GetIndex Sample",
-      "description": "GetIndex gets an index.",
-      "file": "DatastoreAdminClient/GetIndex/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetIndex",
+        "client": {
+          "fullName": "google.datastore.admin.v1.DatastoreAdminClient",
+          "shortName": "DatastoreAdminClient"
+        },
         "fullName": "google.datastore.admin.v1.DatastoreAdminClient.GetIndex",
+        "method": {
+          "fullName": "google.datastore.admin.v1.DatastoreAdmin.GetIndex",
+          "service": {
+            "fullName": "google.datastore.admin.v1.DatastoreAdmin",
+            "shortName": "DatastoreAdmin"
+          },
+          "shortName": "GetIndex"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "adminpb.GetIndexRequest",
-            "name": "req"
+            "name": "req",
+            "type": "adminpb.GetIndexRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*adminpb.Index",
-        "client": {
-          "shortName": "DatastoreAdminClient",
-          "fullName": "google.datastore.admin.v1.DatastoreAdminClient"
-        },
-        "method": {
-          "shortName": "GetIndex",
-          "fullName": "google.datastore.admin.v1.DatastoreAdmin.GetIndex",
-          "service": {
-            "shortName": "DatastoreAdmin",
-            "fullName": "google.datastore.admin.v1.DatastoreAdmin"
-          }
-        }
+        "shortName": "GetIndex"
       },
+      "description": "GetIndex gets an index.",
+      "file": "DatastoreAdminClient/GetIndex/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "datastore_v1_generated_DatastoreAdmin_GetIndex_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datastore GetIndex Sample"
     },
     {
-      "regionTag": "datastore_v1_generated_DatastoreAdmin_GetOperation_sync",
-      "title": "datastore GetOperation Sample",
-      "description": "GetOperation is a utility method from google.longrunning.Operations.",
-      "file": "DatastoreAdminClient/GetOperation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetOperation",
+        "client": {
+          "fullName": "google.datastore.admin.v1.DatastoreAdminClient",
+          "shortName": "DatastoreAdminClient"
+        },
         "fullName": "google.datastore.admin.v1.DatastoreAdminClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.GetOperationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*longrunningpb.Operation",
-        "client": {
-          "shortName": "DatastoreAdminClient",
-          "fullName": "google.datastore.admin.v1.DatastoreAdminClient"
-        },
-        "method": {
-          "shortName": "GetOperation",
-          "fullName": "google.longrunning.Operations.GetOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "GetOperation"
       },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "DatastoreAdminClient/GetOperation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "datastore_v1_generated_DatastoreAdmin_GetOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datastore GetOperation Sample"
     },
     {
-      "regionTag": "datastore_v1_generated_DatastoreAdmin_ImportEntities_sync",
-      "title": "datastore ImportEntities Sample",
-      "description": "ImportEntities imports entities into Google Cloud Datastore. Existing entities with the\nsame key are overwritten. The import occurs in the background and its\nprogress can be monitored and managed via the Operation resource that is\ncreated. If an ImportEntities operation is cancelled, it is possible\nthat a subset of the data has already been imported to Cloud Datastore.",
-      "file": "DatastoreAdminClient/ImportEntities/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ImportEntities",
+        "client": {
+          "fullName": "google.datastore.admin.v1.DatastoreAdminClient",
+          "shortName": "DatastoreAdminClient"
+        },
         "fullName": "google.datastore.admin.v1.DatastoreAdminClient.ImportEntities",
+        "method": {
+          "fullName": "google.datastore.admin.v1.DatastoreAdmin.ImportEntities",
+          "service": {
+            "fullName": "google.datastore.admin.v1.DatastoreAdmin",
+            "shortName": "DatastoreAdmin"
+          },
+          "shortName": "ImportEntities"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "adminpb.ImportEntitiesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "adminpb.ImportEntitiesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ImportEntitiesOperation",
-        "client": {
-          "shortName": "DatastoreAdminClient",
-          "fullName": "google.datastore.admin.v1.DatastoreAdminClient"
-        },
-        "method": {
-          "shortName": "ImportEntities",
-          "fullName": "google.datastore.admin.v1.DatastoreAdmin.ImportEntities",
-          "service": {
-            "shortName": "DatastoreAdmin",
-            "fullName": "google.datastore.admin.v1.DatastoreAdmin"
-          }
-        }
+        "shortName": "ImportEntities"
       },
+      "description": "ImportEntities imports entities into Google Cloud Datastore. Existing entities with the\nsame key are overwritten. The import occurs in the background and its\nprogress can be monitored and managed via the Operation resource that is\ncreated. If an ImportEntities operation is cancelled, it is possible\nthat a subset of the data has already been imported to Cloud Datastore.",
+      "file": "DatastoreAdminClient/ImportEntities/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "datastore_v1_generated_DatastoreAdmin_ImportEntities_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datastore ImportEntities Sample"
     },
     {
-      "regionTag": "datastore_v1_generated_DatastoreAdmin_ListIndexes_sync",
-      "title": "datastore ListIndexes Sample",
-      "description": "ListIndexes lists the indexes that match the specified filters.  Datastore uses an\neventually consistent query to fetch the list of indexes and may\noccasionally return stale results.",
-      "file": "DatastoreAdminClient/ListIndexes/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListIndexes",
+        "client": {
+          "fullName": "google.datastore.admin.v1.DatastoreAdminClient",
+          "shortName": "DatastoreAdminClient"
+        },
         "fullName": "google.datastore.admin.v1.DatastoreAdminClient.ListIndexes",
+        "method": {
+          "fullName": "google.datastore.admin.v1.DatastoreAdmin.ListIndexes",
+          "service": {
+            "fullName": "google.datastore.admin.v1.DatastoreAdmin",
+            "shortName": "DatastoreAdmin"
+          },
+          "shortName": "ListIndexes"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "adminpb.ListIndexesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "adminpb.ListIndexesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "IndexIterator",
-        "client": {
-          "shortName": "DatastoreAdminClient",
-          "fullName": "google.datastore.admin.v1.DatastoreAdminClient"
-        },
-        "method": {
-          "shortName": "ListIndexes",
-          "fullName": "google.datastore.admin.v1.DatastoreAdmin.ListIndexes",
-          "service": {
-            "shortName": "DatastoreAdmin",
-            "fullName": "google.datastore.admin.v1.DatastoreAdmin"
-          }
-        }
+        "shortName": "ListIndexes"
       },
+      "description": "ListIndexes lists the indexes that match the specified filters.  Datastore uses an\neventually consistent query to fetch the list of indexes and may\noccasionally return stale results.",
+      "file": "DatastoreAdminClient/ListIndexes/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "datastore_v1_generated_DatastoreAdmin_ListIndexes_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datastore ListIndexes Sample"
     },
     {
-      "regionTag": "datastore_v1_generated_DatastoreAdmin_ListOperations_sync",
-      "title": "datastore ListOperations Sample",
-      "description": "ListOperations is a utility method from google.longrunning.Operations.",
-      "file": "DatastoreAdminClient/ListOperations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListOperations",
+        "client": {
+          "fullName": "google.datastore.admin.v1.DatastoreAdminClient",
+          "shortName": "DatastoreAdminClient"
+        },
         "fullName": "google.datastore.admin.v1.DatastoreAdminClient.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.ListOperationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "OperationIterator",
-        "client": {
-          "shortName": "DatastoreAdminClient",
-          "fullName": "google.datastore.admin.v1.DatastoreAdminClient"
-        },
-        "method": {
-          "shortName": "ListOperations",
-          "fullName": "google.longrunning.Operations.ListOperations",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "ListOperations"
       },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "DatastoreAdminClient/ListOperations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "datastore_v1_generated_DatastoreAdmin_ListOperations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datastore ListOperations Sample"
     }
   ]
 }

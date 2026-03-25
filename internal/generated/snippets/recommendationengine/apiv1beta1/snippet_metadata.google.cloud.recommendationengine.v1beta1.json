@@ -1,703 +1,703 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/recommendationengine/apiv1beta1",
-    "version": "0.9.7",
-    "language": "GO",
     "apis": [
       {
         "id": "google.cloud.recommendationengine.v1beta1",
         "version": "v1beta1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/recommendationengine/apiv1beta1",
+    "version": "0.9.7"
   },
   "snippets": [
     {
-      "regionTag": "recommendationengine_v1beta1_generated_CatalogService_CreateCatalogItem_sync",
-      "title": "recommendationengine CreateCatalogItem Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.recommendationengine.v1beta1.CatalogClient",
+          "shortName": "CatalogClient"
+        },
+        "fullName": "google.cloud.recommendationengine.v1beta1.CatalogClient.CreateCatalogItem",
+        "method": {
+          "fullName": "google.cloud.recommendationengine.v1beta1.CatalogService.CreateCatalogItem",
+          "service": {
+            "fullName": "google.cloud.recommendationengine.v1beta1.CatalogService",
+            "shortName": "CatalogService"
+          },
+          "shortName": "CreateCatalogItem"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "recommendationenginepb.CreateCatalogItemRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*recommendationenginepb.CatalogItem",
+        "shortName": "CreateCatalogItem"
+      },
       "description": "CreateCatalogItem creates a catalog item.",
       "file": "CatalogClient/CreateCatalogItem/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateCatalogItem",
-        "fullName": "google.cloud.recommendationengine.v1beta1.CatalogClient.CreateCatalogItem",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "recommendationenginepb.CreateCatalogItemRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*recommendationenginepb.CatalogItem",
-        "client": {
-          "shortName": "CatalogClient",
-          "fullName": "google.cloud.recommendationengine.v1beta1.CatalogClient"
-        },
-        "method": {
-          "shortName": "CreateCatalogItem",
-          "fullName": "google.cloud.recommendationengine.v1beta1.CatalogService.CreateCatalogItem",
-          "service": {
-            "shortName": "CatalogService",
-            "fullName": "google.cloud.recommendationengine.v1beta1.CatalogService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "recommendationengine_v1beta1_generated_CatalogService_CreateCatalogItem_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "recommendationengine CreateCatalogItem Sample"
     },
     {
-      "regionTag": "recommendationengine_v1beta1_generated_CatalogService_DeleteCatalogItem_sync",
-      "title": "recommendationengine DeleteCatalogItem Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.recommendationengine.v1beta1.CatalogClient",
+          "shortName": "CatalogClient"
+        },
+        "fullName": "google.cloud.recommendationengine.v1beta1.CatalogClient.DeleteCatalogItem",
+        "method": {
+          "fullName": "google.cloud.recommendationengine.v1beta1.CatalogService.DeleteCatalogItem",
+          "service": {
+            "fullName": "google.cloud.recommendationengine.v1beta1.CatalogService",
+            "shortName": "CatalogService"
+          },
+          "shortName": "DeleteCatalogItem"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "recommendationenginepb.DeleteCatalogItemRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteCatalogItem"
+      },
       "description": "DeleteCatalogItem deletes a catalog item.",
       "file": "CatalogClient/DeleteCatalogItem/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteCatalogItem",
-        "fullName": "google.cloud.recommendationengine.v1beta1.CatalogClient.DeleteCatalogItem",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "recommendationenginepb.DeleteCatalogItemRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "CatalogClient",
-          "fullName": "google.cloud.recommendationengine.v1beta1.CatalogClient"
-        },
-        "method": {
-          "shortName": "DeleteCatalogItem",
-          "fullName": "google.cloud.recommendationengine.v1beta1.CatalogService.DeleteCatalogItem",
-          "service": {
-            "shortName": "CatalogService",
-            "fullName": "google.cloud.recommendationengine.v1beta1.CatalogService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "recommendationengine_v1beta1_generated_CatalogService_DeleteCatalogItem_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "recommendationengine DeleteCatalogItem Sample"
     },
     {
-      "regionTag": "recommendationengine_v1beta1_generated_CatalogService_GetCatalogItem_sync",
-      "title": "recommendationengine GetCatalogItem Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.recommendationengine.v1beta1.CatalogClient",
+          "shortName": "CatalogClient"
+        },
+        "fullName": "google.cloud.recommendationengine.v1beta1.CatalogClient.GetCatalogItem",
+        "method": {
+          "fullName": "google.cloud.recommendationengine.v1beta1.CatalogService.GetCatalogItem",
+          "service": {
+            "fullName": "google.cloud.recommendationengine.v1beta1.CatalogService",
+            "shortName": "CatalogService"
+          },
+          "shortName": "GetCatalogItem"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "recommendationenginepb.GetCatalogItemRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*recommendationenginepb.CatalogItem",
+        "shortName": "GetCatalogItem"
+      },
       "description": "GetCatalogItem gets a specific catalog item.",
       "file": "CatalogClient/GetCatalogItem/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetCatalogItem",
-        "fullName": "google.cloud.recommendationengine.v1beta1.CatalogClient.GetCatalogItem",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "recommendationenginepb.GetCatalogItemRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*recommendationenginepb.CatalogItem",
-        "client": {
-          "shortName": "CatalogClient",
-          "fullName": "google.cloud.recommendationengine.v1beta1.CatalogClient"
-        },
-        "method": {
-          "shortName": "GetCatalogItem",
-          "fullName": "google.cloud.recommendationengine.v1beta1.CatalogService.GetCatalogItem",
-          "service": {
-            "shortName": "CatalogService",
-            "fullName": "google.cloud.recommendationengine.v1beta1.CatalogService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "recommendationengine_v1beta1_generated_CatalogService_GetCatalogItem_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "recommendationengine GetCatalogItem Sample"
     },
     {
-      "regionTag": "recommendationengine_v1beta1_generated_CatalogService_ImportCatalogItems_sync",
-      "title": "recommendationengine ImportCatalogItems Sample",
-      "description": "ImportCatalogItems bulk import of multiple catalog items. Request processing may be\nsynchronous. No partial updating supported. Non-existing items will be\ncreated.\n\nOperation.response is of type ImportResponse. Note that it is\npossible for a subset of the items to be successfully updated.",
-      "file": "CatalogClient/ImportCatalogItems/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ImportCatalogItems",
+        "client": {
+          "fullName": "google.cloud.recommendationengine.v1beta1.CatalogClient",
+          "shortName": "CatalogClient"
+        },
         "fullName": "google.cloud.recommendationengine.v1beta1.CatalogClient.ImportCatalogItems",
+        "method": {
+          "fullName": "google.cloud.recommendationengine.v1beta1.CatalogService.ImportCatalogItems",
+          "service": {
+            "fullName": "google.cloud.recommendationengine.v1beta1.CatalogService",
+            "shortName": "CatalogService"
+          },
+          "shortName": "ImportCatalogItems"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "recommendationenginepb.ImportCatalogItemsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "recommendationenginepb.ImportCatalogItemsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ImportCatalogItemsOperation",
-        "client": {
-          "shortName": "CatalogClient",
-          "fullName": "google.cloud.recommendationengine.v1beta1.CatalogClient"
-        },
-        "method": {
-          "shortName": "ImportCatalogItems",
-          "fullName": "google.cloud.recommendationengine.v1beta1.CatalogService.ImportCatalogItems",
-          "service": {
-            "shortName": "CatalogService",
-            "fullName": "google.cloud.recommendationengine.v1beta1.CatalogService"
-          }
-        }
+        "shortName": "ImportCatalogItems"
       },
+      "description": "ImportCatalogItems bulk import of multiple catalog items. Request processing may be\nsynchronous. No partial updating supported. Non-existing items will be\ncreated.\n\nOperation.response is of type ImportResponse. Note that it is\npossible for a subset of the items to be successfully updated.",
+      "file": "CatalogClient/ImportCatalogItems/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "recommendationengine_v1beta1_generated_CatalogService_ImportCatalogItems_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "recommendationengine ImportCatalogItems Sample"
     },
     {
-      "regionTag": "recommendationengine_v1beta1_generated_CatalogService_ListCatalogItems_sync",
-      "title": "recommendationengine ListCatalogItems Sample",
-      "description": "ListCatalogItems gets a list of catalog items.",
-      "file": "CatalogClient/ListCatalogItems/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListCatalogItems",
+        "client": {
+          "fullName": "google.cloud.recommendationengine.v1beta1.CatalogClient",
+          "shortName": "CatalogClient"
+        },
         "fullName": "google.cloud.recommendationengine.v1beta1.CatalogClient.ListCatalogItems",
+        "method": {
+          "fullName": "google.cloud.recommendationengine.v1beta1.CatalogService.ListCatalogItems",
+          "service": {
+            "fullName": "google.cloud.recommendationengine.v1beta1.CatalogService",
+            "shortName": "CatalogService"
+          },
+          "shortName": "ListCatalogItems"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "recommendationenginepb.ListCatalogItemsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "recommendationenginepb.ListCatalogItemsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CatalogItemIterator",
-        "client": {
-          "shortName": "CatalogClient",
-          "fullName": "google.cloud.recommendationengine.v1beta1.CatalogClient"
-        },
-        "method": {
-          "shortName": "ListCatalogItems",
-          "fullName": "google.cloud.recommendationengine.v1beta1.CatalogService.ListCatalogItems",
-          "service": {
-            "shortName": "CatalogService",
-            "fullName": "google.cloud.recommendationengine.v1beta1.CatalogService"
-          }
-        }
+        "shortName": "ListCatalogItems"
       },
+      "description": "ListCatalogItems gets a list of catalog items.",
+      "file": "CatalogClient/ListCatalogItems/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "recommendationengine_v1beta1_generated_CatalogService_ListCatalogItems_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "recommendationengine ListCatalogItems Sample"
     },
     {
-      "regionTag": "recommendationengine_v1beta1_generated_CatalogService_UpdateCatalogItem_sync",
-      "title": "recommendationengine UpdateCatalogItem Sample",
-      "description": "UpdateCatalogItem updates a catalog item. Partial updating is supported. Non-existing\nitems will be created.",
-      "file": "CatalogClient/UpdateCatalogItem/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateCatalogItem",
+        "client": {
+          "fullName": "google.cloud.recommendationengine.v1beta1.CatalogClient",
+          "shortName": "CatalogClient"
+        },
         "fullName": "google.cloud.recommendationengine.v1beta1.CatalogClient.UpdateCatalogItem",
+        "method": {
+          "fullName": "google.cloud.recommendationengine.v1beta1.CatalogService.UpdateCatalogItem",
+          "service": {
+            "fullName": "google.cloud.recommendationengine.v1beta1.CatalogService",
+            "shortName": "CatalogService"
+          },
+          "shortName": "UpdateCatalogItem"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "recommendationenginepb.UpdateCatalogItemRequest",
-            "name": "req"
+            "name": "req",
+            "type": "recommendationenginepb.UpdateCatalogItemRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*recommendationenginepb.CatalogItem",
-        "client": {
-          "shortName": "CatalogClient",
-          "fullName": "google.cloud.recommendationengine.v1beta1.CatalogClient"
-        },
-        "method": {
-          "shortName": "UpdateCatalogItem",
-          "fullName": "google.cloud.recommendationengine.v1beta1.CatalogService.UpdateCatalogItem",
-          "service": {
-            "shortName": "CatalogService",
-            "fullName": "google.cloud.recommendationengine.v1beta1.CatalogService"
-          }
-        }
+        "shortName": "UpdateCatalogItem"
       },
+      "description": "UpdateCatalogItem updates a catalog item. Partial updating is supported. Non-existing\nitems will be created.",
+      "file": "CatalogClient/UpdateCatalogItem/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "recommendationengine_v1beta1_generated_CatalogService_UpdateCatalogItem_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "recommendationengine UpdateCatalogItem Sample"
     },
     {
-      "regionTag": "recommendationengine_v1beta1_generated_PredictionApiKeyRegistry_CreatePredictionApiKeyRegistration_sync",
-      "title": "recommendationengine CreatePredictionApiKeyRegistration Sample",
-      "description": "CreatePredictionApiKeyRegistration register an API key for use with predict method.",
-      "file": "PredictionApiKeyRegistryClient/CreatePredictionApiKeyRegistration/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreatePredictionApiKeyRegistration",
+        "client": {
+          "fullName": "google.cloud.recommendationengine.v1beta1.PredictionApiKeyRegistryClient",
+          "shortName": "PredictionApiKeyRegistryClient"
+        },
         "fullName": "google.cloud.recommendationengine.v1beta1.PredictionApiKeyRegistryClient.CreatePredictionApiKeyRegistration",
+        "method": {
+          "fullName": "google.cloud.recommendationengine.v1beta1.PredictionApiKeyRegistry.CreatePredictionApiKeyRegistration",
+          "service": {
+            "fullName": "google.cloud.recommendationengine.v1beta1.PredictionApiKeyRegistry",
+            "shortName": "PredictionApiKeyRegistry"
+          },
+          "shortName": "CreatePredictionApiKeyRegistration"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "recommendationenginepb.CreatePredictionApiKeyRegistrationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "recommendationenginepb.CreatePredictionApiKeyRegistrationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*recommendationenginepb.PredictionApiKeyRegistration",
-        "client": {
-          "shortName": "PredictionApiKeyRegistryClient",
-          "fullName": "google.cloud.recommendationengine.v1beta1.PredictionApiKeyRegistryClient"
-        },
-        "method": {
-          "shortName": "CreatePredictionApiKeyRegistration",
-          "fullName": "google.cloud.recommendationengine.v1beta1.PredictionApiKeyRegistry.CreatePredictionApiKeyRegistration",
-          "service": {
-            "shortName": "PredictionApiKeyRegistry",
-            "fullName": "google.cloud.recommendationengine.v1beta1.PredictionApiKeyRegistry"
-          }
-        }
+        "shortName": "CreatePredictionApiKeyRegistration"
       },
+      "description": "CreatePredictionApiKeyRegistration register an API key for use with predict method.",
+      "file": "PredictionApiKeyRegistryClient/CreatePredictionApiKeyRegistration/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "recommendationengine_v1beta1_generated_PredictionApiKeyRegistry_CreatePredictionApiKeyRegistration_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "recommendationengine CreatePredictionApiKeyRegistration Sample"
     },
     {
-      "regionTag": "recommendationengine_v1beta1_generated_PredictionApiKeyRegistry_DeletePredictionApiKeyRegistration_sync",
-      "title": "recommendationengine DeletePredictionApiKeyRegistration Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.recommendationengine.v1beta1.PredictionApiKeyRegistryClient",
+          "shortName": "PredictionApiKeyRegistryClient"
+        },
+        "fullName": "google.cloud.recommendationengine.v1beta1.PredictionApiKeyRegistryClient.DeletePredictionApiKeyRegistration",
+        "method": {
+          "fullName": "google.cloud.recommendationengine.v1beta1.PredictionApiKeyRegistry.DeletePredictionApiKeyRegistration",
+          "service": {
+            "fullName": "google.cloud.recommendationengine.v1beta1.PredictionApiKeyRegistry",
+            "shortName": "PredictionApiKeyRegistry"
+          },
+          "shortName": "DeletePredictionApiKeyRegistration"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "recommendationenginepb.DeletePredictionApiKeyRegistrationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeletePredictionApiKeyRegistration"
+      },
       "description": "DeletePredictionApiKeyRegistration unregister an apiKey from using for predict method.",
       "file": "PredictionApiKeyRegistryClient/DeletePredictionApiKeyRegistration/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeletePredictionApiKeyRegistration",
-        "fullName": "google.cloud.recommendationengine.v1beta1.PredictionApiKeyRegistryClient.DeletePredictionApiKeyRegistration",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "recommendationenginepb.DeletePredictionApiKeyRegistrationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "PredictionApiKeyRegistryClient",
-          "fullName": "google.cloud.recommendationengine.v1beta1.PredictionApiKeyRegistryClient"
-        },
-        "method": {
-          "shortName": "DeletePredictionApiKeyRegistration",
-          "fullName": "google.cloud.recommendationengine.v1beta1.PredictionApiKeyRegistry.DeletePredictionApiKeyRegistration",
-          "service": {
-            "shortName": "PredictionApiKeyRegistry",
-            "fullName": "google.cloud.recommendationengine.v1beta1.PredictionApiKeyRegistry"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "recommendationengine_v1beta1_generated_PredictionApiKeyRegistry_DeletePredictionApiKeyRegistration_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "recommendationengine DeletePredictionApiKeyRegistration Sample"
     },
     {
-      "regionTag": "recommendationengine_v1beta1_generated_PredictionApiKeyRegistry_ListPredictionApiKeyRegistrations_sync",
-      "title": "recommendationengine ListPredictionApiKeyRegistrations Sample",
-      "description": "ListPredictionApiKeyRegistrations list the registered apiKeys for use with predict method.",
-      "file": "PredictionApiKeyRegistryClient/ListPredictionApiKeyRegistrations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListPredictionApiKeyRegistrations",
+        "client": {
+          "fullName": "google.cloud.recommendationengine.v1beta1.PredictionApiKeyRegistryClient",
+          "shortName": "PredictionApiKeyRegistryClient"
+        },
         "fullName": "google.cloud.recommendationengine.v1beta1.PredictionApiKeyRegistryClient.ListPredictionApiKeyRegistrations",
+        "method": {
+          "fullName": "google.cloud.recommendationengine.v1beta1.PredictionApiKeyRegistry.ListPredictionApiKeyRegistrations",
+          "service": {
+            "fullName": "google.cloud.recommendationengine.v1beta1.PredictionApiKeyRegistry",
+            "shortName": "PredictionApiKeyRegistry"
+          },
+          "shortName": "ListPredictionApiKeyRegistrations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "recommendationenginepb.ListPredictionApiKeyRegistrationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "recommendationenginepb.ListPredictionApiKeyRegistrationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "PredictionApiKeyRegistrationIterator",
-        "client": {
-          "shortName": "PredictionApiKeyRegistryClient",
-          "fullName": "google.cloud.recommendationengine.v1beta1.PredictionApiKeyRegistryClient"
-        },
-        "method": {
-          "shortName": "ListPredictionApiKeyRegistrations",
-          "fullName": "google.cloud.recommendationengine.v1beta1.PredictionApiKeyRegistry.ListPredictionApiKeyRegistrations",
-          "service": {
-            "shortName": "PredictionApiKeyRegistry",
-            "fullName": "google.cloud.recommendationengine.v1beta1.PredictionApiKeyRegistry"
-          }
-        }
+        "shortName": "ListPredictionApiKeyRegistrations"
       },
+      "description": "ListPredictionApiKeyRegistrations list the registered apiKeys for use with predict method.",
+      "file": "PredictionApiKeyRegistryClient/ListPredictionApiKeyRegistrations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "recommendationengine_v1beta1_generated_PredictionApiKeyRegistry_ListPredictionApiKeyRegistrations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "recommendationengine ListPredictionApiKeyRegistrations Sample"
     },
     {
-      "regionTag": "recommendationengine_v1beta1_generated_PredictionService_Predict_sync",
-      "title": "recommendationengine Predict Sample",
-      "description": "Predict makes a recommendation prediction. If using API Key based authentication,\nthe API Key must be registered using the\n[PredictionApiKeyRegistry][google.cloud.recommendationengine.v1beta1.PredictionApiKeyRegistry]\nservice. [Learn more](/recommendations-ai/docs/setting-up#register-key).",
-      "file": "PredictionClient/Predict/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "Predict",
+        "client": {
+          "fullName": "google.cloud.recommendationengine.v1beta1.PredictionClient",
+          "shortName": "PredictionClient"
+        },
         "fullName": "google.cloud.recommendationengine.v1beta1.PredictionClient.Predict",
+        "method": {
+          "fullName": "google.cloud.recommendationengine.v1beta1.PredictionService.Predict",
+          "service": {
+            "fullName": "google.cloud.recommendationengine.v1beta1.PredictionService",
+            "shortName": "PredictionService"
+          },
+          "shortName": "Predict"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "recommendationenginepb.PredictRequest",
-            "name": "req"
+            "name": "req",
+            "type": "recommendationenginepb.PredictRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "PredictResponse_PredictionResultIterator",
-        "client": {
-          "shortName": "PredictionClient",
-          "fullName": "google.cloud.recommendationengine.v1beta1.PredictionClient"
-        },
-        "method": {
-          "shortName": "Predict",
-          "fullName": "google.cloud.recommendationengine.v1beta1.PredictionService.Predict",
-          "service": {
-            "shortName": "PredictionService",
-            "fullName": "google.cloud.recommendationengine.v1beta1.PredictionService"
-          }
-        }
+        "shortName": "Predict"
       },
+      "description": "Predict makes a recommendation prediction. If using API Key based authentication,\nthe API Key must be registered using the\n[PredictionApiKeyRegistry][google.cloud.recommendationengine.v1beta1.PredictionApiKeyRegistry]\nservice. [Learn more](/recommendations-ai/docs/setting-up#register-key).",
+      "file": "PredictionClient/Predict/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "recommendationengine_v1beta1_generated_PredictionService_Predict_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "recommendationengine Predict Sample"
     },
     {
-      "regionTag": "recommendationengine_v1beta1_generated_UserEventService_CollectUserEvent_sync",
-      "title": "recommendationengine CollectUserEvent Sample",
-      "description": "CollectUserEvent writes a single user event from the browser. This uses a GET request to\ndue to browser restriction of POST-ing to a 3rd party domain.\n\nThis method is used only by the Recommendations AI JavaScript pixel.\nUsers should not call this method directly.",
-      "file": "UserEventClient/CollectUserEvent/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CollectUserEvent",
+        "client": {
+          "fullName": "google.cloud.recommendationengine.v1beta1.UserEventClient",
+          "shortName": "UserEventClient"
+        },
         "fullName": "google.cloud.recommendationengine.v1beta1.UserEventClient.CollectUserEvent",
+        "method": {
+          "fullName": "google.cloud.recommendationengine.v1beta1.UserEventService.CollectUserEvent",
+          "service": {
+            "fullName": "google.cloud.recommendationengine.v1beta1.UserEventService",
+            "shortName": "UserEventService"
+          },
+          "shortName": "CollectUserEvent"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "recommendationenginepb.CollectUserEventRequest",
-            "name": "req"
+            "name": "req",
+            "type": "recommendationenginepb.CollectUserEventRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*httpbodypb.HttpBody",
-        "client": {
-          "shortName": "UserEventClient",
-          "fullName": "google.cloud.recommendationengine.v1beta1.UserEventClient"
-        },
-        "method": {
-          "shortName": "CollectUserEvent",
-          "fullName": "google.cloud.recommendationengine.v1beta1.UserEventService.CollectUserEvent",
-          "service": {
-            "shortName": "UserEventService",
-            "fullName": "google.cloud.recommendationengine.v1beta1.UserEventService"
-          }
-        }
+        "shortName": "CollectUserEvent"
       },
+      "description": "CollectUserEvent writes a single user event from the browser. This uses a GET request to\ndue to browser restriction of POST-ing to a 3rd party domain.\n\nThis method is used only by the Recommendations AI JavaScript pixel.\nUsers should not call this method directly.",
+      "file": "UserEventClient/CollectUserEvent/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "recommendationengine_v1beta1_generated_UserEventService_CollectUserEvent_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "recommendationengine CollectUserEvent Sample"
     },
     {
-      "regionTag": "recommendationengine_v1beta1_generated_UserEventService_ImportUserEvents_sync",
-      "title": "recommendationengine ImportUserEvents Sample",
-      "description": "ImportUserEvents bulk import of User events. Request processing might be\nsynchronous. Events that already exist are skipped.\nUse this method for backfilling historical user events.\n\nOperation.response is of type ImportResponse. Note that it is\npossible for a subset of the items to be successfully inserted.\nOperation.metadata is of type ImportMetadata.",
-      "file": "UserEventClient/ImportUserEvents/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ImportUserEvents",
+        "client": {
+          "fullName": "google.cloud.recommendationengine.v1beta1.UserEventClient",
+          "shortName": "UserEventClient"
+        },
         "fullName": "google.cloud.recommendationengine.v1beta1.UserEventClient.ImportUserEvents",
+        "method": {
+          "fullName": "google.cloud.recommendationengine.v1beta1.UserEventService.ImportUserEvents",
+          "service": {
+            "fullName": "google.cloud.recommendationengine.v1beta1.UserEventService",
+            "shortName": "UserEventService"
+          },
+          "shortName": "ImportUserEvents"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "recommendationenginepb.ImportUserEventsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "recommendationenginepb.ImportUserEventsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ImportUserEventsOperation",
-        "client": {
-          "shortName": "UserEventClient",
-          "fullName": "google.cloud.recommendationengine.v1beta1.UserEventClient"
-        },
-        "method": {
-          "shortName": "ImportUserEvents",
-          "fullName": "google.cloud.recommendationengine.v1beta1.UserEventService.ImportUserEvents",
-          "service": {
-            "shortName": "UserEventService",
-            "fullName": "google.cloud.recommendationengine.v1beta1.UserEventService"
-          }
-        }
+        "shortName": "ImportUserEvents"
       },
+      "description": "ImportUserEvents bulk import of User events. Request processing might be\nsynchronous. Events that already exist are skipped.\nUse this method for backfilling historical user events.\n\nOperation.response is of type ImportResponse. Note that it is\npossible for a subset of the items to be successfully inserted.\nOperation.metadata is of type ImportMetadata.",
+      "file": "UserEventClient/ImportUserEvents/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "recommendationengine_v1beta1_generated_UserEventService_ImportUserEvents_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "recommendationengine ImportUserEvents Sample"
     },
     {
-      "regionTag": "recommendationengine_v1beta1_generated_UserEventService_ListUserEvents_sync",
-      "title": "recommendationengine ListUserEvents Sample",
-      "description": "ListUserEvents gets a list of user events within a time range, with potential filtering.",
-      "file": "UserEventClient/ListUserEvents/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListUserEvents",
+        "client": {
+          "fullName": "google.cloud.recommendationengine.v1beta1.UserEventClient",
+          "shortName": "UserEventClient"
+        },
         "fullName": "google.cloud.recommendationengine.v1beta1.UserEventClient.ListUserEvents",
+        "method": {
+          "fullName": "google.cloud.recommendationengine.v1beta1.UserEventService.ListUserEvents",
+          "service": {
+            "fullName": "google.cloud.recommendationengine.v1beta1.UserEventService",
+            "shortName": "UserEventService"
+          },
+          "shortName": "ListUserEvents"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "recommendationenginepb.ListUserEventsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "recommendationenginepb.ListUserEventsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UserEventIterator",
-        "client": {
-          "shortName": "UserEventClient",
-          "fullName": "google.cloud.recommendationengine.v1beta1.UserEventClient"
-        },
-        "method": {
-          "shortName": "ListUserEvents",
-          "fullName": "google.cloud.recommendationengine.v1beta1.UserEventService.ListUserEvents",
-          "service": {
-            "shortName": "UserEventService",
-            "fullName": "google.cloud.recommendationengine.v1beta1.UserEventService"
-          }
-        }
+        "shortName": "ListUserEvents"
       },
+      "description": "ListUserEvents gets a list of user events within a time range, with potential filtering.",
+      "file": "UserEventClient/ListUserEvents/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "recommendationengine_v1beta1_generated_UserEventService_ListUserEvents_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "recommendationengine ListUserEvents Sample"
     },
     {
-      "regionTag": "recommendationengine_v1beta1_generated_UserEventService_PurgeUserEvents_sync",
-      "title": "recommendationengine PurgeUserEvents Sample",
-      "description": "PurgeUserEvents deletes permanently all user events specified by the filter provided.\nDepending on the number of events specified by the filter, this operation\ncould take hours or days to complete. To test a filter, use the list\ncommand first.",
-      "file": "UserEventClient/PurgeUserEvents/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "PurgeUserEvents",
+        "client": {
+          "fullName": "google.cloud.recommendationengine.v1beta1.UserEventClient",
+          "shortName": "UserEventClient"
+        },
         "fullName": "google.cloud.recommendationengine.v1beta1.UserEventClient.PurgeUserEvents",
+        "method": {
+          "fullName": "google.cloud.recommendationengine.v1beta1.UserEventService.PurgeUserEvents",
+          "service": {
+            "fullName": "google.cloud.recommendationengine.v1beta1.UserEventService",
+            "shortName": "UserEventService"
+          },
+          "shortName": "PurgeUserEvents"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "recommendationenginepb.PurgeUserEventsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "recommendationenginepb.PurgeUserEventsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "PurgeUserEventsOperation",
-        "client": {
-          "shortName": "UserEventClient",
-          "fullName": "google.cloud.recommendationengine.v1beta1.UserEventClient"
-        },
-        "method": {
-          "shortName": "PurgeUserEvents",
-          "fullName": "google.cloud.recommendationengine.v1beta1.UserEventService.PurgeUserEvents",
-          "service": {
-            "shortName": "UserEventService",
-            "fullName": "google.cloud.recommendationengine.v1beta1.UserEventService"
-          }
-        }
+        "shortName": "PurgeUserEvents"
       },
+      "description": "PurgeUserEvents deletes permanently all user events specified by the filter provided.\nDepending on the number of events specified by the filter, this operation\ncould take hours or days to complete. To test a filter, use the list\ncommand first.",
+      "file": "UserEventClient/PurgeUserEvents/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "recommendationengine_v1beta1_generated_UserEventService_PurgeUserEvents_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "recommendationengine PurgeUserEvents Sample"
     },
     {
-      "regionTag": "recommendationengine_v1beta1_generated_UserEventService_WriteUserEvent_sync",
-      "title": "recommendationengine WriteUserEvent Sample",
-      "description": "WriteUserEvent writes a single user event.",
-      "file": "UserEventClient/WriteUserEvent/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "WriteUserEvent",
+        "client": {
+          "fullName": "google.cloud.recommendationengine.v1beta1.UserEventClient",
+          "shortName": "UserEventClient"
+        },
         "fullName": "google.cloud.recommendationengine.v1beta1.UserEventClient.WriteUserEvent",
+        "method": {
+          "fullName": "google.cloud.recommendationengine.v1beta1.UserEventService.WriteUserEvent",
+          "service": {
+            "fullName": "google.cloud.recommendationengine.v1beta1.UserEventService",
+            "shortName": "UserEventService"
+          },
+          "shortName": "WriteUserEvent"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "recommendationenginepb.WriteUserEventRequest",
-            "name": "req"
+            "name": "req",
+            "type": "recommendationenginepb.WriteUserEventRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*recommendationenginepb.UserEvent",
-        "client": {
-          "shortName": "UserEventClient",
-          "fullName": "google.cloud.recommendationengine.v1beta1.UserEventClient"
-        },
-        "method": {
-          "shortName": "WriteUserEvent",
-          "fullName": "google.cloud.recommendationengine.v1beta1.UserEventService.WriteUserEvent",
-          "service": {
-            "shortName": "UserEventService",
-            "fullName": "google.cloud.recommendationengine.v1beta1.UserEventService"
-          }
-        }
+        "shortName": "WriteUserEvent"
       },
+      "description": "WriteUserEvent writes a single user event.",
+      "file": "UserEventClient/WriteUserEvent/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "recommendationengine_v1beta1_generated_UserEventService_WriteUserEvent_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "recommendationengine WriteUserEvent Sample"
     }
   ]
 }

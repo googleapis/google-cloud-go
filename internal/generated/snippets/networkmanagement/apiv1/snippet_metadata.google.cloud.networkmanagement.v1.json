@@ -1,2079 +1,2079 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/networkmanagement/apiv1",
-    "version": "1.23.0",
-    "language": "GO",
     "apis": [
       {
         "id": "google.cloud.networkmanagement.v1",
         "version": "v1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/networkmanagement/apiv1",
+    "version": "1.23.0"
   },
   "snippets": [
     {
-      "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_CancelOperation_sync",
-      "title": "networkmanagement CancelOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient",
+          "shortName": "OrganizationVpcFlowLogsClient"
+        },
+        "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
       "file": "OrganizationVpcFlowLogsClient/CancelOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CancelOperation",
-        "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient.CancelOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.CancelOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "OrganizationVpcFlowLogsClient",
-          "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient"
-        },
-        "method": {
-          "shortName": "CancelOperation",
-          "fullName": "google.longrunning.Operations.CancelOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_CancelOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement CancelOperation Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_CreateVpcFlowLogsConfig_sync",
-      "title": "networkmanagement CreateVpcFlowLogsConfig Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient",
+          "shortName": "OrganizationVpcFlowLogsClient"
+        },
+        "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient.CreateVpcFlowLogsConfig",
+        "method": {
+          "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsService.CreateVpcFlowLogsConfig",
+          "service": {
+            "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsService",
+            "shortName": "OrganizationVpcFlowLogsService"
+          },
+          "shortName": "CreateVpcFlowLogsConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "networkmanagementpb.CreateVpcFlowLogsConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateVpcFlowLogsConfigOperation",
+        "shortName": "CreateVpcFlowLogsConfig"
+      },
       "description": "CreateVpcFlowLogsConfig creates a new `VpcFlowLogsConfig`.\nIf a configuration with the exact same settings already exists (even if the\nID is different), the creation fails.\nNotes: \n\n1. Creating a configuration with `state=DISABLED` will fail\n2. The following fields are not considered as settings for the purpose\nof the check mentioned above, therefore - creating another configuration\nwith the same fields but different values for the following fields will\nfail as well: \n* name\n* create_time\n* update_time\n* labels\n* description",
       "file": "OrganizationVpcFlowLogsClient/CreateVpcFlowLogsConfig/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateVpcFlowLogsConfig",
-        "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient.CreateVpcFlowLogsConfig",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "networkmanagementpb.CreateVpcFlowLogsConfigRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "CreateVpcFlowLogsConfigOperation",
-        "client": {
-          "shortName": "OrganizationVpcFlowLogsClient",
-          "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient"
-        },
-        "method": {
-          "shortName": "CreateVpcFlowLogsConfig",
-          "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsService.CreateVpcFlowLogsConfig",
-          "service": {
-            "shortName": "OrganizationVpcFlowLogsService",
-            "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_CreateVpcFlowLogsConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement CreateVpcFlowLogsConfig Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_DeleteOperation_sync",
-      "title": "networkmanagement DeleteOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient",
+          "shortName": "OrganizationVpcFlowLogsClient"
+        },
+        "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
       "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
       "file": "OrganizationVpcFlowLogsClient/DeleteOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteOperation",
-        "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient.DeleteOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.DeleteOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "OrganizationVpcFlowLogsClient",
-          "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient"
-        },
-        "method": {
-          "shortName": "DeleteOperation",
-          "fullName": "google.longrunning.Operations.DeleteOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_DeleteOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement DeleteOperation Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_DeleteVpcFlowLogsConfig_sync",
-      "title": "networkmanagement DeleteVpcFlowLogsConfig Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient",
+          "shortName": "OrganizationVpcFlowLogsClient"
+        },
+        "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient.DeleteVpcFlowLogsConfig",
+        "method": {
+          "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsService.DeleteVpcFlowLogsConfig",
+          "service": {
+            "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsService",
+            "shortName": "OrganizationVpcFlowLogsService"
+          },
+          "shortName": "DeleteVpcFlowLogsConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "networkmanagementpb.DeleteVpcFlowLogsConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteVpcFlowLogsConfigOperation",
+        "shortName": "DeleteVpcFlowLogsConfig"
+      },
       "description": "DeleteVpcFlowLogsConfig deletes a specific `VpcFlowLogsConfig`.",
       "file": "OrganizationVpcFlowLogsClient/DeleteVpcFlowLogsConfig/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteVpcFlowLogsConfig",
-        "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient.DeleteVpcFlowLogsConfig",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "networkmanagementpb.DeleteVpcFlowLogsConfigRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "DeleteVpcFlowLogsConfigOperation",
-        "client": {
-          "shortName": "OrganizationVpcFlowLogsClient",
-          "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient"
-        },
-        "method": {
-          "shortName": "DeleteVpcFlowLogsConfig",
-          "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsService.DeleteVpcFlowLogsConfig",
-          "service": {
-            "shortName": "OrganizationVpcFlowLogsService",
-            "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_DeleteVpcFlowLogsConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement DeleteVpcFlowLogsConfig Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_GetIamPolicy_sync",
-      "title": "networkmanagement GetIamPolicy Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient",
+          "shortName": "OrganizationVpcFlowLogsClient"
+        },
+        "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient.GetIamPolicy",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "GetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.GetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "GetIamPolicy"
+      },
       "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
       "file": "OrganizationVpcFlowLogsClient/GetIamPolicy/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetIamPolicy",
-        "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient.GetIamPolicy",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "iampb.GetIamPolicyRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*iampb.Policy",
-        "client": {
-          "shortName": "OrganizationVpcFlowLogsClient",
-          "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient"
-        },
-        "method": {
-          "shortName": "GetIamPolicy",
-          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.iam.v1.IAMPolicy"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_GetIamPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement GetIamPolicy Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_GetLocation_sync",
-      "title": "networkmanagement GetLocation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient",
+          "shortName": "OrganizationVpcFlowLogsClient"
+        },
+        "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "shortName": "GetLocation"
+      },
       "description": "GetLocation gets information about a location.",
       "file": "OrganizationVpcFlowLogsClient/GetLocation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetLocation",
-        "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient.GetLocation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "locationpb.GetLocationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*locationpb.Location",
-        "client": {
-          "shortName": "OrganizationVpcFlowLogsClient",
-          "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient"
-        },
-        "method": {
-          "shortName": "GetLocation",
-          "fullName": "google.cloud.location.Locations.GetLocation",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_GetLocation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement GetLocation Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_GetOperation_sync",
-      "title": "networkmanagement GetOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient",
+          "shortName": "OrganizationVpcFlowLogsClient"
+        },
+        "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
       "description": "GetOperation is a utility method from google.longrunning.Operations.",
       "file": "OrganizationVpcFlowLogsClient/GetOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetOperation",
-        "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient.GetOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.GetOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*longrunningpb.Operation",
-        "client": {
-          "shortName": "OrganizationVpcFlowLogsClient",
-          "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient"
-        },
-        "method": {
-          "shortName": "GetOperation",
-          "fullName": "google.longrunning.Operations.GetOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_GetOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement GetOperation Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_GetVpcFlowLogsConfig_sync",
-      "title": "networkmanagement GetVpcFlowLogsConfig Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient",
+          "shortName": "OrganizationVpcFlowLogsClient"
+        },
+        "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient.GetVpcFlowLogsConfig",
+        "method": {
+          "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsService.GetVpcFlowLogsConfig",
+          "service": {
+            "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsService",
+            "shortName": "OrganizationVpcFlowLogsService"
+          },
+          "shortName": "GetVpcFlowLogsConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "networkmanagementpb.GetVpcFlowLogsConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*networkmanagementpb.VpcFlowLogsConfig",
+        "shortName": "GetVpcFlowLogsConfig"
+      },
       "description": "GetVpcFlowLogsConfig gets the details of a specific `VpcFlowLogsConfig`.",
       "file": "OrganizationVpcFlowLogsClient/GetVpcFlowLogsConfig/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetVpcFlowLogsConfig",
-        "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient.GetVpcFlowLogsConfig",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "networkmanagementpb.GetVpcFlowLogsConfigRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*networkmanagementpb.VpcFlowLogsConfig",
-        "client": {
-          "shortName": "OrganizationVpcFlowLogsClient",
-          "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient"
-        },
-        "method": {
-          "shortName": "GetVpcFlowLogsConfig",
-          "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsService.GetVpcFlowLogsConfig",
-          "service": {
-            "shortName": "OrganizationVpcFlowLogsService",
-            "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_GetVpcFlowLogsConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement GetVpcFlowLogsConfig Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_ListLocations_sync",
-      "title": "networkmanagement ListLocations Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient",
+          "shortName": "OrganizationVpcFlowLogsClient"
+        },
+        "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "shortName": "ListLocations"
+      },
       "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "OrganizationVpcFlowLogsClient/ListLocations/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "ListLocations",
-        "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient.ListLocations",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "locationpb.ListLocationsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "LocationIterator",
-        "client": {
-          "shortName": "OrganizationVpcFlowLogsClient",
-          "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient"
-        },
-        "method": {
-          "shortName": "ListLocations",
-          "fullName": "google.cloud.location.Locations.ListLocations",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_ListLocations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement ListLocations Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_ListOperations_sync",
-      "title": "networkmanagement ListOperations Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient",
+          "shortName": "OrganizationVpcFlowLogsClient"
+        },
+        "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
       "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "OrganizationVpcFlowLogsClient/ListOperations/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "ListOperations",
-        "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient.ListOperations",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.ListOperationsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "OperationIterator",
-        "client": {
-          "shortName": "OrganizationVpcFlowLogsClient",
-          "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient"
-        },
-        "method": {
-          "shortName": "ListOperations",
-          "fullName": "google.longrunning.Operations.ListOperations",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_ListOperations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement ListOperations Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_ListVpcFlowLogsConfigs_sync",
-      "title": "networkmanagement ListVpcFlowLogsConfigs Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient",
+          "shortName": "OrganizationVpcFlowLogsClient"
+        },
+        "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient.ListVpcFlowLogsConfigs",
+        "method": {
+          "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsService.ListVpcFlowLogsConfigs",
+          "service": {
+            "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsService",
+            "shortName": "OrganizationVpcFlowLogsService"
+          },
+          "shortName": "ListVpcFlowLogsConfigs"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "networkmanagementpb.ListVpcFlowLogsConfigsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "VpcFlowLogsConfigIterator",
+        "shortName": "ListVpcFlowLogsConfigs"
+      },
       "description": "ListVpcFlowLogsConfigs lists all `VpcFlowLogsConfigs` in a given organization.",
       "file": "OrganizationVpcFlowLogsClient/ListVpcFlowLogsConfigs/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "ListVpcFlowLogsConfigs",
-        "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient.ListVpcFlowLogsConfigs",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "networkmanagementpb.ListVpcFlowLogsConfigsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "VpcFlowLogsConfigIterator",
-        "client": {
-          "shortName": "OrganizationVpcFlowLogsClient",
-          "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient"
-        },
-        "method": {
-          "shortName": "ListVpcFlowLogsConfigs",
-          "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsService.ListVpcFlowLogsConfigs",
-          "service": {
-            "shortName": "OrganizationVpcFlowLogsService",
-            "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_ListVpcFlowLogsConfigs_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement ListVpcFlowLogsConfigs Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_SetIamPolicy_sync",
-      "title": "networkmanagement SetIamPolicy Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient",
+          "shortName": "OrganizationVpcFlowLogsClient"
+        },
+        "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient.SetIamPolicy",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "SetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.SetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "SetIamPolicy"
+      },
       "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
       "file": "OrganizationVpcFlowLogsClient/SetIamPolicy/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "SetIamPolicy",
-        "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient.SetIamPolicy",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "iampb.SetIamPolicyRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*iampb.Policy",
-        "client": {
-          "shortName": "OrganizationVpcFlowLogsClient",
-          "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient"
-        },
-        "method": {
-          "shortName": "SetIamPolicy",
-          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.iam.v1.IAMPolicy"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_SetIamPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement SetIamPolicy Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_TestIamPermissions_sync",
-      "title": "networkmanagement TestIamPermissions Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient",
+          "shortName": "OrganizationVpcFlowLogsClient"
+        },
+        "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient.TestIamPermissions",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "TestIamPermissions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.TestIamPermissionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "shortName": "TestIamPermissions"
+      },
       "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
       "file": "OrganizationVpcFlowLogsClient/TestIamPermissions/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "TestIamPermissions",
-        "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient.TestIamPermissions",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "iampb.TestIamPermissionsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*iampb.TestIamPermissionsResponse",
-        "client": {
-          "shortName": "OrganizationVpcFlowLogsClient",
-          "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient"
-        },
-        "method": {
-          "shortName": "TestIamPermissions",
-          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.iam.v1.IAMPolicy"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_TestIamPermissions_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement TestIamPermissions Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_UpdateVpcFlowLogsConfig_sync",
-      "title": "networkmanagement UpdateVpcFlowLogsConfig Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient",
+          "shortName": "OrganizationVpcFlowLogsClient"
+        },
+        "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient.UpdateVpcFlowLogsConfig",
+        "method": {
+          "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsService.UpdateVpcFlowLogsConfig",
+          "service": {
+            "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsService",
+            "shortName": "OrganizationVpcFlowLogsService"
+          },
+          "shortName": "UpdateVpcFlowLogsConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "networkmanagementpb.UpdateVpcFlowLogsConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "UpdateVpcFlowLogsConfigOperation",
+        "shortName": "UpdateVpcFlowLogsConfig"
+      },
       "description": "UpdateVpcFlowLogsConfig updates an existing `VpcFlowLogsConfig`.\nIf a configuration with the exact same settings already exists (even if the\nID is different), the creation fails.\nNotes: \n\n1. Updating a configuration with `state=DISABLED` will fail\n2. The following fields are not considered as settings for the purpose\nof the check mentioned above, therefore - updating another configuration\nwith the same fields but different values for the following fields will\nfail as well: \n* name\n* create_time\n* update_time\n* labels\n* description",
       "file": "OrganizationVpcFlowLogsClient/UpdateVpcFlowLogsConfig/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "UpdateVpcFlowLogsConfig",
-        "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient.UpdateVpcFlowLogsConfig",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "networkmanagementpb.UpdateVpcFlowLogsConfigRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "UpdateVpcFlowLogsConfigOperation",
-        "client": {
-          "shortName": "OrganizationVpcFlowLogsClient",
-          "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsClient"
-        },
-        "method": {
-          "shortName": "UpdateVpcFlowLogsConfig",
-          "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsService.UpdateVpcFlowLogsConfig",
-          "service": {
-            "shortName": "OrganizationVpcFlowLogsService",
-            "fullName": "google.cloud.networkmanagement.v1.OrganizationVpcFlowLogsService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_UpdateVpcFlowLogsConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement UpdateVpcFlowLogsConfig Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_ReachabilityService_CancelOperation_sync",
-      "title": "networkmanagement CancelOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient",
+          "shortName": "ReachabilityClient"
+        },
+        "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
       "file": "ReachabilityClient/CancelOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CancelOperation",
-        "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient.CancelOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.CancelOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "ReachabilityClient",
-          "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient"
-        },
-        "method": {
-          "shortName": "CancelOperation",
-          "fullName": "google.longrunning.Operations.CancelOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_ReachabilityService_CancelOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement CancelOperation Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_ReachabilityService_CreateConnectivityTest_sync",
-      "title": "networkmanagement CreateConnectivityTest Sample",
-      "description": "CreateConnectivityTest creates a new Connectivity Test.\nAfter you create a test, the reachability analysis is performed as part\nof the long running operation, which completes when the analysis completes.\n\nIf the endpoint specifications in `ConnectivityTest` are invalid\n(for example, containing non-existent resources in the network, or you\ndon't have read permissions to the network configurations of listed\nprojects), then the reachability result returns a value of `UNKNOWN`.\n\nIf the endpoint specifications in `ConnectivityTest` are\nincomplete, the reachability result returns a value of\n<code>AMBIGUOUS</code>. For more information,\nsee the Connectivity Test documentation.",
-      "file": "ReachabilityClient/CreateConnectivityTest/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateConnectivityTest",
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient",
+          "shortName": "ReachabilityClient"
+        },
         "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient.CreateConnectivityTest",
+        "method": {
+          "fullName": "google.cloud.networkmanagement.v1.ReachabilityService.CreateConnectivityTest",
+          "service": {
+            "fullName": "google.cloud.networkmanagement.v1.ReachabilityService",
+            "shortName": "ReachabilityService"
+          },
+          "shortName": "CreateConnectivityTest"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "networkmanagementpb.CreateConnectivityTestRequest",
-            "name": "req"
+            "name": "req",
+            "type": "networkmanagementpb.CreateConnectivityTestRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateConnectivityTestOperation",
-        "client": {
-          "shortName": "ReachabilityClient",
-          "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient"
-        },
-        "method": {
-          "shortName": "CreateConnectivityTest",
-          "fullName": "google.cloud.networkmanagement.v1.ReachabilityService.CreateConnectivityTest",
-          "service": {
-            "shortName": "ReachabilityService",
-            "fullName": "google.cloud.networkmanagement.v1.ReachabilityService"
-          }
-        }
+        "shortName": "CreateConnectivityTest"
       },
+      "description": "CreateConnectivityTest creates a new Connectivity Test.\nAfter you create a test, the reachability analysis is performed as part\nof the long running operation, which completes when the analysis completes.\n\nIf the endpoint specifications in `ConnectivityTest` are invalid\n(for example, containing non-existent resources in the network, or you\ndon't have read permissions to the network configurations of listed\nprojects), then the reachability result returns a value of `UNKNOWN`.\n\nIf the endpoint specifications in `ConnectivityTest` are\nincomplete, the reachability result returns a value of\n<code>AMBIGUOUS</code>. For more information,\nsee the Connectivity Test documentation.",
+      "file": "ReachabilityClient/CreateConnectivityTest/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_ReachabilityService_CreateConnectivityTest_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement CreateConnectivityTest Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_ReachabilityService_DeleteConnectivityTest_sync",
-      "title": "networkmanagement DeleteConnectivityTest Sample",
-      "description": "DeleteConnectivityTest deletes a specific `ConnectivityTest`.",
-      "file": "ReachabilityClient/DeleteConnectivityTest/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteConnectivityTest",
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient",
+          "shortName": "ReachabilityClient"
+        },
         "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient.DeleteConnectivityTest",
+        "method": {
+          "fullName": "google.cloud.networkmanagement.v1.ReachabilityService.DeleteConnectivityTest",
+          "service": {
+            "fullName": "google.cloud.networkmanagement.v1.ReachabilityService",
+            "shortName": "ReachabilityService"
+          },
+          "shortName": "DeleteConnectivityTest"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "networkmanagementpb.DeleteConnectivityTestRequest",
-            "name": "req"
+            "name": "req",
+            "type": "networkmanagementpb.DeleteConnectivityTestRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteConnectivityTestOperation",
-        "client": {
-          "shortName": "ReachabilityClient",
-          "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient"
-        },
-        "method": {
-          "shortName": "DeleteConnectivityTest",
-          "fullName": "google.cloud.networkmanagement.v1.ReachabilityService.DeleteConnectivityTest",
-          "service": {
-            "shortName": "ReachabilityService",
-            "fullName": "google.cloud.networkmanagement.v1.ReachabilityService"
-          }
-        }
+        "shortName": "DeleteConnectivityTest"
       },
+      "description": "DeleteConnectivityTest deletes a specific `ConnectivityTest`.",
+      "file": "ReachabilityClient/DeleteConnectivityTest/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_ReachabilityService_DeleteConnectivityTest_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement DeleteConnectivityTest Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_ReachabilityService_DeleteOperation_sync",
-      "title": "networkmanagement DeleteOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient",
+          "shortName": "ReachabilityClient"
+        },
+        "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
       "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
       "file": "ReachabilityClient/DeleteOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteOperation",
-        "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient.DeleteOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.DeleteOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "ReachabilityClient",
-          "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient"
-        },
-        "method": {
-          "shortName": "DeleteOperation",
-          "fullName": "google.longrunning.Operations.DeleteOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_ReachabilityService_DeleteOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement DeleteOperation Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_ReachabilityService_GetConnectivityTest_sync",
-      "title": "networkmanagement GetConnectivityTest Sample",
-      "description": "GetConnectivityTest gets the details of a specific Connectivity Test.",
-      "file": "ReachabilityClient/GetConnectivityTest/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetConnectivityTest",
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient",
+          "shortName": "ReachabilityClient"
+        },
         "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient.GetConnectivityTest",
+        "method": {
+          "fullName": "google.cloud.networkmanagement.v1.ReachabilityService.GetConnectivityTest",
+          "service": {
+            "fullName": "google.cloud.networkmanagement.v1.ReachabilityService",
+            "shortName": "ReachabilityService"
+          },
+          "shortName": "GetConnectivityTest"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "networkmanagementpb.GetConnectivityTestRequest",
-            "name": "req"
+            "name": "req",
+            "type": "networkmanagementpb.GetConnectivityTestRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*networkmanagementpb.ConnectivityTest",
-        "client": {
-          "shortName": "ReachabilityClient",
-          "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient"
-        },
-        "method": {
-          "shortName": "GetConnectivityTest",
-          "fullName": "google.cloud.networkmanagement.v1.ReachabilityService.GetConnectivityTest",
-          "service": {
-            "shortName": "ReachabilityService",
-            "fullName": "google.cloud.networkmanagement.v1.ReachabilityService"
-          }
-        }
+        "shortName": "GetConnectivityTest"
       },
+      "description": "GetConnectivityTest gets the details of a specific Connectivity Test.",
+      "file": "ReachabilityClient/GetConnectivityTest/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_ReachabilityService_GetConnectivityTest_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement GetConnectivityTest Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_ReachabilityService_GetIamPolicy_sync",
-      "title": "networkmanagement GetIamPolicy Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient",
+          "shortName": "ReachabilityClient"
+        },
+        "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient.GetIamPolicy",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "GetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.GetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "GetIamPolicy"
+      },
       "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
       "file": "ReachabilityClient/GetIamPolicy/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetIamPolicy",
-        "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient.GetIamPolicy",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "iampb.GetIamPolicyRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*iampb.Policy",
-        "client": {
-          "shortName": "ReachabilityClient",
-          "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient"
-        },
-        "method": {
-          "shortName": "GetIamPolicy",
-          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.iam.v1.IAMPolicy"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_ReachabilityService_GetIamPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement GetIamPolicy Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_ReachabilityService_GetLocation_sync",
-      "title": "networkmanagement GetLocation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient",
+          "shortName": "ReachabilityClient"
+        },
+        "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "shortName": "GetLocation"
+      },
       "description": "GetLocation gets information about a location.",
       "file": "ReachabilityClient/GetLocation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetLocation",
-        "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient.GetLocation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "locationpb.GetLocationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*locationpb.Location",
-        "client": {
-          "shortName": "ReachabilityClient",
-          "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient"
-        },
-        "method": {
-          "shortName": "GetLocation",
-          "fullName": "google.cloud.location.Locations.GetLocation",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_ReachabilityService_GetLocation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement GetLocation Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_ReachabilityService_GetOperation_sync",
-      "title": "networkmanagement GetOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient",
+          "shortName": "ReachabilityClient"
+        },
+        "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
       "description": "GetOperation is a utility method from google.longrunning.Operations.",
       "file": "ReachabilityClient/GetOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetOperation",
-        "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient.GetOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.GetOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*longrunningpb.Operation",
-        "client": {
-          "shortName": "ReachabilityClient",
-          "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient"
-        },
-        "method": {
-          "shortName": "GetOperation",
-          "fullName": "google.longrunning.Operations.GetOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_ReachabilityService_GetOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement GetOperation Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_ReachabilityService_ListConnectivityTests_sync",
-      "title": "networkmanagement ListConnectivityTests Sample",
-      "description": "ListConnectivityTests lists all Connectivity Tests owned by a project.",
-      "file": "ReachabilityClient/ListConnectivityTests/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListConnectivityTests",
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient",
+          "shortName": "ReachabilityClient"
+        },
         "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient.ListConnectivityTests",
+        "method": {
+          "fullName": "google.cloud.networkmanagement.v1.ReachabilityService.ListConnectivityTests",
+          "service": {
+            "fullName": "google.cloud.networkmanagement.v1.ReachabilityService",
+            "shortName": "ReachabilityService"
+          },
+          "shortName": "ListConnectivityTests"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "networkmanagementpb.ListConnectivityTestsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "networkmanagementpb.ListConnectivityTestsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ConnectivityTestIterator",
-        "client": {
-          "shortName": "ReachabilityClient",
-          "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient"
-        },
-        "method": {
-          "shortName": "ListConnectivityTests",
-          "fullName": "google.cloud.networkmanagement.v1.ReachabilityService.ListConnectivityTests",
-          "service": {
-            "shortName": "ReachabilityService",
-            "fullName": "google.cloud.networkmanagement.v1.ReachabilityService"
-          }
-        }
+        "shortName": "ListConnectivityTests"
       },
+      "description": "ListConnectivityTests lists all Connectivity Tests owned by a project.",
+      "file": "ReachabilityClient/ListConnectivityTests/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_ReachabilityService_ListConnectivityTests_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement ListConnectivityTests Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_ReachabilityService_ListLocations_sync",
-      "title": "networkmanagement ListLocations Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient",
+          "shortName": "ReachabilityClient"
+        },
+        "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "shortName": "ListLocations"
+      },
       "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
       "file": "ReachabilityClient/ListLocations/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "ListLocations",
-        "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient.ListLocations",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "locationpb.ListLocationsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "LocationIterator",
-        "client": {
-          "shortName": "ReachabilityClient",
-          "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient"
-        },
-        "method": {
-          "shortName": "ListLocations",
-          "fullName": "google.cloud.location.Locations.ListLocations",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_ReachabilityService_ListLocations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement ListLocations Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_ReachabilityService_ListOperations_sync",
-      "title": "networkmanagement ListOperations Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient",
+          "shortName": "ReachabilityClient"
+        },
+        "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
       "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "ReachabilityClient/ListOperations/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "ListOperations",
-        "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient.ListOperations",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.ListOperationsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "OperationIterator",
-        "client": {
-          "shortName": "ReachabilityClient",
-          "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient"
-        },
-        "method": {
-          "shortName": "ListOperations",
-          "fullName": "google.longrunning.Operations.ListOperations",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_ReachabilityService_ListOperations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement ListOperations Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_ReachabilityService_RerunConnectivityTest_sync",
-      "title": "networkmanagement RerunConnectivityTest Sample",
-      "description": "RerunConnectivityTest rerun an existing `ConnectivityTest`.\nAfter the user triggers the rerun, the reachability analysis is performed\nas part of the long running operation, which completes when the analysis\ncompletes.\n\nEven though the test configuration remains the same, the reachability\nresult may change due to underlying network configuration changes.\n\nIf the endpoint specifications in `ConnectivityTest` become invalid (for\nexample, specified resources are deleted in the network, or you lost\nread permissions to the network configurations of listed projects), then\nthe reachability result returns a value of `UNKNOWN`.",
-      "file": "ReachabilityClient/RerunConnectivityTest/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "RerunConnectivityTest",
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient",
+          "shortName": "ReachabilityClient"
+        },
         "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient.RerunConnectivityTest",
+        "method": {
+          "fullName": "google.cloud.networkmanagement.v1.ReachabilityService.RerunConnectivityTest",
+          "service": {
+            "fullName": "google.cloud.networkmanagement.v1.ReachabilityService",
+            "shortName": "ReachabilityService"
+          },
+          "shortName": "RerunConnectivityTest"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "networkmanagementpb.RerunConnectivityTestRequest",
-            "name": "req"
+            "name": "req",
+            "type": "networkmanagementpb.RerunConnectivityTestRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "RerunConnectivityTestOperation",
-        "client": {
-          "shortName": "ReachabilityClient",
-          "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient"
-        },
-        "method": {
-          "shortName": "RerunConnectivityTest",
-          "fullName": "google.cloud.networkmanagement.v1.ReachabilityService.RerunConnectivityTest",
-          "service": {
-            "shortName": "ReachabilityService",
-            "fullName": "google.cloud.networkmanagement.v1.ReachabilityService"
-          }
-        }
+        "shortName": "RerunConnectivityTest"
       },
+      "description": "RerunConnectivityTest rerun an existing `ConnectivityTest`.\nAfter the user triggers the rerun, the reachability analysis is performed\nas part of the long running operation, which completes when the analysis\ncompletes.\n\nEven though the test configuration remains the same, the reachability\nresult may change due to underlying network configuration changes.\n\nIf the endpoint specifications in `ConnectivityTest` become invalid (for\nexample, specified resources are deleted in the network, or you lost\nread permissions to the network configurations of listed projects), then\nthe reachability result returns a value of `UNKNOWN`.",
+      "file": "ReachabilityClient/RerunConnectivityTest/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_ReachabilityService_RerunConnectivityTest_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement RerunConnectivityTest Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_ReachabilityService_SetIamPolicy_sync",
-      "title": "networkmanagement SetIamPolicy Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient",
+          "shortName": "ReachabilityClient"
+        },
+        "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient.SetIamPolicy",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "SetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.SetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "SetIamPolicy"
+      },
       "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
       "file": "ReachabilityClient/SetIamPolicy/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "SetIamPolicy",
-        "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient.SetIamPolicy",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "iampb.SetIamPolicyRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*iampb.Policy",
-        "client": {
-          "shortName": "ReachabilityClient",
-          "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient"
-        },
-        "method": {
-          "shortName": "SetIamPolicy",
-          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.iam.v1.IAMPolicy"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_ReachabilityService_SetIamPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement SetIamPolicy Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_ReachabilityService_TestIamPermissions_sync",
-      "title": "networkmanagement TestIamPermissions Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient",
+          "shortName": "ReachabilityClient"
+        },
+        "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient.TestIamPermissions",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "TestIamPermissions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.TestIamPermissionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "shortName": "TestIamPermissions"
+      },
       "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
       "file": "ReachabilityClient/TestIamPermissions/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "TestIamPermissions",
-        "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient.TestIamPermissions",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "iampb.TestIamPermissionsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*iampb.TestIamPermissionsResponse",
-        "client": {
-          "shortName": "ReachabilityClient",
-          "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient"
-        },
-        "method": {
-          "shortName": "TestIamPermissions",
-          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.iam.v1.IAMPolicy"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_ReachabilityService_TestIamPermissions_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement TestIamPermissions Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_ReachabilityService_UpdateConnectivityTest_sync",
-      "title": "networkmanagement UpdateConnectivityTest Sample",
-      "description": "UpdateConnectivityTest updates the configuration of an existing `ConnectivityTest`.\nAfter you update a test, the reachability analysis is performed as part\nof the long running operation, which completes when the analysis completes.\nThe Reachability state in the test resource is updated with the new result.\n\nIf the endpoint specifications in `ConnectivityTest` are invalid\n(for example, they contain non-existent resources in the network, or the\nuser does not have read permissions to the network configurations of\nlisted projects), then the reachability result returns a value of\n<code>UNKNOWN</code>.\n\nIf the endpoint specifications in `ConnectivityTest` are incomplete, the\nreachability result returns a value of `AMBIGUOUS`. See the documentation\nin `ConnectivityTest` for more details.",
-      "file": "ReachabilityClient/UpdateConnectivityTest/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateConnectivityTest",
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient",
+          "shortName": "ReachabilityClient"
+        },
         "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient.UpdateConnectivityTest",
+        "method": {
+          "fullName": "google.cloud.networkmanagement.v1.ReachabilityService.UpdateConnectivityTest",
+          "service": {
+            "fullName": "google.cloud.networkmanagement.v1.ReachabilityService",
+            "shortName": "ReachabilityService"
+          },
+          "shortName": "UpdateConnectivityTest"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "networkmanagementpb.UpdateConnectivityTestRequest",
-            "name": "req"
+            "name": "req",
+            "type": "networkmanagementpb.UpdateConnectivityTestRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UpdateConnectivityTestOperation",
-        "client": {
-          "shortName": "ReachabilityClient",
-          "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient"
-        },
-        "method": {
-          "shortName": "UpdateConnectivityTest",
-          "fullName": "google.cloud.networkmanagement.v1.ReachabilityService.UpdateConnectivityTest",
-          "service": {
-            "shortName": "ReachabilityService",
-            "fullName": "google.cloud.networkmanagement.v1.ReachabilityService"
-          }
-        }
+        "shortName": "UpdateConnectivityTest"
       },
+      "description": "UpdateConnectivityTest updates the configuration of an existing `ConnectivityTest`.\nAfter you update a test, the reachability analysis is performed as part\nof the long running operation, which completes when the analysis completes.\nThe Reachability state in the test resource is updated with the new result.\n\nIf the endpoint specifications in `ConnectivityTest` are invalid\n(for example, they contain non-existent resources in the network, or the\nuser does not have read permissions to the network configurations of\nlisted projects), then the reachability result returns a value of\n<code>UNKNOWN</code>.\n\nIf the endpoint specifications in `ConnectivityTest` are incomplete, the\nreachability result returns a value of `AMBIGUOUS`. See the documentation\nin `ConnectivityTest` for more details.",
+      "file": "ReachabilityClient/UpdateConnectivityTest/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_ReachabilityService_UpdateConnectivityTest_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement UpdateConnectivityTest Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_CancelOperation_sync",
-      "title": "networkmanagement CancelOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient",
+          "shortName": "VpcFlowLogsClient"
+        },
+        "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
       "file": "VpcFlowLogsClient/CancelOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CancelOperation",
-        "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient.CancelOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.CancelOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "VpcFlowLogsClient",
-          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient"
-        },
-        "method": {
-          "shortName": "CancelOperation",
-          "fullName": "google.longrunning.Operations.CancelOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_CancelOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement CancelOperation Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_CreateVpcFlowLogsConfig_sync",
-      "title": "networkmanagement CreateVpcFlowLogsConfig Sample",
-      "description": "CreateVpcFlowLogsConfig creates a new `VpcFlowLogsConfig`.\nIf a configuration with the exact same settings already exists (even if the\nID is different), the creation fails.\nNotes: \n\n1. Creating a configuration with `state=DISABLED` will fail\n2. The following fields are not considered as settings for the purpose\nof the check mentioned above, therefore - creating another configuration\nwith the same fields but different values for the following fields will\nfail as well: \n* name\n* create_time\n* update_time\n* labels\n* description",
-      "file": "VpcFlowLogsClient/CreateVpcFlowLogsConfig/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateVpcFlowLogsConfig",
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient",
+          "shortName": "VpcFlowLogsClient"
+        },
         "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient.CreateVpcFlowLogsConfig",
+        "method": {
+          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsService.CreateVpcFlowLogsConfig",
+          "service": {
+            "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsService",
+            "shortName": "VpcFlowLogsService"
+          },
+          "shortName": "CreateVpcFlowLogsConfig"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "networkmanagementpb.CreateVpcFlowLogsConfigRequest",
-            "name": "req"
+            "name": "req",
+            "type": "networkmanagementpb.CreateVpcFlowLogsConfigRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateVpcFlowLogsConfigOperation",
-        "client": {
-          "shortName": "VpcFlowLogsClient",
-          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient"
-        },
-        "method": {
-          "shortName": "CreateVpcFlowLogsConfig",
-          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsService.CreateVpcFlowLogsConfig",
-          "service": {
-            "shortName": "VpcFlowLogsService",
-            "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsService"
-          }
-        }
+        "shortName": "CreateVpcFlowLogsConfig"
       },
+      "description": "CreateVpcFlowLogsConfig creates a new `VpcFlowLogsConfig`.\nIf a configuration with the exact same settings already exists (even if the\nID is different), the creation fails.\nNotes: \n\n1. Creating a configuration with `state=DISABLED` will fail\n2. The following fields are not considered as settings for the purpose\nof the check mentioned above, therefore - creating another configuration\nwith the same fields but different values for the following fields will\nfail as well: \n* name\n* create_time\n* update_time\n* labels\n* description",
+      "file": "VpcFlowLogsClient/CreateVpcFlowLogsConfig/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_CreateVpcFlowLogsConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement CreateVpcFlowLogsConfig Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_DeleteOperation_sync",
-      "title": "networkmanagement DeleteOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient",
+          "shortName": "VpcFlowLogsClient"
+        },
+        "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
       "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
       "file": "VpcFlowLogsClient/DeleteOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteOperation",
-        "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient.DeleteOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.DeleteOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "VpcFlowLogsClient",
-          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient"
-        },
-        "method": {
-          "shortName": "DeleteOperation",
-          "fullName": "google.longrunning.Operations.DeleteOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_DeleteOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement DeleteOperation Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_DeleteVpcFlowLogsConfig_sync",
-      "title": "networkmanagement DeleteVpcFlowLogsConfig Sample",
-      "description": "DeleteVpcFlowLogsConfig deletes a specific `VpcFlowLogsConfig`.",
-      "file": "VpcFlowLogsClient/DeleteVpcFlowLogsConfig/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteVpcFlowLogsConfig",
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient",
+          "shortName": "VpcFlowLogsClient"
+        },
         "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient.DeleteVpcFlowLogsConfig",
+        "method": {
+          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsService.DeleteVpcFlowLogsConfig",
+          "service": {
+            "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsService",
+            "shortName": "VpcFlowLogsService"
+          },
+          "shortName": "DeleteVpcFlowLogsConfig"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "networkmanagementpb.DeleteVpcFlowLogsConfigRequest",
-            "name": "req"
+            "name": "req",
+            "type": "networkmanagementpb.DeleteVpcFlowLogsConfigRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteVpcFlowLogsConfigOperation",
-        "client": {
-          "shortName": "VpcFlowLogsClient",
-          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient"
-        },
-        "method": {
-          "shortName": "DeleteVpcFlowLogsConfig",
-          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsService.DeleteVpcFlowLogsConfig",
-          "service": {
-            "shortName": "VpcFlowLogsService",
-            "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsService"
-          }
-        }
+        "shortName": "DeleteVpcFlowLogsConfig"
       },
+      "description": "DeleteVpcFlowLogsConfig deletes a specific `VpcFlowLogsConfig`.",
+      "file": "VpcFlowLogsClient/DeleteVpcFlowLogsConfig/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_DeleteVpcFlowLogsConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement DeleteVpcFlowLogsConfig Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_GetIamPolicy_sync",
-      "title": "networkmanagement GetIamPolicy Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient",
+          "shortName": "VpcFlowLogsClient"
+        },
+        "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient.GetIamPolicy",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "GetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.GetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "GetIamPolicy"
+      },
       "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
       "file": "VpcFlowLogsClient/GetIamPolicy/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetIamPolicy",
-        "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient.GetIamPolicy",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "iampb.GetIamPolicyRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*iampb.Policy",
-        "client": {
-          "shortName": "VpcFlowLogsClient",
-          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient"
-        },
-        "method": {
-          "shortName": "GetIamPolicy",
-          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.iam.v1.IAMPolicy"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_GetIamPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement GetIamPolicy Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_GetLocation_sync",
-      "title": "networkmanagement GetLocation Sample",
-      "description": "GetLocation gets information about a location.",
-      "file": "VpcFlowLogsClient/GetLocation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetLocation",
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient",
+          "shortName": "VpcFlowLogsClient"
+        },
         "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "locationpb.GetLocationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*locationpb.Location",
-        "client": {
-          "shortName": "VpcFlowLogsClient",
-          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient"
-        },
-        "method": {
-          "shortName": "GetLocation",
-          "fullName": "google.cloud.location.Locations.GetLocation",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
+        "shortName": "GetLocation"
       },
+      "description": "GetLocation gets information about a location.",
+      "file": "VpcFlowLogsClient/GetLocation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_GetLocation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement GetLocation Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_GetOperation_sync",
-      "title": "networkmanagement GetOperation Sample",
-      "description": "GetOperation is a utility method from google.longrunning.Operations.",
-      "file": "VpcFlowLogsClient/GetOperation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetOperation",
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient",
+          "shortName": "VpcFlowLogsClient"
+        },
         "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.GetOperationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*longrunningpb.Operation",
-        "client": {
-          "shortName": "VpcFlowLogsClient",
-          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient"
-        },
-        "method": {
-          "shortName": "GetOperation",
-          "fullName": "google.longrunning.Operations.GetOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "GetOperation"
       },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "VpcFlowLogsClient/GetOperation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_GetOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement GetOperation Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_GetVpcFlowLogsConfig_sync",
-      "title": "networkmanagement GetVpcFlowLogsConfig Sample",
-      "description": "GetVpcFlowLogsConfig gets the details of a specific `VpcFlowLogsConfig`.",
-      "file": "VpcFlowLogsClient/GetVpcFlowLogsConfig/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetVpcFlowLogsConfig",
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient",
+          "shortName": "VpcFlowLogsClient"
+        },
         "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient.GetVpcFlowLogsConfig",
+        "method": {
+          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsService.GetVpcFlowLogsConfig",
+          "service": {
+            "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsService",
+            "shortName": "VpcFlowLogsService"
+          },
+          "shortName": "GetVpcFlowLogsConfig"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "networkmanagementpb.GetVpcFlowLogsConfigRequest",
-            "name": "req"
+            "name": "req",
+            "type": "networkmanagementpb.GetVpcFlowLogsConfigRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*networkmanagementpb.VpcFlowLogsConfig",
-        "client": {
-          "shortName": "VpcFlowLogsClient",
-          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient"
-        },
-        "method": {
-          "shortName": "GetVpcFlowLogsConfig",
-          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsService.GetVpcFlowLogsConfig",
-          "service": {
-            "shortName": "VpcFlowLogsService",
-            "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsService"
-          }
-        }
+        "shortName": "GetVpcFlowLogsConfig"
       },
+      "description": "GetVpcFlowLogsConfig gets the details of a specific `VpcFlowLogsConfig`.",
+      "file": "VpcFlowLogsClient/GetVpcFlowLogsConfig/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_GetVpcFlowLogsConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement GetVpcFlowLogsConfig Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_ListLocations_sync",
-      "title": "networkmanagement ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
-      "file": "VpcFlowLogsClient/ListLocations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListLocations",
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient",
+          "shortName": "VpcFlowLogsClient"
+        },
         "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "locationpb.ListLocationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "LocationIterator",
-        "client": {
-          "shortName": "VpcFlowLogsClient",
-          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient"
-        },
-        "method": {
-          "shortName": "ListLocations",
-          "fullName": "google.cloud.location.Locations.ListLocations",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
+        "shortName": "ListLocations"
       },
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
+      "file": "VpcFlowLogsClient/ListLocations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_ListLocations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement ListLocations Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_ListOperations_sync",
-      "title": "networkmanagement ListOperations Sample",
-      "description": "ListOperations is a utility method from google.longrunning.Operations.",
-      "file": "VpcFlowLogsClient/ListOperations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListOperations",
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient",
+          "shortName": "VpcFlowLogsClient"
+        },
         "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.ListOperationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "OperationIterator",
-        "client": {
-          "shortName": "VpcFlowLogsClient",
-          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient"
-        },
-        "method": {
-          "shortName": "ListOperations",
-          "fullName": "google.longrunning.Operations.ListOperations",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "ListOperations"
       },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "VpcFlowLogsClient/ListOperations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_ListOperations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement ListOperations Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_ListVpcFlowLogsConfigs_sync",
-      "title": "networkmanagement ListVpcFlowLogsConfigs Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient",
+          "shortName": "VpcFlowLogsClient"
+        },
+        "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient.ListVpcFlowLogsConfigs",
+        "method": {
+          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsService.ListVpcFlowLogsConfigs",
+          "service": {
+            "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsService",
+            "shortName": "VpcFlowLogsService"
+          },
+          "shortName": "ListVpcFlowLogsConfigs"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "networkmanagementpb.ListVpcFlowLogsConfigsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "VpcFlowLogsConfigIterator",
+        "shortName": "ListVpcFlowLogsConfigs"
+      },
       "description": "ListVpcFlowLogsConfigs lists all `VpcFlowLogsConfigs` in a given project.",
       "file": "VpcFlowLogsClient/ListVpcFlowLogsConfigs/main.go",
       "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_ListVpcFlowLogsConfigs_sync",
+      "segments": [
+        {
+          "end": 66,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkmanagement ListVpcFlowLogsConfigs Sample"
+    },
+    {
       "clientMethod": {
-        "shortName": "ListVpcFlowLogsConfigs",
-        "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient.ListVpcFlowLogsConfigs",
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient",
+          "shortName": "VpcFlowLogsClient"
+        },
+        "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient.QueryOrgVpcFlowLogsConfigs",
+        "method": {
+          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsService.QueryOrgVpcFlowLogsConfigs",
+          "service": {
+            "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsService",
+            "shortName": "VpcFlowLogsService"
+          },
+          "shortName": "QueryOrgVpcFlowLogsConfigs"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "networkmanagementpb.ListVpcFlowLogsConfigsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "networkmanagementpb.QueryOrgVpcFlowLogsConfigsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "VpcFlowLogsConfigIterator",
-        "client": {
-          "shortName": "VpcFlowLogsClient",
-          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient"
-        },
-        "method": {
-          "shortName": "ListVpcFlowLogsConfigs",
-          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsService.ListVpcFlowLogsConfigs",
-          "service": {
-            "shortName": "VpcFlowLogsService",
-            "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsService"
-          }
-        }
+        "shortName": "QueryOrgVpcFlowLogsConfigs"
       },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 66,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_QueryOrgVpcFlowLogsConfigs_sync",
-      "title": "networkmanagement QueryOrgVpcFlowLogsConfigs Sample",
       "description": "QueryOrgVpcFlowLogsConfigs queryOrgVpcFlowLogsConfigs returns a list of all organization-level VPC\nFlow Logs configurations applicable to the specified project.",
       "file": "VpcFlowLogsClient/QueryOrgVpcFlowLogsConfigs/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "QueryOrgVpcFlowLogsConfigs",
-        "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient.QueryOrgVpcFlowLogsConfigs",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "networkmanagementpb.QueryOrgVpcFlowLogsConfigsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "VpcFlowLogsConfigIterator",
-        "client": {
-          "shortName": "VpcFlowLogsClient",
-          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient"
-        },
-        "method": {
-          "shortName": "QueryOrgVpcFlowLogsConfigs",
-          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsService.QueryOrgVpcFlowLogsConfigs",
-          "service": {
-            "shortName": "VpcFlowLogsService",
-            "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_QueryOrgVpcFlowLogsConfigs_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement QueryOrgVpcFlowLogsConfigs Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_SetIamPolicy_sync",
-      "title": "networkmanagement SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
-      "file": "VpcFlowLogsClient/SetIamPolicy/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "SetIamPolicy",
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient",
+          "shortName": "VpcFlowLogsClient"
+        },
         "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient.SetIamPolicy",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "SetIamPolicy"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "iampb.SetIamPolicyRequest",
-            "name": "req"
+            "name": "req",
+            "type": "iampb.SetIamPolicyRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*iampb.Policy",
-        "client": {
-          "shortName": "VpcFlowLogsClient",
-          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient"
-        },
-        "method": {
-          "shortName": "SetIamPolicy",
-          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.iam.v1.IAMPolicy"
-          }
-        }
+        "shortName": "SetIamPolicy"
       },
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "VpcFlowLogsClient/SetIamPolicy/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_SetIamPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement SetIamPolicy Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_ShowEffectiveFlowLogsConfigs_sync",
-      "title": "networkmanagement ShowEffectiveFlowLogsConfigs Sample",
-      "description": "ShowEffectiveFlowLogsConfigs showEffectiveFlowLogsConfigs returns a list of all VPC Flow Logs\nconfigurations applicable to a specified resource.",
-      "file": "VpcFlowLogsClient/ShowEffectiveFlowLogsConfigs/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ShowEffectiveFlowLogsConfigs",
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient",
+          "shortName": "VpcFlowLogsClient"
+        },
         "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient.ShowEffectiveFlowLogsConfigs",
+        "method": {
+          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsService.ShowEffectiveFlowLogsConfigs",
+          "service": {
+            "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsService",
+            "shortName": "VpcFlowLogsService"
+          },
+          "shortName": "ShowEffectiveFlowLogsConfigs"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "networkmanagementpb.ShowEffectiveFlowLogsConfigsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "networkmanagementpb.ShowEffectiveFlowLogsConfigsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "EffectiveVpcFlowLogsConfigIterator",
-        "client": {
-          "shortName": "VpcFlowLogsClient",
-          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient"
-        },
-        "method": {
-          "shortName": "ShowEffectiveFlowLogsConfigs",
-          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsService.ShowEffectiveFlowLogsConfigs",
-          "service": {
-            "shortName": "VpcFlowLogsService",
-            "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsService"
-          }
-        }
+        "shortName": "ShowEffectiveFlowLogsConfigs"
       },
+      "description": "ShowEffectiveFlowLogsConfigs showEffectiveFlowLogsConfigs returns a list of all VPC Flow Logs\nconfigurations applicable to a specified resource.",
+      "file": "VpcFlowLogsClient/ShowEffectiveFlowLogsConfigs/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_ShowEffectiveFlowLogsConfigs_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement ShowEffectiveFlowLogsConfigs Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_TestIamPermissions_sync",
-      "title": "networkmanagement TestIamPermissions Sample",
-      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
-      "file": "VpcFlowLogsClient/TestIamPermissions/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "TestIamPermissions",
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient",
+          "shortName": "VpcFlowLogsClient"
+        },
         "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient.TestIamPermissions",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "TestIamPermissions"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "iampb.TestIamPermissionsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "iampb.TestIamPermissionsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*iampb.TestIamPermissionsResponse",
-        "client": {
-          "shortName": "VpcFlowLogsClient",
-          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient"
-        },
-        "method": {
-          "shortName": "TestIamPermissions",
-          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.iam.v1.IAMPolicy"
-          }
-        }
+        "shortName": "TestIamPermissions"
       },
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "VpcFlowLogsClient/TestIamPermissions/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_TestIamPermissions_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement TestIamPermissions Sample"
     },
     {
-      "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_UpdateVpcFlowLogsConfig_sync",
-      "title": "networkmanagement UpdateVpcFlowLogsConfig Sample",
-      "description": "UpdateVpcFlowLogsConfig updates an existing `VpcFlowLogsConfig`.\nIf a configuration with the exact same settings already exists (even if the\nID is different), the creation fails.\nNotes: \n\n1. Updating a configuration with `state=DISABLED` will fail.\n2. The following fields are not considered as settings for the purpose\nof the check mentioned above, therefore - updating another configuration\nwith the same fields but different values for the following fields will\nfail as well: \n* name\n* create_time\n* update_time\n* labels\n* description",
-      "file": "VpcFlowLogsClient/UpdateVpcFlowLogsConfig/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateVpcFlowLogsConfig",
+        "client": {
+          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient",
+          "shortName": "VpcFlowLogsClient"
+        },
         "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient.UpdateVpcFlowLogsConfig",
+        "method": {
+          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsService.UpdateVpcFlowLogsConfig",
+          "service": {
+            "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsService",
+            "shortName": "VpcFlowLogsService"
+          },
+          "shortName": "UpdateVpcFlowLogsConfig"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "networkmanagementpb.UpdateVpcFlowLogsConfigRequest",
-            "name": "req"
+            "name": "req",
+            "type": "networkmanagementpb.UpdateVpcFlowLogsConfigRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UpdateVpcFlowLogsConfigOperation",
-        "client": {
-          "shortName": "VpcFlowLogsClient",
-          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsClient"
-        },
-        "method": {
-          "shortName": "UpdateVpcFlowLogsConfig",
-          "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsService.UpdateVpcFlowLogsConfig",
-          "service": {
-            "shortName": "VpcFlowLogsService",
-            "fullName": "google.cloud.networkmanagement.v1.VpcFlowLogsService"
-          }
-        }
+        "shortName": "UpdateVpcFlowLogsConfig"
       },
+      "description": "UpdateVpcFlowLogsConfig updates an existing `VpcFlowLogsConfig`.\nIf a configuration with the exact same settings already exists (even if the\nID is different), the creation fails.\nNotes: \n\n1. Updating a configuration with `state=DISABLED` will fail.\n2. The following fields are not considered as settings for the purpose\nof the check mentioned above, therefore - updating another configuration\nwith the same fields but different values for the following fields will\nfail as well: \n* name\n* create_time\n* update_time\n* labels\n* description",
+      "file": "VpcFlowLogsClient/UpdateVpcFlowLogsConfig/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_UpdateVpcFlowLogsConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkmanagement UpdateVpcFlowLogsConfig Sample"
     }
   ]
 }

@@ -1,61 +1,61 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/videointelligence/apiv1",
-    "version": "1.12.7",
-    "language": "GO",
     "apis": [
       {
         "id": "google.cloud.videointelligence.v1",
         "version": "v1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/videointelligence/apiv1",
+    "version": "1.12.7"
   },
   "snippets": [
     {
-      "regionTag": "videointelligence_v1_generated_VideoIntelligenceService_AnnotateVideo_sync",
-      "title": "videointelligence AnnotateVideo Sample",
-      "description": "AnnotateVideo performs asynchronous video annotation. Progress and results can be\nretrieved through the `google.longrunning.Operations` interface.\n`Operation.metadata` contains `AnnotateVideoProgress` (progress).\n`Operation.response` contains `AnnotateVideoResponse` (results).",
-      "file": "Client/AnnotateVideo/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "AnnotateVideo",
+        "client": {
+          "fullName": "google.cloud.videointelligence.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.videointelligence.v1.Client.AnnotateVideo",
+        "method": {
+          "fullName": "google.cloud.videointelligence.v1.VideoIntelligenceService.AnnotateVideo",
+          "service": {
+            "fullName": "google.cloud.videointelligence.v1.VideoIntelligenceService",
+            "shortName": "VideoIntelligenceService"
+          },
+          "shortName": "AnnotateVideo"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "videointelligencepb.AnnotateVideoRequest",
-            "name": "req"
+            "name": "req",
+            "type": "videointelligencepb.AnnotateVideoRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "AnnotateVideoOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.videointelligence.v1.Client"
-        },
-        "method": {
-          "shortName": "AnnotateVideo",
-          "fullName": "google.cloud.videointelligence.v1.VideoIntelligenceService.AnnotateVideo",
-          "service": {
-            "shortName": "VideoIntelligenceService",
-            "fullName": "google.cloud.videointelligence.v1.VideoIntelligenceService"
-          }
-        }
+        "shortName": "AnnotateVideo"
       },
+      "description": "AnnotateVideo performs asynchronous video annotation. Progress and results can be\nretrieved through the `google.longrunning.Operations` interface.\n`Operation.metadata` contains `AnnotateVideoProgress` (progress).\n`Operation.response` contains `AnnotateVideoResponse` (results).",
+      "file": "Client/AnnotateVideo/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "videointelligence_v1_generated_VideoIntelligenceService_AnnotateVideo_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "videointelligence AnnotateVideo Sample"
     }
   ]
 }

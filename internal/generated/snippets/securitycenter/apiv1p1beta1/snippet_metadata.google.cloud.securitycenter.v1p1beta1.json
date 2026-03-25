@@ -1,1072 +1,1072 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/securitycenter/apiv1p1beta1",
-    "version": "1.39.0",
-    "language": "GO",
     "apis": [
       {
         "id": "google.cloud.securitycenter.v1p1beta1",
         "version": "v1p1beta1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/securitycenter/apiv1p1beta1",
+    "version": "1.39.0"
   },
   "snippets": [
     {
-      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_CreateFinding_sync",
-      "title": "securitycenter CreateFinding Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.securitycenter.v1p1beta1.Client.CreateFinding",
+        "method": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.CreateFinding",
+          "service": {
+            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter",
+            "shortName": "SecurityCenter"
+          },
+          "shortName": "CreateFinding"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "securitycenterpb.CreateFindingRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*securitycenterpb.Finding",
+        "shortName": "CreateFinding"
+      },
       "description": "CreateFinding creates a finding. The corresponding source must exist for finding\ncreation to succeed.",
       "file": "Client/CreateFinding/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateFinding",
-        "fullName": "google.cloud.securitycenter.v1p1beta1.Client.CreateFinding",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "securitycenterpb.CreateFindingRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*securitycenterpb.Finding",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.Client"
-        },
-        "method": {
-          "shortName": "CreateFinding",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.CreateFinding",
-          "service": {
-            "shortName": "SecurityCenter",
-            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_CreateFinding_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "securitycenter CreateFinding Sample"
     },
     {
-      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_CreateNotificationConfig_sync",
-      "title": "securitycenter CreateNotificationConfig Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.securitycenter.v1p1beta1.Client.CreateNotificationConfig",
+        "method": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.CreateNotificationConfig",
+          "service": {
+            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter",
+            "shortName": "SecurityCenter"
+          },
+          "shortName": "CreateNotificationConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "securitycenterpb.CreateNotificationConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*securitycenterpb.NotificationConfig",
+        "shortName": "CreateNotificationConfig"
+      },
       "description": "CreateNotificationConfig creates a notification config.",
       "file": "Client/CreateNotificationConfig/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateNotificationConfig",
-        "fullName": "google.cloud.securitycenter.v1p1beta1.Client.CreateNotificationConfig",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "securitycenterpb.CreateNotificationConfigRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*securitycenterpb.NotificationConfig",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.Client"
-        },
-        "method": {
-          "shortName": "CreateNotificationConfig",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.CreateNotificationConfig",
-          "service": {
-            "shortName": "SecurityCenter",
-            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_CreateNotificationConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "securitycenter CreateNotificationConfig Sample"
     },
     {
-      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_CreateSource_sync",
-      "title": "securitycenter CreateSource Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.securitycenter.v1p1beta1.Client.CreateSource",
+        "method": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.CreateSource",
+          "service": {
+            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter",
+            "shortName": "SecurityCenter"
+          },
+          "shortName": "CreateSource"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "securitycenterpb.CreateSourceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*securitycenterpb.Source",
+        "shortName": "CreateSource"
+      },
       "description": "CreateSource creates a source.",
       "file": "Client/CreateSource/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateSource",
-        "fullName": "google.cloud.securitycenter.v1p1beta1.Client.CreateSource",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "securitycenterpb.CreateSourceRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*securitycenterpb.Source",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.Client"
-        },
-        "method": {
-          "shortName": "CreateSource",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.CreateSource",
-          "service": {
-            "shortName": "SecurityCenter",
-            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_CreateSource_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "securitycenter CreateSource Sample"
     },
     {
-      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_DeleteNotificationConfig_sync",
-      "title": "securitycenter DeleteNotificationConfig Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.securitycenter.v1p1beta1.Client.DeleteNotificationConfig",
+        "method": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.DeleteNotificationConfig",
+          "service": {
+            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter",
+            "shortName": "SecurityCenter"
+          },
+          "shortName": "DeleteNotificationConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "securitycenterpb.DeleteNotificationConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteNotificationConfig"
+      },
       "description": "DeleteNotificationConfig deletes a notification config.",
       "file": "Client/DeleteNotificationConfig/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteNotificationConfig",
-        "fullName": "google.cloud.securitycenter.v1p1beta1.Client.DeleteNotificationConfig",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "securitycenterpb.DeleteNotificationConfigRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.Client"
-        },
-        "method": {
-          "shortName": "DeleteNotificationConfig",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.DeleteNotificationConfig",
-          "service": {
-            "shortName": "SecurityCenter",
-            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_DeleteNotificationConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "securitycenter DeleteNotificationConfig Sample"
     },
     {
-      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_GetIamPolicy_sync",
-      "title": "securitycenter GetIamPolicy Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.securitycenter.v1p1beta1.Client.GetIamPolicy",
+        "method": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.GetIamPolicy",
+          "service": {
+            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter",
+            "shortName": "SecurityCenter"
+          },
+          "shortName": "GetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.GetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "GetIamPolicy"
+      },
       "description": "GetIamPolicy gets the access control policy on the specified Source.",
       "file": "Client/GetIamPolicy/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetIamPolicy",
-        "fullName": "google.cloud.securitycenter.v1p1beta1.Client.GetIamPolicy",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "iampb.GetIamPolicyRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*iampb.Policy",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.Client"
-        },
-        "method": {
-          "shortName": "GetIamPolicy",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.GetIamPolicy",
-          "service": {
-            "shortName": "SecurityCenter",
-            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_GetIamPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "securitycenter GetIamPolicy Sample"
     },
     {
-      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_GetNotificationConfig_sync",
-      "title": "securitycenter GetNotificationConfig Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.securitycenter.v1p1beta1.Client.GetNotificationConfig",
+        "method": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.GetNotificationConfig",
+          "service": {
+            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter",
+            "shortName": "SecurityCenter"
+          },
+          "shortName": "GetNotificationConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "securitycenterpb.GetNotificationConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*securitycenterpb.NotificationConfig",
+        "shortName": "GetNotificationConfig"
+      },
       "description": "GetNotificationConfig gets a notification config.",
       "file": "Client/GetNotificationConfig/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetNotificationConfig",
-        "fullName": "google.cloud.securitycenter.v1p1beta1.Client.GetNotificationConfig",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "securitycenterpb.GetNotificationConfigRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*securitycenterpb.NotificationConfig",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.Client"
-        },
-        "method": {
-          "shortName": "GetNotificationConfig",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.GetNotificationConfig",
-          "service": {
-            "shortName": "SecurityCenter",
-            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_GetNotificationConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "securitycenter GetNotificationConfig Sample"
     },
     {
-      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_GetOrganizationSettings_sync",
-      "title": "securitycenter GetOrganizationSettings Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.securitycenter.v1p1beta1.Client.GetOrganizationSettings",
+        "method": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.GetOrganizationSettings",
+          "service": {
+            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter",
+            "shortName": "SecurityCenter"
+          },
+          "shortName": "GetOrganizationSettings"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "securitycenterpb.GetOrganizationSettingsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*securitycenterpb.OrganizationSettings",
+        "shortName": "GetOrganizationSettings"
+      },
       "description": "GetOrganizationSettings gets the settings for an organization.",
       "file": "Client/GetOrganizationSettings/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetOrganizationSettings",
-        "fullName": "google.cloud.securitycenter.v1p1beta1.Client.GetOrganizationSettings",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "securitycenterpb.GetOrganizationSettingsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*securitycenterpb.OrganizationSettings",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.Client"
-        },
-        "method": {
-          "shortName": "GetOrganizationSettings",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.GetOrganizationSettings",
-          "service": {
-            "shortName": "SecurityCenter",
-            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_GetOrganizationSettings_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "securitycenter GetOrganizationSettings Sample"
     },
     {
-      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_GetSource_sync",
-      "title": "securitycenter GetSource Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.securitycenter.v1p1beta1.Client.GetSource",
+        "method": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.GetSource",
+          "service": {
+            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter",
+            "shortName": "SecurityCenter"
+          },
+          "shortName": "GetSource"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "securitycenterpb.GetSourceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*securitycenterpb.Source",
+        "shortName": "GetSource"
+      },
       "description": "GetSource gets a source.",
       "file": "Client/GetSource/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetSource",
-        "fullName": "google.cloud.securitycenter.v1p1beta1.Client.GetSource",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "securitycenterpb.GetSourceRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*securitycenterpb.Source",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.Client"
-        },
-        "method": {
-          "shortName": "GetSource",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.GetSource",
-          "service": {
-            "shortName": "SecurityCenter",
-            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_GetSource_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "securitycenter GetSource Sample"
     },
     {
-      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_GroupAssets_sync",
-      "title": "securitycenter GroupAssets Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.securitycenter.v1p1beta1.Client.GroupAssets",
+        "method": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.GroupAssets",
+          "service": {
+            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter",
+            "shortName": "SecurityCenter"
+          },
+          "shortName": "GroupAssets"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "securitycenterpb.GroupAssetsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "GroupResultIterator",
+        "shortName": "GroupAssets"
+      },
       "description": "GroupAssets filters an organization's assets and  groups them by their specified\nproperties.",
       "file": "Client/GroupAssets/main.go",
       "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_GroupAssets_sync",
+      "segments": [
+        {
+          "end": 66,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "securitycenter GroupAssets Sample"
+    },
+    {
       "clientMethod": {
-        "shortName": "GroupAssets",
-        "fullName": "google.cloud.securitycenter.v1p1beta1.Client.GroupAssets",
+        "client": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.securitycenter.v1p1beta1.Client.GroupFindings",
+        "method": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.GroupFindings",
+          "service": {
+            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter",
+            "shortName": "SecurityCenter"
+          },
+          "shortName": "GroupFindings"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "securitycenterpb.GroupAssetsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "securitycenterpb.GroupFindingsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "GroupResultIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.Client"
-        },
-        "method": {
-          "shortName": "GroupAssets",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.GroupAssets",
-          "service": {
-            "shortName": "SecurityCenter",
-            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter"
-          }
-        }
+        "shortName": "GroupFindings"
       },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 66,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_GroupFindings_sync",
-      "title": "securitycenter GroupFindings Sample",
       "description": "GroupFindings filters an organization or source's findings and  groups them by their\nspecified properties.\n\nTo group across all sources provide a `-` as the source id.\nExample: /v1/organizations/{organization_id}/sources/-/findings,\n/v1/folders/{folder_id}/sources/-/findings,\n/v1/projects/{project_id}/sources/-/findings",
       "file": "Client/GroupFindings/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GroupFindings",
-        "fullName": "google.cloud.securitycenter.v1p1beta1.Client.GroupFindings",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "securitycenterpb.GroupFindingsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "GroupResultIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.Client"
-        },
-        "method": {
-          "shortName": "GroupFindings",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.GroupFindings",
-          "service": {
-            "shortName": "SecurityCenter",
-            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_GroupFindings_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "securitycenter GroupFindings Sample"
     },
     {
-      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_ListAssets_sync",
-      "title": "securitycenter ListAssets Sample",
-      "description": "ListAssets lists an organization's assets.",
-      "file": "Client/ListAssets/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListAssets",
+        "client": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.securitycenter.v1p1beta1.Client.ListAssets",
+        "method": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.ListAssets",
+          "service": {
+            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter",
+            "shortName": "SecurityCenter"
+          },
+          "shortName": "ListAssets"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "securitycenterpb.ListAssetsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "securitycenterpb.ListAssetsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ListAssetsResponse_ListAssetsResultIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.Client"
-        },
-        "method": {
-          "shortName": "ListAssets",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.ListAssets",
-          "service": {
-            "shortName": "SecurityCenter",
-            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter"
-          }
-        }
+        "shortName": "ListAssets"
       },
+      "description": "ListAssets lists an organization's assets.",
+      "file": "Client/ListAssets/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_ListAssets_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "securitycenter ListAssets Sample"
     },
     {
-      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_ListFindings_sync",
-      "title": "securitycenter ListFindings Sample",
-      "description": "ListFindings lists an organization or source's findings.\n\nTo list across all sources provide a `-` as the source id.\nExample: /v1p1beta1/organizations/{organization_id}/sources/-/findings",
-      "file": "Client/ListFindings/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListFindings",
+        "client": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.securitycenter.v1p1beta1.Client.ListFindings",
+        "method": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.ListFindings",
+          "service": {
+            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter",
+            "shortName": "SecurityCenter"
+          },
+          "shortName": "ListFindings"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "securitycenterpb.ListFindingsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "securitycenterpb.ListFindingsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ListFindingsResponse_ListFindingsResultIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.Client"
-        },
-        "method": {
-          "shortName": "ListFindings",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.ListFindings",
-          "service": {
-            "shortName": "SecurityCenter",
-            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter"
-          }
-        }
+        "shortName": "ListFindings"
       },
+      "description": "ListFindings lists an organization or source's findings.\n\nTo list across all sources provide a `-` as the source id.\nExample: /v1p1beta1/organizations/{organization_id}/sources/-/findings",
+      "file": "Client/ListFindings/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_ListFindings_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "securitycenter ListFindings Sample"
     },
     {
-      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_ListNotificationConfigs_sync",
-      "title": "securitycenter ListNotificationConfigs Sample",
-      "description": "ListNotificationConfigs lists notification configs.",
-      "file": "Client/ListNotificationConfigs/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListNotificationConfigs",
+        "client": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.securitycenter.v1p1beta1.Client.ListNotificationConfigs",
+        "method": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.ListNotificationConfigs",
+          "service": {
+            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter",
+            "shortName": "SecurityCenter"
+          },
+          "shortName": "ListNotificationConfigs"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "securitycenterpb.ListNotificationConfigsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "securitycenterpb.ListNotificationConfigsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "NotificationConfigIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.Client"
-        },
-        "method": {
-          "shortName": "ListNotificationConfigs",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.ListNotificationConfigs",
-          "service": {
-            "shortName": "SecurityCenter",
-            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter"
-          }
-        }
+        "shortName": "ListNotificationConfigs"
       },
+      "description": "ListNotificationConfigs lists notification configs.",
+      "file": "Client/ListNotificationConfigs/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_ListNotificationConfigs_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "securitycenter ListNotificationConfigs Sample"
     },
     {
-      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_ListSources_sync",
-      "title": "securitycenter ListSources Sample",
-      "description": "ListSources lists all sources belonging to an organization.",
-      "file": "Client/ListSources/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListSources",
+        "client": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.securitycenter.v1p1beta1.Client.ListSources",
+        "method": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.ListSources",
+          "service": {
+            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter",
+            "shortName": "SecurityCenter"
+          },
+          "shortName": "ListSources"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "securitycenterpb.ListSourcesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "securitycenterpb.ListSourcesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "SourceIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.Client"
-        },
-        "method": {
-          "shortName": "ListSources",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.ListSources",
-          "service": {
-            "shortName": "SecurityCenter",
-            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter"
-          }
-        }
+        "shortName": "ListSources"
       },
+      "description": "ListSources lists all sources belonging to an organization.",
+      "file": "Client/ListSources/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_ListSources_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "securitycenter ListSources Sample"
     },
     {
-      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_RunAssetDiscovery_sync",
-      "title": "securitycenter RunAssetDiscovery Sample",
-      "description": "RunAssetDiscovery runs asset discovery. The discovery is tracked with a long-running\noperation.\n\nThis API can only be called with limited frequency for an organization. If\nit is called too frequently the caller will receive a TOO_MANY_REQUESTS\nerror.",
-      "file": "Client/RunAssetDiscovery/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "RunAssetDiscovery",
+        "client": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.securitycenter.v1p1beta1.Client.RunAssetDiscovery",
+        "method": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.RunAssetDiscovery",
+          "service": {
+            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter",
+            "shortName": "SecurityCenter"
+          },
+          "shortName": "RunAssetDiscovery"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "securitycenterpb.RunAssetDiscoveryRequest",
-            "name": "req"
+            "name": "req",
+            "type": "securitycenterpb.RunAssetDiscoveryRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "RunAssetDiscoveryOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.Client"
-        },
-        "method": {
-          "shortName": "RunAssetDiscovery",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.RunAssetDiscovery",
-          "service": {
-            "shortName": "SecurityCenter",
-            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter"
-          }
-        }
+        "shortName": "RunAssetDiscovery"
       },
+      "description": "RunAssetDiscovery runs asset discovery. The discovery is tracked with a long-running\noperation.\n\nThis API can only be called with limited frequency for an organization. If\nit is called too frequently the caller will receive a TOO_MANY_REQUESTS\nerror.",
+      "file": "Client/RunAssetDiscovery/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_RunAssetDiscovery_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "securitycenter RunAssetDiscovery Sample"
     },
     {
-      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_SetFindingState_sync",
-      "title": "securitycenter SetFindingState Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.securitycenter.v1p1beta1.Client.SetFindingState",
+        "method": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.SetFindingState",
+          "service": {
+            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter",
+            "shortName": "SecurityCenter"
+          },
+          "shortName": "SetFindingState"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "securitycenterpb.SetFindingStateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*securitycenterpb.Finding",
+        "shortName": "SetFindingState"
+      },
       "description": "SetFindingState updates the state of a finding.",
       "file": "Client/SetFindingState/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "SetFindingState",
-        "fullName": "google.cloud.securitycenter.v1p1beta1.Client.SetFindingState",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "securitycenterpb.SetFindingStateRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*securitycenterpb.Finding",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.Client"
-        },
-        "method": {
-          "shortName": "SetFindingState",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.SetFindingState",
-          "service": {
-            "shortName": "SecurityCenter",
-            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_SetFindingState_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "securitycenter SetFindingState Sample"
     },
     {
-      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_SetIamPolicy_sync",
-      "title": "securitycenter SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the access control policy on the specified Source.",
-      "file": "Client/SetIamPolicy/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "SetIamPolicy",
+        "client": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.securitycenter.v1p1beta1.Client.SetIamPolicy",
+        "method": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.SetIamPolicy",
+          "service": {
+            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter",
+            "shortName": "SecurityCenter"
+          },
+          "shortName": "SetIamPolicy"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "iampb.SetIamPolicyRequest",
-            "name": "req"
+            "name": "req",
+            "type": "iampb.SetIamPolicyRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*iampb.Policy",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.Client"
-        },
-        "method": {
-          "shortName": "SetIamPolicy",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.SetIamPolicy",
-          "service": {
-            "shortName": "SecurityCenter",
-            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter"
-          }
-        }
+        "shortName": "SetIamPolicy"
       },
+      "description": "SetIamPolicy sets the access control policy on the specified Source.",
+      "file": "Client/SetIamPolicy/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_SetIamPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "securitycenter SetIamPolicy Sample"
     },
     {
-      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_TestIamPermissions_sync",
-      "title": "securitycenter TestIamPermissions Sample",
-      "description": "TestIamPermissions returns the permissions that a caller has on the specified source.",
-      "file": "Client/TestIamPermissions/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "TestIamPermissions",
+        "client": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.securitycenter.v1p1beta1.Client.TestIamPermissions",
+        "method": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.TestIamPermissions",
+          "service": {
+            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter",
+            "shortName": "SecurityCenter"
+          },
+          "shortName": "TestIamPermissions"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "iampb.TestIamPermissionsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "iampb.TestIamPermissionsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*iampb.TestIamPermissionsResponse",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.Client"
-        },
-        "method": {
-          "shortName": "TestIamPermissions",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.TestIamPermissions",
-          "service": {
-            "shortName": "SecurityCenter",
-            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter"
-          }
-        }
+        "shortName": "TestIamPermissions"
       },
+      "description": "TestIamPermissions returns the permissions that a caller has on the specified source.",
+      "file": "Client/TestIamPermissions/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_TestIamPermissions_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "securitycenter TestIamPermissions Sample"
     },
     {
-      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_UpdateFinding_sync",
-      "title": "securitycenter UpdateFinding Sample",
-      "description": "UpdateFinding creates or updates a finding. The corresponding source must exist for a\nfinding creation to succeed.",
-      "file": "Client/UpdateFinding/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateFinding",
+        "client": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.securitycenter.v1p1beta1.Client.UpdateFinding",
+        "method": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.UpdateFinding",
+          "service": {
+            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter",
+            "shortName": "SecurityCenter"
+          },
+          "shortName": "UpdateFinding"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "securitycenterpb.UpdateFindingRequest",
-            "name": "req"
+            "name": "req",
+            "type": "securitycenterpb.UpdateFindingRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*securitycenterpb.Finding",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.Client"
-        },
-        "method": {
-          "shortName": "UpdateFinding",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.UpdateFinding",
-          "service": {
-            "shortName": "SecurityCenter",
-            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter"
-          }
-        }
+        "shortName": "UpdateFinding"
       },
+      "description": "UpdateFinding creates or updates a finding. The corresponding source must exist for a\nfinding creation to succeed.",
+      "file": "Client/UpdateFinding/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_UpdateFinding_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "securitycenter UpdateFinding Sample"
     },
     {
-      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_UpdateNotificationConfig_sync",
-      "title": "securitycenter UpdateNotificationConfig Sample",
-      "description": "UpdateNotificationConfig updates a notification config. The following update\nfields are allowed: description, pubsub_topic, streaming_config.filter",
-      "file": "Client/UpdateNotificationConfig/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateNotificationConfig",
+        "client": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.securitycenter.v1p1beta1.Client.UpdateNotificationConfig",
+        "method": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.UpdateNotificationConfig",
+          "service": {
+            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter",
+            "shortName": "SecurityCenter"
+          },
+          "shortName": "UpdateNotificationConfig"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "securitycenterpb.UpdateNotificationConfigRequest",
-            "name": "req"
+            "name": "req",
+            "type": "securitycenterpb.UpdateNotificationConfigRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*securitycenterpb.NotificationConfig",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.Client"
-        },
-        "method": {
-          "shortName": "UpdateNotificationConfig",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.UpdateNotificationConfig",
-          "service": {
-            "shortName": "SecurityCenter",
-            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter"
-          }
-        }
+        "shortName": "UpdateNotificationConfig"
       },
+      "description": "UpdateNotificationConfig updates a notification config. The following update\nfields are allowed: description, pubsub_topic, streaming_config.filter",
+      "file": "Client/UpdateNotificationConfig/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_UpdateNotificationConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "securitycenter UpdateNotificationConfig Sample"
     },
     {
-      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_UpdateOrganizationSettings_sync",
-      "title": "securitycenter UpdateOrganizationSettings Sample",
-      "description": "UpdateOrganizationSettings updates an organization's settings.",
-      "file": "Client/UpdateOrganizationSettings/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateOrganizationSettings",
+        "client": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.securitycenter.v1p1beta1.Client.UpdateOrganizationSettings",
+        "method": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.UpdateOrganizationSettings",
+          "service": {
+            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter",
+            "shortName": "SecurityCenter"
+          },
+          "shortName": "UpdateOrganizationSettings"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "securitycenterpb.UpdateOrganizationSettingsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "securitycenterpb.UpdateOrganizationSettingsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*securitycenterpb.OrganizationSettings",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.Client"
-        },
-        "method": {
-          "shortName": "UpdateOrganizationSettings",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.UpdateOrganizationSettings",
-          "service": {
-            "shortName": "SecurityCenter",
-            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter"
-          }
-        }
+        "shortName": "UpdateOrganizationSettings"
       },
+      "description": "UpdateOrganizationSettings updates an organization's settings.",
+      "file": "Client/UpdateOrganizationSettings/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_UpdateOrganizationSettings_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "securitycenter UpdateOrganizationSettings Sample"
     },
     {
-      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_UpdateSecurityMarks_sync",
-      "title": "securitycenter UpdateSecurityMarks Sample",
-      "description": "UpdateSecurityMarks updates security marks.",
-      "file": "Client/UpdateSecurityMarks/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateSecurityMarks",
+        "client": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.securitycenter.v1p1beta1.Client.UpdateSecurityMarks",
+        "method": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.UpdateSecurityMarks",
+          "service": {
+            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter",
+            "shortName": "SecurityCenter"
+          },
+          "shortName": "UpdateSecurityMarks"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "securitycenterpb.UpdateSecurityMarksRequest",
-            "name": "req"
+            "name": "req",
+            "type": "securitycenterpb.UpdateSecurityMarksRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*securitycenterpb.SecurityMarks",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.Client"
-        },
-        "method": {
-          "shortName": "UpdateSecurityMarks",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.UpdateSecurityMarks",
-          "service": {
-            "shortName": "SecurityCenter",
-            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter"
-          }
-        }
+        "shortName": "UpdateSecurityMarks"
       },
+      "description": "UpdateSecurityMarks updates security marks.",
+      "file": "Client/UpdateSecurityMarks/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_UpdateSecurityMarks_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "securitycenter UpdateSecurityMarks Sample"
     },
     {
-      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_UpdateSource_sync",
-      "title": "securitycenter UpdateSource Sample",
-      "description": "UpdateSource updates a source.",
-      "file": "Client/UpdateSource/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateSource",
+        "client": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.securitycenter.v1p1beta1.Client.UpdateSource",
+        "method": {
+          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.UpdateSource",
+          "service": {
+            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter",
+            "shortName": "SecurityCenter"
+          },
+          "shortName": "UpdateSource"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "securitycenterpb.UpdateSourceRequest",
-            "name": "req"
+            "name": "req",
+            "type": "securitycenterpb.UpdateSourceRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*securitycenterpb.Source",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.Client"
-        },
-        "method": {
-          "shortName": "UpdateSource",
-          "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter.UpdateSource",
-          "service": {
-            "shortName": "SecurityCenter",
-            "fullName": "google.cloud.securitycenter.v1p1beta1.SecurityCenter"
-          }
-        }
+        "shortName": "UpdateSource"
       },
+      "description": "UpdateSource updates a source.",
+      "file": "Client/UpdateSource/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_UpdateSource_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "securitycenter UpdateSource Sample"
     }
   ]
 }

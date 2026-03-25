@@ -1,933 +1,933 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/containeranalysis/apiv1beta1",
-    "version": "0.14.2",
-    "language": "GO",
     "apis": [
       {
         "id": "google.devtools.containeranalysis.v1beta1",
         "version": "v1beta1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/containeranalysis/apiv1beta1",
+    "version": "0.14.2"
   },
   "snippets": [
     {
-      "regionTag": "containeranalysis_v1beta1_generated_ContainerAnalysisV1Beta1_ExportSBOM_sync",
-      "title": "containeranalysis ExportSBOM Sample",
-      "description": "ExportSBOM generates an SBOM and other dependency information for the given resource.",
-      "file": "ContainerAnalysisV1Beta1Client/ExportSBOM/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ExportSBOM",
+        "client": {
+          "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1Client",
+          "shortName": "ContainerAnalysisV1Beta1Client"
+        },
         "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1Client.ExportSBOM",
+        "method": {
+          "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1.ExportSBOM",
+          "service": {
+            "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1",
+            "shortName": "ContainerAnalysisV1Beta1"
+          },
+          "shortName": "ExportSBOM"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "containeranalysispb.ExportSBOMRequest",
-            "name": "req"
+            "name": "req",
+            "type": "containeranalysispb.ExportSBOMRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*containeranalysispb.ExportSBOMResponse",
-        "client": {
-          "shortName": "ContainerAnalysisV1Beta1Client",
-          "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1Client"
-        },
-        "method": {
-          "shortName": "ExportSBOM",
-          "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1.ExportSBOM",
-          "service": {
-            "shortName": "ContainerAnalysisV1Beta1",
-            "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1"
-          }
-        }
+        "shortName": "ExportSBOM"
       },
+      "description": "ExportSBOM generates an SBOM and other dependency information for the given resource.",
+      "file": "ContainerAnalysisV1Beta1Client/ExportSBOM/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "containeranalysis_v1beta1_generated_ContainerAnalysisV1Beta1_ExportSBOM_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "containeranalysis ExportSBOM Sample"
     },
     {
-      "regionTag": "containeranalysis_v1beta1_generated_ContainerAnalysisV1Beta1_GeneratePackagesSummary_sync",
-      "title": "containeranalysis GeneratePackagesSummary Sample",
-      "description": "GeneratePackagesSummary gets a summary of the packages within a given resource.",
-      "file": "ContainerAnalysisV1Beta1Client/GeneratePackagesSummary/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GeneratePackagesSummary",
+        "client": {
+          "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1Client",
+          "shortName": "ContainerAnalysisV1Beta1Client"
+        },
         "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1Client.GeneratePackagesSummary",
+        "method": {
+          "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1.GeneratePackagesSummary",
+          "service": {
+            "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1",
+            "shortName": "ContainerAnalysisV1Beta1"
+          },
+          "shortName": "GeneratePackagesSummary"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "containeranalysispb.GeneratePackagesSummaryRequest",
-            "name": "req"
+            "name": "req",
+            "type": "containeranalysispb.GeneratePackagesSummaryRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*containeranalysispb.PackagesSummaryResponse",
-        "client": {
-          "shortName": "ContainerAnalysisV1Beta1Client",
-          "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1Client"
-        },
-        "method": {
-          "shortName": "GeneratePackagesSummary",
-          "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1.GeneratePackagesSummary",
-          "service": {
-            "shortName": "ContainerAnalysisV1Beta1",
-            "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1"
-          }
-        }
+        "shortName": "GeneratePackagesSummary"
       },
+      "description": "GeneratePackagesSummary gets a summary of the packages within a given resource.",
+      "file": "ContainerAnalysisV1Beta1Client/GeneratePackagesSummary/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "containeranalysis_v1beta1_generated_ContainerAnalysisV1Beta1_GeneratePackagesSummary_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "containeranalysis GeneratePackagesSummary Sample"
     },
     {
-      "regionTag": "containeranalysis_v1beta1_generated_ContainerAnalysisV1Beta1_GetIamPolicy_sync",
-      "title": "containeranalysis GetIamPolicy Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1Client",
+          "shortName": "ContainerAnalysisV1Beta1Client"
+        },
+        "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1Client.GetIamPolicy",
+        "method": {
+          "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1.GetIamPolicy",
+          "service": {
+            "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1",
+            "shortName": "ContainerAnalysisV1Beta1"
+          },
+          "shortName": "GetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.GetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "GetIamPolicy"
+      },
       "description": "GetIamPolicy gets the access control policy for a note or an occurrence resource.\nRequires `containeranalysis.notes.setIamPolicy` or\n`containeranalysis.occurrences.setIamPolicy` permission if the resource is\na note or occurrence, respectively.\n\nThe resource takes the format `projects/[PROJECT_ID]/notes/[NOTE_ID]` for\nnotes and `projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID]` for\noccurrences.",
       "file": "ContainerAnalysisV1Beta1Client/GetIamPolicy/main.go",
       "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "containeranalysis_v1beta1_generated_ContainerAnalysisV1Beta1_GetIamPolicy_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "containeranalysis GetIamPolicy Sample"
+    },
+    {
       "clientMethod": {
-        "shortName": "GetIamPolicy",
-        "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1Client.GetIamPolicy",
+        "client": {
+          "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1Client",
+          "shortName": "ContainerAnalysisV1Beta1Client"
+        },
+        "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1Client.SetIamPolicy",
+        "method": {
+          "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1.SetIamPolicy",
+          "service": {
+            "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1",
+            "shortName": "ContainerAnalysisV1Beta1"
+          },
+          "shortName": "SetIamPolicy"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "iampb.GetIamPolicyRequest",
-            "name": "req"
+            "name": "req",
+            "type": "iampb.SetIamPolicyRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*iampb.Policy",
-        "client": {
-          "shortName": "ContainerAnalysisV1Beta1Client",
-          "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1Client"
-        },
-        "method": {
-          "shortName": "GetIamPolicy",
-          "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1.GetIamPolicy",
-          "service": {
-            "shortName": "ContainerAnalysisV1Beta1",
-            "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1"
-          }
-        }
+        "shortName": "SetIamPolicy"
       },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "containeranalysis_v1beta1_generated_ContainerAnalysisV1Beta1_SetIamPolicy_sync",
-      "title": "containeranalysis SetIamPolicy Sample",
       "description": "SetIamPolicy sets the access control policy on the specified note or occurrence.\nRequires `containeranalysis.notes.setIamPolicy` or\n`containeranalysis.occurrences.setIamPolicy` permission if the resource is\na note or an occurrence, respectively.\n\nThe resource takes the format `projects/[PROJECT_ID]/notes/[NOTE_ID]` for\nnotes and `projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID]` for\noccurrences.",
       "file": "ContainerAnalysisV1Beta1Client/SetIamPolicy/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "SetIamPolicy",
-        "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1Client.SetIamPolicy",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "iampb.SetIamPolicyRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*iampb.Policy",
-        "client": {
-          "shortName": "ContainerAnalysisV1Beta1Client",
-          "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1Client"
-        },
-        "method": {
-          "shortName": "SetIamPolicy",
-          "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1.SetIamPolicy",
-          "service": {
-            "shortName": "ContainerAnalysisV1Beta1",
-            "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "containeranalysis_v1beta1_generated_ContainerAnalysisV1Beta1_SetIamPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "containeranalysis SetIamPolicy Sample"
     },
     {
-      "regionTag": "containeranalysis_v1beta1_generated_ContainerAnalysisV1Beta1_TestIamPermissions_sync",
-      "title": "containeranalysis TestIamPermissions Sample",
-      "description": "TestIamPermissions returns the permissions that a caller has on the specified note or\noccurrence. Requires list permission on the project (for example,\n`containeranalysis.notes.list`).\n\nThe resource takes the format `projects/[PROJECT_ID]/notes/[NOTE_ID]` for\nnotes and `projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID]` for\noccurrences.",
-      "file": "ContainerAnalysisV1Beta1Client/TestIamPermissions/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "TestIamPermissions",
+        "client": {
+          "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1Client",
+          "shortName": "ContainerAnalysisV1Beta1Client"
+        },
         "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1Client.TestIamPermissions",
+        "method": {
+          "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1.TestIamPermissions",
+          "service": {
+            "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1",
+            "shortName": "ContainerAnalysisV1Beta1"
+          },
+          "shortName": "TestIamPermissions"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "iampb.TestIamPermissionsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "iampb.TestIamPermissionsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*iampb.TestIamPermissionsResponse",
-        "client": {
-          "shortName": "ContainerAnalysisV1Beta1Client",
-          "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1Client"
-        },
-        "method": {
-          "shortName": "TestIamPermissions",
-          "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1.TestIamPermissions",
-          "service": {
-            "shortName": "ContainerAnalysisV1Beta1",
-            "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1"
-          }
-        }
+        "shortName": "TestIamPermissions"
       },
+      "description": "TestIamPermissions returns the permissions that a caller has on the specified note or\noccurrence. Requires list permission on the project (for example,\n`containeranalysis.notes.list`).\n\nThe resource takes the format `projects/[PROJECT_ID]/notes/[NOTE_ID]` for\nnotes and `projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID]` for\noccurrences.",
+      "file": "ContainerAnalysisV1Beta1Client/TestIamPermissions/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "containeranalysis_v1beta1_generated_ContainerAnalysisV1Beta1_TestIamPermissions_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "containeranalysis TestIamPermissions Sample"
     },
     {
-      "regionTag": "containeranalysis_v1beta1_generated_GrafeasV1Beta1_BatchCreateNotes_sync",
-      "title": "containeranalysis BatchCreateNotes Sample",
-      "description": "BatchCreateNotes creates new notes in batch.",
-      "file": "GrafeasV1Beta1Client/BatchCreateNotes/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "BatchCreateNotes",
+        "client": {
+          "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client",
+          "shortName": "GrafeasV1Beta1Client"
+        },
         "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client.BatchCreateNotes",
+        "method": {
+          "fullName": "grafeas.v1beta1.GrafeasV1Beta1.BatchCreateNotes",
+          "service": {
+            "fullName": "grafeas.v1beta1.GrafeasV1Beta1",
+            "shortName": "GrafeasV1Beta1"
+          },
+          "shortName": "BatchCreateNotes"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "grafeaspb.BatchCreateNotesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "grafeaspb.BatchCreateNotesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*grafeaspb.BatchCreateNotesResponse",
-        "client": {
-          "shortName": "GrafeasV1Beta1Client",
-          "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client"
-        },
-        "method": {
-          "shortName": "BatchCreateNotes",
-          "fullName": "grafeas.v1beta1.GrafeasV1Beta1.BatchCreateNotes",
-          "service": {
-            "shortName": "GrafeasV1Beta1",
-            "fullName": "grafeas.v1beta1.GrafeasV1Beta1"
-          }
-        }
+        "shortName": "BatchCreateNotes"
       },
+      "description": "BatchCreateNotes creates new notes in batch.",
+      "file": "GrafeasV1Beta1Client/BatchCreateNotes/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "containeranalysis_v1beta1_generated_GrafeasV1Beta1_BatchCreateNotes_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "containeranalysis BatchCreateNotes Sample"
     },
     {
-      "regionTag": "containeranalysis_v1beta1_generated_GrafeasV1Beta1_BatchCreateOccurrences_sync",
-      "title": "containeranalysis BatchCreateOccurrences Sample",
-      "description": "BatchCreateOccurrences creates new occurrences in batch.",
-      "file": "GrafeasV1Beta1Client/BatchCreateOccurrences/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "BatchCreateOccurrences",
+        "client": {
+          "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client",
+          "shortName": "GrafeasV1Beta1Client"
+        },
         "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client.BatchCreateOccurrences",
+        "method": {
+          "fullName": "grafeas.v1beta1.GrafeasV1Beta1.BatchCreateOccurrences",
+          "service": {
+            "fullName": "grafeas.v1beta1.GrafeasV1Beta1",
+            "shortName": "GrafeasV1Beta1"
+          },
+          "shortName": "BatchCreateOccurrences"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "grafeaspb.BatchCreateOccurrencesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "grafeaspb.BatchCreateOccurrencesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*grafeaspb.BatchCreateOccurrencesResponse",
-        "client": {
-          "shortName": "GrafeasV1Beta1Client",
-          "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client"
-        },
-        "method": {
-          "shortName": "BatchCreateOccurrences",
-          "fullName": "grafeas.v1beta1.GrafeasV1Beta1.BatchCreateOccurrences",
-          "service": {
-            "shortName": "GrafeasV1Beta1",
-            "fullName": "grafeas.v1beta1.GrafeasV1Beta1"
-          }
-        }
+        "shortName": "BatchCreateOccurrences"
       },
+      "description": "BatchCreateOccurrences creates new occurrences in batch.",
+      "file": "GrafeasV1Beta1Client/BatchCreateOccurrences/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "containeranalysis_v1beta1_generated_GrafeasV1Beta1_BatchCreateOccurrences_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "containeranalysis BatchCreateOccurrences Sample"
     },
     {
-      "regionTag": "containeranalysis_v1beta1_generated_GrafeasV1Beta1_CreateNote_sync",
-      "title": "containeranalysis CreateNote Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client",
+          "shortName": "GrafeasV1Beta1Client"
+        },
+        "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client.CreateNote",
+        "method": {
+          "fullName": "grafeas.v1beta1.GrafeasV1Beta1.CreateNote",
+          "service": {
+            "fullName": "grafeas.v1beta1.GrafeasV1Beta1",
+            "shortName": "GrafeasV1Beta1"
+          },
+          "shortName": "CreateNote"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "grafeaspb.CreateNoteRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*grafeaspb.Note",
+        "shortName": "CreateNote"
+      },
       "description": "CreateNote creates a new note.",
       "file": "GrafeasV1Beta1Client/CreateNote/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateNote",
-        "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client.CreateNote",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "grafeaspb.CreateNoteRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*grafeaspb.Note",
-        "client": {
-          "shortName": "GrafeasV1Beta1Client",
-          "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client"
-        },
-        "method": {
-          "shortName": "CreateNote",
-          "fullName": "grafeas.v1beta1.GrafeasV1Beta1.CreateNote",
-          "service": {
-            "shortName": "GrafeasV1Beta1",
-            "fullName": "grafeas.v1beta1.GrafeasV1Beta1"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "containeranalysis_v1beta1_generated_GrafeasV1Beta1_CreateNote_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "containeranalysis CreateNote Sample"
     },
     {
-      "regionTag": "containeranalysis_v1beta1_generated_GrafeasV1Beta1_CreateOccurrence_sync",
-      "title": "containeranalysis CreateOccurrence Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client",
+          "shortName": "GrafeasV1Beta1Client"
+        },
+        "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client.CreateOccurrence",
+        "method": {
+          "fullName": "grafeas.v1beta1.GrafeasV1Beta1.CreateOccurrence",
+          "service": {
+            "fullName": "grafeas.v1beta1.GrafeasV1Beta1",
+            "shortName": "GrafeasV1Beta1"
+          },
+          "shortName": "CreateOccurrence"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "grafeaspb.CreateOccurrenceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*grafeaspb.Occurrence",
+        "shortName": "CreateOccurrence"
+      },
       "description": "CreateOccurrence creates a new occurrence.",
       "file": "GrafeasV1Beta1Client/CreateOccurrence/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateOccurrence",
-        "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client.CreateOccurrence",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "grafeaspb.CreateOccurrenceRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*grafeaspb.Occurrence",
-        "client": {
-          "shortName": "GrafeasV1Beta1Client",
-          "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client"
-        },
-        "method": {
-          "shortName": "CreateOccurrence",
-          "fullName": "grafeas.v1beta1.GrafeasV1Beta1.CreateOccurrence",
-          "service": {
-            "shortName": "GrafeasV1Beta1",
-            "fullName": "grafeas.v1beta1.GrafeasV1Beta1"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "containeranalysis_v1beta1_generated_GrafeasV1Beta1_CreateOccurrence_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "containeranalysis CreateOccurrence Sample"
     },
     {
-      "regionTag": "containeranalysis_v1beta1_generated_GrafeasV1Beta1_DeleteNote_sync",
-      "title": "containeranalysis DeleteNote Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client",
+          "shortName": "GrafeasV1Beta1Client"
+        },
+        "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client.DeleteNote",
+        "method": {
+          "fullName": "grafeas.v1beta1.GrafeasV1Beta1.DeleteNote",
+          "service": {
+            "fullName": "grafeas.v1beta1.GrafeasV1Beta1",
+            "shortName": "GrafeasV1Beta1"
+          },
+          "shortName": "DeleteNote"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "grafeaspb.DeleteNoteRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteNote"
+      },
       "description": "DeleteNote deletes the specified note.",
       "file": "GrafeasV1Beta1Client/DeleteNote/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteNote",
-        "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client.DeleteNote",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "grafeaspb.DeleteNoteRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "GrafeasV1Beta1Client",
-          "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client"
-        },
-        "method": {
-          "shortName": "DeleteNote",
-          "fullName": "grafeas.v1beta1.GrafeasV1Beta1.DeleteNote",
-          "service": {
-            "shortName": "GrafeasV1Beta1",
-            "fullName": "grafeas.v1beta1.GrafeasV1Beta1"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "containeranalysis_v1beta1_generated_GrafeasV1Beta1_DeleteNote_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "containeranalysis DeleteNote Sample"
     },
     {
-      "regionTag": "containeranalysis_v1beta1_generated_GrafeasV1Beta1_DeleteOccurrence_sync",
-      "title": "containeranalysis DeleteOccurrence Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client",
+          "shortName": "GrafeasV1Beta1Client"
+        },
+        "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client.DeleteOccurrence",
+        "method": {
+          "fullName": "grafeas.v1beta1.GrafeasV1Beta1.DeleteOccurrence",
+          "service": {
+            "fullName": "grafeas.v1beta1.GrafeasV1Beta1",
+            "shortName": "GrafeasV1Beta1"
+          },
+          "shortName": "DeleteOccurrence"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "grafeaspb.DeleteOccurrenceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOccurrence"
+      },
       "description": "DeleteOccurrence deletes the specified occurrence. For example, use this method to delete an\noccurrence when the occurrence is no longer applicable for the given\nresource.",
       "file": "GrafeasV1Beta1Client/DeleteOccurrence/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteOccurrence",
-        "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client.DeleteOccurrence",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "grafeaspb.DeleteOccurrenceRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "GrafeasV1Beta1Client",
-          "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client"
-        },
-        "method": {
-          "shortName": "DeleteOccurrence",
-          "fullName": "grafeas.v1beta1.GrafeasV1Beta1.DeleteOccurrence",
-          "service": {
-            "shortName": "GrafeasV1Beta1",
-            "fullName": "grafeas.v1beta1.GrafeasV1Beta1"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "containeranalysis_v1beta1_generated_GrafeasV1Beta1_DeleteOccurrence_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "containeranalysis DeleteOccurrence Sample"
     },
     {
-      "regionTag": "containeranalysis_v1beta1_generated_GrafeasV1Beta1_GetNote_sync",
-      "title": "containeranalysis GetNote Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client",
+          "shortName": "GrafeasV1Beta1Client"
+        },
+        "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client.GetNote",
+        "method": {
+          "fullName": "grafeas.v1beta1.GrafeasV1Beta1.GetNote",
+          "service": {
+            "fullName": "grafeas.v1beta1.GrafeasV1Beta1",
+            "shortName": "GrafeasV1Beta1"
+          },
+          "shortName": "GetNote"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "grafeaspb.GetNoteRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*grafeaspb.Note",
+        "shortName": "GetNote"
+      },
       "description": "GetNote gets the specified note.",
       "file": "GrafeasV1Beta1Client/GetNote/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetNote",
-        "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client.GetNote",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "grafeaspb.GetNoteRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*grafeaspb.Note",
-        "client": {
-          "shortName": "GrafeasV1Beta1Client",
-          "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client"
-        },
-        "method": {
-          "shortName": "GetNote",
-          "fullName": "grafeas.v1beta1.GrafeasV1Beta1.GetNote",
-          "service": {
-            "shortName": "GrafeasV1Beta1",
-            "fullName": "grafeas.v1beta1.GrafeasV1Beta1"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "containeranalysis_v1beta1_generated_GrafeasV1Beta1_GetNote_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "containeranalysis GetNote Sample"
     },
     {
-      "regionTag": "containeranalysis_v1beta1_generated_GrafeasV1Beta1_GetOccurrence_sync",
-      "title": "containeranalysis GetOccurrence Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client",
+          "shortName": "GrafeasV1Beta1Client"
+        },
+        "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client.GetOccurrence",
+        "method": {
+          "fullName": "grafeas.v1beta1.GrafeasV1Beta1.GetOccurrence",
+          "service": {
+            "fullName": "grafeas.v1beta1.GrafeasV1Beta1",
+            "shortName": "GrafeasV1Beta1"
+          },
+          "shortName": "GetOccurrence"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "grafeaspb.GetOccurrenceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*grafeaspb.Occurrence",
+        "shortName": "GetOccurrence"
+      },
       "description": "GetOccurrence gets the specified occurrence.",
       "file": "GrafeasV1Beta1Client/GetOccurrence/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetOccurrence",
-        "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client.GetOccurrence",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "grafeaspb.GetOccurrenceRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*grafeaspb.Occurrence",
-        "client": {
-          "shortName": "GrafeasV1Beta1Client",
-          "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client"
-        },
-        "method": {
-          "shortName": "GetOccurrence",
-          "fullName": "grafeas.v1beta1.GrafeasV1Beta1.GetOccurrence",
-          "service": {
-            "shortName": "GrafeasV1Beta1",
-            "fullName": "grafeas.v1beta1.GrafeasV1Beta1"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "containeranalysis_v1beta1_generated_GrafeasV1Beta1_GetOccurrence_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "containeranalysis GetOccurrence Sample"
     },
     {
-      "regionTag": "containeranalysis_v1beta1_generated_GrafeasV1Beta1_GetOccurrenceNote_sync",
-      "title": "containeranalysis GetOccurrenceNote Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client",
+          "shortName": "GrafeasV1Beta1Client"
+        },
+        "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client.GetOccurrenceNote",
+        "method": {
+          "fullName": "grafeas.v1beta1.GrafeasV1Beta1.GetOccurrenceNote",
+          "service": {
+            "fullName": "grafeas.v1beta1.GrafeasV1Beta1",
+            "shortName": "GrafeasV1Beta1"
+          },
+          "shortName": "GetOccurrenceNote"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "grafeaspb.GetOccurrenceNoteRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*grafeaspb.Note",
+        "shortName": "GetOccurrenceNote"
+      },
       "description": "GetOccurrenceNote gets the note attached to the specified occurrence. Consumer projects can\nuse this method to get a note that belongs to a provider project.",
       "file": "GrafeasV1Beta1Client/GetOccurrenceNote/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetOccurrenceNote",
-        "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client.GetOccurrenceNote",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "grafeaspb.GetOccurrenceNoteRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*grafeaspb.Note",
-        "client": {
-          "shortName": "GrafeasV1Beta1Client",
-          "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client"
-        },
-        "method": {
-          "shortName": "GetOccurrenceNote",
-          "fullName": "grafeas.v1beta1.GrafeasV1Beta1.GetOccurrenceNote",
-          "service": {
-            "shortName": "GrafeasV1Beta1",
-            "fullName": "grafeas.v1beta1.GrafeasV1Beta1"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "containeranalysis_v1beta1_generated_GrafeasV1Beta1_GetOccurrenceNote_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "containeranalysis GetOccurrenceNote Sample"
     },
     {
-      "regionTag": "containeranalysis_v1beta1_generated_GrafeasV1Beta1_GetVulnerabilityOccurrencesSummary_sync",
-      "title": "containeranalysis GetVulnerabilityOccurrencesSummary Sample",
-      "description": "GetVulnerabilityOccurrencesSummary gets a summary of the number and severity of occurrences.",
-      "file": "GrafeasV1Beta1Client/GetVulnerabilityOccurrencesSummary/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetVulnerabilityOccurrencesSummary",
+        "client": {
+          "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client",
+          "shortName": "GrafeasV1Beta1Client"
+        },
         "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client.GetVulnerabilityOccurrencesSummary",
+        "method": {
+          "fullName": "grafeas.v1beta1.GrafeasV1Beta1.GetVulnerabilityOccurrencesSummary",
+          "service": {
+            "fullName": "grafeas.v1beta1.GrafeasV1Beta1",
+            "shortName": "GrafeasV1Beta1"
+          },
+          "shortName": "GetVulnerabilityOccurrencesSummary"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "grafeaspb.GetVulnerabilityOccurrencesSummaryRequest",
-            "name": "req"
+            "name": "req",
+            "type": "grafeaspb.GetVulnerabilityOccurrencesSummaryRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*grafeaspb.VulnerabilityOccurrencesSummary",
-        "client": {
-          "shortName": "GrafeasV1Beta1Client",
-          "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client"
-        },
-        "method": {
-          "shortName": "GetVulnerabilityOccurrencesSummary",
-          "fullName": "grafeas.v1beta1.GrafeasV1Beta1.GetVulnerabilityOccurrencesSummary",
-          "service": {
-            "shortName": "GrafeasV1Beta1",
-            "fullName": "grafeas.v1beta1.GrafeasV1Beta1"
-          }
-        }
+        "shortName": "GetVulnerabilityOccurrencesSummary"
       },
+      "description": "GetVulnerabilityOccurrencesSummary gets a summary of the number and severity of occurrences.",
+      "file": "GrafeasV1Beta1Client/GetVulnerabilityOccurrencesSummary/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "containeranalysis_v1beta1_generated_GrafeasV1Beta1_GetVulnerabilityOccurrencesSummary_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "containeranalysis GetVulnerabilityOccurrencesSummary Sample"
     },
     {
-      "regionTag": "containeranalysis_v1beta1_generated_GrafeasV1Beta1_ListNoteOccurrences_sync",
-      "title": "containeranalysis ListNoteOccurrences Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client",
+          "shortName": "GrafeasV1Beta1Client"
+        },
+        "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client.ListNoteOccurrences",
+        "method": {
+          "fullName": "grafeas.v1beta1.GrafeasV1Beta1.ListNoteOccurrences",
+          "service": {
+            "fullName": "grafeas.v1beta1.GrafeasV1Beta1",
+            "shortName": "GrafeasV1Beta1"
+          },
+          "shortName": "ListNoteOccurrences"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "grafeaspb.ListNoteOccurrencesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OccurrenceIterator",
+        "shortName": "ListNoteOccurrences"
+      },
       "description": "ListNoteOccurrences lists occurrences referencing the specified note. Provider projects can use\nthis method to get all occurrences across consumer projects referencing the\nspecified note.",
       "file": "GrafeasV1Beta1Client/ListNoteOccurrences/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "ListNoteOccurrences",
-        "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client.ListNoteOccurrences",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "grafeaspb.ListNoteOccurrencesRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "OccurrenceIterator",
-        "client": {
-          "shortName": "GrafeasV1Beta1Client",
-          "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client"
-        },
-        "method": {
-          "shortName": "ListNoteOccurrences",
-          "fullName": "grafeas.v1beta1.GrafeasV1Beta1.ListNoteOccurrences",
-          "service": {
-            "shortName": "GrafeasV1Beta1",
-            "fullName": "grafeas.v1beta1.GrafeasV1Beta1"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "containeranalysis_v1beta1_generated_GrafeasV1Beta1_ListNoteOccurrences_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "containeranalysis ListNoteOccurrences Sample"
     },
     {
-      "regionTag": "containeranalysis_v1beta1_generated_GrafeasV1Beta1_ListNotes_sync",
-      "title": "containeranalysis ListNotes Sample",
-      "description": "ListNotes lists notes for the specified project.",
-      "file": "GrafeasV1Beta1Client/ListNotes/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListNotes",
+        "client": {
+          "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client",
+          "shortName": "GrafeasV1Beta1Client"
+        },
         "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client.ListNotes",
+        "method": {
+          "fullName": "grafeas.v1beta1.GrafeasV1Beta1.ListNotes",
+          "service": {
+            "fullName": "grafeas.v1beta1.GrafeasV1Beta1",
+            "shortName": "GrafeasV1Beta1"
+          },
+          "shortName": "ListNotes"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "grafeaspb.ListNotesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "grafeaspb.ListNotesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "NoteIterator",
-        "client": {
-          "shortName": "GrafeasV1Beta1Client",
-          "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client"
-        },
-        "method": {
-          "shortName": "ListNotes",
-          "fullName": "grafeas.v1beta1.GrafeasV1Beta1.ListNotes",
-          "service": {
-            "shortName": "GrafeasV1Beta1",
-            "fullName": "grafeas.v1beta1.GrafeasV1Beta1"
-          }
-        }
+        "shortName": "ListNotes"
       },
+      "description": "ListNotes lists notes for the specified project.",
+      "file": "GrafeasV1Beta1Client/ListNotes/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "containeranalysis_v1beta1_generated_GrafeasV1Beta1_ListNotes_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "containeranalysis ListNotes Sample"
     },
     {
-      "regionTag": "containeranalysis_v1beta1_generated_GrafeasV1Beta1_ListOccurrences_sync",
-      "title": "containeranalysis ListOccurrences Sample",
-      "description": "ListOccurrences lists occurrences for the specified project.",
-      "file": "GrafeasV1Beta1Client/ListOccurrences/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListOccurrences",
+        "client": {
+          "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client",
+          "shortName": "GrafeasV1Beta1Client"
+        },
         "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client.ListOccurrences",
+        "method": {
+          "fullName": "grafeas.v1beta1.GrafeasV1Beta1.ListOccurrences",
+          "service": {
+            "fullName": "grafeas.v1beta1.GrafeasV1Beta1",
+            "shortName": "GrafeasV1Beta1"
+          },
+          "shortName": "ListOccurrences"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "grafeaspb.ListOccurrencesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "grafeaspb.ListOccurrencesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "OccurrenceIterator",
-        "client": {
-          "shortName": "GrafeasV1Beta1Client",
-          "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client"
-        },
-        "method": {
-          "shortName": "ListOccurrences",
-          "fullName": "grafeas.v1beta1.GrafeasV1Beta1.ListOccurrences",
-          "service": {
-            "shortName": "GrafeasV1Beta1",
-            "fullName": "grafeas.v1beta1.GrafeasV1Beta1"
-          }
-        }
+        "shortName": "ListOccurrences"
       },
+      "description": "ListOccurrences lists occurrences for the specified project.",
+      "file": "GrafeasV1Beta1Client/ListOccurrences/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "containeranalysis_v1beta1_generated_GrafeasV1Beta1_ListOccurrences_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "containeranalysis ListOccurrences Sample"
     },
     {
-      "regionTag": "containeranalysis_v1beta1_generated_GrafeasV1Beta1_UpdateNote_sync",
-      "title": "containeranalysis UpdateNote Sample",
-      "description": "UpdateNote updates the specified note.",
-      "file": "GrafeasV1Beta1Client/UpdateNote/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateNote",
+        "client": {
+          "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client",
+          "shortName": "GrafeasV1Beta1Client"
+        },
         "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client.UpdateNote",
+        "method": {
+          "fullName": "grafeas.v1beta1.GrafeasV1Beta1.UpdateNote",
+          "service": {
+            "fullName": "grafeas.v1beta1.GrafeasV1Beta1",
+            "shortName": "GrafeasV1Beta1"
+          },
+          "shortName": "UpdateNote"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "grafeaspb.UpdateNoteRequest",
-            "name": "req"
+            "name": "req",
+            "type": "grafeaspb.UpdateNoteRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*grafeaspb.Note",
-        "client": {
-          "shortName": "GrafeasV1Beta1Client",
-          "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client"
-        },
-        "method": {
-          "shortName": "UpdateNote",
-          "fullName": "grafeas.v1beta1.GrafeasV1Beta1.UpdateNote",
-          "service": {
-            "shortName": "GrafeasV1Beta1",
-            "fullName": "grafeas.v1beta1.GrafeasV1Beta1"
-          }
-        }
+        "shortName": "UpdateNote"
       },
+      "description": "UpdateNote updates the specified note.",
+      "file": "GrafeasV1Beta1Client/UpdateNote/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "containeranalysis_v1beta1_generated_GrafeasV1Beta1_UpdateNote_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "containeranalysis UpdateNote Sample"
     },
     {
-      "regionTag": "containeranalysis_v1beta1_generated_GrafeasV1Beta1_UpdateOccurrence_sync",
-      "title": "containeranalysis UpdateOccurrence Sample",
-      "description": "UpdateOccurrence updates the specified occurrence.",
-      "file": "GrafeasV1Beta1Client/UpdateOccurrence/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateOccurrence",
+        "client": {
+          "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client",
+          "shortName": "GrafeasV1Beta1Client"
+        },
         "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client.UpdateOccurrence",
+        "method": {
+          "fullName": "grafeas.v1beta1.GrafeasV1Beta1.UpdateOccurrence",
+          "service": {
+            "fullName": "grafeas.v1beta1.GrafeasV1Beta1",
+            "shortName": "GrafeasV1Beta1"
+          },
+          "shortName": "UpdateOccurrence"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "grafeaspb.UpdateOccurrenceRequest",
-            "name": "req"
+            "name": "req",
+            "type": "grafeaspb.UpdateOccurrenceRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*grafeaspb.Occurrence",
-        "client": {
-          "shortName": "GrafeasV1Beta1Client",
-          "fullName": "google.devtools.containeranalysis.v1beta1.GrafeasV1Beta1Client"
-        },
-        "method": {
-          "shortName": "UpdateOccurrence",
-          "fullName": "grafeas.v1beta1.GrafeasV1Beta1.UpdateOccurrence",
-          "service": {
-            "shortName": "GrafeasV1Beta1",
-            "fullName": "grafeas.v1beta1.GrafeasV1Beta1"
-          }
-        }
+        "shortName": "UpdateOccurrence"
       },
+      "description": "UpdateOccurrence updates the specified occurrence.",
+      "file": "GrafeasV1Beta1Client/UpdateOccurrence/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "containeranalysis_v1beta1_generated_GrafeasV1Beta1_UpdateOccurrence_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "containeranalysis UpdateOccurrence Sample"
     }
   ]
 }

@@ -1,521 +1,521 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/support/apiv2",
-    "version": "1.5.0",
-    "language": "GO",
     "apis": [
       {
         "id": "google.cloud.support.v2",
         "version": "v2"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/support/apiv2",
+    "version": "1.5.0"
   },
   "snippets": [
     {
-      "regionTag": "cloudsupport_v2_generated_CaseAttachmentService_ListAttachments_sync",
-      "title": "cloudsupport ListAttachments Sample",
-      "description": "ListAttachments list all the attachments associated with a support case.",
-      "file": "CaseAttachmentClient/ListAttachments/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListAttachments",
+        "client": {
+          "fullName": "google.cloud.support.v2.CaseAttachmentClient",
+          "shortName": "CaseAttachmentClient"
+        },
         "fullName": "google.cloud.support.v2.CaseAttachmentClient.ListAttachments",
+        "method": {
+          "fullName": "google.cloud.support.v2.CaseAttachmentService.ListAttachments",
+          "service": {
+            "fullName": "google.cloud.support.v2.CaseAttachmentService",
+            "shortName": "CaseAttachmentService"
+          },
+          "shortName": "ListAttachments"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "supportpb.ListAttachmentsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "supportpb.ListAttachmentsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "AttachmentIterator",
-        "client": {
-          "shortName": "CaseAttachmentClient",
-          "fullName": "google.cloud.support.v2.CaseAttachmentClient"
-        },
-        "method": {
-          "shortName": "ListAttachments",
-          "fullName": "google.cloud.support.v2.CaseAttachmentService.ListAttachments",
-          "service": {
-            "shortName": "CaseAttachmentService",
-            "fullName": "google.cloud.support.v2.CaseAttachmentService"
-          }
-        }
+        "shortName": "ListAttachments"
       },
+      "description": "ListAttachments list all the attachments associated with a support case.",
+      "file": "CaseAttachmentClient/ListAttachments/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "cloudsupport_v2_generated_CaseAttachmentService_ListAttachments_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "cloudsupport ListAttachments Sample"
     },
     {
-      "regionTag": "cloudsupport_v2_generated_CaseService_CloseCase_sync",
-      "title": "cloudsupport CloseCase Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.support.v2.CaseClient",
+          "shortName": "CaseClient"
+        },
+        "fullName": "google.cloud.support.v2.CaseClient.CloseCase",
+        "method": {
+          "fullName": "google.cloud.support.v2.CaseService.CloseCase",
+          "service": {
+            "fullName": "google.cloud.support.v2.CaseService",
+            "shortName": "CaseService"
+          },
+          "shortName": "CloseCase"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "supportpb.CloseCaseRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*supportpb.Case",
+        "shortName": "CloseCase"
+      },
       "description": "CloseCase close a case.",
       "file": "CaseClient/CloseCase/main.go",
       "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudsupport_v2_generated_CaseService_CloseCase_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudsupport CloseCase Sample"
+    },
+    {
       "clientMethod": {
-        "shortName": "CloseCase",
-        "fullName": "google.cloud.support.v2.CaseClient.CloseCase",
+        "client": {
+          "fullName": "google.cloud.support.v2.CaseClient",
+          "shortName": "CaseClient"
+        },
+        "fullName": "google.cloud.support.v2.CaseClient.CreateCase",
+        "method": {
+          "fullName": "google.cloud.support.v2.CaseService.CreateCase",
+          "service": {
+            "fullName": "google.cloud.support.v2.CaseService",
+            "shortName": "CaseService"
+          },
+          "shortName": "CreateCase"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "supportpb.CloseCaseRequest",
-            "name": "req"
+            "name": "req",
+            "type": "supportpb.CreateCaseRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*supportpb.Case",
-        "client": {
-          "shortName": "CaseClient",
-          "fullName": "google.cloud.support.v2.CaseClient"
-        },
-        "method": {
-          "shortName": "CloseCase",
-          "fullName": "google.cloud.support.v2.CaseService.CloseCase",
-          "service": {
-            "shortName": "CaseService",
-            "fullName": "google.cloud.support.v2.CaseService"
-          }
-        }
+        "shortName": "CreateCase"
       },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "cloudsupport_v2_generated_CaseService_CreateCase_sync",
-      "title": "cloudsupport CreateCase Sample",
       "description": "CreateCase create a new case and associate it with a parent.\n\nIt must have the following fields set: `display_name`, `description`,\n`classification`, and `priority`. If you're just testing the API and don't\nwant to route your case to an agent, set `testCase=true`.",
       "file": "CaseClient/CreateCase/main.go",
       "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudsupport_v2_generated_CaseService_CreateCase_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudsupport CreateCase Sample"
+    },
+    {
       "clientMethod": {
-        "shortName": "CreateCase",
-        "fullName": "google.cloud.support.v2.CaseClient.CreateCase",
+        "client": {
+          "fullName": "google.cloud.support.v2.CaseClient",
+          "shortName": "CaseClient"
+        },
+        "fullName": "google.cloud.support.v2.CaseClient.EscalateCase",
+        "method": {
+          "fullName": "google.cloud.support.v2.CaseService.EscalateCase",
+          "service": {
+            "fullName": "google.cloud.support.v2.CaseService",
+            "shortName": "CaseService"
+          },
+          "shortName": "EscalateCase"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "supportpb.CreateCaseRequest",
-            "name": "req"
+            "name": "req",
+            "type": "supportpb.EscalateCaseRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*supportpb.Case",
-        "client": {
-          "shortName": "CaseClient",
-          "fullName": "google.cloud.support.v2.CaseClient"
-        },
-        "method": {
-          "shortName": "CreateCase",
-          "fullName": "google.cloud.support.v2.CaseService.CreateCase",
-          "service": {
-            "shortName": "CaseService",
-            "fullName": "google.cloud.support.v2.CaseService"
-          }
-        }
+        "shortName": "EscalateCase"
       },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "cloudsupport_v2_generated_CaseService_EscalateCase_sync",
-      "title": "cloudsupport EscalateCase Sample",
       "description": "EscalateCase escalate a case, starting the Google Cloud Support escalation management\nprocess.\n\nThis operation is only available for some support services. Go to\nhttps: //cloud.google.com/support and look for 'Technical support\nescalations' in the feature list to find out which ones let you\ndo that.",
       "file": "CaseClient/EscalateCase/main.go",
       "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudsupport_v2_generated_CaseService_EscalateCase_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudsupport EscalateCase Sample"
+    },
+    {
       "clientMethod": {
-        "shortName": "EscalateCase",
-        "fullName": "google.cloud.support.v2.CaseClient.EscalateCase",
+        "client": {
+          "fullName": "google.cloud.support.v2.CaseClient",
+          "shortName": "CaseClient"
+        },
+        "fullName": "google.cloud.support.v2.CaseClient.GetCase",
+        "method": {
+          "fullName": "google.cloud.support.v2.CaseService.GetCase",
+          "service": {
+            "fullName": "google.cloud.support.v2.CaseService",
+            "shortName": "CaseService"
+          },
+          "shortName": "GetCase"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "supportpb.EscalateCaseRequest",
-            "name": "req"
+            "name": "req",
+            "type": "supportpb.GetCaseRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*supportpb.Case",
-        "client": {
-          "shortName": "CaseClient",
-          "fullName": "google.cloud.support.v2.CaseClient"
-        },
-        "method": {
-          "shortName": "EscalateCase",
-          "fullName": "google.cloud.support.v2.CaseService.EscalateCase",
-          "service": {
-            "shortName": "CaseService",
-            "fullName": "google.cloud.support.v2.CaseService"
-          }
-        }
+        "shortName": "GetCase"
       },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "cloudsupport_v2_generated_CaseService_GetCase_sync",
-      "title": "cloudsupport GetCase Sample",
       "description": "GetCase retrieve a case.",
       "file": "CaseClient/GetCase/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetCase",
-        "fullName": "google.cloud.support.v2.CaseClient.GetCase",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "supportpb.GetCaseRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*supportpb.Case",
-        "client": {
-          "shortName": "CaseClient",
-          "fullName": "google.cloud.support.v2.CaseClient"
-        },
-        "method": {
-          "shortName": "GetCase",
-          "fullName": "google.cloud.support.v2.CaseService.GetCase",
-          "service": {
-            "shortName": "CaseService",
-            "fullName": "google.cloud.support.v2.CaseService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "cloudsupport_v2_generated_CaseService_GetCase_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "cloudsupport GetCase Sample"
     },
     {
-      "regionTag": "cloudsupport_v2_generated_CaseService_ListCases_sync",
-      "title": "cloudsupport ListCases Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.support.v2.CaseClient",
+          "shortName": "CaseClient"
+        },
+        "fullName": "google.cloud.support.v2.CaseClient.ListCases",
+        "method": {
+          "fullName": "google.cloud.support.v2.CaseService.ListCases",
+          "service": {
+            "fullName": "google.cloud.support.v2.CaseService",
+            "shortName": "CaseService"
+          },
+          "shortName": "ListCases"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "supportpb.ListCasesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CaseIterator",
+        "shortName": "ListCases"
+      },
       "description": "ListCases retrieve all cases under a parent, but not its children.\n\nFor example, listing cases under an organization only returns the cases\nthat are directly parented by that organization. To retrieve cases\nunder an organization and its projects, use `cases.search`.",
       "file": "CaseClient/ListCases/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "ListCases",
-        "fullName": "google.cloud.support.v2.CaseClient.ListCases",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "supportpb.ListCasesRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "CaseIterator",
-        "client": {
-          "shortName": "CaseClient",
-          "fullName": "google.cloud.support.v2.CaseClient"
-        },
-        "method": {
-          "shortName": "ListCases",
-          "fullName": "google.cloud.support.v2.CaseService.ListCases",
-          "service": {
-            "shortName": "CaseService",
-            "fullName": "google.cloud.support.v2.CaseService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "cloudsupport_v2_generated_CaseService_ListCases_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "cloudsupport ListCases Sample"
     },
     {
-      "regionTag": "cloudsupport_v2_generated_CaseService_SearchCaseClassifications_sync",
-      "title": "cloudsupport SearchCaseClassifications Sample",
-      "description": "SearchCaseClassifications retrieve valid classifications to use when creating a support case.\n\nClassifications are hierarchical. Each classification is a string\ncontaining all levels of the hierarchy separated by `\" > \"`. For example,\n`\"Technical Issue > Compute > Compute Engine\"`.\n\nClassification IDs returned by this endpoint are valid for at least six\nmonths. When a classification is deactivated, this endpoint immediately\nstops returning it. After six months, `case.create` requests using the\nclassification will fail.",
-      "file": "CaseClient/SearchCaseClassifications/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "SearchCaseClassifications",
+        "client": {
+          "fullName": "google.cloud.support.v2.CaseClient",
+          "shortName": "CaseClient"
+        },
         "fullName": "google.cloud.support.v2.CaseClient.SearchCaseClassifications",
+        "method": {
+          "fullName": "google.cloud.support.v2.CaseService.SearchCaseClassifications",
+          "service": {
+            "fullName": "google.cloud.support.v2.CaseService",
+            "shortName": "CaseService"
+          },
+          "shortName": "SearchCaseClassifications"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "supportpb.SearchCaseClassificationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "supportpb.SearchCaseClassificationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CaseClassificationIterator",
-        "client": {
-          "shortName": "CaseClient",
-          "fullName": "google.cloud.support.v2.CaseClient"
-        },
-        "method": {
-          "shortName": "SearchCaseClassifications",
-          "fullName": "google.cloud.support.v2.CaseService.SearchCaseClassifications",
-          "service": {
-            "shortName": "CaseService",
-            "fullName": "google.cloud.support.v2.CaseService"
-          }
-        }
+        "shortName": "SearchCaseClassifications"
       },
+      "description": "SearchCaseClassifications retrieve valid classifications to use when creating a support case.\n\nClassifications are hierarchical. Each classification is a string\ncontaining all levels of the hierarchy separated by `\" > \"`. For example,\n`\"Technical Issue > Compute > Compute Engine\"`.\n\nClassification IDs returned by this endpoint are valid for at least six\nmonths. When a classification is deactivated, this endpoint immediately\nstops returning it. After six months, `case.create` requests using the\nclassification will fail.",
+      "file": "CaseClient/SearchCaseClassifications/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "cloudsupport_v2_generated_CaseService_SearchCaseClassifications_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "cloudsupport SearchCaseClassifications Sample"
     },
     {
-      "regionTag": "cloudsupport_v2_generated_CaseService_SearchCases_sync",
-      "title": "cloudsupport SearchCases Sample",
-      "description": "SearchCases search for cases using a query.",
-      "file": "CaseClient/SearchCases/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "SearchCases",
+        "client": {
+          "fullName": "google.cloud.support.v2.CaseClient",
+          "shortName": "CaseClient"
+        },
         "fullName": "google.cloud.support.v2.CaseClient.SearchCases",
+        "method": {
+          "fullName": "google.cloud.support.v2.CaseService.SearchCases",
+          "service": {
+            "fullName": "google.cloud.support.v2.CaseService",
+            "shortName": "CaseService"
+          },
+          "shortName": "SearchCases"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "supportpb.SearchCasesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "supportpb.SearchCasesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CaseIterator",
-        "client": {
-          "shortName": "CaseClient",
-          "fullName": "google.cloud.support.v2.CaseClient"
-        },
-        "method": {
-          "shortName": "SearchCases",
-          "fullName": "google.cloud.support.v2.CaseService.SearchCases",
-          "service": {
-            "shortName": "CaseService",
-            "fullName": "google.cloud.support.v2.CaseService"
-          }
-        }
+        "shortName": "SearchCases"
       },
+      "description": "SearchCases search for cases using a query.",
+      "file": "CaseClient/SearchCases/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "cloudsupport_v2_generated_CaseService_SearchCases_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "cloudsupport SearchCases Sample"
     },
     {
-      "regionTag": "cloudsupport_v2_generated_CaseService_UpdateCase_sync",
-      "title": "cloudsupport UpdateCase Sample",
-      "description": "UpdateCase update a case. Only some fields can be updated.",
-      "file": "CaseClient/UpdateCase/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateCase",
+        "client": {
+          "fullName": "google.cloud.support.v2.CaseClient",
+          "shortName": "CaseClient"
+        },
         "fullName": "google.cloud.support.v2.CaseClient.UpdateCase",
+        "method": {
+          "fullName": "google.cloud.support.v2.CaseService.UpdateCase",
+          "service": {
+            "fullName": "google.cloud.support.v2.CaseService",
+            "shortName": "CaseService"
+          },
+          "shortName": "UpdateCase"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "supportpb.UpdateCaseRequest",
-            "name": "req"
+            "name": "req",
+            "type": "supportpb.UpdateCaseRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*supportpb.Case",
-        "client": {
-          "shortName": "CaseClient",
-          "fullName": "google.cloud.support.v2.CaseClient"
-        },
-        "method": {
-          "shortName": "UpdateCase",
-          "fullName": "google.cloud.support.v2.CaseService.UpdateCase",
-          "service": {
-            "shortName": "CaseService",
-            "fullName": "google.cloud.support.v2.CaseService"
-          }
-        }
+        "shortName": "UpdateCase"
       },
+      "description": "UpdateCase update a case. Only some fields can be updated.",
+      "file": "CaseClient/UpdateCase/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "cloudsupport_v2_generated_CaseService_UpdateCase_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "cloudsupport UpdateCase Sample"
     },
     {
-      "regionTag": "cloudsupport_v2_generated_CommentService_CreateComment_sync",
-      "title": "cloudsupport CreateComment Sample",
-      "description": "CreateComment add a new comment to a case.\n\nThe comment must have the following fields set: `body`.",
-      "file": "CommentClient/CreateComment/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateComment",
+        "client": {
+          "fullName": "google.cloud.support.v2.CommentClient",
+          "shortName": "CommentClient"
+        },
         "fullName": "google.cloud.support.v2.CommentClient.CreateComment",
+        "method": {
+          "fullName": "google.cloud.support.v2.CommentService.CreateComment",
+          "service": {
+            "fullName": "google.cloud.support.v2.CommentService",
+            "shortName": "CommentService"
+          },
+          "shortName": "CreateComment"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "supportpb.CreateCommentRequest",
-            "name": "req"
+            "name": "req",
+            "type": "supportpb.CreateCommentRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*supportpb.Comment",
-        "client": {
-          "shortName": "CommentClient",
-          "fullName": "google.cloud.support.v2.CommentClient"
-        },
-        "method": {
-          "shortName": "CreateComment",
-          "fullName": "google.cloud.support.v2.CommentService.CreateComment",
-          "service": {
-            "shortName": "CommentService",
-            "fullName": "google.cloud.support.v2.CommentService"
-          }
-        }
+        "shortName": "CreateComment"
       },
+      "description": "CreateComment add a new comment to a case.\n\nThe comment must have the following fields set: `body`.",
+      "file": "CommentClient/CreateComment/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "cloudsupport_v2_generated_CommentService_CreateComment_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "cloudsupport CreateComment Sample"
     },
     {
-      "regionTag": "cloudsupport_v2_generated_CommentService_ListComments_sync",
-      "title": "cloudsupport ListComments Sample",
-      "description": "ListComments list all the comments associated with a case.",
-      "file": "CommentClient/ListComments/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListComments",
+        "client": {
+          "fullName": "google.cloud.support.v2.CommentClient",
+          "shortName": "CommentClient"
+        },
         "fullName": "google.cloud.support.v2.CommentClient.ListComments",
+        "method": {
+          "fullName": "google.cloud.support.v2.CommentService.ListComments",
+          "service": {
+            "fullName": "google.cloud.support.v2.CommentService",
+            "shortName": "CommentService"
+          },
+          "shortName": "ListComments"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "supportpb.ListCommentsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "supportpb.ListCommentsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CommentIterator",
-        "client": {
-          "shortName": "CommentClient",
-          "fullName": "google.cloud.support.v2.CommentClient"
-        },
-        "method": {
-          "shortName": "ListComments",
-          "fullName": "google.cloud.support.v2.CommentService.ListComments",
-          "service": {
-            "shortName": "CommentService",
-            "fullName": "google.cloud.support.v2.CommentService"
-          }
-        }
+        "shortName": "ListComments"
       },
+      "description": "ListComments list all the comments associated with a case.",
+      "file": "CommentClient/ListComments/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "cloudsupport_v2_generated_CommentService_ListComments_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "cloudsupport ListComments Sample"
     }
   ]
 }

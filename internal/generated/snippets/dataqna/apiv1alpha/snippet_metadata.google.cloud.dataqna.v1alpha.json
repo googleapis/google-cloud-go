@@ -1,291 +1,291 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/dataqna/apiv1alpha",
-    "version": "0.9.8",
-    "language": "GO",
     "apis": [
       {
         "id": "google.cloud.dataqna.v1alpha",
         "version": "v1alpha"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/dataqna/apiv1alpha",
+    "version": "0.9.8"
   },
   "snippets": [
     {
-      "regionTag": "dataqna_v1alpha_generated_AutoSuggestionService_SuggestQueries_sync",
-      "title": "dataqna SuggestQueries Sample",
-      "description": "SuggestQueries gets a list of suggestions based on a prefix string.\nAutoSuggestion tolerance should be less than 1 second.",
-      "file": "AutoSuggestionClient/SuggestQueries/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "SuggestQueries",
+        "client": {
+          "fullName": "google.cloud.dataqna.v1alpha.AutoSuggestionClient",
+          "shortName": "AutoSuggestionClient"
+        },
         "fullName": "google.cloud.dataqna.v1alpha.AutoSuggestionClient.SuggestQueries",
+        "method": {
+          "fullName": "google.cloud.dataqna.v1alpha.AutoSuggestionService.SuggestQueries",
+          "service": {
+            "fullName": "google.cloud.dataqna.v1alpha.AutoSuggestionService",
+            "shortName": "AutoSuggestionService"
+          },
+          "shortName": "SuggestQueries"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "dataqnapb.SuggestQueriesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "dataqnapb.SuggestQueriesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*dataqnapb.SuggestQueriesResponse",
-        "client": {
-          "shortName": "AutoSuggestionClient",
-          "fullName": "google.cloud.dataqna.v1alpha.AutoSuggestionClient"
-        },
-        "method": {
-          "shortName": "SuggestQueries",
-          "fullName": "google.cloud.dataqna.v1alpha.AutoSuggestionService.SuggestQueries",
-          "service": {
-            "shortName": "AutoSuggestionService",
-            "fullName": "google.cloud.dataqna.v1alpha.AutoSuggestionService"
-          }
-        }
+        "shortName": "SuggestQueries"
       },
+      "description": "SuggestQueries gets a list of suggestions based on a prefix string.\nAutoSuggestion tolerance should be less than 1 second.",
+      "file": "AutoSuggestionClient/SuggestQueries/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "dataqna_v1alpha_generated_AutoSuggestionService_SuggestQueries_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "dataqna SuggestQueries Sample"
     },
     {
-      "regionTag": "dataqna_v1alpha_generated_QuestionService_CreateQuestion_sync",
-      "title": "dataqna CreateQuestion Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.dataqna.v1alpha.QuestionClient",
+          "shortName": "QuestionClient"
+        },
+        "fullName": "google.cloud.dataqna.v1alpha.QuestionClient.CreateQuestion",
+        "method": {
+          "fullName": "google.cloud.dataqna.v1alpha.QuestionService.CreateQuestion",
+          "service": {
+            "fullName": "google.cloud.dataqna.v1alpha.QuestionService",
+            "shortName": "QuestionService"
+          },
+          "shortName": "CreateQuestion"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "dataqnapb.CreateQuestionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*dataqnapb.Question",
+        "shortName": "CreateQuestion"
+      },
       "description": "CreateQuestion creates a question.",
       "file": "QuestionClient/CreateQuestion/main.go",
       "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dataqna_v1alpha_generated_QuestionService_CreateQuestion_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dataqna CreateQuestion Sample"
+    },
+    {
       "clientMethod": {
-        "shortName": "CreateQuestion",
-        "fullName": "google.cloud.dataqna.v1alpha.QuestionClient.CreateQuestion",
+        "client": {
+          "fullName": "google.cloud.dataqna.v1alpha.QuestionClient",
+          "shortName": "QuestionClient"
+        },
+        "fullName": "google.cloud.dataqna.v1alpha.QuestionClient.ExecuteQuestion",
+        "method": {
+          "fullName": "google.cloud.dataqna.v1alpha.QuestionService.ExecuteQuestion",
+          "service": {
+            "fullName": "google.cloud.dataqna.v1alpha.QuestionService",
+            "shortName": "QuestionService"
+          },
+          "shortName": "ExecuteQuestion"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "dataqnapb.CreateQuestionRequest",
-            "name": "req"
+            "name": "req",
+            "type": "dataqnapb.ExecuteQuestionRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*dataqnapb.Question",
-        "client": {
-          "shortName": "QuestionClient",
-          "fullName": "google.cloud.dataqna.v1alpha.QuestionClient"
-        },
-        "method": {
-          "shortName": "CreateQuestion",
-          "fullName": "google.cloud.dataqna.v1alpha.QuestionService.CreateQuestion",
-          "service": {
-            "shortName": "QuestionService",
-            "fullName": "google.cloud.dataqna.v1alpha.QuestionService"
-          }
-        }
+        "shortName": "ExecuteQuestion"
       },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "dataqna_v1alpha_generated_QuestionService_ExecuteQuestion_sync",
-      "title": "dataqna ExecuteQuestion Sample",
       "description": "ExecuteQuestion executes an interpretation.",
       "file": "QuestionClient/ExecuteQuestion/main.go",
       "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dataqna_v1alpha_generated_QuestionService_ExecuteQuestion_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dataqna ExecuteQuestion Sample"
+    },
+    {
       "clientMethod": {
-        "shortName": "ExecuteQuestion",
-        "fullName": "google.cloud.dataqna.v1alpha.QuestionClient.ExecuteQuestion",
+        "client": {
+          "fullName": "google.cloud.dataqna.v1alpha.QuestionClient",
+          "shortName": "QuestionClient"
+        },
+        "fullName": "google.cloud.dataqna.v1alpha.QuestionClient.GetQuestion",
+        "method": {
+          "fullName": "google.cloud.dataqna.v1alpha.QuestionService.GetQuestion",
+          "service": {
+            "fullName": "google.cloud.dataqna.v1alpha.QuestionService",
+            "shortName": "QuestionService"
+          },
+          "shortName": "GetQuestion"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "dataqnapb.ExecuteQuestionRequest",
-            "name": "req"
+            "name": "req",
+            "type": "dataqnapb.GetQuestionRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*dataqnapb.Question",
-        "client": {
-          "shortName": "QuestionClient",
-          "fullName": "google.cloud.dataqna.v1alpha.QuestionClient"
-        },
-        "method": {
-          "shortName": "ExecuteQuestion",
-          "fullName": "google.cloud.dataqna.v1alpha.QuestionService.ExecuteQuestion",
-          "service": {
-            "shortName": "QuestionService",
-            "fullName": "google.cloud.dataqna.v1alpha.QuestionService"
-          }
-        }
+        "shortName": "GetQuestion"
       },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "dataqna_v1alpha_generated_QuestionService_GetQuestion_sync",
-      "title": "dataqna GetQuestion Sample",
       "description": "GetQuestion gets a previously created question.",
       "file": "QuestionClient/GetQuestion/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetQuestion",
-        "fullName": "google.cloud.dataqna.v1alpha.QuestionClient.GetQuestion",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "dataqnapb.GetQuestionRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*dataqnapb.Question",
-        "client": {
-          "shortName": "QuestionClient",
-          "fullName": "google.cloud.dataqna.v1alpha.QuestionClient"
-        },
-        "method": {
-          "shortName": "GetQuestion",
-          "fullName": "google.cloud.dataqna.v1alpha.QuestionService.GetQuestion",
-          "service": {
-            "shortName": "QuestionService",
-            "fullName": "google.cloud.dataqna.v1alpha.QuestionService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "dataqna_v1alpha_generated_QuestionService_GetQuestion_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "dataqna GetQuestion Sample"
     },
     {
-      "regionTag": "dataqna_v1alpha_generated_QuestionService_GetUserFeedback_sync",
-      "title": "dataqna GetUserFeedback Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.dataqna.v1alpha.QuestionClient",
+          "shortName": "QuestionClient"
+        },
+        "fullName": "google.cloud.dataqna.v1alpha.QuestionClient.GetUserFeedback",
+        "method": {
+          "fullName": "google.cloud.dataqna.v1alpha.QuestionService.GetUserFeedback",
+          "service": {
+            "fullName": "google.cloud.dataqna.v1alpha.QuestionService",
+            "shortName": "QuestionService"
+          },
+          "shortName": "GetUserFeedback"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "dataqnapb.GetUserFeedbackRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*dataqnapb.UserFeedback",
+        "shortName": "GetUserFeedback"
+      },
       "description": "GetUserFeedback gets previously created user feedback.",
       "file": "QuestionClient/GetUserFeedback/main.go",
       "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dataqna_v1alpha_generated_QuestionService_GetUserFeedback_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dataqna GetUserFeedback Sample"
+    },
+    {
       "clientMethod": {
-        "shortName": "GetUserFeedback",
-        "fullName": "google.cloud.dataqna.v1alpha.QuestionClient.GetUserFeedback",
+        "client": {
+          "fullName": "google.cloud.dataqna.v1alpha.QuestionClient",
+          "shortName": "QuestionClient"
+        },
+        "fullName": "google.cloud.dataqna.v1alpha.QuestionClient.UpdateUserFeedback",
+        "method": {
+          "fullName": "google.cloud.dataqna.v1alpha.QuestionService.UpdateUserFeedback",
+          "service": {
+            "fullName": "google.cloud.dataqna.v1alpha.QuestionService",
+            "shortName": "QuestionService"
+          },
+          "shortName": "UpdateUserFeedback"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "dataqnapb.GetUserFeedbackRequest",
-            "name": "req"
+            "name": "req",
+            "type": "dataqnapb.UpdateUserFeedbackRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*dataqnapb.UserFeedback",
-        "client": {
-          "shortName": "QuestionClient",
-          "fullName": "google.cloud.dataqna.v1alpha.QuestionClient"
-        },
-        "method": {
-          "shortName": "GetUserFeedback",
-          "fullName": "google.cloud.dataqna.v1alpha.QuestionService.GetUserFeedback",
-          "service": {
-            "shortName": "QuestionService",
-            "fullName": "google.cloud.dataqna.v1alpha.QuestionService"
-          }
-        }
+        "shortName": "UpdateUserFeedback"
       },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "dataqna_v1alpha_generated_QuestionService_UpdateUserFeedback_sync",
-      "title": "dataqna UpdateUserFeedback Sample",
       "description": "UpdateUserFeedback updates user feedback. This creates user feedback if there was none before\n(upsert).",
       "file": "QuestionClient/UpdateUserFeedback/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "UpdateUserFeedback",
-        "fullName": "google.cloud.dataqna.v1alpha.QuestionClient.UpdateUserFeedback",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "dataqnapb.UpdateUserFeedbackRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*dataqnapb.UserFeedback",
-        "client": {
-          "shortName": "QuestionClient",
-          "fullName": "google.cloud.dataqna.v1alpha.QuestionClient"
-        },
-        "method": {
-          "shortName": "UpdateUserFeedback",
-          "fullName": "google.cloud.dataqna.v1alpha.QuestionService.UpdateUserFeedback",
-          "service": {
-            "shortName": "QuestionService",
-            "fullName": "google.cloud.dataqna.v1alpha.QuestionService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "dataqna_v1alpha_generated_QuestionService_UpdateUserFeedback_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "dataqna UpdateUserFeedback Sample"
     }
   ]
 }

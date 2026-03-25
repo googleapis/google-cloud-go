@@ -1,611 +1,611 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/beyondcorp/clientgateways/apiv1",
-    "version": "1.2.0",
-    "language": "GO",
     "apis": [
       {
         "id": "google.cloud.beyondcorp.clientgateways.v1",
         "version": "v1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/beyondcorp/clientgateways/apiv1",
+    "version": "1.2.0"
   },
   "snippets": [
     {
-      "regionTag": "beyondcorp_v1_generated_ClientGatewaysService_CancelOperation_sync",
-      "title": "beyondcorp CancelOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
       "file": "Client/CancelOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CancelOperation",
-        "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client.CancelOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.CancelOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client"
-        },
-        "method": {
-          "shortName": "CancelOperation",
-          "fullName": "google.longrunning.Operations.CancelOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "beyondcorp_v1_generated_ClientGatewaysService_CancelOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "beyondcorp CancelOperation Sample"
     },
     {
-      "regionTag": "beyondcorp_v1_generated_ClientGatewaysService_CreateClientGateway_sync",
-      "title": "beyondcorp CreateClientGateway Sample",
-      "description": "CreateClientGateway creates a new ClientGateway in a given project and location.",
-      "file": "Client/CreateClientGateway/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateClientGateway",
+        "client": {
+          "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client.CreateClientGateway",
+        "method": {
+          "fullName": "google.cloud.beyondcorp.clientgateways.v1.ClientGatewaysService.CreateClientGateway",
+          "service": {
+            "fullName": "google.cloud.beyondcorp.clientgateways.v1.ClientGatewaysService",
+            "shortName": "ClientGatewaysService"
+          },
+          "shortName": "CreateClientGateway"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "clientgatewayspb.CreateClientGatewayRequest",
-            "name": "req"
+            "name": "req",
+            "type": "clientgatewayspb.CreateClientGatewayRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateClientGatewayOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateClientGateway",
-          "fullName": "google.cloud.beyondcorp.clientgateways.v1.ClientGatewaysService.CreateClientGateway",
-          "service": {
-            "shortName": "ClientGatewaysService",
-            "fullName": "google.cloud.beyondcorp.clientgateways.v1.ClientGatewaysService"
-          }
-        }
+        "shortName": "CreateClientGateway"
       },
+      "description": "CreateClientGateway creates a new ClientGateway in a given project and location.",
+      "file": "Client/CreateClientGateway/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "beyondcorp_v1_generated_ClientGatewaysService_CreateClientGateway_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "beyondcorp CreateClientGateway Sample"
     },
     {
-      "regionTag": "beyondcorp_v1_generated_ClientGatewaysService_DeleteClientGateway_sync",
-      "title": "beyondcorp DeleteClientGateway Sample",
-      "description": "DeleteClientGateway deletes a single ClientGateway.",
-      "file": "Client/DeleteClientGateway/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteClientGateway",
+        "client": {
+          "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client.DeleteClientGateway",
+        "method": {
+          "fullName": "google.cloud.beyondcorp.clientgateways.v1.ClientGatewaysService.DeleteClientGateway",
+          "service": {
+            "fullName": "google.cloud.beyondcorp.clientgateways.v1.ClientGatewaysService",
+            "shortName": "ClientGatewaysService"
+          },
+          "shortName": "DeleteClientGateway"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "clientgatewayspb.DeleteClientGatewayRequest",
-            "name": "req"
+            "name": "req",
+            "type": "clientgatewayspb.DeleteClientGatewayRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteClientGatewayOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteClientGateway",
-          "fullName": "google.cloud.beyondcorp.clientgateways.v1.ClientGatewaysService.DeleteClientGateway",
-          "service": {
-            "shortName": "ClientGatewaysService",
-            "fullName": "google.cloud.beyondcorp.clientgateways.v1.ClientGatewaysService"
-          }
-        }
+        "shortName": "DeleteClientGateway"
       },
+      "description": "DeleteClientGateway deletes a single ClientGateway.",
+      "file": "Client/DeleteClientGateway/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "beyondcorp_v1_generated_ClientGatewaysService_DeleteClientGateway_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "beyondcorp DeleteClientGateway Sample"
     },
     {
-      "regionTag": "beyondcorp_v1_generated_ClientGatewaysService_DeleteOperation_sync",
-      "title": "beyondcorp DeleteOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
       "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
       "file": "Client/DeleteOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteOperation",
-        "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client.DeleteOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.DeleteOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteOperation",
-          "fullName": "google.longrunning.Operations.DeleteOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "beyondcorp_v1_generated_ClientGatewaysService_DeleteOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "beyondcorp DeleteOperation Sample"
     },
     {
-      "regionTag": "beyondcorp_v1_generated_ClientGatewaysService_GetClientGateway_sync",
-      "title": "beyondcorp GetClientGateway Sample",
-      "description": "GetClientGateway gets details of a single ClientGateway.",
-      "file": "Client/GetClientGateway/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetClientGateway",
+        "client": {
+          "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client.GetClientGateway",
+        "method": {
+          "fullName": "google.cloud.beyondcorp.clientgateways.v1.ClientGatewaysService.GetClientGateway",
+          "service": {
+            "fullName": "google.cloud.beyondcorp.clientgateways.v1.ClientGatewaysService",
+            "shortName": "ClientGatewaysService"
+          },
+          "shortName": "GetClientGateway"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "clientgatewayspb.GetClientGatewayRequest",
-            "name": "req"
+            "name": "req",
+            "type": "clientgatewayspb.GetClientGatewayRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*clientgatewayspb.ClientGateway",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client"
-        },
-        "method": {
-          "shortName": "GetClientGateway",
-          "fullName": "google.cloud.beyondcorp.clientgateways.v1.ClientGatewaysService.GetClientGateway",
-          "service": {
-            "shortName": "ClientGatewaysService",
-            "fullName": "google.cloud.beyondcorp.clientgateways.v1.ClientGatewaysService"
-          }
-        }
+        "shortName": "GetClientGateway"
       },
+      "description": "GetClientGateway gets details of a single ClientGateway.",
+      "file": "Client/GetClientGateway/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "beyondcorp_v1_generated_ClientGatewaysService_GetClientGateway_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "beyondcorp GetClientGateway Sample"
     },
     {
-      "regionTag": "beyondcorp_v1_generated_ClientGatewaysService_GetIamPolicy_sync",
-      "title": "beyondcorp GetIamPolicy Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client.GetIamPolicy",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "GetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.GetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "GetIamPolicy"
+      },
       "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
       "file": "Client/GetIamPolicy/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetIamPolicy",
-        "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client.GetIamPolicy",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "iampb.GetIamPolicyRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*iampb.Policy",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client"
-        },
-        "method": {
-          "shortName": "GetIamPolicy",
-          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.iam.v1.IAMPolicy"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "beyondcorp_v1_generated_ClientGatewaysService_GetIamPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "beyondcorp GetIamPolicy Sample"
     },
     {
-      "regionTag": "beyondcorp_v1_generated_ClientGatewaysService_GetLocation_sync",
-      "title": "beyondcorp GetLocation Sample",
-      "description": "GetLocation gets information about a location.",
-      "file": "Client/GetLocation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetLocation",
+        "client": {
+          "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "locationpb.GetLocationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*locationpb.Location",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client"
-        },
-        "method": {
-          "shortName": "GetLocation",
-          "fullName": "google.cloud.location.Locations.GetLocation",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
+        "shortName": "GetLocation"
       },
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "beyondcorp_v1_generated_ClientGatewaysService_GetLocation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "beyondcorp GetLocation Sample"
     },
     {
-      "regionTag": "beyondcorp_v1_generated_ClientGatewaysService_GetOperation_sync",
-      "title": "beyondcorp GetOperation Sample",
-      "description": "GetOperation is a utility method from google.longrunning.Operations.",
-      "file": "Client/GetOperation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetOperation",
+        "client": {
+          "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.GetOperationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*longrunningpb.Operation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client"
-        },
-        "method": {
-          "shortName": "GetOperation",
-          "fullName": "google.longrunning.Operations.GetOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "GetOperation"
       },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "beyondcorp_v1_generated_ClientGatewaysService_GetOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "beyondcorp GetOperation Sample"
     },
     {
-      "regionTag": "beyondcorp_v1_generated_ClientGatewaysService_ListClientGateways_sync",
-      "title": "beyondcorp ListClientGateways Sample",
-      "description": "ListClientGateways lists ClientGateways in a given project and location.",
-      "file": "Client/ListClientGateways/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListClientGateways",
+        "client": {
+          "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client.ListClientGateways",
+        "method": {
+          "fullName": "google.cloud.beyondcorp.clientgateways.v1.ClientGatewaysService.ListClientGateways",
+          "service": {
+            "fullName": "google.cloud.beyondcorp.clientgateways.v1.ClientGatewaysService",
+            "shortName": "ClientGatewaysService"
+          },
+          "shortName": "ListClientGateways"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "clientgatewayspb.ListClientGatewaysRequest",
-            "name": "req"
+            "name": "req",
+            "type": "clientgatewayspb.ListClientGatewaysRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ClientGatewayIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client"
-        },
-        "method": {
-          "shortName": "ListClientGateways",
-          "fullName": "google.cloud.beyondcorp.clientgateways.v1.ClientGatewaysService.ListClientGateways",
-          "service": {
-            "shortName": "ClientGatewaysService",
-            "fullName": "google.cloud.beyondcorp.clientgateways.v1.ClientGatewaysService"
-          }
-        }
+        "shortName": "ListClientGateways"
       },
+      "description": "ListClientGateways lists ClientGateways in a given project and location.",
+      "file": "Client/ListClientGateways/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "beyondcorp_v1_generated_ClientGatewaysService_ListClientGateways_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "beyondcorp ListClientGateways Sample"
     },
     {
-      "regionTag": "beyondcorp_v1_generated_ClientGatewaysService_ListLocations_sync",
-      "title": "beyondcorp ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
-      "file": "Client/ListLocations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListLocations",
+        "client": {
+          "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "locationpb.ListLocationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "LocationIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client"
-        },
-        "method": {
-          "shortName": "ListLocations",
-          "fullName": "google.cloud.location.Locations.ListLocations",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
+        "shortName": "ListLocations"
       },
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "beyondcorp_v1_generated_ClientGatewaysService_ListLocations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "beyondcorp ListLocations Sample"
     },
     {
-      "regionTag": "beyondcorp_v1_generated_ClientGatewaysService_ListOperations_sync",
-      "title": "beyondcorp ListOperations Sample",
-      "description": "ListOperations is a utility method from google.longrunning.Operations.",
-      "file": "Client/ListOperations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListOperations",
+        "client": {
+          "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.ListOperationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "OperationIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client"
-        },
-        "method": {
-          "shortName": "ListOperations",
-          "fullName": "google.longrunning.Operations.ListOperations",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "ListOperations"
       },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "beyondcorp_v1_generated_ClientGatewaysService_ListOperations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "beyondcorp ListOperations Sample"
     },
     {
-      "regionTag": "beyondcorp_v1_generated_ClientGatewaysService_SetIamPolicy_sync",
-      "title": "beyondcorp SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
-      "file": "Client/SetIamPolicy/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "SetIamPolicy",
+        "client": {
+          "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client.SetIamPolicy",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "SetIamPolicy"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "iampb.SetIamPolicyRequest",
-            "name": "req"
+            "name": "req",
+            "type": "iampb.SetIamPolicyRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*iampb.Policy",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client"
-        },
-        "method": {
-          "shortName": "SetIamPolicy",
-          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.iam.v1.IAMPolicy"
-          }
-        }
+        "shortName": "SetIamPolicy"
       },
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "Client/SetIamPolicy/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "beyondcorp_v1_generated_ClientGatewaysService_SetIamPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "beyondcorp SetIamPolicy Sample"
     },
     {
-      "regionTag": "beyondcorp_v1_generated_ClientGatewaysService_TestIamPermissions_sync",
-      "title": "beyondcorp TestIamPermissions Sample",
-      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
-      "file": "Client/TestIamPermissions/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "TestIamPermissions",
+        "client": {
+          "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client.TestIamPermissions",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "TestIamPermissions"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "iampb.TestIamPermissionsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "iampb.TestIamPermissionsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*iampb.TestIamPermissionsResponse",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.beyondcorp.clientgateways.v1.Client"
-        },
-        "method": {
-          "shortName": "TestIamPermissions",
-          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.iam.v1.IAMPolicy"
-          }
-        }
+        "shortName": "TestIamPermissions"
       },
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "Client/TestIamPermissions/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "beyondcorp_v1_generated_ClientGatewaysService_TestIamPermissions_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "beyondcorp TestIamPermissions Sample"
     }
   ]
 }

@@ -1,2031 +1,2031 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/saasplatform/saasservicemgmt/apiv1beta1",
-    "version": "0.2.0",
-    "language": "GO",
     "apis": [
       {
         "id": "google.cloud.saasplatform.saasservicemgmt.v1beta1",
         "version": "v1beta1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/saasplatform/saasservicemgmt/apiv1beta1",
+    "version": "0.2.0"
   },
   "snippets": [
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_CreateRelease_sync",
-      "title": "saasservicemgmt CreateRelease Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient",
+          "shortName": "SaasDeploymentsClient"
+        },
+        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.CreateRelease",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.CreateRelease",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments",
+            "shortName": "SaasDeployments"
+          },
+          "shortName": "CreateRelease"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "saasservicemgmtpb.CreateReleaseRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*saasservicemgmtpb.Release",
+        "shortName": "CreateRelease"
+      },
       "description": "CreateRelease create a new release.",
       "file": "SaasDeploymentsClient/CreateRelease/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateRelease",
-        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.CreateRelease",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "saasservicemgmtpb.CreateReleaseRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*saasservicemgmtpb.Release",
-        "client": {
-          "shortName": "SaasDeploymentsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient"
-        },
-        "method": {
-          "shortName": "CreateRelease",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.CreateRelease",
-          "service": {
-            "shortName": "SaasDeployments",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_CreateRelease_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt CreateRelease Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_CreateSaas_sync",
-      "title": "saasservicemgmt CreateSaas Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient",
+          "shortName": "SaasDeploymentsClient"
+        },
+        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.CreateSaas",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.CreateSaas",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments",
+            "shortName": "SaasDeployments"
+          },
+          "shortName": "CreateSaas"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "saasservicemgmtpb.CreateSaasRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*saasservicemgmtpb.Saas",
+        "shortName": "CreateSaas"
+      },
       "description": "CreateSaas create a new saas.",
       "file": "SaasDeploymentsClient/CreateSaas/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateSaas",
-        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.CreateSaas",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "saasservicemgmtpb.CreateSaasRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*saasservicemgmtpb.Saas",
-        "client": {
-          "shortName": "SaasDeploymentsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient"
-        },
-        "method": {
-          "shortName": "CreateSaas",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.CreateSaas",
-          "service": {
-            "shortName": "SaasDeployments",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_CreateSaas_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt CreateSaas Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_CreateTenant_sync",
-      "title": "saasservicemgmt CreateTenant Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient",
+          "shortName": "SaasDeploymentsClient"
+        },
+        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.CreateTenant",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.CreateTenant",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments",
+            "shortName": "SaasDeployments"
+          },
+          "shortName": "CreateTenant"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "saasservicemgmtpb.CreateTenantRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*saasservicemgmtpb.Tenant",
+        "shortName": "CreateTenant"
+      },
       "description": "CreateTenant create a new tenant.",
       "file": "SaasDeploymentsClient/CreateTenant/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateTenant",
-        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.CreateTenant",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "saasservicemgmtpb.CreateTenantRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*saasservicemgmtpb.Tenant",
-        "client": {
-          "shortName": "SaasDeploymentsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient"
-        },
-        "method": {
-          "shortName": "CreateTenant",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.CreateTenant",
-          "service": {
-            "shortName": "SaasDeployments",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_CreateTenant_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt CreateTenant Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_CreateUnit_sync",
-      "title": "saasservicemgmt CreateUnit Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient",
+          "shortName": "SaasDeploymentsClient"
+        },
+        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.CreateUnit",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.CreateUnit",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments",
+            "shortName": "SaasDeployments"
+          },
+          "shortName": "CreateUnit"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "saasservicemgmtpb.CreateUnitRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*saasservicemgmtpb.Unit",
+        "shortName": "CreateUnit"
+      },
       "description": "CreateUnit create a new unit.",
       "file": "SaasDeploymentsClient/CreateUnit/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateUnit",
-        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.CreateUnit",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "saasservicemgmtpb.CreateUnitRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*saasservicemgmtpb.Unit",
-        "client": {
-          "shortName": "SaasDeploymentsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient"
-        },
-        "method": {
-          "shortName": "CreateUnit",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.CreateUnit",
-          "service": {
-            "shortName": "SaasDeployments",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_CreateUnit_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt CreateUnit Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_CreateUnitKind_sync",
-      "title": "saasservicemgmt CreateUnitKind Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient",
+          "shortName": "SaasDeploymentsClient"
+        },
+        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.CreateUnitKind",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.CreateUnitKind",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments",
+            "shortName": "SaasDeployments"
+          },
+          "shortName": "CreateUnitKind"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "saasservicemgmtpb.CreateUnitKindRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*saasservicemgmtpb.UnitKind",
+        "shortName": "CreateUnitKind"
+      },
       "description": "CreateUnitKind create a new unit kind.",
       "file": "SaasDeploymentsClient/CreateUnitKind/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateUnitKind",
-        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.CreateUnitKind",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "saasservicemgmtpb.CreateUnitKindRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*saasservicemgmtpb.UnitKind",
-        "client": {
-          "shortName": "SaasDeploymentsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient"
-        },
-        "method": {
-          "shortName": "CreateUnitKind",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.CreateUnitKind",
-          "service": {
-            "shortName": "SaasDeployments",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_CreateUnitKind_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt CreateUnitKind Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_CreateUnitOperation_sync",
-      "title": "saasservicemgmt CreateUnitOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient",
+          "shortName": "SaasDeploymentsClient"
+        },
+        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.CreateUnitOperation",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.CreateUnitOperation",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments",
+            "shortName": "SaasDeployments"
+          },
+          "shortName": "CreateUnitOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "saasservicemgmtpb.CreateUnitOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*saasservicemgmtpb.UnitOperation",
+        "shortName": "CreateUnitOperation"
+      },
       "description": "CreateUnitOperation create a new unit operation.",
       "file": "SaasDeploymentsClient/CreateUnitOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateUnitOperation",
-        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.CreateUnitOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "saasservicemgmtpb.CreateUnitOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*saasservicemgmtpb.UnitOperation",
-        "client": {
-          "shortName": "SaasDeploymentsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient"
-        },
-        "method": {
-          "shortName": "CreateUnitOperation",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.CreateUnitOperation",
-          "service": {
-            "shortName": "SaasDeployments",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_CreateUnitOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt CreateUnitOperation Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_DeleteRelease_sync",
-      "title": "saasservicemgmt DeleteRelease Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient",
+          "shortName": "SaasDeploymentsClient"
+        },
+        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.DeleteRelease",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.DeleteRelease",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments",
+            "shortName": "SaasDeployments"
+          },
+          "shortName": "DeleteRelease"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "saasservicemgmtpb.DeleteReleaseRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteRelease"
+      },
       "description": "DeleteRelease delete a single release.",
       "file": "SaasDeploymentsClient/DeleteRelease/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteRelease",
-        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.DeleteRelease",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "saasservicemgmtpb.DeleteReleaseRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "SaasDeploymentsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient"
-        },
-        "method": {
-          "shortName": "DeleteRelease",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.DeleteRelease",
-          "service": {
-            "shortName": "SaasDeployments",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_DeleteRelease_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt DeleteRelease Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_DeleteSaas_sync",
-      "title": "saasservicemgmt DeleteSaas Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient",
+          "shortName": "SaasDeploymentsClient"
+        },
+        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.DeleteSaas",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.DeleteSaas",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments",
+            "shortName": "SaasDeployments"
+          },
+          "shortName": "DeleteSaas"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "saasservicemgmtpb.DeleteSaasRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteSaas"
+      },
       "description": "DeleteSaas delete a single saas.",
       "file": "SaasDeploymentsClient/DeleteSaas/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteSaas",
-        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.DeleteSaas",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "saasservicemgmtpb.DeleteSaasRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "SaasDeploymentsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient"
-        },
-        "method": {
-          "shortName": "DeleteSaas",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.DeleteSaas",
-          "service": {
-            "shortName": "SaasDeployments",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_DeleteSaas_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt DeleteSaas Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_DeleteTenant_sync",
-      "title": "saasservicemgmt DeleteTenant Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient",
+          "shortName": "SaasDeploymentsClient"
+        },
+        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.DeleteTenant",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.DeleteTenant",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments",
+            "shortName": "SaasDeployments"
+          },
+          "shortName": "DeleteTenant"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "saasservicemgmtpb.DeleteTenantRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteTenant"
+      },
       "description": "DeleteTenant delete a single tenant.",
       "file": "SaasDeploymentsClient/DeleteTenant/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteTenant",
-        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.DeleteTenant",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "saasservicemgmtpb.DeleteTenantRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "SaasDeploymentsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient"
-        },
-        "method": {
-          "shortName": "DeleteTenant",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.DeleteTenant",
-          "service": {
-            "shortName": "SaasDeployments",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_DeleteTenant_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt DeleteTenant Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_DeleteUnit_sync",
-      "title": "saasservicemgmt DeleteUnit Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient",
+          "shortName": "SaasDeploymentsClient"
+        },
+        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.DeleteUnit",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.DeleteUnit",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments",
+            "shortName": "SaasDeployments"
+          },
+          "shortName": "DeleteUnit"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "saasservicemgmtpb.DeleteUnitRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteUnit"
+      },
       "description": "DeleteUnit delete a single unit.",
       "file": "SaasDeploymentsClient/DeleteUnit/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteUnit",
-        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.DeleteUnit",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "saasservicemgmtpb.DeleteUnitRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "SaasDeploymentsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient"
-        },
-        "method": {
-          "shortName": "DeleteUnit",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.DeleteUnit",
-          "service": {
-            "shortName": "SaasDeployments",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_DeleteUnit_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt DeleteUnit Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_DeleteUnitKind_sync",
-      "title": "saasservicemgmt DeleteUnitKind Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient",
+          "shortName": "SaasDeploymentsClient"
+        },
+        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.DeleteUnitKind",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.DeleteUnitKind",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments",
+            "shortName": "SaasDeployments"
+          },
+          "shortName": "DeleteUnitKind"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "saasservicemgmtpb.DeleteUnitKindRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteUnitKind"
+      },
       "description": "DeleteUnitKind delete a single unit kind.",
       "file": "SaasDeploymentsClient/DeleteUnitKind/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteUnitKind",
-        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.DeleteUnitKind",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "saasservicemgmtpb.DeleteUnitKindRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "SaasDeploymentsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient"
-        },
-        "method": {
-          "shortName": "DeleteUnitKind",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.DeleteUnitKind",
-          "service": {
-            "shortName": "SaasDeployments",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_DeleteUnitKind_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt DeleteUnitKind Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_DeleteUnitOperation_sync",
-      "title": "saasservicemgmt DeleteUnitOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient",
+          "shortName": "SaasDeploymentsClient"
+        },
+        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.DeleteUnitOperation",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.DeleteUnitOperation",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments",
+            "shortName": "SaasDeployments"
+          },
+          "shortName": "DeleteUnitOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "saasservicemgmtpb.DeleteUnitOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteUnitOperation"
+      },
       "description": "DeleteUnitOperation delete a single unit operation.",
       "file": "SaasDeploymentsClient/DeleteUnitOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteUnitOperation",
-        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.DeleteUnitOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "saasservicemgmtpb.DeleteUnitOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "SaasDeploymentsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient"
-        },
-        "method": {
-          "shortName": "DeleteUnitOperation",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.DeleteUnitOperation",
-          "service": {
-            "shortName": "SaasDeployments",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_DeleteUnitOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt DeleteUnitOperation Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_GetLocation_sync",
-      "title": "saasservicemgmt GetLocation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient",
+          "shortName": "SaasDeploymentsClient"
+        },
+        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "shortName": "GetLocation"
+      },
       "description": "GetLocation gets information about a location.",
       "file": "SaasDeploymentsClient/GetLocation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetLocation",
-        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.GetLocation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "locationpb.GetLocationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*locationpb.Location",
-        "client": {
-          "shortName": "SaasDeploymentsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient"
-        },
-        "method": {
-          "shortName": "GetLocation",
-          "fullName": "google.cloud.location.Locations.GetLocation",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_GetLocation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt GetLocation Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_GetRelease_sync",
-      "title": "saasservicemgmt GetRelease Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient",
+          "shortName": "SaasDeploymentsClient"
+        },
+        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.GetRelease",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.GetRelease",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments",
+            "shortName": "SaasDeployments"
+          },
+          "shortName": "GetRelease"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "saasservicemgmtpb.GetReleaseRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*saasservicemgmtpb.Release",
+        "shortName": "GetRelease"
+      },
       "description": "GetRelease retrieve a single release.",
       "file": "SaasDeploymentsClient/GetRelease/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetRelease",
-        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.GetRelease",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "saasservicemgmtpb.GetReleaseRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*saasservicemgmtpb.Release",
-        "client": {
-          "shortName": "SaasDeploymentsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient"
-        },
-        "method": {
-          "shortName": "GetRelease",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.GetRelease",
-          "service": {
-            "shortName": "SaasDeployments",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_GetRelease_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt GetRelease Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_GetSaas_sync",
-      "title": "saasservicemgmt GetSaas Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient",
+          "shortName": "SaasDeploymentsClient"
+        },
+        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.GetSaas",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.GetSaas",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments",
+            "shortName": "SaasDeployments"
+          },
+          "shortName": "GetSaas"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "saasservicemgmtpb.GetSaasRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*saasservicemgmtpb.Saas",
+        "shortName": "GetSaas"
+      },
       "description": "GetSaas retrieve a single saas.",
       "file": "SaasDeploymentsClient/GetSaas/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetSaas",
-        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.GetSaas",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "saasservicemgmtpb.GetSaasRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*saasservicemgmtpb.Saas",
-        "client": {
-          "shortName": "SaasDeploymentsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient"
-        },
-        "method": {
-          "shortName": "GetSaas",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.GetSaas",
-          "service": {
-            "shortName": "SaasDeployments",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_GetSaas_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt GetSaas Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_GetTenant_sync",
-      "title": "saasservicemgmt GetTenant Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient",
+          "shortName": "SaasDeploymentsClient"
+        },
+        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.GetTenant",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.GetTenant",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments",
+            "shortName": "SaasDeployments"
+          },
+          "shortName": "GetTenant"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "saasservicemgmtpb.GetTenantRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*saasservicemgmtpb.Tenant",
+        "shortName": "GetTenant"
+      },
       "description": "GetTenant retrieve a single tenant.",
       "file": "SaasDeploymentsClient/GetTenant/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetTenant",
-        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.GetTenant",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "saasservicemgmtpb.GetTenantRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*saasservicemgmtpb.Tenant",
-        "client": {
-          "shortName": "SaasDeploymentsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient"
-        },
-        "method": {
-          "shortName": "GetTenant",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.GetTenant",
-          "service": {
-            "shortName": "SaasDeployments",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_GetTenant_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt GetTenant Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_GetUnit_sync",
-      "title": "saasservicemgmt GetUnit Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient",
+          "shortName": "SaasDeploymentsClient"
+        },
+        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.GetUnit",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.GetUnit",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments",
+            "shortName": "SaasDeployments"
+          },
+          "shortName": "GetUnit"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "saasservicemgmtpb.GetUnitRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*saasservicemgmtpb.Unit",
+        "shortName": "GetUnit"
+      },
       "description": "GetUnit retrieve a single unit.",
       "file": "SaasDeploymentsClient/GetUnit/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetUnit",
-        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.GetUnit",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "saasservicemgmtpb.GetUnitRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*saasservicemgmtpb.Unit",
-        "client": {
-          "shortName": "SaasDeploymentsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient"
-        },
-        "method": {
-          "shortName": "GetUnit",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.GetUnit",
-          "service": {
-            "shortName": "SaasDeployments",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_GetUnit_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt GetUnit Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_GetUnitKind_sync",
-      "title": "saasservicemgmt GetUnitKind Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient",
+          "shortName": "SaasDeploymentsClient"
+        },
+        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.GetUnitKind",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.GetUnitKind",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments",
+            "shortName": "SaasDeployments"
+          },
+          "shortName": "GetUnitKind"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "saasservicemgmtpb.GetUnitKindRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*saasservicemgmtpb.UnitKind",
+        "shortName": "GetUnitKind"
+      },
       "description": "GetUnitKind retrieve a single unit kind.",
       "file": "SaasDeploymentsClient/GetUnitKind/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetUnitKind",
-        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.GetUnitKind",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "saasservicemgmtpb.GetUnitKindRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*saasservicemgmtpb.UnitKind",
-        "client": {
-          "shortName": "SaasDeploymentsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient"
-        },
-        "method": {
-          "shortName": "GetUnitKind",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.GetUnitKind",
-          "service": {
-            "shortName": "SaasDeployments",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_GetUnitKind_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt GetUnitKind Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_GetUnitOperation_sync",
-      "title": "saasservicemgmt GetUnitOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient",
+          "shortName": "SaasDeploymentsClient"
+        },
+        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.GetUnitOperation",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.GetUnitOperation",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments",
+            "shortName": "SaasDeployments"
+          },
+          "shortName": "GetUnitOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "saasservicemgmtpb.GetUnitOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*saasservicemgmtpb.UnitOperation",
+        "shortName": "GetUnitOperation"
+      },
       "description": "GetUnitOperation retrieve a single unit operation.",
       "file": "SaasDeploymentsClient/GetUnitOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetUnitOperation",
-        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.GetUnitOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "saasservicemgmtpb.GetUnitOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*saasservicemgmtpb.UnitOperation",
-        "client": {
-          "shortName": "SaasDeploymentsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient"
-        },
-        "method": {
-          "shortName": "GetUnitOperation",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.GetUnitOperation",
-          "service": {
-            "shortName": "SaasDeployments",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_GetUnitOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt GetUnitOperation Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_ListLocations_sync",
-      "title": "saasservicemgmt ListLocations Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient",
+          "shortName": "SaasDeploymentsClient"
+        },
+        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "shortName": "ListLocations"
+      },
       "description": "ListLocations lists information about the supported locations for this service.",
       "file": "SaasDeploymentsClient/ListLocations/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "ListLocations",
-        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.ListLocations",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "locationpb.ListLocationsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "LocationIterator",
-        "client": {
-          "shortName": "SaasDeploymentsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient"
-        },
-        "method": {
-          "shortName": "ListLocations",
-          "fullName": "google.cloud.location.Locations.ListLocations",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_ListLocations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt ListLocations Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_ListReleases_sync",
-      "title": "saasservicemgmt ListReleases Sample",
-      "description": "ListReleases retrieve a collection of releases.",
-      "file": "SaasDeploymentsClient/ListReleases/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListReleases",
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient",
+          "shortName": "SaasDeploymentsClient"
+        },
         "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.ListReleases",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.ListReleases",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments",
+            "shortName": "SaasDeployments"
+          },
+          "shortName": "ListReleases"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "saasservicemgmtpb.ListReleasesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "saasservicemgmtpb.ListReleasesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ReleaseIterator",
-        "client": {
-          "shortName": "SaasDeploymentsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient"
-        },
-        "method": {
-          "shortName": "ListReleases",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.ListReleases",
-          "service": {
-            "shortName": "SaasDeployments",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments"
-          }
-        }
+        "shortName": "ListReleases"
       },
+      "description": "ListReleases retrieve a collection of releases.",
+      "file": "SaasDeploymentsClient/ListReleases/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_ListReleases_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt ListReleases Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_ListSaas_sync",
-      "title": "saasservicemgmt ListSaas Sample",
-      "description": "ListSaas retrieve a collection of saas.",
-      "file": "SaasDeploymentsClient/ListSaas/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListSaas",
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient",
+          "shortName": "SaasDeploymentsClient"
+        },
         "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.ListSaas",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.ListSaas",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments",
+            "shortName": "SaasDeployments"
+          },
+          "shortName": "ListSaas"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "saasservicemgmtpb.ListSaasRequest",
-            "name": "req"
+            "name": "req",
+            "type": "saasservicemgmtpb.ListSaasRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "SaasIterator",
-        "client": {
-          "shortName": "SaasDeploymentsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient"
-        },
-        "method": {
-          "shortName": "ListSaas",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.ListSaas",
-          "service": {
-            "shortName": "SaasDeployments",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments"
-          }
-        }
+        "shortName": "ListSaas"
       },
+      "description": "ListSaas retrieve a collection of saas.",
+      "file": "SaasDeploymentsClient/ListSaas/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_ListSaas_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt ListSaas Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_ListTenants_sync",
-      "title": "saasservicemgmt ListTenants Sample",
-      "description": "ListTenants retrieve a collection of tenants.",
-      "file": "SaasDeploymentsClient/ListTenants/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListTenants",
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient",
+          "shortName": "SaasDeploymentsClient"
+        },
         "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.ListTenants",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.ListTenants",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments",
+            "shortName": "SaasDeployments"
+          },
+          "shortName": "ListTenants"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "saasservicemgmtpb.ListTenantsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "saasservicemgmtpb.ListTenantsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "TenantIterator",
-        "client": {
-          "shortName": "SaasDeploymentsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient"
-        },
-        "method": {
-          "shortName": "ListTenants",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.ListTenants",
-          "service": {
-            "shortName": "SaasDeployments",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments"
-          }
-        }
+        "shortName": "ListTenants"
       },
+      "description": "ListTenants retrieve a collection of tenants.",
+      "file": "SaasDeploymentsClient/ListTenants/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_ListTenants_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt ListTenants Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_ListUnitKinds_sync",
-      "title": "saasservicemgmt ListUnitKinds Sample",
-      "description": "ListUnitKinds retrieve a collection of unit kinds.",
-      "file": "SaasDeploymentsClient/ListUnitKinds/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListUnitKinds",
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient",
+          "shortName": "SaasDeploymentsClient"
+        },
         "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.ListUnitKinds",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.ListUnitKinds",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments",
+            "shortName": "SaasDeployments"
+          },
+          "shortName": "ListUnitKinds"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "saasservicemgmtpb.ListUnitKindsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "saasservicemgmtpb.ListUnitKindsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UnitKindIterator",
-        "client": {
-          "shortName": "SaasDeploymentsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient"
-        },
-        "method": {
-          "shortName": "ListUnitKinds",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.ListUnitKinds",
-          "service": {
-            "shortName": "SaasDeployments",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments"
-          }
-        }
+        "shortName": "ListUnitKinds"
       },
+      "description": "ListUnitKinds retrieve a collection of unit kinds.",
+      "file": "SaasDeploymentsClient/ListUnitKinds/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_ListUnitKinds_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt ListUnitKinds Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_ListUnitOperations_sync",
-      "title": "saasservicemgmt ListUnitOperations Sample",
-      "description": "ListUnitOperations retrieve a collection of unit operations.",
-      "file": "SaasDeploymentsClient/ListUnitOperations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListUnitOperations",
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient",
+          "shortName": "SaasDeploymentsClient"
+        },
         "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.ListUnitOperations",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.ListUnitOperations",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments",
+            "shortName": "SaasDeployments"
+          },
+          "shortName": "ListUnitOperations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "saasservicemgmtpb.ListUnitOperationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "saasservicemgmtpb.ListUnitOperationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UnitOperationIterator",
-        "client": {
-          "shortName": "SaasDeploymentsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient"
-        },
-        "method": {
-          "shortName": "ListUnitOperations",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.ListUnitOperations",
-          "service": {
-            "shortName": "SaasDeployments",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments"
-          }
-        }
+        "shortName": "ListUnitOperations"
       },
+      "description": "ListUnitOperations retrieve a collection of unit operations.",
+      "file": "SaasDeploymentsClient/ListUnitOperations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_ListUnitOperations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt ListUnitOperations Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_ListUnits_sync",
-      "title": "saasservicemgmt ListUnits Sample",
-      "description": "ListUnits retrieve a collection of units.",
-      "file": "SaasDeploymentsClient/ListUnits/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListUnits",
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient",
+          "shortName": "SaasDeploymentsClient"
+        },
         "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.ListUnits",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.ListUnits",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments",
+            "shortName": "SaasDeployments"
+          },
+          "shortName": "ListUnits"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "saasservicemgmtpb.ListUnitsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "saasservicemgmtpb.ListUnitsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UnitIterator",
-        "client": {
-          "shortName": "SaasDeploymentsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient"
-        },
-        "method": {
-          "shortName": "ListUnits",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.ListUnits",
-          "service": {
-            "shortName": "SaasDeployments",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments"
-          }
-        }
+        "shortName": "ListUnits"
       },
+      "description": "ListUnits retrieve a collection of units.",
+      "file": "SaasDeploymentsClient/ListUnits/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_ListUnits_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt ListUnits Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_UpdateRelease_sync",
-      "title": "saasservicemgmt UpdateRelease Sample",
-      "description": "UpdateRelease update a single release.",
-      "file": "SaasDeploymentsClient/UpdateRelease/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateRelease",
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient",
+          "shortName": "SaasDeploymentsClient"
+        },
         "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.UpdateRelease",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.UpdateRelease",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments",
+            "shortName": "SaasDeployments"
+          },
+          "shortName": "UpdateRelease"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "saasservicemgmtpb.UpdateReleaseRequest",
-            "name": "req"
+            "name": "req",
+            "type": "saasservicemgmtpb.UpdateReleaseRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*saasservicemgmtpb.Release",
-        "client": {
-          "shortName": "SaasDeploymentsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient"
-        },
-        "method": {
-          "shortName": "UpdateRelease",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.UpdateRelease",
-          "service": {
-            "shortName": "SaasDeployments",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments"
-          }
-        }
+        "shortName": "UpdateRelease"
       },
+      "description": "UpdateRelease update a single release.",
+      "file": "SaasDeploymentsClient/UpdateRelease/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_UpdateRelease_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt UpdateRelease Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_UpdateSaas_sync",
-      "title": "saasservicemgmt UpdateSaas Sample",
-      "description": "UpdateSaas update a single saas.",
-      "file": "SaasDeploymentsClient/UpdateSaas/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateSaas",
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient",
+          "shortName": "SaasDeploymentsClient"
+        },
         "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.UpdateSaas",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.UpdateSaas",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments",
+            "shortName": "SaasDeployments"
+          },
+          "shortName": "UpdateSaas"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "saasservicemgmtpb.UpdateSaasRequest",
-            "name": "req"
+            "name": "req",
+            "type": "saasservicemgmtpb.UpdateSaasRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*saasservicemgmtpb.Saas",
-        "client": {
-          "shortName": "SaasDeploymentsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient"
-        },
-        "method": {
-          "shortName": "UpdateSaas",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.UpdateSaas",
-          "service": {
-            "shortName": "SaasDeployments",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments"
-          }
-        }
+        "shortName": "UpdateSaas"
       },
+      "description": "UpdateSaas update a single saas.",
+      "file": "SaasDeploymentsClient/UpdateSaas/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_UpdateSaas_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt UpdateSaas Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_UpdateTenant_sync",
-      "title": "saasservicemgmt UpdateTenant Sample",
-      "description": "UpdateTenant update a single tenant.",
-      "file": "SaasDeploymentsClient/UpdateTenant/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateTenant",
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient",
+          "shortName": "SaasDeploymentsClient"
+        },
         "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.UpdateTenant",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.UpdateTenant",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments",
+            "shortName": "SaasDeployments"
+          },
+          "shortName": "UpdateTenant"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "saasservicemgmtpb.UpdateTenantRequest",
-            "name": "req"
+            "name": "req",
+            "type": "saasservicemgmtpb.UpdateTenantRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*saasservicemgmtpb.Tenant",
-        "client": {
-          "shortName": "SaasDeploymentsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient"
-        },
-        "method": {
-          "shortName": "UpdateTenant",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.UpdateTenant",
-          "service": {
-            "shortName": "SaasDeployments",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments"
-          }
-        }
+        "shortName": "UpdateTenant"
       },
+      "description": "UpdateTenant update a single tenant.",
+      "file": "SaasDeploymentsClient/UpdateTenant/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_UpdateTenant_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt UpdateTenant Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_UpdateUnit_sync",
-      "title": "saasservicemgmt UpdateUnit Sample",
-      "description": "UpdateUnit update a single unit.",
-      "file": "SaasDeploymentsClient/UpdateUnit/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateUnit",
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient",
+          "shortName": "SaasDeploymentsClient"
+        },
         "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.UpdateUnit",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.UpdateUnit",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments",
+            "shortName": "SaasDeployments"
+          },
+          "shortName": "UpdateUnit"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "saasservicemgmtpb.UpdateUnitRequest",
-            "name": "req"
+            "name": "req",
+            "type": "saasservicemgmtpb.UpdateUnitRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*saasservicemgmtpb.Unit",
-        "client": {
-          "shortName": "SaasDeploymentsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient"
-        },
-        "method": {
-          "shortName": "UpdateUnit",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.UpdateUnit",
-          "service": {
-            "shortName": "SaasDeployments",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments"
-          }
-        }
+        "shortName": "UpdateUnit"
       },
+      "description": "UpdateUnit update a single unit.",
+      "file": "SaasDeploymentsClient/UpdateUnit/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_UpdateUnit_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt UpdateUnit Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_UpdateUnitKind_sync",
-      "title": "saasservicemgmt UpdateUnitKind Sample",
-      "description": "UpdateUnitKind update a single unit kind.",
-      "file": "SaasDeploymentsClient/UpdateUnitKind/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateUnitKind",
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient",
+          "shortName": "SaasDeploymentsClient"
+        },
         "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.UpdateUnitKind",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.UpdateUnitKind",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments",
+            "shortName": "SaasDeployments"
+          },
+          "shortName": "UpdateUnitKind"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "saasservicemgmtpb.UpdateUnitKindRequest",
-            "name": "req"
+            "name": "req",
+            "type": "saasservicemgmtpb.UpdateUnitKindRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*saasservicemgmtpb.UnitKind",
-        "client": {
-          "shortName": "SaasDeploymentsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient"
-        },
-        "method": {
-          "shortName": "UpdateUnitKind",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.UpdateUnitKind",
-          "service": {
-            "shortName": "SaasDeployments",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments"
-          }
-        }
+        "shortName": "UpdateUnitKind"
       },
+      "description": "UpdateUnitKind update a single unit kind.",
+      "file": "SaasDeploymentsClient/UpdateUnitKind/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_UpdateUnitKind_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt UpdateUnitKind Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_UpdateUnitOperation_sync",
-      "title": "saasservicemgmt UpdateUnitOperation Sample",
-      "description": "UpdateUnitOperation update a single unit operation.",
-      "file": "SaasDeploymentsClient/UpdateUnitOperation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateUnitOperation",
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient",
+          "shortName": "SaasDeploymentsClient"
+        },
         "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient.UpdateUnitOperation",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.UpdateUnitOperation",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments",
+            "shortName": "SaasDeployments"
+          },
+          "shortName": "UpdateUnitOperation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "saasservicemgmtpb.UpdateUnitOperationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "saasservicemgmtpb.UpdateUnitOperationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*saasservicemgmtpb.UnitOperation",
-        "client": {
-          "shortName": "SaasDeploymentsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeploymentsClient"
-        },
-        "method": {
-          "shortName": "UpdateUnitOperation",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments.UpdateUnitOperation",
-          "service": {
-            "shortName": "SaasDeployments",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments"
-          }
-        }
+        "shortName": "UpdateUnitOperation"
       },
+      "description": "UpdateUnitOperation update a single unit operation.",
+      "file": "SaasDeploymentsClient/UpdateUnitOperation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_UpdateUnitOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt UpdateUnitOperation Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasRollouts_CreateRollout_sync",
-      "title": "saasservicemgmt CreateRollout Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient",
+          "shortName": "SaasRolloutsClient"
+        },
+        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient.CreateRollout",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts.CreateRollout",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts",
+            "shortName": "SaasRollouts"
+          },
+          "shortName": "CreateRollout"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "saasservicemgmtpb.CreateRolloutRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*saasservicemgmtpb.Rollout",
+        "shortName": "CreateRollout"
+      },
       "description": "CreateRollout create a new rollout.",
       "file": "SaasRolloutsClient/CreateRollout/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateRollout",
-        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient.CreateRollout",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "saasservicemgmtpb.CreateRolloutRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*saasservicemgmtpb.Rollout",
-        "client": {
-          "shortName": "SaasRolloutsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient"
-        },
-        "method": {
-          "shortName": "CreateRollout",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts.CreateRollout",
-          "service": {
-            "shortName": "SaasRollouts",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasRollouts_CreateRollout_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt CreateRollout Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasRollouts_CreateRolloutKind_sync",
-      "title": "saasservicemgmt CreateRolloutKind Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient",
+          "shortName": "SaasRolloutsClient"
+        },
+        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient.CreateRolloutKind",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts.CreateRolloutKind",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts",
+            "shortName": "SaasRollouts"
+          },
+          "shortName": "CreateRolloutKind"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "saasservicemgmtpb.CreateRolloutKindRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*saasservicemgmtpb.RolloutKind",
+        "shortName": "CreateRolloutKind"
+      },
       "description": "CreateRolloutKind create a new rollout kind.",
       "file": "SaasRolloutsClient/CreateRolloutKind/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateRolloutKind",
-        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient.CreateRolloutKind",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "saasservicemgmtpb.CreateRolloutKindRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*saasservicemgmtpb.RolloutKind",
-        "client": {
-          "shortName": "SaasRolloutsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient"
-        },
-        "method": {
-          "shortName": "CreateRolloutKind",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts.CreateRolloutKind",
-          "service": {
-            "shortName": "SaasRollouts",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasRollouts_CreateRolloutKind_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt CreateRolloutKind Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasRollouts_DeleteRollout_sync",
-      "title": "saasservicemgmt DeleteRollout Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient",
+          "shortName": "SaasRolloutsClient"
+        },
+        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient.DeleteRollout",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts.DeleteRollout",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts",
+            "shortName": "SaasRollouts"
+          },
+          "shortName": "DeleteRollout"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "saasservicemgmtpb.DeleteRolloutRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteRollout"
+      },
       "description": "DeleteRollout delete a single rollout.",
       "file": "SaasRolloutsClient/DeleteRollout/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteRollout",
-        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient.DeleteRollout",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "saasservicemgmtpb.DeleteRolloutRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "SaasRolloutsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient"
-        },
-        "method": {
-          "shortName": "DeleteRollout",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts.DeleteRollout",
-          "service": {
-            "shortName": "SaasRollouts",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasRollouts_DeleteRollout_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt DeleteRollout Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasRollouts_DeleteRolloutKind_sync",
-      "title": "saasservicemgmt DeleteRolloutKind Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient",
+          "shortName": "SaasRolloutsClient"
+        },
+        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient.DeleteRolloutKind",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts.DeleteRolloutKind",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts",
+            "shortName": "SaasRollouts"
+          },
+          "shortName": "DeleteRolloutKind"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "saasservicemgmtpb.DeleteRolloutKindRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteRolloutKind"
+      },
       "description": "DeleteRolloutKind delete a single rollout kind.",
       "file": "SaasRolloutsClient/DeleteRolloutKind/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteRolloutKind",
-        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient.DeleteRolloutKind",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "saasservicemgmtpb.DeleteRolloutKindRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "SaasRolloutsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient"
-        },
-        "method": {
-          "shortName": "DeleteRolloutKind",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts.DeleteRolloutKind",
-          "service": {
-            "shortName": "SaasRollouts",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasRollouts_DeleteRolloutKind_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt DeleteRolloutKind Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasRollouts_GetLocation_sync",
-      "title": "saasservicemgmt GetLocation Sample",
-      "description": "GetLocation gets information about a location.",
-      "file": "SaasRolloutsClient/GetLocation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetLocation",
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient",
+          "shortName": "SaasRolloutsClient"
+        },
         "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "locationpb.GetLocationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*locationpb.Location",
-        "client": {
-          "shortName": "SaasRolloutsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient"
-        },
-        "method": {
-          "shortName": "GetLocation",
-          "fullName": "google.cloud.location.Locations.GetLocation",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
+        "shortName": "GetLocation"
       },
+      "description": "GetLocation gets information about a location.",
+      "file": "SaasRolloutsClient/GetLocation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasRollouts_GetLocation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt GetLocation Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasRollouts_GetRollout_sync",
-      "title": "saasservicemgmt GetRollout Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient",
+          "shortName": "SaasRolloutsClient"
+        },
+        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient.GetRollout",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts.GetRollout",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts",
+            "shortName": "SaasRollouts"
+          },
+          "shortName": "GetRollout"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "saasservicemgmtpb.GetRolloutRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*saasservicemgmtpb.Rollout",
+        "shortName": "GetRollout"
+      },
       "description": "GetRollout retrieve a single rollout.",
       "file": "SaasRolloutsClient/GetRollout/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetRollout",
-        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient.GetRollout",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "saasservicemgmtpb.GetRolloutRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*saasservicemgmtpb.Rollout",
-        "client": {
-          "shortName": "SaasRolloutsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient"
-        },
-        "method": {
-          "shortName": "GetRollout",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts.GetRollout",
-          "service": {
-            "shortName": "SaasRollouts",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasRollouts_GetRollout_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt GetRollout Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasRollouts_GetRolloutKind_sync",
-      "title": "saasservicemgmt GetRolloutKind Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient",
+          "shortName": "SaasRolloutsClient"
+        },
+        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient.GetRolloutKind",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts.GetRolloutKind",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts",
+            "shortName": "SaasRollouts"
+          },
+          "shortName": "GetRolloutKind"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "saasservicemgmtpb.GetRolloutKindRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*saasservicemgmtpb.RolloutKind",
+        "shortName": "GetRolloutKind"
+      },
       "description": "GetRolloutKind retrieve a single rollout kind.",
       "file": "SaasRolloutsClient/GetRolloutKind/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetRolloutKind",
-        "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient.GetRolloutKind",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "saasservicemgmtpb.GetRolloutKindRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*saasservicemgmtpb.RolloutKind",
-        "client": {
-          "shortName": "SaasRolloutsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient"
-        },
-        "method": {
-          "shortName": "GetRolloutKind",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts.GetRolloutKind",
-          "service": {
-            "shortName": "SaasRollouts",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasRollouts_GetRolloutKind_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt GetRolloutKind Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasRollouts_ListLocations_sync",
-      "title": "saasservicemgmt ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
-      "file": "SaasRolloutsClient/ListLocations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListLocations",
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient",
+          "shortName": "SaasRolloutsClient"
+        },
         "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "locationpb.ListLocationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "LocationIterator",
-        "client": {
-          "shortName": "SaasRolloutsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient"
-        },
-        "method": {
-          "shortName": "ListLocations",
-          "fullName": "google.cloud.location.Locations.ListLocations",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
+        "shortName": "ListLocations"
       },
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "SaasRolloutsClient/ListLocations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasRollouts_ListLocations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt ListLocations Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasRollouts_ListRolloutKinds_sync",
-      "title": "saasservicemgmt ListRolloutKinds Sample",
-      "description": "ListRolloutKinds retrieve a collection of rollout kinds.",
-      "file": "SaasRolloutsClient/ListRolloutKinds/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListRolloutKinds",
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient",
+          "shortName": "SaasRolloutsClient"
+        },
         "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient.ListRolloutKinds",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts.ListRolloutKinds",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts",
+            "shortName": "SaasRollouts"
+          },
+          "shortName": "ListRolloutKinds"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "saasservicemgmtpb.ListRolloutKindsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "saasservicemgmtpb.ListRolloutKindsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "RolloutKindIterator",
-        "client": {
-          "shortName": "SaasRolloutsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient"
-        },
-        "method": {
-          "shortName": "ListRolloutKinds",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts.ListRolloutKinds",
-          "service": {
-            "shortName": "SaasRollouts",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts"
-          }
-        }
+        "shortName": "ListRolloutKinds"
       },
+      "description": "ListRolloutKinds retrieve a collection of rollout kinds.",
+      "file": "SaasRolloutsClient/ListRolloutKinds/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasRollouts_ListRolloutKinds_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt ListRolloutKinds Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasRollouts_ListRollouts_sync",
-      "title": "saasservicemgmt ListRollouts Sample",
-      "description": "ListRollouts retrieve a collection of rollouts.",
-      "file": "SaasRolloutsClient/ListRollouts/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListRollouts",
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient",
+          "shortName": "SaasRolloutsClient"
+        },
         "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient.ListRollouts",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts.ListRollouts",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts",
+            "shortName": "SaasRollouts"
+          },
+          "shortName": "ListRollouts"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "saasservicemgmtpb.ListRolloutsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "saasservicemgmtpb.ListRolloutsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "RolloutIterator",
-        "client": {
-          "shortName": "SaasRolloutsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient"
-        },
-        "method": {
-          "shortName": "ListRollouts",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts.ListRollouts",
-          "service": {
-            "shortName": "SaasRollouts",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts"
-          }
-        }
+        "shortName": "ListRollouts"
       },
+      "description": "ListRollouts retrieve a collection of rollouts.",
+      "file": "SaasRolloutsClient/ListRollouts/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasRollouts_ListRollouts_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt ListRollouts Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasRollouts_UpdateRollout_sync",
-      "title": "saasservicemgmt UpdateRollout Sample",
-      "description": "UpdateRollout update a single rollout.",
-      "file": "SaasRolloutsClient/UpdateRollout/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateRollout",
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient",
+          "shortName": "SaasRolloutsClient"
+        },
         "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient.UpdateRollout",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts.UpdateRollout",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts",
+            "shortName": "SaasRollouts"
+          },
+          "shortName": "UpdateRollout"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "saasservicemgmtpb.UpdateRolloutRequest",
-            "name": "req"
+            "name": "req",
+            "type": "saasservicemgmtpb.UpdateRolloutRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*saasservicemgmtpb.Rollout",
-        "client": {
-          "shortName": "SaasRolloutsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient"
-        },
-        "method": {
-          "shortName": "UpdateRollout",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts.UpdateRollout",
-          "service": {
-            "shortName": "SaasRollouts",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts"
-          }
-        }
+        "shortName": "UpdateRollout"
       },
+      "description": "UpdateRollout update a single rollout.",
+      "file": "SaasRolloutsClient/UpdateRollout/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasRollouts_UpdateRollout_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt UpdateRollout Sample"
     },
     {
-      "regionTag": "saasservicemgmt_v1beta1_generated_SaasRollouts_UpdateRolloutKind_sync",
-      "title": "saasservicemgmt UpdateRolloutKind Sample",
-      "description": "UpdateRolloutKind update a single rollout kind.",
-      "file": "SaasRolloutsClient/UpdateRolloutKind/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateRolloutKind",
+        "client": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient",
+          "shortName": "SaasRolloutsClient"
+        },
         "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient.UpdateRolloutKind",
+        "method": {
+          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts.UpdateRolloutKind",
+          "service": {
+            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts",
+            "shortName": "SaasRollouts"
+          },
+          "shortName": "UpdateRolloutKind"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "saasservicemgmtpb.UpdateRolloutKindRequest",
-            "name": "req"
+            "name": "req",
+            "type": "saasservicemgmtpb.UpdateRolloutKindRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*saasservicemgmtpb.RolloutKind",
-        "client": {
-          "shortName": "SaasRolloutsClient",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRolloutsClient"
-        },
-        "method": {
-          "shortName": "UpdateRolloutKind",
-          "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts.UpdateRolloutKind",
-          "service": {
-            "shortName": "SaasRollouts",
-            "fullName": "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts"
-          }
-        }
+        "shortName": "UpdateRolloutKind"
       },
+      "description": "UpdateRolloutKind update a single rollout kind.",
+      "file": "SaasRolloutsClient/UpdateRolloutKind/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "saasservicemgmt_v1beta1_generated_SaasRollouts_UpdateRolloutKind_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "saasservicemgmt UpdateRolloutKind Sample"
     }
   ]
 }

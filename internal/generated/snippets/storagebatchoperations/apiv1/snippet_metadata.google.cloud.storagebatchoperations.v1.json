@@ -1,610 +1,610 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/storagebatchoperations/apiv1",
-    "version": "0.4.0",
-    "language": "GO",
     "apis": [
       {
         "id": "google.cloud.storagebatchoperations.v1",
         "version": "v1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/storagebatchoperations/apiv1",
+    "version": "0.4.0"
   },
   "snippets": [
     {
-      "regionTag": "storagebatchoperations_v1_generated_StorageBatchOperations_CancelJob_sync",
-      "title": "storagebatchoperations CancelJob Sample",
-      "description": "CancelJob cancels a batch job.",
-      "file": "Client/CancelJob/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CancelJob",
+        "client": {
+          "fullName": "google.cloud.storagebatchoperations.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.storagebatchoperations.v1.Client.CancelJob",
+        "method": {
+          "fullName": "google.cloud.storagebatchoperations.v1.StorageBatchOperations.CancelJob",
+          "service": {
+            "fullName": "google.cloud.storagebatchoperations.v1.StorageBatchOperations",
+            "shortName": "StorageBatchOperations"
+          },
+          "shortName": "CancelJob"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "storagebatchoperationspb.CancelJobRequest",
-            "name": "req"
+            "name": "req",
+            "type": "storagebatchoperationspb.CancelJobRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*storagebatchoperationspb.CancelJobResponse",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.storagebatchoperations.v1.Client"
-        },
-        "method": {
-          "shortName": "CancelJob",
-          "fullName": "google.cloud.storagebatchoperations.v1.StorageBatchOperations.CancelJob",
-          "service": {
-            "shortName": "StorageBatchOperations",
-            "fullName": "google.cloud.storagebatchoperations.v1.StorageBatchOperations"
-          }
-        }
+        "shortName": "CancelJob"
       },
+      "description": "CancelJob cancels a batch job.",
+      "file": "Client/CancelJob/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "storagebatchoperations_v1_generated_StorageBatchOperations_CancelJob_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storagebatchoperations CancelJob Sample"
     },
     {
-      "regionTag": "storagebatchoperations_v1_generated_StorageBatchOperations_CancelOperation_sync",
-      "title": "storagebatchoperations CancelOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.storagebatchoperations.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.storagebatchoperations.v1.Client.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
       "file": "Client/CancelOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CancelOperation",
-        "fullName": "google.cloud.storagebatchoperations.v1.Client.CancelOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.CancelOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.storagebatchoperations.v1.Client"
-        },
-        "method": {
-          "shortName": "CancelOperation",
-          "fullName": "google.longrunning.Operations.CancelOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "storagebatchoperations_v1_generated_StorageBatchOperations_CancelOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storagebatchoperations CancelOperation Sample"
     },
     {
-      "regionTag": "storagebatchoperations_v1_generated_StorageBatchOperations_CreateJob_sync",
-      "title": "storagebatchoperations CreateJob Sample",
-      "description": "CreateJob creates a batch job.",
-      "file": "Client/CreateJob/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateJob",
+        "client": {
+          "fullName": "google.cloud.storagebatchoperations.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.storagebatchoperations.v1.Client.CreateJob",
+        "method": {
+          "fullName": "google.cloud.storagebatchoperations.v1.StorageBatchOperations.CreateJob",
+          "service": {
+            "fullName": "google.cloud.storagebatchoperations.v1.StorageBatchOperations",
+            "shortName": "StorageBatchOperations"
+          },
+          "shortName": "CreateJob"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "storagebatchoperationspb.CreateJobRequest",
-            "name": "req"
+            "name": "req",
+            "type": "storagebatchoperationspb.CreateJobRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateJobOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.storagebatchoperations.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateJob",
-          "fullName": "google.cloud.storagebatchoperations.v1.StorageBatchOperations.CreateJob",
-          "service": {
-            "shortName": "StorageBatchOperations",
-            "fullName": "google.cloud.storagebatchoperations.v1.StorageBatchOperations"
-          }
-        }
+        "shortName": "CreateJob"
       },
+      "description": "CreateJob creates a batch job.",
+      "file": "Client/CreateJob/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "storagebatchoperations_v1_generated_StorageBatchOperations_CreateJob_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storagebatchoperations CreateJob Sample"
     },
     {
-      "regionTag": "storagebatchoperations_v1_generated_StorageBatchOperations_DeleteJob_sync",
-      "title": "storagebatchoperations DeleteJob Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.storagebatchoperations.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.storagebatchoperations.v1.Client.DeleteJob",
+        "method": {
+          "fullName": "google.cloud.storagebatchoperations.v1.StorageBatchOperations.DeleteJob",
+          "service": {
+            "fullName": "google.cloud.storagebatchoperations.v1.StorageBatchOperations",
+            "shortName": "StorageBatchOperations"
+          },
+          "shortName": "DeleteJob"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "storagebatchoperationspb.DeleteJobRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteJob"
+      },
       "description": "DeleteJob deletes a batch job.",
       "file": "Client/DeleteJob/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteJob",
-        "fullName": "google.cloud.storagebatchoperations.v1.Client.DeleteJob",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "storagebatchoperationspb.DeleteJobRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.storagebatchoperations.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteJob",
-          "fullName": "google.cloud.storagebatchoperations.v1.StorageBatchOperations.DeleteJob",
-          "service": {
-            "shortName": "StorageBatchOperations",
-            "fullName": "google.cloud.storagebatchoperations.v1.StorageBatchOperations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "storagebatchoperations_v1_generated_StorageBatchOperations_DeleteJob_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storagebatchoperations DeleteJob Sample"
     },
     {
-      "regionTag": "storagebatchoperations_v1_generated_StorageBatchOperations_DeleteOperation_sync",
-      "title": "storagebatchoperations DeleteOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.storagebatchoperations.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.storagebatchoperations.v1.Client.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
       "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
       "file": "Client/DeleteOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteOperation",
-        "fullName": "google.cloud.storagebatchoperations.v1.Client.DeleteOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.DeleteOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.storagebatchoperations.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteOperation",
-          "fullName": "google.longrunning.Operations.DeleteOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "storagebatchoperations_v1_generated_StorageBatchOperations_DeleteOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storagebatchoperations DeleteOperation Sample"
     },
     {
-      "regionTag": "storagebatchoperations_v1_generated_StorageBatchOperations_GetBucketOperation_sync",
-      "title": "storagebatchoperations GetBucketOperation Sample",
-      "description": "GetBucketOperation gets a BucketOperation.",
-      "file": "Client/GetBucketOperation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetBucketOperation",
+        "client": {
+          "fullName": "google.cloud.storagebatchoperations.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.storagebatchoperations.v1.Client.GetBucketOperation",
+        "method": {
+          "fullName": "google.cloud.storagebatchoperations.v1.StorageBatchOperations.GetBucketOperation",
+          "service": {
+            "fullName": "google.cloud.storagebatchoperations.v1.StorageBatchOperations",
+            "shortName": "StorageBatchOperations"
+          },
+          "shortName": "GetBucketOperation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "storagebatchoperationspb.GetBucketOperationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "storagebatchoperationspb.GetBucketOperationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*storagebatchoperationspb.BucketOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.storagebatchoperations.v1.Client"
-        },
-        "method": {
-          "shortName": "GetBucketOperation",
-          "fullName": "google.cloud.storagebatchoperations.v1.StorageBatchOperations.GetBucketOperation",
-          "service": {
-            "shortName": "StorageBatchOperations",
-            "fullName": "google.cloud.storagebatchoperations.v1.StorageBatchOperations"
-          }
-        }
+        "shortName": "GetBucketOperation"
       },
+      "description": "GetBucketOperation gets a BucketOperation.",
+      "file": "Client/GetBucketOperation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "storagebatchoperations_v1_generated_StorageBatchOperations_GetBucketOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storagebatchoperations GetBucketOperation Sample"
     },
     {
-      "regionTag": "storagebatchoperations_v1_generated_StorageBatchOperations_GetJob_sync",
-      "title": "storagebatchoperations GetJob Sample",
-      "description": "GetJob gets a batch job.",
-      "file": "Client/GetJob/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetJob",
+        "client": {
+          "fullName": "google.cloud.storagebatchoperations.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.storagebatchoperations.v1.Client.GetJob",
+        "method": {
+          "fullName": "google.cloud.storagebatchoperations.v1.StorageBatchOperations.GetJob",
+          "service": {
+            "fullName": "google.cloud.storagebatchoperations.v1.StorageBatchOperations",
+            "shortName": "StorageBatchOperations"
+          },
+          "shortName": "GetJob"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "storagebatchoperationspb.GetJobRequest",
-            "name": "req"
+            "name": "req",
+            "type": "storagebatchoperationspb.GetJobRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*storagebatchoperationspb.Job",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.storagebatchoperations.v1.Client"
-        },
-        "method": {
-          "shortName": "GetJob",
-          "fullName": "google.cloud.storagebatchoperations.v1.StorageBatchOperations.GetJob",
-          "service": {
-            "shortName": "StorageBatchOperations",
-            "fullName": "google.cloud.storagebatchoperations.v1.StorageBatchOperations"
-          }
-        }
+        "shortName": "GetJob"
       },
+      "description": "GetJob gets a batch job.",
+      "file": "Client/GetJob/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "storagebatchoperations_v1_generated_StorageBatchOperations_GetJob_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storagebatchoperations GetJob Sample"
     },
     {
-      "regionTag": "storagebatchoperations_v1_generated_StorageBatchOperations_GetLocation_sync",
-      "title": "storagebatchoperations GetLocation Sample",
-      "description": "GetLocation gets information about a location.",
-      "file": "Client/GetLocation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetLocation",
+        "client": {
+          "fullName": "google.cloud.storagebatchoperations.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.storagebatchoperations.v1.Client.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "locationpb.GetLocationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*locationpb.Location",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.storagebatchoperations.v1.Client"
-        },
-        "method": {
-          "shortName": "GetLocation",
-          "fullName": "google.cloud.location.Locations.GetLocation",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
+        "shortName": "GetLocation"
       },
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "storagebatchoperations_v1_generated_StorageBatchOperations_GetLocation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storagebatchoperations GetLocation Sample"
     },
     {
-      "regionTag": "storagebatchoperations_v1_generated_StorageBatchOperations_GetOperation_sync",
-      "title": "storagebatchoperations GetOperation Sample",
-      "description": "GetOperation is a utility method from google.longrunning.Operations.",
-      "file": "Client/GetOperation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetOperation",
+        "client": {
+          "fullName": "google.cloud.storagebatchoperations.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.storagebatchoperations.v1.Client.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.GetOperationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*longrunningpb.Operation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.storagebatchoperations.v1.Client"
-        },
-        "method": {
-          "shortName": "GetOperation",
-          "fullName": "google.longrunning.Operations.GetOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "GetOperation"
       },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "storagebatchoperations_v1_generated_StorageBatchOperations_GetOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storagebatchoperations GetOperation Sample"
     },
     {
-      "regionTag": "storagebatchoperations_v1_generated_StorageBatchOperations_ListBucketOperations_sync",
-      "title": "storagebatchoperations ListBucketOperations Sample",
-      "description": "ListBucketOperations lists BucketOperations in a given project and job.",
-      "file": "Client/ListBucketOperations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListBucketOperations",
+        "client": {
+          "fullName": "google.cloud.storagebatchoperations.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.storagebatchoperations.v1.Client.ListBucketOperations",
+        "method": {
+          "fullName": "google.cloud.storagebatchoperations.v1.StorageBatchOperations.ListBucketOperations",
+          "service": {
+            "fullName": "google.cloud.storagebatchoperations.v1.StorageBatchOperations",
+            "shortName": "StorageBatchOperations"
+          },
+          "shortName": "ListBucketOperations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "storagebatchoperationspb.ListBucketOperationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "storagebatchoperationspb.ListBucketOperationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "BucketOperationIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.storagebatchoperations.v1.Client"
-        },
-        "method": {
-          "shortName": "ListBucketOperations",
-          "fullName": "google.cloud.storagebatchoperations.v1.StorageBatchOperations.ListBucketOperations",
-          "service": {
-            "shortName": "StorageBatchOperations",
-            "fullName": "google.cloud.storagebatchoperations.v1.StorageBatchOperations"
-          }
-        }
+        "shortName": "ListBucketOperations"
       },
+      "description": "ListBucketOperations lists BucketOperations in a given project and job.",
+      "file": "Client/ListBucketOperations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "storagebatchoperations_v1_generated_StorageBatchOperations_ListBucketOperations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storagebatchoperations ListBucketOperations Sample"
     },
     {
-      "regionTag": "storagebatchoperations_v1_generated_StorageBatchOperations_ListJobs_sync",
-      "title": "storagebatchoperations ListJobs Sample",
-      "description": "ListJobs lists Jobs in a given project.",
-      "file": "Client/ListJobs/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListJobs",
+        "client": {
+          "fullName": "google.cloud.storagebatchoperations.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.storagebatchoperations.v1.Client.ListJobs",
+        "method": {
+          "fullName": "google.cloud.storagebatchoperations.v1.StorageBatchOperations.ListJobs",
+          "service": {
+            "fullName": "google.cloud.storagebatchoperations.v1.StorageBatchOperations",
+            "shortName": "StorageBatchOperations"
+          },
+          "shortName": "ListJobs"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "storagebatchoperationspb.ListJobsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "storagebatchoperationspb.ListJobsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "JobIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.storagebatchoperations.v1.Client"
-        },
-        "method": {
-          "shortName": "ListJobs",
-          "fullName": "google.cloud.storagebatchoperations.v1.StorageBatchOperations.ListJobs",
-          "service": {
-            "shortName": "StorageBatchOperations",
-            "fullName": "google.cloud.storagebatchoperations.v1.StorageBatchOperations"
-          }
-        }
+        "shortName": "ListJobs"
       },
+      "description": "ListJobs lists Jobs in a given project.",
+      "file": "Client/ListJobs/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "storagebatchoperations_v1_generated_StorageBatchOperations_ListJobs_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storagebatchoperations ListJobs Sample"
     },
     {
-      "regionTag": "storagebatchoperations_v1_generated_StorageBatchOperations_ListLocations_sync",
-      "title": "storagebatchoperations ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
-      "file": "Client/ListLocations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListLocations",
+        "client": {
+          "fullName": "google.cloud.storagebatchoperations.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.storagebatchoperations.v1.Client.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "locationpb.ListLocationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "LocationIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.storagebatchoperations.v1.Client"
-        },
-        "method": {
-          "shortName": "ListLocations",
-          "fullName": "google.cloud.location.Locations.ListLocations",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
+        "shortName": "ListLocations"
       },
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "storagebatchoperations_v1_generated_StorageBatchOperations_ListLocations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storagebatchoperations ListLocations Sample"
     },
     {
-      "regionTag": "storagebatchoperations_v1_generated_StorageBatchOperations_ListOperations_sync",
-      "title": "storagebatchoperations ListOperations Sample",
-      "description": "ListOperations is a utility method from google.longrunning.Operations.",
-      "file": "Client/ListOperations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListOperations",
+        "client": {
+          "fullName": "google.cloud.storagebatchoperations.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.storagebatchoperations.v1.Client.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.ListOperationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "OperationIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.storagebatchoperations.v1.Client"
-        },
-        "method": {
-          "shortName": "ListOperations",
-          "fullName": "google.longrunning.Operations.ListOperations",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "ListOperations"
       },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "storagebatchoperations_v1_generated_StorageBatchOperations_ListOperations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storagebatchoperations ListOperations Sample"
     }
   ]
 }

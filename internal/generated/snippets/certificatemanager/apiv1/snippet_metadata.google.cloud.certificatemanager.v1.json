@@ -1,1623 +1,1623 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/certificatemanager/apiv1",
-    "version": "1.9.6",
-    "language": "GO",
     "apis": [
       {
         "id": "google.cloud.certificatemanager.v1",
         "version": "v1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/certificatemanager/apiv1",
+    "version": "1.9.6"
   },
   "snippets": [
     {
-      "regionTag": "certificatemanager_v1_generated_CertificateManager_CancelOperation_sync",
-      "title": "certificatemanager CancelOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.certificatemanager.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.certificatemanager.v1.Client.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
       "file": "Client/CancelOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CancelOperation",
-        "fullName": "google.cloud.certificatemanager.v1.Client.CancelOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.CancelOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.certificatemanager.v1.Client"
-        },
-        "method": {
-          "shortName": "CancelOperation",
-          "fullName": "google.longrunning.Operations.CancelOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_CancelOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "certificatemanager CancelOperation Sample"
     },
     {
-      "regionTag": "certificatemanager_v1_generated_CertificateManager_CreateCertificate_sync",
-      "title": "certificatemanager CreateCertificate Sample",
-      "description": "CreateCertificate creates a new Certificate in a given project and location.",
-      "file": "Client/CreateCertificate/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateCertificate",
+        "client": {
+          "fullName": "google.cloud.certificatemanager.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.certificatemanager.v1.Client.CreateCertificate",
+        "method": {
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.CreateCertificate",
+          "service": {
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager",
+            "shortName": "CertificateManager"
+          },
+          "shortName": "CreateCertificate"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "certificatemanagerpb.CreateCertificateRequest",
-            "name": "req"
+            "name": "req",
+            "type": "certificatemanagerpb.CreateCertificateRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateCertificateOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.certificatemanager.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateCertificate",
-          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.CreateCertificate",
-          "service": {
-            "shortName": "CertificateManager",
-            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
-          }
-        }
+        "shortName": "CreateCertificate"
       },
+      "description": "CreateCertificate creates a new Certificate in a given project and location.",
+      "file": "Client/CreateCertificate/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_CreateCertificate_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "certificatemanager CreateCertificate Sample"
     },
     {
-      "regionTag": "certificatemanager_v1_generated_CertificateManager_CreateCertificateIssuanceConfig_sync",
-      "title": "certificatemanager CreateCertificateIssuanceConfig Sample",
-      "description": "CreateCertificateIssuanceConfig creates a new CertificateIssuanceConfig in a given project and location.",
-      "file": "Client/CreateCertificateIssuanceConfig/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateCertificateIssuanceConfig",
+        "client": {
+          "fullName": "google.cloud.certificatemanager.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.certificatemanager.v1.Client.CreateCertificateIssuanceConfig",
+        "method": {
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.CreateCertificateIssuanceConfig",
+          "service": {
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager",
+            "shortName": "CertificateManager"
+          },
+          "shortName": "CreateCertificateIssuanceConfig"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "certificatemanagerpb.CreateCertificateIssuanceConfigRequest",
-            "name": "req"
+            "name": "req",
+            "type": "certificatemanagerpb.CreateCertificateIssuanceConfigRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateCertificateIssuanceConfigOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.certificatemanager.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateCertificateIssuanceConfig",
-          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.CreateCertificateIssuanceConfig",
-          "service": {
-            "shortName": "CertificateManager",
-            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
-          }
-        }
+        "shortName": "CreateCertificateIssuanceConfig"
       },
+      "description": "CreateCertificateIssuanceConfig creates a new CertificateIssuanceConfig in a given project and location.",
+      "file": "Client/CreateCertificateIssuanceConfig/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_CreateCertificateIssuanceConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "certificatemanager CreateCertificateIssuanceConfig Sample"
     },
     {
-      "regionTag": "certificatemanager_v1_generated_CertificateManager_CreateCertificateMap_sync",
-      "title": "certificatemanager CreateCertificateMap Sample",
-      "description": "CreateCertificateMap creates a new CertificateMap in a given project and location.",
-      "file": "Client/CreateCertificateMap/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateCertificateMap",
+        "client": {
+          "fullName": "google.cloud.certificatemanager.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.certificatemanager.v1.Client.CreateCertificateMap",
+        "method": {
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.CreateCertificateMap",
+          "service": {
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager",
+            "shortName": "CertificateManager"
+          },
+          "shortName": "CreateCertificateMap"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "certificatemanagerpb.CreateCertificateMapRequest",
-            "name": "req"
+            "name": "req",
+            "type": "certificatemanagerpb.CreateCertificateMapRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateCertificateMapOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.certificatemanager.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateCertificateMap",
-          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.CreateCertificateMap",
-          "service": {
-            "shortName": "CertificateManager",
-            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
-          }
-        }
+        "shortName": "CreateCertificateMap"
       },
+      "description": "CreateCertificateMap creates a new CertificateMap in a given project and location.",
+      "file": "Client/CreateCertificateMap/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_CreateCertificateMap_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "certificatemanager CreateCertificateMap Sample"
     },
     {
-      "regionTag": "certificatemanager_v1_generated_CertificateManager_CreateCertificateMapEntry_sync",
-      "title": "certificatemanager CreateCertificateMapEntry Sample",
-      "description": "CreateCertificateMapEntry creates a new CertificateMapEntry in a given project and location.",
-      "file": "Client/CreateCertificateMapEntry/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateCertificateMapEntry",
+        "client": {
+          "fullName": "google.cloud.certificatemanager.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.certificatemanager.v1.Client.CreateCertificateMapEntry",
+        "method": {
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.CreateCertificateMapEntry",
+          "service": {
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager",
+            "shortName": "CertificateManager"
+          },
+          "shortName": "CreateCertificateMapEntry"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "certificatemanagerpb.CreateCertificateMapEntryRequest",
-            "name": "req"
+            "name": "req",
+            "type": "certificatemanagerpb.CreateCertificateMapEntryRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateCertificateMapEntryOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.certificatemanager.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateCertificateMapEntry",
-          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.CreateCertificateMapEntry",
-          "service": {
-            "shortName": "CertificateManager",
-            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
-          }
-        }
+        "shortName": "CreateCertificateMapEntry"
       },
+      "description": "CreateCertificateMapEntry creates a new CertificateMapEntry in a given project and location.",
+      "file": "Client/CreateCertificateMapEntry/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_CreateCertificateMapEntry_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "certificatemanager CreateCertificateMapEntry Sample"
     },
     {
-      "regionTag": "certificatemanager_v1_generated_CertificateManager_CreateDnsAuthorization_sync",
-      "title": "certificatemanager CreateDnsAuthorization Sample",
-      "description": "CreateDnsAuthorization creates a new DnsAuthorization in a given project and location.",
-      "file": "Client/CreateDnsAuthorization/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateDnsAuthorization",
+        "client": {
+          "fullName": "google.cloud.certificatemanager.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.certificatemanager.v1.Client.CreateDnsAuthorization",
+        "method": {
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.CreateDnsAuthorization",
+          "service": {
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager",
+            "shortName": "CertificateManager"
+          },
+          "shortName": "CreateDnsAuthorization"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "certificatemanagerpb.CreateDnsAuthorizationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "certificatemanagerpb.CreateDnsAuthorizationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateDnsAuthorizationOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.certificatemanager.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateDnsAuthorization",
-          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.CreateDnsAuthorization",
-          "service": {
-            "shortName": "CertificateManager",
-            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
-          }
-        }
+        "shortName": "CreateDnsAuthorization"
       },
+      "description": "CreateDnsAuthorization creates a new DnsAuthorization in a given project and location.",
+      "file": "Client/CreateDnsAuthorization/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_CreateDnsAuthorization_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "certificatemanager CreateDnsAuthorization Sample"
     },
     {
-      "regionTag": "certificatemanager_v1_generated_CertificateManager_CreateTrustConfig_sync",
-      "title": "certificatemanager CreateTrustConfig Sample",
-      "description": "CreateTrustConfig creates a new TrustConfig in a given project and location.",
-      "file": "Client/CreateTrustConfig/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateTrustConfig",
+        "client": {
+          "fullName": "google.cloud.certificatemanager.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.certificatemanager.v1.Client.CreateTrustConfig",
+        "method": {
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.CreateTrustConfig",
+          "service": {
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager",
+            "shortName": "CertificateManager"
+          },
+          "shortName": "CreateTrustConfig"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "certificatemanagerpb.CreateTrustConfigRequest",
-            "name": "req"
+            "name": "req",
+            "type": "certificatemanagerpb.CreateTrustConfigRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateTrustConfigOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.certificatemanager.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateTrustConfig",
-          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.CreateTrustConfig",
-          "service": {
-            "shortName": "CertificateManager",
-            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
-          }
-        }
+        "shortName": "CreateTrustConfig"
       },
+      "description": "CreateTrustConfig creates a new TrustConfig in a given project and location.",
+      "file": "Client/CreateTrustConfig/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_CreateTrustConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "certificatemanager CreateTrustConfig Sample"
     },
     {
-      "regionTag": "certificatemanager_v1_generated_CertificateManager_DeleteCertificate_sync",
-      "title": "certificatemanager DeleteCertificate Sample",
-      "description": "DeleteCertificate deletes a single Certificate.",
-      "file": "Client/DeleteCertificate/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteCertificate",
+        "client": {
+          "fullName": "google.cloud.certificatemanager.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.certificatemanager.v1.Client.DeleteCertificate",
+        "method": {
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.DeleteCertificate",
+          "service": {
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager",
+            "shortName": "CertificateManager"
+          },
+          "shortName": "DeleteCertificate"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "certificatemanagerpb.DeleteCertificateRequest",
-            "name": "req"
+            "name": "req",
+            "type": "certificatemanagerpb.DeleteCertificateRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteCertificateOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.certificatemanager.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteCertificate",
-          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.DeleteCertificate",
-          "service": {
-            "shortName": "CertificateManager",
-            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
-          }
-        }
+        "shortName": "DeleteCertificate"
       },
+      "description": "DeleteCertificate deletes a single Certificate.",
+      "file": "Client/DeleteCertificate/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_DeleteCertificate_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "certificatemanager DeleteCertificate Sample"
     },
     {
-      "regionTag": "certificatemanager_v1_generated_CertificateManager_DeleteCertificateIssuanceConfig_sync",
-      "title": "certificatemanager DeleteCertificateIssuanceConfig Sample",
-      "description": "DeleteCertificateIssuanceConfig deletes a single CertificateIssuanceConfig.",
-      "file": "Client/DeleteCertificateIssuanceConfig/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteCertificateIssuanceConfig",
+        "client": {
+          "fullName": "google.cloud.certificatemanager.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.certificatemanager.v1.Client.DeleteCertificateIssuanceConfig",
+        "method": {
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.DeleteCertificateIssuanceConfig",
+          "service": {
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager",
+            "shortName": "CertificateManager"
+          },
+          "shortName": "DeleteCertificateIssuanceConfig"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "certificatemanagerpb.DeleteCertificateIssuanceConfigRequest",
-            "name": "req"
+            "name": "req",
+            "type": "certificatemanagerpb.DeleteCertificateIssuanceConfigRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteCertificateIssuanceConfigOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.certificatemanager.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteCertificateIssuanceConfig",
-          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.DeleteCertificateIssuanceConfig",
-          "service": {
-            "shortName": "CertificateManager",
-            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
-          }
-        }
+        "shortName": "DeleteCertificateIssuanceConfig"
       },
+      "description": "DeleteCertificateIssuanceConfig deletes a single CertificateIssuanceConfig.",
+      "file": "Client/DeleteCertificateIssuanceConfig/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_DeleteCertificateIssuanceConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "certificatemanager DeleteCertificateIssuanceConfig Sample"
     },
     {
-      "regionTag": "certificatemanager_v1_generated_CertificateManager_DeleteCertificateMap_sync",
-      "title": "certificatemanager DeleteCertificateMap Sample",
-      "description": "DeleteCertificateMap deletes a single CertificateMap. A Certificate Map can't be deleted\nif it contains Certificate Map Entries. Remove all the entries from\nthe map before calling this method.",
-      "file": "Client/DeleteCertificateMap/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteCertificateMap",
+        "client": {
+          "fullName": "google.cloud.certificatemanager.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.certificatemanager.v1.Client.DeleteCertificateMap",
+        "method": {
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.DeleteCertificateMap",
+          "service": {
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager",
+            "shortName": "CertificateManager"
+          },
+          "shortName": "DeleteCertificateMap"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "certificatemanagerpb.DeleteCertificateMapRequest",
-            "name": "req"
+            "name": "req",
+            "type": "certificatemanagerpb.DeleteCertificateMapRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteCertificateMapOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.certificatemanager.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteCertificateMap",
-          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.DeleteCertificateMap",
-          "service": {
-            "shortName": "CertificateManager",
-            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
-          }
-        }
+        "shortName": "DeleteCertificateMap"
       },
+      "description": "DeleteCertificateMap deletes a single CertificateMap. A Certificate Map can't be deleted\nif it contains Certificate Map Entries. Remove all the entries from\nthe map before calling this method.",
+      "file": "Client/DeleteCertificateMap/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_DeleteCertificateMap_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "certificatemanager DeleteCertificateMap Sample"
     },
     {
-      "regionTag": "certificatemanager_v1_generated_CertificateManager_DeleteCertificateMapEntry_sync",
-      "title": "certificatemanager DeleteCertificateMapEntry Sample",
-      "description": "DeleteCertificateMapEntry deletes a single CertificateMapEntry.",
-      "file": "Client/DeleteCertificateMapEntry/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteCertificateMapEntry",
+        "client": {
+          "fullName": "google.cloud.certificatemanager.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.certificatemanager.v1.Client.DeleteCertificateMapEntry",
+        "method": {
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.DeleteCertificateMapEntry",
+          "service": {
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager",
+            "shortName": "CertificateManager"
+          },
+          "shortName": "DeleteCertificateMapEntry"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "certificatemanagerpb.DeleteCertificateMapEntryRequest",
-            "name": "req"
+            "name": "req",
+            "type": "certificatemanagerpb.DeleteCertificateMapEntryRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteCertificateMapEntryOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.certificatemanager.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteCertificateMapEntry",
-          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.DeleteCertificateMapEntry",
-          "service": {
-            "shortName": "CertificateManager",
-            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
-          }
-        }
+        "shortName": "DeleteCertificateMapEntry"
       },
+      "description": "DeleteCertificateMapEntry deletes a single CertificateMapEntry.",
+      "file": "Client/DeleteCertificateMapEntry/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_DeleteCertificateMapEntry_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "certificatemanager DeleteCertificateMapEntry Sample"
     },
     {
-      "regionTag": "certificatemanager_v1_generated_CertificateManager_DeleteDnsAuthorization_sync",
-      "title": "certificatemanager DeleteDnsAuthorization Sample",
-      "description": "DeleteDnsAuthorization deletes a single DnsAuthorization.",
-      "file": "Client/DeleteDnsAuthorization/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteDnsAuthorization",
+        "client": {
+          "fullName": "google.cloud.certificatemanager.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.certificatemanager.v1.Client.DeleteDnsAuthorization",
+        "method": {
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.DeleteDnsAuthorization",
+          "service": {
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager",
+            "shortName": "CertificateManager"
+          },
+          "shortName": "DeleteDnsAuthorization"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "certificatemanagerpb.DeleteDnsAuthorizationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "certificatemanagerpb.DeleteDnsAuthorizationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteDnsAuthorizationOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.certificatemanager.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteDnsAuthorization",
-          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.DeleteDnsAuthorization",
-          "service": {
-            "shortName": "CertificateManager",
-            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
-          }
-        }
+        "shortName": "DeleteDnsAuthorization"
       },
+      "description": "DeleteDnsAuthorization deletes a single DnsAuthorization.",
+      "file": "Client/DeleteDnsAuthorization/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_DeleteDnsAuthorization_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "certificatemanager DeleteDnsAuthorization Sample"
     },
     {
-      "regionTag": "certificatemanager_v1_generated_CertificateManager_DeleteOperation_sync",
-      "title": "certificatemanager DeleteOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.certificatemanager.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.certificatemanager.v1.Client.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
       "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
       "file": "Client/DeleteOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteOperation",
-        "fullName": "google.cloud.certificatemanager.v1.Client.DeleteOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.DeleteOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.certificatemanager.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteOperation",
-          "fullName": "google.longrunning.Operations.DeleteOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_DeleteOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "certificatemanager DeleteOperation Sample"
     },
     {
-      "regionTag": "certificatemanager_v1_generated_CertificateManager_DeleteTrustConfig_sync",
-      "title": "certificatemanager DeleteTrustConfig Sample",
-      "description": "DeleteTrustConfig deletes a single TrustConfig.",
-      "file": "Client/DeleteTrustConfig/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteTrustConfig",
+        "client": {
+          "fullName": "google.cloud.certificatemanager.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.certificatemanager.v1.Client.DeleteTrustConfig",
+        "method": {
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.DeleteTrustConfig",
+          "service": {
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager",
+            "shortName": "CertificateManager"
+          },
+          "shortName": "DeleteTrustConfig"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "certificatemanagerpb.DeleteTrustConfigRequest",
-            "name": "req"
+            "name": "req",
+            "type": "certificatemanagerpb.DeleteTrustConfigRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteTrustConfigOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.certificatemanager.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteTrustConfig",
-          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.DeleteTrustConfig",
-          "service": {
-            "shortName": "CertificateManager",
-            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
-          }
-        }
+        "shortName": "DeleteTrustConfig"
       },
+      "description": "DeleteTrustConfig deletes a single TrustConfig.",
+      "file": "Client/DeleteTrustConfig/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_DeleteTrustConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "certificatemanager DeleteTrustConfig Sample"
     },
     {
-      "regionTag": "certificatemanager_v1_generated_CertificateManager_GetCertificate_sync",
-      "title": "certificatemanager GetCertificate Sample",
-      "description": "GetCertificate gets details of a single Certificate.",
-      "file": "Client/GetCertificate/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetCertificate",
+        "client": {
+          "fullName": "google.cloud.certificatemanager.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.certificatemanager.v1.Client.GetCertificate",
+        "method": {
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.GetCertificate",
+          "service": {
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager",
+            "shortName": "CertificateManager"
+          },
+          "shortName": "GetCertificate"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "certificatemanagerpb.GetCertificateRequest",
-            "name": "req"
+            "name": "req",
+            "type": "certificatemanagerpb.GetCertificateRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*certificatemanagerpb.Certificate",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.certificatemanager.v1.Client"
-        },
-        "method": {
-          "shortName": "GetCertificate",
-          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.GetCertificate",
-          "service": {
-            "shortName": "CertificateManager",
-            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
-          }
-        }
+        "shortName": "GetCertificate"
       },
+      "description": "GetCertificate gets details of a single Certificate.",
+      "file": "Client/GetCertificate/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_GetCertificate_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "certificatemanager GetCertificate Sample"
     },
     {
-      "regionTag": "certificatemanager_v1_generated_CertificateManager_GetCertificateIssuanceConfig_sync",
-      "title": "certificatemanager GetCertificateIssuanceConfig Sample",
-      "description": "GetCertificateIssuanceConfig gets details of a single CertificateIssuanceConfig.",
-      "file": "Client/GetCertificateIssuanceConfig/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetCertificateIssuanceConfig",
+        "client": {
+          "fullName": "google.cloud.certificatemanager.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.certificatemanager.v1.Client.GetCertificateIssuanceConfig",
+        "method": {
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.GetCertificateIssuanceConfig",
+          "service": {
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager",
+            "shortName": "CertificateManager"
+          },
+          "shortName": "GetCertificateIssuanceConfig"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "certificatemanagerpb.GetCertificateIssuanceConfigRequest",
-            "name": "req"
+            "name": "req",
+            "type": "certificatemanagerpb.GetCertificateIssuanceConfigRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*certificatemanagerpb.CertificateIssuanceConfig",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.certificatemanager.v1.Client"
-        },
-        "method": {
-          "shortName": "GetCertificateIssuanceConfig",
-          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.GetCertificateIssuanceConfig",
-          "service": {
-            "shortName": "CertificateManager",
-            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
-          }
-        }
+        "shortName": "GetCertificateIssuanceConfig"
       },
+      "description": "GetCertificateIssuanceConfig gets details of a single CertificateIssuanceConfig.",
+      "file": "Client/GetCertificateIssuanceConfig/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_GetCertificateIssuanceConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "certificatemanager GetCertificateIssuanceConfig Sample"
     },
     {
-      "regionTag": "certificatemanager_v1_generated_CertificateManager_GetCertificateMap_sync",
-      "title": "certificatemanager GetCertificateMap Sample",
-      "description": "GetCertificateMap gets details of a single CertificateMap.",
-      "file": "Client/GetCertificateMap/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetCertificateMap",
+        "client": {
+          "fullName": "google.cloud.certificatemanager.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.certificatemanager.v1.Client.GetCertificateMap",
+        "method": {
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.GetCertificateMap",
+          "service": {
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager",
+            "shortName": "CertificateManager"
+          },
+          "shortName": "GetCertificateMap"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "certificatemanagerpb.GetCertificateMapRequest",
-            "name": "req"
+            "name": "req",
+            "type": "certificatemanagerpb.GetCertificateMapRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*certificatemanagerpb.CertificateMap",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.certificatemanager.v1.Client"
-        },
-        "method": {
-          "shortName": "GetCertificateMap",
-          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.GetCertificateMap",
-          "service": {
-            "shortName": "CertificateManager",
-            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
-          }
-        }
+        "shortName": "GetCertificateMap"
       },
+      "description": "GetCertificateMap gets details of a single CertificateMap.",
+      "file": "Client/GetCertificateMap/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_GetCertificateMap_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "certificatemanager GetCertificateMap Sample"
     },
     {
-      "regionTag": "certificatemanager_v1_generated_CertificateManager_GetCertificateMapEntry_sync",
-      "title": "certificatemanager GetCertificateMapEntry Sample",
-      "description": "GetCertificateMapEntry gets details of a single CertificateMapEntry.",
-      "file": "Client/GetCertificateMapEntry/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetCertificateMapEntry",
+        "client": {
+          "fullName": "google.cloud.certificatemanager.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.certificatemanager.v1.Client.GetCertificateMapEntry",
+        "method": {
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.GetCertificateMapEntry",
+          "service": {
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager",
+            "shortName": "CertificateManager"
+          },
+          "shortName": "GetCertificateMapEntry"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "certificatemanagerpb.GetCertificateMapEntryRequest",
-            "name": "req"
+            "name": "req",
+            "type": "certificatemanagerpb.GetCertificateMapEntryRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*certificatemanagerpb.CertificateMapEntry",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.certificatemanager.v1.Client"
-        },
-        "method": {
-          "shortName": "GetCertificateMapEntry",
-          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.GetCertificateMapEntry",
-          "service": {
-            "shortName": "CertificateManager",
-            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
-          }
-        }
+        "shortName": "GetCertificateMapEntry"
       },
+      "description": "GetCertificateMapEntry gets details of a single CertificateMapEntry.",
+      "file": "Client/GetCertificateMapEntry/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_GetCertificateMapEntry_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "certificatemanager GetCertificateMapEntry Sample"
     },
     {
-      "regionTag": "certificatemanager_v1_generated_CertificateManager_GetDnsAuthorization_sync",
-      "title": "certificatemanager GetDnsAuthorization Sample",
-      "description": "GetDnsAuthorization gets details of a single DnsAuthorization.",
-      "file": "Client/GetDnsAuthorization/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetDnsAuthorization",
+        "client": {
+          "fullName": "google.cloud.certificatemanager.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.certificatemanager.v1.Client.GetDnsAuthorization",
+        "method": {
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.GetDnsAuthorization",
+          "service": {
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager",
+            "shortName": "CertificateManager"
+          },
+          "shortName": "GetDnsAuthorization"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "certificatemanagerpb.GetDnsAuthorizationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "certificatemanagerpb.GetDnsAuthorizationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*certificatemanagerpb.DnsAuthorization",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.certificatemanager.v1.Client"
-        },
-        "method": {
-          "shortName": "GetDnsAuthorization",
-          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.GetDnsAuthorization",
-          "service": {
-            "shortName": "CertificateManager",
-            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
-          }
-        }
+        "shortName": "GetDnsAuthorization"
       },
+      "description": "GetDnsAuthorization gets details of a single DnsAuthorization.",
+      "file": "Client/GetDnsAuthorization/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_GetDnsAuthorization_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "certificatemanager GetDnsAuthorization Sample"
     },
     {
-      "regionTag": "certificatemanager_v1_generated_CertificateManager_GetLocation_sync",
-      "title": "certificatemanager GetLocation Sample",
-      "description": "GetLocation gets information about a location.",
-      "file": "Client/GetLocation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetLocation",
+        "client": {
+          "fullName": "google.cloud.certificatemanager.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.certificatemanager.v1.Client.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "locationpb.GetLocationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*locationpb.Location",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.certificatemanager.v1.Client"
-        },
-        "method": {
-          "shortName": "GetLocation",
-          "fullName": "google.cloud.location.Locations.GetLocation",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
+        "shortName": "GetLocation"
       },
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_GetLocation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "certificatemanager GetLocation Sample"
     },
     {
-      "regionTag": "certificatemanager_v1_generated_CertificateManager_GetOperation_sync",
-      "title": "certificatemanager GetOperation Sample",
-      "description": "GetOperation is a utility method from google.longrunning.Operations.",
-      "file": "Client/GetOperation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetOperation",
+        "client": {
+          "fullName": "google.cloud.certificatemanager.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.certificatemanager.v1.Client.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.GetOperationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*longrunningpb.Operation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.certificatemanager.v1.Client"
-        },
-        "method": {
-          "shortName": "GetOperation",
-          "fullName": "google.longrunning.Operations.GetOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "GetOperation"
       },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_GetOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "certificatemanager GetOperation Sample"
     },
     {
-      "regionTag": "certificatemanager_v1_generated_CertificateManager_GetTrustConfig_sync",
-      "title": "certificatemanager GetTrustConfig Sample",
-      "description": "GetTrustConfig gets details of a single TrustConfig.",
-      "file": "Client/GetTrustConfig/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetTrustConfig",
+        "client": {
+          "fullName": "google.cloud.certificatemanager.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.certificatemanager.v1.Client.GetTrustConfig",
+        "method": {
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.GetTrustConfig",
+          "service": {
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager",
+            "shortName": "CertificateManager"
+          },
+          "shortName": "GetTrustConfig"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "certificatemanagerpb.GetTrustConfigRequest",
-            "name": "req"
+            "name": "req",
+            "type": "certificatemanagerpb.GetTrustConfigRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*certificatemanagerpb.TrustConfig",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.certificatemanager.v1.Client"
-        },
-        "method": {
-          "shortName": "GetTrustConfig",
-          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.GetTrustConfig",
-          "service": {
-            "shortName": "CertificateManager",
-            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
-          }
-        }
+        "shortName": "GetTrustConfig"
       },
+      "description": "GetTrustConfig gets details of a single TrustConfig.",
+      "file": "Client/GetTrustConfig/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_GetTrustConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "certificatemanager GetTrustConfig Sample"
     },
     {
-      "regionTag": "certificatemanager_v1_generated_CertificateManager_ListCertificateIssuanceConfigs_sync",
-      "title": "certificatemanager ListCertificateIssuanceConfigs Sample",
-      "description": "ListCertificateIssuanceConfigs lists CertificateIssuanceConfigs in a given project and location.",
-      "file": "Client/ListCertificateIssuanceConfigs/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListCertificateIssuanceConfigs",
+        "client": {
+          "fullName": "google.cloud.certificatemanager.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.certificatemanager.v1.Client.ListCertificateIssuanceConfigs",
+        "method": {
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.ListCertificateIssuanceConfigs",
+          "service": {
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager",
+            "shortName": "CertificateManager"
+          },
+          "shortName": "ListCertificateIssuanceConfigs"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "certificatemanagerpb.ListCertificateIssuanceConfigsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "certificatemanagerpb.ListCertificateIssuanceConfigsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CertificateIssuanceConfigIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.certificatemanager.v1.Client"
-        },
-        "method": {
-          "shortName": "ListCertificateIssuanceConfigs",
-          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.ListCertificateIssuanceConfigs",
-          "service": {
-            "shortName": "CertificateManager",
-            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
-          }
-        }
+        "shortName": "ListCertificateIssuanceConfigs"
       },
+      "description": "ListCertificateIssuanceConfigs lists CertificateIssuanceConfigs in a given project and location.",
+      "file": "Client/ListCertificateIssuanceConfigs/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_ListCertificateIssuanceConfigs_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "certificatemanager ListCertificateIssuanceConfigs Sample"
     },
     {
-      "regionTag": "certificatemanager_v1_generated_CertificateManager_ListCertificateMapEntries_sync",
-      "title": "certificatemanager ListCertificateMapEntries Sample",
-      "description": "ListCertificateMapEntries lists CertificateMapEntries in a given project and location.",
-      "file": "Client/ListCertificateMapEntries/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListCertificateMapEntries",
+        "client": {
+          "fullName": "google.cloud.certificatemanager.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.certificatemanager.v1.Client.ListCertificateMapEntries",
+        "method": {
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.ListCertificateMapEntries",
+          "service": {
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager",
+            "shortName": "CertificateManager"
+          },
+          "shortName": "ListCertificateMapEntries"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "certificatemanagerpb.ListCertificateMapEntriesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "certificatemanagerpb.ListCertificateMapEntriesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CertificateMapEntryIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.certificatemanager.v1.Client"
-        },
-        "method": {
-          "shortName": "ListCertificateMapEntries",
-          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.ListCertificateMapEntries",
-          "service": {
-            "shortName": "CertificateManager",
-            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
-          }
-        }
+        "shortName": "ListCertificateMapEntries"
       },
+      "description": "ListCertificateMapEntries lists CertificateMapEntries in a given project and location.",
+      "file": "Client/ListCertificateMapEntries/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_ListCertificateMapEntries_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "certificatemanager ListCertificateMapEntries Sample"
     },
     {
-      "regionTag": "certificatemanager_v1_generated_CertificateManager_ListCertificateMaps_sync",
-      "title": "certificatemanager ListCertificateMaps Sample",
-      "description": "ListCertificateMaps lists CertificateMaps in a given project and location.",
-      "file": "Client/ListCertificateMaps/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListCertificateMaps",
+        "client": {
+          "fullName": "google.cloud.certificatemanager.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.certificatemanager.v1.Client.ListCertificateMaps",
+        "method": {
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.ListCertificateMaps",
+          "service": {
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager",
+            "shortName": "CertificateManager"
+          },
+          "shortName": "ListCertificateMaps"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "certificatemanagerpb.ListCertificateMapsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "certificatemanagerpb.ListCertificateMapsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CertificateMapIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.certificatemanager.v1.Client"
-        },
-        "method": {
-          "shortName": "ListCertificateMaps",
-          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.ListCertificateMaps",
-          "service": {
-            "shortName": "CertificateManager",
-            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
-          }
-        }
+        "shortName": "ListCertificateMaps"
       },
+      "description": "ListCertificateMaps lists CertificateMaps in a given project and location.",
+      "file": "Client/ListCertificateMaps/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_ListCertificateMaps_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "certificatemanager ListCertificateMaps Sample"
     },
     {
-      "regionTag": "certificatemanager_v1_generated_CertificateManager_ListCertificates_sync",
-      "title": "certificatemanager ListCertificates Sample",
-      "description": "ListCertificates lists Certificates in a given project and location.",
-      "file": "Client/ListCertificates/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListCertificates",
+        "client": {
+          "fullName": "google.cloud.certificatemanager.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.certificatemanager.v1.Client.ListCertificates",
+        "method": {
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.ListCertificates",
+          "service": {
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager",
+            "shortName": "CertificateManager"
+          },
+          "shortName": "ListCertificates"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "certificatemanagerpb.ListCertificatesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "certificatemanagerpb.ListCertificatesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CertificateIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.certificatemanager.v1.Client"
-        },
-        "method": {
-          "shortName": "ListCertificates",
-          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.ListCertificates",
-          "service": {
-            "shortName": "CertificateManager",
-            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
-          }
-        }
+        "shortName": "ListCertificates"
       },
+      "description": "ListCertificates lists Certificates in a given project and location.",
+      "file": "Client/ListCertificates/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_ListCertificates_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "certificatemanager ListCertificates Sample"
     },
     {
-      "regionTag": "certificatemanager_v1_generated_CertificateManager_ListDnsAuthorizations_sync",
-      "title": "certificatemanager ListDnsAuthorizations Sample",
-      "description": "ListDnsAuthorizations lists DnsAuthorizations in a given project and location.",
-      "file": "Client/ListDnsAuthorizations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListDnsAuthorizations",
+        "client": {
+          "fullName": "google.cloud.certificatemanager.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.certificatemanager.v1.Client.ListDnsAuthorizations",
+        "method": {
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.ListDnsAuthorizations",
+          "service": {
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager",
+            "shortName": "CertificateManager"
+          },
+          "shortName": "ListDnsAuthorizations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "certificatemanagerpb.ListDnsAuthorizationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "certificatemanagerpb.ListDnsAuthorizationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DnsAuthorizationIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.certificatemanager.v1.Client"
-        },
-        "method": {
-          "shortName": "ListDnsAuthorizations",
-          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.ListDnsAuthorizations",
-          "service": {
-            "shortName": "CertificateManager",
-            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
-          }
-        }
+        "shortName": "ListDnsAuthorizations"
       },
+      "description": "ListDnsAuthorizations lists DnsAuthorizations in a given project and location.",
+      "file": "Client/ListDnsAuthorizations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_ListDnsAuthorizations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "certificatemanager ListDnsAuthorizations Sample"
     },
     {
-      "regionTag": "certificatemanager_v1_generated_CertificateManager_ListLocations_sync",
-      "title": "certificatemanager ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
-      "file": "Client/ListLocations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListLocations",
+        "client": {
+          "fullName": "google.cloud.certificatemanager.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.certificatemanager.v1.Client.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "locationpb.ListLocationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "LocationIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.certificatemanager.v1.Client"
-        },
-        "method": {
-          "shortName": "ListLocations",
-          "fullName": "google.cloud.location.Locations.ListLocations",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
+        "shortName": "ListLocations"
       },
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_ListLocations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "certificatemanager ListLocations Sample"
     },
     {
-      "regionTag": "certificatemanager_v1_generated_CertificateManager_ListOperations_sync",
-      "title": "certificatemanager ListOperations Sample",
-      "description": "ListOperations is a utility method from google.longrunning.Operations.",
-      "file": "Client/ListOperations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListOperations",
+        "client": {
+          "fullName": "google.cloud.certificatemanager.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.certificatemanager.v1.Client.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.ListOperationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "OperationIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.certificatemanager.v1.Client"
-        },
-        "method": {
-          "shortName": "ListOperations",
-          "fullName": "google.longrunning.Operations.ListOperations",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "ListOperations"
       },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_ListOperations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "certificatemanager ListOperations Sample"
     },
     {
-      "regionTag": "certificatemanager_v1_generated_CertificateManager_ListTrustConfigs_sync",
-      "title": "certificatemanager ListTrustConfigs Sample",
-      "description": "ListTrustConfigs lists TrustConfigs in a given project and location.",
-      "file": "Client/ListTrustConfigs/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListTrustConfigs",
+        "client": {
+          "fullName": "google.cloud.certificatemanager.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.certificatemanager.v1.Client.ListTrustConfigs",
+        "method": {
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.ListTrustConfigs",
+          "service": {
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager",
+            "shortName": "CertificateManager"
+          },
+          "shortName": "ListTrustConfigs"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "certificatemanagerpb.ListTrustConfigsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "certificatemanagerpb.ListTrustConfigsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "TrustConfigIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.certificatemanager.v1.Client"
-        },
-        "method": {
-          "shortName": "ListTrustConfigs",
-          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.ListTrustConfigs",
-          "service": {
-            "shortName": "CertificateManager",
-            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
-          }
-        }
+        "shortName": "ListTrustConfigs"
       },
+      "description": "ListTrustConfigs lists TrustConfigs in a given project and location.",
+      "file": "Client/ListTrustConfigs/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_ListTrustConfigs_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "certificatemanager ListTrustConfigs Sample"
     },
     {
-      "regionTag": "certificatemanager_v1_generated_CertificateManager_UpdateCertificate_sync",
-      "title": "certificatemanager UpdateCertificate Sample",
-      "description": "UpdateCertificate updates a Certificate.",
-      "file": "Client/UpdateCertificate/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateCertificate",
+        "client": {
+          "fullName": "google.cloud.certificatemanager.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.certificatemanager.v1.Client.UpdateCertificate",
+        "method": {
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.UpdateCertificate",
+          "service": {
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager",
+            "shortName": "CertificateManager"
+          },
+          "shortName": "UpdateCertificate"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "certificatemanagerpb.UpdateCertificateRequest",
-            "name": "req"
+            "name": "req",
+            "type": "certificatemanagerpb.UpdateCertificateRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UpdateCertificateOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.certificatemanager.v1.Client"
-        },
-        "method": {
-          "shortName": "UpdateCertificate",
-          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.UpdateCertificate",
-          "service": {
-            "shortName": "CertificateManager",
-            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
-          }
-        }
+        "shortName": "UpdateCertificate"
       },
+      "description": "UpdateCertificate updates a Certificate.",
+      "file": "Client/UpdateCertificate/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_UpdateCertificate_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "certificatemanager UpdateCertificate Sample"
     },
     {
-      "regionTag": "certificatemanager_v1_generated_CertificateManager_UpdateCertificateMap_sync",
-      "title": "certificatemanager UpdateCertificateMap Sample",
-      "description": "UpdateCertificateMap updates a CertificateMap.",
-      "file": "Client/UpdateCertificateMap/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateCertificateMap",
+        "client": {
+          "fullName": "google.cloud.certificatemanager.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.certificatemanager.v1.Client.UpdateCertificateMap",
+        "method": {
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.UpdateCertificateMap",
+          "service": {
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager",
+            "shortName": "CertificateManager"
+          },
+          "shortName": "UpdateCertificateMap"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "certificatemanagerpb.UpdateCertificateMapRequest",
-            "name": "req"
+            "name": "req",
+            "type": "certificatemanagerpb.UpdateCertificateMapRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UpdateCertificateMapOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.certificatemanager.v1.Client"
-        },
-        "method": {
-          "shortName": "UpdateCertificateMap",
-          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.UpdateCertificateMap",
-          "service": {
-            "shortName": "CertificateManager",
-            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
-          }
-        }
+        "shortName": "UpdateCertificateMap"
       },
+      "description": "UpdateCertificateMap updates a CertificateMap.",
+      "file": "Client/UpdateCertificateMap/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_UpdateCertificateMap_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "certificatemanager UpdateCertificateMap Sample"
     },
     {
-      "regionTag": "certificatemanager_v1_generated_CertificateManager_UpdateCertificateMapEntry_sync",
-      "title": "certificatemanager UpdateCertificateMapEntry Sample",
-      "description": "UpdateCertificateMapEntry updates a CertificateMapEntry.",
-      "file": "Client/UpdateCertificateMapEntry/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateCertificateMapEntry",
+        "client": {
+          "fullName": "google.cloud.certificatemanager.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.certificatemanager.v1.Client.UpdateCertificateMapEntry",
+        "method": {
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.UpdateCertificateMapEntry",
+          "service": {
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager",
+            "shortName": "CertificateManager"
+          },
+          "shortName": "UpdateCertificateMapEntry"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "certificatemanagerpb.UpdateCertificateMapEntryRequest",
-            "name": "req"
+            "name": "req",
+            "type": "certificatemanagerpb.UpdateCertificateMapEntryRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UpdateCertificateMapEntryOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.certificatemanager.v1.Client"
-        },
-        "method": {
-          "shortName": "UpdateCertificateMapEntry",
-          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.UpdateCertificateMapEntry",
-          "service": {
-            "shortName": "CertificateManager",
-            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
-          }
-        }
+        "shortName": "UpdateCertificateMapEntry"
       },
+      "description": "UpdateCertificateMapEntry updates a CertificateMapEntry.",
+      "file": "Client/UpdateCertificateMapEntry/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_UpdateCertificateMapEntry_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "certificatemanager UpdateCertificateMapEntry Sample"
     },
     {
-      "regionTag": "certificatemanager_v1_generated_CertificateManager_UpdateDnsAuthorization_sync",
-      "title": "certificatemanager UpdateDnsAuthorization Sample",
-      "description": "UpdateDnsAuthorization updates a DnsAuthorization.",
-      "file": "Client/UpdateDnsAuthorization/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateDnsAuthorization",
+        "client": {
+          "fullName": "google.cloud.certificatemanager.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.certificatemanager.v1.Client.UpdateDnsAuthorization",
+        "method": {
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.UpdateDnsAuthorization",
+          "service": {
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager",
+            "shortName": "CertificateManager"
+          },
+          "shortName": "UpdateDnsAuthorization"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "certificatemanagerpb.UpdateDnsAuthorizationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "certificatemanagerpb.UpdateDnsAuthorizationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UpdateDnsAuthorizationOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.certificatemanager.v1.Client"
-        },
-        "method": {
-          "shortName": "UpdateDnsAuthorization",
-          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.UpdateDnsAuthorization",
-          "service": {
-            "shortName": "CertificateManager",
-            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
-          }
-        }
+        "shortName": "UpdateDnsAuthorization"
       },
+      "description": "UpdateDnsAuthorization updates a DnsAuthorization.",
+      "file": "Client/UpdateDnsAuthorization/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_UpdateDnsAuthorization_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "certificatemanager UpdateDnsAuthorization Sample"
     },
     {
-      "regionTag": "certificatemanager_v1_generated_CertificateManager_UpdateTrustConfig_sync",
-      "title": "certificatemanager UpdateTrustConfig Sample",
-      "description": "UpdateTrustConfig updates a TrustConfig.",
-      "file": "Client/UpdateTrustConfig/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateTrustConfig",
+        "client": {
+          "fullName": "google.cloud.certificatemanager.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.certificatemanager.v1.Client.UpdateTrustConfig",
+        "method": {
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.UpdateTrustConfig",
+          "service": {
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager",
+            "shortName": "CertificateManager"
+          },
+          "shortName": "UpdateTrustConfig"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "certificatemanagerpb.UpdateTrustConfigRequest",
-            "name": "req"
+            "name": "req",
+            "type": "certificatemanagerpb.UpdateTrustConfigRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UpdateTrustConfigOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.certificatemanager.v1.Client"
-        },
-        "method": {
-          "shortName": "UpdateTrustConfig",
-          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.UpdateTrustConfig",
-          "service": {
-            "shortName": "CertificateManager",
-            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
-          }
-        }
+        "shortName": "UpdateTrustConfig"
       },
+      "description": "UpdateTrustConfig updates a TrustConfig.",
+      "file": "Client/UpdateTrustConfig/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_UpdateTrustConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "certificatemanager UpdateTrustConfig Sample"
     }
   ]
 }

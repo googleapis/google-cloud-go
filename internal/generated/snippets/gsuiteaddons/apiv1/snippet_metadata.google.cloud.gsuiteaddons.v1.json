@@ -1,426 +1,426 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/gsuiteaddons/apiv1",
-    "version": "1.7.8",
-    "language": "GO",
     "apis": [
       {
         "id": "google.cloud.gsuiteaddons.v1",
         "version": "v1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/gsuiteaddons/apiv1",
+    "version": "1.7.8"
   },
   "snippets": [
     {
-      "regionTag": "gsuiteaddons_v1_generated_GSuiteAddOns_CreateDeployment_sync",
-      "title": "gsuiteaddons CreateDeployment Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.gsuiteaddons.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.gsuiteaddons.v1.Client.CreateDeployment",
+        "method": {
+          "fullName": "google.cloud.gsuiteaddons.v1.GSuiteAddOns.CreateDeployment",
+          "service": {
+            "fullName": "google.cloud.gsuiteaddons.v1.GSuiteAddOns",
+            "shortName": "GSuiteAddOns"
+          },
+          "shortName": "CreateDeployment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "gsuiteaddonspb.CreateDeploymentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*gsuiteaddonspb.Deployment",
+        "shortName": "CreateDeployment"
+      },
       "description": "CreateDeployment creates a deployment with the specified name and configuration.",
       "file": "Client/CreateDeployment/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateDeployment",
-        "fullName": "google.cloud.gsuiteaddons.v1.Client.CreateDeployment",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "gsuiteaddonspb.CreateDeploymentRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*gsuiteaddonspb.Deployment",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.gsuiteaddons.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateDeployment",
-          "fullName": "google.cloud.gsuiteaddons.v1.GSuiteAddOns.CreateDeployment",
-          "service": {
-            "shortName": "GSuiteAddOns",
-            "fullName": "google.cloud.gsuiteaddons.v1.GSuiteAddOns"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "gsuiteaddons_v1_generated_GSuiteAddOns_CreateDeployment_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "gsuiteaddons CreateDeployment Sample"
     },
     {
-      "regionTag": "gsuiteaddons_v1_generated_GSuiteAddOns_DeleteDeployment_sync",
-      "title": "gsuiteaddons DeleteDeployment Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.gsuiteaddons.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.gsuiteaddons.v1.Client.DeleteDeployment",
+        "method": {
+          "fullName": "google.cloud.gsuiteaddons.v1.GSuiteAddOns.DeleteDeployment",
+          "service": {
+            "fullName": "google.cloud.gsuiteaddons.v1.GSuiteAddOns",
+            "shortName": "GSuiteAddOns"
+          },
+          "shortName": "DeleteDeployment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "gsuiteaddonspb.DeleteDeploymentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteDeployment"
+      },
       "description": "DeleteDeployment deletes the deployment with the given name.",
       "file": "Client/DeleteDeployment/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteDeployment",
-        "fullName": "google.cloud.gsuiteaddons.v1.Client.DeleteDeployment",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "gsuiteaddonspb.DeleteDeploymentRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.gsuiteaddons.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteDeployment",
-          "fullName": "google.cloud.gsuiteaddons.v1.GSuiteAddOns.DeleteDeployment",
-          "service": {
-            "shortName": "GSuiteAddOns",
-            "fullName": "google.cloud.gsuiteaddons.v1.GSuiteAddOns"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "gsuiteaddons_v1_generated_GSuiteAddOns_DeleteDeployment_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "gsuiteaddons DeleteDeployment Sample"
     },
     {
-      "regionTag": "gsuiteaddons_v1_generated_GSuiteAddOns_GetAuthorization_sync",
-      "title": "gsuiteaddons GetAuthorization Sample",
-      "description": "GetAuthorization gets the authorization information for deployments in a given project.",
-      "file": "Client/GetAuthorization/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetAuthorization",
+        "client": {
+          "fullName": "google.cloud.gsuiteaddons.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.gsuiteaddons.v1.Client.GetAuthorization",
+        "method": {
+          "fullName": "google.cloud.gsuiteaddons.v1.GSuiteAddOns.GetAuthorization",
+          "service": {
+            "fullName": "google.cloud.gsuiteaddons.v1.GSuiteAddOns",
+            "shortName": "GSuiteAddOns"
+          },
+          "shortName": "GetAuthorization"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "gsuiteaddonspb.GetAuthorizationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "gsuiteaddonspb.GetAuthorizationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*gsuiteaddonspb.Authorization",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.gsuiteaddons.v1.Client"
-        },
-        "method": {
-          "shortName": "GetAuthorization",
-          "fullName": "google.cloud.gsuiteaddons.v1.GSuiteAddOns.GetAuthorization",
-          "service": {
-            "shortName": "GSuiteAddOns",
-            "fullName": "google.cloud.gsuiteaddons.v1.GSuiteAddOns"
-          }
-        }
+        "shortName": "GetAuthorization"
       },
+      "description": "GetAuthorization gets the authorization information for deployments in a given project.",
+      "file": "Client/GetAuthorization/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "gsuiteaddons_v1_generated_GSuiteAddOns_GetAuthorization_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "gsuiteaddons GetAuthorization Sample"
     },
     {
-      "regionTag": "gsuiteaddons_v1_generated_GSuiteAddOns_GetDeployment_sync",
-      "title": "gsuiteaddons GetDeployment Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.gsuiteaddons.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.gsuiteaddons.v1.Client.GetDeployment",
+        "method": {
+          "fullName": "google.cloud.gsuiteaddons.v1.GSuiteAddOns.GetDeployment",
+          "service": {
+            "fullName": "google.cloud.gsuiteaddons.v1.GSuiteAddOns",
+            "shortName": "GSuiteAddOns"
+          },
+          "shortName": "GetDeployment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "gsuiteaddonspb.GetDeploymentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*gsuiteaddonspb.Deployment",
+        "shortName": "GetDeployment"
+      },
       "description": "GetDeployment gets the deployment with the specified name.",
       "file": "Client/GetDeployment/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetDeployment",
-        "fullName": "google.cloud.gsuiteaddons.v1.Client.GetDeployment",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "gsuiteaddonspb.GetDeploymentRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*gsuiteaddonspb.Deployment",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.gsuiteaddons.v1.Client"
-        },
-        "method": {
-          "shortName": "GetDeployment",
-          "fullName": "google.cloud.gsuiteaddons.v1.GSuiteAddOns.GetDeployment",
-          "service": {
-            "shortName": "GSuiteAddOns",
-            "fullName": "google.cloud.gsuiteaddons.v1.GSuiteAddOns"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "gsuiteaddons_v1_generated_GSuiteAddOns_GetDeployment_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "gsuiteaddons GetDeployment Sample"
     },
     {
-      "regionTag": "gsuiteaddons_v1_generated_GSuiteAddOns_GetInstallStatus_sync",
-      "title": "gsuiteaddons GetInstallStatus Sample",
-      "description": "GetInstallStatus fetches the install status of a developer mode deployment.",
-      "file": "Client/GetInstallStatus/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetInstallStatus",
+        "client": {
+          "fullName": "google.cloud.gsuiteaddons.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.gsuiteaddons.v1.Client.GetInstallStatus",
+        "method": {
+          "fullName": "google.cloud.gsuiteaddons.v1.GSuiteAddOns.GetInstallStatus",
+          "service": {
+            "fullName": "google.cloud.gsuiteaddons.v1.GSuiteAddOns",
+            "shortName": "GSuiteAddOns"
+          },
+          "shortName": "GetInstallStatus"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "gsuiteaddonspb.GetInstallStatusRequest",
-            "name": "req"
+            "name": "req",
+            "type": "gsuiteaddonspb.GetInstallStatusRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*gsuiteaddonspb.InstallStatus",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.gsuiteaddons.v1.Client"
-        },
-        "method": {
-          "shortName": "GetInstallStatus",
-          "fullName": "google.cloud.gsuiteaddons.v1.GSuiteAddOns.GetInstallStatus",
-          "service": {
-            "shortName": "GSuiteAddOns",
-            "fullName": "google.cloud.gsuiteaddons.v1.GSuiteAddOns"
-          }
-        }
+        "shortName": "GetInstallStatus"
       },
+      "description": "GetInstallStatus fetches the install status of a developer mode deployment.",
+      "file": "Client/GetInstallStatus/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "gsuiteaddons_v1_generated_GSuiteAddOns_GetInstallStatus_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "gsuiteaddons GetInstallStatus Sample"
     },
     {
-      "regionTag": "gsuiteaddons_v1_generated_GSuiteAddOns_InstallDeployment_sync",
-      "title": "gsuiteaddons InstallDeployment Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.gsuiteaddons.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.gsuiteaddons.v1.Client.InstallDeployment",
+        "method": {
+          "fullName": "google.cloud.gsuiteaddons.v1.GSuiteAddOns.InstallDeployment",
+          "service": {
+            "fullName": "google.cloud.gsuiteaddons.v1.GSuiteAddOns",
+            "shortName": "GSuiteAddOns"
+          },
+          "shortName": "InstallDeployment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "gsuiteaddonspb.InstallDeploymentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "InstallDeployment"
+      },
       "description": "InstallDeployment installs a deployment in developer mode.\nSee: \nhttps: //developers.google.com/gsuite/add-ons/how-tos/testing-gsuite-addons.",
       "file": "Client/InstallDeployment/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "InstallDeployment",
-        "fullName": "google.cloud.gsuiteaddons.v1.Client.InstallDeployment",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "gsuiteaddonspb.InstallDeploymentRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.gsuiteaddons.v1.Client"
-        },
-        "method": {
-          "shortName": "InstallDeployment",
-          "fullName": "google.cloud.gsuiteaddons.v1.GSuiteAddOns.InstallDeployment",
-          "service": {
-            "shortName": "GSuiteAddOns",
-            "fullName": "google.cloud.gsuiteaddons.v1.GSuiteAddOns"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "gsuiteaddons_v1_generated_GSuiteAddOns_InstallDeployment_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "gsuiteaddons InstallDeployment Sample"
     },
     {
-      "regionTag": "gsuiteaddons_v1_generated_GSuiteAddOns_ListDeployments_sync",
-      "title": "gsuiteaddons ListDeployments Sample",
-      "description": "ListDeployments lists all deployments in a particular project.",
-      "file": "Client/ListDeployments/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListDeployments",
+        "client": {
+          "fullName": "google.cloud.gsuiteaddons.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.gsuiteaddons.v1.Client.ListDeployments",
+        "method": {
+          "fullName": "google.cloud.gsuiteaddons.v1.GSuiteAddOns.ListDeployments",
+          "service": {
+            "fullName": "google.cloud.gsuiteaddons.v1.GSuiteAddOns",
+            "shortName": "GSuiteAddOns"
+          },
+          "shortName": "ListDeployments"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "gsuiteaddonspb.ListDeploymentsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "gsuiteaddonspb.ListDeploymentsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeploymentIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.gsuiteaddons.v1.Client"
-        },
-        "method": {
-          "shortName": "ListDeployments",
-          "fullName": "google.cloud.gsuiteaddons.v1.GSuiteAddOns.ListDeployments",
-          "service": {
-            "shortName": "GSuiteAddOns",
-            "fullName": "google.cloud.gsuiteaddons.v1.GSuiteAddOns"
-          }
-        }
+        "shortName": "ListDeployments"
       },
+      "description": "ListDeployments lists all deployments in a particular project.",
+      "file": "Client/ListDeployments/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "gsuiteaddons_v1_generated_GSuiteAddOns_ListDeployments_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "gsuiteaddons ListDeployments Sample"
     },
     {
-      "regionTag": "gsuiteaddons_v1_generated_GSuiteAddOns_ReplaceDeployment_sync",
-      "title": "gsuiteaddons ReplaceDeployment Sample",
-      "description": "ReplaceDeployment creates or replaces a deployment with the specified name.",
-      "file": "Client/ReplaceDeployment/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ReplaceDeployment",
+        "client": {
+          "fullName": "google.cloud.gsuiteaddons.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.gsuiteaddons.v1.Client.ReplaceDeployment",
+        "method": {
+          "fullName": "google.cloud.gsuiteaddons.v1.GSuiteAddOns.ReplaceDeployment",
+          "service": {
+            "fullName": "google.cloud.gsuiteaddons.v1.GSuiteAddOns",
+            "shortName": "GSuiteAddOns"
+          },
+          "shortName": "ReplaceDeployment"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "gsuiteaddonspb.ReplaceDeploymentRequest",
-            "name": "req"
+            "name": "req",
+            "type": "gsuiteaddonspb.ReplaceDeploymentRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*gsuiteaddonspb.Deployment",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.gsuiteaddons.v1.Client"
-        },
-        "method": {
-          "shortName": "ReplaceDeployment",
-          "fullName": "google.cloud.gsuiteaddons.v1.GSuiteAddOns.ReplaceDeployment",
-          "service": {
-            "shortName": "GSuiteAddOns",
-            "fullName": "google.cloud.gsuiteaddons.v1.GSuiteAddOns"
-          }
-        }
+        "shortName": "ReplaceDeployment"
       },
+      "description": "ReplaceDeployment creates or replaces a deployment with the specified name.",
+      "file": "Client/ReplaceDeployment/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "gsuiteaddons_v1_generated_GSuiteAddOns_ReplaceDeployment_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "gsuiteaddons ReplaceDeployment Sample"
     },
     {
-      "regionTag": "gsuiteaddons_v1_generated_GSuiteAddOns_UninstallDeployment_sync",
-      "title": "gsuiteaddons UninstallDeployment Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.gsuiteaddons.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.gsuiteaddons.v1.Client.UninstallDeployment",
+        "method": {
+          "fullName": "google.cloud.gsuiteaddons.v1.GSuiteAddOns.UninstallDeployment",
+          "service": {
+            "fullName": "google.cloud.gsuiteaddons.v1.GSuiteAddOns",
+            "shortName": "GSuiteAddOns"
+          },
+          "shortName": "UninstallDeployment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "gsuiteaddonspb.UninstallDeploymentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "UninstallDeployment"
+      },
       "description": "UninstallDeployment uninstalls a developer mode deployment.\nSee: \nhttps: //developers.google.com/gsuite/add-ons/how-tos/testing-gsuite-addons.",
       "file": "Client/UninstallDeployment/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "UninstallDeployment",
-        "fullName": "google.cloud.gsuiteaddons.v1.Client.UninstallDeployment",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "gsuiteaddonspb.UninstallDeploymentRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.gsuiteaddons.v1.Client"
-        },
-        "method": {
-          "shortName": "UninstallDeployment",
-          "fullName": "google.cloud.gsuiteaddons.v1.GSuiteAddOns.UninstallDeployment",
-          "service": {
-            "shortName": "GSuiteAddOns",
-            "fullName": "google.cloud.gsuiteaddons.v1.GSuiteAddOns"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "gsuiteaddons_v1_generated_GSuiteAddOns_UninstallDeployment_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "gsuiteaddons UninstallDeployment Sample"
     }
   ]
 }

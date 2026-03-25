@@ -1,290 +1,290 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/asset/apiv1p2beta1",
-    "version": "1.22.1",
-    "language": "GO",
     "apis": [
       {
         "id": "google.cloud.asset.v1p2beta1",
         "version": "v1p2beta1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/asset/apiv1p2beta1",
+    "version": "1.22.1"
   },
   "snippets": [
     {
-      "regionTag": "cloudasset_v1p2beta1_generated_AssetService_CreateFeed_sync",
-      "title": "cloudasset CreateFeed Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.asset.v1p2beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.asset.v1p2beta1.Client.CreateFeed",
+        "method": {
+          "fullName": "google.cloud.asset.v1p2beta1.AssetService.CreateFeed",
+          "service": {
+            "fullName": "google.cloud.asset.v1p2beta1.AssetService",
+            "shortName": "AssetService"
+          },
+          "shortName": "CreateFeed"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "assetpb.CreateFeedRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*assetpb.Feed",
+        "shortName": "CreateFeed"
+      },
       "description": "CreateFeed creates a feed in a parent project/folder/organization to listen to its\nasset updates.",
       "file": "Client/CreateFeed/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateFeed",
-        "fullName": "google.cloud.asset.v1p2beta1.Client.CreateFeed",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "assetpb.CreateFeedRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*assetpb.Feed",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.asset.v1p2beta1.Client"
-        },
-        "method": {
-          "shortName": "CreateFeed",
-          "fullName": "google.cloud.asset.v1p2beta1.AssetService.CreateFeed",
-          "service": {
-            "shortName": "AssetService",
-            "fullName": "google.cloud.asset.v1p2beta1.AssetService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "cloudasset_v1p2beta1_generated_AssetService_CreateFeed_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "cloudasset CreateFeed Sample"
     },
     {
-      "regionTag": "cloudasset_v1p2beta1_generated_AssetService_DeleteFeed_sync",
-      "title": "cloudasset DeleteFeed Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.asset.v1p2beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.asset.v1p2beta1.Client.DeleteFeed",
+        "method": {
+          "fullName": "google.cloud.asset.v1p2beta1.AssetService.DeleteFeed",
+          "service": {
+            "fullName": "google.cloud.asset.v1p2beta1.AssetService",
+            "shortName": "AssetService"
+          },
+          "shortName": "DeleteFeed"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "assetpb.DeleteFeedRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteFeed"
+      },
       "description": "DeleteFeed deletes an asset feed.",
       "file": "Client/DeleteFeed/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteFeed",
-        "fullName": "google.cloud.asset.v1p2beta1.Client.DeleteFeed",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "assetpb.DeleteFeedRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.asset.v1p2beta1.Client"
-        },
-        "method": {
-          "shortName": "DeleteFeed",
-          "fullName": "google.cloud.asset.v1p2beta1.AssetService.DeleteFeed",
-          "service": {
-            "shortName": "AssetService",
-            "fullName": "google.cloud.asset.v1p2beta1.AssetService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "cloudasset_v1p2beta1_generated_AssetService_DeleteFeed_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "cloudasset DeleteFeed Sample"
     },
     {
-      "regionTag": "cloudasset_v1p2beta1_generated_AssetService_GetFeed_sync",
-      "title": "cloudasset GetFeed Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.asset.v1p2beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.asset.v1p2beta1.Client.GetFeed",
+        "method": {
+          "fullName": "google.cloud.asset.v1p2beta1.AssetService.GetFeed",
+          "service": {
+            "fullName": "google.cloud.asset.v1p2beta1.AssetService",
+            "shortName": "AssetService"
+          },
+          "shortName": "GetFeed"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "assetpb.GetFeedRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*assetpb.Feed",
+        "shortName": "GetFeed"
+      },
       "description": "GetFeed gets details about an asset feed.",
       "file": "Client/GetFeed/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetFeed",
-        "fullName": "google.cloud.asset.v1p2beta1.Client.GetFeed",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "assetpb.GetFeedRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*assetpb.Feed",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.asset.v1p2beta1.Client"
-        },
-        "method": {
-          "shortName": "GetFeed",
-          "fullName": "google.cloud.asset.v1p2beta1.AssetService.GetFeed",
-          "service": {
-            "shortName": "AssetService",
-            "fullName": "google.cloud.asset.v1p2beta1.AssetService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "cloudasset_v1p2beta1_generated_AssetService_GetFeed_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "cloudasset GetFeed Sample"
     },
     {
-      "regionTag": "cloudasset_v1p2beta1_generated_AssetService_GetOperation_sync",
-      "title": "cloudasset GetOperation Sample",
-      "description": "GetOperation is a utility method from google.longrunning.Operations.",
-      "file": "Client/GetOperation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetOperation",
+        "client": {
+          "fullName": "google.cloud.asset.v1p2beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.asset.v1p2beta1.Client.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.GetOperationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*longrunningpb.Operation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.asset.v1p2beta1.Client"
-        },
-        "method": {
-          "shortName": "GetOperation",
-          "fullName": "google.longrunning.Operations.GetOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "GetOperation"
       },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "cloudasset_v1p2beta1_generated_AssetService_GetOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "cloudasset GetOperation Sample"
     },
     {
-      "regionTag": "cloudasset_v1p2beta1_generated_AssetService_ListFeeds_sync",
-      "title": "cloudasset ListFeeds Sample",
-      "description": "ListFeeds lists all asset feeds in a parent project/folder/organization.",
-      "file": "Client/ListFeeds/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListFeeds",
+        "client": {
+          "fullName": "google.cloud.asset.v1p2beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.asset.v1p2beta1.Client.ListFeeds",
+        "method": {
+          "fullName": "google.cloud.asset.v1p2beta1.AssetService.ListFeeds",
+          "service": {
+            "fullName": "google.cloud.asset.v1p2beta1.AssetService",
+            "shortName": "AssetService"
+          },
+          "shortName": "ListFeeds"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "assetpb.ListFeedsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "assetpb.ListFeedsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*assetpb.ListFeedsResponse",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.asset.v1p2beta1.Client"
-        },
-        "method": {
-          "shortName": "ListFeeds",
-          "fullName": "google.cloud.asset.v1p2beta1.AssetService.ListFeeds",
-          "service": {
-            "shortName": "AssetService",
-            "fullName": "google.cloud.asset.v1p2beta1.AssetService"
-          }
-        }
+        "shortName": "ListFeeds"
       },
+      "description": "ListFeeds lists all asset feeds in a parent project/folder/organization.",
+      "file": "Client/ListFeeds/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "cloudasset_v1p2beta1_generated_AssetService_ListFeeds_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "cloudasset ListFeeds Sample"
     },
     {
-      "regionTag": "cloudasset_v1p2beta1_generated_AssetService_UpdateFeed_sync",
-      "title": "cloudasset UpdateFeed Sample",
-      "description": "UpdateFeed updates an asset feed configuration.",
-      "file": "Client/UpdateFeed/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateFeed",
+        "client": {
+          "fullName": "google.cloud.asset.v1p2beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.asset.v1p2beta1.Client.UpdateFeed",
+        "method": {
+          "fullName": "google.cloud.asset.v1p2beta1.AssetService.UpdateFeed",
+          "service": {
+            "fullName": "google.cloud.asset.v1p2beta1.AssetService",
+            "shortName": "AssetService"
+          },
+          "shortName": "UpdateFeed"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "assetpb.UpdateFeedRequest",
-            "name": "req"
+            "name": "req",
+            "type": "assetpb.UpdateFeedRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*assetpb.Feed",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.asset.v1p2beta1.Client"
-        },
-        "method": {
-          "shortName": "UpdateFeed",
-          "fullName": "google.cloud.asset.v1p2beta1.AssetService.UpdateFeed",
-          "service": {
-            "shortName": "AssetService",
-            "fullName": "google.cloud.asset.v1p2beta1.AssetService"
-          }
-        }
+        "shortName": "UpdateFeed"
       },
+      "description": "UpdateFeed updates an asset feed configuration.",
+      "file": "Client/UpdateFeed/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "cloudasset_v1p2beta1_generated_AssetService_UpdateFeed_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "cloudasset UpdateFeed Sample"
     }
   ]
 }

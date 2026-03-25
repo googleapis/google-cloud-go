@@ -1,795 +1,795 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/redis/apiv1",
-    "version": "1.18.3",
-    "language": "GO",
     "apis": [
       {
         "id": "google.cloud.redis.v1",
         "version": "v1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/redis/apiv1",
+    "version": "1.18.3"
   },
   "snippets": [
     {
-      "regionTag": "redis_v1_generated_CloudRedis_CancelOperation_sync",
-      "title": "redis CancelOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.redis.v1.CloudRedisClient",
+          "shortName": "CloudRedisClient"
+        },
+        "fullName": "google.cloud.redis.v1.CloudRedisClient.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
       "file": "CloudRedisClient/CancelOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CancelOperation",
-        "fullName": "google.cloud.redis.v1.CloudRedisClient.CancelOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.CancelOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "CloudRedisClient",
-          "fullName": "google.cloud.redis.v1.CloudRedisClient"
-        },
-        "method": {
-          "shortName": "CancelOperation",
-          "fullName": "google.longrunning.Operations.CancelOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "redis_v1_generated_CloudRedis_CancelOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "redis CancelOperation Sample"
     },
     {
-      "regionTag": "redis_v1_generated_CloudRedis_CreateInstance_sync",
-      "title": "redis CreateInstance Sample",
-      "description": "CreateInstance creates a Redis instance based on the specified tier and memory size.\n\nBy default, the instance is accessible from the project's\n[default network](https: //cloud.google.com/vpc/docs/vpc).\n\nThe creation is executed asynchronously and callers may check the returned\noperation to track its progress. Once the operation is completed the Redis\ninstance will be fully functional. Completed longrunning.Operation will\ncontain the new instance object in the response field.\n\nThe returned operation is automatically deleted after a few hours, so there\nis no need to call DeleteOperation.",
-      "file": "CloudRedisClient/CreateInstance/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateInstance",
+        "client": {
+          "fullName": "google.cloud.redis.v1.CloudRedisClient",
+          "shortName": "CloudRedisClient"
+        },
         "fullName": "google.cloud.redis.v1.CloudRedisClient.CreateInstance",
+        "method": {
+          "fullName": "google.cloud.redis.v1.CloudRedis.CreateInstance",
+          "service": {
+            "fullName": "google.cloud.redis.v1.CloudRedis",
+            "shortName": "CloudRedis"
+          },
+          "shortName": "CreateInstance"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "redispb.CreateInstanceRequest",
-            "name": "req"
+            "name": "req",
+            "type": "redispb.CreateInstanceRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateInstanceOperation",
-        "client": {
-          "shortName": "CloudRedisClient",
-          "fullName": "google.cloud.redis.v1.CloudRedisClient"
-        },
-        "method": {
-          "shortName": "CreateInstance",
-          "fullName": "google.cloud.redis.v1.CloudRedis.CreateInstance",
-          "service": {
-            "shortName": "CloudRedis",
-            "fullName": "google.cloud.redis.v1.CloudRedis"
-          }
-        }
+        "shortName": "CreateInstance"
       },
+      "description": "CreateInstance creates a Redis instance based on the specified tier and memory size.\n\nBy default, the instance is accessible from the project's\n[default network](https: //cloud.google.com/vpc/docs/vpc).\n\nThe creation is executed asynchronously and callers may check the returned\noperation to track its progress. Once the operation is completed the Redis\ninstance will be fully functional. Completed longrunning.Operation will\ncontain the new instance object in the response field.\n\nThe returned operation is automatically deleted after a few hours, so there\nis no need to call DeleteOperation.",
+      "file": "CloudRedisClient/CreateInstance/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "redis_v1_generated_CloudRedis_CreateInstance_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "redis CreateInstance Sample"
     },
     {
-      "regionTag": "redis_v1_generated_CloudRedis_DeleteInstance_sync",
-      "title": "redis DeleteInstance Sample",
-      "description": "DeleteInstance deletes a specific Redis instance.  Instance stops serving and data is\ndeleted.",
-      "file": "CloudRedisClient/DeleteInstance/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteInstance",
+        "client": {
+          "fullName": "google.cloud.redis.v1.CloudRedisClient",
+          "shortName": "CloudRedisClient"
+        },
         "fullName": "google.cloud.redis.v1.CloudRedisClient.DeleteInstance",
+        "method": {
+          "fullName": "google.cloud.redis.v1.CloudRedis.DeleteInstance",
+          "service": {
+            "fullName": "google.cloud.redis.v1.CloudRedis",
+            "shortName": "CloudRedis"
+          },
+          "shortName": "DeleteInstance"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "redispb.DeleteInstanceRequest",
-            "name": "req"
+            "name": "req",
+            "type": "redispb.DeleteInstanceRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteInstanceOperation",
-        "client": {
-          "shortName": "CloudRedisClient",
-          "fullName": "google.cloud.redis.v1.CloudRedisClient"
-        },
-        "method": {
-          "shortName": "DeleteInstance",
-          "fullName": "google.cloud.redis.v1.CloudRedis.DeleteInstance",
-          "service": {
-            "shortName": "CloudRedis",
-            "fullName": "google.cloud.redis.v1.CloudRedis"
-          }
-        }
+        "shortName": "DeleteInstance"
       },
+      "description": "DeleteInstance deletes a specific Redis instance.  Instance stops serving and data is\ndeleted.",
+      "file": "CloudRedisClient/DeleteInstance/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "redis_v1_generated_CloudRedis_DeleteInstance_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "redis DeleteInstance Sample"
     },
     {
-      "regionTag": "redis_v1_generated_CloudRedis_DeleteOperation_sync",
-      "title": "redis DeleteOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.redis.v1.CloudRedisClient",
+          "shortName": "CloudRedisClient"
+        },
+        "fullName": "google.cloud.redis.v1.CloudRedisClient.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
       "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
       "file": "CloudRedisClient/DeleteOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteOperation",
-        "fullName": "google.cloud.redis.v1.CloudRedisClient.DeleteOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.DeleteOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "CloudRedisClient",
-          "fullName": "google.cloud.redis.v1.CloudRedisClient"
-        },
-        "method": {
-          "shortName": "DeleteOperation",
-          "fullName": "google.longrunning.Operations.DeleteOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "redis_v1_generated_CloudRedis_DeleteOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "redis DeleteOperation Sample"
     },
     {
-      "regionTag": "redis_v1_generated_CloudRedis_ExportInstance_sync",
-      "title": "redis ExportInstance Sample",
-      "description": "ExportInstance export Redis instance data into a Redis RDB format file in Cloud Storage.\n\nRedis will continue serving during this operation.\n\nThe returned operation is automatically deleted after a few hours, so\nthere is no need to call DeleteOperation.",
-      "file": "CloudRedisClient/ExportInstance/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ExportInstance",
+        "client": {
+          "fullName": "google.cloud.redis.v1.CloudRedisClient",
+          "shortName": "CloudRedisClient"
+        },
         "fullName": "google.cloud.redis.v1.CloudRedisClient.ExportInstance",
+        "method": {
+          "fullName": "google.cloud.redis.v1.CloudRedis.ExportInstance",
+          "service": {
+            "fullName": "google.cloud.redis.v1.CloudRedis",
+            "shortName": "CloudRedis"
+          },
+          "shortName": "ExportInstance"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "redispb.ExportInstanceRequest",
-            "name": "req"
+            "name": "req",
+            "type": "redispb.ExportInstanceRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ExportInstanceOperation",
-        "client": {
-          "shortName": "CloudRedisClient",
-          "fullName": "google.cloud.redis.v1.CloudRedisClient"
-        },
-        "method": {
-          "shortName": "ExportInstance",
-          "fullName": "google.cloud.redis.v1.CloudRedis.ExportInstance",
-          "service": {
-            "shortName": "CloudRedis",
-            "fullName": "google.cloud.redis.v1.CloudRedis"
-          }
-        }
+        "shortName": "ExportInstance"
       },
+      "description": "ExportInstance export Redis instance data into a Redis RDB format file in Cloud Storage.\n\nRedis will continue serving during this operation.\n\nThe returned operation is automatically deleted after a few hours, so\nthere is no need to call DeleteOperation.",
+      "file": "CloudRedisClient/ExportInstance/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "redis_v1_generated_CloudRedis_ExportInstance_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "redis ExportInstance Sample"
     },
     {
-      "regionTag": "redis_v1_generated_CloudRedis_FailoverInstance_sync",
-      "title": "redis FailoverInstance Sample",
-      "description": "FailoverInstance initiates a failover of the primary node to current replica node for a\nspecific STANDARD tier Cloud Memorystore for Redis instance.",
-      "file": "CloudRedisClient/FailoverInstance/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "FailoverInstance",
+        "client": {
+          "fullName": "google.cloud.redis.v1.CloudRedisClient",
+          "shortName": "CloudRedisClient"
+        },
         "fullName": "google.cloud.redis.v1.CloudRedisClient.FailoverInstance",
+        "method": {
+          "fullName": "google.cloud.redis.v1.CloudRedis.FailoverInstance",
+          "service": {
+            "fullName": "google.cloud.redis.v1.CloudRedis",
+            "shortName": "CloudRedis"
+          },
+          "shortName": "FailoverInstance"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "redispb.FailoverInstanceRequest",
-            "name": "req"
+            "name": "req",
+            "type": "redispb.FailoverInstanceRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "FailoverInstanceOperation",
-        "client": {
-          "shortName": "CloudRedisClient",
-          "fullName": "google.cloud.redis.v1.CloudRedisClient"
-        },
-        "method": {
-          "shortName": "FailoverInstance",
-          "fullName": "google.cloud.redis.v1.CloudRedis.FailoverInstance",
-          "service": {
-            "shortName": "CloudRedis",
-            "fullName": "google.cloud.redis.v1.CloudRedis"
-          }
-        }
+        "shortName": "FailoverInstance"
       },
+      "description": "FailoverInstance initiates a failover of the primary node to current replica node for a\nspecific STANDARD tier Cloud Memorystore for Redis instance.",
+      "file": "CloudRedisClient/FailoverInstance/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "redis_v1_generated_CloudRedis_FailoverInstance_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "redis FailoverInstance Sample"
     },
     {
-      "regionTag": "redis_v1_generated_CloudRedis_GetInstance_sync",
-      "title": "redis GetInstance Sample",
-      "description": "GetInstance gets the details of a specific Redis instance.",
-      "file": "CloudRedisClient/GetInstance/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetInstance",
+        "client": {
+          "fullName": "google.cloud.redis.v1.CloudRedisClient",
+          "shortName": "CloudRedisClient"
+        },
         "fullName": "google.cloud.redis.v1.CloudRedisClient.GetInstance",
+        "method": {
+          "fullName": "google.cloud.redis.v1.CloudRedis.GetInstance",
+          "service": {
+            "fullName": "google.cloud.redis.v1.CloudRedis",
+            "shortName": "CloudRedis"
+          },
+          "shortName": "GetInstance"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "redispb.GetInstanceRequest",
-            "name": "req"
+            "name": "req",
+            "type": "redispb.GetInstanceRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*redispb.Instance",
-        "client": {
-          "shortName": "CloudRedisClient",
-          "fullName": "google.cloud.redis.v1.CloudRedisClient"
-        },
-        "method": {
-          "shortName": "GetInstance",
-          "fullName": "google.cloud.redis.v1.CloudRedis.GetInstance",
-          "service": {
-            "shortName": "CloudRedis",
-            "fullName": "google.cloud.redis.v1.CloudRedis"
-          }
-        }
+        "shortName": "GetInstance"
       },
+      "description": "GetInstance gets the details of a specific Redis instance.",
+      "file": "CloudRedisClient/GetInstance/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "redis_v1_generated_CloudRedis_GetInstance_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "redis GetInstance Sample"
     },
     {
-      "regionTag": "redis_v1_generated_CloudRedis_GetInstanceAuthString_sync",
-      "title": "redis GetInstanceAuthString Sample",
-      "description": "GetInstanceAuthString gets the AUTH string for a Redis instance. If AUTH is not enabled for the\ninstance the response will be empty. This information is not included in\nthe details returned to GetInstance.",
-      "file": "CloudRedisClient/GetInstanceAuthString/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetInstanceAuthString",
+        "client": {
+          "fullName": "google.cloud.redis.v1.CloudRedisClient",
+          "shortName": "CloudRedisClient"
+        },
         "fullName": "google.cloud.redis.v1.CloudRedisClient.GetInstanceAuthString",
+        "method": {
+          "fullName": "google.cloud.redis.v1.CloudRedis.GetInstanceAuthString",
+          "service": {
+            "fullName": "google.cloud.redis.v1.CloudRedis",
+            "shortName": "CloudRedis"
+          },
+          "shortName": "GetInstanceAuthString"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "redispb.GetInstanceAuthStringRequest",
-            "name": "req"
+            "name": "req",
+            "type": "redispb.GetInstanceAuthStringRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*redispb.InstanceAuthString",
-        "client": {
-          "shortName": "CloudRedisClient",
-          "fullName": "google.cloud.redis.v1.CloudRedisClient"
-        },
-        "method": {
-          "shortName": "GetInstanceAuthString",
-          "fullName": "google.cloud.redis.v1.CloudRedis.GetInstanceAuthString",
-          "service": {
-            "shortName": "CloudRedis",
-            "fullName": "google.cloud.redis.v1.CloudRedis"
-          }
-        }
+        "shortName": "GetInstanceAuthString"
       },
+      "description": "GetInstanceAuthString gets the AUTH string for a Redis instance. If AUTH is not enabled for the\ninstance the response will be empty. This information is not included in\nthe details returned to GetInstance.",
+      "file": "CloudRedisClient/GetInstanceAuthString/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "redis_v1_generated_CloudRedis_GetInstanceAuthString_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "redis GetInstanceAuthString Sample"
     },
     {
-      "regionTag": "redis_v1_generated_CloudRedis_GetLocation_sync",
-      "title": "redis GetLocation Sample",
-      "description": "GetLocation gets information about a location.",
-      "file": "CloudRedisClient/GetLocation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetLocation",
+        "client": {
+          "fullName": "google.cloud.redis.v1.CloudRedisClient",
+          "shortName": "CloudRedisClient"
+        },
         "fullName": "google.cloud.redis.v1.CloudRedisClient.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "locationpb.GetLocationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*locationpb.Location",
-        "client": {
-          "shortName": "CloudRedisClient",
-          "fullName": "google.cloud.redis.v1.CloudRedisClient"
-        },
-        "method": {
-          "shortName": "GetLocation",
-          "fullName": "google.cloud.location.Locations.GetLocation",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
+        "shortName": "GetLocation"
       },
+      "description": "GetLocation gets information about a location.",
+      "file": "CloudRedisClient/GetLocation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "redis_v1_generated_CloudRedis_GetLocation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "redis GetLocation Sample"
     },
     {
-      "regionTag": "redis_v1_generated_CloudRedis_GetOperation_sync",
-      "title": "redis GetOperation Sample",
-      "description": "GetOperation is a utility method from google.longrunning.Operations.",
-      "file": "CloudRedisClient/GetOperation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetOperation",
+        "client": {
+          "fullName": "google.cloud.redis.v1.CloudRedisClient",
+          "shortName": "CloudRedisClient"
+        },
         "fullName": "google.cloud.redis.v1.CloudRedisClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.GetOperationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*longrunningpb.Operation",
-        "client": {
-          "shortName": "CloudRedisClient",
-          "fullName": "google.cloud.redis.v1.CloudRedisClient"
-        },
-        "method": {
-          "shortName": "GetOperation",
-          "fullName": "google.longrunning.Operations.GetOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "GetOperation"
       },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "CloudRedisClient/GetOperation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "redis_v1_generated_CloudRedis_GetOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "redis GetOperation Sample"
     },
     {
-      "regionTag": "redis_v1_generated_CloudRedis_ImportInstance_sync",
-      "title": "redis ImportInstance Sample",
-      "description": "ImportInstance import a Redis RDB snapshot file from Cloud Storage into a Redis instance.\n\nRedis may stop serving during this operation. Instance state will be\nIMPORTING for entire operation. When complete, the instance will contain\nonly data from the imported file.\n\nThe returned operation is automatically deleted after a few hours, so\nthere is no need to call DeleteOperation.",
-      "file": "CloudRedisClient/ImportInstance/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ImportInstance",
+        "client": {
+          "fullName": "google.cloud.redis.v1.CloudRedisClient",
+          "shortName": "CloudRedisClient"
+        },
         "fullName": "google.cloud.redis.v1.CloudRedisClient.ImportInstance",
+        "method": {
+          "fullName": "google.cloud.redis.v1.CloudRedis.ImportInstance",
+          "service": {
+            "fullName": "google.cloud.redis.v1.CloudRedis",
+            "shortName": "CloudRedis"
+          },
+          "shortName": "ImportInstance"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "redispb.ImportInstanceRequest",
-            "name": "req"
+            "name": "req",
+            "type": "redispb.ImportInstanceRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ImportInstanceOperation",
-        "client": {
-          "shortName": "CloudRedisClient",
-          "fullName": "google.cloud.redis.v1.CloudRedisClient"
-        },
-        "method": {
-          "shortName": "ImportInstance",
-          "fullName": "google.cloud.redis.v1.CloudRedis.ImportInstance",
-          "service": {
-            "shortName": "CloudRedis",
-            "fullName": "google.cloud.redis.v1.CloudRedis"
-          }
-        }
+        "shortName": "ImportInstance"
       },
+      "description": "ImportInstance import a Redis RDB snapshot file from Cloud Storage into a Redis instance.\n\nRedis may stop serving during this operation. Instance state will be\nIMPORTING for entire operation. When complete, the instance will contain\nonly data from the imported file.\n\nThe returned operation is automatically deleted after a few hours, so\nthere is no need to call DeleteOperation.",
+      "file": "CloudRedisClient/ImportInstance/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "redis_v1_generated_CloudRedis_ImportInstance_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "redis ImportInstance Sample"
     },
     {
-      "regionTag": "redis_v1_generated_CloudRedis_ListInstances_sync",
-      "title": "redis ListInstances Sample",
-      "description": "ListInstances lists all Redis instances owned by a project in either the specified\nlocation (region) or all locations.\n\nThe location should have the following format: \n\n* `projects/{project_id}/locations/{location_id}`\n\nIf `location_id` is specified as `-` (wildcard), then all regions\navailable to the project are queried, and the results are aggregated.",
-      "file": "CloudRedisClient/ListInstances/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListInstances",
+        "client": {
+          "fullName": "google.cloud.redis.v1.CloudRedisClient",
+          "shortName": "CloudRedisClient"
+        },
         "fullName": "google.cloud.redis.v1.CloudRedisClient.ListInstances",
+        "method": {
+          "fullName": "google.cloud.redis.v1.CloudRedis.ListInstances",
+          "service": {
+            "fullName": "google.cloud.redis.v1.CloudRedis",
+            "shortName": "CloudRedis"
+          },
+          "shortName": "ListInstances"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "redispb.ListInstancesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "redispb.ListInstancesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "InstanceIterator",
-        "client": {
-          "shortName": "CloudRedisClient",
-          "fullName": "google.cloud.redis.v1.CloudRedisClient"
-        },
-        "method": {
-          "shortName": "ListInstances",
-          "fullName": "google.cloud.redis.v1.CloudRedis.ListInstances",
-          "service": {
-            "shortName": "CloudRedis",
-            "fullName": "google.cloud.redis.v1.CloudRedis"
-          }
-        }
+        "shortName": "ListInstances"
       },
+      "description": "ListInstances lists all Redis instances owned by a project in either the specified\nlocation (region) or all locations.\n\nThe location should have the following format: \n\n* `projects/{project_id}/locations/{location_id}`\n\nIf `location_id` is specified as `-` (wildcard), then all regions\navailable to the project are queried, and the results are aggregated.",
+      "file": "CloudRedisClient/ListInstances/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "redis_v1_generated_CloudRedis_ListInstances_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "redis ListInstances Sample"
     },
     {
-      "regionTag": "redis_v1_generated_CloudRedis_ListLocations_sync",
-      "title": "redis ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
-      "file": "CloudRedisClient/ListLocations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListLocations",
+        "client": {
+          "fullName": "google.cloud.redis.v1.CloudRedisClient",
+          "shortName": "CloudRedisClient"
+        },
         "fullName": "google.cloud.redis.v1.CloudRedisClient.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "locationpb.ListLocationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "LocationIterator",
-        "client": {
-          "shortName": "CloudRedisClient",
-          "fullName": "google.cloud.redis.v1.CloudRedisClient"
-        },
-        "method": {
-          "shortName": "ListLocations",
-          "fullName": "google.cloud.location.Locations.ListLocations",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
+        "shortName": "ListLocations"
       },
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "CloudRedisClient/ListLocations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "redis_v1_generated_CloudRedis_ListLocations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "redis ListLocations Sample"
     },
     {
-      "regionTag": "redis_v1_generated_CloudRedis_ListOperations_sync",
-      "title": "redis ListOperations Sample",
-      "description": "ListOperations is a utility method from google.longrunning.Operations.",
-      "file": "CloudRedisClient/ListOperations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListOperations",
+        "client": {
+          "fullName": "google.cloud.redis.v1.CloudRedisClient",
+          "shortName": "CloudRedisClient"
+        },
         "fullName": "google.cloud.redis.v1.CloudRedisClient.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.ListOperationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "OperationIterator",
-        "client": {
-          "shortName": "CloudRedisClient",
-          "fullName": "google.cloud.redis.v1.CloudRedisClient"
-        },
-        "method": {
-          "shortName": "ListOperations",
-          "fullName": "google.longrunning.Operations.ListOperations",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "ListOperations"
       },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "CloudRedisClient/ListOperations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "redis_v1_generated_CloudRedis_ListOperations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "redis ListOperations Sample"
     },
     {
-      "regionTag": "redis_v1_generated_CloudRedis_RescheduleMaintenance_sync",
-      "title": "redis RescheduleMaintenance Sample",
-      "description": "RescheduleMaintenance reschedule maintenance for a given instance in a given project and\nlocation.",
-      "file": "CloudRedisClient/RescheduleMaintenance/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "RescheduleMaintenance",
+        "client": {
+          "fullName": "google.cloud.redis.v1.CloudRedisClient",
+          "shortName": "CloudRedisClient"
+        },
         "fullName": "google.cloud.redis.v1.CloudRedisClient.RescheduleMaintenance",
+        "method": {
+          "fullName": "google.cloud.redis.v1.CloudRedis.RescheduleMaintenance",
+          "service": {
+            "fullName": "google.cloud.redis.v1.CloudRedis",
+            "shortName": "CloudRedis"
+          },
+          "shortName": "RescheduleMaintenance"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "redispb.RescheduleMaintenanceRequest",
-            "name": "req"
+            "name": "req",
+            "type": "redispb.RescheduleMaintenanceRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "RescheduleMaintenanceOperation",
-        "client": {
-          "shortName": "CloudRedisClient",
-          "fullName": "google.cloud.redis.v1.CloudRedisClient"
-        },
-        "method": {
-          "shortName": "RescheduleMaintenance",
-          "fullName": "google.cloud.redis.v1.CloudRedis.RescheduleMaintenance",
-          "service": {
-            "shortName": "CloudRedis",
-            "fullName": "google.cloud.redis.v1.CloudRedis"
-          }
-        }
+        "shortName": "RescheduleMaintenance"
       },
+      "description": "RescheduleMaintenance reschedule maintenance for a given instance in a given project and\nlocation.",
+      "file": "CloudRedisClient/RescheduleMaintenance/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "redis_v1_generated_CloudRedis_RescheduleMaintenance_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "redis RescheduleMaintenance Sample"
     },
     {
-      "regionTag": "redis_v1_generated_CloudRedis_UpdateInstance_sync",
-      "title": "redis UpdateInstance Sample",
-      "description": "UpdateInstance updates the metadata and configuration of a specific Redis instance.\n\nCompleted longrunning.Operation will contain the new instance object\nin the response field. The returned operation is automatically deleted\nafter a few hours, so there is no need to call DeleteOperation.",
-      "file": "CloudRedisClient/UpdateInstance/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateInstance",
+        "client": {
+          "fullName": "google.cloud.redis.v1.CloudRedisClient",
+          "shortName": "CloudRedisClient"
+        },
         "fullName": "google.cloud.redis.v1.CloudRedisClient.UpdateInstance",
+        "method": {
+          "fullName": "google.cloud.redis.v1.CloudRedis.UpdateInstance",
+          "service": {
+            "fullName": "google.cloud.redis.v1.CloudRedis",
+            "shortName": "CloudRedis"
+          },
+          "shortName": "UpdateInstance"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "redispb.UpdateInstanceRequest",
-            "name": "req"
+            "name": "req",
+            "type": "redispb.UpdateInstanceRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UpdateInstanceOperation",
-        "client": {
-          "shortName": "CloudRedisClient",
-          "fullName": "google.cloud.redis.v1.CloudRedisClient"
-        },
-        "method": {
-          "shortName": "UpdateInstance",
-          "fullName": "google.cloud.redis.v1.CloudRedis.UpdateInstance",
-          "service": {
-            "shortName": "CloudRedis",
-            "fullName": "google.cloud.redis.v1.CloudRedis"
-          }
-        }
+        "shortName": "UpdateInstance"
       },
+      "description": "UpdateInstance updates the metadata and configuration of a specific Redis instance.\n\nCompleted longrunning.Operation will contain the new instance object\nin the response field. The returned operation is automatically deleted\nafter a few hours, so there is no need to call DeleteOperation.",
+      "file": "CloudRedisClient/UpdateInstance/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "redis_v1_generated_CloudRedis_UpdateInstance_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "redis UpdateInstance Sample"
     },
     {
-      "regionTag": "redis_v1_generated_CloudRedis_UpgradeInstance_sync",
-      "title": "redis UpgradeInstance Sample",
-      "description": "UpgradeInstance upgrades Redis instance to the newer Redis version specified in the\nrequest.",
-      "file": "CloudRedisClient/UpgradeInstance/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpgradeInstance",
+        "client": {
+          "fullName": "google.cloud.redis.v1.CloudRedisClient",
+          "shortName": "CloudRedisClient"
+        },
         "fullName": "google.cloud.redis.v1.CloudRedisClient.UpgradeInstance",
+        "method": {
+          "fullName": "google.cloud.redis.v1.CloudRedis.UpgradeInstance",
+          "service": {
+            "fullName": "google.cloud.redis.v1.CloudRedis",
+            "shortName": "CloudRedis"
+          },
+          "shortName": "UpgradeInstance"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "redispb.UpgradeInstanceRequest",
-            "name": "req"
+            "name": "req",
+            "type": "redispb.UpgradeInstanceRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UpgradeInstanceOperation",
-        "client": {
-          "shortName": "CloudRedisClient",
-          "fullName": "google.cloud.redis.v1.CloudRedisClient"
-        },
-        "method": {
-          "shortName": "UpgradeInstance",
-          "fullName": "google.cloud.redis.v1.CloudRedis.UpgradeInstance",
-          "service": {
-            "shortName": "CloudRedis",
-            "fullName": "google.cloud.redis.v1.CloudRedis"
-          }
-        }
+        "shortName": "UpgradeInstance"
       },
+      "description": "UpgradeInstance upgrades Redis instance to the newer Redis version specified in the\nrequest.",
+      "file": "CloudRedisClient/UpgradeInstance/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "redis_v1_generated_CloudRedis_UpgradeInstance_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "redis UpgradeInstance Sample"
     }
   ]
 }

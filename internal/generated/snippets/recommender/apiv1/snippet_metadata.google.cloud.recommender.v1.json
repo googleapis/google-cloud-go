@@ -1,613 +1,613 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/recommender/apiv1",
-    "version": "1.13.6",
-    "language": "GO",
     "apis": [
       {
         "id": "google.cloud.recommender.v1",
         "version": "v1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/recommender/apiv1",
+    "version": "1.13.6"
   },
   "snippets": [
     {
-      "regionTag": "recommender_v1_generated_Recommender_GetInsight_sync",
-      "title": "recommender GetInsight Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.recommender.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.recommender.v1.Client.GetInsight",
+        "method": {
+          "fullName": "google.cloud.recommender.v1.Recommender.GetInsight",
+          "service": {
+            "fullName": "google.cloud.recommender.v1.Recommender",
+            "shortName": "Recommender"
+          },
+          "shortName": "GetInsight"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "recommenderpb.GetInsightRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*recommenderpb.Insight",
+        "shortName": "GetInsight"
+      },
       "description": "GetInsight gets the requested insight. Requires the recommender.*.get IAM permission\nfor the specified insight type.",
       "file": "Client/GetInsight/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetInsight",
-        "fullName": "google.cloud.recommender.v1.Client.GetInsight",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "recommenderpb.GetInsightRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*recommenderpb.Insight",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.recommender.v1.Client"
-        },
-        "method": {
-          "shortName": "GetInsight",
-          "fullName": "google.cloud.recommender.v1.Recommender.GetInsight",
-          "service": {
-            "shortName": "Recommender",
-            "fullName": "google.cloud.recommender.v1.Recommender"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "recommender_v1_generated_Recommender_GetInsight_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "recommender GetInsight Sample"
     },
     {
-      "regionTag": "recommender_v1_generated_Recommender_GetInsightTypeConfig_sync",
-      "title": "recommender GetInsightTypeConfig Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.recommender.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.recommender.v1.Client.GetInsightTypeConfig",
+        "method": {
+          "fullName": "google.cloud.recommender.v1.Recommender.GetInsightTypeConfig",
+          "service": {
+            "fullName": "google.cloud.recommender.v1.Recommender",
+            "shortName": "Recommender"
+          },
+          "shortName": "GetInsightTypeConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "recommenderpb.GetInsightTypeConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*recommenderpb.InsightTypeConfig",
+        "shortName": "GetInsightTypeConfig"
+      },
       "description": "GetInsightTypeConfig gets the requested InsightTypeConfig. There is only one instance of the\nconfig for each InsightType.",
       "file": "Client/GetInsightTypeConfig/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetInsightTypeConfig",
-        "fullName": "google.cloud.recommender.v1.Client.GetInsightTypeConfig",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "recommenderpb.GetInsightTypeConfigRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*recommenderpb.InsightTypeConfig",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.recommender.v1.Client"
-        },
-        "method": {
-          "shortName": "GetInsightTypeConfig",
-          "fullName": "google.cloud.recommender.v1.Recommender.GetInsightTypeConfig",
-          "service": {
-            "shortName": "Recommender",
-            "fullName": "google.cloud.recommender.v1.Recommender"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "recommender_v1_generated_Recommender_GetInsightTypeConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "recommender GetInsightTypeConfig Sample"
     },
     {
-      "regionTag": "recommender_v1_generated_Recommender_GetRecommendation_sync",
-      "title": "recommender GetRecommendation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.recommender.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.recommender.v1.Client.GetRecommendation",
+        "method": {
+          "fullName": "google.cloud.recommender.v1.Recommender.GetRecommendation",
+          "service": {
+            "fullName": "google.cloud.recommender.v1.Recommender",
+            "shortName": "Recommender"
+          },
+          "shortName": "GetRecommendation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "recommenderpb.GetRecommendationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*recommenderpb.Recommendation",
+        "shortName": "GetRecommendation"
+      },
       "description": "GetRecommendation gets the requested recommendation. Requires the recommender.*.get\nIAM permission for the specified recommender.",
       "file": "Client/GetRecommendation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetRecommendation",
-        "fullName": "google.cloud.recommender.v1.Client.GetRecommendation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "recommenderpb.GetRecommendationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*recommenderpb.Recommendation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.recommender.v1.Client"
-        },
-        "method": {
-          "shortName": "GetRecommendation",
-          "fullName": "google.cloud.recommender.v1.Recommender.GetRecommendation",
-          "service": {
-            "shortName": "Recommender",
-            "fullName": "google.cloud.recommender.v1.Recommender"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "recommender_v1_generated_Recommender_GetRecommendation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "recommender GetRecommendation Sample"
     },
     {
-      "regionTag": "recommender_v1_generated_Recommender_GetRecommenderConfig_sync",
-      "title": "recommender GetRecommenderConfig Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.recommender.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.recommender.v1.Client.GetRecommenderConfig",
+        "method": {
+          "fullName": "google.cloud.recommender.v1.Recommender.GetRecommenderConfig",
+          "service": {
+            "fullName": "google.cloud.recommender.v1.Recommender",
+            "shortName": "Recommender"
+          },
+          "shortName": "GetRecommenderConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "recommenderpb.GetRecommenderConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*recommenderpb.RecommenderConfig",
+        "shortName": "GetRecommenderConfig"
+      },
       "description": "GetRecommenderConfig gets the requested Recommender Config. There is only one instance of the\nconfig for each Recommender.",
       "file": "Client/GetRecommenderConfig/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetRecommenderConfig",
-        "fullName": "google.cloud.recommender.v1.Client.GetRecommenderConfig",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "recommenderpb.GetRecommenderConfigRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*recommenderpb.RecommenderConfig",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.recommender.v1.Client"
-        },
-        "method": {
-          "shortName": "GetRecommenderConfig",
-          "fullName": "google.cloud.recommender.v1.Recommender.GetRecommenderConfig",
-          "service": {
-            "shortName": "Recommender",
-            "fullName": "google.cloud.recommender.v1.Recommender"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "recommender_v1_generated_Recommender_GetRecommenderConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "recommender GetRecommenderConfig Sample"
     },
     {
-      "regionTag": "recommender_v1_generated_Recommender_ListInsights_sync",
-      "title": "recommender ListInsights Sample",
-      "description": "ListInsights lists insights for the specified Cloud Resource. Requires the\nrecommender.*.list IAM permission for the specified insight type.",
-      "file": "Client/ListInsights/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListInsights",
+        "client": {
+          "fullName": "google.cloud.recommender.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.recommender.v1.Client.ListInsights",
+        "method": {
+          "fullName": "google.cloud.recommender.v1.Recommender.ListInsights",
+          "service": {
+            "fullName": "google.cloud.recommender.v1.Recommender",
+            "shortName": "Recommender"
+          },
+          "shortName": "ListInsights"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "recommenderpb.ListInsightsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "recommenderpb.ListInsightsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "InsightIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.recommender.v1.Client"
-        },
-        "method": {
-          "shortName": "ListInsights",
-          "fullName": "google.cloud.recommender.v1.Recommender.ListInsights",
-          "service": {
-            "shortName": "Recommender",
-            "fullName": "google.cloud.recommender.v1.Recommender"
-          }
-        }
+        "shortName": "ListInsights"
       },
+      "description": "ListInsights lists insights for the specified Cloud Resource. Requires the\nrecommender.*.list IAM permission for the specified insight type.",
+      "file": "Client/ListInsights/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "recommender_v1_generated_Recommender_ListInsights_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "recommender ListInsights Sample"
     },
     {
-      "regionTag": "recommender_v1_generated_Recommender_ListRecommendations_sync",
-      "title": "recommender ListRecommendations Sample",
-      "description": "ListRecommendations lists recommendations for the specified Cloud Resource. Requires the\nrecommender.*.list IAM permission for the specified recommender.",
-      "file": "Client/ListRecommendations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListRecommendations",
+        "client": {
+          "fullName": "google.cloud.recommender.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.recommender.v1.Client.ListRecommendations",
+        "method": {
+          "fullName": "google.cloud.recommender.v1.Recommender.ListRecommendations",
+          "service": {
+            "fullName": "google.cloud.recommender.v1.Recommender",
+            "shortName": "Recommender"
+          },
+          "shortName": "ListRecommendations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "recommenderpb.ListRecommendationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "recommenderpb.ListRecommendationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "RecommendationIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.recommender.v1.Client"
-        },
-        "method": {
-          "shortName": "ListRecommendations",
-          "fullName": "google.cloud.recommender.v1.Recommender.ListRecommendations",
-          "service": {
-            "shortName": "Recommender",
-            "fullName": "google.cloud.recommender.v1.Recommender"
-          }
-        }
+        "shortName": "ListRecommendations"
       },
+      "description": "ListRecommendations lists recommendations for the specified Cloud Resource. Requires the\nrecommender.*.list IAM permission for the specified recommender.",
+      "file": "Client/ListRecommendations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "recommender_v1_generated_Recommender_ListRecommendations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "recommender ListRecommendations Sample"
     },
     {
-      "regionTag": "recommender_v1_generated_Recommender_MarkInsightAccepted_sync",
-      "title": "recommender MarkInsightAccepted Sample",
-      "description": "MarkInsightAccepted marks the Insight State as Accepted. Users can use this method to\nindicate to the Recommender API that they have applied some action based\non the insight. This stops the insight content from being updated.\n\nMarkInsightAccepted can be applied to insights in ACTIVE state. Requires\nthe recommender.*.update IAM permission for the specified insight.",
-      "file": "Client/MarkInsightAccepted/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "MarkInsightAccepted",
+        "client": {
+          "fullName": "google.cloud.recommender.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.recommender.v1.Client.MarkInsightAccepted",
+        "method": {
+          "fullName": "google.cloud.recommender.v1.Recommender.MarkInsightAccepted",
+          "service": {
+            "fullName": "google.cloud.recommender.v1.Recommender",
+            "shortName": "Recommender"
+          },
+          "shortName": "MarkInsightAccepted"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "recommenderpb.MarkInsightAcceptedRequest",
-            "name": "req"
+            "name": "req",
+            "type": "recommenderpb.MarkInsightAcceptedRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*recommenderpb.Insight",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.recommender.v1.Client"
-        },
-        "method": {
-          "shortName": "MarkInsightAccepted",
-          "fullName": "google.cloud.recommender.v1.Recommender.MarkInsightAccepted",
-          "service": {
-            "shortName": "Recommender",
-            "fullName": "google.cloud.recommender.v1.Recommender"
-          }
-        }
+        "shortName": "MarkInsightAccepted"
       },
+      "description": "MarkInsightAccepted marks the Insight State as Accepted. Users can use this method to\nindicate to the Recommender API that they have applied some action based\non the insight. This stops the insight content from being updated.\n\nMarkInsightAccepted can be applied to insights in ACTIVE state. Requires\nthe recommender.*.update IAM permission for the specified insight.",
+      "file": "Client/MarkInsightAccepted/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "recommender_v1_generated_Recommender_MarkInsightAccepted_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "recommender MarkInsightAccepted Sample"
     },
     {
-      "regionTag": "recommender_v1_generated_Recommender_MarkRecommendationClaimed_sync",
-      "title": "recommender MarkRecommendationClaimed Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.recommender.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.recommender.v1.Client.MarkRecommendationClaimed",
+        "method": {
+          "fullName": "google.cloud.recommender.v1.Recommender.MarkRecommendationClaimed",
+          "service": {
+            "fullName": "google.cloud.recommender.v1.Recommender",
+            "shortName": "Recommender"
+          },
+          "shortName": "MarkRecommendationClaimed"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "recommenderpb.MarkRecommendationClaimedRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*recommenderpb.Recommendation",
+        "shortName": "MarkRecommendationClaimed"
+      },
       "description": "MarkRecommendationClaimed marks the Recommendation State as Claimed. Users can use this method to\nindicate to the Recommender API that they are starting to apply the\nrecommendation themselves. This stops the recommendation content from being\nupdated. Associated insights are frozen and placed in the ACCEPTED state.\n\nMarkRecommendationClaimed can be applied to recommendations in CLAIMED,\nSUCCEEDED, FAILED, or ACTIVE state.\n\nRequires the recommender.*.update IAM permission for the specified\nrecommender.",
       "file": "Client/MarkRecommendationClaimed/main.go",
       "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "recommender_v1_generated_Recommender_MarkRecommendationClaimed_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "recommender MarkRecommendationClaimed Sample"
+    },
+    {
       "clientMethod": {
-        "shortName": "MarkRecommendationClaimed",
-        "fullName": "google.cloud.recommender.v1.Client.MarkRecommendationClaimed",
+        "client": {
+          "fullName": "google.cloud.recommender.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.recommender.v1.Client.MarkRecommendationDismissed",
+        "method": {
+          "fullName": "google.cloud.recommender.v1.Recommender.MarkRecommendationDismissed",
+          "service": {
+            "fullName": "google.cloud.recommender.v1.Recommender",
+            "shortName": "Recommender"
+          },
+          "shortName": "MarkRecommendationDismissed"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "recommenderpb.MarkRecommendationClaimedRequest",
-            "name": "req"
+            "name": "req",
+            "type": "recommenderpb.MarkRecommendationDismissedRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*recommenderpb.Recommendation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.recommender.v1.Client"
-        },
-        "method": {
-          "shortName": "MarkRecommendationClaimed",
-          "fullName": "google.cloud.recommender.v1.Recommender.MarkRecommendationClaimed",
-          "service": {
-            "shortName": "Recommender",
-            "fullName": "google.cloud.recommender.v1.Recommender"
-          }
-        }
+        "shortName": "MarkRecommendationDismissed"
       },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "recommender_v1_generated_Recommender_MarkRecommendationDismissed_sync",
-      "title": "recommender MarkRecommendationDismissed Sample",
       "description": "MarkRecommendationDismissed mark the Recommendation State as Dismissed. Users can use this method to\nindicate to the Recommender API that an ACTIVE recommendation has to\nbe marked back as DISMISSED.\n\nMarkRecommendationDismissed can be applied to recommendations in ACTIVE\nstate.\n\nRequires the recommender.*.update IAM permission for the specified\nrecommender.",
       "file": "Client/MarkRecommendationDismissed/main.go",
       "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "recommender_v1_generated_Recommender_MarkRecommendationDismissed_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "recommender MarkRecommendationDismissed Sample"
+    },
+    {
       "clientMethod": {
-        "shortName": "MarkRecommendationDismissed",
-        "fullName": "google.cloud.recommender.v1.Client.MarkRecommendationDismissed",
+        "client": {
+          "fullName": "google.cloud.recommender.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.recommender.v1.Client.MarkRecommendationFailed",
+        "method": {
+          "fullName": "google.cloud.recommender.v1.Recommender.MarkRecommendationFailed",
+          "service": {
+            "fullName": "google.cloud.recommender.v1.Recommender",
+            "shortName": "Recommender"
+          },
+          "shortName": "MarkRecommendationFailed"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "recommenderpb.MarkRecommendationDismissedRequest",
-            "name": "req"
+            "name": "req",
+            "type": "recommenderpb.MarkRecommendationFailedRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*recommenderpb.Recommendation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.recommender.v1.Client"
-        },
-        "method": {
-          "shortName": "MarkRecommendationDismissed",
-          "fullName": "google.cloud.recommender.v1.Recommender.MarkRecommendationDismissed",
-          "service": {
-            "shortName": "Recommender",
-            "fullName": "google.cloud.recommender.v1.Recommender"
-          }
-        }
+        "shortName": "MarkRecommendationFailed"
       },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "recommender_v1_generated_Recommender_MarkRecommendationFailed_sync",
-      "title": "recommender MarkRecommendationFailed Sample",
       "description": "MarkRecommendationFailed marks the Recommendation State as Failed. Users can use this method to\nindicate to the Recommender API that they have applied the recommendation\nthemselves, and the operation failed. This stops the recommendation content\nfrom being updated. Associated insights are frozen and placed in the\nACCEPTED state.\n\nMarkRecommendationFailed can be applied to recommendations in ACTIVE,\nCLAIMED, SUCCEEDED, or FAILED state.\n\nRequires the recommender.*.update IAM permission for the specified\nrecommender.",
       "file": "Client/MarkRecommendationFailed/main.go",
       "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "recommender_v1_generated_Recommender_MarkRecommendationFailed_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "recommender MarkRecommendationFailed Sample"
+    },
+    {
       "clientMethod": {
-        "shortName": "MarkRecommendationFailed",
-        "fullName": "google.cloud.recommender.v1.Client.MarkRecommendationFailed",
+        "client": {
+          "fullName": "google.cloud.recommender.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.recommender.v1.Client.MarkRecommendationSucceeded",
+        "method": {
+          "fullName": "google.cloud.recommender.v1.Recommender.MarkRecommendationSucceeded",
+          "service": {
+            "fullName": "google.cloud.recommender.v1.Recommender",
+            "shortName": "Recommender"
+          },
+          "shortName": "MarkRecommendationSucceeded"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "recommenderpb.MarkRecommendationFailedRequest",
-            "name": "req"
+            "name": "req",
+            "type": "recommenderpb.MarkRecommendationSucceededRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*recommenderpb.Recommendation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.recommender.v1.Client"
-        },
-        "method": {
-          "shortName": "MarkRecommendationFailed",
-          "fullName": "google.cloud.recommender.v1.Recommender.MarkRecommendationFailed",
-          "service": {
-            "shortName": "Recommender",
-            "fullName": "google.cloud.recommender.v1.Recommender"
-          }
-        }
+        "shortName": "MarkRecommendationSucceeded"
       },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "recommender_v1_generated_Recommender_MarkRecommendationSucceeded_sync",
-      "title": "recommender MarkRecommendationSucceeded Sample",
       "description": "MarkRecommendationSucceeded marks the Recommendation State as Succeeded. Users can use this method to\nindicate to the Recommender API that they have applied the recommendation\nthemselves, and the operation was successful. This stops the recommendation\ncontent from being updated. Associated insights are frozen and placed in\nthe ACCEPTED state.\n\nMarkRecommendationSucceeded can be applied to recommendations in ACTIVE,\nCLAIMED, SUCCEEDED, or FAILED state.\n\nRequires the recommender.*.update IAM permission for the specified\nrecommender.",
       "file": "Client/MarkRecommendationSucceeded/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "MarkRecommendationSucceeded",
-        "fullName": "google.cloud.recommender.v1.Client.MarkRecommendationSucceeded",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "recommenderpb.MarkRecommendationSucceededRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*recommenderpb.Recommendation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.recommender.v1.Client"
-        },
-        "method": {
-          "shortName": "MarkRecommendationSucceeded",
-          "fullName": "google.cloud.recommender.v1.Recommender.MarkRecommendationSucceeded",
-          "service": {
-            "shortName": "Recommender",
-            "fullName": "google.cloud.recommender.v1.Recommender"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "recommender_v1_generated_Recommender_MarkRecommendationSucceeded_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "recommender MarkRecommendationSucceeded Sample"
     },
     {
-      "regionTag": "recommender_v1_generated_Recommender_UpdateInsightTypeConfig_sync",
-      "title": "recommender UpdateInsightTypeConfig Sample",
-      "description": "UpdateInsightTypeConfig updates an InsightTypeConfig change. This will create a new revision of the\nconfig.",
-      "file": "Client/UpdateInsightTypeConfig/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateInsightTypeConfig",
+        "client": {
+          "fullName": "google.cloud.recommender.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.recommender.v1.Client.UpdateInsightTypeConfig",
+        "method": {
+          "fullName": "google.cloud.recommender.v1.Recommender.UpdateInsightTypeConfig",
+          "service": {
+            "fullName": "google.cloud.recommender.v1.Recommender",
+            "shortName": "Recommender"
+          },
+          "shortName": "UpdateInsightTypeConfig"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "recommenderpb.UpdateInsightTypeConfigRequest",
-            "name": "req"
+            "name": "req",
+            "type": "recommenderpb.UpdateInsightTypeConfigRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*recommenderpb.InsightTypeConfig",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.recommender.v1.Client"
-        },
-        "method": {
-          "shortName": "UpdateInsightTypeConfig",
-          "fullName": "google.cloud.recommender.v1.Recommender.UpdateInsightTypeConfig",
-          "service": {
-            "shortName": "Recommender",
-            "fullName": "google.cloud.recommender.v1.Recommender"
-          }
-        }
+        "shortName": "UpdateInsightTypeConfig"
       },
+      "description": "UpdateInsightTypeConfig updates an InsightTypeConfig change. This will create a new revision of the\nconfig.",
+      "file": "Client/UpdateInsightTypeConfig/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "recommender_v1_generated_Recommender_UpdateInsightTypeConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "recommender UpdateInsightTypeConfig Sample"
     },
     {
-      "regionTag": "recommender_v1_generated_Recommender_UpdateRecommenderConfig_sync",
-      "title": "recommender UpdateRecommenderConfig Sample",
-      "description": "UpdateRecommenderConfig updates a Recommender Config. This will create a new revision of the\nconfig.",
-      "file": "Client/UpdateRecommenderConfig/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateRecommenderConfig",
+        "client": {
+          "fullName": "google.cloud.recommender.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.recommender.v1.Client.UpdateRecommenderConfig",
+        "method": {
+          "fullName": "google.cloud.recommender.v1.Recommender.UpdateRecommenderConfig",
+          "service": {
+            "fullName": "google.cloud.recommender.v1.Recommender",
+            "shortName": "Recommender"
+          },
+          "shortName": "UpdateRecommenderConfig"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "recommenderpb.UpdateRecommenderConfigRequest",
-            "name": "req"
+            "name": "req",
+            "type": "recommenderpb.UpdateRecommenderConfigRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*recommenderpb.RecommenderConfig",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.recommender.v1.Client"
-        },
-        "method": {
-          "shortName": "UpdateRecommenderConfig",
-          "fullName": "google.cloud.recommender.v1.Recommender.UpdateRecommenderConfig",
-          "service": {
-            "shortName": "Recommender",
-            "fullName": "google.cloud.recommender.v1.Recommender"
-          }
-        }
+        "shortName": "UpdateRecommenderConfig"
       },
+      "description": "UpdateRecommenderConfig updates a Recommender Config. This will create a new revision of the\nconfig.",
+      "file": "Client/UpdateRecommenderConfig/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "recommender_v1_generated_Recommender_UpdateRecommenderConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "recommender UpdateRecommenderConfig Sample"
     }
   ]
 }

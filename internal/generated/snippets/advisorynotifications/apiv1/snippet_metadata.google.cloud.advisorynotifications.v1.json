@@ -1,199 +1,199 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/advisorynotifications/apiv1",
-    "version": "1.5.6",
-    "language": "GO",
     "apis": [
       {
         "id": "google.cloud.advisorynotifications.v1",
         "version": "v1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/advisorynotifications/apiv1",
+    "version": "1.5.6"
   },
   "snippets": [
     {
-      "regionTag": "advisorynotifications_v1_generated_AdvisoryNotificationsService_GetNotification_sync",
-      "title": "advisorynotifications GetNotification Sample",
-      "description": "GetNotification gets a notification.",
-      "file": "Client/GetNotification/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetNotification",
+        "client": {
+          "fullName": "google.cloud.advisorynotifications.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.advisorynotifications.v1.Client.GetNotification",
+        "method": {
+          "fullName": "google.cloud.advisorynotifications.v1.AdvisoryNotificationsService.GetNotification",
+          "service": {
+            "fullName": "google.cloud.advisorynotifications.v1.AdvisoryNotificationsService",
+            "shortName": "AdvisoryNotificationsService"
+          },
+          "shortName": "GetNotification"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "advisorynotificationspb.GetNotificationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "advisorynotificationspb.GetNotificationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*advisorynotificationspb.Notification",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.advisorynotifications.v1.Client"
-        },
-        "method": {
-          "shortName": "GetNotification",
-          "fullName": "google.cloud.advisorynotifications.v1.AdvisoryNotificationsService.GetNotification",
-          "service": {
-            "shortName": "AdvisoryNotificationsService",
-            "fullName": "google.cloud.advisorynotifications.v1.AdvisoryNotificationsService"
-          }
-        }
+        "shortName": "GetNotification"
       },
+      "description": "GetNotification gets a notification.",
+      "file": "Client/GetNotification/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "advisorynotifications_v1_generated_AdvisoryNotificationsService_GetNotification_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "advisorynotifications GetNotification Sample"
     },
     {
-      "regionTag": "advisorynotifications_v1_generated_AdvisoryNotificationsService_GetSettings_sync",
-      "title": "advisorynotifications GetSettings Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.advisorynotifications.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.advisorynotifications.v1.Client.GetSettings",
+        "method": {
+          "fullName": "google.cloud.advisorynotifications.v1.AdvisoryNotificationsService.GetSettings",
+          "service": {
+            "fullName": "google.cloud.advisorynotifications.v1.AdvisoryNotificationsService",
+            "shortName": "AdvisoryNotificationsService"
+          },
+          "shortName": "GetSettings"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "advisorynotificationspb.GetSettingsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*advisorynotificationspb.Settings",
+        "shortName": "GetSettings"
+      },
       "description": "GetSettings get notification settings.",
       "file": "Client/GetSettings/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetSettings",
-        "fullName": "google.cloud.advisorynotifications.v1.Client.GetSettings",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "advisorynotificationspb.GetSettingsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*advisorynotificationspb.Settings",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.advisorynotifications.v1.Client"
-        },
-        "method": {
-          "shortName": "GetSettings",
-          "fullName": "google.cloud.advisorynotifications.v1.AdvisoryNotificationsService.GetSettings",
-          "service": {
-            "shortName": "AdvisoryNotificationsService",
-            "fullName": "google.cloud.advisorynotifications.v1.AdvisoryNotificationsService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "advisorynotifications_v1_generated_AdvisoryNotificationsService_GetSettings_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "advisorynotifications GetSettings Sample"
     },
     {
-      "regionTag": "advisorynotifications_v1_generated_AdvisoryNotificationsService_ListNotifications_sync",
-      "title": "advisorynotifications ListNotifications Sample",
-      "description": "ListNotifications lists notifications under a given parent.",
-      "file": "Client/ListNotifications/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListNotifications",
+        "client": {
+          "fullName": "google.cloud.advisorynotifications.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.advisorynotifications.v1.Client.ListNotifications",
+        "method": {
+          "fullName": "google.cloud.advisorynotifications.v1.AdvisoryNotificationsService.ListNotifications",
+          "service": {
+            "fullName": "google.cloud.advisorynotifications.v1.AdvisoryNotificationsService",
+            "shortName": "AdvisoryNotificationsService"
+          },
+          "shortName": "ListNotifications"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "advisorynotificationspb.ListNotificationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "advisorynotificationspb.ListNotificationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "NotificationIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.advisorynotifications.v1.Client"
-        },
-        "method": {
-          "shortName": "ListNotifications",
-          "fullName": "google.cloud.advisorynotifications.v1.AdvisoryNotificationsService.ListNotifications",
-          "service": {
-            "shortName": "AdvisoryNotificationsService",
-            "fullName": "google.cloud.advisorynotifications.v1.AdvisoryNotificationsService"
-          }
-        }
+        "shortName": "ListNotifications"
       },
+      "description": "ListNotifications lists notifications under a given parent.",
+      "file": "Client/ListNotifications/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "advisorynotifications_v1_generated_AdvisoryNotificationsService_ListNotifications_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "advisorynotifications ListNotifications Sample"
     },
     {
-      "regionTag": "advisorynotifications_v1_generated_AdvisoryNotificationsService_UpdateSettings_sync",
-      "title": "advisorynotifications UpdateSettings Sample",
-      "description": "UpdateSettings update notification settings.",
-      "file": "Client/UpdateSettings/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateSettings",
+        "client": {
+          "fullName": "google.cloud.advisorynotifications.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.advisorynotifications.v1.Client.UpdateSettings",
+        "method": {
+          "fullName": "google.cloud.advisorynotifications.v1.AdvisoryNotificationsService.UpdateSettings",
+          "service": {
+            "fullName": "google.cloud.advisorynotifications.v1.AdvisoryNotificationsService",
+            "shortName": "AdvisoryNotificationsService"
+          },
+          "shortName": "UpdateSettings"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "advisorynotificationspb.UpdateSettingsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "advisorynotificationspb.UpdateSettingsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*advisorynotificationspb.Settings",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.advisorynotifications.v1.Client"
-        },
-        "method": {
-          "shortName": "UpdateSettings",
-          "fullName": "google.cloud.advisorynotifications.v1.AdvisoryNotificationsService.UpdateSettings",
-          "service": {
-            "shortName": "AdvisoryNotificationsService",
-            "fullName": "google.cloud.advisorynotifications.v1.AdvisoryNotificationsService"
-          }
-        }
+        "shortName": "UpdateSettings"
       },
+      "description": "UpdateSettings update notification settings.",
+      "file": "Client/UpdateSettings/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "advisorynotifications_v1_generated_AdvisoryNotificationsService_UpdateSettings_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "advisorynotifications UpdateSettings Sample"
     }
   ]
 }

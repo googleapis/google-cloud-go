@@ -1,245 +1,245 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/identitytoolkit/apiv2",
-    "version": "0.2.6",
-    "language": "GO",
     "apis": [
       {
         "id": "google.cloud.identitytoolkit.v2",
         "version": "v2"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/identitytoolkit/apiv2",
+    "version": "0.2.6"
   },
   "snippets": [
     {
-      "regionTag": "identitytoolkit_v2_generated_AccountManagementService_FinalizeMfaEnrollment_sync",
-      "title": "identitytoolkit FinalizeMfaEnrollment Sample",
-      "description": "FinalizeMfaEnrollment finishes enrolling a second factor for the user.",
-      "file": "AccountManagementClient/FinalizeMfaEnrollment/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "FinalizeMfaEnrollment",
+        "client": {
+          "fullName": "google.cloud.identitytoolkit.v2.AccountManagementClient",
+          "shortName": "AccountManagementClient"
+        },
         "fullName": "google.cloud.identitytoolkit.v2.AccountManagementClient.FinalizeMfaEnrollment",
+        "method": {
+          "fullName": "google.cloud.identitytoolkit.v2.AccountManagementService.FinalizeMfaEnrollment",
+          "service": {
+            "fullName": "google.cloud.identitytoolkit.v2.AccountManagementService",
+            "shortName": "AccountManagementService"
+          },
+          "shortName": "FinalizeMfaEnrollment"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "identitytoolkitpb.FinalizeMfaEnrollmentRequest",
-            "name": "req"
+            "name": "req",
+            "type": "identitytoolkitpb.FinalizeMfaEnrollmentRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*identitytoolkitpb.FinalizeMfaEnrollmentResponse",
-        "client": {
-          "shortName": "AccountManagementClient",
-          "fullName": "google.cloud.identitytoolkit.v2.AccountManagementClient"
-        },
-        "method": {
-          "shortName": "FinalizeMfaEnrollment",
-          "fullName": "google.cloud.identitytoolkit.v2.AccountManagementService.FinalizeMfaEnrollment",
-          "service": {
-            "shortName": "AccountManagementService",
-            "fullName": "google.cloud.identitytoolkit.v2.AccountManagementService"
-          }
-        }
+        "shortName": "FinalizeMfaEnrollment"
       },
+      "description": "FinalizeMfaEnrollment finishes enrolling a second factor for the user.",
+      "file": "AccountManagementClient/FinalizeMfaEnrollment/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "identitytoolkit_v2_generated_AccountManagementService_FinalizeMfaEnrollment_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "identitytoolkit FinalizeMfaEnrollment Sample"
     },
     {
-      "regionTag": "identitytoolkit_v2_generated_AccountManagementService_StartMfaEnrollment_sync",
-      "title": "identitytoolkit StartMfaEnrollment Sample",
-      "description": "StartMfaEnrollment step one of the MFA enrollment process. In SMS case, this sends an\nSMS verification code to the user.",
-      "file": "AccountManagementClient/StartMfaEnrollment/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "StartMfaEnrollment",
+        "client": {
+          "fullName": "google.cloud.identitytoolkit.v2.AccountManagementClient",
+          "shortName": "AccountManagementClient"
+        },
         "fullName": "google.cloud.identitytoolkit.v2.AccountManagementClient.StartMfaEnrollment",
+        "method": {
+          "fullName": "google.cloud.identitytoolkit.v2.AccountManagementService.StartMfaEnrollment",
+          "service": {
+            "fullName": "google.cloud.identitytoolkit.v2.AccountManagementService",
+            "shortName": "AccountManagementService"
+          },
+          "shortName": "StartMfaEnrollment"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "identitytoolkitpb.StartMfaEnrollmentRequest",
-            "name": "req"
+            "name": "req",
+            "type": "identitytoolkitpb.StartMfaEnrollmentRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*identitytoolkitpb.StartMfaEnrollmentResponse",
-        "client": {
-          "shortName": "AccountManagementClient",
-          "fullName": "google.cloud.identitytoolkit.v2.AccountManagementClient"
-        },
-        "method": {
-          "shortName": "StartMfaEnrollment",
-          "fullName": "google.cloud.identitytoolkit.v2.AccountManagementService.StartMfaEnrollment",
-          "service": {
-            "shortName": "AccountManagementService",
-            "fullName": "google.cloud.identitytoolkit.v2.AccountManagementService"
-          }
-        }
+        "shortName": "StartMfaEnrollment"
       },
+      "description": "StartMfaEnrollment step one of the MFA enrollment process. In SMS case, this sends an\nSMS verification code to the user.",
+      "file": "AccountManagementClient/StartMfaEnrollment/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "identitytoolkit_v2_generated_AccountManagementService_StartMfaEnrollment_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "identitytoolkit StartMfaEnrollment Sample"
     },
     {
-      "regionTag": "identitytoolkit_v2_generated_AccountManagementService_WithdrawMfa_sync",
-      "title": "identitytoolkit WithdrawMfa Sample",
-      "description": "WithdrawMfa revokes one second factor from the enrolled second factors for an account.",
-      "file": "AccountManagementClient/WithdrawMfa/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "WithdrawMfa",
+        "client": {
+          "fullName": "google.cloud.identitytoolkit.v2.AccountManagementClient",
+          "shortName": "AccountManagementClient"
+        },
         "fullName": "google.cloud.identitytoolkit.v2.AccountManagementClient.WithdrawMfa",
+        "method": {
+          "fullName": "google.cloud.identitytoolkit.v2.AccountManagementService.WithdrawMfa",
+          "service": {
+            "fullName": "google.cloud.identitytoolkit.v2.AccountManagementService",
+            "shortName": "AccountManagementService"
+          },
+          "shortName": "WithdrawMfa"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "identitytoolkitpb.WithdrawMfaRequest",
-            "name": "req"
+            "name": "req",
+            "type": "identitytoolkitpb.WithdrawMfaRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*identitytoolkitpb.WithdrawMfaResponse",
-        "client": {
-          "shortName": "AccountManagementClient",
-          "fullName": "google.cloud.identitytoolkit.v2.AccountManagementClient"
-        },
-        "method": {
-          "shortName": "WithdrawMfa",
-          "fullName": "google.cloud.identitytoolkit.v2.AccountManagementService.WithdrawMfa",
-          "service": {
-            "shortName": "AccountManagementService",
-            "fullName": "google.cloud.identitytoolkit.v2.AccountManagementService"
-          }
-        }
+        "shortName": "WithdrawMfa"
       },
+      "description": "WithdrawMfa revokes one second factor from the enrolled second factors for an account.",
+      "file": "AccountManagementClient/WithdrawMfa/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "identitytoolkit_v2_generated_AccountManagementService_WithdrawMfa_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "identitytoolkit WithdrawMfa Sample"
     },
     {
-      "regionTag": "identitytoolkit_v2_generated_AuthenticationService_FinalizeMfaSignIn_sync",
-      "title": "identitytoolkit FinalizeMfaSignIn Sample",
-      "description": "FinalizeMfaSignIn verifies the MFA challenge and performs sign-in",
-      "file": "AuthenticationClient/FinalizeMfaSignIn/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "FinalizeMfaSignIn",
+        "client": {
+          "fullName": "google.cloud.identitytoolkit.v2.AuthenticationClient",
+          "shortName": "AuthenticationClient"
+        },
         "fullName": "google.cloud.identitytoolkit.v2.AuthenticationClient.FinalizeMfaSignIn",
+        "method": {
+          "fullName": "google.cloud.identitytoolkit.v2.AuthenticationService.FinalizeMfaSignIn",
+          "service": {
+            "fullName": "google.cloud.identitytoolkit.v2.AuthenticationService",
+            "shortName": "AuthenticationService"
+          },
+          "shortName": "FinalizeMfaSignIn"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "identitytoolkitpb.FinalizeMfaSignInRequest",
-            "name": "req"
+            "name": "req",
+            "type": "identitytoolkitpb.FinalizeMfaSignInRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*identitytoolkitpb.FinalizeMfaSignInResponse",
-        "client": {
-          "shortName": "AuthenticationClient",
-          "fullName": "google.cloud.identitytoolkit.v2.AuthenticationClient"
-        },
-        "method": {
-          "shortName": "FinalizeMfaSignIn",
-          "fullName": "google.cloud.identitytoolkit.v2.AuthenticationService.FinalizeMfaSignIn",
-          "service": {
-            "shortName": "AuthenticationService",
-            "fullName": "google.cloud.identitytoolkit.v2.AuthenticationService"
-          }
-        }
+        "shortName": "FinalizeMfaSignIn"
       },
+      "description": "FinalizeMfaSignIn verifies the MFA challenge and performs sign-in",
+      "file": "AuthenticationClient/FinalizeMfaSignIn/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "identitytoolkit_v2_generated_AuthenticationService_FinalizeMfaSignIn_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "identitytoolkit FinalizeMfaSignIn Sample"
     },
     {
-      "regionTag": "identitytoolkit_v2_generated_AuthenticationService_StartMfaSignIn_sync",
-      "title": "identitytoolkit StartMfaSignIn Sample",
-      "description": "StartMfaSignIn sends the MFA challenge",
-      "file": "AuthenticationClient/StartMfaSignIn/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "StartMfaSignIn",
+        "client": {
+          "fullName": "google.cloud.identitytoolkit.v2.AuthenticationClient",
+          "shortName": "AuthenticationClient"
+        },
         "fullName": "google.cloud.identitytoolkit.v2.AuthenticationClient.StartMfaSignIn",
+        "method": {
+          "fullName": "google.cloud.identitytoolkit.v2.AuthenticationService.StartMfaSignIn",
+          "service": {
+            "fullName": "google.cloud.identitytoolkit.v2.AuthenticationService",
+            "shortName": "AuthenticationService"
+          },
+          "shortName": "StartMfaSignIn"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "identitytoolkitpb.StartMfaSignInRequest",
-            "name": "req"
+            "name": "req",
+            "type": "identitytoolkitpb.StartMfaSignInRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*identitytoolkitpb.StartMfaSignInResponse",
-        "client": {
-          "shortName": "AuthenticationClient",
-          "fullName": "google.cloud.identitytoolkit.v2.AuthenticationClient"
-        },
-        "method": {
-          "shortName": "StartMfaSignIn",
-          "fullName": "google.cloud.identitytoolkit.v2.AuthenticationService.StartMfaSignIn",
-          "service": {
-            "shortName": "AuthenticationService",
-            "fullName": "google.cloud.identitytoolkit.v2.AuthenticationService"
-          }
-        }
+        "shortName": "StartMfaSignIn"
       },
+      "description": "StartMfaSignIn sends the MFA challenge",
+      "file": "AuthenticationClient/StartMfaSignIn/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "identitytoolkit_v2_generated_AuthenticationService_StartMfaSignIn_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "identitytoolkit StartMfaSignIn Sample"
     }
   ]
 }

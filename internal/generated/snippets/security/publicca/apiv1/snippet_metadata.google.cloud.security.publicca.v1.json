@@ -1,61 +1,61 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/security/publicca/apiv1",
-    "version": "1.19.2",
-    "language": "GO",
     "apis": [
       {
         "id": "google.cloud.security.publicca.v1",
         "version": "v1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/security/publicca/apiv1",
+    "version": "1.19.2"
   },
   "snippets": [
     {
-      "regionTag": "publicca_v1_generated_PublicCertificateAuthorityService_CreateExternalAccountKey_sync",
-      "title": "publicca CreateExternalAccountKey Sample",
-      "description": "CreateExternalAccountKey creates a new\n[ExternalAccountKey][google.cloud.security.publicca.v1.ExternalAccountKey]\nbound to the project.",
-      "file": "PublicCertificateAuthorityClient/CreateExternalAccountKey/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateExternalAccountKey",
+        "client": {
+          "fullName": "google.cloud.security.publicca.v1.PublicCertificateAuthorityClient",
+          "shortName": "PublicCertificateAuthorityClient"
+        },
         "fullName": "google.cloud.security.publicca.v1.PublicCertificateAuthorityClient.CreateExternalAccountKey",
+        "method": {
+          "fullName": "google.cloud.security.publicca.v1.PublicCertificateAuthorityService.CreateExternalAccountKey",
+          "service": {
+            "fullName": "google.cloud.security.publicca.v1.PublicCertificateAuthorityService",
+            "shortName": "PublicCertificateAuthorityService"
+          },
+          "shortName": "CreateExternalAccountKey"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "publiccapb.CreateExternalAccountKeyRequest",
-            "name": "req"
+            "name": "req",
+            "type": "publiccapb.CreateExternalAccountKeyRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*publiccapb.ExternalAccountKey",
-        "client": {
-          "shortName": "PublicCertificateAuthorityClient",
-          "fullName": "google.cloud.security.publicca.v1.PublicCertificateAuthorityClient"
-        },
-        "method": {
-          "shortName": "CreateExternalAccountKey",
-          "fullName": "google.cloud.security.publicca.v1.PublicCertificateAuthorityService.CreateExternalAccountKey",
-          "service": {
-            "shortName": "PublicCertificateAuthorityService",
-            "fullName": "google.cloud.security.publicca.v1.PublicCertificateAuthorityService"
-          }
-        }
+        "shortName": "CreateExternalAccountKey"
       },
+      "description": "CreateExternalAccountKey creates a new\n[ExternalAccountKey][google.cloud.security.publicca.v1.ExternalAccountKey]\nbound to the project.",
+      "file": "PublicCertificateAuthorityClient/CreateExternalAccountKey/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "publicca_v1_generated_PublicCertificateAuthorityService_CreateExternalAccountKey_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "publicca CreateExternalAccountKey Sample"
     }
   ]
 }

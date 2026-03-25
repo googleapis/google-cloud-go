@@ -1,291 +1,291 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/osconfig/agentendpoint/apiv1",
-    "version": "1.16.0",
-    "language": "GO",
     "apis": [
       {
         "id": "google.cloud.osconfig.agentendpoint.v1",
         "version": "v1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/osconfig/agentendpoint/apiv1",
+    "version": "1.16.0"
   },
   "snippets": [
     {
-      "regionTag": "osconfig_v1_generated_AgentEndpointService_RegisterAgent_sync",
-      "title": "osconfig RegisterAgent Sample",
-      "description": "RegisterAgent registers the agent running on the VM.",
-      "file": "Client/RegisterAgent/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "RegisterAgent",
+        "client": {
+          "fullName": "google.cloud.osconfig.agentendpoint.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.osconfig.agentendpoint.v1.Client.RegisterAgent",
+        "method": {
+          "fullName": "google.cloud.osconfig.agentendpoint.v1.AgentEndpointService.RegisterAgent",
+          "service": {
+            "fullName": "google.cloud.osconfig.agentendpoint.v1.AgentEndpointService",
+            "shortName": "AgentEndpointService"
+          },
+          "shortName": "RegisterAgent"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "agentendpointpb.RegisterAgentRequest",
-            "name": "req"
+            "name": "req",
+            "type": "agentendpointpb.RegisterAgentRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*agentendpointpb.RegisterAgentResponse",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.osconfig.agentendpoint.v1.Client"
-        },
-        "method": {
-          "shortName": "RegisterAgent",
-          "fullName": "google.cloud.osconfig.agentendpoint.v1.AgentEndpointService.RegisterAgent",
-          "service": {
-            "shortName": "AgentEndpointService",
-            "fullName": "google.cloud.osconfig.agentendpoint.v1.AgentEndpointService"
-          }
-        }
+        "shortName": "RegisterAgent"
       },
+      "description": "RegisterAgent registers the agent running on the VM.",
+      "file": "Client/RegisterAgent/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "osconfig_v1_generated_AgentEndpointService_RegisterAgent_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "osconfig RegisterAgent Sample"
     },
     {
-      "regionTag": "osconfig_v1_generated_AgentEndpointService_ReportInventory_sync",
-      "title": "osconfig ReportInventory Sample",
-      "description": "ReportInventory reports the VMs current inventory.",
-      "file": "Client/ReportInventory/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ReportInventory",
+        "client": {
+          "fullName": "google.cloud.osconfig.agentendpoint.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.osconfig.agentendpoint.v1.Client.ReportInventory",
+        "method": {
+          "fullName": "google.cloud.osconfig.agentendpoint.v1.AgentEndpointService.ReportInventory",
+          "service": {
+            "fullName": "google.cloud.osconfig.agentendpoint.v1.AgentEndpointService",
+            "shortName": "AgentEndpointService"
+          },
+          "shortName": "ReportInventory"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "agentendpointpb.ReportInventoryRequest",
-            "name": "req"
+            "name": "req",
+            "type": "agentendpointpb.ReportInventoryRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*agentendpointpb.ReportInventoryResponse",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.osconfig.agentendpoint.v1.Client"
-        },
-        "method": {
-          "shortName": "ReportInventory",
-          "fullName": "google.cloud.osconfig.agentendpoint.v1.AgentEndpointService.ReportInventory",
-          "service": {
-            "shortName": "AgentEndpointService",
-            "fullName": "google.cloud.osconfig.agentendpoint.v1.AgentEndpointService"
-          }
-        }
+        "shortName": "ReportInventory"
       },
+      "description": "ReportInventory reports the VMs current inventory.",
+      "file": "Client/ReportInventory/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "osconfig_v1_generated_AgentEndpointService_ReportInventory_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "osconfig ReportInventory Sample"
     },
     {
-      "regionTag": "osconfig_v1_generated_AgentEndpointService_ReportTaskComplete_sync",
-      "title": "osconfig ReportTaskComplete Sample",
-      "description": "ReportTaskComplete signals that the task execution is complete and optionally returns the next\ntask.",
-      "file": "Client/ReportTaskComplete/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ReportTaskComplete",
+        "client": {
+          "fullName": "google.cloud.osconfig.agentendpoint.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.osconfig.agentendpoint.v1.Client.ReportTaskComplete",
+        "method": {
+          "fullName": "google.cloud.osconfig.agentendpoint.v1.AgentEndpointService.ReportTaskComplete",
+          "service": {
+            "fullName": "google.cloud.osconfig.agentendpoint.v1.AgentEndpointService",
+            "shortName": "AgentEndpointService"
+          },
+          "shortName": "ReportTaskComplete"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "agentendpointpb.ReportTaskCompleteRequest",
-            "name": "req"
+            "name": "req",
+            "type": "agentendpointpb.ReportTaskCompleteRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*agentendpointpb.ReportTaskCompleteResponse",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.osconfig.agentendpoint.v1.Client"
-        },
-        "method": {
-          "shortName": "ReportTaskComplete",
-          "fullName": "google.cloud.osconfig.agentendpoint.v1.AgentEndpointService.ReportTaskComplete",
-          "service": {
-            "shortName": "AgentEndpointService",
-            "fullName": "google.cloud.osconfig.agentendpoint.v1.AgentEndpointService"
-          }
-        }
+        "shortName": "ReportTaskComplete"
       },
+      "description": "ReportTaskComplete signals that the task execution is complete and optionally returns the next\ntask.",
+      "file": "Client/ReportTaskComplete/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "osconfig_v1_generated_AgentEndpointService_ReportTaskComplete_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "osconfig ReportTaskComplete Sample"
     },
     {
-      "regionTag": "osconfig_v1_generated_AgentEndpointService_ReportTaskProgress_sync",
-      "title": "osconfig ReportTaskProgress Sample",
-      "description": "ReportTaskProgress signals an intermediary progress checkpoint in task execution.",
-      "file": "Client/ReportTaskProgress/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ReportTaskProgress",
+        "client": {
+          "fullName": "google.cloud.osconfig.agentendpoint.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.osconfig.agentendpoint.v1.Client.ReportTaskProgress",
+        "method": {
+          "fullName": "google.cloud.osconfig.agentendpoint.v1.AgentEndpointService.ReportTaskProgress",
+          "service": {
+            "fullName": "google.cloud.osconfig.agentendpoint.v1.AgentEndpointService",
+            "shortName": "AgentEndpointService"
+          },
+          "shortName": "ReportTaskProgress"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "agentendpointpb.ReportTaskProgressRequest",
-            "name": "req"
+            "name": "req",
+            "type": "agentendpointpb.ReportTaskProgressRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*agentendpointpb.ReportTaskProgressResponse",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.osconfig.agentendpoint.v1.Client"
-        },
-        "method": {
-          "shortName": "ReportTaskProgress",
-          "fullName": "google.cloud.osconfig.agentendpoint.v1.AgentEndpointService.ReportTaskProgress",
-          "service": {
-            "shortName": "AgentEndpointService",
-            "fullName": "google.cloud.osconfig.agentendpoint.v1.AgentEndpointService"
-          }
-        }
+        "shortName": "ReportTaskProgress"
       },
+      "description": "ReportTaskProgress signals an intermediary progress checkpoint in task execution.",
+      "file": "Client/ReportTaskProgress/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "osconfig_v1_generated_AgentEndpointService_ReportTaskProgress_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "osconfig ReportTaskProgress Sample"
     },
     {
-      "regionTag": "osconfig_v1_generated_AgentEndpointService_ReportVmInventory_sync",
-      "title": "osconfig ReportVmInventory Sample",
-      "description": "ReportVmInventory reports the VMs current inventory.",
-      "file": "Client/ReportVmInventory/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ReportVmInventory",
+        "client": {
+          "fullName": "google.cloud.osconfig.agentendpoint.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.osconfig.agentendpoint.v1.Client.ReportVmInventory",
+        "method": {
+          "fullName": "google.cloud.osconfig.agentendpoint.v1.AgentEndpointService.ReportVmInventory",
+          "service": {
+            "fullName": "google.cloud.osconfig.agentendpoint.v1.AgentEndpointService",
+            "shortName": "AgentEndpointService"
+          },
+          "shortName": "ReportVmInventory"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "agentendpointpb.ReportVmInventoryRequest",
-            "name": "req"
+            "name": "req",
+            "type": "agentendpointpb.ReportVmInventoryRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*agentendpointpb.ReportVmInventoryResponse",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.osconfig.agentendpoint.v1.Client"
-        },
-        "method": {
-          "shortName": "ReportVmInventory",
-          "fullName": "google.cloud.osconfig.agentendpoint.v1.AgentEndpointService.ReportVmInventory",
-          "service": {
-            "shortName": "AgentEndpointService",
-            "fullName": "google.cloud.osconfig.agentendpoint.v1.AgentEndpointService"
-          }
-        }
+        "shortName": "ReportVmInventory"
       },
+      "description": "ReportVmInventory reports the VMs current inventory.",
+      "file": "Client/ReportVmInventory/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "osconfig_v1_generated_AgentEndpointService_ReportVmInventory_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "osconfig ReportVmInventory Sample"
     },
     {
-      "regionTag": "osconfig_v1_generated_AgentEndpointService_StartNextTask_sync",
-      "title": "osconfig StartNextTask Sample",
-      "description": "StartNextTask signals the start of a task execution and returns the task info.",
-      "file": "Client/StartNextTask/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "StartNextTask",
+        "client": {
+          "fullName": "google.cloud.osconfig.agentendpoint.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.osconfig.agentendpoint.v1.Client.StartNextTask",
+        "method": {
+          "fullName": "google.cloud.osconfig.agentendpoint.v1.AgentEndpointService.StartNextTask",
+          "service": {
+            "fullName": "google.cloud.osconfig.agentendpoint.v1.AgentEndpointService",
+            "shortName": "AgentEndpointService"
+          },
+          "shortName": "StartNextTask"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "agentendpointpb.StartNextTaskRequest",
-            "name": "req"
+            "name": "req",
+            "type": "agentendpointpb.StartNextTaskRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*agentendpointpb.StartNextTaskResponse",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.osconfig.agentendpoint.v1.Client"
-        },
-        "method": {
-          "shortName": "StartNextTask",
-          "fullName": "google.cloud.osconfig.agentendpoint.v1.AgentEndpointService.StartNextTask",
-          "service": {
-            "shortName": "AgentEndpointService",
-            "fullName": "google.cloud.osconfig.agentendpoint.v1.AgentEndpointService"
-          }
-        }
+        "shortName": "StartNextTask"
       },
+      "description": "StartNextTask signals the start of a task execution and returns the task info.",
+      "file": "Client/StartNextTask/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "osconfig_v1_generated_AgentEndpointService_StartNextTask_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "osconfig StartNextTask Sample"
     }
   ]
 }

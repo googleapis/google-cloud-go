@@ -1,791 +1,791 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/speech/apiv1p1beta1",
-    "version": "1.30.0",
-    "language": "GO",
     "apis": [
       {
         "id": "google.cloud.speech.v1p1beta1",
         "version": "v1p1beta1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/speech/apiv1p1beta1",
+    "version": "1.30.0"
   },
   "snippets": [
     {
-      "regionTag": "speech_v1p1beta1_generated_Adaptation_CreateCustomClass_sync",
-      "title": "speech CreateCustomClass Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient",
+          "shortName": "AdaptationClient"
+        },
+        "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient.CreateCustomClass",
+        "method": {
+          "fullName": "google.cloud.speech.v1p1beta1.Adaptation.CreateCustomClass",
+          "service": {
+            "fullName": "google.cloud.speech.v1p1beta1.Adaptation",
+            "shortName": "Adaptation"
+          },
+          "shortName": "CreateCustomClass"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "speechpb.CreateCustomClassRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*speechpb.CustomClass",
+        "shortName": "CreateCustomClass"
+      },
       "description": "CreateCustomClass create a custom class.",
       "file": "AdaptationClient/CreateCustomClass/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateCustomClass",
-        "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient.CreateCustomClass",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "speechpb.CreateCustomClassRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*speechpb.CustomClass",
-        "client": {
-          "shortName": "AdaptationClient",
-          "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient"
-        },
-        "method": {
-          "shortName": "CreateCustomClass",
-          "fullName": "google.cloud.speech.v1p1beta1.Adaptation.CreateCustomClass",
-          "service": {
-            "shortName": "Adaptation",
-            "fullName": "google.cloud.speech.v1p1beta1.Adaptation"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "speech_v1p1beta1_generated_Adaptation_CreateCustomClass_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "speech CreateCustomClass Sample"
     },
     {
-      "regionTag": "speech_v1p1beta1_generated_Adaptation_CreatePhraseSet_sync",
-      "title": "speech CreatePhraseSet Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient",
+          "shortName": "AdaptationClient"
+        },
+        "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient.CreatePhraseSet",
+        "method": {
+          "fullName": "google.cloud.speech.v1p1beta1.Adaptation.CreatePhraseSet",
+          "service": {
+            "fullName": "google.cloud.speech.v1p1beta1.Adaptation",
+            "shortName": "Adaptation"
+          },
+          "shortName": "CreatePhraseSet"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "speechpb.CreatePhraseSetRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*speechpb.PhraseSet",
+        "shortName": "CreatePhraseSet"
+      },
       "description": "CreatePhraseSet create a set of phrase hints. Each item in the set can be a single word or\na multi-word phrase. The items in the PhraseSet are favored by the\nrecognition model when you send a call that includes the PhraseSet.",
       "file": "AdaptationClient/CreatePhraseSet/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreatePhraseSet",
-        "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient.CreatePhraseSet",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "speechpb.CreatePhraseSetRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*speechpb.PhraseSet",
-        "client": {
-          "shortName": "AdaptationClient",
-          "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient"
-        },
-        "method": {
-          "shortName": "CreatePhraseSet",
-          "fullName": "google.cloud.speech.v1p1beta1.Adaptation.CreatePhraseSet",
-          "service": {
-            "shortName": "Adaptation",
-            "fullName": "google.cloud.speech.v1p1beta1.Adaptation"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "speech_v1p1beta1_generated_Adaptation_CreatePhraseSet_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "speech CreatePhraseSet Sample"
     },
     {
-      "regionTag": "speech_v1p1beta1_generated_Adaptation_DeleteCustomClass_sync",
-      "title": "speech DeleteCustomClass Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient",
+          "shortName": "AdaptationClient"
+        },
+        "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient.DeleteCustomClass",
+        "method": {
+          "fullName": "google.cloud.speech.v1p1beta1.Adaptation.DeleteCustomClass",
+          "service": {
+            "fullName": "google.cloud.speech.v1p1beta1.Adaptation",
+            "shortName": "Adaptation"
+          },
+          "shortName": "DeleteCustomClass"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "speechpb.DeleteCustomClassRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteCustomClass"
+      },
       "description": "DeleteCustomClass delete a custom class.",
       "file": "AdaptationClient/DeleteCustomClass/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteCustomClass",
-        "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient.DeleteCustomClass",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "speechpb.DeleteCustomClassRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "AdaptationClient",
-          "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient"
-        },
-        "method": {
-          "shortName": "DeleteCustomClass",
-          "fullName": "google.cloud.speech.v1p1beta1.Adaptation.DeleteCustomClass",
-          "service": {
-            "shortName": "Adaptation",
-            "fullName": "google.cloud.speech.v1p1beta1.Adaptation"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "speech_v1p1beta1_generated_Adaptation_DeleteCustomClass_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "speech DeleteCustomClass Sample"
     },
     {
-      "regionTag": "speech_v1p1beta1_generated_Adaptation_DeletePhraseSet_sync",
-      "title": "speech DeletePhraseSet Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient",
+          "shortName": "AdaptationClient"
+        },
+        "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient.DeletePhraseSet",
+        "method": {
+          "fullName": "google.cloud.speech.v1p1beta1.Adaptation.DeletePhraseSet",
+          "service": {
+            "fullName": "google.cloud.speech.v1p1beta1.Adaptation",
+            "shortName": "Adaptation"
+          },
+          "shortName": "DeletePhraseSet"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "speechpb.DeletePhraseSetRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeletePhraseSet"
+      },
       "description": "DeletePhraseSet delete a phrase set.",
       "file": "AdaptationClient/DeletePhraseSet/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeletePhraseSet",
-        "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient.DeletePhraseSet",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "speechpb.DeletePhraseSetRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "AdaptationClient",
-          "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient"
-        },
-        "method": {
-          "shortName": "DeletePhraseSet",
-          "fullName": "google.cloud.speech.v1p1beta1.Adaptation.DeletePhraseSet",
-          "service": {
-            "shortName": "Adaptation",
-            "fullName": "google.cloud.speech.v1p1beta1.Adaptation"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "speech_v1p1beta1_generated_Adaptation_DeletePhraseSet_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "speech DeletePhraseSet Sample"
     },
     {
-      "regionTag": "speech_v1p1beta1_generated_Adaptation_GetCustomClass_sync",
-      "title": "speech GetCustomClass Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient",
+          "shortName": "AdaptationClient"
+        },
+        "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient.GetCustomClass",
+        "method": {
+          "fullName": "google.cloud.speech.v1p1beta1.Adaptation.GetCustomClass",
+          "service": {
+            "fullName": "google.cloud.speech.v1p1beta1.Adaptation",
+            "shortName": "Adaptation"
+          },
+          "shortName": "GetCustomClass"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "speechpb.GetCustomClassRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*speechpb.CustomClass",
+        "shortName": "GetCustomClass"
+      },
       "description": "GetCustomClass get a custom class.",
       "file": "AdaptationClient/GetCustomClass/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetCustomClass",
-        "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient.GetCustomClass",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "speechpb.GetCustomClassRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*speechpb.CustomClass",
-        "client": {
-          "shortName": "AdaptationClient",
-          "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient"
-        },
-        "method": {
-          "shortName": "GetCustomClass",
-          "fullName": "google.cloud.speech.v1p1beta1.Adaptation.GetCustomClass",
-          "service": {
-            "shortName": "Adaptation",
-            "fullName": "google.cloud.speech.v1p1beta1.Adaptation"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "speech_v1p1beta1_generated_Adaptation_GetCustomClass_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "speech GetCustomClass Sample"
     },
     {
-      "regionTag": "speech_v1p1beta1_generated_Adaptation_GetOperation_sync",
-      "title": "speech GetOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient",
+          "shortName": "AdaptationClient"
+        },
+        "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
       "description": "GetOperation is a utility method from google.longrunning.Operations.",
       "file": "AdaptationClient/GetOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetOperation",
-        "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient.GetOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.GetOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*longrunningpb.Operation",
-        "client": {
-          "shortName": "AdaptationClient",
-          "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient"
-        },
-        "method": {
-          "shortName": "GetOperation",
-          "fullName": "google.longrunning.Operations.GetOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "speech_v1p1beta1_generated_Adaptation_GetOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "speech GetOperation Sample"
     },
     {
-      "regionTag": "speech_v1p1beta1_generated_Adaptation_GetPhraseSet_sync",
-      "title": "speech GetPhraseSet Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient",
+          "shortName": "AdaptationClient"
+        },
+        "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient.GetPhraseSet",
+        "method": {
+          "fullName": "google.cloud.speech.v1p1beta1.Adaptation.GetPhraseSet",
+          "service": {
+            "fullName": "google.cloud.speech.v1p1beta1.Adaptation",
+            "shortName": "Adaptation"
+          },
+          "shortName": "GetPhraseSet"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "speechpb.GetPhraseSetRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*speechpb.PhraseSet",
+        "shortName": "GetPhraseSet"
+      },
       "description": "GetPhraseSet get a phrase set.",
       "file": "AdaptationClient/GetPhraseSet/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetPhraseSet",
-        "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient.GetPhraseSet",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "speechpb.GetPhraseSetRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*speechpb.PhraseSet",
-        "client": {
-          "shortName": "AdaptationClient",
-          "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient"
-        },
-        "method": {
-          "shortName": "GetPhraseSet",
-          "fullName": "google.cloud.speech.v1p1beta1.Adaptation.GetPhraseSet",
-          "service": {
-            "shortName": "Adaptation",
-            "fullName": "google.cloud.speech.v1p1beta1.Adaptation"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "speech_v1p1beta1_generated_Adaptation_GetPhraseSet_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "speech GetPhraseSet Sample"
     },
     {
-      "regionTag": "speech_v1p1beta1_generated_Adaptation_ListCustomClasses_sync",
-      "title": "speech ListCustomClasses Sample",
-      "description": "ListCustomClasses list custom classes.",
-      "file": "AdaptationClient/ListCustomClasses/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListCustomClasses",
+        "client": {
+          "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient",
+          "shortName": "AdaptationClient"
+        },
         "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient.ListCustomClasses",
+        "method": {
+          "fullName": "google.cloud.speech.v1p1beta1.Adaptation.ListCustomClasses",
+          "service": {
+            "fullName": "google.cloud.speech.v1p1beta1.Adaptation",
+            "shortName": "Adaptation"
+          },
+          "shortName": "ListCustomClasses"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "speechpb.ListCustomClassesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "speechpb.ListCustomClassesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CustomClassIterator",
-        "client": {
-          "shortName": "AdaptationClient",
-          "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient"
-        },
-        "method": {
-          "shortName": "ListCustomClasses",
-          "fullName": "google.cloud.speech.v1p1beta1.Adaptation.ListCustomClasses",
-          "service": {
-            "shortName": "Adaptation",
-            "fullName": "google.cloud.speech.v1p1beta1.Adaptation"
-          }
-        }
+        "shortName": "ListCustomClasses"
       },
+      "description": "ListCustomClasses list custom classes.",
+      "file": "AdaptationClient/ListCustomClasses/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "speech_v1p1beta1_generated_Adaptation_ListCustomClasses_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "speech ListCustomClasses Sample"
     },
     {
-      "regionTag": "speech_v1p1beta1_generated_Adaptation_ListOperations_sync",
-      "title": "speech ListOperations Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient",
+          "shortName": "AdaptationClient"
+        },
+        "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
       "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "AdaptationClient/ListOperations/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "ListOperations",
-        "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient.ListOperations",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.ListOperationsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "OperationIterator",
-        "client": {
-          "shortName": "AdaptationClient",
-          "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient"
-        },
-        "method": {
-          "shortName": "ListOperations",
-          "fullName": "google.longrunning.Operations.ListOperations",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "speech_v1p1beta1_generated_Adaptation_ListOperations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "speech ListOperations Sample"
     },
     {
-      "regionTag": "speech_v1p1beta1_generated_Adaptation_ListPhraseSet_sync",
-      "title": "speech ListPhraseSet Sample",
-      "description": "ListPhraseSet list phrase sets.",
-      "file": "AdaptationClient/ListPhraseSet/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListPhraseSet",
+        "client": {
+          "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient",
+          "shortName": "AdaptationClient"
+        },
         "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient.ListPhraseSet",
+        "method": {
+          "fullName": "google.cloud.speech.v1p1beta1.Adaptation.ListPhraseSet",
+          "service": {
+            "fullName": "google.cloud.speech.v1p1beta1.Adaptation",
+            "shortName": "Adaptation"
+          },
+          "shortName": "ListPhraseSet"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "speechpb.ListPhraseSetRequest",
-            "name": "req"
+            "name": "req",
+            "type": "speechpb.ListPhraseSetRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "PhraseSetIterator",
-        "client": {
-          "shortName": "AdaptationClient",
-          "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient"
-        },
-        "method": {
-          "shortName": "ListPhraseSet",
-          "fullName": "google.cloud.speech.v1p1beta1.Adaptation.ListPhraseSet",
-          "service": {
-            "shortName": "Adaptation",
-            "fullName": "google.cloud.speech.v1p1beta1.Adaptation"
-          }
-        }
+        "shortName": "ListPhraseSet"
       },
+      "description": "ListPhraseSet list phrase sets.",
+      "file": "AdaptationClient/ListPhraseSet/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "speech_v1p1beta1_generated_Adaptation_ListPhraseSet_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "speech ListPhraseSet Sample"
     },
     {
-      "regionTag": "speech_v1p1beta1_generated_Adaptation_UpdateCustomClass_sync",
-      "title": "speech UpdateCustomClass Sample",
-      "description": "UpdateCustomClass update a custom class.",
-      "file": "AdaptationClient/UpdateCustomClass/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateCustomClass",
+        "client": {
+          "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient",
+          "shortName": "AdaptationClient"
+        },
         "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient.UpdateCustomClass",
+        "method": {
+          "fullName": "google.cloud.speech.v1p1beta1.Adaptation.UpdateCustomClass",
+          "service": {
+            "fullName": "google.cloud.speech.v1p1beta1.Adaptation",
+            "shortName": "Adaptation"
+          },
+          "shortName": "UpdateCustomClass"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "speechpb.UpdateCustomClassRequest",
-            "name": "req"
+            "name": "req",
+            "type": "speechpb.UpdateCustomClassRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*speechpb.CustomClass",
-        "client": {
-          "shortName": "AdaptationClient",
-          "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient"
-        },
-        "method": {
-          "shortName": "UpdateCustomClass",
-          "fullName": "google.cloud.speech.v1p1beta1.Adaptation.UpdateCustomClass",
-          "service": {
-            "shortName": "Adaptation",
-            "fullName": "google.cloud.speech.v1p1beta1.Adaptation"
-          }
-        }
+        "shortName": "UpdateCustomClass"
       },
+      "description": "UpdateCustomClass update a custom class.",
+      "file": "AdaptationClient/UpdateCustomClass/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "speech_v1p1beta1_generated_Adaptation_UpdateCustomClass_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "speech UpdateCustomClass Sample"
     },
     {
-      "regionTag": "speech_v1p1beta1_generated_Adaptation_UpdatePhraseSet_sync",
-      "title": "speech UpdatePhraseSet Sample",
-      "description": "UpdatePhraseSet update a phrase set.",
-      "file": "AdaptationClient/UpdatePhraseSet/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdatePhraseSet",
+        "client": {
+          "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient",
+          "shortName": "AdaptationClient"
+        },
         "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient.UpdatePhraseSet",
+        "method": {
+          "fullName": "google.cloud.speech.v1p1beta1.Adaptation.UpdatePhraseSet",
+          "service": {
+            "fullName": "google.cloud.speech.v1p1beta1.Adaptation",
+            "shortName": "Adaptation"
+          },
+          "shortName": "UpdatePhraseSet"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "speechpb.UpdatePhraseSetRequest",
-            "name": "req"
+            "name": "req",
+            "type": "speechpb.UpdatePhraseSetRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*speechpb.PhraseSet",
-        "client": {
-          "shortName": "AdaptationClient",
-          "fullName": "google.cloud.speech.v1p1beta1.AdaptationClient"
-        },
-        "method": {
-          "shortName": "UpdatePhraseSet",
-          "fullName": "google.cloud.speech.v1p1beta1.Adaptation.UpdatePhraseSet",
-          "service": {
-            "shortName": "Adaptation",
-            "fullName": "google.cloud.speech.v1p1beta1.Adaptation"
-          }
-        }
+        "shortName": "UpdatePhraseSet"
       },
+      "description": "UpdatePhraseSet update a phrase set.",
+      "file": "AdaptationClient/UpdatePhraseSet/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "speech_v1p1beta1_generated_Adaptation_UpdatePhraseSet_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "speech UpdatePhraseSet Sample"
     },
     {
-      "regionTag": "speech_v1p1beta1_generated_Speech_GetOperation_sync",
-      "title": "speech GetOperation Sample",
-      "description": "GetOperation is a utility method from google.longrunning.Operations.",
-      "file": "Client/GetOperation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetOperation",
+        "client": {
+          "fullName": "google.cloud.speech.v1p1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.speech.v1p1beta1.Client.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.GetOperationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*longrunningpb.Operation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.speech.v1p1beta1.Client"
-        },
-        "method": {
-          "shortName": "GetOperation",
-          "fullName": "google.longrunning.Operations.GetOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "GetOperation"
       },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "speech_v1p1beta1_generated_Speech_GetOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "speech GetOperation Sample"
     },
     {
-      "regionTag": "speech_v1p1beta1_generated_Speech_ListOperations_sync",
-      "title": "speech ListOperations Sample",
-      "description": "ListOperations is a utility method from google.longrunning.Operations.",
-      "file": "Client/ListOperations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListOperations",
+        "client": {
+          "fullName": "google.cloud.speech.v1p1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.speech.v1p1beta1.Client.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.ListOperationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "OperationIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.speech.v1p1beta1.Client"
-        },
-        "method": {
-          "shortName": "ListOperations",
-          "fullName": "google.longrunning.Operations.ListOperations",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "ListOperations"
       },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "speech_v1p1beta1_generated_Speech_ListOperations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "speech ListOperations Sample"
     },
     {
-      "regionTag": "speech_v1p1beta1_generated_Speech_LongRunningRecognize_sync",
-      "title": "speech LongRunningRecognize Sample",
-      "description": "LongRunningRecognize performs asynchronous speech recognition: receive results via the\ngoogle.longrunning.Operations interface. Returns either an\n`Operation.error` or an `Operation.response` which contains\na `LongRunningRecognizeResponse` message.\nFor more information on asynchronous speech recognition, see the\n[how-to](https: //cloud.google.com/speech-to-text/docs/async-recognize).",
-      "file": "Client/LongRunningRecognize/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "LongRunningRecognize",
+        "client": {
+          "fullName": "google.cloud.speech.v1p1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.speech.v1p1beta1.Client.LongRunningRecognize",
+        "method": {
+          "fullName": "google.cloud.speech.v1p1beta1.Speech.LongRunningRecognize",
+          "service": {
+            "fullName": "google.cloud.speech.v1p1beta1.Speech",
+            "shortName": "Speech"
+          },
+          "shortName": "LongRunningRecognize"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "speechpb.LongRunningRecognizeRequest",
-            "name": "req"
+            "name": "req",
+            "type": "speechpb.LongRunningRecognizeRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "LongRunningRecognizeOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.speech.v1p1beta1.Client"
-        },
-        "method": {
-          "shortName": "LongRunningRecognize",
-          "fullName": "google.cloud.speech.v1p1beta1.Speech.LongRunningRecognize",
-          "service": {
-            "shortName": "Speech",
-            "fullName": "google.cloud.speech.v1p1beta1.Speech"
-          }
-        }
+        "shortName": "LongRunningRecognize"
       },
+      "description": "LongRunningRecognize performs asynchronous speech recognition: receive results via the\ngoogle.longrunning.Operations interface. Returns either an\n`Operation.error` or an `Operation.response` which contains\na `LongRunningRecognizeResponse` message.\nFor more information on asynchronous speech recognition, see the\n[how-to](https: //cloud.google.com/speech-to-text/docs/async-recognize).",
+      "file": "Client/LongRunningRecognize/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "speech_v1p1beta1_generated_Speech_LongRunningRecognize_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "speech LongRunningRecognize Sample"
     },
     {
-      "regionTag": "speech_v1p1beta1_generated_Speech_Recognize_sync",
-      "title": "speech Recognize Sample",
-      "description": "Recognize performs synchronous speech recognition: receive results after all audio\nhas been sent and processed.",
-      "file": "Client/Recognize/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "Recognize",
+        "client": {
+          "fullName": "google.cloud.speech.v1p1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.speech.v1p1beta1.Client.Recognize",
+        "method": {
+          "fullName": "google.cloud.speech.v1p1beta1.Speech.Recognize",
+          "service": {
+            "fullName": "google.cloud.speech.v1p1beta1.Speech",
+            "shortName": "Speech"
+          },
+          "shortName": "Recognize"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "speechpb.RecognizeRequest",
-            "name": "req"
+            "name": "req",
+            "type": "speechpb.RecognizeRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*speechpb.RecognizeResponse",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.speech.v1p1beta1.Client"
-        },
-        "method": {
-          "shortName": "Recognize",
-          "fullName": "google.cloud.speech.v1p1beta1.Speech.Recognize",
-          "service": {
-            "shortName": "Speech",
-            "fullName": "google.cloud.speech.v1p1beta1.Speech"
-          }
-        }
+        "shortName": "Recognize"
       },
+      "description": "Recognize performs synchronous speech recognition: receive results after all audio\nhas been sent and processed.",
+      "file": "Client/Recognize/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "speech_v1p1beta1_generated_Speech_Recognize_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "speech Recognize Sample"
     },
     {
-      "regionTag": "speech_v1p1beta1_generated_Speech_StreamingRecognize_sync",
-      "title": "speech StreamingRecognize Sample",
-      "description": "StreamingRecognize performs bidirectional streaming speech recognition: receive results while\nsending audio. This method is only available via the gRPC API (not REST).\n\n\nThis method is not supported for the REST transport.",
-      "file": "Client/StreamingRecognize/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "StreamingRecognize",
+        "client": {
+          "fullName": "google.cloud.speech.v1p1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.speech.v1p1beta1.Client.StreamingRecognize",
+        "method": {
+          "fullName": "google.cloud.speech.v1p1beta1.Speech.StreamingRecognize",
+          "service": {
+            "fullName": "google.cloud.speech.v1p1beta1.Speech",
+            "shortName": "Speech"
+          },
+          "shortName": "StreamingRecognize"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "speechpb.Speech_StreamingRecognizeClient",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.speech.v1p1beta1.Client"
-        },
-        "method": {
-          "shortName": "StreamingRecognize",
-          "fullName": "google.cloud.speech.v1p1beta1.Speech.StreamingRecognize",
-          "service": {
-            "shortName": "Speech",
-            "fullName": "google.cloud.speech.v1p1beta1.Speech"
-          }
-        }
+        "shortName": "StreamingRecognize"
       },
+      "description": "StreamingRecognize performs bidirectional streaming speech recognition: receive results while\nsending audio. This method is only available via the gRPC API (not REST).\n\n\nThis method is not supported for the REST transport.",
+      "file": "Client/StreamingRecognize/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "speech_v1p1beta1_generated_Speech_StreamingRecognize_sync",
       "segments": [
         {
-          "start": 18,
           "end": 69,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "speech StreamingRecognize Sample"
     }
   ]
 }

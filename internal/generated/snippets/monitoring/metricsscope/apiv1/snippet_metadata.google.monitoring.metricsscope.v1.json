@@ -1,199 +1,199 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/monitoring/metricsscope/apiv1",
-    "version": "1.24.3",
-    "language": "GO",
     "apis": [
       {
         "id": "google.monitoring.metricsscope.v1",
         "version": "v1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/monitoring/metricsscope/apiv1",
+    "version": "1.24.3"
   },
   "snippets": [
     {
-      "regionTag": "monitoring_v1_generated_MetricsScopes_CreateMonitoredProject_sync",
-      "title": "monitoring CreateMonitoredProject Sample",
-      "description": "CreateMonitoredProject adds a `MonitoredProject` with the given project ID\nto the specified `Metrics Scope`.",
-      "file": "MetricsScopesClient/CreateMonitoredProject/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateMonitoredProject",
+        "client": {
+          "fullName": "google.monitoring.metricsscope.v1.MetricsScopesClient",
+          "shortName": "MetricsScopesClient"
+        },
         "fullName": "google.monitoring.metricsscope.v1.MetricsScopesClient.CreateMonitoredProject",
+        "method": {
+          "fullName": "google.monitoring.metricsscope.v1.MetricsScopes.CreateMonitoredProject",
+          "service": {
+            "fullName": "google.monitoring.metricsscope.v1.MetricsScopes",
+            "shortName": "MetricsScopes"
+          },
+          "shortName": "CreateMonitoredProject"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "metricsscopepb.CreateMonitoredProjectRequest",
-            "name": "req"
+            "name": "req",
+            "type": "metricsscopepb.CreateMonitoredProjectRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateMonitoredProjectOperation",
-        "client": {
-          "shortName": "MetricsScopesClient",
-          "fullName": "google.monitoring.metricsscope.v1.MetricsScopesClient"
-        },
-        "method": {
-          "shortName": "CreateMonitoredProject",
-          "fullName": "google.monitoring.metricsscope.v1.MetricsScopes.CreateMonitoredProject",
-          "service": {
-            "shortName": "MetricsScopes",
-            "fullName": "google.monitoring.metricsscope.v1.MetricsScopes"
-          }
-        }
+        "shortName": "CreateMonitoredProject"
       },
+      "description": "CreateMonitoredProject adds a `MonitoredProject` with the given project ID\nto the specified `Metrics Scope`.",
+      "file": "MetricsScopesClient/CreateMonitoredProject/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "monitoring_v1_generated_MetricsScopes_CreateMonitoredProject_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "monitoring CreateMonitoredProject Sample"
     },
     {
-      "regionTag": "monitoring_v1_generated_MetricsScopes_DeleteMonitoredProject_sync",
-      "title": "monitoring DeleteMonitoredProject Sample",
-      "description": "DeleteMonitoredProject deletes a `MonitoredProject` from the specified `Metrics Scope`.",
-      "file": "MetricsScopesClient/DeleteMonitoredProject/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteMonitoredProject",
+        "client": {
+          "fullName": "google.monitoring.metricsscope.v1.MetricsScopesClient",
+          "shortName": "MetricsScopesClient"
+        },
         "fullName": "google.monitoring.metricsscope.v1.MetricsScopesClient.DeleteMonitoredProject",
+        "method": {
+          "fullName": "google.monitoring.metricsscope.v1.MetricsScopes.DeleteMonitoredProject",
+          "service": {
+            "fullName": "google.monitoring.metricsscope.v1.MetricsScopes",
+            "shortName": "MetricsScopes"
+          },
+          "shortName": "DeleteMonitoredProject"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "metricsscopepb.DeleteMonitoredProjectRequest",
-            "name": "req"
+            "name": "req",
+            "type": "metricsscopepb.DeleteMonitoredProjectRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteMonitoredProjectOperation",
-        "client": {
-          "shortName": "MetricsScopesClient",
-          "fullName": "google.monitoring.metricsscope.v1.MetricsScopesClient"
-        },
-        "method": {
-          "shortName": "DeleteMonitoredProject",
-          "fullName": "google.monitoring.metricsscope.v1.MetricsScopes.DeleteMonitoredProject",
-          "service": {
-            "shortName": "MetricsScopes",
-            "fullName": "google.monitoring.metricsscope.v1.MetricsScopes"
-          }
-        }
+        "shortName": "DeleteMonitoredProject"
       },
+      "description": "DeleteMonitoredProject deletes a `MonitoredProject` from the specified `Metrics Scope`.",
+      "file": "MetricsScopesClient/DeleteMonitoredProject/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "monitoring_v1_generated_MetricsScopes_DeleteMonitoredProject_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "monitoring DeleteMonitoredProject Sample"
     },
     {
-      "regionTag": "monitoring_v1_generated_MetricsScopes_GetMetricsScope_sync",
-      "title": "monitoring GetMetricsScope Sample",
-      "description": "GetMetricsScope returns a specific `Metrics Scope`.",
-      "file": "MetricsScopesClient/GetMetricsScope/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetMetricsScope",
+        "client": {
+          "fullName": "google.monitoring.metricsscope.v1.MetricsScopesClient",
+          "shortName": "MetricsScopesClient"
+        },
         "fullName": "google.monitoring.metricsscope.v1.MetricsScopesClient.GetMetricsScope",
+        "method": {
+          "fullName": "google.monitoring.metricsscope.v1.MetricsScopes.GetMetricsScope",
+          "service": {
+            "fullName": "google.monitoring.metricsscope.v1.MetricsScopes",
+            "shortName": "MetricsScopes"
+          },
+          "shortName": "GetMetricsScope"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "metricsscopepb.GetMetricsScopeRequest",
-            "name": "req"
+            "name": "req",
+            "type": "metricsscopepb.GetMetricsScopeRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*metricsscopepb.MetricsScope",
-        "client": {
-          "shortName": "MetricsScopesClient",
-          "fullName": "google.monitoring.metricsscope.v1.MetricsScopesClient"
-        },
-        "method": {
-          "shortName": "GetMetricsScope",
-          "fullName": "google.monitoring.metricsscope.v1.MetricsScopes.GetMetricsScope",
-          "service": {
-            "shortName": "MetricsScopes",
-            "fullName": "google.monitoring.metricsscope.v1.MetricsScopes"
-          }
-        }
+        "shortName": "GetMetricsScope"
       },
+      "description": "GetMetricsScope returns a specific `Metrics Scope`.",
+      "file": "MetricsScopesClient/GetMetricsScope/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "monitoring_v1_generated_MetricsScopes_GetMetricsScope_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "monitoring GetMetricsScope Sample"
     },
     {
-      "regionTag": "monitoring_v1_generated_MetricsScopes_ListMetricsScopesByMonitoredProject_sync",
-      "title": "monitoring ListMetricsScopesByMonitoredProject Sample",
-      "description": "ListMetricsScopesByMonitoredProject returns a list of every `Metrics Scope` that a specific `MonitoredProject`\nhas been added to. The metrics scope representing the specified monitored\nproject will always be the first entry in the response.",
-      "file": "MetricsScopesClient/ListMetricsScopesByMonitoredProject/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListMetricsScopesByMonitoredProject",
+        "client": {
+          "fullName": "google.monitoring.metricsscope.v1.MetricsScopesClient",
+          "shortName": "MetricsScopesClient"
+        },
         "fullName": "google.monitoring.metricsscope.v1.MetricsScopesClient.ListMetricsScopesByMonitoredProject",
+        "method": {
+          "fullName": "google.monitoring.metricsscope.v1.MetricsScopes.ListMetricsScopesByMonitoredProject",
+          "service": {
+            "fullName": "google.monitoring.metricsscope.v1.MetricsScopes",
+            "shortName": "MetricsScopes"
+          },
+          "shortName": "ListMetricsScopesByMonitoredProject"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "metricsscopepb.ListMetricsScopesByMonitoredProjectRequest",
-            "name": "req"
+            "name": "req",
+            "type": "metricsscopepb.ListMetricsScopesByMonitoredProjectRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*metricsscopepb.ListMetricsScopesByMonitoredProjectResponse",
-        "client": {
-          "shortName": "MetricsScopesClient",
-          "fullName": "google.monitoring.metricsscope.v1.MetricsScopesClient"
-        },
-        "method": {
-          "shortName": "ListMetricsScopesByMonitoredProject",
-          "fullName": "google.monitoring.metricsscope.v1.MetricsScopes.ListMetricsScopesByMonitoredProject",
-          "service": {
-            "shortName": "MetricsScopes",
-            "fullName": "google.monitoring.metricsscope.v1.MetricsScopes"
-          }
-        }
+        "shortName": "ListMetricsScopesByMonitoredProject"
       },
+      "description": "ListMetricsScopesByMonitoredProject returns a list of every `Metrics Scope` that a specific `MonitoredProject`\nhas been added to. The metrics scope representing the specified monitored\nproject will always be the first entry in the response.",
+      "file": "MetricsScopesClient/ListMetricsScopesByMonitoredProject/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "monitoring_v1_generated_MetricsScopes_ListMetricsScopesByMonitoredProject_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "monitoring ListMetricsScopesByMonitoredProject Sample"
     }
   ]
 }

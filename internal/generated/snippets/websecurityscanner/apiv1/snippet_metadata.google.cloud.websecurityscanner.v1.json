@@ -1,612 +1,612 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/websecurityscanner/apiv1",
-    "version": "1.7.7",
-    "language": "GO",
     "apis": [
       {
         "id": "google.cloud.websecurityscanner.v1",
         "version": "v1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/websecurityscanner/apiv1",
+    "version": "1.7.7"
   },
   "snippets": [
     {
-      "regionTag": "websecurityscanner_v1_generated_WebSecurityScanner_CreateScanConfig_sync",
-      "title": "websecurityscanner CreateScanConfig Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.websecurityscanner.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.websecurityscanner.v1.Client.CreateScanConfig",
+        "method": {
+          "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner.CreateScanConfig",
+          "service": {
+            "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner",
+            "shortName": "WebSecurityScanner"
+          },
+          "shortName": "CreateScanConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "websecurityscannerpb.CreateScanConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*websecurityscannerpb.ScanConfig",
+        "shortName": "CreateScanConfig"
+      },
       "description": "CreateScanConfig creates a new ScanConfig.",
       "file": "Client/CreateScanConfig/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateScanConfig",
-        "fullName": "google.cloud.websecurityscanner.v1.Client.CreateScanConfig",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "websecurityscannerpb.CreateScanConfigRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*websecurityscannerpb.ScanConfig",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.websecurityscanner.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateScanConfig",
-          "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner.CreateScanConfig",
-          "service": {
-            "shortName": "WebSecurityScanner",
-            "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "websecurityscanner_v1_generated_WebSecurityScanner_CreateScanConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "websecurityscanner CreateScanConfig Sample"
     },
     {
-      "regionTag": "websecurityscanner_v1_generated_WebSecurityScanner_DeleteScanConfig_sync",
-      "title": "websecurityscanner DeleteScanConfig Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.websecurityscanner.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.websecurityscanner.v1.Client.DeleteScanConfig",
+        "method": {
+          "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner.DeleteScanConfig",
+          "service": {
+            "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner",
+            "shortName": "WebSecurityScanner"
+          },
+          "shortName": "DeleteScanConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "websecurityscannerpb.DeleteScanConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteScanConfig"
+      },
       "description": "DeleteScanConfig deletes an existing ScanConfig and its child resources.",
       "file": "Client/DeleteScanConfig/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteScanConfig",
-        "fullName": "google.cloud.websecurityscanner.v1.Client.DeleteScanConfig",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "websecurityscannerpb.DeleteScanConfigRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.websecurityscanner.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteScanConfig",
-          "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner.DeleteScanConfig",
-          "service": {
-            "shortName": "WebSecurityScanner",
-            "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "websecurityscanner_v1_generated_WebSecurityScanner_DeleteScanConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "websecurityscanner DeleteScanConfig Sample"
     },
     {
-      "regionTag": "websecurityscanner_v1_generated_WebSecurityScanner_GetFinding_sync",
-      "title": "websecurityscanner GetFinding Sample",
-      "description": "GetFinding gets a Finding.",
-      "file": "Client/GetFinding/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetFinding",
+        "client": {
+          "fullName": "google.cloud.websecurityscanner.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.websecurityscanner.v1.Client.GetFinding",
+        "method": {
+          "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner.GetFinding",
+          "service": {
+            "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner",
+            "shortName": "WebSecurityScanner"
+          },
+          "shortName": "GetFinding"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "websecurityscannerpb.GetFindingRequest",
-            "name": "req"
+            "name": "req",
+            "type": "websecurityscannerpb.GetFindingRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*websecurityscannerpb.Finding",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.websecurityscanner.v1.Client"
-        },
-        "method": {
-          "shortName": "GetFinding",
-          "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner.GetFinding",
-          "service": {
-            "shortName": "WebSecurityScanner",
-            "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner"
-          }
-        }
+        "shortName": "GetFinding"
       },
+      "description": "GetFinding gets a Finding.",
+      "file": "Client/GetFinding/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "websecurityscanner_v1_generated_WebSecurityScanner_GetFinding_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "websecurityscanner GetFinding Sample"
     },
     {
-      "regionTag": "websecurityscanner_v1_generated_WebSecurityScanner_GetScanConfig_sync",
-      "title": "websecurityscanner GetScanConfig Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.websecurityscanner.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.websecurityscanner.v1.Client.GetScanConfig",
+        "method": {
+          "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner.GetScanConfig",
+          "service": {
+            "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner",
+            "shortName": "WebSecurityScanner"
+          },
+          "shortName": "GetScanConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "websecurityscannerpb.GetScanConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*websecurityscannerpb.ScanConfig",
+        "shortName": "GetScanConfig"
+      },
       "description": "GetScanConfig gets a ScanConfig.",
       "file": "Client/GetScanConfig/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetScanConfig",
-        "fullName": "google.cloud.websecurityscanner.v1.Client.GetScanConfig",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "websecurityscannerpb.GetScanConfigRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*websecurityscannerpb.ScanConfig",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.websecurityscanner.v1.Client"
-        },
-        "method": {
-          "shortName": "GetScanConfig",
-          "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner.GetScanConfig",
-          "service": {
-            "shortName": "WebSecurityScanner",
-            "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "websecurityscanner_v1_generated_WebSecurityScanner_GetScanConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "websecurityscanner GetScanConfig Sample"
     },
     {
-      "regionTag": "websecurityscanner_v1_generated_WebSecurityScanner_GetScanRun_sync",
-      "title": "websecurityscanner GetScanRun Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.websecurityscanner.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.websecurityscanner.v1.Client.GetScanRun",
+        "method": {
+          "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner.GetScanRun",
+          "service": {
+            "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner",
+            "shortName": "WebSecurityScanner"
+          },
+          "shortName": "GetScanRun"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "websecurityscannerpb.GetScanRunRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*websecurityscannerpb.ScanRun",
+        "shortName": "GetScanRun"
+      },
       "description": "GetScanRun gets a ScanRun.",
       "file": "Client/GetScanRun/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetScanRun",
-        "fullName": "google.cloud.websecurityscanner.v1.Client.GetScanRun",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "websecurityscannerpb.GetScanRunRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*websecurityscannerpb.ScanRun",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.websecurityscanner.v1.Client"
-        },
-        "method": {
-          "shortName": "GetScanRun",
-          "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner.GetScanRun",
-          "service": {
-            "shortName": "WebSecurityScanner",
-            "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "websecurityscanner_v1_generated_WebSecurityScanner_GetScanRun_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "websecurityscanner GetScanRun Sample"
     },
     {
-      "regionTag": "websecurityscanner_v1_generated_WebSecurityScanner_ListCrawledUrls_sync",
-      "title": "websecurityscanner ListCrawledUrls Sample",
-      "description": "ListCrawledUrls list CrawledUrls under a given ScanRun.",
-      "file": "Client/ListCrawledUrls/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListCrawledUrls",
+        "client": {
+          "fullName": "google.cloud.websecurityscanner.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.websecurityscanner.v1.Client.ListCrawledUrls",
+        "method": {
+          "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner.ListCrawledUrls",
+          "service": {
+            "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner",
+            "shortName": "WebSecurityScanner"
+          },
+          "shortName": "ListCrawledUrls"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "websecurityscannerpb.ListCrawledUrlsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "websecurityscannerpb.ListCrawledUrlsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CrawledUrlIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.websecurityscanner.v1.Client"
-        },
-        "method": {
-          "shortName": "ListCrawledUrls",
-          "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner.ListCrawledUrls",
-          "service": {
-            "shortName": "WebSecurityScanner",
-            "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner"
-          }
-        }
+        "shortName": "ListCrawledUrls"
       },
+      "description": "ListCrawledUrls list CrawledUrls under a given ScanRun.",
+      "file": "Client/ListCrawledUrls/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "websecurityscanner_v1_generated_WebSecurityScanner_ListCrawledUrls_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "websecurityscanner ListCrawledUrls Sample"
     },
     {
-      "regionTag": "websecurityscanner_v1_generated_WebSecurityScanner_ListFindingTypeStats_sync",
-      "title": "websecurityscanner ListFindingTypeStats Sample",
-      "description": "ListFindingTypeStats list all FindingTypeStats under a given ScanRun.",
-      "file": "Client/ListFindingTypeStats/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListFindingTypeStats",
+        "client": {
+          "fullName": "google.cloud.websecurityscanner.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.websecurityscanner.v1.Client.ListFindingTypeStats",
+        "method": {
+          "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner.ListFindingTypeStats",
+          "service": {
+            "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner",
+            "shortName": "WebSecurityScanner"
+          },
+          "shortName": "ListFindingTypeStats"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "websecurityscannerpb.ListFindingTypeStatsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "websecurityscannerpb.ListFindingTypeStatsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*websecurityscannerpb.ListFindingTypeStatsResponse",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.websecurityscanner.v1.Client"
-        },
-        "method": {
-          "shortName": "ListFindingTypeStats",
-          "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner.ListFindingTypeStats",
-          "service": {
-            "shortName": "WebSecurityScanner",
-            "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner"
-          }
-        }
+        "shortName": "ListFindingTypeStats"
       },
+      "description": "ListFindingTypeStats list all FindingTypeStats under a given ScanRun.",
+      "file": "Client/ListFindingTypeStats/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "websecurityscanner_v1_generated_WebSecurityScanner_ListFindingTypeStats_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "websecurityscanner ListFindingTypeStats Sample"
     },
     {
-      "regionTag": "websecurityscanner_v1_generated_WebSecurityScanner_ListFindings_sync",
-      "title": "websecurityscanner ListFindings Sample",
-      "description": "ListFindings list Findings under a given ScanRun.",
-      "file": "Client/ListFindings/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListFindings",
+        "client": {
+          "fullName": "google.cloud.websecurityscanner.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.websecurityscanner.v1.Client.ListFindings",
+        "method": {
+          "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner.ListFindings",
+          "service": {
+            "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner",
+            "shortName": "WebSecurityScanner"
+          },
+          "shortName": "ListFindings"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "websecurityscannerpb.ListFindingsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "websecurityscannerpb.ListFindingsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "FindingIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.websecurityscanner.v1.Client"
-        },
-        "method": {
-          "shortName": "ListFindings",
-          "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner.ListFindings",
-          "service": {
-            "shortName": "WebSecurityScanner",
-            "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner"
-          }
-        }
+        "shortName": "ListFindings"
       },
+      "description": "ListFindings list Findings under a given ScanRun.",
+      "file": "Client/ListFindings/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "websecurityscanner_v1_generated_WebSecurityScanner_ListFindings_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "websecurityscanner ListFindings Sample"
     },
     {
-      "regionTag": "websecurityscanner_v1_generated_WebSecurityScanner_ListScanConfigs_sync",
-      "title": "websecurityscanner ListScanConfigs Sample",
-      "description": "ListScanConfigs lists ScanConfigs under a given project.",
-      "file": "Client/ListScanConfigs/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListScanConfigs",
+        "client": {
+          "fullName": "google.cloud.websecurityscanner.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.websecurityscanner.v1.Client.ListScanConfigs",
+        "method": {
+          "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner.ListScanConfigs",
+          "service": {
+            "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner",
+            "shortName": "WebSecurityScanner"
+          },
+          "shortName": "ListScanConfigs"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "websecurityscannerpb.ListScanConfigsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "websecurityscannerpb.ListScanConfigsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ScanConfigIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.websecurityscanner.v1.Client"
-        },
-        "method": {
-          "shortName": "ListScanConfigs",
-          "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner.ListScanConfigs",
-          "service": {
-            "shortName": "WebSecurityScanner",
-            "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner"
-          }
-        }
+        "shortName": "ListScanConfigs"
       },
+      "description": "ListScanConfigs lists ScanConfigs under a given project.",
+      "file": "Client/ListScanConfigs/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "websecurityscanner_v1_generated_WebSecurityScanner_ListScanConfigs_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "websecurityscanner ListScanConfigs Sample"
     },
     {
-      "regionTag": "websecurityscanner_v1_generated_WebSecurityScanner_ListScanRuns_sync",
-      "title": "websecurityscanner ListScanRuns Sample",
-      "description": "ListScanRuns lists ScanRuns under a given ScanConfig, in descending order of ScanRun\nstop time.",
-      "file": "Client/ListScanRuns/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListScanRuns",
+        "client": {
+          "fullName": "google.cloud.websecurityscanner.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.websecurityscanner.v1.Client.ListScanRuns",
+        "method": {
+          "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner.ListScanRuns",
+          "service": {
+            "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner",
+            "shortName": "WebSecurityScanner"
+          },
+          "shortName": "ListScanRuns"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "websecurityscannerpb.ListScanRunsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "websecurityscannerpb.ListScanRunsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ScanRunIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.websecurityscanner.v1.Client"
-        },
-        "method": {
-          "shortName": "ListScanRuns",
-          "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner.ListScanRuns",
-          "service": {
-            "shortName": "WebSecurityScanner",
-            "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner"
-          }
-        }
+        "shortName": "ListScanRuns"
       },
+      "description": "ListScanRuns lists ScanRuns under a given ScanConfig, in descending order of ScanRun\nstop time.",
+      "file": "Client/ListScanRuns/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "websecurityscanner_v1_generated_WebSecurityScanner_ListScanRuns_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "websecurityscanner ListScanRuns Sample"
     },
     {
-      "regionTag": "websecurityscanner_v1_generated_WebSecurityScanner_StartScanRun_sync",
-      "title": "websecurityscanner StartScanRun Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.websecurityscanner.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.websecurityscanner.v1.Client.StartScanRun",
+        "method": {
+          "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner.StartScanRun",
+          "service": {
+            "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner",
+            "shortName": "WebSecurityScanner"
+          },
+          "shortName": "StartScanRun"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "websecurityscannerpb.StartScanRunRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*websecurityscannerpb.ScanRun",
+        "shortName": "StartScanRun"
+      },
       "description": "StartScanRun start a ScanRun according to the given ScanConfig.",
       "file": "Client/StartScanRun/main.go",
       "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "websecurityscanner_v1_generated_WebSecurityScanner_StartScanRun_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "websecurityscanner StartScanRun Sample"
+    },
+    {
       "clientMethod": {
-        "shortName": "StartScanRun",
-        "fullName": "google.cloud.websecurityscanner.v1.Client.StartScanRun",
+        "client": {
+          "fullName": "google.cloud.websecurityscanner.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.websecurityscanner.v1.Client.StopScanRun",
+        "method": {
+          "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner.StopScanRun",
+          "service": {
+            "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner",
+            "shortName": "WebSecurityScanner"
+          },
+          "shortName": "StopScanRun"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "websecurityscannerpb.StartScanRunRequest",
-            "name": "req"
+            "name": "req",
+            "type": "websecurityscannerpb.StopScanRunRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*websecurityscannerpb.ScanRun",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.websecurityscanner.v1.Client"
-        },
-        "method": {
-          "shortName": "StartScanRun",
-          "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner.StartScanRun",
-          "service": {
-            "shortName": "WebSecurityScanner",
-            "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner"
-          }
-        }
+        "shortName": "StopScanRun"
       },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "websecurityscanner_v1_generated_WebSecurityScanner_StopScanRun_sync",
-      "title": "websecurityscanner StopScanRun Sample",
       "description": "StopScanRun stops a ScanRun. The stopped ScanRun is returned.",
       "file": "Client/StopScanRun/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "StopScanRun",
-        "fullName": "google.cloud.websecurityscanner.v1.Client.StopScanRun",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "websecurityscannerpb.StopScanRunRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*websecurityscannerpb.ScanRun",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.websecurityscanner.v1.Client"
-        },
-        "method": {
-          "shortName": "StopScanRun",
-          "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner.StopScanRun",
-          "service": {
-            "shortName": "WebSecurityScanner",
-            "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "websecurityscanner_v1_generated_WebSecurityScanner_StopScanRun_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "websecurityscanner StopScanRun Sample"
     },
     {
-      "regionTag": "websecurityscanner_v1_generated_WebSecurityScanner_UpdateScanConfig_sync",
-      "title": "websecurityscanner UpdateScanConfig Sample",
-      "description": "UpdateScanConfig updates a ScanConfig. This method support partial update of a ScanConfig.",
-      "file": "Client/UpdateScanConfig/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateScanConfig",
+        "client": {
+          "fullName": "google.cloud.websecurityscanner.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.websecurityscanner.v1.Client.UpdateScanConfig",
+        "method": {
+          "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner.UpdateScanConfig",
+          "service": {
+            "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner",
+            "shortName": "WebSecurityScanner"
+          },
+          "shortName": "UpdateScanConfig"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "websecurityscannerpb.UpdateScanConfigRequest",
-            "name": "req"
+            "name": "req",
+            "type": "websecurityscannerpb.UpdateScanConfigRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*websecurityscannerpb.ScanConfig",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.websecurityscanner.v1.Client"
-        },
-        "method": {
-          "shortName": "UpdateScanConfig",
-          "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner.UpdateScanConfig",
-          "service": {
-            "shortName": "WebSecurityScanner",
-            "fullName": "google.cloud.websecurityscanner.v1.WebSecurityScanner"
-          }
-        }
+        "shortName": "UpdateScanConfig"
       },
+      "description": "UpdateScanConfig updates a ScanConfig. This method support partial update of a ScanConfig.",
+      "file": "Client/UpdateScanConfig/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "websecurityscanner_v1_generated_WebSecurityScanner_UpdateScanConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "websecurityscanner UpdateScanConfig Sample"
     }
   ]
 }

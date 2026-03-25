@@ -1,1758 +1,1758 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/networksecurity/apiv1beta1",
-    "version": "0.11.0",
-    "language": "GO",
     "apis": [
       {
         "id": "google.cloud.networksecurity.v1beta1",
         "version": "v1beta1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/networksecurity/apiv1beta1",
+    "version": "0.11.0"
   },
   "snippets": [
     {
-      "regionTag": "networksecurity_v1beta1_generated_DnsThreatDetectorService_CancelOperation_sync",
-      "title": "networksecurity CancelOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient",
+          "shortName": "DnsThreatDetectorClient"
+        },
+        "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
       "file": "DnsThreatDetectorClient/CancelOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CancelOperation",
-        "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient.CancelOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.CancelOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "DnsThreatDetectorClient",
-          "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient"
-        },
-        "method": {
-          "shortName": "CancelOperation",
-          "fullName": "google.longrunning.Operations.CancelOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networksecurity_v1beta1_generated_DnsThreatDetectorService_CancelOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networksecurity CancelOperation Sample"
     },
     {
-      "regionTag": "networksecurity_v1beta1_generated_DnsThreatDetectorService_CreateDnsThreatDetector_sync",
-      "title": "networksecurity CreateDnsThreatDetector Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient",
+          "shortName": "DnsThreatDetectorClient"
+        },
+        "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient.CreateDnsThreatDetector",
+        "method": {
+          "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorService.CreateDnsThreatDetector",
+          "service": {
+            "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorService",
+            "shortName": "DnsThreatDetectorService"
+          },
+          "shortName": "CreateDnsThreatDetector"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "networksecuritypb.CreateDnsThreatDetectorRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*networksecuritypb.DnsThreatDetector",
+        "shortName": "CreateDnsThreatDetector"
+      },
       "description": "CreateDnsThreatDetector creates a new DnsThreatDetector in a given project and location.",
       "file": "DnsThreatDetectorClient/CreateDnsThreatDetector/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateDnsThreatDetector",
-        "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient.CreateDnsThreatDetector",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "networksecuritypb.CreateDnsThreatDetectorRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*networksecuritypb.DnsThreatDetector",
-        "client": {
-          "shortName": "DnsThreatDetectorClient",
-          "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient"
-        },
-        "method": {
-          "shortName": "CreateDnsThreatDetector",
-          "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorService.CreateDnsThreatDetector",
-          "service": {
-            "shortName": "DnsThreatDetectorService",
-            "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networksecurity_v1beta1_generated_DnsThreatDetectorService_CreateDnsThreatDetector_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networksecurity CreateDnsThreatDetector Sample"
     },
     {
-      "regionTag": "networksecurity_v1beta1_generated_DnsThreatDetectorService_DeleteDnsThreatDetector_sync",
-      "title": "networksecurity DeleteDnsThreatDetector Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient",
+          "shortName": "DnsThreatDetectorClient"
+        },
+        "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient.DeleteDnsThreatDetector",
+        "method": {
+          "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorService.DeleteDnsThreatDetector",
+          "service": {
+            "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorService",
+            "shortName": "DnsThreatDetectorService"
+          },
+          "shortName": "DeleteDnsThreatDetector"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "networksecuritypb.DeleteDnsThreatDetectorRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteDnsThreatDetector"
+      },
       "description": "DeleteDnsThreatDetector deletes a single DnsThreatDetector.",
       "file": "DnsThreatDetectorClient/DeleteDnsThreatDetector/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteDnsThreatDetector",
-        "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient.DeleteDnsThreatDetector",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "networksecuritypb.DeleteDnsThreatDetectorRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "DnsThreatDetectorClient",
-          "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient"
-        },
-        "method": {
-          "shortName": "DeleteDnsThreatDetector",
-          "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorService.DeleteDnsThreatDetector",
-          "service": {
-            "shortName": "DnsThreatDetectorService",
-            "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networksecurity_v1beta1_generated_DnsThreatDetectorService_DeleteDnsThreatDetector_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networksecurity DeleteDnsThreatDetector Sample"
     },
     {
-      "regionTag": "networksecurity_v1beta1_generated_DnsThreatDetectorService_DeleteOperation_sync",
-      "title": "networksecurity DeleteOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient",
+          "shortName": "DnsThreatDetectorClient"
+        },
+        "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
       "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
       "file": "DnsThreatDetectorClient/DeleteOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteOperation",
-        "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient.DeleteOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.DeleteOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "DnsThreatDetectorClient",
-          "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient"
-        },
-        "method": {
-          "shortName": "DeleteOperation",
-          "fullName": "google.longrunning.Operations.DeleteOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networksecurity_v1beta1_generated_DnsThreatDetectorService_DeleteOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networksecurity DeleteOperation Sample"
     },
     {
-      "regionTag": "networksecurity_v1beta1_generated_DnsThreatDetectorService_GetDnsThreatDetector_sync",
-      "title": "networksecurity GetDnsThreatDetector Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient",
+          "shortName": "DnsThreatDetectorClient"
+        },
+        "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient.GetDnsThreatDetector",
+        "method": {
+          "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorService.GetDnsThreatDetector",
+          "service": {
+            "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorService",
+            "shortName": "DnsThreatDetectorService"
+          },
+          "shortName": "GetDnsThreatDetector"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "networksecuritypb.GetDnsThreatDetectorRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*networksecuritypb.DnsThreatDetector",
+        "shortName": "GetDnsThreatDetector"
+      },
       "description": "GetDnsThreatDetector gets the details of a single DnsThreatDetector.",
       "file": "DnsThreatDetectorClient/GetDnsThreatDetector/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetDnsThreatDetector",
-        "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient.GetDnsThreatDetector",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "networksecuritypb.GetDnsThreatDetectorRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*networksecuritypb.DnsThreatDetector",
-        "client": {
-          "shortName": "DnsThreatDetectorClient",
-          "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient"
-        },
-        "method": {
-          "shortName": "GetDnsThreatDetector",
-          "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorService.GetDnsThreatDetector",
-          "service": {
-            "shortName": "DnsThreatDetectorService",
-            "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networksecurity_v1beta1_generated_DnsThreatDetectorService_GetDnsThreatDetector_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networksecurity GetDnsThreatDetector Sample"
     },
     {
-      "regionTag": "networksecurity_v1beta1_generated_DnsThreatDetectorService_GetIamPolicy_sync",
-      "title": "networksecurity GetIamPolicy Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient",
+          "shortName": "DnsThreatDetectorClient"
+        },
+        "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient.GetIamPolicy",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "GetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.GetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "GetIamPolicy"
+      },
       "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
       "file": "DnsThreatDetectorClient/GetIamPolicy/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetIamPolicy",
-        "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient.GetIamPolicy",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "iampb.GetIamPolicyRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*iampb.Policy",
-        "client": {
-          "shortName": "DnsThreatDetectorClient",
-          "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient"
-        },
-        "method": {
-          "shortName": "GetIamPolicy",
-          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.iam.v1.IAMPolicy"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networksecurity_v1beta1_generated_DnsThreatDetectorService_GetIamPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networksecurity GetIamPolicy Sample"
     },
     {
-      "regionTag": "networksecurity_v1beta1_generated_DnsThreatDetectorService_GetLocation_sync",
-      "title": "networksecurity GetLocation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient",
+          "shortName": "DnsThreatDetectorClient"
+        },
+        "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "shortName": "GetLocation"
+      },
       "description": "GetLocation gets information about a location.",
       "file": "DnsThreatDetectorClient/GetLocation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetLocation",
-        "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient.GetLocation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "locationpb.GetLocationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*locationpb.Location",
-        "client": {
-          "shortName": "DnsThreatDetectorClient",
-          "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient"
-        },
-        "method": {
-          "shortName": "GetLocation",
-          "fullName": "google.cloud.location.Locations.GetLocation",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networksecurity_v1beta1_generated_DnsThreatDetectorService_GetLocation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networksecurity GetLocation Sample"
     },
     {
-      "regionTag": "networksecurity_v1beta1_generated_DnsThreatDetectorService_GetOperation_sync",
-      "title": "networksecurity GetOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient",
+          "shortName": "DnsThreatDetectorClient"
+        },
+        "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
       "description": "GetOperation is a utility method from google.longrunning.Operations.",
       "file": "DnsThreatDetectorClient/GetOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetOperation",
-        "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient.GetOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.GetOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*longrunningpb.Operation",
-        "client": {
-          "shortName": "DnsThreatDetectorClient",
-          "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient"
-        },
-        "method": {
-          "shortName": "GetOperation",
-          "fullName": "google.longrunning.Operations.GetOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networksecurity_v1beta1_generated_DnsThreatDetectorService_GetOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networksecurity GetOperation Sample"
     },
     {
-      "regionTag": "networksecurity_v1beta1_generated_DnsThreatDetectorService_ListDnsThreatDetectors_sync",
-      "title": "networksecurity ListDnsThreatDetectors Sample",
-      "description": "ListDnsThreatDetectors lists DnsThreatDetectors in a given project and location.",
-      "file": "DnsThreatDetectorClient/ListDnsThreatDetectors/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListDnsThreatDetectors",
+        "client": {
+          "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient",
+          "shortName": "DnsThreatDetectorClient"
+        },
         "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient.ListDnsThreatDetectors",
+        "method": {
+          "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorService.ListDnsThreatDetectors",
+          "service": {
+            "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorService",
+            "shortName": "DnsThreatDetectorService"
+          },
+          "shortName": "ListDnsThreatDetectors"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "networksecuritypb.ListDnsThreatDetectorsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "networksecuritypb.ListDnsThreatDetectorsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DnsThreatDetectorIterator",
-        "client": {
-          "shortName": "DnsThreatDetectorClient",
-          "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient"
-        },
-        "method": {
-          "shortName": "ListDnsThreatDetectors",
-          "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorService.ListDnsThreatDetectors",
-          "service": {
-            "shortName": "DnsThreatDetectorService",
-            "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorService"
-          }
-        }
+        "shortName": "ListDnsThreatDetectors"
       },
+      "description": "ListDnsThreatDetectors lists DnsThreatDetectors in a given project and location.",
+      "file": "DnsThreatDetectorClient/ListDnsThreatDetectors/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networksecurity_v1beta1_generated_DnsThreatDetectorService_ListDnsThreatDetectors_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networksecurity ListDnsThreatDetectors Sample"
     },
     {
-      "regionTag": "networksecurity_v1beta1_generated_DnsThreatDetectorService_ListLocations_sync",
-      "title": "networksecurity ListLocations Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient",
+          "shortName": "DnsThreatDetectorClient"
+        },
+        "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "shortName": "ListLocations"
+      },
       "description": "ListLocations lists information about the supported locations for this service.",
       "file": "DnsThreatDetectorClient/ListLocations/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "ListLocations",
-        "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient.ListLocations",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "locationpb.ListLocationsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "LocationIterator",
-        "client": {
-          "shortName": "DnsThreatDetectorClient",
-          "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient"
-        },
-        "method": {
-          "shortName": "ListLocations",
-          "fullName": "google.cloud.location.Locations.ListLocations",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networksecurity_v1beta1_generated_DnsThreatDetectorService_ListLocations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networksecurity ListLocations Sample"
     },
     {
-      "regionTag": "networksecurity_v1beta1_generated_DnsThreatDetectorService_ListOperations_sync",
-      "title": "networksecurity ListOperations Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient",
+          "shortName": "DnsThreatDetectorClient"
+        },
+        "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
       "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "DnsThreatDetectorClient/ListOperations/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "ListOperations",
-        "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient.ListOperations",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.ListOperationsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "OperationIterator",
-        "client": {
-          "shortName": "DnsThreatDetectorClient",
-          "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient"
-        },
-        "method": {
-          "shortName": "ListOperations",
-          "fullName": "google.longrunning.Operations.ListOperations",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networksecurity_v1beta1_generated_DnsThreatDetectorService_ListOperations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networksecurity ListOperations Sample"
     },
     {
-      "regionTag": "networksecurity_v1beta1_generated_DnsThreatDetectorService_SetIamPolicy_sync",
-      "title": "networksecurity SetIamPolicy Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient",
+          "shortName": "DnsThreatDetectorClient"
+        },
+        "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient.SetIamPolicy",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "SetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.SetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "SetIamPolicy"
+      },
       "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
       "file": "DnsThreatDetectorClient/SetIamPolicy/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "SetIamPolicy",
-        "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient.SetIamPolicy",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "iampb.SetIamPolicyRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*iampb.Policy",
-        "client": {
-          "shortName": "DnsThreatDetectorClient",
-          "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient"
-        },
-        "method": {
-          "shortName": "SetIamPolicy",
-          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.iam.v1.IAMPolicy"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networksecurity_v1beta1_generated_DnsThreatDetectorService_SetIamPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networksecurity SetIamPolicy Sample"
     },
     {
-      "regionTag": "networksecurity_v1beta1_generated_DnsThreatDetectorService_TestIamPermissions_sync",
-      "title": "networksecurity TestIamPermissions Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient",
+          "shortName": "DnsThreatDetectorClient"
+        },
+        "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient.TestIamPermissions",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "TestIamPermissions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.TestIamPermissionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "shortName": "TestIamPermissions"
+      },
       "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
       "file": "DnsThreatDetectorClient/TestIamPermissions/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "TestIamPermissions",
-        "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient.TestIamPermissions",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "iampb.TestIamPermissionsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*iampb.TestIamPermissionsResponse",
-        "client": {
-          "shortName": "DnsThreatDetectorClient",
-          "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient"
-        },
-        "method": {
-          "shortName": "TestIamPermissions",
-          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.iam.v1.IAMPolicy"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networksecurity_v1beta1_generated_DnsThreatDetectorService_TestIamPermissions_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networksecurity TestIamPermissions Sample"
     },
     {
-      "regionTag": "networksecurity_v1beta1_generated_DnsThreatDetectorService_UpdateDnsThreatDetector_sync",
-      "title": "networksecurity UpdateDnsThreatDetector Sample",
-      "description": "UpdateDnsThreatDetector updates a single DnsThreatDetector.",
-      "file": "DnsThreatDetectorClient/UpdateDnsThreatDetector/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateDnsThreatDetector",
+        "client": {
+          "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient",
+          "shortName": "DnsThreatDetectorClient"
+        },
         "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient.UpdateDnsThreatDetector",
+        "method": {
+          "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorService.UpdateDnsThreatDetector",
+          "service": {
+            "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorService",
+            "shortName": "DnsThreatDetectorService"
+          },
+          "shortName": "UpdateDnsThreatDetector"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "networksecuritypb.UpdateDnsThreatDetectorRequest",
-            "name": "req"
+            "name": "req",
+            "type": "networksecuritypb.UpdateDnsThreatDetectorRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*networksecuritypb.DnsThreatDetector",
-        "client": {
-          "shortName": "DnsThreatDetectorClient",
-          "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorClient"
-        },
-        "method": {
-          "shortName": "UpdateDnsThreatDetector",
-          "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorService.UpdateDnsThreatDetector",
-          "service": {
-            "shortName": "DnsThreatDetectorService",
-            "fullName": "google.cloud.networksecurity.v1beta1.DnsThreatDetectorService"
-          }
-        }
+        "shortName": "UpdateDnsThreatDetector"
       },
+      "description": "UpdateDnsThreatDetector updates a single DnsThreatDetector.",
+      "file": "DnsThreatDetectorClient/UpdateDnsThreatDetector/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networksecurity_v1beta1_generated_DnsThreatDetectorService_UpdateDnsThreatDetector_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networksecurity UpdateDnsThreatDetector Sample"
     },
     {
-      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_CancelOperation_sync",
-      "title": "networksecurity CancelOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networksecurity.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.networksecurity.v1beta1.Client.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
       "file": "Client/CancelOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CancelOperation",
-        "fullName": "google.cloud.networksecurity.v1beta1.Client.CancelOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.CancelOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.networksecurity.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "CancelOperation",
-          "fullName": "google.longrunning.Operations.CancelOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_CancelOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networksecurity CancelOperation Sample"
     },
     {
-      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_CreateAuthorizationPolicy_sync",
-      "title": "networksecurity CreateAuthorizationPolicy Sample",
-      "description": "CreateAuthorizationPolicy creates a new AuthorizationPolicy in a given project and location.",
-      "file": "Client/CreateAuthorizationPolicy/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateAuthorizationPolicy",
+        "client": {
+          "fullName": "google.cloud.networksecurity.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.networksecurity.v1beta1.Client.CreateAuthorizationPolicy",
+        "method": {
+          "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity.CreateAuthorizationPolicy",
+          "service": {
+            "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity",
+            "shortName": "NetworkSecurity"
+          },
+          "shortName": "CreateAuthorizationPolicy"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "networksecuritypb.CreateAuthorizationPolicyRequest",
-            "name": "req"
+            "name": "req",
+            "type": "networksecuritypb.CreateAuthorizationPolicyRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateAuthorizationPolicyOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.networksecurity.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "CreateAuthorizationPolicy",
-          "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity.CreateAuthorizationPolicy",
-          "service": {
-            "shortName": "NetworkSecurity",
-            "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity"
-          }
-        }
+        "shortName": "CreateAuthorizationPolicy"
       },
+      "description": "CreateAuthorizationPolicy creates a new AuthorizationPolicy in a given project and location.",
+      "file": "Client/CreateAuthorizationPolicy/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_CreateAuthorizationPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networksecurity CreateAuthorizationPolicy Sample"
     },
     {
-      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_CreateClientTlsPolicy_sync",
-      "title": "networksecurity CreateClientTlsPolicy Sample",
-      "description": "CreateClientTlsPolicy creates a new ClientTlsPolicy in a given project and location.",
-      "file": "Client/CreateClientTlsPolicy/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateClientTlsPolicy",
+        "client": {
+          "fullName": "google.cloud.networksecurity.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.networksecurity.v1beta1.Client.CreateClientTlsPolicy",
+        "method": {
+          "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity.CreateClientTlsPolicy",
+          "service": {
+            "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity",
+            "shortName": "NetworkSecurity"
+          },
+          "shortName": "CreateClientTlsPolicy"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "networksecuritypb.CreateClientTlsPolicyRequest",
-            "name": "req"
+            "name": "req",
+            "type": "networksecuritypb.CreateClientTlsPolicyRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateClientTlsPolicyOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.networksecurity.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "CreateClientTlsPolicy",
-          "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity.CreateClientTlsPolicy",
-          "service": {
-            "shortName": "NetworkSecurity",
-            "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity"
-          }
-        }
+        "shortName": "CreateClientTlsPolicy"
       },
+      "description": "CreateClientTlsPolicy creates a new ClientTlsPolicy in a given project and location.",
+      "file": "Client/CreateClientTlsPolicy/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_CreateClientTlsPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networksecurity CreateClientTlsPolicy Sample"
     },
     {
-      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_CreateServerTlsPolicy_sync",
-      "title": "networksecurity CreateServerTlsPolicy Sample",
-      "description": "CreateServerTlsPolicy creates a new ServerTlsPolicy in a given project and location.",
-      "file": "Client/CreateServerTlsPolicy/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateServerTlsPolicy",
+        "client": {
+          "fullName": "google.cloud.networksecurity.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.networksecurity.v1beta1.Client.CreateServerTlsPolicy",
+        "method": {
+          "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity.CreateServerTlsPolicy",
+          "service": {
+            "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity",
+            "shortName": "NetworkSecurity"
+          },
+          "shortName": "CreateServerTlsPolicy"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "networksecuritypb.CreateServerTlsPolicyRequest",
-            "name": "req"
+            "name": "req",
+            "type": "networksecuritypb.CreateServerTlsPolicyRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateServerTlsPolicyOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.networksecurity.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "CreateServerTlsPolicy",
-          "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity.CreateServerTlsPolicy",
-          "service": {
-            "shortName": "NetworkSecurity",
-            "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity"
-          }
-        }
+        "shortName": "CreateServerTlsPolicy"
       },
+      "description": "CreateServerTlsPolicy creates a new ServerTlsPolicy in a given project and location.",
+      "file": "Client/CreateServerTlsPolicy/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_CreateServerTlsPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networksecurity CreateServerTlsPolicy Sample"
     },
     {
-      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_DeleteAuthorizationPolicy_sync",
-      "title": "networksecurity DeleteAuthorizationPolicy Sample",
-      "description": "DeleteAuthorizationPolicy deletes a single AuthorizationPolicy.",
-      "file": "Client/DeleteAuthorizationPolicy/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteAuthorizationPolicy",
+        "client": {
+          "fullName": "google.cloud.networksecurity.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.networksecurity.v1beta1.Client.DeleteAuthorizationPolicy",
+        "method": {
+          "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity.DeleteAuthorizationPolicy",
+          "service": {
+            "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity",
+            "shortName": "NetworkSecurity"
+          },
+          "shortName": "DeleteAuthorizationPolicy"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "networksecuritypb.DeleteAuthorizationPolicyRequest",
-            "name": "req"
+            "name": "req",
+            "type": "networksecuritypb.DeleteAuthorizationPolicyRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteAuthorizationPolicyOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.networksecurity.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "DeleteAuthorizationPolicy",
-          "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity.DeleteAuthorizationPolicy",
-          "service": {
-            "shortName": "NetworkSecurity",
-            "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity"
-          }
-        }
+        "shortName": "DeleteAuthorizationPolicy"
       },
+      "description": "DeleteAuthorizationPolicy deletes a single AuthorizationPolicy.",
+      "file": "Client/DeleteAuthorizationPolicy/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_DeleteAuthorizationPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networksecurity DeleteAuthorizationPolicy Sample"
     },
     {
-      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_DeleteClientTlsPolicy_sync",
-      "title": "networksecurity DeleteClientTlsPolicy Sample",
-      "description": "DeleteClientTlsPolicy deletes a single ClientTlsPolicy.",
-      "file": "Client/DeleteClientTlsPolicy/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteClientTlsPolicy",
+        "client": {
+          "fullName": "google.cloud.networksecurity.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.networksecurity.v1beta1.Client.DeleteClientTlsPolicy",
+        "method": {
+          "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity.DeleteClientTlsPolicy",
+          "service": {
+            "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity",
+            "shortName": "NetworkSecurity"
+          },
+          "shortName": "DeleteClientTlsPolicy"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "networksecuritypb.DeleteClientTlsPolicyRequest",
-            "name": "req"
+            "name": "req",
+            "type": "networksecuritypb.DeleteClientTlsPolicyRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteClientTlsPolicyOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.networksecurity.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "DeleteClientTlsPolicy",
-          "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity.DeleteClientTlsPolicy",
-          "service": {
-            "shortName": "NetworkSecurity",
-            "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity"
-          }
-        }
+        "shortName": "DeleteClientTlsPolicy"
       },
+      "description": "DeleteClientTlsPolicy deletes a single ClientTlsPolicy.",
+      "file": "Client/DeleteClientTlsPolicy/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_DeleteClientTlsPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networksecurity DeleteClientTlsPolicy Sample"
     },
     {
-      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_DeleteOperation_sync",
-      "title": "networksecurity DeleteOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networksecurity.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.networksecurity.v1beta1.Client.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
       "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
       "file": "Client/DeleteOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteOperation",
-        "fullName": "google.cloud.networksecurity.v1beta1.Client.DeleteOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.DeleteOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.networksecurity.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "DeleteOperation",
-          "fullName": "google.longrunning.Operations.DeleteOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_DeleteOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networksecurity DeleteOperation Sample"
     },
     {
-      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_DeleteServerTlsPolicy_sync",
-      "title": "networksecurity DeleteServerTlsPolicy Sample",
-      "description": "DeleteServerTlsPolicy deletes a single ServerTlsPolicy.",
-      "file": "Client/DeleteServerTlsPolicy/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteServerTlsPolicy",
+        "client": {
+          "fullName": "google.cloud.networksecurity.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.networksecurity.v1beta1.Client.DeleteServerTlsPolicy",
+        "method": {
+          "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity.DeleteServerTlsPolicy",
+          "service": {
+            "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity",
+            "shortName": "NetworkSecurity"
+          },
+          "shortName": "DeleteServerTlsPolicy"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "networksecuritypb.DeleteServerTlsPolicyRequest",
-            "name": "req"
+            "name": "req",
+            "type": "networksecuritypb.DeleteServerTlsPolicyRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteServerTlsPolicyOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.networksecurity.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "DeleteServerTlsPolicy",
-          "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity.DeleteServerTlsPolicy",
-          "service": {
-            "shortName": "NetworkSecurity",
-            "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity"
-          }
-        }
+        "shortName": "DeleteServerTlsPolicy"
       },
+      "description": "DeleteServerTlsPolicy deletes a single ServerTlsPolicy.",
+      "file": "Client/DeleteServerTlsPolicy/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_DeleteServerTlsPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networksecurity DeleteServerTlsPolicy Sample"
     },
     {
-      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_GetAuthorizationPolicy_sync",
-      "title": "networksecurity GetAuthorizationPolicy Sample",
-      "description": "GetAuthorizationPolicy gets details of a single AuthorizationPolicy.",
-      "file": "Client/GetAuthorizationPolicy/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetAuthorizationPolicy",
+        "client": {
+          "fullName": "google.cloud.networksecurity.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.networksecurity.v1beta1.Client.GetAuthorizationPolicy",
+        "method": {
+          "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity.GetAuthorizationPolicy",
+          "service": {
+            "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity",
+            "shortName": "NetworkSecurity"
+          },
+          "shortName": "GetAuthorizationPolicy"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "networksecuritypb.GetAuthorizationPolicyRequest",
-            "name": "req"
+            "name": "req",
+            "type": "networksecuritypb.GetAuthorizationPolicyRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*networksecuritypb.AuthorizationPolicy",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.networksecurity.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "GetAuthorizationPolicy",
-          "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity.GetAuthorizationPolicy",
-          "service": {
-            "shortName": "NetworkSecurity",
-            "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity"
-          }
-        }
+        "shortName": "GetAuthorizationPolicy"
       },
+      "description": "GetAuthorizationPolicy gets details of a single AuthorizationPolicy.",
+      "file": "Client/GetAuthorizationPolicy/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_GetAuthorizationPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networksecurity GetAuthorizationPolicy Sample"
     },
     {
-      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_GetClientTlsPolicy_sync",
-      "title": "networksecurity GetClientTlsPolicy Sample",
-      "description": "GetClientTlsPolicy gets details of a single ClientTlsPolicy.",
-      "file": "Client/GetClientTlsPolicy/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetClientTlsPolicy",
+        "client": {
+          "fullName": "google.cloud.networksecurity.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.networksecurity.v1beta1.Client.GetClientTlsPolicy",
+        "method": {
+          "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity.GetClientTlsPolicy",
+          "service": {
+            "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity",
+            "shortName": "NetworkSecurity"
+          },
+          "shortName": "GetClientTlsPolicy"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "networksecuritypb.GetClientTlsPolicyRequest",
-            "name": "req"
+            "name": "req",
+            "type": "networksecuritypb.GetClientTlsPolicyRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*networksecuritypb.ClientTlsPolicy",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.networksecurity.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "GetClientTlsPolicy",
-          "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity.GetClientTlsPolicy",
-          "service": {
-            "shortName": "NetworkSecurity",
-            "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity"
-          }
-        }
+        "shortName": "GetClientTlsPolicy"
       },
+      "description": "GetClientTlsPolicy gets details of a single ClientTlsPolicy.",
+      "file": "Client/GetClientTlsPolicy/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_GetClientTlsPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networksecurity GetClientTlsPolicy Sample"
     },
     {
-      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_GetIamPolicy_sync",
-      "title": "networksecurity GetIamPolicy Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networksecurity.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.networksecurity.v1beta1.Client.GetIamPolicy",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "GetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.GetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "GetIamPolicy"
+      },
       "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
       "file": "Client/GetIamPolicy/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetIamPolicy",
-        "fullName": "google.cloud.networksecurity.v1beta1.Client.GetIamPolicy",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "iampb.GetIamPolicyRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*iampb.Policy",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.networksecurity.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "GetIamPolicy",
-          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.iam.v1.IAMPolicy"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_GetIamPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networksecurity GetIamPolicy Sample"
     },
     {
-      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_GetLocation_sync",
-      "title": "networksecurity GetLocation Sample",
-      "description": "GetLocation gets information about a location.",
-      "file": "Client/GetLocation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetLocation",
+        "client": {
+          "fullName": "google.cloud.networksecurity.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.networksecurity.v1beta1.Client.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "locationpb.GetLocationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*locationpb.Location",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.networksecurity.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "GetLocation",
-          "fullName": "google.cloud.location.Locations.GetLocation",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
+        "shortName": "GetLocation"
       },
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_GetLocation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networksecurity GetLocation Sample"
     },
     {
-      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_GetOperation_sync",
-      "title": "networksecurity GetOperation Sample",
-      "description": "GetOperation is a utility method from google.longrunning.Operations.",
-      "file": "Client/GetOperation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetOperation",
+        "client": {
+          "fullName": "google.cloud.networksecurity.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.networksecurity.v1beta1.Client.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.GetOperationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*longrunningpb.Operation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.networksecurity.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "GetOperation",
-          "fullName": "google.longrunning.Operations.GetOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "GetOperation"
       },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_GetOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networksecurity GetOperation Sample"
     },
     {
-      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_GetServerTlsPolicy_sync",
-      "title": "networksecurity GetServerTlsPolicy Sample",
-      "description": "GetServerTlsPolicy gets details of a single ServerTlsPolicy.",
-      "file": "Client/GetServerTlsPolicy/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetServerTlsPolicy",
+        "client": {
+          "fullName": "google.cloud.networksecurity.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.networksecurity.v1beta1.Client.GetServerTlsPolicy",
+        "method": {
+          "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity.GetServerTlsPolicy",
+          "service": {
+            "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity",
+            "shortName": "NetworkSecurity"
+          },
+          "shortName": "GetServerTlsPolicy"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "networksecuritypb.GetServerTlsPolicyRequest",
-            "name": "req"
+            "name": "req",
+            "type": "networksecuritypb.GetServerTlsPolicyRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*networksecuritypb.ServerTlsPolicy",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.networksecurity.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "GetServerTlsPolicy",
-          "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity.GetServerTlsPolicy",
-          "service": {
-            "shortName": "NetworkSecurity",
-            "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity"
-          }
-        }
+        "shortName": "GetServerTlsPolicy"
       },
+      "description": "GetServerTlsPolicy gets details of a single ServerTlsPolicy.",
+      "file": "Client/GetServerTlsPolicy/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_GetServerTlsPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networksecurity GetServerTlsPolicy Sample"
     },
     {
-      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_ListAuthorizationPolicies_sync",
-      "title": "networksecurity ListAuthorizationPolicies Sample",
-      "description": "ListAuthorizationPolicies lists AuthorizationPolicies in a given project and location.",
-      "file": "Client/ListAuthorizationPolicies/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListAuthorizationPolicies",
+        "client": {
+          "fullName": "google.cloud.networksecurity.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.networksecurity.v1beta1.Client.ListAuthorizationPolicies",
+        "method": {
+          "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity.ListAuthorizationPolicies",
+          "service": {
+            "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity",
+            "shortName": "NetworkSecurity"
+          },
+          "shortName": "ListAuthorizationPolicies"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "networksecuritypb.ListAuthorizationPoliciesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "networksecuritypb.ListAuthorizationPoliciesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "AuthorizationPolicyIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.networksecurity.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "ListAuthorizationPolicies",
-          "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity.ListAuthorizationPolicies",
-          "service": {
-            "shortName": "NetworkSecurity",
-            "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity"
-          }
-        }
+        "shortName": "ListAuthorizationPolicies"
       },
+      "description": "ListAuthorizationPolicies lists AuthorizationPolicies in a given project and location.",
+      "file": "Client/ListAuthorizationPolicies/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_ListAuthorizationPolicies_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networksecurity ListAuthorizationPolicies Sample"
     },
     {
-      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_ListClientTlsPolicies_sync",
-      "title": "networksecurity ListClientTlsPolicies Sample",
-      "description": "ListClientTlsPolicies lists ClientTlsPolicies in a given project and location.",
-      "file": "Client/ListClientTlsPolicies/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListClientTlsPolicies",
+        "client": {
+          "fullName": "google.cloud.networksecurity.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.networksecurity.v1beta1.Client.ListClientTlsPolicies",
+        "method": {
+          "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity.ListClientTlsPolicies",
+          "service": {
+            "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity",
+            "shortName": "NetworkSecurity"
+          },
+          "shortName": "ListClientTlsPolicies"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "networksecuritypb.ListClientTlsPoliciesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "networksecuritypb.ListClientTlsPoliciesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ClientTlsPolicyIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.networksecurity.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "ListClientTlsPolicies",
-          "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity.ListClientTlsPolicies",
-          "service": {
-            "shortName": "NetworkSecurity",
-            "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity"
-          }
-        }
+        "shortName": "ListClientTlsPolicies"
       },
+      "description": "ListClientTlsPolicies lists ClientTlsPolicies in a given project and location.",
+      "file": "Client/ListClientTlsPolicies/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_ListClientTlsPolicies_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networksecurity ListClientTlsPolicies Sample"
     },
     {
-      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_ListLocations_sync",
-      "title": "networksecurity ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
-      "file": "Client/ListLocations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListLocations",
+        "client": {
+          "fullName": "google.cloud.networksecurity.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.networksecurity.v1beta1.Client.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "locationpb.ListLocationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "LocationIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.networksecurity.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "ListLocations",
-          "fullName": "google.cloud.location.Locations.ListLocations",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
+        "shortName": "ListLocations"
       },
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_ListLocations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networksecurity ListLocations Sample"
     },
     {
-      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_ListOperations_sync",
-      "title": "networksecurity ListOperations Sample",
-      "description": "ListOperations is a utility method from google.longrunning.Operations.",
-      "file": "Client/ListOperations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListOperations",
+        "client": {
+          "fullName": "google.cloud.networksecurity.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.networksecurity.v1beta1.Client.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.ListOperationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "OperationIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.networksecurity.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "ListOperations",
-          "fullName": "google.longrunning.Operations.ListOperations",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "ListOperations"
       },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_ListOperations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networksecurity ListOperations Sample"
     },
     {
-      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_ListServerTlsPolicies_sync",
-      "title": "networksecurity ListServerTlsPolicies Sample",
-      "description": "ListServerTlsPolicies lists ServerTlsPolicies in a given project and location.",
-      "file": "Client/ListServerTlsPolicies/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListServerTlsPolicies",
+        "client": {
+          "fullName": "google.cloud.networksecurity.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.networksecurity.v1beta1.Client.ListServerTlsPolicies",
+        "method": {
+          "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity.ListServerTlsPolicies",
+          "service": {
+            "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity",
+            "shortName": "NetworkSecurity"
+          },
+          "shortName": "ListServerTlsPolicies"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "networksecuritypb.ListServerTlsPoliciesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "networksecuritypb.ListServerTlsPoliciesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ServerTlsPolicyIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.networksecurity.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "ListServerTlsPolicies",
-          "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity.ListServerTlsPolicies",
-          "service": {
-            "shortName": "NetworkSecurity",
-            "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity"
-          }
-        }
+        "shortName": "ListServerTlsPolicies"
       },
+      "description": "ListServerTlsPolicies lists ServerTlsPolicies in a given project and location.",
+      "file": "Client/ListServerTlsPolicies/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_ListServerTlsPolicies_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networksecurity ListServerTlsPolicies Sample"
     },
     {
-      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_SetIamPolicy_sync",
-      "title": "networksecurity SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
-      "file": "Client/SetIamPolicy/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "SetIamPolicy",
+        "client": {
+          "fullName": "google.cloud.networksecurity.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.networksecurity.v1beta1.Client.SetIamPolicy",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "SetIamPolicy"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "iampb.SetIamPolicyRequest",
-            "name": "req"
+            "name": "req",
+            "type": "iampb.SetIamPolicyRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*iampb.Policy",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.networksecurity.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "SetIamPolicy",
-          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.iam.v1.IAMPolicy"
-          }
-        }
+        "shortName": "SetIamPolicy"
       },
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "Client/SetIamPolicy/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_SetIamPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networksecurity SetIamPolicy Sample"
     },
     {
-      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_TestIamPermissions_sync",
-      "title": "networksecurity TestIamPermissions Sample",
-      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
-      "file": "Client/TestIamPermissions/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "TestIamPermissions",
+        "client": {
+          "fullName": "google.cloud.networksecurity.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.networksecurity.v1beta1.Client.TestIamPermissions",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "TestIamPermissions"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "iampb.TestIamPermissionsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "iampb.TestIamPermissionsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*iampb.TestIamPermissionsResponse",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.networksecurity.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "TestIamPermissions",
-          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.iam.v1.IAMPolicy"
-          }
-        }
+        "shortName": "TestIamPermissions"
       },
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "Client/TestIamPermissions/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_TestIamPermissions_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networksecurity TestIamPermissions Sample"
     },
     {
-      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_UpdateAuthorizationPolicy_sync",
-      "title": "networksecurity UpdateAuthorizationPolicy Sample",
-      "description": "UpdateAuthorizationPolicy updates the parameters of a single AuthorizationPolicy.",
-      "file": "Client/UpdateAuthorizationPolicy/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateAuthorizationPolicy",
+        "client": {
+          "fullName": "google.cloud.networksecurity.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.networksecurity.v1beta1.Client.UpdateAuthorizationPolicy",
+        "method": {
+          "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity.UpdateAuthorizationPolicy",
+          "service": {
+            "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity",
+            "shortName": "NetworkSecurity"
+          },
+          "shortName": "UpdateAuthorizationPolicy"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "networksecuritypb.UpdateAuthorizationPolicyRequest",
-            "name": "req"
+            "name": "req",
+            "type": "networksecuritypb.UpdateAuthorizationPolicyRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UpdateAuthorizationPolicyOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.networksecurity.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "UpdateAuthorizationPolicy",
-          "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity.UpdateAuthorizationPolicy",
-          "service": {
-            "shortName": "NetworkSecurity",
-            "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity"
-          }
-        }
+        "shortName": "UpdateAuthorizationPolicy"
       },
+      "description": "UpdateAuthorizationPolicy updates the parameters of a single AuthorizationPolicy.",
+      "file": "Client/UpdateAuthorizationPolicy/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_UpdateAuthorizationPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networksecurity UpdateAuthorizationPolicy Sample"
     },
     {
-      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_UpdateClientTlsPolicy_sync",
-      "title": "networksecurity UpdateClientTlsPolicy Sample",
-      "description": "UpdateClientTlsPolicy updates the parameters of a single ClientTlsPolicy.",
-      "file": "Client/UpdateClientTlsPolicy/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateClientTlsPolicy",
+        "client": {
+          "fullName": "google.cloud.networksecurity.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.networksecurity.v1beta1.Client.UpdateClientTlsPolicy",
+        "method": {
+          "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity.UpdateClientTlsPolicy",
+          "service": {
+            "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity",
+            "shortName": "NetworkSecurity"
+          },
+          "shortName": "UpdateClientTlsPolicy"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "networksecuritypb.UpdateClientTlsPolicyRequest",
-            "name": "req"
+            "name": "req",
+            "type": "networksecuritypb.UpdateClientTlsPolicyRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UpdateClientTlsPolicyOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.networksecurity.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "UpdateClientTlsPolicy",
-          "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity.UpdateClientTlsPolicy",
-          "service": {
-            "shortName": "NetworkSecurity",
-            "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity"
-          }
-        }
+        "shortName": "UpdateClientTlsPolicy"
       },
+      "description": "UpdateClientTlsPolicy updates the parameters of a single ClientTlsPolicy.",
+      "file": "Client/UpdateClientTlsPolicy/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_UpdateClientTlsPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networksecurity UpdateClientTlsPolicy Sample"
     },
     {
-      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_UpdateServerTlsPolicy_sync",
-      "title": "networksecurity UpdateServerTlsPolicy Sample",
-      "description": "UpdateServerTlsPolicy updates the parameters of a single ServerTlsPolicy.",
-      "file": "Client/UpdateServerTlsPolicy/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateServerTlsPolicy",
+        "client": {
+          "fullName": "google.cloud.networksecurity.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.networksecurity.v1beta1.Client.UpdateServerTlsPolicy",
+        "method": {
+          "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity.UpdateServerTlsPolicy",
+          "service": {
+            "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity",
+            "shortName": "NetworkSecurity"
+          },
+          "shortName": "UpdateServerTlsPolicy"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "networksecuritypb.UpdateServerTlsPolicyRequest",
-            "name": "req"
+            "name": "req",
+            "type": "networksecuritypb.UpdateServerTlsPolicyRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UpdateServerTlsPolicyOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.networksecurity.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "UpdateServerTlsPolicy",
-          "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity.UpdateServerTlsPolicy",
-          "service": {
-            "shortName": "NetworkSecurity",
-            "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity"
-          }
-        }
+        "shortName": "UpdateServerTlsPolicy"
       },
+      "description": "UpdateServerTlsPolicy updates the parameters of a single ServerTlsPolicy.",
+      "file": "Client/UpdateServerTlsPolicy/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_UpdateServerTlsPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networksecurity UpdateServerTlsPolicy Sample"
     }
   ]
 }

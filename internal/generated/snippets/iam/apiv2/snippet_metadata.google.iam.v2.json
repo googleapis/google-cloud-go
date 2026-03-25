@@ -1,291 +1,291 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/iam/apiv2",
-    "version": "1.5.3",
-    "language": "GO",
     "apis": [
       {
         "id": "google.iam.v2",
         "version": "v2"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/iam/apiv2",
+    "version": "1.5.3"
   },
   "snippets": [
     {
-      "regionTag": "iam_v2_generated_Policies_CreatePolicy_sync",
-      "title": "iam CreatePolicy Sample",
-      "description": "CreatePolicy creates a policy.",
-      "file": "PoliciesClient/CreatePolicy/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreatePolicy",
+        "client": {
+          "fullName": "google.iam.v2.PoliciesClient",
+          "shortName": "PoliciesClient"
+        },
         "fullName": "google.iam.v2.PoliciesClient.CreatePolicy",
+        "method": {
+          "fullName": "google.iam.v2.Policies.CreatePolicy",
+          "service": {
+            "fullName": "google.iam.v2.Policies",
+            "shortName": "Policies"
+          },
+          "shortName": "CreatePolicy"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "iampb.CreatePolicyRequest",
-            "name": "req"
+            "name": "req",
+            "type": "iampb.CreatePolicyRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreatePolicyOperation",
-        "client": {
-          "shortName": "PoliciesClient",
-          "fullName": "google.iam.v2.PoliciesClient"
-        },
-        "method": {
-          "shortName": "CreatePolicy",
-          "fullName": "google.iam.v2.Policies.CreatePolicy",
-          "service": {
-            "shortName": "Policies",
-            "fullName": "google.iam.v2.Policies"
-          }
-        }
+        "shortName": "CreatePolicy"
       },
+      "description": "CreatePolicy creates a policy.",
+      "file": "PoliciesClient/CreatePolicy/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "iam_v2_generated_Policies_CreatePolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "iam CreatePolicy Sample"
     },
     {
-      "regionTag": "iam_v2_generated_Policies_DeletePolicy_sync",
-      "title": "iam DeletePolicy Sample",
-      "description": "DeletePolicy deletes a policy. This action is permanent.",
-      "file": "PoliciesClient/DeletePolicy/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeletePolicy",
+        "client": {
+          "fullName": "google.iam.v2.PoliciesClient",
+          "shortName": "PoliciesClient"
+        },
         "fullName": "google.iam.v2.PoliciesClient.DeletePolicy",
+        "method": {
+          "fullName": "google.iam.v2.Policies.DeletePolicy",
+          "service": {
+            "fullName": "google.iam.v2.Policies",
+            "shortName": "Policies"
+          },
+          "shortName": "DeletePolicy"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "iampb.DeletePolicyRequest",
-            "name": "req"
+            "name": "req",
+            "type": "iampb.DeletePolicyRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeletePolicyOperation",
-        "client": {
-          "shortName": "PoliciesClient",
-          "fullName": "google.iam.v2.PoliciesClient"
-        },
-        "method": {
-          "shortName": "DeletePolicy",
-          "fullName": "google.iam.v2.Policies.DeletePolicy",
-          "service": {
-            "shortName": "Policies",
-            "fullName": "google.iam.v2.Policies"
-          }
-        }
+        "shortName": "DeletePolicy"
       },
+      "description": "DeletePolicy deletes a policy. This action is permanent.",
+      "file": "PoliciesClient/DeletePolicy/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "iam_v2_generated_Policies_DeletePolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "iam DeletePolicy Sample"
     },
     {
-      "regionTag": "iam_v2_generated_Policies_GetOperation_sync",
-      "title": "iam GetOperation Sample",
-      "description": "GetOperation is a utility method from google.longrunning.Operations.",
-      "file": "PoliciesClient/GetOperation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetOperation",
+        "client": {
+          "fullName": "google.iam.v2.PoliciesClient",
+          "shortName": "PoliciesClient"
+        },
         "fullName": "google.iam.v2.PoliciesClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.GetOperationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*longrunningpb.Operation",
-        "client": {
-          "shortName": "PoliciesClient",
-          "fullName": "google.iam.v2.PoliciesClient"
-        },
-        "method": {
-          "shortName": "GetOperation",
-          "fullName": "google.longrunning.Operations.GetOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "GetOperation"
       },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "PoliciesClient/GetOperation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "iam_v2_generated_Policies_GetOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "iam GetOperation Sample"
     },
     {
-      "regionTag": "iam_v2_generated_Policies_GetPolicy_sync",
-      "title": "iam GetPolicy Sample",
-      "description": "GetPolicy gets a policy.",
-      "file": "PoliciesClient/GetPolicy/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetPolicy",
+        "client": {
+          "fullName": "google.iam.v2.PoliciesClient",
+          "shortName": "PoliciesClient"
+        },
         "fullName": "google.iam.v2.PoliciesClient.GetPolicy",
+        "method": {
+          "fullName": "google.iam.v2.Policies.GetPolicy",
+          "service": {
+            "fullName": "google.iam.v2.Policies",
+            "shortName": "Policies"
+          },
+          "shortName": "GetPolicy"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "iampb.GetPolicyRequest",
-            "name": "req"
+            "name": "req",
+            "type": "iampb.GetPolicyRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*iampb.Policy",
-        "client": {
-          "shortName": "PoliciesClient",
-          "fullName": "google.iam.v2.PoliciesClient"
-        },
-        "method": {
-          "shortName": "GetPolicy",
-          "fullName": "google.iam.v2.Policies.GetPolicy",
-          "service": {
-            "shortName": "Policies",
-            "fullName": "google.iam.v2.Policies"
-          }
-        }
+        "shortName": "GetPolicy"
       },
+      "description": "GetPolicy gets a policy.",
+      "file": "PoliciesClient/GetPolicy/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "iam_v2_generated_Policies_GetPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "iam GetPolicy Sample"
     },
     {
-      "regionTag": "iam_v2_generated_Policies_ListPolicies_sync",
-      "title": "iam ListPolicies Sample",
-      "description": "ListPolicies retrieves the policies of the specified kind that are attached to a\nresource.\n\nThe response lists only policy metadata. In particular, policy rules are\nomitted.",
-      "file": "PoliciesClient/ListPolicies/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListPolicies",
+        "client": {
+          "fullName": "google.iam.v2.PoliciesClient",
+          "shortName": "PoliciesClient"
+        },
         "fullName": "google.iam.v2.PoliciesClient.ListPolicies",
+        "method": {
+          "fullName": "google.iam.v2.Policies.ListPolicies",
+          "service": {
+            "fullName": "google.iam.v2.Policies",
+            "shortName": "Policies"
+          },
+          "shortName": "ListPolicies"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "iampb.ListPoliciesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "iampb.ListPoliciesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "PolicyIterator",
-        "client": {
-          "shortName": "PoliciesClient",
-          "fullName": "google.iam.v2.PoliciesClient"
-        },
-        "method": {
-          "shortName": "ListPolicies",
-          "fullName": "google.iam.v2.Policies.ListPolicies",
-          "service": {
-            "shortName": "Policies",
-            "fullName": "google.iam.v2.Policies"
-          }
-        }
+        "shortName": "ListPolicies"
       },
+      "description": "ListPolicies retrieves the policies of the specified kind that are attached to a\nresource.\n\nThe response lists only policy metadata. In particular, policy rules are\nomitted.",
+      "file": "PoliciesClient/ListPolicies/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "iam_v2_generated_Policies_ListPolicies_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "iam ListPolicies Sample"
     },
     {
-      "regionTag": "iam_v2_generated_Policies_UpdatePolicy_sync",
-      "title": "iam UpdatePolicy Sample",
-      "description": "UpdatePolicy updates the specified policy.\n\nYou can update only the rules and the display name for the policy.\n\nTo update a policy, you should use a read-modify-write loop: \n\n1. Use [GetPolicy][google.iam.v2.Policies.GetPolicy] to read the current version of the policy.\n2. Modify the policy as needed.\n3. Use `UpdatePolicy` to write the updated policy.\n\nThis pattern helps prevent conflicts between concurrent updates.",
-      "file": "PoliciesClient/UpdatePolicy/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdatePolicy",
+        "client": {
+          "fullName": "google.iam.v2.PoliciesClient",
+          "shortName": "PoliciesClient"
+        },
         "fullName": "google.iam.v2.PoliciesClient.UpdatePolicy",
+        "method": {
+          "fullName": "google.iam.v2.Policies.UpdatePolicy",
+          "service": {
+            "fullName": "google.iam.v2.Policies",
+            "shortName": "Policies"
+          },
+          "shortName": "UpdatePolicy"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "iampb.UpdatePolicyRequest",
-            "name": "req"
+            "name": "req",
+            "type": "iampb.UpdatePolicyRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UpdatePolicyOperation",
-        "client": {
-          "shortName": "PoliciesClient",
-          "fullName": "google.iam.v2.PoliciesClient"
-        },
-        "method": {
-          "shortName": "UpdatePolicy",
-          "fullName": "google.iam.v2.Policies.UpdatePolicy",
-          "service": {
-            "shortName": "Policies",
-            "fullName": "google.iam.v2.Policies"
-          }
-        }
+        "shortName": "UpdatePolicy"
       },
+      "description": "UpdatePolicy updates the specified policy.\n\nYou can update only the rules and the display name for the policy.\n\nTo update a policy, you should use a read-modify-write loop: \n\n1. Use [GetPolicy][google.iam.v2.Policies.GetPolicy] to read the current version of the policy.\n2. Modify the policy as needed.\n3. Use `UpdatePolicy` to write the updated policy.\n\nThis pattern helps prevent conflicts between concurrent updates.",
+      "file": "PoliciesClient/UpdatePolicy/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "iam_v2_generated_Policies_UpdatePolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "iam UpdatePolicy Sample"
     }
   ]
 }

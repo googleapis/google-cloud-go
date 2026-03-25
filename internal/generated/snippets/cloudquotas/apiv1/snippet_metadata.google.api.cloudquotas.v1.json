@@ -1,291 +1,291 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/cloudquotas/apiv1",
-    "version": "1.6.0",
-    "language": "GO",
     "apis": [
       {
         "id": "google.api.cloudquotas.v1",
         "version": "v1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/cloudquotas/apiv1",
+    "version": "1.6.0"
   },
   "snippets": [
     {
-      "regionTag": "cloudquotas_v1_generated_CloudQuotas_CreateQuotaPreference_sync",
-      "title": "cloudquotas CreateQuotaPreference Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.api.cloudquotas.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.api.cloudquotas.v1.Client.CreateQuotaPreference",
+        "method": {
+          "fullName": "google.api.cloudquotas.v1.CloudQuotas.CreateQuotaPreference",
+          "service": {
+            "fullName": "google.api.cloudquotas.v1.CloudQuotas",
+            "shortName": "CloudQuotas"
+          },
+          "shortName": "CreateQuotaPreference"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "cloudquotaspb.CreateQuotaPreferenceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*cloudquotaspb.QuotaPreference",
+        "shortName": "CreateQuotaPreference"
+      },
       "description": "CreateQuotaPreference creates a new QuotaPreference that declares the desired value for a quota.",
       "file": "Client/CreateQuotaPreference/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateQuotaPreference",
-        "fullName": "google.api.cloudquotas.v1.Client.CreateQuotaPreference",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "cloudquotaspb.CreateQuotaPreferenceRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*cloudquotaspb.QuotaPreference",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.api.cloudquotas.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateQuotaPreference",
-          "fullName": "google.api.cloudquotas.v1.CloudQuotas.CreateQuotaPreference",
-          "service": {
-            "shortName": "CloudQuotas",
-            "fullName": "google.api.cloudquotas.v1.CloudQuotas"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "cloudquotas_v1_generated_CloudQuotas_CreateQuotaPreference_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "cloudquotas CreateQuotaPreference Sample"
     },
     {
-      "regionTag": "cloudquotas_v1_generated_CloudQuotas_GetQuotaInfo_sync",
-      "title": "cloudquotas GetQuotaInfo Sample",
-      "description": "GetQuotaInfo retrieve the QuotaInfo of a quota for a project, folder or organization.",
-      "file": "Client/GetQuotaInfo/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetQuotaInfo",
+        "client": {
+          "fullName": "google.api.cloudquotas.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.api.cloudquotas.v1.Client.GetQuotaInfo",
+        "method": {
+          "fullName": "google.api.cloudquotas.v1.CloudQuotas.GetQuotaInfo",
+          "service": {
+            "fullName": "google.api.cloudquotas.v1.CloudQuotas",
+            "shortName": "CloudQuotas"
+          },
+          "shortName": "GetQuotaInfo"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "cloudquotaspb.GetQuotaInfoRequest",
-            "name": "req"
+            "name": "req",
+            "type": "cloudquotaspb.GetQuotaInfoRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*cloudquotaspb.QuotaInfo",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.api.cloudquotas.v1.Client"
-        },
-        "method": {
-          "shortName": "GetQuotaInfo",
-          "fullName": "google.api.cloudquotas.v1.CloudQuotas.GetQuotaInfo",
-          "service": {
-            "shortName": "CloudQuotas",
-            "fullName": "google.api.cloudquotas.v1.CloudQuotas"
-          }
-        }
+        "shortName": "GetQuotaInfo"
       },
+      "description": "GetQuotaInfo retrieve the QuotaInfo of a quota for a project, folder or organization.",
+      "file": "Client/GetQuotaInfo/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "cloudquotas_v1_generated_CloudQuotas_GetQuotaInfo_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "cloudquotas GetQuotaInfo Sample"
     },
     {
-      "regionTag": "cloudquotas_v1_generated_CloudQuotas_GetQuotaPreference_sync",
-      "title": "cloudquotas GetQuotaPreference Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.api.cloudquotas.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.api.cloudquotas.v1.Client.GetQuotaPreference",
+        "method": {
+          "fullName": "google.api.cloudquotas.v1.CloudQuotas.GetQuotaPreference",
+          "service": {
+            "fullName": "google.api.cloudquotas.v1.CloudQuotas",
+            "shortName": "CloudQuotas"
+          },
+          "shortName": "GetQuotaPreference"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "cloudquotaspb.GetQuotaPreferenceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*cloudquotaspb.QuotaPreference",
+        "shortName": "GetQuotaPreference"
+      },
       "description": "GetQuotaPreference gets details of a single QuotaPreference.",
       "file": "Client/GetQuotaPreference/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetQuotaPreference",
-        "fullName": "google.api.cloudquotas.v1.Client.GetQuotaPreference",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "cloudquotaspb.GetQuotaPreferenceRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*cloudquotaspb.QuotaPreference",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.api.cloudquotas.v1.Client"
-        },
-        "method": {
-          "shortName": "GetQuotaPreference",
-          "fullName": "google.api.cloudquotas.v1.CloudQuotas.GetQuotaPreference",
-          "service": {
-            "shortName": "CloudQuotas",
-            "fullName": "google.api.cloudquotas.v1.CloudQuotas"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "cloudquotas_v1_generated_CloudQuotas_GetQuotaPreference_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "cloudquotas GetQuotaPreference Sample"
     },
     {
-      "regionTag": "cloudquotas_v1_generated_CloudQuotas_ListQuotaInfos_sync",
-      "title": "cloudquotas ListQuotaInfos Sample",
-      "description": "ListQuotaInfos lists QuotaInfos of all quotas for a given project, folder or organization.",
-      "file": "Client/ListQuotaInfos/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListQuotaInfos",
+        "client": {
+          "fullName": "google.api.cloudquotas.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.api.cloudquotas.v1.Client.ListQuotaInfos",
+        "method": {
+          "fullName": "google.api.cloudquotas.v1.CloudQuotas.ListQuotaInfos",
+          "service": {
+            "fullName": "google.api.cloudquotas.v1.CloudQuotas",
+            "shortName": "CloudQuotas"
+          },
+          "shortName": "ListQuotaInfos"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "cloudquotaspb.ListQuotaInfosRequest",
-            "name": "req"
+            "name": "req",
+            "type": "cloudquotaspb.ListQuotaInfosRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "QuotaInfoIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.api.cloudquotas.v1.Client"
-        },
-        "method": {
-          "shortName": "ListQuotaInfos",
-          "fullName": "google.api.cloudquotas.v1.CloudQuotas.ListQuotaInfos",
-          "service": {
-            "shortName": "CloudQuotas",
-            "fullName": "google.api.cloudquotas.v1.CloudQuotas"
-          }
-        }
+        "shortName": "ListQuotaInfos"
       },
+      "description": "ListQuotaInfos lists QuotaInfos of all quotas for a given project, folder or organization.",
+      "file": "Client/ListQuotaInfos/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "cloudquotas_v1_generated_CloudQuotas_ListQuotaInfos_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "cloudquotas ListQuotaInfos Sample"
     },
     {
-      "regionTag": "cloudquotas_v1_generated_CloudQuotas_ListQuotaPreferences_sync",
-      "title": "cloudquotas ListQuotaPreferences Sample",
-      "description": "ListQuotaPreferences lists QuotaPreferences in a given project, folder or organization.",
-      "file": "Client/ListQuotaPreferences/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListQuotaPreferences",
+        "client": {
+          "fullName": "google.api.cloudquotas.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.api.cloudquotas.v1.Client.ListQuotaPreferences",
+        "method": {
+          "fullName": "google.api.cloudquotas.v1.CloudQuotas.ListQuotaPreferences",
+          "service": {
+            "fullName": "google.api.cloudquotas.v1.CloudQuotas",
+            "shortName": "CloudQuotas"
+          },
+          "shortName": "ListQuotaPreferences"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "cloudquotaspb.ListQuotaPreferencesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "cloudquotaspb.ListQuotaPreferencesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "QuotaPreferenceIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.api.cloudquotas.v1.Client"
-        },
-        "method": {
-          "shortName": "ListQuotaPreferences",
-          "fullName": "google.api.cloudquotas.v1.CloudQuotas.ListQuotaPreferences",
-          "service": {
-            "shortName": "CloudQuotas",
-            "fullName": "google.api.cloudquotas.v1.CloudQuotas"
-          }
-        }
+        "shortName": "ListQuotaPreferences"
       },
+      "description": "ListQuotaPreferences lists QuotaPreferences in a given project, folder or organization.",
+      "file": "Client/ListQuotaPreferences/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "cloudquotas_v1_generated_CloudQuotas_ListQuotaPreferences_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "cloudquotas ListQuotaPreferences Sample"
     },
     {
-      "regionTag": "cloudquotas_v1_generated_CloudQuotas_UpdateQuotaPreference_sync",
-      "title": "cloudquotas UpdateQuotaPreference Sample",
-      "description": "UpdateQuotaPreference updates the parameters of a single QuotaPreference. It can updates the\nconfig in any states, not just the ones pending approval.",
-      "file": "Client/UpdateQuotaPreference/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateQuotaPreference",
+        "client": {
+          "fullName": "google.api.cloudquotas.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.api.cloudquotas.v1.Client.UpdateQuotaPreference",
+        "method": {
+          "fullName": "google.api.cloudquotas.v1.CloudQuotas.UpdateQuotaPreference",
+          "service": {
+            "fullName": "google.api.cloudquotas.v1.CloudQuotas",
+            "shortName": "CloudQuotas"
+          },
+          "shortName": "UpdateQuotaPreference"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "cloudquotaspb.UpdateQuotaPreferenceRequest",
-            "name": "req"
+            "name": "req",
+            "type": "cloudquotaspb.UpdateQuotaPreferenceRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*cloudquotaspb.QuotaPreference",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.api.cloudquotas.v1.Client"
-        },
-        "method": {
-          "shortName": "UpdateQuotaPreference",
-          "fullName": "google.api.cloudquotas.v1.CloudQuotas.UpdateQuotaPreference",
-          "service": {
-            "shortName": "CloudQuotas",
-            "fullName": "google.api.cloudquotas.v1.CloudQuotas"
-          }
-        }
+        "shortName": "UpdateQuotaPreference"
       },
+      "description": "UpdateQuotaPreference updates the parameters of a single QuotaPreference. It can updates the\nconfig in any states, not just the ones pending approval.",
+      "file": "Client/UpdateQuotaPreference/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "cloudquotas_v1_generated_CloudQuotas_UpdateQuotaPreference_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "cloudquotas UpdateQuotaPreference Sample"
     }
   ]
 }

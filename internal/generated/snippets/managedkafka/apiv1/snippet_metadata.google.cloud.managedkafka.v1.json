@@ -1,2169 +1,2169 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/managedkafka/apiv1",
-    "version": "0.8.1",
-    "language": "GO",
     "apis": [
       {
         "id": "google.cloud.managedkafka.v1",
         "version": "v1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/managedkafka/apiv1",
+    "version": "0.8.1"
   },
   "snippets": [
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafka_AddAclEntry_sync",
-      "title": "managedkafka AddAclEntry Sample",
-      "description": "AddAclEntry incremental update: Adds an acl entry to an acl. Creates the acl if it does\nnot exist yet.",
-      "file": "Client/AddAclEntry/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "AddAclEntry",
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.managedkafka.v1.Client.AddAclEntry",
+        "method": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.AddAclEntry",
+          "service": {
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafka",
+            "shortName": "ManagedKafka"
+          },
+          "shortName": "AddAclEntry"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "managedkafkapb.AddAclEntryRequest",
-            "name": "req"
+            "name": "req",
+            "type": "managedkafkapb.AddAclEntryRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*managedkafkapb.AddAclEntryResponse",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.managedkafka.v1.Client"
-        },
-        "method": {
-          "shortName": "AddAclEntry",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.AddAclEntry",
-          "service": {
-            "shortName": "ManagedKafka",
-            "fullName": "google.cloud.managedkafka.v1.ManagedKafka"
-          }
-        }
+        "shortName": "AddAclEntry"
       },
+      "description": "AddAclEntry incremental update: Adds an acl entry to an acl. Creates the acl if it does\nnot exist yet.",
+      "file": "Client/AddAclEntry/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafka_AddAclEntry_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka AddAclEntry Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafka_CancelOperation_sync",
-      "title": "managedkafka CancelOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.managedkafka.v1.Client.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
       "file": "Client/CancelOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CancelOperation",
-        "fullName": "google.cloud.managedkafka.v1.Client.CancelOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.CancelOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.managedkafka.v1.Client"
-        },
-        "method": {
-          "shortName": "CancelOperation",
-          "fullName": "google.longrunning.Operations.CancelOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafka_CancelOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka CancelOperation Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafka_CreateAcl_sync",
-      "title": "managedkafka CreateAcl Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.managedkafka.v1.Client.CreateAcl",
+        "method": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.CreateAcl",
+          "service": {
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafka",
+            "shortName": "ManagedKafka"
+          },
+          "shortName": "CreateAcl"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "managedkafkapb.CreateAclRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*managedkafkapb.Acl",
+        "shortName": "CreateAcl"
+      },
       "description": "CreateAcl creates a new acl in the given project, location, and cluster.",
       "file": "Client/CreateAcl/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateAcl",
-        "fullName": "google.cloud.managedkafka.v1.Client.CreateAcl",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "managedkafkapb.CreateAclRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*managedkafkapb.Acl",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.managedkafka.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateAcl",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.CreateAcl",
-          "service": {
-            "shortName": "ManagedKafka",
-            "fullName": "google.cloud.managedkafka.v1.ManagedKafka"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafka_CreateAcl_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka CreateAcl Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafka_CreateCluster_sync",
-      "title": "managedkafka CreateCluster Sample",
-      "description": "CreateCluster creates a new cluster in a given project and location.",
-      "file": "Client/CreateCluster/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateCluster",
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.managedkafka.v1.Client.CreateCluster",
+        "method": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.CreateCluster",
+          "service": {
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafka",
+            "shortName": "ManagedKafka"
+          },
+          "shortName": "CreateCluster"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "managedkafkapb.CreateClusterRequest",
-            "name": "req"
+            "name": "req",
+            "type": "managedkafkapb.CreateClusterRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateClusterOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.managedkafka.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateCluster",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.CreateCluster",
-          "service": {
-            "shortName": "ManagedKafka",
-            "fullName": "google.cloud.managedkafka.v1.ManagedKafka"
-          }
-        }
+        "shortName": "CreateCluster"
       },
+      "description": "CreateCluster creates a new cluster in a given project and location.",
+      "file": "Client/CreateCluster/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafka_CreateCluster_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka CreateCluster Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafka_CreateTopic_sync",
-      "title": "managedkafka CreateTopic Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.managedkafka.v1.Client.CreateTopic",
+        "method": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.CreateTopic",
+          "service": {
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafka",
+            "shortName": "ManagedKafka"
+          },
+          "shortName": "CreateTopic"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "managedkafkapb.CreateTopicRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*managedkafkapb.Topic",
+        "shortName": "CreateTopic"
+      },
       "description": "CreateTopic creates a new topic in a given project and location.",
       "file": "Client/CreateTopic/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateTopic",
-        "fullName": "google.cloud.managedkafka.v1.Client.CreateTopic",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "managedkafkapb.CreateTopicRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*managedkafkapb.Topic",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.managedkafka.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateTopic",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.CreateTopic",
-          "service": {
-            "shortName": "ManagedKafka",
-            "fullName": "google.cloud.managedkafka.v1.ManagedKafka"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafka_CreateTopic_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka CreateTopic Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafka_DeleteAcl_sync",
-      "title": "managedkafka DeleteAcl Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.managedkafka.v1.Client.DeleteAcl",
+        "method": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.DeleteAcl",
+          "service": {
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafka",
+            "shortName": "ManagedKafka"
+          },
+          "shortName": "DeleteAcl"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "managedkafkapb.DeleteAclRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteAcl"
+      },
       "description": "DeleteAcl deletes an acl.",
       "file": "Client/DeleteAcl/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteAcl",
-        "fullName": "google.cloud.managedkafka.v1.Client.DeleteAcl",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "managedkafkapb.DeleteAclRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.managedkafka.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteAcl",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.DeleteAcl",
-          "service": {
-            "shortName": "ManagedKafka",
-            "fullName": "google.cloud.managedkafka.v1.ManagedKafka"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafka_DeleteAcl_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka DeleteAcl Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafka_DeleteCluster_sync",
-      "title": "managedkafka DeleteCluster Sample",
-      "description": "DeleteCluster deletes a single cluster.",
-      "file": "Client/DeleteCluster/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteCluster",
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.managedkafka.v1.Client.DeleteCluster",
+        "method": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.DeleteCluster",
+          "service": {
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafka",
+            "shortName": "ManagedKafka"
+          },
+          "shortName": "DeleteCluster"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "managedkafkapb.DeleteClusterRequest",
-            "name": "req"
+            "name": "req",
+            "type": "managedkafkapb.DeleteClusterRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteClusterOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.managedkafka.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteCluster",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.DeleteCluster",
-          "service": {
-            "shortName": "ManagedKafka",
-            "fullName": "google.cloud.managedkafka.v1.ManagedKafka"
-          }
-        }
+        "shortName": "DeleteCluster"
       },
+      "description": "DeleteCluster deletes a single cluster.",
+      "file": "Client/DeleteCluster/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafka_DeleteCluster_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka DeleteCluster Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafka_DeleteConsumerGroup_sync",
-      "title": "managedkafka DeleteConsumerGroup Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.managedkafka.v1.Client.DeleteConsumerGroup",
+        "method": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.DeleteConsumerGroup",
+          "service": {
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafka",
+            "shortName": "ManagedKafka"
+          },
+          "shortName": "DeleteConsumerGroup"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "managedkafkapb.DeleteConsumerGroupRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteConsumerGroup"
+      },
       "description": "DeleteConsumerGroup deletes a single consumer group.",
       "file": "Client/DeleteConsumerGroup/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteConsumerGroup",
-        "fullName": "google.cloud.managedkafka.v1.Client.DeleteConsumerGroup",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "managedkafkapb.DeleteConsumerGroupRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.managedkafka.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteConsumerGroup",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.DeleteConsumerGroup",
-          "service": {
-            "shortName": "ManagedKafka",
-            "fullName": "google.cloud.managedkafka.v1.ManagedKafka"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafka_DeleteConsumerGroup_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka DeleteConsumerGroup Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafka_DeleteOperation_sync",
-      "title": "managedkafka DeleteOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.managedkafka.v1.Client.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
       "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
       "file": "Client/DeleteOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteOperation",
-        "fullName": "google.cloud.managedkafka.v1.Client.DeleteOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.DeleteOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.managedkafka.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteOperation",
-          "fullName": "google.longrunning.Operations.DeleteOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafka_DeleteOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka DeleteOperation Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafka_DeleteTopic_sync",
-      "title": "managedkafka DeleteTopic Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.managedkafka.v1.Client.DeleteTopic",
+        "method": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.DeleteTopic",
+          "service": {
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafka",
+            "shortName": "ManagedKafka"
+          },
+          "shortName": "DeleteTopic"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "managedkafkapb.DeleteTopicRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteTopic"
+      },
       "description": "DeleteTopic deletes a single topic.",
       "file": "Client/DeleteTopic/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteTopic",
-        "fullName": "google.cloud.managedkafka.v1.Client.DeleteTopic",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "managedkafkapb.DeleteTopicRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.managedkafka.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteTopic",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.DeleteTopic",
-          "service": {
-            "shortName": "ManagedKafka",
-            "fullName": "google.cloud.managedkafka.v1.ManagedKafka"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafka_DeleteTopic_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka DeleteTopic Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafka_GetAcl_sync",
-      "title": "managedkafka GetAcl Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.managedkafka.v1.Client.GetAcl",
+        "method": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.GetAcl",
+          "service": {
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafka",
+            "shortName": "ManagedKafka"
+          },
+          "shortName": "GetAcl"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "managedkafkapb.GetAclRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*managedkafkapb.Acl",
+        "shortName": "GetAcl"
+      },
       "description": "GetAcl returns the properties of a single acl.",
       "file": "Client/GetAcl/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetAcl",
-        "fullName": "google.cloud.managedkafka.v1.Client.GetAcl",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "managedkafkapb.GetAclRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*managedkafkapb.Acl",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.managedkafka.v1.Client"
-        },
-        "method": {
-          "shortName": "GetAcl",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.GetAcl",
-          "service": {
-            "shortName": "ManagedKafka",
-            "fullName": "google.cloud.managedkafka.v1.ManagedKafka"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafka_GetAcl_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka GetAcl Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafka_GetCluster_sync",
-      "title": "managedkafka GetCluster Sample",
-      "description": "GetCluster returns the properties of a single cluster.",
-      "file": "Client/GetCluster/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetCluster",
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.managedkafka.v1.Client.GetCluster",
+        "method": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.GetCluster",
+          "service": {
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafka",
+            "shortName": "ManagedKafka"
+          },
+          "shortName": "GetCluster"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "managedkafkapb.GetClusterRequest",
-            "name": "req"
+            "name": "req",
+            "type": "managedkafkapb.GetClusterRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*managedkafkapb.Cluster",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.managedkafka.v1.Client"
-        },
-        "method": {
-          "shortName": "GetCluster",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.GetCluster",
-          "service": {
-            "shortName": "ManagedKafka",
-            "fullName": "google.cloud.managedkafka.v1.ManagedKafka"
-          }
-        }
+        "shortName": "GetCluster"
       },
+      "description": "GetCluster returns the properties of a single cluster.",
+      "file": "Client/GetCluster/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafka_GetCluster_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka GetCluster Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafka_GetConsumerGroup_sync",
-      "title": "managedkafka GetConsumerGroup Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.managedkafka.v1.Client.GetConsumerGroup",
+        "method": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.GetConsumerGroup",
+          "service": {
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafka",
+            "shortName": "ManagedKafka"
+          },
+          "shortName": "GetConsumerGroup"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "managedkafkapb.GetConsumerGroupRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*managedkafkapb.ConsumerGroup",
+        "shortName": "GetConsumerGroup"
+      },
       "description": "GetConsumerGroup returns the properties of a single consumer group.",
       "file": "Client/GetConsumerGroup/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetConsumerGroup",
-        "fullName": "google.cloud.managedkafka.v1.Client.GetConsumerGroup",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "managedkafkapb.GetConsumerGroupRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*managedkafkapb.ConsumerGroup",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.managedkafka.v1.Client"
-        },
-        "method": {
-          "shortName": "GetConsumerGroup",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.GetConsumerGroup",
-          "service": {
-            "shortName": "ManagedKafka",
-            "fullName": "google.cloud.managedkafka.v1.ManagedKafka"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafka_GetConsumerGroup_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka GetConsumerGroup Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafka_GetLocation_sync",
-      "title": "managedkafka GetLocation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.managedkafka.v1.Client.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "shortName": "GetLocation"
+      },
       "description": "GetLocation gets information about a location.",
       "file": "Client/GetLocation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetLocation",
-        "fullName": "google.cloud.managedkafka.v1.Client.GetLocation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "locationpb.GetLocationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*locationpb.Location",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.managedkafka.v1.Client"
-        },
-        "method": {
-          "shortName": "GetLocation",
-          "fullName": "google.cloud.location.Locations.GetLocation",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafka_GetLocation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka GetLocation Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafka_GetOperation_sync",
-      "title": "managedkafka GetOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.managedkafka.v1.Client.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
       "description": "GetOperation is a utility method from google.longrunning.Operations.",
       "file": "Client/GetOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetOperation",
-        "fullName": "google.cloud.managedkafka.v1.Client.GetOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.GetOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*longrunningpb.Operation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.managedkafka.v1.Client"
-        },
-        "method": {
-          "shortName": "GetOperation",
-          "fullName": "google.longrunning.Operations.GetOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafka_GetOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka GetOperation Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafka_GetTopic_sync",
-      "title": "managedkafka GetTopic Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.managedkafka.v1.Client.GetTopic",
+        "method": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.GetTopic",
+          "service": {
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafka",
+            "shortName": "ManagedKafka"
+          },
+          "shortName": "GetTopic"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "managedkafkapb.GetTopicRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*managedkafkapb.Topic",
+        "shortName": "GetTopic"
+      },
       "description": "GetTopic returns the properties of a single topic.",
       "file": "Client/GetTopic/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetTopic",
-        "fullName": "google.cloud.managedkafka.v1.Client.GetTopic",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "managedkafkapb.GetTopicRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*managedkafkapb.Topic",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.managedkafka.v1.Client"
-        },
-        "method": {
-          "shortName": "GetTopic",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.GetTopic",
-          "service": {
-            "shortName": "ManagedKafka",
-            "fullName": "google.cloud.managedkafka.v1.ManagedKafka"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafka_GetTopic_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka GetTopic Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafka_ListAcls_sync",
-      "title": "managedkafka ListAcls Sample",
-      "description": "ListAcls lists the acls in a given cluster.",
-      "file": "Client/ListAcls/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListAcls",
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.managedkafka.v1.Client.ListAcls",
+        "method": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.ListAcls",
+          "service": {
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafka",
+            "shortName": "ManagedKafka"
+          },
+          "shortName": "ListAcls"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "managedkafkapb.ListAclsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "managedkafkapb.ListAclsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "AclIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.managedkafka.v1.Client"
-        },
-        "method": {
-          "shortName": "ListAcls",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.ListAcls",
-          "service": {
-            "shortName": "ManagedKafka",
-            "fullName": "google.cloud.managedkafka.v1.ManagedKafka"
-          }
-        }
+        "shortName": "ListAcls"
       },
+      "description": "ListAcls lists the acls in a given cluster.",
+      "file": "Client/ListAcls/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafka_ListAcls_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka ListAcls Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafka_ListClusters_sync",
-      "title": "managedkafka ListClusters Sample",
-      "description": "ListClusters lists the clusters in a given project and location.",
-      "file": "Client/ListClusters/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListClusters",
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.managedkafka.v1.Client.ListClusters",
+        "method": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.ListClusters",
+          "service": {
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafka",
+            "shortName": "ManagedKafka"
+          },
+          "shortName": "ListClusters"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "managedkafkapb.ListClustersRequest",
-            "name": "req"
+            "name": "req",
+            "type": "managedkafkapb.ListClustersRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ClusterIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.managedkafka.v1.Client"
-        },
-        "method": {
-          "shortName": "ListClusters",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.ListClusters",
-          "service": {
-            "shortName": "ManagedKafka",
-            "fullName": "google.cloud.managedkafka.v1.ManagedKafka"
-          }
-        }
+        "shortName": "ListClusters"
       },
+      "description": "ListClusters lists the clusters in a given project and location.",
+      "file": "Client/ListClusters/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafka_ListClusters_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka ListClusters Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafka_ListConsumerGroups_sync",
-      "title": "managedkafka ListConsumerGroups Sample",
-      "description": "ListConsumerGroups lists the consumer groups in a given cluster.",
-      "file": "Client/ListConsumerGroups/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListConsumerGroups",
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.managedkafka.v1.Client.ListConsumerGroups",
+        "method": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.ListConsumerGroups",
+          "service": {
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafka",
+            "shortName": "ManagedKafka"
+          },
+          "shortName": "ListConsumerGroups"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "managedkafkapb.ListConsumerGroupsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "managedkafkapb.ListConsumerGroupsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ConsumerGroupIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.managedkafka.v1.Client"
-        },
-        "method": {
-          "shortName": "ListConsumerGroups",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.ListConsumerGroups",
-          "service": {
-            "shortName": "ManagedKafka",
-            "fullName": "google.cloud.managedkafka.v1.ManagedKafka"
-          }
-        }
+        "shortName": "ListConsumerGroups"
       },
+      "description": "ListConsumerGroups lists the consumer groups in a given cluster.",
+      "file": "Client/ListConsumerGroups/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafka_ListConsumerGroups_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka ListConsumerGroups Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafka_ListLocations_sync",
-      "title": "managedkafka ListLocations Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.managedkafka.v1.Client.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "shortName": "ListLocations"
+      },
       "description": "ListLocations lists information about the supported locations for this service.",
       "file": "Client/ListLocations/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "ListLocations",
-        "fullName": "google.cloud.managedkafka.v1.Client.ListLocations",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "locationpb.ListLocationsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "LocationIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.managedkafka.v1.Client"
-        },
-        "method": {
-          "shortName": "ListLocations",
-          "fullName": "google.cloud.location.Locations.ListLocations",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafka_ListLocations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka ListLocations Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafka_ListOperations_sync",
-      "title": "managedkafka ListOperations Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.managedkafka.v1.Client.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
       "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "Client/ListOperations/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "ListOperations",
-        "fullName": "google.cloud.managedkafka.v1.Client.ListOperations",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.ListOperationsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "OperationIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.managedkafka.v1.Client"
-        },
-        "method": {
-          "shortName": "ListOperations",
-          "fullName": "google.longrunning.Operations.ListOperations",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafka_ListOperations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka ListOperations Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafka_ListTopics_sync",
-      "title": "managedkafka ListTopics Sample",
-      "description": "ListTopics lists the topics in a given cluster.",
-      "file": "Client/ListTopics/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListTopics",
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.managedkafka.v1.Client.ListTopics",
+        "method": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.ListTopics",
+          "service": {
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafka",
+            "shortName": "ManagedKafka"
+          },
+          "shortName": "ListTopics"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "managedkafkapb.ListTopicsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "managedkafkapb.ListTopicsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "TopicIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.managedkafka.v1.Client"
-        },
-        "method": {
-          "shortName": "ListTopics",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.ListTopics",
-          "service": {
-            "shortName": "ManagedKafka",
-            "fullName": "google.cloud.managedkafka.v1.ManagedKafka"
-          }
-        }
+        "shortName": "ListTopics"
       },
+      "description": "ListTopics lists the topics in a given cluster.",
+      "file": "Client/ListTopics/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafka_ListTopics_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka ListTopics Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafka_RemoveAclEntry_sync",
-      "title": "managedkafka RemoveAclEntry Sample",
-      "description": "RemoveAclEntry incremental update: Removes an acl entry from an acl. Deletes the acl if\nits acl entries become empty (i.e. if the removed entry was the last one in\nthe acl).",
-      "file": "Client/RemoveAclEntry/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "RemoveAclEntry",
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.managedkafka.v1.Client.RemoveAclEntry",
+        "method": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.RemoveAclEntry",
+          "service": {
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafka",
+            "shortName": "ManagedKafka"
+          },
+          "shortName": "RemoveAclEntry"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "managedkafkapb.RemoveAclEntryRequest",
-            "name": "req"
+            "name": "req",
+            "type": "managedkafkapb.RemoveAclEntryRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*managedkafkapb.RemoveAclEntryResponse",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.managedkafka.v1.Client"
-        },
-        "method": {
-          "shortName": "RemoveAclEntry",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.RemoveAclEntry",
-          "service": {
-            "shortName": "ManagedKafka",
-            "fullName": "google.cloud.managedkafka.v1.ManagedKafka"
-          }
-        }
+        "shortName": "RemoveAclEntry"
       },
+      "description": "RemoveAclEntry incremental update: Removes an acl entry from an acl. Deletes the acl if\nits acl entries become empty (i.e. if the removed entry was the last one in\nthe acl).",
+      "file": "Client/RemoveAclEntry/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafka_RemoveAclEntry_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka RemoveAclEntry Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafka_UpdateAcl_sync",
-      "title": "managedkafka UpdateAcl Sample",
-      "description": "UpdateAcl updates the properties of a single acl.",
-      "file": "Client/UpdateAcl/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateAcl",
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.managedkafka.v1.Client.UpdateAcl",
+        "method": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.UpdateAcl",
+          "service": {
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafka",
+            "shortName": "ManagedKafka"
+          },
+          "shortName": "UpdateAcl"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "managedkafkapb.UpdateAclRequest",
-            "name": "req"
+            "name": "req",
+            "type": "managedkafkapb.UpdateAclRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*managedkafkapb.Acl",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.managedkafka.v1.Client"
-        },
-        "method": {
-          "shortName": "UpdateAcl",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.UpdateAcl",
-          "service": {
-            "shortName": "ManagedKafka",
-            "fullName": "google.cloud.managedkafka.v1.ManagedKafka"
-          }
-        }
+        "shortName": "UpdateAcl"
       },
+      "description": "UpdateAcl updates the properties of a single acl.",
+      "file": "Client/UpdateAcl/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafka_UpdateAcl_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka UpdateAcl Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafka_UpdateCluster_sync",
-      "title": "managedkafka UpdateCluster Sample",
-      "description": "UpdateCluster updates the properties of a single cluster.",
-      "file": "Client/UpdateCluster/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateCluster",
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.managedkafka.v1.Client.UpdateCluster",
+        "method": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.UpdateCluster",
+          "service": {
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafka",
+            "shortName": "ManagedKafka"
+          },
+          "shortName": "UpdateCluster"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "managedkafkapb.UpdateClusterRequest",
-            "name": "req"
+            "name": "req",
+            "type": "managedkafkapb.UpdateClusterRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UpdateClusterOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.managedkafka.v1.Client"
-        },
-        "method": {
-          "shortName": "UpdateCluster",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.UpdateCluster",
-          "service": {
-            "shortName": "ManagedKafka",
-            "fullName": "google.cloud.managedkafka.v1.ManagedKafka"
-          }
-        }
+        "shortName": "UpdateCluster"
       },
+      "description": "UpdateCluster updates the properties of a single cluster.",
+      "file": "Client/UpdateCluster/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafka_UpdateCluster_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka UpdateCluster Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafka_UpdateConsumerGroup_sync",
-      "title": "managedkafka UpdateConsumerGroup Sample",
-      "description": "UpdateConsumerGroup updates the properties of a single consumer group.",
-      "file": "Client/UpdateConsumerGroup/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateConsumerGroup",
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.managedkafka.v1.Client.UpdateConsumerGroup",
+        "method": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.UpdateConsumerGroup",
+          "service": {
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafka",
+            "shortName": "ManagedKafka"
+          },
+          "shortName": "UpdateConsumerGroup"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "managedkafkapb.UpdateConsumerGroupRequest",
-            "name": "req"
+            "name": "req",
+            "type": "managedkafkapb.UpdateConsumerGroupRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*managedkafkapb.ConsumerGroup",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.managedkafka.v1.Client"
-        },
-        "method": {
-          "shortName": "UpdateConsumerGroup",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.UpdateConsumerGroup",
-          "service": {
-            "shortName": "ManagedKafka",
-            "fullName": "google.cloud.managedkafka.v1.ManagedKafka"
-          }
-        }
+        "shortName": "UpdateConsumerGroup"
       },
+      "description": "UpdateConsumerGroup updates the properties of a single consumer group.",
+      "file": "Client/UpdateConsumerGroup/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafka_UpdateConsumerGroup_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka UpdateConsumerGroup Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafka_UpdateTopic_sync",
-      "title": "managedkafka UpdateTopic Sample",
-      "description": "UpdateTopic updates the properties of a single topic.",
-      "file": "Client/UpdateTopic/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateTopic",
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.managedkafka.v1.Client.UpdateTopic",
+        "method": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.UpdateTopic",
+          "service": {
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafka",
+            "shortName": "ManagedKafka"
+          },
+          "shortName": "UpdateTopic"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "managedkafkapb.UpdateTopicRequest",
-            "name": "req"
+            "name": "req",
+            "type": "managedkafkapb.UpdateTopicRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*managedkafkapb.Topic",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.managedkafka.v1.Client"
-        },
-        "method": {
-          "shortName": "UpdateTopic",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafka.UpdateTopic",
-          "service": {
-            "shortName": "ManagedKafka",
-            "fullName": "google.cloud.managedkafka.v1.ManagedKafka"
-          }
-        }
+        "shortName": "UpdateTopic"
       },
+      "description": "UpdateTopic updates the properties of a single topic.",
+      "file": "Client/UpdateTopic/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafka_UpdateTopic_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka UpdateTopic Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_CancelOperation_sync",
-      "title": "managedkafka CancelOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient",
+          "shortName": "ManagedKafkaConnectClient"
+        },
+        "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
       "file": "ManagedKafkaConnectClient/CancelOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CancelOperation",
-        "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient.CancelOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.CancelOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "ManagedKafkaConnectClient",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient"
-        },
-        "method": {
-          "shortName": "CancelOperation",
-          "fullName": "google.longrunning.Operations.CancelOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_CancelOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka CancelOperation Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_CreateConnectCluster_sync",
-      "title": "managedkafka CreateConnectCluster Sample",
-      "description": "CreateConnectCluster creates a new Kafka Connect cluster in a given project and location.",
-      "file": "ManagedKafkaConnectClient/CreateConnectCluster/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateConnectCluster",
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient",
+          "shortName": "ManagedKafkaConnectClient"
+        },
         "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient.CreateConnectCluster",
+        "method": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect.CreateConnectCluster",
+          "service": {
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect",
+            "shortName": "ManagedKafkaConnect"
+          },
+          "shortName": "CreateConnectCluster"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "managedkafkapb.CreateConnectClusterRequest",
-            "name": "req"
+            "name": "req",
+            "type": "managedkafkapb.CreateConnectClusterRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateConnectClusterOperation",
-        "client": {
-          "shortName": "ManagedKafkaConnectClient",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient"
-        },
-        "method": {
-          "shortName": "CreateConnectCluster",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect.CreateConnectCluster",
-          "service": {
-            "shortName": "ManagedKafkaConnect",
-            "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect"
-          }
-        }
+        "shortName": "CreateConnectCluster"
       },
+      "description": "CreateConnectCluster creates a new Kafka Connect cluster in a given project and location.",
+      "file": "ManagedKafkaConnectClient/CreateConnectCluster/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_CreateConnectCluster_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka CreateConnectCluster Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_CreateConnector_sync",
-      "title": "managedkafka CreateConnector Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient",
+          "shortName": "ManagedKafkaConnectClient"
+        },
+        "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient.CreateConnector",
+        "method": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect.CreateConnector",
+          "service": {
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect",
+            "shortName": "ManagedKafkaConnect"
+          },
+          "shortName": "CreateConnector"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "managedkafkapb.CreateConnectorRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*managedkafkapb.Connector",
+        "shortName": "CreateConnector"
+      },
       "description": "CreateConnector creates a new connector in a given Connect cluster.",
       "file": "ManagedKafkaConnectClient/CreateConnector/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateConnector",
-        "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient.CreateConnector",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "managedkafkapb.CreateConnectorRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*managedkafkapb.Connector",
-        "client": {
-          "shortName": "ManagedKafkaConnectClient",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient"
-        },
-        "method": {
-          "shortName": "CreateConnector",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect.CreateConnector",
-          "service": {
-            "shortName": "ManagedKafkaConnect",
-            "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_CreateConnector_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka CreateConnector Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_DeleteConnectCluster_sync",
-      "title": "managedkafka DeleteConnectCluster Sample",
-      "description": "DeleteConnectCluster deletes a single Connect cluster.",
-      "file": "ManagedKafkaConnectClient/DeleteConnectCluster/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteConnectCluster",
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient",
+          "shortName": "ManagedKafkaConnectClient"
+        },
         "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient.DeleteConnectCluster",
+        "method": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect.DeleteConnectCluster",
+          "service": {
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect",
+            "shortName": "ManagedKafkaConnect"
+          },
+          "shortName": "DeleteConnectCluster"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "managedkafkapb.DeleteConnectClusterRequest",
-            "name": "req"
+            "name": "req",
+            "type": "managedkafkapb.DeleteConnectClusterRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteConnectClusterOperation",
-        "client": {
-          "shortName": "ManagedKafkaConnectClient",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient"
-        },
-        "method": {
-          "shortName": "DeleteConnectCluster",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect.DeleteConnectCluster",
-          "service": {
-            "shortName": "ManagedKafkaConnect",
-            "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect"
-          }
-        }
+        "shortName": "DeleteConnectCluster"
       },
+      "description": "DeleteConnectCluster deletes a single Connect cluster.",
+      "file": "ManagedKafkaConnectClient/DeleteConnectCluster/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_DeleteConnectCluster_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka DeleteConnectCluster Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_DeleteConnector_sync",
-      "title": "managedkafka DeleteConnector Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient",
+          "shortName": "ManagedKafkaConnectClient"
+        },
+        "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient.DeleteConnector",
+        "method": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect.DeleteConnector",
+          "service": {
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect",
+            "shortName": "ManagedKafkaConnect"
+          },
+          "shortName": "DeleteConnector"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "managedkafkapb.DeleteConnectorRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteConnector"
+      },
       "description": "DeleteConnector deletes a connector.",
       "file": "ManagedKafkaConnectClient/DeleteConnector/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteConnector",
-        "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient.DeleteConnector",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "managedkafkapb.DeleteConnectorRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "ManagedKafkaConnectClient",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient"
-        },
-        "method": {
-          "shortName": "DeleteConnector",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect.DeleteConnector",
-          "service": {
-            "shortName": "ManagedKafkaConnect",
-            "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_DeleteConnector_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka DeleteConnector Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_DeleteOperation_sync",
-      "title": "managedkafka DeleteOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient",
+          "shortName": "ManagedKafkaConnectClient"
+        },
+        "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
       "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
       "file": "ManagedKafkaConnectClient/DeleteOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteOperation",
-        "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient.DeleteOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.DeleteOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "ManagedKafkaConnectClient",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient"
-        },
-        "method": {
-          "shortName": "DeleteOperation",
-          "fullName": "google.longrunning.Operations.DeleteOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_DeleteOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka DeleteOperation Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_GetConnectCluster_sync",
-      "title": "managedkafka GetConnectCluster Sample",
-      "description": "GetConnectCluster returns the properties of a single Kafka Connect cluster.",
-      "file": "ManagedKafkaConnectClient/GetConnectCluster/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetConnectCluster",
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient",
+          "shortName": "ManagedKafkaConnectClient"
+        },
         "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient.GetConnectCluster",
+        "method": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect.GetConnectCluster",
+          "service": {
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect",
+            "shortName": "ManagedKafkaConnect"
+          },
+          "shortName": "GetConnectCluster"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "managedkafkapb.GetConnectClusterRequest",
-            "name": "req"
+            "name": "req",
+            "type": "managedkafkapb.GetConnectClusterRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*managedkafkapb.ConnectCluster",
-        "client": {
-          "shortName": "ManagedKafkaConnectClient",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient"
-        },
-        "method": {
-          "shortName": "GetConnectCluster",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect.GetConnectCluster",
-          "service": {
-            "shortName": "ManagedKafkaConnect",
-            "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect"
-          }
-        }
+        "shortName": "GetConnectCluster"
       },
+      "description": "GetConnectCluster returns the properties of a single Kafka Connect cluster.",
+      "file": "ManagedKafkaConnectClient/GetConnectCluster/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_GetConnectCluster_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka GetConnectCluster Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_GetConnector_sync",
-      "title": "managedkafka GetConnector Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient",
+          "shortName": "ManagedKafkaConnectClient"
+        },
+        "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient.GetConnector",
+        "method": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect.GetConnector",
+          "service": {
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect",
+            "shortName": "ManagedKafkaConnect"
+          },
+          "shortName": "GetConnector"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "managedkafkapb.GetConnectorRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*managedkafkapb.Connector",
+        "shortName": "GetConnector"
+      },
       "description": "GetConnector returns the properties of a single connector.",
       "file": "ManagedKafkaConnectClient/GetConnector/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetConnector",
-        "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient.GetConnector",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "managedkafkapb.GetConnectorRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*managedkafkapb.Connector",
-        "client": {
-          "shortName": "ManagedKafkaConnectClient",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient"
-        },
-        "method": {
-          "shortName": "GetConnector",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect.GetConnector",
-          "service": {
-            "shortName": "ManagedKafkaConnect",
-            "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_GetConnector_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka GetConnector Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_GetLocation_sync",
-      "title": "managedkafka GetLocation Sample",
-      "description": "GetLocation gets information about a location.",
-      "file": "ManagedKafkaConnectClient/GetLocation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetLocation",
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient",
+          "shortName": "ManagedKafkaConnectClient"
+        },
         "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "locationpb.GetLocationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*locationpb.Location",
-        "client": {
-          "shortName": "ManagedKafkaConnectClient",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient"
-        },
-        "method": {
-          "shortName": "GetLocation",
-          "fullName": "google.cloud.location.Locations.GetLocation",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
+        "shortName": "GetLocation"
       },
+      "description": "GetLocation gets information about a location.",
+      "file": "ManagedKafkaConnectClient/GetLocation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_GetLocation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka GetLocation Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_GetOperation_sync",
-      "title": "managedkafka GetOperation Sample",
-      "description": "GetOperation is a utility method from google.longrunning.Operations.",
-      "file": "ManagedKafkaConnectClient/GetOperation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetOperation",
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient",
+          "shortName": "ManagedKafkaConnectClient"
+        },
         "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.GetOperationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*longrunningpb.Operation",
-        "client": {
-          "shortName": "ManagedKafkaConnectClient",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient"
-        },
-        "method": {
-          "shortName": "GetOperation",
-          "fullName": "google.longrunning.Operations.GetOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "GetOperation"
       },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "ManagedKafkaConnectClient/GetOperation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_GetOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka GetOperation Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_ListConnectClusters_sync",
-      "title": "managedkafka ListConnectClusters Sample",
-      "description": "ListConnectClusters lists the Kafka Connect clusters in a given project and location.",
-      "file": "ManagedKafkaConnectClient/ListConnectClusters/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListConnectClusters",
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient",
+          "shortName": "ManagedKafkaConnectClient"
+        },
         "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient.ListConnectClusters",
+        "method": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect.ListConnectClusters",
+          "service": {
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect",
+            "shortName": "ManagedKafkaConnect"
+          },
+          "shortName": "ListConnectClusters"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "managedkafkapb.ListConnectClustersRequest",
-            "name": "req"
+            "name": "req",
+            "type": "managedkafkapb.ListConnectClustersRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ConnectClusterIterator",
-        "client": {
-          "shortName": "ManagedKafkaConnectClient",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient"
-        },
-        "method": {
-          "shortName": "ListConnectClusters",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect.ListConnectClusters",
-          "service": {
-            "shortName": "ManagedKafkaConnect",
-            "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect"
-          }
-        }
+        "shortName": "ListConnectClusters"
       },
+      "description": "ListConnectClusters lists the Kafka Connect clusters in a given project and location.",
+      "file": "ManagedKafkaConnectClient/ListConnectClusters/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_ListConnectClusters_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka ListConnectClusters Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_ListConnectors_sync",
-      "title": "managedkafka ListConnectors Sample",
-      "description": "ListConnectors lists the connectors in a given Connect cluster.",
-      "file": "ManagedKafkaConnectClient/ListConnectors/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListConnectors",
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient",
+          "shortName": "ManagedKafkaConnectClient"
+        },
         "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient.ListConnectors",
+        "method": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect.ListConnectors",
+          "service": {
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect",
+            "shortName": "ManagedKafkaConnect"
+          },
+          "shortName": "ListConnectors"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "managedkafkapb.ListConnectorsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "managedkafkapb.ListConnectorsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ConnectorIterator",
-        "client": {
-          "shortName": "ManagedKafkaConnectClient",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient"
-        },
-        "method": {
-          "shortName": "ListConnectors",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect.ListConnectors",
-          "service": {
-            "shortName": "ManagedKafkaConnect",
-            "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect"
-          }
-        }
+        "shortName": "ListConnectors"
       },
+      "description": "ListConnectors lists the connectors in a given Connect cluster.",
+      "file": "ManagedKafkaConnectClient/ListConnectors/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_ListConnectors_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka ListConnectors Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_ListLocations_sync",
-      "title": "managedkafka ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
-      "file": "ManagedKafkaConnectClient/ListLocations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListLocations",
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient",
+          "shortName": "ManagedKafkaConnectClient"
+        },
         "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "locationpb.ListLocationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "LocationIterator",
-        "client": {
-          "shortName": "ManagedKafkaConnectClient",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient"
-        },
-        "method": {
-          "shortName": "ListLocations",
-          "fullName": "google.cloud.location.Locations.ListLocations",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
+        "shortName": "ListLocations"
       },
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "ManagedKafkaConnectClient/ListLocations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_ListLocations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka ListLocations Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_ListOperations_sync",
-      "title": "managedkafka ListOperations Sample",
-      "description": "ListOperations is a utility method from google.longrunning.Operations.",
-      "file": "ManagedKafkaConnectClient/ListOperations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListOperations",
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient",
+          "shortName": "ManagedKafkaConnectClient"
+        },
         "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.ListOperationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "OperationIterator",
-        "client": {
-          "shortName": "ManagedKafkaConnectClient",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient"
-        },
-        "method": {
-          "shortName": "ListOperations",
-          "fullName": "google.longrunning.Operations.ListOperations",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "ListOperations"
       },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "ManagedKafkaConnectClient/ListOperations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_ListOperations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka ListOperations Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_PauseConnector_sync",
-      "title": "managedkafka PauseConnector Sample",
-      "description": "PauseConnector pauses the connector and its tasks.",
-      "file": "ManagedKafkaConnectClient/PauseConnector/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "PauseConnector",
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient",
+          "shortName": "ManagedKafkaConnectClient"
+        },
         "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient.PauseConnector",
+        "method": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect.PauseConnector",
+          "service": {
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect",
+            "shortName": "ManagedKafkaConnect"
+          },
+          "shortName": "PauseConnector"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "managedkafkapb.PauseConnectorRequest",
-            "name": "req"
+            "name": "req",
+            "type": "managedkafkapb.PauseConnectorRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*managedkafkapb.PauseConnectorResponse",
-        "client": {
-          "shortName": "ManagedKafkaConnectClient",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient"
-        },
-        "method": {
-          "shortName": "PauseConnector",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect.PauseConnector",
-          "service": {
-            "shortName": "ManagedKafkaConnect",
-            "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect"
-          }
-        }
+        "shortName": "PauseConnector"
       },
+      "description": "PauseConnector pauses the connector and its tasks.",
+      "file": "ManagedKafkaConnectClient/PauseConnector/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_PauseConnector_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka PauseConnector Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_RestartConnector_sync",
-      "title": "managedkafka RestartConnector Sample",
-      "description": "RestartConnector restarts the connector.",
-      "file": "ManagedKafkaConnectClient/RestartConnector/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "RestartConnector",
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient",
+          "shortName": "ManagedKafkaConnectClient"
+        },
         "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient.RestartConnector",
+        "method": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect.RestartConnector",
+          "service": {
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect",
+            "shortName": "ManagedKafkaConnect"
+          },
+          "shortName": "RestartConnector"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "managedkafkapb.RestartConnectorRequest",
-            "name": "req"
+            "name": "req",
+            "type": "managedkafkapb.RestartConnectorRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*managedkafkapb.RestartConnectorResponse",
-        "client": {
-          "shortName": "ManagedKafkaConnectClient",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient"
-        },
-        "method": {
-          "shortName": "RestartConnector",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect.RestartConnector",
-          "service": {
-            "shortName": "ManagedKafkaConnect",
-            "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect"
-          }
-        }
+        "shortName": "RestartConnector"
       },
+      "description": "RestartConnector restarts the connector.",
+      "file": "ManagedKafkaConnectClient/RestartConnector/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_RestartConnector_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka RestartConnector Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_ResumeConnector_sync",
-      "title": "managedkafka ResumeConnector Sample",
-      "description": "ResumeConnector resumes the connector and its tasks.",
-      "file": "ManagedKafkaConnectClient/ResumeConnector/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ResumeConnector",
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient",
+          "shortName": "ManagedKafkaConnectClient"
+        },
         "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient.ResumeConnector",
+        "method": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect.ResumeConnector",
+          "service": {
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect",
+            "shortName": "ManagedKafkaConnect"
+          },
+          "shortName": "ResumeConnector"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "managedkafkapb.ResumeConnectorRequest",
-            "name": "req"
+            "name": "req",
+            "type": "managedkafkapb.ResumeConnectorRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*managedkafkapb.ResumeConnectorResponse",
-        "client": {
-          "shortName": "ManagedKafkaConnectClient",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient"
-        },
-        "method": {
-          "shortName": "ResumeConnector",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect.ResumeConnector",
-          "service": {
-            "shortName": "ManagedKafkaConnect",
-            "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect"
-          }
-        }
+        "shortName": "ResumeConnector"
       },
+      "description": "ResumeConnector resumes the connector and its tasks.",
+      "file": "ManagedKafkaConnectClient/ResumeConnector/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_ResumeConnector_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka ResumeConnector Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_StopConnector_sync",
-      "title": "managedkafka StopConnector Sample",
-      "description": "StopConnector stops the connector.",
-      "file": "ManagedKafkaConnectClient/StopConnector/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "StopConnector",
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient",
+          "shortName": "ManagedKafkaConnectClient"
+        },
         "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient.StopConnector",
+        "method": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect.StopConnector",
+          "service": {
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect",
+            "shortName": "ManagedKafkaConnect"
+          },
+          "shortName": "StopConnector"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "managedkafkapb.StopConnectorRequest",
-            "name": "req"
+            "name": "req",
+            "type": "managedkafkapb.StopConnectorRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*managedkafkapb.StopConnectorResponse",
-        "client": {
-          "shortName": "ManagedKafkaConnectClient",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient"
-        },
-        "method": {
-          "shortName": "StopConnector",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect.StopConnector",
-          "service": {
-            "shortName": "ManagedKafkaConnect",
-            "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect"
-          }
-        }
+        "shortName": "StopConnector"
       },
+      "description": "StopConnector stops the connector.",
+      "file": "ManagedKafkaConnectClient/StopConnector/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_StopConnector_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka StopConnector Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_UpdateConnectCluster_sync",
-      "title": "managedkafka UpdateConnectCluster Sample",
-      "description": "UpdateConnectCluster updates the properties of a single Kafka Connect cluster.",
-      "file": "ManagedKafkaConnectClient/UpdateConnectCluster/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateConnectCluster",
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient",
+          "shortName": "ManagedKafkaConnectClient"
+        },
         "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient.UpdateConnectCluster",
+        "method": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect.UpdateConnectCluster",
+          "service": {
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect",
+            "shortName": "ManagedKafkaConnect"
+          },
+          "shortName": "UpdateConnectCluster"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "managedkafkapb.UpdateConnectClusterRequest",
-            "name": "req"
+            "name": "req",
+            "type": "managedkafkapb.UpdateConnectClusterRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UpdateConnectClusterOperation",
-        "client": {
-          "shortName": "ManagedKafkaConnectClient",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient"
-        },
-        "method": {
-          "shortName": "UpdateConnectCluster",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect.UpdateConnectCluster",
-          "service": {
-            "shortName": "ManagedKafkaConnect",
-            "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect"
-          }
-        }
+        "shortName": "UpdateConnectCluster"
       },
+      "description": "UpdateConnectCluster updates the properties of a single Kafka Connect cluster.",
+      "file": "ManagedKafkaConnectClient/UpdateConnectCluster/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_UpdateConnectCluster_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka UpdateConnectCluster Sample"
     },
     {
-      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_UpdateConnector_sync",
-      "title": "managedkafka UpdateConnector Sample",
-      "description": "UpdateConnector updates the properties of a connector.",
-      "file": "ManagedKafkaConnectClient/UpdateConnector/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateConnector",
+        "client": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient",
+          "shortName": "ManagedKafkaConnectClient"
+        },
         "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient.UpdateConnector",
+        "method": {
+          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect.UpdateConnector",
+          "service": {
+            "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect",
+            "shortName": "ManagedKafkaConnect"
+          },
+          "shortName": "UpdateConnector"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "managedkafkapb.UpdateConnectorRequest",
-            "name": "req"
+            "name": "req",
+            "type": "managedkafkapb.UpdateConnectorRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*managedkafkapb.Connector",
-        "client": {
-          "shortName": "ManagedKafkaConnectClient",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnectClient"
-        },
-        "method": {
-          "shortName": "UpdateConnector",
-          "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect.UpdateConnector",
-          "service": {
-            "shortName": "ManagedKafkaConnect",
-            "fullName": "google.cloud.managedkafka.v1.ManagedKafkaConnect"
-          }
-        }
+        "shortName": "UpdateConnector"
       },
+      "description": "UpdateConnector updates the properties of a connector.",
+      "file": "ManagedKafkaConnectClient/UpdateConnector/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_UpdateConnector_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "managedkafka UpdateConnector Sample"
     }
   ]
 }

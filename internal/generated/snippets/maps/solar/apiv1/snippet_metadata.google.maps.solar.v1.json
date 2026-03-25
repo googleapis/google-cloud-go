@@ -1,153 +1,153 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/maps/solar/apiv1",
-    "version": "1.29.0",
-    "language": "GO",
     "apis": [
       {
         "id": "google.maps.solar.v1",
         "version": "v1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/maps/solar/apiv1",
+    "version": "1.29.0"
   },
   "snippets": [
     {
-      "regionTag": "solar_v1_generated_Solar_FindClosestBuildingInsights_sync",
-      "title": "solar FindClosestBuildingInsights Sample",
-      "description": "FindClosestBuildingInsights locates the building whose centroid is closest to a query point. Returns an\nerror with code `NOT_FOUND` if there are no buildings within approximately\n50m of the query point.",
-      "file": "Client/FindClosestBuildingInsights/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "FindClosestBuildingInsights",
+        "client": {
+          "fullName": "google.maps.solar.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.maps.solar.v1.Client.FindClosestBuildingInsights",
+        "method": {
+          "fullName": "google.maps.solar.v1.Solar.FindClosestBuildingInsights",
+          "service": {
+            "fullName": "google.maps.solar.v1.Solar",
+            "shortName": "Solar"
+          },
+          "shortName": "FindClosestBuildingInsights"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "solarpb.FindClosestBuildingInsightsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "solarpb.FindClosestBuildingInsightsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*solarpb.BuildingInsights",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.maps.solar.v1.Client"
-        },
-        "method": {
-          "shortName": "FindClosestBuildingInsights",
-          "fullName": "google.maps.solar.v1.Solar.FindClosestBuildingInsights",
-          "service": {
-            "shortName": "Solar",
-            "fullName": "google.maps.solar.v1.Solar"
-          }
-        }
+        "shortName": "FindClosestBuildingInsights"
       },
+      "description": "FindClosestBuildingInsights locates the building whose centroid is closest to a query point. Returns an\nerror with code `NOT_FOUND` if there are no buildings within approximately\n50m of the query point.",
+      "file": "Client/FindClosestBuildingInsights/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "solar_v1_generated_Solar_FindClosestBuildingInsights_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "solar FindClosestBuildingInsights Sample"
     },
     {
-      "regionTag": "solar_v1_generated_Solar_GetDataLayers_sync",
-      "title": "solar GetDataLayers Sample",
-      "description": "GetDataLayers gets solar information for a region surrounding a location.\nReturns an error with code `NOT_FOUND` if the location is outside\nthe coverage area.",
-      "file": "Client/GetDataLayers/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetDataLayers",
+        "client": {
+          "fullName": "google.maps.solar.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.maps.solar.v1.Client.GetDataLayers",
+        "method": {
+          "fullName": "google.maps.solar.v1.Solar.GetDataLayers",
+          "service": {
+            "fullName": "google.maps.solar.v1.Solar",
+            "shortName": "Solar"
+          },
+          "shortName": "GetDataLayers"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "solarpb.GetDataLayersRequest",
-            "name": "req"
+            "name": "req",
+            "type": "solarpb.GetDataLayersRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*solarpb.DataLayers",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.maps.solar.v1.Client"
-        },
-        "method": {
-          "shortName": "GetDataLayers",
-          "fullName": "google.maps.solar.v1.Solar.GetDataLayers",
-          "service": {
-            "shortName": "Solar",
-            "fullName": "google.maps.solar.v1.Solar"
-          }
-        }
+        "shortName": "GetDataLayers"
       },
+      "description": "GetDataLayers gets solar information for a region surrounding a location.\nReturns an error with code `NOT_FOUND` if the location is outside\nthe coverage area.",
+      "file": "Client/GetDataLayers/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "solar_v1_generated_Solar_GetDataLayers_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "solar GetDataLayers Sample"
     },
     {
-      "regionTag": "solar_v1_generated_Solar_GetGeoTiff_sync",
-      "title": "solar GetGeoTiff Sample",
-      "description": "GetGeoTiff returns an image by its ID.",
-      "file": "Client/GetGeoTiff/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetGeoTiff",
+        "client": {
+          "fullName": "google.maps.solar.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.maps.solar.v1.Client.GetGeoTiff",
+        "method": {
+          "fullName": "google.maps.solar.v1.Solar.GetGeoTiff",
+          "service": {
+            "fullName": "google.maps.solar.v1.Solar",
+            "shortName": "Solar"
+          },
+          "shortName": "GetGeoTiff"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "solarpb.GetGeoTiffRequest",
-            "name": "req"
+            "name": "req",
+            "type": "solarpb.GetGeoTiffRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*httpbodypb.HttpBody",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.maps.solar.v1.Client"
-        },
-        "method": {
-          "shortName": "GetGeoTiff",
-          "fullName": "google.maps.solar.v1.Solar.GetGeoTiff",
-          "service": {
-            "shortName": "Solar",
-            "fullName": "google.maps.solar.v1.Solar"
-          }
-        }
+        "shortName": "GetGeoTiff"
       },
+      "description": "GetGeoTiff returns an image by its ID.",
+      "file": "Client/GetGeoTiff/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "solar_v1_generated_Solar_GetGeoTiff_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "solar GetGeoTiff Sample"
     }
   ]
 }

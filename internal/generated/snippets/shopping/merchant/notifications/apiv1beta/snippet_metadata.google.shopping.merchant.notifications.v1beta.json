@@ -1,244 +1,244 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/shopping/merchant/notifications/apiv1beta",
-    "version": "1.6.0",
-    "language": "GO",
     "apis": [
       {
         "id": "google.shopping.merchant.notifications.v1beta",
         "version": "v1beta"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/shopping/merchant/notifications/apiv1beta",
+    "version": "1.6.0"
   },
   "snippets": [
     {
-      "regionTag": "merchantapi_v1beta_generated_NotificationsApiService_CreateNotificationSubscription_sync",
-      "title": "merchantapi CreateNotificationSubscription Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.shopping.merchant.notifications.v1beta.NotificationsApiClient",
+          "shortName": "NotificationsApiClient"
+        },
+        "fullName": "google.shopping.merchant.notifications.v1beta.NotificationsApiClient.CreateNotificationSubscription",
+        "method": {
+          "fullName": "google.shopping.merchant.notifications.v1beta.NotificationsApiService.CreateNotificationSubscription",
+          "service": {
+            "fullName": "google.shopping.merchant.notifications.v1beta.NotificationsApiService",
+            "shortName": "NotificationsApiService"
+          },
+          "shortName": "CreateNotificationSubscription"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "notificationspb.CreateNotificationSubscriptionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*notificationspb.NotificationSubscription",
+        "shortName": "CreateNotificationSubscription"
+      },
       "description": "CreateNotificationSubscription creates a notification subscription for a merchant. We will allow the\nfollowing types of notification subscriptions to exist together (per\nmerchant as a subscriber per event type): \n1. Subscription for all managed accounts + subscription for self\n2. Multiple \"partial\" subscriptions for managed accounts + subscription\nfor self\n\nwe will not allow (per merchant as a subscriber per event type): \n1. multiple self subscriptions.\n2. multiple \"all managed accounts\" subscriptions.\n3. all and partial subscriptions at the same time.\n4. multiple partial subscriptions for the same target account",
       "file": "NotificationsApiClient/CreateNotificationSubscription/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateNotificationSubscription",
-        "fullName": "google.shopping.merchant.notifications.v1beta.NotificationsApiClient.CreateNotificationSubscription",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "notificationspb.CreateNotificationSubscriptionRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*notificationspb.NotificationSubscription",
-        "client": {
-          "shortName": "NotificationsApiClient",
-          "fullName": "google.shopping.merchant.notifications.v1beta.NotificationsApiClient"
-        },
-        "method": {
-          "shortName": "CreateNotificationSubscription",
-          "fullName": "google.shopping.merchant.notifications.v1beta.NotificationsApiService.CreateNotificationSubscription",
-          "service": {
-            "shortName": "NotificationsApiService",
-            "fullName": "google.shopping.merchant.notifications.v1beta.NotificationsApiService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "merchantapi_v1beta_generated_NotificationsApiService_CreateNotificationSubscription_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "merchantapi CreateNotificationSubscription Sample"
     },
     {
-      "regionTag": "merchantapi_v1beta_generated_NotificationsApiService_DeleteNotificationSubscription_sync",
-      "title": "merchantapi DeleteNotificationSubscription Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.shopping.merchant.notifications.v1beta.NotificationsApiClient",
+          "shortName": "NotificationsApiClient"
+        },
+        "fullName": "google.shopping.merchant.notifications.v1beta.NotificationsApiClient.DeleteNotificationSubscription",
+        "method": {
+          "fullName": "google.shopping.merchant.notifications.v1beta.NotificationsApiService.DeleteNotificationSubscription",
+          "service": {
+            "fullName": "google.shopping.merchant.notifications.v1beta.NotificationsApiService",
+            "shortName": "NotificationsApiService"
+          },
+          "shortName": "DeleteNotificationSubscription"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "notificationspb.DeleteNotificationSubscriptionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteNotificationSubscription"
+      },
       "description": "DeleteNotificationSubscription deletes a notification subscription for a merchant.",
       "file": "NotificationsApiClient/DeleteNotificationSubscription/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteNotificationSubscription",
-        "fullName": "google.shopping.merchant.notifications.v1beta.NotificationsApiClient.DeleteNotificationSubscription",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "notificationspb.DeleteNotificationSubscriptionRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "NotificationsApiClient",
-          "fullName": "google.shopping.merchant.notifications.v1beta.NotificationsApiClient"
-        },
-        "method": {
-          "shortName": "DeleteNotificationSubscription",
-          "fullName": "google.shopping.merchant.notifications.v1beta.NotificationsApiService.DeleteNotificationSubscription",
-          "service": {
-            "shortName": "NotificationsApiService",
-            "fullName": "google.shopping.merchant.notifications.v1beta.NotificationsApiService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "merchantapi_v1beta_generated_NotificationsApiService_DeleteNotificationSubscription_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "merchantapi DeleteNotificationSubscription Sample"
     },
     {
-      "regionTag": "merchantapi_v1beta_generated_NotificationsApiService_GetNotificationSubscription_sync",
-      "title": "merchantapi GetNotificationSubscription Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.shopping.merchant.notifications.v1beta.NotificationsApiClient",
+          "shortName": "NotificationsApiClient"
+        },
+        "fullName": "google.shopping.merchant.notifications.v1beta.NotificationsApiClient.GetNotificationSubscription",
+        "method": {
+          "fullName": "google.shopping.merchant.notifications.v1beta.NotificationsApiService.GetNotificationSubscription",
+          "service": {
+            "fullName": "google.shopping.merchant.notifications.v1beta.NotificationsApiService",
+            "shortName": "NotificationsApiService"
+          },
+          "shortName": "GetNotificationSubscription"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "notificationspb.GetNotificationSubscriptionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*notificationspb.NotificationSubscription",
+        "shortName": "GetNotificationSubscription"
+      },
       "description": "GetNotificationSubscription gets notification subscriptions for an account.",
       "file": "NotificationsApiClient/GetNotificationSubscription/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetNotificationSubscription",
-        "fullName": "google.shopping.merchant.notifications.v1beta.NotificationsApiClient.GetNotificationSubscription",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "notificationspb.GetNotificationSubscriptionRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*notificationspb.NotificationSubscription",
-        "client": {
-          "shortName": "NotificationsApiClient",
-          "fullName": "google.shopping.merchant.notifications.v1beta.NotificationsApiClient"
-        },
-        "method": {
-          "shortName": "GetNotificationSubscription",
-          "fullName": "google.shopping.merchant.notifications.v1beta.NotificationsApiService.GetNotificationSubscription",
-          "service": {
-            "shortName": "NotificationsApiService",
-            "fullName": "google.shopping.merchant.notifications.v1beta.NotificationsApiService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "merchantapi_v1beta_generated_NotificationsApiService_GetNotificationSubscription_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "merchantapi GetNotificationSubscription Sample"
     },
     {
-      "regionTag": "merchantapi_v1beta_generated_NotificationsApiService_ListNotificationSubscriptions_sync",
-      "title": "merchantapi ListNotificationSubscriptions Sample",
-      "description": "ListNotificationSubscriptions gets all the notification subscriptions for a merchant.",
-      "file": "NotificationsApiClient/ListNotificationSubscriptions/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListNotificationSubscriptions",
+        "client": {
+          "fullName": "google.shopping.merchant.notifications.v1beta.NotificationsApiClient",
+          "shortName": "NotificationsApiClient"
+        },
         "fullName": "google.shopping.merchant.notifications.v1beta.NotificationsApiClient.ListNotificationSubscriptions",
+        "method": {
+          "fullName": "google.shopping.merchant.notifications.v1beta.NotificationsApiService.ListNotificationSubscriptions",
+          "service": {
+            "fullName": "google.shopping.merchant.notifications.v1beta.NotificationsApiService",
+            "shortName": "NotificationsApiService"
+          },
+          "shortName": "ListNotificationSubscriptions"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "notificationspb.ListNotificationSubscriptionsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "notificationspb.ListNotificationSubscriptionsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "NotificationSubscriptionIterator",
-        "client": {
-          "shortName": "NotificationsApiClient",
-          "fullName": "google.shopping.merchant.notifications.v1beta.NotificationsApiClient"
-        },
-        "method": {
-          "shortName": "ListNotificationSubscriptions",
-          "fullName": "google.shopping.merchant.notifications.v1beta.NotificationsApiService.ListNotificationSubscriptions",
-          "service": {
-            "shortName": "NotificationsApiService",
-            "fullName": "google.shopping.merchant.notifications.v1beta.NotificationsApiService"
-          }
-        }
+        "shortName": "ListNotificationSubscriptions"
       },
+      "description": "ListNotificationSubscriptions gets all the notification subscriptions for a merchant.",
+      "file": "NotificationsApiClient/ListNotificationSubscriptions/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "merchantapi_v1beta_generated_NotificationsApiService_ListNotificationSubscriptions_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "merchantapi ListNotificationSubscriptions Sample"
     },
     {
-      "regionTag": "merchantapi_v1beta_generated_NotificationsApiService_UpdateNotificationSubscription_sync",
-      "title": "merchantapi UpdateNotificationSubscription Sample",
-      "description": "UpdateNotificationSubscription updates an existing notification subscription for a merchant.",
-      "file": "NotificationsApiClient/UpdateNotificationSubscription/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateNotificationSubscription",
+        "client": {
+          "fullName": "google.shopping.merchant.notifications.v1beta.NotificationsApiClient",
+          "shortName": "NotificationsApiClient"
+        },
         "fullName": "google.shopping.merchant.notifications.v1beta.NotificationsApiClient.UpdateNotificationSubscription",
+        "method": {
+          "fullName": "google.shopping.merchant.notifications.v1beta.NotificationsApiService.UpdateNotificationSubscription",
+          "service": {
+            "fullName": "google.shopping.merchant.notifications.v1beta.NotificationsApiService",
+            "shortName": "NotificationsApiService"
+          },
+          "shortName": "UpdateNotificationSubscription"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "notificationspb.UpdateNotificationSubscriptionRequest",
-            "name": "req"
+            "name": "req",
+            "type": "notificationspb.UpdateNotificationSubscriptionRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*notificationspb.NotificationSubscription",
-        "client": {
-          "shortName": "NotificationsApiClient",
-          "fullName": "google.shopping.merchant.notifications.v1beta.NotificationsApiClient"
-        },
-        "method": {
-          "shortName": "UpdateNotificationSubscription",
-          "fullName": "google.shopping.merchant.notifications.v1beta.NotificationsApiService.UpdateNotificationSubscription",
-          "service": {
-            "shortName": "NotificationsApiService",
-            "fullName": "google.shopping.merchant.notifications.v1beta.NotificationsApiService"
-          }
-        }
+        "shortName": "UpdateNotificationSubscription"
       },
+      "description": "UpdateNotificationSubscription updates an existing notification subscription for a merchant.",
+      "file": "NotificationsApiClient/UpdateNotificationSubscription/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "merchantapi_v1beta_generated_NotificationsApiService_UpdateNotificationSubscription_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "merchantapi UpdateNotificationSubscription Sample"
     }
   ]
 }

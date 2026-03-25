@@ -1,932 +1,932 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/storageinsights/apiv1",
-    "version": "1.2.1",
-    "language": "GO",
     "apis": [
       {
         "id": "google.cloud.storageinsights.v1",
         "version": "v1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/storageinsights/apiv1",
+    "version": "1.2.1"
   },
   "snippets": [
     {
-      "regionTag": "storageinsights_v1_generated_StorageInsights_CancelOperation_sync",
-      "title": "storageinsights CancelOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.storageinsights.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.storageinsights.v1.Client.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
       "file": "Client/CancelOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CancelOperation",
-        "fullName": "google.cloud.storageinsights.v1.Client.CancelOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.CancelOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.storageinsights.v1.Client"
-        },
-        "method": {
-          "shortName": "CancelOperation",
-          "fullName": "google.longrunning.Operations.CancelOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "storageinsights_v1_generated_StorageInsights_CancelOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storageinsights CancelOperation Sample"
     },
     {
-      "regionTag": "storageinsights_v1_generated_StorageInsights_CreateDatasetConfig_sync",
-      "title": "storageinsights CreateDatasetConfig Sample",
-      "description": "CreateDatasetConfig creates a dataset configuration in a given project for a given location.",
-      "file": "Client/CreateDatasetConfig/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateDatasetConfig",
+        "client": {
+          "fullName": "google.cloud.storageinsights.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.storageinsights.v1.Client.CreateDatasetConfig",
+        "method": {
+          "fullName": "google.cloud.storageinsights.v1.StorageInsights.CreateDatasetConfig",
+          "service": {
+            "fullName": "google.cloud.storageinsights.v1.StorageInsights",
+            "shortName": "StorageInsights"
+          },
+          "shortName": "CreateDatasetConfig"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "storageinsightspb.CreateDatasetConfigRequest",
-            "name": "req"
+            "name": "req",
+            "type": "storageinsightspb.CreateDatasetConfigRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateDatasetConfigOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.storageinsights.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateDatasetConfig",
-          "fullName": "google.cloud.storageinsights.v1.StorageInsights.CreateDatasetConfig",
-          "service": {
-            "shortName": "StorageInsights",
-            "fullName": "google.cloud.storageinsights.v1.StorageInsights"
-          }
-        }
+        "shortName": "CreateDatasetConfig"
       },
+      "description": "CreateDatasetConfig creates a dataset configuration in a given project for a given location.",
+      "file": "Client/CreateDatasetConfig/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "storageinsights_v1_generated_StorageInsights_CreateDatasetConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storageinsights CreateDatasetConfig Sample"
     },
     {
-      "regionTag": "storageinsights_v1_generated_StorageInsights_CreateReportConfig_sync",
-      "title": "storageinsights CreateReportConfig Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.storageinsights.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.storageinsights.v1.Client.CreateReportConfig",
+        "method": {
+          "fullName": "google.cloud.storageinsights.v1.StorageInsights.CreateReportConfig",
+          "service": {
+            "fullName": "google.cloud.storageinsights.v1.StorageInsights",
+            "shortName": "StorageInsights"
+          },
+          "shortName": "CreateReportConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "storageinsightspb.CreateReportConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*storageinsightspb.ReportConfig",
+        "shortName": "CreateReportConfig"
+      },
       "description": "CreateReportConfig creates a new ReportConfig in a given project and location.",
       "file": "Client/CreateReportConfig/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateReportConfig",
-        "fullName": "google.cloud.storageinsights.v1.Client.CreateReportConfig",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "storageinsightspb.CreateReportConfigRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*storageinsightspb.ReportConfig",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.storageinsights.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateReportConfig",
-          "fullName": "google.cloud.storageinsights.v1.StorageInsights.CreateReportConfig",
-          "service": {
-            "shortName": "StorageInsights",
-            "fullName": "google.cloud.storageinsights.v1.StorageInsights"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "storageinsights_v1_generated_StorageInsights_CreateReportConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storageinsights CreateReportConfig Sample"
     },
     {
-      "regionTag": "storageinsights_v1_generated_StorageInsights_DeleteDatasetConfig_sync",
-      "title": "storageinsights DeleteDatasetConfig Sample",
-      "description": "DeleteDatasetConfig deletes a dataset configuration in a given project for a given location.",
-      "file": "Client/DeleteDatasetConfig/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteDatasetConfig",
+        "client": {
+          "fullName": "google.cloud.storageinsights.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.storageinsights.v1.Client.DeleteDatasetConfig",
+        "method": {
+          "fullName": "google.cloud.storageinsights.v1.StorageInsights.DeleteDatasetConfig",
+          "service": {
+            "fullName": "google.cloud.storageinsights.v1.StorageInsights",
+            "shortName": "StorageInsights"
+          },
+          "shortName": "DeleteDatasetConfig"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "storageinsightspb.DeleteDatasetConfigRequest",
-            "name": "req"
+            "name": "req",
+            "type": "storageinsightspb.DeleteDatasetConfigRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteDatasetConfigOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.storageinsights.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteDatasetConfig",
-          "fullName": "google.cloud.storageinsights.v1.StorageInsights.DeleteDatasetConfig",
-          "service": {
-            "shortName": "StorageInsights",
-            "fullName": "google.cloud.storageinsights.v1.StorageInsights"
-          }
-        }
+        "shortName": "DeleteDatasetConfig"
       },
+      "description": "DeleteDatasetConfig deletes a dataset configuration in a given project for a given location.",
+      "file": "Client/DeleteDatasetConfig/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "storageinsights_v1_generated_StorageInsights_DeleteDatasetConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storageinsights DeleteDatasetConfig Sample"
     },
     {
-      "regionTag": "storageinsights_v1_generated_StorageInsights_DeleteOperation_sync",
-      "title": "storageinsights DeleteOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.storageinsights.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.storageinsights.v1.Client.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
       "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
       "file": "Client/DeleteOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteOperation",
-        "fullName": "google.cloud.storageinsights.v1.Client.DeleteOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.DeleteOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.storageinsights.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteOperation",
-          "fullName": "google.longrunning.Operations.DeleteOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "storageinsights_v1_generated_StorageInsights_DeleteOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storageinsights DeleteOperation Sample"
     },
     {
-      "regionTag": "storageinsights_v1_generated_StorageInsights_DeleteReportConfig_sync",
-      "title": "storageinsights DeleteReportConfig Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.storageinsights.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.storageinsights.v1.Client.DeleteReportConfig",
+        "method": {
+          "fullName": "google.cloud.storageinsights.v1.StorageInsights.DeleteReportConfig",
+          "service": {
+            "fullName": "google.cloud.storageinsights.v1.StorageInsights",
+            "shortName": "StorageInsights"
+          },
+          "shortName": "DeleteReportConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "storageinsightspb.DeleteReportConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteReportConfig"
+      },
       "description": "DeleteReportConfig deletes a single ReportConfig.",
       "file": "Client/DeleteReportConfig/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteReportConfig",
-        "fullName": "google.cloud.storageinsights.v1.Client.DeleteReportConfig",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "storageinsightspb.DeleteReportConfigRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.storageinsights.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteReportConfig",
-          "fullName": "google.cloud.storageinsights.v1.StorageInsights.DeleteReportConfig",
-          "service": {
-            "shortName": "StorageInsights",
-            "fullName": "google.cloud.storageinsights.v1.StorageInsights"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "storageinsights_v1_generated_StorageInsights_DeleteReportConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storageinsights DeleteReportConfig Sample"
     },
     {
-      "regionTag": "storageinsights_v1_generated_StorageInsights_GetDatasetConfig_sync",
-      "title": "storageinsights GetDatasetConfig Sample",
-      "description": "GetDatasetConfig gets the dataset configuration in a given project for a given location.",
-      "file": "Client/GetDatasetConfig/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetDatasetConfig",
+        "client": {
+          "fullName": "google.cloud.storageinsights.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.storageinsights.v1.Client.GetDatasetConfig",
+        "method": {
+          "fullName": "google.cloud.storageinsights.v1.StorageInsights.GetDatasetConfig",
+          "service": {
+            "fullName": "google.cloud.storageinsights.v1.StorageInsights",
+            "shortName": "StorageInsights"
+          },
+          "shortName": "GetDatasetConfig"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "storageinsightspb.GetDatasetConfigRequest",
-            "name": "req"
+            "name": "req",
+            "type": "storageinsightspb.GetDatasetConfigRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*storageinsightspb.DatasetConfig",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.storageinsights.v1.Client"
-        },
-        "method": {
-          "shortName": "GetDatasetConfig",
-          "fullName": "google.cloud.storageinsights.v1.StorageInsights.GetDatasetConfig",
-          "service": {
-            "shortName": "StorageInsights",
-            "fullName": "google.cloud.storageinsights.v1.StorageInsights"
-          }
-        }
+        "shortName": "GetDatasetConfig"
       },
+      "description": "GetDatasetConfig gets the dataset configuration in a given project for a given location.",
+      "file": "Client/GetDatasetConfig/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "storageinsights_v1_generated_StorageInsights_GetDatasetConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storageinsights GetDatasetConfig Sample"
     },
     {
-      "regionTag": "storageinsights_v1_generated_StorageInsights_GetLocation_sync",
-      "title": "storageinsights GetLocation Sample",
-      "description": "GetLocation gets information about a location.",
-      "file": "Client/GetLocation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetLocation",
+        "client": {
+          "fullName": "google.cloud.storageinsights.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.storageinsights.v1.Client.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "locationpb.GetLocationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*locationpb.Location",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.storageinsights.v1.Client"
-        },
-        "method": {
-          "shortName": "GetLocation",
-          "fullName": "google.cloud.location.Locations.GetLocation",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
+        "shortName": "GetLocation"
       },
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "storageinsights_v1_generated_StorageInsights_GetLocation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storageinsights GetLocation Sample"
     },
     {
-      "regionTag": "storageinsights_v1_generated_StorageInsights_GetOperation_sync",
-      "title": "storageinsights GetOperation Sample",
-      "description": "GetOperation is a utility method from google.longrunning.Operations.",
-      "file": "Client/GetOperation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetOperation",
+        "client": {
+          "fullName": "google.cloud.storageinsights.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.storageinsights.v1.Client.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.GetOperationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*longrunningpb.Operation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.storageinsights.v1.Client"
-        },
-        "method": {
-          "shortName": "GetOperation",
-          "fullName": "google.longrunning.Operations.GetOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "GetOperation"
       },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "storageinsights_v1_generated_StorageInsights_GetOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storageinsights GetOperation Sample"
     },
     {
-      "regionTag": "storageinsights_v1_generated_StorageInsights_GetReportConfig_sync",
-      "title": "storageinsights GetReportConfig Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.storageinsights.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.storageinsights.v1.Client.GetReportConfig",
+        "method": {
+          "fullName": "google.cloud.storageinsights.v1.StorageInsights.GetReportConfig",
+          "service": {
+            "fullName": "google.cloud.storageinsights.v1.StorageInsights",
+            "shortName": "StorageInsights"
+          },
+          "shortName": "GetReportConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "storageinsightspb.GetReportConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*storageinsightspb.ReportConfig",
+        "shortName": "GetReportConfig"
+      },
       "description": "GetReportConfig gets details of a single ReportConfig.",
       "file": "Client/GetReportConfig/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetReportConfig",
-        "fullName": "google.cloud.storageinsights.v1.Client.GetReportConfig",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "storageinsightspb.GetReportConfigRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*storageinsightspb.ReportConfig",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.storageinsights.v1.Client"
-        },
-        "method": {
-          "shortName": "GetReportConfig",
-          "fullName": "google.cloud.storageinsights.v1.StorageInsights.GetReportConfig",
-          "service": {
-            "shortName": "StorageInsights",
-            "fullName": "google.cloud.storageinsights.v1.StorageInsights"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "storageinsights_v1_generated_StorageInsights_GetReportConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storageinsights GetReportConfig Sample"
     },
     {
-      "regionTag": "storageinsights_v1_generated_StorageInsights_GetReportDetail_sync",
-      "title": "storageinsights GetReportDetail Sample",
-      "description": "GetReportDetail gets details of a single ReportDetail.",
-      "file": "Client/GetReportDetail/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetReportDetail",
+        "client": {
+          "fullName": "google.cloud.storageinsights.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.storageinsights.v1.Client.GetReportDetail",
+        "method": {
+          "fullName": "google.cloud.storageinsights.v1.StorageInsights.GetReportDetail",
+          "service": {
+            "fullName": "google.cloud.storageinsights.v1.StorageInsights",
+            "shortName": "StorageInsights"
+          },
+          "shortName": "GetReportDetail"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "storageinsightspb.GetReportDetailRequest",
-            "name": "req"
+            "name": "req",
+            "type": "storageinsightspb.GetReportDetailRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*storageinsightspb.ReportDetail",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.storageinsights.v1.Client"
-        },
-        "method": {
-          "shortName": "GetReportDetail",
-          "fullName": "google.cloud.storageinsights.v1.StorageInsights.GetReportDetail",
-          "service": {
-            "shortName": "StorageInsights",
-            "fullName": "google.cloud.storageinsights.v1.StorageInsights"
-          }
-        }
+        "shortName": "GetReportDetail"
       },
+      "description": "GetReportDetail gets details of a single ReportDetail.",
+      "file": "Client/GetReportDetail/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "storageinsights_v1_generated_StorageInsights_GetReportDetail_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storageinsights GetReportDetail Sample"
     },
     {
-      "regionTag": "storageinsights_v1_generated_StorageInsights_LinkDataset_sync",
-      "title": "storageinsights LinkDataset Sample",
-      "description": "LinkDataset links a dataset to BigQuery in a given project for a given location.",
-      "file": "Client/LinkDataset/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "LinkDataset",
+        "client": {
+          "fullName": "google.cloud.storageinsights.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.storageinsights.v1.Client.LinkDataset",
+        "method": {
+          "fullName": "google.cloud.storageinsights.v1.StorageInsights.LinkDataset",
+          "service": {
+            "fullName": "google.cloud.storageinsights.v1.StorageInsights",
+            "shortName": "StorageInsights"
+          },
+          "shortName": "LinkDataset"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "storageinsightspb.LinkDatasetRequest",
-            "name": "req"
+            "name": "req",
+            "type": "storageinsightspb.LinkDatasetRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "LinkDatasetOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.storageinsights.v1.Client"
-        },
-        "method": {
-          "shortName": "LinkDataset",
-          "fullName": "google.cloud.storageinsights.v1.StorageInsights.LinkDataset",
-          "service": {
-            "shortName": "StorageInsights",
-            "fullName": "google.cloud.storageinsights.v1.StorageInsights"
-          }
-        }
+        "shortName": "LinkDataset"
       },
+      "description": "LinkDataset links a dataset to BigQuery in a given project for a given location.",
+      "file": "Client/LinkDataset/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "storageinsights_v1_generated_StorageInsights_LinkDataset_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storageinsights LinkDataset Sample"
     },
     {
-      "regionTag": "storageinsights_v1_generated_StorageInsights_ListDatasetConfigs_sync",
-      "title": "storageinsights ListDatasetConfigs Sample",
-      "description": "ListDatasetConfigs lists the dataset configurations in a given project for a given location.",
-      "file": "Client/ListDatasetConfigs/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListDatasetConfigs",
+        "client": {
+          "fullName": "google.cloud.storageinsights.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.storageinsights.v1.Client.ListDatasetConfigs",
+        "method": {
+          "fullName": "google.cloud.storageinsights.v1.StorageInsights.ListDatasetConfigs",
+          "service": {
+            "fullName": "google.cloud.storageinsights.v1.StorageInsights",
+            "shortName": "StorageInsights"
+          },
+          "shortName": "ListDatasetConfigs"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "storageinsightspb.ListDatasetConfigsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "storageinsightspb.ListDatasetConfigsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DatasetConfigIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.storageinsights.v1.Client"
-        },
-        "method": {
-          "shortName": "ListDatasetConfigs",
-          "fullName": "google.cloud.storageinsights.v1.StorageInsights.ListDatasetConfigs",
-          "service": {
-            "shortName": "StorageInsights",
-            "fullName": "google.cloud.storageinsights.v1.StorageInsights"
-          }
-        }
+        "shortName": "ListDatasetConfigs"
       },
+      "description": "ListDatasetConfigs lists the dataset configurations in a given project for a given location.",
+      "file": "Client/ListDatasetConfigs/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "storageinsights_v1_generated_StorageInsights_ListDatasetConfigs_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storageinsights ListDatasetConfigs Sample"
     },
     {
-      "regionTag": "storageinsights_v1_generated_StorageInsights_ListLocations_sync",
-      "title": "storageinsights ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
-      "file": "Client/ListLocations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListLocations",
+        "client": {
+          "fullName": "google.cloud.storageinsights.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.storageinsights.v1.Client.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "locationpb.ListLocationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "LocationIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.storageinsights.v1.Client"
-        },
-        "method": {
-          "shortName": "ListLocations",
-          "fullName": "google.cloud.location.Locations.ListLocations",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
+        "shortName": "ListLocations"
       },
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "storageinsights_v1_generated_StorageInsights_ListLocations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storageinsights ListLocations Sample"
     },
     {
-      "regionTag": "storageinsights_v1_generated_StorageInsights_ListOperations_sync",
-      "title": "storageinsights ListOperations Sample",
-      "description": "ListOperations is a utility method from google.longrunning.Operations.",
-      "file": "Client/ListOperations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListOperations",
+        "client": {
+          "fullName": "google.cloud.storageinsights.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.storageinsights.v1.Client.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.ListOperationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "OperationIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.storageinsights.v1.Client"
-        },
-        "method": {
-          "shortName": "ListOperations",
-          "fullName": "google.longrunning.Operations.ListOperations",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "ListOperations"
       },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "storageinsights_v1_generated_StorageInsights_ListOperations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storageinsights ListOperations Sample"
     },
     {
-      "regionTag": "storageinsights_v1_generated_StorageInsights_ListReportConfigs_sync",
-      "title": "storageinsights ListReportConfigs Sample",
-      "description": "ListReportConfigs lists ReportConfigs in a given project and location.",
-      "file": "Client/ListReportConfigs/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListReportConfigs",
+        "client": {
+          "fullName": "google.cloud.storageinsights.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.storageinsights.v1.Client.ListReportConfigs",
+        "method": {
+          "fullName": "google.cloud.storageinsights.v1.StorageInsights.ListReportConfigs",
+          "service": {
+            "fullName": "google.cloud.storageinsights.v1.StorageInsights",
+            "shortName": "StorageInsights"
+          },
+          "shortName": "ListReportConfigs"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "storageinsightspb.ListReportConfigsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "storageinsightspb.ListReportConfigsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ReportConfigIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.storageinsights.v1.Client"
-        },
-        "method": {
-          "shortName": "ListReportConfigs",
-          "fullName": "google.cloud.storageinsights.v1.StorageInsights.ListReportConfigs",
-          "service": {
-            "shortName": "StorageInsights",
-            "fullName": "google.cloud.storageinsights.v1.StorageInsights"
-          }
-        }
+        "shortName": "ListReportConfigs"
       },
+      "description": "ListReportConfigs lists ReportConfigs in a given project and location.",
+      "file": "Client/ListReportConfigs/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "storageinsights_v1_generated_StorageInsights_ListReportConfigs_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storageinsights ListReportConfigs Sample"
     },
     {
-      "regionTag": "storageinsights_v1_generated_StorageInsights_ListReportDetails_sync",
-      "title": "storageinsights ListReportDetails Sample",
-      "description": "ListReportDetails lists ReportDetails in a given project and location.",
-      "file": "Client/ListReportDetails/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListReportDetails",
+        "client": {
+          "fullName": "google.cloud.storageinsights.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.storageinsights.v1.Client.ListReportDetails",
+        "method": {
+          "fullName": "google.cloud.storageinsights.v1.StorageInsights.ListReportDetails",
+          "service": {
+            "fullName": "google.cloud.storageinsights.v1.StorageInsights",
+            "shortName": "StorageInsights"
+          },
+          "shortName": "ListReportDetails"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "storageinsightspb.ListReportDetailsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "storageinsightspb.ListReportDetailsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ReportDetailIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.storageinsights.v1.Client"
-        },
-        "method": {
-          "shortName": "ListReportDetails",
-          "fullName": "google.cloud.storageinsights.v1.StorageInsights.ListReportDetails",
-          "service": {
-            "shortName": "StorageInsights",
-            "fullName": "google.cloud.storageinsights.v1.StorageInsights"
-          }
-        }
+        "shortName": "ListReportDetails"
       },
+      "description": "ListReportDetails lists ReportDetails in a given project and location.",
+      "file": "Client/ListReportDetails/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "storageinsights_v1_generated_StorageInsights_ListReportDetails_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storageinsights ListReportDetails Sample"
     },
     {
-      "regionTag": "storageinsights_v1_generated_StorageInsights_UnlinkDataset_sync",
-      "title": "storageinsights UnlinkDataset Sample",
-      "description": "UnlinkDataset unlinks a dataset from BigQuery in a given project\nfor a given location.",
-      "file": "Client/UnlinkDataset/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UnlinkDataset",
+        "client": {
+          "fullName": "google.cloud.storageinsights.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.storageinsights.v1.Client.UnlinkDataset",
+        "method": {
+          "fullName": "google.cloud.storageinsights.v1.StorageInsights.UnlinkDataset",
+          "service": {
+            "fullName": "google.cloud.storageinsights.v1.StorageInsights",
+            "shortName": "StorageInsights"
+          },
+          "shortName": "UnlinkDataset"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "storageinsightspb.UnlinkDatasetRequest",
-            "name": "req"
+            "name": "req",
+            "type": "storageinsightspb.UnlinkDatasetRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UnlinkDatasetOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.storageinsights.v1.Client"
-        },
-        "method": {
-          "shortName": "UnlinkDataset",
-          "fullName": "google.cloud.storageinsights.v1.StorageInsights.UnlinkDataset",
-          "service": {
-            "shortName": "StorageInsights",
-            "fullName": "google.cloud.storageinsights.v1.StorageInsights"
-          }
-        }
+        "shortName": "UnlinkDataset"
       },
+      "description": "UnlinkDataset unlinks a dataset from BigQuery in a given project\nfor a given location.",
+      "file": "Client/UnlinkDataset/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "storageinsights_v1_generated_StorageInsights_UnlinkDataset_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storageinsights UnlinkDataset Sample"
     },
     {
-      "regionTag": "storageinsights_v1_generated_StorageInsights_UpdateDatasetConfig_sync",
-      "title": "storageinsights UpdateDatasetConfig Sample",
-      "description": "UpdateDatasetConfig updates a dataset configuration in a given project for a given location.",
-      "file": "Client/UpdateDatasetConfig/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateDatasetConfig",
+        "client": {
+          "fullName": "google.cloud.storageinsights.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.storageinsights.v1.Client.UpdateDatasetConfig",
+        "method": {
+          "fullName": "google.cloud.storageinsights.v1.StorageInsights.UpdateDatasetConfig",
+          "service": {
+            "fullName": "google.cloud.storageinsights.v1.StorageInsights",
+            "shortName": "StorageInsights"
+          },
+          "shortName": "UpdateDatasetConfig"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "storageinsightspb.UpdateDatasetConfigRequest",
-            "name": "req"
+            "name": "req",
+            "type": "storageinsightspb.UpdateDatasetConfigRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UpdateDatasetConfigOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.storageinsights.v1.Client"
-        },
-        "method": {
-          "shortName": "UpdateDatasetConfig",
-          "fullName": "google.cloud.storageinsights.v1.StorageInsights.UpdateDatasetConfig",
-          "service": {
-            "shortName": "StorageInsights",
-            "fullName": "google.cloud.storageinsights.v1.StorageInsights"
-          }
-        }
+        "shortName": "UpdateDatasetConfig"
       },
+      "description": "UpdateDatasetConfig updates a dataset configuration in a given project for a given location.",
+      "file": "Client/UpdateDatasetConfig/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "storageinsights_v1_generated_StorageInsights_UpdateDatasetConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storageinsights UpdateDatasetConfig Sample"
     },
     {
-      "regionTag": "storageinsights_v1_generated_StorageInsights_UpdateReportConfig_sync",
-      "title": "storageinsights UpdateReportConfig Sample",
-      "description": "UpdateReportConfig updates the parameters of a single ReportConfig.",
-      "file": "Client/UpdateReportConfig/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateReportConfig",
+        "client": {
+          "fullName": "google.cloud.storageinsights.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.storageinsights.v1.Client.UpdateReportConfig",
+        "method": {
+          "fullName": "google.cloud.storageinsights.v1.StorageInsights.UpdateReportConfig",
+          "service": {
+            "fullName": "google.cloud.storageinsights.v1.StorageInsights",
+            "shortName": "StorageInsights"
+          },
+          "shortName": "UpdateReportConfig"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "storageinsightspb.UpdateReportConfigRequest",
-            "name": "req"
+            "name": "req",
+            "type": "storageinsightspb.UpdateReportConfigRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*storageinsightspb.ReportConfig",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.storageinsights.v1.Client"
-        },
-        "method": {
-          "shortName": "UpdateReportConfig",
-          "fullName": "google.cloud.storageinsights.v1.StorageInsights.UpdateReportConfig",
-          "service": {
-            "shortName": "StorageInsights",
-            "fullName": "google.cloud.storageinsights.v1.StorageInsights"
-          }
-        }
+        "shortName": "UpdateReportConfig"
       },
+      "description": "UpdateReportConfig updates the parameters of a single ReportConfig.",
+      "file": "Client/UpdateReportConfig/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "storageinsights_v1_generated_StorageInsights_UpdateReportConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storageinsights UpdateReportConfig Sample"
     }
   ]
 }

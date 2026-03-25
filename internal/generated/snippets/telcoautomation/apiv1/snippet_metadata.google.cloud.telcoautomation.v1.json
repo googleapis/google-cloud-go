@@ -1,1943 +1,1943 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/telcoautomation/apiv1",
-    "version": "1.1.6",
-    "language": "GO",
     "apis": [
       {
         "id": "google.cloud.telcoautomation.v1",
         "version": "v1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/telcoautomation/apiv1",
+    "version": "1.1.6"
   },
   "snippets": [
     {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ApplyDeployment_sync",
-      "title": "telcoautomation ApplyDeployment Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.telcoautomation.v1.Client.ApplyDeployment",
+        "method": {
+          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.ApplyDeployment",
+          "service": {
+            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation",
+            "shortName": "TelcoAutomation"
+          },
+          "shortName": "ApplyDeployment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "telcoautomationpb.ApplyDeploymentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*telcoautomationpb.Deployment",
+        "shortName": "ApplyDeployment"
+      },
       "description": "ApplyDeployment applies the deployment's YAML files to the parent orchestration cluster.",
       "file": "Client/ApplyDeployment/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "ApplyDeployment",
-        "fullName": "google.cloud.telcoautomation.v1.Client.ApplyDeployment",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "telcoautomationpb.ApplyDeploymentRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*telcoautomationpb.Deployment",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "ApplyDeployment",
-          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.ApplyDeployment",
-          "service": {
-            "shortName": "TelcoAutomation",
-            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ApplyDeployment_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "telcoautomation ApplyDeployment Sample"
     },
     {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ApplyHydratedDeployment_sync",
-      "title": "telcoautomation ApplyHydratedDeployment Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.telcoautomation.v1.Client.ApplyHydratedDeployment",
+        "method": {
+          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.ApplyHydratedDeployment",
+          "service": {
+            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation",
+            "shortName": "TelcoAutomation"
+          },
+          "shortName": "ApplyHydratedDeployment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "telcoautomationpb.ApplyHydratedDeploymentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*telcoautomationpb.HydratedDeployment",
+        "shortName": "ApplyHydratedDeployment"
+      },
       "description": "ApplyHydratedDeployment applies a hydrated deployment to a workload cluster.",
       "file": "Client/ApplyHydratedDeployment/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "ApplyHydratedDeployment",
-        "fullName": "google.cloud.telcoautomation.v1.Client.ApplyHydratedDeployment",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "telcoautomationpb.ApplyHydratedDeploymentRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*telcoautomationpb.HydratedDeployment",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "ApplyHydratedDeployment",
-          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.ApplyHydratedDeployment",
-          "service": {
-            "shortName": "TelcoAutomation",
-            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ApplyHydratedDeployment_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "telcoautomation ApplyHydratedDeployment Sample"
     },
     {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ApproveBlueprint_sync",
-      "title": "telcoautomation ApproveBlueprint Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.telcoautomation.v1.Client.ApproveBlueprint",
+        "method": {
+          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.ApproveBlueprint",
+          "service": {
+            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation",
+            "shortName": "TelcoAutomation"
+          },
+          "shortName": "ApproveBlueprint"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "telcoautomationpb.ApproveBlueprintRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*telcoautomationpb.Blueprint",
+        "shortName": "ApproveBlueprint"
+      },
       "description": "ApproveBlueprint approves a blueprint and commits a new revision.",
       "file": "Client/ApproveBlueprint/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "ApproveBlueprint",
-        "fullName": "google.cloud.telcoautomation.v1.Client.ApproveBlueprint",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "telcoautomationpb.ApproveBlueprintRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*telcoautomationpb.Blueprint",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "ApproveBlueprint",
-          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.ApproveBlueprint",
-          "service": {
-            "shortName": "TelcoAutomation",
-            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ApproveBlueprint_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "telcoautomation ApproveBlueprint Sample"
     },
     {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_CancelOperation_sync",
-      "title": "telcoautomation CancelOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.telcoautomation.v1.Client.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
       "file": "Client/CancelOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CancelOperation",
-        "fullName": "google.cloud.telcoautomation.v1.Client.CancelOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.CancelOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "CancelOperation",
-          "fullName": "google.longrunning.Operations.CancelOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_CancelOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "telcoautomation CancelOperation Sample"
     },
     {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ComputeDeploymentStatus_sync",
-      "title": "telcoautomation ComputeDeploymentStatus Sample",
-      "description": "ComputeDeploymentStatus returns the requested deployment status.",
-      "file": "Client/ComputeDeploymentStatus/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ComputeDeploymentStatus",
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.telcoautomation.v1.Client.ComputeDeploymentStatus",
+        "method": {
+          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.ComputeDeploymentStatus",
+          "service": {
+            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation",
+            "shortName": "TelcoAutomation"
+          },
+          "shortName": "ComputeDeploymentStatus"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "telcoautomationpb.ComputeDeploymentStatusRequest",
-            "name": "req"
+            "name": "req",
+            "type": "telcoautomationpb.ComputeDeploymentStatusRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*telcoautomationpb.ComputeDeploymentStatusResponse",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "ComputeDeploymentStatus",
-          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.ComputeDeploymentStatus",
-          "service": {
-            "shortName": "TelcoAutomation",
-            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation"
-          }
-        }
+        "shortName": "ComputeDeploymentStatus"
       },
+      "description": "ComputeDeploymentStatus returns the requested deployment status.",
+      "file": "Client/ComputeDeploymentStatus/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ComputeDeploymentStatus_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "telcoautomation ComputeDeploymentStatus Sample"
     },
     {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_CreateBlueprint_sync",
-      "title": "telcoautomation CreateBlueprint Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.telcoautomation.v1.Client.CreateBlueprint",
+        "method": {
+          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.CreateBlueprint",
+          "service": {
+            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation",
+            "shortName": "TelcoAutomation"
+          },
+          "shortName": "CreateBlueprint"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "telcoautomationpb.CreateBlueprintRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*telcoautomationpb.Blueprint",
+        "shortName": "CreateBlueprint"
+      },
       "description": "CreateBlueprint creates a blueprint.",
       "file": "Client/CreateBlueprint/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateBlueprint",
-        "fullName": "google.cloud.telcoautomation.v1.Client.CreateBlueprint",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "telcoautomationpb.CreateBlueprintRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*telcoautomationpb.Blueprint",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateBlueprint",
-          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.CreateBlueprint",
-          "service": {
-            "shortName": "TelcoAutomation",
-            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_CreateBlueprint_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "telcoautomation CreateBlueprint Sample"
     },
     {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_CreateDeployment_sync",
-      "title": "telcoautomation CreateDeployment Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.telcoautomation.v1.Client.CreateDeployment",
+        "method": {
+          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.CreateDeployment",
+          "service": {
+            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation",
+            "shortName": "TelcoAutomation"
+          },
+          "shortName": "CreateDeployment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "telcoautomationpb.CreateDeploymentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*telcoautomationpb.Deployment",
+        "shortName": "CreateDeployment"
+      },
       "description": "CreateDeployment creates a deployment.",
       "file": "Client/CreateDeployment/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateDeployment",
-        "fullName": "google.cloud.telcoautomation.v1.Client.CreateDeployment",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "telcoautomationpb.CreateDeploymentRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*telcoautomationpb.Deployment",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateDeployment",
-          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.CreateDeployment",
-          "service": {
-            "shortName": "TelcoAutomation",
-            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_CreateDeployment_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "telcoautomation CreateDeployment Sample"
     },
     {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_CreateEdgeSlm_sync",
-      "title": "telcoautomation CreateEdgeSlm Sample",
-      "description": "CreateEdgeSlm creates a new EdgeSlm in a given project and location.",
-      "file": "Client/CreateEdgeSlm/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateEdgeSlm",
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.telcoautomation.v1.Client.CreateEdgeSlm",
+        "method": {
+          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.CreateEdgeSlm",
+          "service": {
+            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation",
+            "shortName": "TelcoAutomation"
+          },
+          "shortName": "CreateEdgeSlm"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "telcoautomationpb.CreateEdgeSlmRequest",
-            "name": "req"
+            "name": "req",
+            "type": "telcoautomationpb.CreateEdgeSlmRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateEdgeSlmOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateEdgeSlm",
-          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.CreateEdgeSlm",
-          "service": {
-            "shortName": "TelcoAutomation",
-            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation"
-          }
-        }
+        "shortName": "CreateEdgeSlm"
       },
+      "description": "CreateEdgeSlm creates a new EdgeSlm in a given project and location.",
+      "file": "Client/CreateEdgeSlm/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_CreateEdgeSlm_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "telcoautomation CreateEdgeSlm Sample"
     },
     {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_CreateOrchestrationCluster_sync",
-      "title": "telcoautomation CreateOrchestrationCluster Sample",
-      "description": "CreateOrchestrationCluster creates a new OrchestrationCluster in a given project and location.",
-      "file": "Client/CreateOrchestrationCluster/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateOrchestrationCluster",
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.telcoautomation.v1.Client.CreateOrchestrationCluster",
+        "method": {
+          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.CreateOrchestrationCluster",
+          "service": {
+            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation",
+            "shortName": "TelcoAutomation"
+          },
+          "shortName": "CreateOrchestrationCluster"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "telcoautomationpb.CreateOrchestrationClusterRequest",
-            "name": "req"
+            "name": "req",
+            "type": "telcoautomationpb.CreateOrchestrationClusterRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateOrchestrationClusterOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateOrchestrationCluster",
-          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.CreateOrchestrationCluster",
-          "service": {
-            "shortName": "TelcoAutomation",
-            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation"
-          }
-        }
+        "shortName": "CreateOrchestrationCluster"
       },
+      "description": "CreateOrchestrationCluster creates a new OrchestrationCluster in a given project and location.",
+      "file": "Client/CreateOrchestrationCluster/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_CreateOrchestrationCluster_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "telcoautomation CreateOrchestrationCluster Sample"
     },
     {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_DeleteBlueprint_sync",
-      "title": "telcoautomation DeleteBlueprint Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.telcoautomation.v1.Client.DeleteBlueprint",
+        "method": {
+          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.DeleteBlueprint",
+          "service": {
+            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation",
+            "shortName": "TelcoAutomation"
+          },
+          "shortName": "DeleteBlueprint"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "telcoautomationpb.DeleteBlueprintRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteBlueprint"
+      },
       "description": "DeleteBlueprint deletes a blueprint and all its revisions.",
       "file": "Client/DeleteBlueprint/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteBlueprint",
-        "fullName": "google.cloud.telcoautomation.v1.Client.DeleteBlueprint",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "telcoautomationpb.DeleteBlueprintRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteBlueprint",
-          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.DeleteBlueprint",
-          "service": {
-            "shortName": "TelcoAutomation",
-            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_DeleteBlueprint_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "telcoautomation DeleteBlueprint Sample"
     },
     {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_DeleteEdgeSlm_sync",
-      "title": "telcoautomation DeleteEdgeSlm Sample",
-      "description": "DeleteEdgeSlm deletes a single EdgeSlm.",
-      "file": "Client/DeleteEdgeSlm/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteEdgeSlm",
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.telcoautomation.v1.Client.DeleteEdgeSlm",
+        "method": {
+          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.DeleteEdgeSlm",
+          "service": {
+            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation",
+            "shortName": "TelcoAutomation"
+          },
+          "shortName": "DeleteEdgeSlm"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "telcoautomationpb.DeleteEdgeSlmRequest",
-            "name": "req"
+            "name": "req",
+            "type": "telcoautomationpb.DeleteEdgeSlmRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteEdgeSlmOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteEdgeSlm",
-          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.DeleteEdgeSlm",
-          "service": {
-            "shortName": "TelcoAutomation",
-            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation"
-          }
-        }
+        "shortName": "DeleteEdgeSlm"
       },
+      "description": "DeleteEdgeSlm deletes a single EdgeSlm.",
+      "file": "Client/DeleteEdgeSlm/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_DeleteEdgeSlm_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "telcoautomation DeleteEdgeSlm Sample"
     },
     {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_DeleteOperation_sync",
-      "title": "telcoautomation DeleteOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.telcoautomation.v1.Client.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
       "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
       "file": "Client/DeleteOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteOperation",
-        "fullName": "google.cloud.telcoautomation.v1.Client.DeleteOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.DeleteOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteOperation",
-          "fullName": "google.longrunning.Operations.DeleteOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_DeleteOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "telcoautomation DeleteOperation Sample"
     },
     {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_DeleteOrchestrationCluster_sync",
-      "title": "telcoautomation DeleteOrchestrationCluster Sample",
-      "description": "DeleteOrchestrationCluster deletes a single OrchestrationCluster.",
-      "file": "Client/DeleteOrchestrationCluster/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteOrchestrationCluster",
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.telcoautomation.v1.Client.DeleteOrchestrationCluster",
+        "method": {
+          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.DeleteOrchestrationCluster",
+          "service": {
+            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation",
+            "shortName": "TelcoAutomation"
+          },
+          "shortName": "DeleteOrchestrationCluster"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "telcoautomationpb.DeleteOrchestrationClusterRequest",
-            "name": "req"
+            "name": "req",
+            "type": "telcoautomationpb.DeleteOrchestrationClusterRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteOrchestrationClusterOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteOrchestrationCluster",
-          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.DeleteOrchestrationCluster",
-          "service": {
-            "shortName": "TelcoAutomation",
-            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation"
-          }
-        }
+        "shortName": "DeleteOrchestrationCluster"
       },
+      "description": "DeleteOrchestrationCluster deletes a single OrchestrationCluster.",
+      "file": "Client/DeleteOrchestrationCluster/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_DeleteOrchestrationCluster_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "telcoautomation DeleteOrchestrationCluster Sample"
     },
     {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_DiscardBlueprintChanges_sync",
-      "title": "telcoautomation DiscardBlueprintChanges Sample",
-      "description": "DiscardBlueprintChanges discards the changes in a blueprint and reverts the blueprint to the last\napproved blueprint revision. No changes take place if a blueprint does not\nhave revisions.",
-      "file": "Client/DiscardBlueprintChanges/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DiscardBlueprintChanges",
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.telcoautomation.v1.Client.DiscardBlueprintChanges",
+        "method": {
+          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.DiscardBlueprintChanges",
+          "service": {
+            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation",
+            "shortName": "TelcoAutomation"
+          },
+          "shortName": "DiscardBlueprintChanges"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "telcoautomationpb.DiscardBlueprintChangesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "telcoautomationpb.DiscardBlueprintChangesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*telcoautomationpb.DiscardBlueprintChangesResponse",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "DiscardBlueprintChanges",
-          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.DiscardBlueprintChanges",
-          "service": {
-            "shortName": "TelcoAutomation",
-            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation"
-          }
-        }
+        "shortName": "DiscardBlueprintChanges"
       },
+      "description": "DiscardBlueprintChanges discards the changes in a blueprint and reverts the blueprint to the last\napproved blueprint revision. No changes take place if a blueprint does not\nhave revisions.",
+      "file": "Client/DiscardBlueprintChanges/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_DiscardBlueprintChanges_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "telcoautomation DiscardBlueprintChanges Sample"
     },
     {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_DiscardDeploymentChanges_sync",
-      "title": "telcoautomation DiscardDeploymentChanges Sample",
-      "description": "DiscardDeploymentChanges discards the changes in a deployment and reverts the deployment to the last\napproved deployment revision. No changes take place if a deployment does\nnot have revisions.",
-      "file": "Client/DiscardDeploymentChanges/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DiscardDeploymentChanges",
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.telcoautomation.v1.Client.DiscardDeploymentChanges",
+        "method": {
+          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.DiscardDeploymentChanges",
+          "service": {
+            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation",
+            "shortName": "TelcoAutomation"
+          },
+          "shortName": "DiscardDeploymentChanges"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "telcoautomationpb.DiscardDeploymentChangesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "telcoautomationpb.DiscardDeploymentChangesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*telcoautomationpb.DiscardDeploymentChangesResponse",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "DiscardDeploymentChanges",
-          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.DiscardDeploymentChanges",
-          "service": {
-            "shortName": "TelcoAutomation",
-            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation"
-          }
-        }
+        "shortName": "DiscardDeploymentChanges"
       },
+      "description": "DiscardDeploymentChanges discards the changes in a deployment and reverts the deployment to the last\napproved deployment revision. No changes take place if a deployment does\nnot have revisions.",
+      "file": "Client/DiscardDeploymentChanges/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_DiscardDeploymentChanges_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "telcoautomation DiscardDeploymentChanges Sample"
     },
     {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_GetBlueprint_sync",
-      "title": "telcoautomation GetBlueprint Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.telcoautomation.v1.Client.GetBlueprint",
+        "method": {
+          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.GetBlueprint",
+          "service": {
+            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation",
+            "shortName": "TelcoAutomation"
+          },
+          "shortName": "GetBlueprint"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "telcoautomationpb.GetBlueprintRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*telcoautomationpb.Blueprint",
+        "shortName": "GetBlueprint"
+      },
       "description": "GetBlueprint returns the requested blueprint.",
       "file": "Client/GetBlueprint/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetBlueprint",
-        "fullName": "google.cloud.telcoautomation.v1.Client.GetBlueprint",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "telcoautomationpb.GetBlueprintRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*telcoautomationpb.Blueprint",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "GetBlueprint",
-          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.GetBlueprint",
-          "service": {
-            "shortName": "TelcoAutomation",
-            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_GetBlueprint_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "telcoautomation GetBlueprint Sample"
     },
     {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_GetDeployment_sync",
-      "title": "telcoautomation GetDeployment Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.telcoautomation.v1.Client.GetDeployment",
+        "method": {
+          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.GetDeployment",
+          "service": {
+            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation",
+            "shortName": "TelcoAutomation"
+          },
+          "shortName": "GetDeployment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "telcoautomationpb.GetDeploymentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*telcoautomationpb.Deployment",
+        "shortName": "GetDeployment"
+      },
       "description": "GetDeployment returns the requested deployment.",
       "file": "Client/GetDeployment/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetDeployment",
-        "fullName": "google.cloud.telcoautomation.v1.Client.GetDeployment",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "telcoautomationpb.GetDeploymentRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*telcoautomationpb.Deployment",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "GetDeployment",
-          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.GetDeployment",
-          "service": {
-            "shortName": "TelcoAutomation",
-            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_GetDeployment_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "telcoautomation GetDeployment Sample"
     },
     {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_GetEdgeSlm_sync",
-      "title": "telcoautomation GetEdgeSlm Sample",
-      "description": "GetEdgeSlm gets details of a single EdgeSlm.",
-      "file": "Client/GetEdgeSlm/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetEdgeSlm",
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.telcoautomation.v1.Client.GetEdgeSlm",
+        "method": {
+          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.GetEdgeSlm",
+          "service": {
+            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation",
+            "shortName": "TelcoAutomation"
+          },
+          "shortName": "GetEdgeSlm"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "telcoautomationpb.GetEdgeSlmRequest",
-            "name": "req"
+            "name": "req",
+            "type": "telcoautomationpb.GetEdgeSlmRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*telcoautomationpb.EdgeSlm",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "GetEdgeSlm",
-          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.GetEdgeSlm",
-          "service": {
-            "shortName": "TelcoAutomation",
-            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation"
-          }
-        }
+        "shortName": "GetEdgeSlm"
       },
+      "description": "GetEdgeSlm gets details of a single EdgeSlm.",
+      "file": "Client/GetEdgeSlm/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_GetEdgeSlm_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "telcoautomation GetEdgeSlm Sample"
     },
     {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_GetHydratedDeployment_sync",
-      "title": "telcoautomation GetHydratedDeployment Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.telcoautomation.v1.Client.GetHydratedDeployment",
+        "method": {
+          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.GetHydratedDeployment",
+          "service": {
+            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation",
+            "shortName": "TelcoAutomation"
+          },
+          "shortName": "GetHydratedDeployment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "telcoautomationpb.GetHydratedDeploymentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*telcoautomationpb.HydratedDeployment",
+        "shortName": "GetHydratedDeployment"
+      },
       "description": "GetHydratedDeployment returns the requested hydrated deployment.",
       "file": "Client/GetHydratedDeployment/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetHydratedDeployment",
-        "fullName": "google.cloud.telcoautomation.v1.Client.GetHydratedDeployment",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "telcoautomationpb.GetHydratedDeploymentRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*telcoautomationpb.HydratedDeployment",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "GetHydratedDeployment",
-          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.GetHydratedDeployment",
-          "service": {
-            "shortName": "TelcoAutomation",
-            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_GetHydratedDeployment_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "telcoautomation GetHydratedDeployment Sample"
     },
     {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_GetLocation_sync",
-      "title": "telcoautomation GetLocation Sample",
-      "description": "GetLocation gets information about a location.",
-      "file": "Client/GetLocation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetLocation",
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.telcoautomation.v1.Client.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "locationpb.GetLocationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*locationpb.Location",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "GetLocation",
-          "fullName": "google.cloud.location.Locations.GetLocation",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
+        "shortName": "GetLocation"
       },
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_GetLocation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "telcoautomation GetLocation Sample"
     },
     {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_GetOperation_sync",
-      "title": "telcoautomation GetOperation Sample",
-      "description": "GetOperation is a utility method from google.longrunning.Operations.",
-      "file": "Client/GetOperation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetOperation",
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.telcoautomation.v1.Client.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.GetOperationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*longrunningpb.Operation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "GetOperation",
-          "fullName": "google.longrunning.Operations.GetOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "GetOperation"
       },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_GetOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "telcoautomation GetOperation Sample"
     },
     {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_GetOrchestrationCluster_sync",
-      "title": "telcoautomation GetOrchestrationCluster Sample",
-      "description": "GetOrchestrationCluster gets details of a single OrchestrationCluster.",
-      "file": "Client/GetOrchestrationCluster/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetOrchestrationCluster",
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.telcoautomation.v1.Client.GetOrchestrationCluster",
+        "method": {
+          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.GetOrchestrationCluster",
+          "service": {
+            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation",
+            "shortName": "TelcoAutomation"
+          },
+          "shortName": "GetOrchestrationCluster"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "telcoautomationpb.GetOrchestrationClusterRequest",
-            "name": "req"
+            "name": "req",
+            "type": "telcoautomationpb.GetOrchestrationClusterRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*telcoautomationpb.OrchestrationCluster",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "GetOrchestrationCluster",
-          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.GetOrchestrationCluster",
-          "service": {
-            "shortName": "TelcoAutomation",
-            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation"
-          }
-        }
+        "shortName": "GetOrchestrationCluster"
       },
+      "description": "GetOrchestrationCluster gets details of a single OrchestrationCluster.",
+      "file": "Client/GetOrchestrationCluster/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_GetOrchestrationCluster_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "telcoautomation GetOrchestrationCluster Sample"
     },
     {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_GetPublicBlueprint_sync",
-      "title": "telcoautomation GetPublicBlueprint Sample",
-      "description": "GetPublicBlueprint returns the requested public blueprint.",
-      "file": "Client/GetPublicBlueprint/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetPublicBlueprint",
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.telcoautomation.v1.Client.GetPublicBlueprint",
+        "method": {
+          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.GetPublicBlueprint",
+          "service": {
+            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation",
+            "shortName": "TelcoAutomation"
+          },
+          "shortName": "GetPublicBlueprint"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "telcoautomationpb.GetPublicBlueprintRequest",
-            "name": "req"
+            "name": "req",
+            "type": "telcoautomationpb.GetPublicBlueprintRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*telcoautomationpb.PublicBlueprint",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "GetPublicBlueprint",
-          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.GetPublicBlueprint",
-          "service": {
-            "shortName": "TelcoAutomation",
-            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation"
-          }
-        }
+        "shortName": "GetPublicBlueprint"
       },
+      "description": "GetPublicBlueprint returns the requested public blueprint.",
+      "file": "Client/GetPublicBlueprint/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_GetPublicBlueprint_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "telcoautomation GetPublicBlueprint Sample"
     },
     {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ListBlueprintRevisions_sync",
-      "title": "telcoautomation ListBlueprintRevisions Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.telcoautomation.v1.Client.ListBlueprintRevisions",
+        "method": {
+          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.ListBlueprintRevisions",
+          "service": {
+            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation",
+            "shortName": "TelcoAutomation"
+          },
+          "shortName": "ListBlueprintRevisions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "telcoautomationpb.ListBlueprintRevisionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "BlueprintIterator",
+        "shortName": "ListBlueprintRevisions"
+      },
       "description": "ListBlueprintRevisions list blueprint revisions of a given blueprint.",
       "file": "Client/ListBlueprintRevisions/main.go",
       "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ListBlueprintRevisions_sync",
+      "segments": [
+        {
+          "end": 66,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "telcoautomation ListBlueprintRevisions Sample"
+    },
+    {
       "clientMethod": {
-        "shortName": "ListBlueprintRevisions",
-        "fullName": "google.cloud.telcoautomation.v1.Client.ListBlueprintRevisions",
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.telcoautomation.v1.Client.ListBlueprints",
+        "method": {
+          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.ListBlueprints",
+          "service": {
+            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation",
+            "shortName": "TelcoAutomation"
+          },
+          "shortName": "ListBlueprints"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "telcoautomationpb.ListBlueprintRevisionsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "telcoautomationpb.ListBlueprintsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "BlueprintIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "ListBlueprintRevisions",
-          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.ListBlueprintRevisions",
-          "service": {
-            "shortName": "TelcoAutomation",
-            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation"
-          }
-        }
+        "shortName": "ListBlueprints"
       },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 66,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ListBlueprints_sync",
-      "title": "telcoautomation ListBlueprints Sample",
       "description": "ListBlueprints list all blueprints.",
       "file": "Client/ListBlueprints/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "ListBlueprints",
-        "fullName": "google.cloud.telcoautomation.v1.Client.ListBlueprints",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "telcoautomationpb.ListBlueprintsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "BlueprintIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "ListBlueprints",
-          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.ListBlueprints",
-          "service": {
-            "shortName": "TelcoAutomation",
-            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ListBlueprints_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "telcoautomation ListBlueprints Sample"
     },
     {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ListDeploymentRevisions_sync",
-      "title": "telcoautomation ListDeploymentRevisions Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.telcoautomation.v1.Client.ListDeploymentRevisions",
+        "method": {
+          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.ListDeploymentRevisions",
+          "service": {
+            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation",
+            "shortName": "TelcoAutomation"
+          },
+          "shortName": "ListDeploymentRevisions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "telcoautomationpb.ListDeploymentRevisionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeploymentIterator",
+        "shortName": "ListDeploymentRevisions"
+      },
       "description": "ListDeploymentRevisions list deployment revisions of a given deployment.",
       "file": "Client/ListDeploymentRevisions/main.go",
       "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ListDeploymentRevisions_sync",
+      "segments": [
+        {
+          "end": 66,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "telcoautomation ListDeploymentRevisions Sample"
+    },
+    {
       "clientMethod": {
-        "shortName": "ListDeploymentRevisions",
-        "fullName": "google.cloud.telcoautomation.v1.Client.ListDeploymentRevisions",
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.telcoautomation.v1.Client.ListDeployments",
+        "method": {
+          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.ListDeployments",
+          "service": {
+            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation",
+            "shortName": "TelcoAutomation"
+          },
+          "shortName": "ListDeployments"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "telcoautomationpb.ListDeploymentRevisionsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "telcoautomationpb.ListDeploymentsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeploymentIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "ListDeploymentRevisions",
-          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.ListDeploymentRevisions",
-          "service": {
-            "shortName": "TelcoAutomation",
-            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation"
-          }
-        }
+        "shortName": "ListDeployments"
       },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 66,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ListDeployments_sync",
-      "title": "telcoautomation ListDeployments Sample",
       "description": "ListDeployments list all deployments.",
       "file": "Client/ListDeployments/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "ListDeployments",
-        "fullName": "google.cloud.telcoautomation.v1.Client.ListDeployments",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "telcoautomationpb.ListDeploymentsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "DeploymentIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "ListDeployments",
-          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.ListDeployments",
-          "service": {
-            "shortName": "TelcoAutomation",
-            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ListDeployments_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "telcoautomation ListDeployments Sample"
     },
     {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ListEdgeSlms_sync",
-      "title": "telcoautomation ListEdgeSlms Sample",
-      "description": "ListEdgeSlms lists EdgeSlms in a given project and location.",
-      "file": "Client/ListEdgeSlms/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListEdgeSlms",
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.telcoautomation.v1.Client.ListEdgeSlms",
+        "method": {
+          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.ListEdgeSlms",
+          "service": {
+            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation",
+            "shortName": "TelcoAutomation"
+          },
+          "shortName": "ListEdgeSlms"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "telcoautomationpb.ListEdgeSlmsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "telcoautomationpb.ListEdgeSlmsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "EdgeSlmIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "ListEdgeSlms",
-          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.ListEdgeSlms",
-          "service": {
-            "shortName": "TelcoAutomation",
-            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation"
-          }
-        }
+        "shortName": "ListEdgeSlms"
       },
+      "description": "ListEdgeSlms lists EdgeSlms in a given project and location.",
+      "file": "Client/ListEdgeSlms/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ListEdgeSlms_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "telcoautomation ListEdgeSlms Sample"
     },
     {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ListHydratedDeployments_sync",
-      "title": "telcoautomation ListHydratedDeployments Sample",
-      "description": "ListHydratedDeployments list all hydrated deployments present under a deployment.",
-      "file": "Client/ListHydratedDeployments/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListHydratedDeployments",
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.telcoautomation.v1.Client.ListHydratedDeployments",
+        "method": {
+          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.ListHydratedDeployments",
+          "service": {
+            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation",
+            "shortName": "TelcoAutomation"
+          },
+          "shortName": "ListHydratedDeployments"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "telcoautomationpb.ListHydratedDeploymentsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "telcoautomationpb.ListHydratedDeploymentsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "HydratedDeploymentIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "ListHydratedDeployments",
-          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.ListHydratedDeployments",
-          "service": {
-            "shortName": "TelcoAutomation",
-            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation"
-          }
-        }
+        "shortName": "ListHydratedDeployments"
       },
+      "description": "ListHydratedDeployments list all hydrated deployments present under a deployment.",
+      "file": "Client/ListHydratedDeployments/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ListHydratedDeployments_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "telcoautomation ListHydratedDeployments Sample"
     },
     {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ListLocations_sync",
-      "title": "telcoautomation ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
-      "file": "Client/ListLocations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListLocations",
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.telcoautomation.v1.Client.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "locationpb.ListLocationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "LocationIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "ListLocations",
-          "fullName": "google.cloud.location.Locations.ListLocations",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
+        "shortName": "ListLocations"
       },
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ListLocations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "telcoautomation ListLocations Sample"
     },
     {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ListOperations_sync",
-      "title": "telcoautomation ListOperations Sample",
-      "description": "ListOperations is a utility method from google.longrunning.Operations.",
-      "file": "Client/ListOperations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListOperations",
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.telcoautomation.v1.Client.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.ListOperationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "OperationIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "ListOperations",
-          "fullName": "google.longrunning.Operations.ListOperations",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "ListOperations"
       },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ListOperations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "telcoautomation ListOperations Sample"
     },
     {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ListOrchestrationClusters_sync",
-      "title": "telcoautomation ListOrchestrationClusters Sample",
-      "description": "ListOrchestrationClusters lists OrchestrationClusters in a given project and location.",
-      "file": "Client/ListOrchestrationClusters/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListOrchestrationClusters",
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.telcoautomation.v1.Client.ListOrchestrationClusters",
+        "method": {
+          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.ListOrchestrationClusters",
+          "service": {
+            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation",
+            "shortName": "TelcoAutomation"
+          },
+          "shortName": "ListOrchestrationClusters"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "telcoautomationpb.ListOrchestrationClustersRequest",
-            "name": "req"
+            "name": "req",
+            "type": "telcoautomationpb.ListOrchestrationClustersRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "OrchestrationClusterIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "ListOrchestrationClusters",
-          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.ListOrchestrationClusters",
-          "service": {
-            "shortName": "TelcoAutomation",
-            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation"
-          }
-        }
+        "shortName": "ListOrchestrationClusters"
       },
+      "description": "ListOrchestrationClusters lists OrchestrationClusters in a given project and location.",
+      "file": "Client/ListOrchestrationClusters/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ListOrchestrationClusters_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "telcoautomation ListOrchestrationClusters Sample"
     },
     {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ListPublicBlueprints_sync",
-      "title": "telcoautomation ListPublicBlueprints Sample",
-      "description": "ListPublicBlueprints lists the blueprints in TNA's public catalog. Default page size = 20,\nMax Page Size = 100.",
-      "file": "Client/ListPublicBlueprints/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListPublicBlueprints",
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.telcoautomation.v1.Client.ListPublicBlueprints",
+        "method": {
+          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.ListPublicBlueprints",
+          "service": {
+            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation",
+            "shortName": "TelcoAutomation"
+          },
+          "shortName": "ListPublicBlueprints"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "telcoautomationpb.ListPublicBlueprintsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "telcoautomationpb.ListPublicBlueprintsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "PublicBlueprintIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "ListPublicBlueprints",
-          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.ListPublicBlueprints",
-          "service": {
-            "shortName": "TelcoAutomation",
-            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation"
-          }
-        }
+        "shortName": "ListPublicBlueprints"
       },
+      "description": "ListPublicBlueprints lists the blueprints in TNA's public catalog. Default page size = 20,\nMax Page Size = 100.",
+      "file": "Client/ListPublicBlueprints/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ListPublicBlueprints_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "telcoautomation ListPublicBlueprints Sample"
     },
     {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ProposeBlueprint_sync",
-      "title": "telcoautomation ProposeBlueprint Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.telcoautomation.v1.Client.ProposeBlueprint",
+        "method": {
+          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.ProposeBlueprint",
+          "service": {
+            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation",
+            "shortName": "TelcoAutomation"
+          },
+          "shortName": "ProposeBlueprint"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "telcoautomationpb.ProposeBlueprintRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*telcoautomationpb.Blueprint",
+        "shortName": "ProposeBlueprint"
+      },
       "description": "ProposeBlueprint proposes a blueprint for approval of changes.",
       "file": "Client/ProposeBlueprint/main.go",
       "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ProposeBlueprint_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "telcoautomation ProposeBlueprint Sample"
+    },
+    {
       "clientMethod": {
-        "shortName": "ProposeBlueprint",
-        "fullName": "google.cloud.telcoautomation.v1.Client.ProposeBlueprint",
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.telcoautomation.v1.Client.RejectBlueprint",
+        "method": {
+          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.RejectBlueprint",
+          "service": {
+            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation",
+            "shortName": "TelcoAutomation"
+          },
+          "shortName": "RejectBlueprint"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "telcoautomationpb.ProposeBlueprintRequest",
-            "name": "req"
+            "name": "req",
+            "type": "telcoautomationpb.RejectBlueprintRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*telcoautomationpb.Blueprint",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "ProposeBlueprint",
-          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.ProposeBlueprint",
-          "service": {
-            "shortName": "TelcoAutomation",
-            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation"
-          }
-        }
+        "shortName": "RejectBlueprint"
       },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_RejectBlueprint_sync",
-      "title": "telcoautomation RejectBlueprint Sample",
       "description": "RejectBlueprint rejects a blueprint revision proposal and flips it back to Draft state.",
       "file": "Client/RejectBlueprint/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "RejectBlueprint",
-        "fullName": "google.cloud.telcoautomation.v1.Client.RejectBlueprint",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "telcoautomationpb.RejectBlueprintRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*telcoautomationpb.Blueprint",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "RejectBlueprint",
-          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.RejectBlueprint",
-          "service": {
-            "shortName": "TelcoAutomation",
-            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_RejectBlueprint_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "telcoautomation RejectBlueprint Sample"
     },
     {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_RemoveDeployment_sync",
-      "title": "telcoautomation RemoveDeployment Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.telcoautomation.v1.Client.RemoveDeployment",
+        "method": {
+          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.RemoveDeployment",
+          "service": {
+            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation",
+            "shortName": "TelcoAutomation"
+          },
+          "shortName": "RemoveDeployment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "telcoautomationpb.RemoveDeploymentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "RemoveDeployment"
+      },
       "description": "RemoveDeployment removes the deployment by marking it as DELETING. Post which deployment and\nit's revisions gets deleted.",
       "file": "Client/RemoveDeployment/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "RemoveDeployment",
-        "fullName": "google.cloud.telcoautomation.v1.Client.RemoveDeployment",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "telcoautomationpb.RemoveDeploymentRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "RemoveDeployment",
-          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.RemoveDeployment",
-          "service": {
-            "shortName": "TelcoAutomation",
-            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_RemoveDeployment_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "telcoautomation RemoveDeployment Sample"
     },
     {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_RollbackDeployment_sync",
-      "title": "telcoautomation RollbackDeployment Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.telcoautomation.v1.Client.RollbackDeployment",
+        "method": {
+          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.RollbackDeployment",
+          "service": {
+            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation",
+            "shortName": "TelcoAutomation"
+          },
+          "shortName": "RollbackDeployment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "telcoautomationpb.RollbackDeploymentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*telcoautomationpb.Deployment",
+        "shortName": "RollbackDeployment"
+      },
       "description": "RollbackDeployment rollback the active deployment to the given past approved deployment\nrevision.",
       "file": "Client/RollbackDeployment/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "RollbackDeployment",
-        "fullName": "google.cloud.telcoautomation.v1.Client.RollbackDeployment",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "telcoautomationpb.RollbackDeploymentRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*telcoautomationpb.Deployment",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "RollbackDeployment",
-          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.RollbackDeployment",
-          "service": {
-            "shortName": "TelcoAutomation",
-            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_RollbackDeployment_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "telcoautomation RollbackDeployment Sample"
     },
     {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_SearchBlueprintRevisions_sync",
-      "title": "telcoautomation SearchBlueprintRevisions Sample",
-      "description": "SearchBlueprintRevisions searches across blueprint revisions.",
-      "file": "Client/SearchBlueprintRevisions/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "SearchBlueprintRevisions",
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.telcoautomation.v1.Client.SearchBlueprintRevisions",
+        "method": {
+          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.SearchBlueprintRevisions",
+          "service": {
+            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation",
+            "shortName": "TelcoAutomation"
+          },
+          "shortName": "SearchBlueprintRevisions"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "telcoautomationpb.SearchBlueprintRevisionsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "telcoautomationpb.SearchBlueprintRevisionsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "BlueprintIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "SearchBlueprintRevisions",
-          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.SearchBlueprintRevisions",
-          "service": {
-            "shortName": "TelcoAutomation",
-            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation"
-          }
-        }
+        "shortName": "SearchBlueprintRevisions"
       },
+      "description": "SearchBlueprintRevisions searches across blueprint revisions.",
+      "file": "Client/SearchBlueprintRevisions/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_SearchBlueprintRevisions_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "telcoautomation SearchBlueprintRevisions Sample"
     },
     {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_SearchDeploymentRevisions_sync",
-      "title": "telcoautomation SearchDeploymentRevisions Sample",
-      "description": "SearchDeploymentRevisions searches across deployment revisions.",
-      "file": "Client/SearchDeploymentRevisions/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "SearchDeploymentRevisions",
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.telcoautomation.v1.Client.SearchDeploymentRevisions",
+        "method": {
+          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.SearchDeploymentRevisions",
+          "service": {
+            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation",
+            "shortName": "TelcoAutomation"
+          },
+          "shortName": "SearchDeploymentRevisions"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "telcoautomationpb.SearchDeploymentRevisionsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "telcoautomationpb.SearchDeploymentRevisionsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeploymentIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "SearchDeploymentRevisions",
-          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.SearchDeploymentRevisions",
-          "service": {
-            "shortName": "TelcoAutomation",
-            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation"
-          }
-        }
+        "shortName": "SearchDeploymentRevisions"
       },
+      "description": "SearchDeploymentRevisions searches across deployment revisions.",
+      "file": "Client/SearchDeploymentRevisions/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_SearchDeploymentRevisions_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "telcoautomation SearchDeploymentRevisions Sample"
     },
     {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_UpdateBlueprint_sync",
-      "title": "telcoautomation UpdateBlueprint Sample",
-      "description": "UpdateBlueprint updates a blueprint.",
-      "file": "Client/UpdateBlueprint/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateBlueprint",
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.telcoautomation.v1.Client.UpdateBlueprint",
+        "method": {
+          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.UpdateBlueprint",
+          "service": {
+            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation",
+            "shortName": "TelcoAutomation"
+          },
+          "shortName": "UpdateBlueprint"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "telcoautomationpb.UpdateBlueprintRequest",
-            "name": "req"
+            "name": "req",
+            "type": "telcoautomationpb.UpdateBlueprintRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*telcoautomationpb.Blueprint",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "UpdateBlueprint",
-          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.UpdateBlueprint",
-          "service": {
-            "shortName": "TelcoAutomation",
-            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation"
-          }
-        }
+        "shortName": "UpdateBlueprint"
       },
+      "description": "UpdateBlueprint updates a blueprint.",
+      "file": "Client/UpdateBlueprint/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_UpdateBlueprint_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "telcoautomation UpdateBlueprint Sample"
     },
     {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_UpdateDeployment_sync",
-      "title": "telcoautomation UpdateDeployment Sample",
-      "description": "UpdateDeployment updates a deployment.",
-      "file": "Client/UpdateDeployment/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateDeployment",
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.telcoautomation.v1.Client.UpdateDeployment",
+        "method": {
+          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.UpdateDeployment",
+          "service": {
+            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation",
+            "shortName": "TelcoAutomation"
+          },
+          "shortName": "UpdateDeployment"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "telcoautomationpb.UpdateDeploymentRequest",
-            "name": "req"
+            "name": "req",
+            "type": "telcoautomationpb.UpdateDeploymentRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*telcoautomationpb.Deployment",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "UpdateDeployment",
-          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.UpdateDeployment",
-          "service": {
-            "shortName": "TelcoAutomation",
-            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation"
-          }
-        }
+        "shortName": "UpdateDeployment"
       },
+      "description": "UpdateDeployment updates a deployment.",
+      "file": "Client/UpdateDeployment/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_UpdateDeployment_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "telcoautomation UpdateDeployment Sample"
     },
     {
-      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_UpdateHydratedDeployment_sync",
-      "title": "telcoautomation UpdateHydratedDeployment Sample",
-      "description": "UpdateHydratedDeployment updates a hydrated deployment.",
-      "file": "Client/UpdateHydratedDeployment/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateHydratedDeployment",
+        "client": {
+          "fullName": "google.cloud.telcoautomation.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.telcoautomation.v1.Client.UpdateHydratedDeployment",
+        "method": {
+          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.UpdateHydratedDeployment",
+          "service": {
+            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation",
+            "shortName": "TelcoAutomation"
+          },
+          "shortName": "UpdateHydratedDeployment"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "telcoautomationpb.UpdateHydratedDeploymentRequest",
-            "name": "req"
+            "name": "req",
+            "type": "telcoautomationpb.UpdateHydratedDeploymentRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*telcoautomationpb.HydratedDeployment",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.telcoautomation.v1.Client"
-        },
-        "method": {
-          "shortName": "UpdateHydratedDeployment",
-          "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation.UpdateHydratedDeployment",
-          "service": {
-            "shortName": "TelcoAutomation",
-            "fullName": "google.cloud.telcoautomation.v1.TelcoAutomation"
-          }
-        }
+        "shortName": "UpdateHydratedDeployment"
       },
+      "description": "UpdateHydratedDeployment updates a hydrated deployment.",
+      "file": "Client/UpdateHydratedDeployment/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "telcoautomation_v1_generated_TelcoAutomation_UpdateHydratedDeployment_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "telcoautomation UpdateHydratedDeployment Sample"
     }
   ]
 }

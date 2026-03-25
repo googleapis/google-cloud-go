@@ -1,888 +1,888 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/cloudbuild/apiv2",
-    "version": "1.25.0",
-    "language": "GO",
     "apis": [
       {
         "id": "google.devtools.cloudbuild.v2",
         "version": "v2"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/cloudbuild/apiv2",
+    "version": "1.25.0"
   },
   "snippets": [
     {
-      "regionTag": "cloudbuild_v2_generated_RepositoryManager_BatchCreateRepositories_sync",
-      "title": "cloudbuild BatchCreateRepositories Sample",
-      "description": "BatchCreateRepositories creates multiple repositories inside a connection.",
-      "file": "RepositoryManagerClient/BatchCreateRepositories/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "BatchCreateRepositories",
+        "client": {
+          "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient",
+          "shortName": "RepositoryManagerClient"
+        },
         "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient.BatchCreateRepositories",
+        "method": {
+          "fullName": "google.devtools.cloudbuild.v2.RepositoryManager.BatchCreateRepositories",
+          "service": {
+            "fullName": "google.devtools.cloudbuild.v2.RepositoryManager",
+            "shortName": "RepositoryManager"
+          },
+          "shortName": "BatchCreateRepositories"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "cloudbuildpb.BatchCreateRepositoriesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "cloudbuildpb.BatchCreateRepositoriesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "BatchCreateRepositoriesOperation",
-        "client": {
-          "shortName": "RepositoryManagerClient",
-          "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient"
-        },
-        "method": {
-          "shortName": "BatchCreateRepositories",
-          "fullName": "google.devtools.cloudbuild.v2.RepositoryManager.BatchCreateRepositories",
-          "service": {
-            "shortName": "RepositoryManager",
-            "fullName": "google.devtools.cloudbuild.v2.RepositoryManager"
-          }
-        }
+        "shortName": "BatchCreateRepositories"
       },
+      "description": "BatchCreateRepositories creates multiple repositories inside a connection.",
+      "file": "RepositoryManagerClient/BatchCreateRepositories/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "cloudbuild_v2_generated_RepositoryManager_BatchCreateRepositories_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "cloudbuild BatchCreateRepositories Sample"
     },
     {
-      "regionTag": "cloudbuild_v2_generated_RepositoryManager_CancelOperation_sync",
-      "title": "cloudbuild CancelOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient",
+          "shortName": "RepositoryManagerClient"
+        },
+        "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
       "file": "RepositoryManagerClient/CancelOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CancelOperation",
-        "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient.CancelOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.CancelOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "RepositoryManagerClient",
-          "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient"
-        },
-        "method": {
-          "shortName": "CancelOperation",
-          "fullName": "google.longrunning.Operations.CancelOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "cloudbuild_v2_generated_RepositoryManager_CancelOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "cloudbuild CancelOperation Sample"
     },
     {
-      "regionTag": "cloudbuild_v2_generated_RepositoryManager_CreateConnection_sync",
-      "title": "cloudbuild CreateConnection Sample",
-      "description": "CreateConnection creates a Connection.",
-      "file": "RepositoryManagerClient/CreateConnection/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateConnection",
+        "client": {
+          "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient",
+          "shortName": "RepositoryManagerClient"
+        },
         "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient.CreateConnection",
+        "method": {
+          "fullName": "google.devtools.cloudbuild.v2.RepositoryManager.CreateConnection",
+          "service": {
+            "fullName": "google.devtools.cloudbuild.v2.RepositoryManager",
+            "shortName": "RepositoryManager"
+          },
+          "shortName": "CreateConnection"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "cloudbuildpb.CreateConnectionRequest",
-            "name": "req"
+            "name": "req",
+            "type": "cloudbuildpb.CreateConnectionRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateConnectionOperation",
-        "client": {
-          "shortName": "RepositoryManagerClient",
-          "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient"
-        },
-        "method": {
-          "shortName": "CreateConnection",
-          "fullName": "google.devtools.cloudbuild.v2.RepositoryManager.CreateConnection",
-          "service": {
-            "shortName": "RepositoryManager",
-            "fullName": "google.devtools.cloudbuild.v2.RepositoryManager"
-          }
-        }
+        "shortName": "CreateConnection"
       },
+      "description": "CreateConnection creates a Connection.",
+      "file": "RepositoryManagerClient/CreateConnection/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "cloudbuild_v2_generated_RepositoryManager_CreateConnection_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "cloudbuild CreateConnection Sample"
     },
     {
-      "regionTag": "cloudbuild_v2_generated_RepositoryManager_CreateRepository_sync",
-      "title": "cloudbuild CreateRepository Sample",
-      "description": "CreateRepository creates a Repository.",
-      "file": "RepositoryManagerClient/CreateRepository/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateRepository",
+        "client": {
+          "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient",
+          "shortName": "RepositoryManagerClient"
+        },
         "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient.CreateRepository",
+        "method": {
+          "fullName": "google.devtools.cloudbuild.v2.RepositoryManager.CreateRepository",
+          "service": {
+            "fullName": "google.devtools.cloudbuild.v2.RepositoryManager",
+            "shortName": "RepositoryManager"
+          },
+          "shortName": "CreateRepository"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "cloudbuildpb.CreateRepositoryRequest",
-            "name": "req"
+            "name": "req",
+            "type": "cloudbuildpb.CreateRepositoryRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateRepositoryOperation",
-        "client": {
-          "shortName": "RepositoryManagerClient",
-          "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient"
-        },
-        "method": {
-          "shortName": "CreateRepository",
-          "fullName": "google.devtools.cloudbuild.v2.RepositoryManager.CreateRepository",
-          "service": {
-            "shortName": "RepositoryManager",
-            "fullName": "google.devtools.cloudbuild.v2.RepositoryManager"
-          }
-        }
+        "shortName": "CreateRepository"
       },
+      "description": "CreateRepository creates a Repository.",
+      "file": "RepositoryManagerClient/CreateRepository/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "cloudbuild_v2_generated_RepositoryManager_CreateRepository_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "cloudbuild CreateRepository Sample"
     },
     {
-      "regionTag": "cloudbuild_v2_generated_RepositoryManager_DeleteConnection_sync",
-      "title": "cloudbuild DeleteConnection Sample",
-      "description": "DeleteConnection deletes a single connection.",
-      "file": "RepositoryManagerClient/DeleteConnection/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteConnection",
+        "client": {
+          "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient",
+          "shortName": "RepositoryManagerClient"
+        },
         "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient.DeleteConnection",
+        "method": {
+          "fullName": "google.devtools.cloudbuild.v2.RepositoryManager.DeleteConnection",
+          "service": {
+            "fullName": "google.devtools.cloudbuild.v2.RepositoryManager",
+            "shortName": "RepositoryManager"
+          },
+          "shortName": "DeleteConnection"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "cloudbuildpb.DeleteConnectionRequest",
-            "name": "req"
+            "name": "req",
+            "type": "cloudbuildpb.DeleteConnectionRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteConnectionOperation",
-        "client": {
-          "shortName": "RepositoryManagerClient",
-          "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient"
-        },
-        "method": {
-          "shortName": "DeleteConnection",
-          "fullName": "google.devtools.cloudbuild.v2.RepositoryManager.DeleteConnection",
-          "service": {
-            "shortName": "RepositoryManager",
-            "fullName": "google.devtools.cloudbuild.v2.RepositoryManager"
-          }
-        }
+        "shortName": "DeleteConnection"
       },
+      "description": "DeleteConnection deletes a single connection.",
+      "file": "RepositoryManagerClient/DeleteConnection/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "cloudbuild_v2_generated_RepositoryManager_DeleteConnection_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "cloudbuild DeleteConnection Sample"
     },
     {
-      "regionTag": "cloudbuild_v2_generated_RepositoryManager_DeleteRepository_sync",
-      "title": "cloudbuild DeleteRepository Sample",
-      "description": "DeleteRepository deletes a single repository.",
-      "file": "RepositoryManagerClient/DeleteRepository/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteRepository",
+        "client": {
+          "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient",
+          "shortName": "RepositoryManagerClient"
+        },
         "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient.DeleteRepository",
+        "method": {
+          "fullName": "google.devtools.cloudbuild.v2.RepositoryManager.DeleteRepository",
+          "service": {
+            "fullName": "google.devtools.cloudbuild.v2.RepositoryManager",
+            "shortName": "RepositoryManager"
+          },
+          "shortName": "DeleteRepository"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "cloudbuildpb.DeleteRepositoryRequest",
-            "name": "req"
+            "name": "req",
+            "type": "cloudbuildpb.DeleteRepositoryRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteRepositoryOperation",
-        "client": {
-          "shortName": "RepositoryManagerClient",
-          "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient"
-        },
-        "method": {
-          "shortName": "DeleteRepository",
-          "fullName": "google.devtools.cloudbuild.v2.RepositoryManager.DeleteRepository",
-          "service": {
-            "shortName": "RepositoryManager",
-            "fullName": "google.devtools.cloudbuild.v2.RepositoryManager"
-          }
-        }
+        "shortName": "DeleteRepository"
       },
+      "description": "DeleteRepository deletes a single repository.",
+      "file": "RepositoryManagerClient/DeleteRepository/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "cloudbuild_v2_generated_RepositoryManager_DeleteRepository_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "cloudbuild DeleteRepository Sample"
     },
     {
-      "regionTag": "cloudbuild_v2_generated_RepositoryManager_FetchGitRefs_sync",
-      "title": "cloudbuild FetchGitRefs Sample",
-      "description": "FetchGitRefs fetch the list of branches or tags for a given repository.",
-      "file": "RepositoryManagerClient/FetchGitRefs/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "FetchGitRefs",
+        "client": {
+          "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient",
+          "shortName": "RepositoryManagerClient"
+        },
         "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient.FetchGitRefs",
+        "method": {
+          "fullName": "google.devtools.cloudbuild.v2.RepositoryManager.FetchGitRefs",
+          "service": {
+            "fullName": "google.devtools.cloudbuild.v2.RepositoryManager",
+            "shortName": "RepositoryManager"
+          },
+          "shortName": "FetchGitRefs"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "cloudbuildpb.FetchGitRefsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "cloudbuildpb.FetchGitRefsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*cloudbuildpb.FetchGitRefsResponse",
-        "client": {
-          "shortName": "RepositoryManagerClient",
-          "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient"
-        },
-        "method": {
-          "shortName": "FetchGitRefs",
-          "fullName": "google.devtools.cloudbuild.v2.RepositoryManager.FetchGitRefs",
-          "service": {
-            "shortName": "RepositoryManager",
-            "fullName": "google.devtools.cloudbuild.v2.RepositoryManager"
-          }
-        }
+        "shortName": "FetchGitRefs"
       },
+      "description": "FetchGitRefs fetch the list of branches or tags for a given repository.",
+      "file": "RepositoryManagerClient/FetchGitRefs/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "cloudbuild_v2_generated_RepositoryManager_FetchGitRefs_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "cloudbuild FetchGitRefs Sample"
     },
     {
-      "regionTag": "cloudbuild_v2_generated_RepositoryManager_FetchLinkableRepositories_sync",
-      "title": "cloudbuild FetchLinkableRepositories Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient",
+          "shortName": "RepositoryManagerClient"
+        },
+        "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient.FetchLinkableRepositories",
+        "method": {
+          "fullName": "google.devtools.cloudbuild.v2.RepositoryManager.FetchLinkableRepositories",
+          "service": {
+            "fullName": "google.devtools.cloudbuild.v2.RepositoryManager",
+            "shortName": "RepositoryManager"
+          },
+          "shortName": "FetchLinkableRepositories"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "cloudbuildpb.FetchLinkableRepositoriesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "RepositoryIterator",
+        "shortName": "FetchLinkableRepositories"
+      },
       "description": "FetchLinkableRepositories fetchLinkableRepositories get repositories from SCM that are\naccessible and could be added to the connection.",
       "file": "RepositoryManagerClient/FetchLinkableRepositories/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "FetchLinkableRepositories",
-        "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient.FetchLinkableRepositories",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "cloudbuildpb.FetchLinkableRepositoriesRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "RepositoryIterator",
-        "client": {
-          "shortName": "RepositoryManagerClient",
-          "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient"
-        },
-        "method": {
-          "shortName": "FetchLinkableRepositories",
-          "fullName": "google.devtools.cloudbuild.v2.RepositoryManager.FetchLinkableRepositories",
-          "service": {
-            "shortName": "RepositoryManager",
-            "fullName": "google.devtools.cloudbuild.v2.RepositoryManager"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "cloudbuild_v2_generated_RepositoryManager_FetchLinkableRepositories_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "cloudbuild FetchLinkableRepositories Sample"
     },
     {
-      "regionTag": "cloudbuild_v2_generated_RepositoryManager_FetchReadToken_sync",
-      "title": "cloudbuild FetchReadToken Sample",
-      "description": "FetchReadToken fetches read token of a given repository.",
-      "file": "RepositoryManagerClient/FetchReadToken/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "FetchReadToken",
+        "client": {
+          "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient",
+          "shortName": "RepositoryManagerClient"
+        },
         "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient.FetchReadToken",
+        "method": {
+          "fullName": "google.devtools.cloudbuild.v2.RepositoryManager.FetchReadToken",
+          "service": {
+            "fullName": "google.devtools.cloudbuild.v2.RepositoryManager",
+            "shortName": "RepositoryManager"
+          },
+          "shortName": "FetchReadToken"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "cloudbuildpb.FetchReadTokenRequest",
-            "name": "req"
+            "name": "req",
+            "type": "cloudbuildpb.FetchReadTokenRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*cloudbuildpb.FetchReadTokenResponse",
-        "client": {
-          "shortName": "RepositoryManagerClient",
-          "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient"
-        },
-        "method": {
-          "shortName": "FetchReadToken",
-          "fullName": "google.devtools.cloudbuild.v2.RepositoryManager.FetchReadToken",
-          "service": {
-            "shortName": "RepositoryManager",
-            "fullName": "google.devtools.cloudbuild.v2.RepositoryManager"
-          }
-        }
+        "shortName": "FetchReadToken"
       },
+      "description": "FetchReadToken fetches read token of a given repository.",
+      "file": "RepositoryManagerClient/FetchReadToken/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "cloudbuild_v2_generated_RepositoryManager_FetchReadToken_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "cloudbuild FetchReadToken Sample"
     },
     {
-      "regionTag": "cloudbuild_v2_generated_RepositoryManager_FetchReadWriteToken_sync",
-      "title": "cloudbuild FetchReadWriteToken Sample",
-      "description": "FetchReadWriteToken fetches read/write token of a given repository.",
-      "file": "RepositoryManagerClient/FetchReadWriteToken/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "FetchReadWriteToken",
+        "client": {
+          "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient",
+          "shortName": "RepositoryManagerClient"
+        },
         "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient.FetchReadWriteToken",
+        "method": {
+          "fullName": "google.devtools.cloudbuild.v2.RepositoryManager.FetchReadWriteToken",
+          "service": {
+            "fullName": "google.devtools.cloudbuild.v2.RepositoryManager",
+            "shortName": "RepositoryManager"
+          },
+          "shortName": "FetchReadWriteToken"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "cloudbuildpb.FetchReadWriteTokenRequest",
-            "name": "req"
+            "name": "req",
+            "type": "cloudbuildpb.FetchReadWriteTokenRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*cloudbuildpb.FetchReadWriteTokenResponse",
-        "client": {
-          "shortName": "RepositoryManagerClient",
-          "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient"
-        },
-        "method": {
-          "shortName": "FetchReadWriteToken",
-          "fullName": "google.devtools.cloudbuild.v2.RepositoryManager.FetchReadWriteToken",
-          "service": {
-            "shortName": "RepositoryManager",
-            "fullName": "google.devtools.cloudbuild.v2.RepositoryManager"
-          }
-        }
+        "shortName": "FetchReadWriteToken"
       },
+      "description": "FetchReadWriteToken fetches read/write token of a given repository.",
+      "file": "RepositoryManagerClient/FetchReadWriteToken/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "cloudbuild_v2_generated_RepositoryManager_FetchReadWriteToken_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "cloudbuild FetchReadWriteToken Sample"
     },
     {
-      "regionTag": "cloudbuild_v2_generated_RepositoryManager_GetConnection_sync",
-      "title": "cloudbuild GetConnection Sample",
-      "description": "GetConnection gets details of a single connection.",
-      "file": "RepositoryManagerClient/GetConnection/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetConnection",
+        "client": {
+          "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient",
+          "shortName": "RepositoryManagerClient"
+        },
         "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient.GetConnection",
+        "method": {
+          "fullName": "google.devtools.cloudbuild.v2.RepositoryManager.GetConnection",
+          "service": {
+            "fullName": "google.devtools.cloudbuild.v2.RepositoryManager",
+            "shortName": "RepositoryManager"
+          },
+          "shortName": "GetConnection"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "cloudbuildpb.GetConnectionRequest",
-            "name": "req"
+            "name": "req",
+            "type": "cloudbuildpb.GetConnectionRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*cloudbuildpb.Connection",
-        "client": {
-          "shortName": "RepositoryManagerClient",
-          "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient"
-        },
-        "method": {
-          "shortName": "GetConnection",
-          "fullName": "google.devtools.cloudbuild.v2.RepositoryManager.GetConnection",
-          "service": {
-            "shortName": "RepositoryManager",
-            "fullName": "google.devtools.cloudbuild.v2.RepositoryManager"
-          }
-        }
+        "shortName": "GetConnection"
       },
+      "description": "GetConnection gets details of a single connection.",
+      "file": "RepositoryManagerClient/GetConnection/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "cloudbuild_v2_generated_RepositoryManager_GetConnection_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "cloudbuild GetConnection Sample"
     },
     {
-      "regionTag": "cloudbuild_v2_generated_RepositoryManager_GetIamPolicy_sync",
-      "title": "cloudbuild GetIamPolicy Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient",
+          "shortName": "RepositoryManagerClient"
+        },
+        "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient.GetIamPolicy",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "GetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.GetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "GetIamPolicy"
+      },
       "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
       "file": "RepositoryManagerClient/GetIamPolicy/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetIamPolicy",
-        "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient.GetIamPolicy",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "iampb.GetIamPolicyRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*iampb.Policy",
-        "client": {
-          "shortName": "RepositoryManagerClient",
-          "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient"
-        },
-        "method": {
-          "shortName": "GetIamPolicy",
-          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.iam.v1.IAMPolicy"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "cloudbuild_v2_generated_RepositoryManager_GetIamPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "cloudbuild GetIamPolicy Sample"
     },
     {
-      "regionTag": "cloudbuild_v2_generated_RepositoryManager_GetOperation_sync",
-      "title": "cloudbuild GetOperation Sample",
-      "description": "GetOperation is a utility method from google.longrunning.Operations.",
-      "file": "RepositoryManagerClient/GetOperation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetOperation",
+        "client": {
+          "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient",
+          "shortName": "RepositoryManagerClient"
+        },
         "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.GetOperationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*longrunningpb.Operation",
-        "client": {
-          "shortName": "RepositoryManagerClient",
-          "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient"
-        },
-        "method": {
-          "shortName": "GetOperation",
-          "fullName": "google.longrunning.Operations.GetOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "GetOperation"
       },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "RepositoryManagerClient/GetOperation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "cloudbuild_v2_generated_RepositoryManager_GetOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "cloudbuild GetOperation Sample"
     },
     {
-      "regionTag": "cloudbuild_v2_generated_RepositoryManager_GetRepository_sync",
-      "title": "cloudbuild GetRepository Sample",
-      "description": "GetRepository gets details of a single repository.",
-      "file": "RepositoryManagerClient/GetRepository/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetRepository",
+        "client": {
+          "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient",
+          "shortName": "RepositoryManagerClient"
+        },
         "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient.GetRepository",
+        "method": {
+          "fullName": "google.devtools.cloudbuild.v2.RepositoryManager.GetRepository",
+          "service": {
+            "fullName": "google.devtools.cloudbuild.v2.RepositoryManager",
+            "shortName": "RepositoryManager"
+          },
+          "shortName": "GetRepository"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "cloudbuildpb.GetRepositoryRequest",
-            "name": "req"
+            "name": "req",
+            "type": "cloudbuildpb.GetRepositoryRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*cloudbuildpb.Repository",
-        "client": {
-          "shortName": "RepositoryManagerClient",
-          "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient"
-        },
-        "method": {
-          "shortName": "GetRepository",
-          "fullName": "google.devtools.cloudbuild.v2.RepositoryManager.GetRepository",
-          "service": {
-            "shortName": "RepositoryManager",
-            "fullName": "google.devtools.cloudbuild.v2.RepositoryManager"
-          }
-        }
+        "shortName": "GetRepository"
       },
+      "description": "GetRepository gets details of a single repository.",
+      "file": "RepositoryManagerClient/GetRepository/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "cloudbuild_v2_generated_RepositoryManager_GetRepository_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "cloudbuild GetRepository Sample"
     },
     {
-      "regionTag": "cloudbuild_v2_generated_RepositoryManager_ListConnections_sync",
-      "title": "cloudbuild ListConnections Sample",
-      "description": "ListConnections lists Connections in a given project and location.",
-      "file": "RepositoryManagerClient/ListConnections/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListConnections",
+        "client": {
+          "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient",
+          "shortName": "RepositoryManagerClient"
+        },
         "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient.ListConnections",
+        "method": {
+          "fullName": "google.devtools.cloudbuild.v2.RepositoryManager.ListConnections",
+          "service": {
+            "fullName": "google.devtools.cloudbuild.v2.RepositoryManager",
+            "shortName": "RepositoryManager"
+          },
+          "shortName": "ListConnections"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "cloudbuildpb.ListConnectionsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "cloudbuildpb.ListConnectionsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ConnectionIterator",
-        "client": {
-          "shortName": "RepositoryManagerClient",
-          "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient"
-        },
-        "method": {
-          "shortName": "ListConnections",
-          "fullName": "google.devtools.cloudbuild.v2.RepositoryManager.ListConnections",
-          "service": {
-            "shortName": "RepositoryManager",
-            "fullName": "google.devtools.cloudbuild.v2.RepositoryManager"
-          }
-        }
+        "shortName": "ListConnections"
       },
+      "description": "ListConnections lists Connections in a given project and location.",
+      "file": "RepositoryManagerClient/ListConnections/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "cloudbuild_v2_generated_RepositoryManager_ListConnections_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "cloudbuild ListConnections Sample"
     },
     {
-      "regionTag": "cloudbuild_v2_generated_RepositoryManager_ListRepositories_sync",
-      "title": "cloudbuild ListRepositories Sample",
-      "description": "ListRepositories lists Repositories in a given connection.",
-      "file": "RepositoryManagerClient/ListRepositories/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListRepositories",
+        "client": {
+          "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient",
+          "shortName": "RepositoryManagerClient"
+        },
         "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient.ListRepositories",
+        "method": {
+          "fullName": "google.devtools.cloudbuild.v2.RepositoryManager.ListRepositories",
+          "service": {
+            "fullName": "google.devtools.cloudbuild.v2.RepositoryManager",
+            "shortName": "RepositoryManager"
+          },
+          "shortName": "ListRepositories"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "cloudbuildpb.ListRepositoriesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "cloudbuildpb.ListRepositoriesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "RepositoryIterator",
-        "client": {
-          "shortName": "RepositoryManagerClient",
-          "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient"
-        },
-        "method": {
-          "shortName": "ListRepositories",
-          "fullName": "google.devtools.cloudbuild.v2.RepositoryManager.ListRepositories",
-          "service": {
-            "shortName": "RepositoryManager",
-            "fullName": "google.devtools.cloudbuild.v2.RepositoryManager"
-          }
-        }
+        "shortName": "ListRepositories"
       },
+      "description": "ListRepositories lists Repositories in a given connection.",
+      "file": "RepositoryManagerClient/ListRepositories/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "cloudbuild_v2_generated_RepositoryManager_ListRepositories_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "cloudbuild ListRepositories Sample"
     },
     {
-      "regionTag": "cloudbuild_v2_generated_RepositoryManager_SetIamPolicy_sync",
-      "title": "cloudbuild SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
-      "file": "RepositoryManagerClient/SetIamPolicy/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "SetIamPolicy",
+        "client": {
+          "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient",
+          "shortName": "RepositoryManagerClient"
+        },
         "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient.SetIamPolicy",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "SetIamPolicy"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "iampb.SetIamPolicyRequest",
-            "name": "req"
+            "name": "req",
+            "type": "iampb.SetIamPolicyRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*iampb.Policy",
-        "client": {
-          "shortName": "RepositoryManagerClient",
-          "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient"
-        },
-        "method": {
-          "shortName": "SetIamPolicy",
-          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.iam.v1.IAMPolicy"
-          }
-        }
+        "shortName": "SetIamPolicy"
       },
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "RepositoryManagerClient/SetIamPolicy/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "cloudbuild_v2_generated_RepositoryManager_SetIamPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "cloudbuild SetIamPolicy Sample"
     },
     {
-      "regionTag": "cloudbuild_v2_generated_RepositoryManager_TestIamPermissions_sync",
-      "title": "cloudbuild TestIamPermissions Sample",
-      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
-      "file": "RepositoryManagerClient/TestIamPermissions/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "TestIamPermissions",
+        "client": {
+          "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient",
+          "shortName": "RepositoryManagerClient"
+        },
         "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient.TestIamPermissions",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "TestIamPermissions"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "iampb.TestIamPermissionsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "iampb.TestIamPermissionsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*iampb.TestIamPermissionsResponse",
-        "client": {
-          "shortName": "RepositoryManagerClient",
-          "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient"
-        },
-        "method": {
-          "shortName": "TestIamPermissions",
-          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.iam.v1.IAMPolicy"
-          }
-        }
+        "shortName": "TestIamPermissions"
       },
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "RepositoryManagerClient/TestIamPermissions/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "cloudbuild_v2_generated_RepositoryManager_TestIamPermissions_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "cloudbuild TestIamPermissions Sample"
     },
     {
-      "regionTag": "cloudbuild_v2_generated_RepositoryManager_UpdateConnection_sync",
-      "title": "cloudbuild UpdateConnection Sample",
-      "description": "UpdateConnection updates a single connection.",
-      "file": "RepositoryManagerClient/UpdateConnection/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateConnection",
+        "client": {
+          "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient",
+          "shortName": "RepositoryManagerClient"
+        },
         "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient.UpdateConnection",
+        "method": {
+          "fullName": "google.devtools.cloudbuild.v2.RepositoryManager.UpdateConnection",
+          "service": {
+            "fullName": "google.devtools.cloudbuild.v2.RepositoryManager",
+            "shortName": "RepositoryManager"
+          },
+          "shortName": "UpdateConnection"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "cloudbuildpb.UpdateConnectionRequest",
-            "name": "req"
+            "name": "req",
+            "type": "cloudbuildpb.UpdateConnectionRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UpdateConnectionOperation",
-        "client": {
-          "shortName": "RepositoryManagerClient",
-          "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient"
-        },
-        "method": {
-          "shortName": "UpdateConnection",
-          "fullName": "google.devtools.cloudbuild.v2.RepositoryManager.UpdateConnection",
-          "service": {
-            "shortName": "RepositoryManager",
-            "fullName": "google.devtools.cloudbuild.v2.RepositoryManager"
-          }
-        }
+        "shortName": "UpdateConnection"
       },
+      "description": "UpdateConnection updates a single connection.",
+      "file": "RepositoryManagerClient/UpdateConnection/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "cloudbuild_v2_generated_RepositoryManager_UpdateConnection_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "cloudbuild UpdateConnection Sample"
     }
   ]
 }

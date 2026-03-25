@@ -1,1025 +1,1025 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/datamanager/apiv1",
-    "version": "0.3.0",
-    "language": "GO",
     "apis": [
       {
         "id": "google.ads.datamanager.v1",
         "version": "v1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/datamanager/apiv1",
+    "version": "0.3.0"
   },
   "snippets": [
     {
-      "regionTag": "datamanager_v1_generated_IngestionService_IngestAudienceMembers_sync",
-      "title": "datamanager IngestAudienceMembers Sample",
-      "description": "IngestAudienceMembers uploads a list of\n[AudienceMember][google.ads.datamanager.v1.AudienceMember] resources to the\nprovided [Destination][google.ads.datamanager.v1.Destination].",
-      "file": "IngestionClient/IngestAudienceMembers/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "IngestAudienceMembers",
+        "client": {
+          "fullName": "google.ads.datamanager.v1.IngestionClient",
+          "shortName": "IngestionClient"
+        },
         "fullName": "google.ads.datamanager.v1.IngestionClient.IngestAudienceMembers",
+        "method": {
+          "fullName": "google.ads.datamanager.v1.IngestionService.IngestAudienceMembers",
+          "service": {
+            "fullName": "google.ads.datamanager.v1.IngestionService",
+            "shortName": "IngestionService"
+          },
+          "shortName": "IngestAudienceMembers"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "datamanagerpb.IngestAudienceMembersRequest",
-            "name": "req"
+            "name": "req",
+            "type": "datamanagerpb.IngestAudienceMembersRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*datamanagerpb.IngestAudienceMembersResponse",
-        "client": {
-          "shortName": "IngestionClient",
-          "fullName": "google.ads.datamanager.v1.IngestionClient"
-        },
-        "method": {
-          "shortName": "IngestAudienceMembers",
-          "fullName": "google.ads.datamanager.v1.IngestionService.IngestAudienceMembers",
-          "service": {
-            "shortName": "IngestionService",
-            "fullName": "google.ads.datamanager.v1.IngestionService"
-          }
-        }
+        "shortName": "IngestAudienceMembers"
       },
+      "description": "IngestAudienceMembers uploads a list of\n[AudienceMember][google.ads.datamanager.v1.AudienceMember] resources to the\nprovided [Destination][google.ads.datamanager.v1.Destination].",
+      "file": "IngestionClient/IngestAudienceMembers/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "datamanager_v1_generated_IngestionService_IngestAudienceMembers_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datamanager IngestAudienceMembers Sample"
     },
     {
-      "regionTag": "datamanager_v1_generated_IngestionService_IngestEvents_sync",
-      "title": "datamanager IngestEvents Sample",
-      "description": "IngestEvents uploads a list of\n[Event][google.ads.datamanager.v1.Event] resources from\nthe provided [Destination][google.ads.datamanager.v1.Destination].",
-      "file": "IngestionClient/IngestEvents/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "IngestEvents",
+        "client": {
+          "fullName": "google.ads.datamanager.v1.IngestionClient",
+          "shortName": "IngestionClient"
+        },
         "fullName": "google.ads.datamanager.v1.IngestionClient.IngestEvents",
+        "method": {
+          "fullName": "google.ads.datamanager.v1.IngestionService.IngestEvents",
+          "service": {
+            "fullName": "google.ads.datamanager.v1.IngestionService",
+            "shortName": "IngestionService"
+          },
+          "shortName": "IngestEvents"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "datamanagerpb.IngestEventsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "datamanagerpb.IngestEventsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*datamanagerpb.IngestEventsResponse",
-        "client": {
-          "shortName": "IngestionClient",
-          "fullName": "google.ads.datamanager.v1.IngestionClient"
-        },
-        "method": {
-          "shortName": "IngestEvents",
-          "fullName": "google.ads.datamanager.v1.IngestionService.IngestEvents",
-          "service": {
-            "shortName": "IngestionService",
-            "fullName": "google.ads.datamanager.v1.IngestionService"
-          }
-        }
+        "shortName": "IngestEvents"
       },
+      "description": "IngestEvents uploads a list of\n[Event][google.ads.datamanager.v1.Event] resources from\nthe provided [Destination][google.ads.datamanager.v1.Destination].",
+      "file": "IngestionClient/IngestEvents/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "datamanager_v1_generated_IngestionService_IngestEvents_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datamanager IngestEvents Sample"
     },
     {
-      "regionTag": "datamanager_v1_generated_IngestionService_RemoveAudienceMembers_sync",
-      "title": "datamanager RemoveAudienceMembers Sample",
-      "description": "RemoveAudienceMembers removes a list of\n[AudienceMember][google.ads.datamanager.v1.AudienceMember] resources from\nthe provided [Destination][google.ads.datamanager.v1.Destination].",
-      "file": "IngestionClient/RemoveAudienceMembers/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "RemoveAudienceMembers",
+        "client": {
+          "fullName": "google.ads.datamanager.v1.IngestionClient",
+          "shortName": "IngestionClient"
+        },
         "fullName": "google.ads.datamanager.v1.IngestionClient.RemoveAudienceMembers",
+        "method": {
+          "fullName": "google.ads.datamanager.v1.IngestionService.RemoveAudienceMembers",
+          "service": {
+            "fullName": "google.ads.datamanager.v1.IngestionService",
+            "shortName": "IngestionService"
+          },
+          "shortName": "RemoveAudienceMembers"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "datamanagerpb.RemoveAudienceMembersRequest",
-            "name": "req"
+            "name": "req",
+            "type": "datamanagerpb.RemoveAudienceMembersRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*datamanagerpb.RemoveAudienceMembersResponse",
-        "client": {
-          "shortName": "IngestionClient",
-          "fullName": "google.ads.datamanager.v1.IngestionClient"
-        },
-        "method": {
-          "shortName": "RemoveAudienceMembers",
-          "fullName": "google.ads.datamanager.v1.IngestionService.RemoveAudienceMembers",
-          "service": {
-            "shortName": "IngestionService",
-            "fullName": "google.ads.datamanager.v1.IngestionService"
-          }
-        }
+        "shortName": "RemoveAudienceMembers"
       },
+      "description": "RemoveAudienceMembers removes a list of\n[AudienceMember][google.ads.datamanager.v1.AudienceMember] resources from\nthe provided [Destination][google.ads.datamanager.v1.Destination].",
+      "file": "IngestionClient/RemoveAudienceMembers/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "datamanager_v1_generated_IngestionService_RemoveAudienceMembers_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datamanager RemoveAudienceMembers Sample"
     },
     {
-      "regionTag": "datamanager_v1_generated_IngestionService_RetrieveRequestStatus_sync",
-      "title": "datamanager RetrieveRequestStatus Sample",
-      "description": "RetrieveRequestStatus gets the status of a request given request id.",
-      "file": "IngestionClient/RetrieveRequestStatus/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "RetrieveRequestStatus",
+        "client": {
+          "fullName": "google.ads.datamanager.v1.IngestionClient",
+          "shortName": "IngestionClient"
+        },
         "fullName": "google.ads.datamanager.v1.IngestionClient.RetrieveRequestStatus",
+        "method": {
+          "fullName": "google.ads.datamanager.v1.IngestionService.RetrieveRequestStatus",
+          "service": {
+            "fullName": "google.ads.datamanager.v1.IngestionService",
+            "shortName": "IngestionService"
+          },
+          "shortName": "RetrieveRequestStatus"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "datamanagerpb.RetrieveRequestStatusRequest",
-            "name": "req"
+            "name": "req",
+            "type": "datamanagerpb.RetrieveRequestStatusRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*datamanagerpb.RetrieveRequestStatusResponse",
-        "client": {
-          "shortName": "IngestionClient",
-          "fullName": "google.ads.datamanager.v1.IngestionClient"
-        },
-        "method": {
-          "shortName": "RetrieveRequestStatus",
-          "fullName": "google.ads.datamanager.v1.IngestionService.RetrieveRequestStatus",
-          "service": {
-            "shortName": "IngestionService",
-            "fullName": "google.ads.datamanager.v1.IngestionService"
-          }
-        }
+        "shortName": "RetrieveRequestStatus"
       },
+      "description": "RetrieveRequestStatus gets the status of a request given request id.",
+      "file": "IngestionClient/RetrieveRequestStatus/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "datamanager_v1_generated_IngestionService_RetrieveRequestStatus_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datamanager RetrieveRequestStatus Sample"
     },
     {
-      "regionTag": "datamanager_v1_generated_MarketingDataInsightsService_RetrieveInsights_sync",
-      "title": "datamanager RetrieveInsights Sample",
-      "description": "RetrieveInsights retrieves marketing data insights for a given user list.\n\nThis feature is only available to data partners.\n\nAuthorization Headers: \n\nThis method supports the following optional headers to define how the API\nauthorizes access for the request: \n\n* `login-account`: (Optional) The resource name of the account where the\nGoogle Account of the credentials is a user. If not set, defaults to the\naccount of the request. Format: \n`accountTypes/{loginAccountType}/accounts/{loginAccountId}`\n* `linked-account`: (Optional) The resource name of the account with an\nestablished product link to the `login-account`. Format: \n`accountTypes/{linkedAccountType}/accounts/{linkedAccountId}`",
-      "file": "MarketingDataInsightsClient/RetrieveInsights/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "RetrieveInsights",
+        "client": {
+          "fullName": "google.ads.datamanager.v1.MarketingDataInsightsClient",
+          "shortName": "MarketingDataInsightsClient"
+        },
         "fullName": "google.ads.datamanager.v1.MarketingDataInsightsClient.RetrieveInsights",
+        "method": {
+          "fullName": "google.ads.datamanager.v1.MarketingDataInsightsService.RetrieveInsights",
+          "service": {
+            "fullName": "google.ads.datamanager.v1.MarketingDataInsightsService",
+            "shortName": "MarketingDataInsightsService"
+          },
+          "shortName": "RetrieveInsights"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "datamanagerpb.RetrieveInsightsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "datamanagerpb.RetrieveInsightsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*datamanagerpb.RetrieveInsightsResponse",
-        "client": {
-          "shortName": "MarketingDataInsightsClient",
-          "fullName": "google.ads.datamanager.v1.MarketingDataInsightsClient"
-        },
-        "method": {
-          "shortName": "RetrieveInsights",
-          "fullName": "google.ads.datamanager.v1.MarketingDataInsightsService.RetrieveInsights",
-          "service": {
-            "shortName": "MarketingDataInsightsService",
-            "fullName": "google.ads.datamanager.v1.MarketingDataInsightsService"
-          }
-        }
+        "shortName": "RetrieveInsights"
       },
+      "description": "RetrieveInsights retrieves marketing data insights for a given user list.\n\nThis feature is only available to data partners.\n\nAuthorization Headers: \n\nThis method supports the following optional headers to define how the API\nauthorizes access for the request: \n\n* `login-account`: (Optional) The resource name of the account where the\nGoogle Account of the credentials is a user. If not set, defaults to the\naccount of the request. Format: \n`accountTypes/{loginAccountType}/accounts/{loginAccountId}`\n* `linked-account`: (Optional) The resource name of the account with an\nestablished product link to the `login-account`. Format: \n`accountTypes/{linkedAccountType}/accounts/{linkedAccountId}`",
+      "file": "MarketingDataInsightsClient/RetrieveInsights/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "datamanager_v1_generated_MarketingDataInsightsService_RetrieveInsights_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datamanager RetrieveInsights Sample"
     },
     {
-      "regionTag": "datamanager_v1_generated_PartnerLinkService_CreatePartnerLink_sync",
-      "title": "datamanager CreatePartnerLink Sample",
-      "description": "CreatePartnerLink creates a partner link for the given account.\n\nAuthorization Headers: \n\nThis method supports the following optional headers to define how the API\nauthorizes access for the request: \n\n* `login-account`: (Optional) The resource name of the account where the\nGoogle Account of the credentials is a user. If not set, defaults to the\naccount of the request. Format: \n`accountTypes/{loginAccountType}/accounts/{loginAccountId}`\n* `linked-account`: (Optional) The resource name of the account with an\nestablished product link to the `login-account`. Format: \n`accountTypes/{linkedAccountType}/accounts/{linkedAccountId}`",
-      "file": "PartnerLinkClient/CreatePartnerLink/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreatePartnerLink",
+        "client": {
+          "fullName": "google.ads.datamanager.v1.PartnerLinkClient",
+          "shortName": "PartnerLinkClient"
+        },
         "fullName": "google.ads.datamanager.v1.PartnerLinkClient.CreatePartnerLink",
+        "method": {
+          "fullName": "google.ads.datamanager.v1.PartnerLinkService.CreatePartnerLink",
+          "service": {
+            "fullName": "google.ads.datamanager.v1.PartnerLinkService",
+            "shortName": "PartnerLinkService"
+          },
+          "shortName": "CreatePartnerLink"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "datamanagerpb.CreatePartnerLinkRequest",
-            "name": "req"
+            "name": "req",
+            "type": "datamanagerpb.CreatePartnerLinkRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*datamanagerpb.PartnerLink",
-        "client": {
-          "shortName": "PartnerLinkClient",
-          "fullName": "google.ads.datamanager.v1.PartnerLinkClient"
-        },
-        "method": {
-          "shortName": "CreatePartnerLink",
-          "fullName": "google.ads.datamanager.v1.PartnerLinkService.CreatePartnerLink",
-          "service": {
-            "shortName": "PartnerLinkService",
-            "fullName": "google.ads.datamanager.v1.PartnerLinkService"
-          }
-        }
+        "shortName": "CreatePartnerLink"
       },
+      "description": "CreatePartnerLink creates a partner link for the given account.\n\nAuthorization Headers: \n\nThis method supports the following optional headers to define how the API\nauthorizes access for the request: \n\n* `login-account`: (Optional) The resource name of the account where the\nGoogle Account of the credentials is a user. If not set, defaults to the\naccount of the request. Format: \n`accountTypes/{loginAccountType}/accounts/{loginAccountId}`\n* `linked-account`: (Optional) The resource name of the account with an\nestablished product link to the `login-account`. Format: \n`accountTypes/{linkedAccountType}/accounts/{linkedAccountId}`",
+      "file": "PartnerLinkClient/CreatePartnerLink/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "datamanager_v1_generated_PartnerLinkService_CreatePartnerLink_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datamanager CreatePartnerLink Sample"
     },
     {
-      "regionTag": "datamanager_v1_generated_PartnerLinkService_DeletePartnerLink_sync",
-      "title": "datamanager DeletePartnerLink Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.ads.datamanager.v1.PartnerLinkClient",
+          "shortName": "PartnerLinkClient"
+        },
+        "fullName": "google.ads.datamanager.v1.PartnerLinkClient.DeletePartnerLink",
+        "method": {
+          "fullName": "google.ads.datamanager.v1.PartnerLinkService.DeletePartnerLink",
+          "service": {
+            "fullName": "google.ads.datamanager.v1.PartnerLinkService",
+            "shortName": "PartnerLinkService"
+          },
+          "shortName": "DeletePartnerLink"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datamanagerpb.DeletePartnerLinkRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeletePartnerLink"
+      },
       "description": "DeletePartnerLink deletes a partner link for the given account.\n\nAuthorization Headers: \n\nThis method supports the following optional headers to define how the API\nauthorizes access for the request: \n\n* `login-account`: (Optional) The resource name of the account where the\nGoogle Account of the credentials is a user. If not set, defaults to the\naccount of the request. Format: \n`accountTypes/{loginAccountType}/accounts/{loginAccountId}`\n* `linked-account`: (Optional) The resource name of the account with an\nestablished product link to the `login-account`. Format: \n`accountTypes/{linkedAccountType}/accounts/{linkedAccountId}`",
       "file": "PartnerLinkClient/DeletePartnerLink/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeletePartnerLink",
-        "fullName": "google.ads.datamanager.v1.PartnerLinkClient.DeletePartnerLink",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "datamanagerpb.DeletePartnerLinkRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "PartnerLinkClient",
-          "fullName": "google.ads.datamanager.v1.PartnerLinkClient"
-        },
-        "method": {
-          "shortName": "DeletePartnerLink",
-          "fullName": "google.ads.datamanager.v1.PartnerLinkService.DeletePartnerLink",
-          "service": {
-            "shortName": "PartnerLinkService",
-            "fullName": "google.ads.datamanager.v1.PartnerLinkService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "datamanager_v1_generated_PartnerLinkService_DeletePartnerLink_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datamanager DeletePartnerLink Sample"
     },
     {
-      "regionTag": "datamanager_v1_generated_PartnerLinkService_SearchPartnerLinks_sync",
-      "title": "datamanager SearchPartnerLinks Sample",
-      "description": "SearchPartnerLinks searches for all partner links to and from a given account.\n\nAuthorization Headers: \n\nThis method supports the following optional headers to define how the API\nauthorizes access for the request: \n\n* `login-account`: (Optional) The resource name of the account where the\nGoogle Account of the credentials is a user. If not set, defaults to the\naccount of the request. Format: \n`accountTypes/{loginAccountType}/accounts/{loginAccountId}`\n* `linked-account`: (Optional) The resource name of the account with an\nestablished product link to the `login-account`. Format: \n`accountTypes/{linkedAccountType}/accounts/{linkedAccountId}`",
-      "file": "PartnerLinkClient/SearchPartnerLinks/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "SearchPartnerLinks",
+        "client": {
+          "fullName": "google.ads.datamanager.v1.PartnerLinkClient",
+          "shortName": "PartnerLinkClient"
+        },
         "fullName": "google.ads.datamanager.v1.PartnerLinkClient.SearchPartnerLinks",
+        "method": {
+          "fullName": "google.ads.datamanager.v1.PartnerLinkService.SearchPartnerLinks",
+          "service": {
+            "fullName": "google.ads.datamanager.v1.PartnerLinkService",
+            "shortName": "PartnerLinkService"
+          },
+          "shortName": "SearchPartnerLinks"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "datamanagerpb.SearchPartnerLinksRequest",
-            "name": "req"
+            "name": "req",
+            "type": "datamanagerpb.SearchPartnerLinksRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "PartnerLinkIterator",
-        "client": {
-          "shortName": "PartnerLinkClient",
-          "fullName": "google.ads.datamanager.v1.PartnerLinkClient"
-        },
-        "method": {
-          "shortName": "SearchPartnerLinks",
-          "fullName": "google.ads.datamanager.v1.PartnerLinkService.SearchPartnerLinks",
-          "service": {
-            "shortName": "PartnerLinkService",
-            "fullName": "google.ads.datamanager.v1.PartnerLinkService"
-          }
-        }
+        "shortName": "SearchPartnerLinks"
       },
+      "description": "SearchPartnerLinks searches for all partner links to and from a given account.\n\nAuthorization Headers: \n\nThis method supports the following optional headers to define how the API\nauthorizes access for the request: \n\n* `login-account`: (Optional) The resource name of the account where the\nGoogle Account of the credentials is a user. If not set, defaults to the\naccount of the request. Format: \n`accountTypes/{loginAccountType}/accounts/{loginAccountId}`\n* `linked-account`: (Optional) The resource name of the account with an\nestablished product link to the `login-account`. Format: \n`accountTypes/{linkedAccountType}/accounts/{linkedAccountId}`",
+      "file": "PartnerLinkClient/SearchPartnerLinks/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "datamanager_v1_generated_PartnerLinkService_SearchPartnerLinks_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datamanager SearchPartnerLinks Sample"
     },
     {
-      "regionTag": "datamanager_v1_generated_UserListDirectLicenseService_CreateUserListDirectLicense_sync",
-      "title": "datamanager CreateUserListDirectLicense Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.ads.datamanager.v1.UserListDirectLicenseClient",
+          "shortName": "UserListDirectLicenseClient"
+        },
+        "fullName": "google.ads.datamanager.v1.UserListDirectLicenseClient.CreateUserListDirectLicense",
+        "method": {
+          "fullName": "google.ads.datamanager.v1.UserListDirectLicenseService.CreateUserListDirectLicense",
+          "service": {
+            "fullName": "google.ads.datamanager.v1.UserListDirectLicenseService",
+            "shortName": "UserListDirectLicenseService"
+          },
+          "shortName": "CreateUserListDirectLicense"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datamanagerpb.CreateUserListDirectLicenseRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*datamanagerpb.UserListDirectLicense",
+        "shortName": "CreateUserListDirectLicense"
+      },
       "description": "CreateUserListDirectLicense creates a user list direct license.\n\nThis feature is only available to data partners.",
       "file": "UserListDirectLicenseClient/CreateUserListDirectLicense/main.go",
       "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "datamanager_v1_generated_UserListDirectLicenseService_CreateUserListDirectLicense_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "datamanager CreateUserListDirectLicense Sample"
+    },
+    {
       "clientMethod": {
-        "shortName": "CreateUserListDirectLicense",
-        "fullName": "google.ads.datamanager.v1.UserListDirectLicenseClient.CreateUserListDirectLicense",
+        "client": {
+          "fullName": "google.ads.datamanager.v1.UserListDirectLicenseClient",
+          "shortName": "UserListDirectLicenseClient"
+        },
+        "fullName": "google.ads.datamanager.v1.UserListDirectLicenseClient.GetUserListDirectLicense",
+        "method": {
+          "fullName": "google.ads.datamanager.v1.UserListDirectLicenseService.GetUserListDirectLicense",
+          "service": {
+            "fullName": "google.ads.datamanager.v1.UserListDirectLicenseService",
+            "shortName": "UserListDirectLicenseService"
+          },
+          "shortName": "GetUserListDirectLicense"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "datamanagerpb.CreateUserListDirectLicenseRequest",
-            "name": "req"
+            "name": "req",
+            "type": "datamanagerpb.GetUserListDirectLicenseRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*datamanagerpb.UserListDirectLicense",
-        "client": {
-          "shortName": "UserListDirectLicenseClient",
-          "fullName": "google.ads.datamanager.v1.UserListDirectLicenseClient"
-        },
-        "method": {
-          "shortName": "CreateUserListDirectLicense",
-          "fullName": "google.ads.datamanager.v1.UserListDirectLicenseService.CreateUserListDirectLicense",
-          "service": {
-            "shortName": "UserListDirectLicenseService",
-            "fullName": "google.ads.datamanager.v1.UserListDirectLicenseService"
-          }
-        }
+        "shortName": "GetUserListDirectLicense"
       },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "datamanager_v1_generated_UserListDirectLicenseService_GetUserListDirectLicense_sync",
-      "title": "datamanager GetUserListDirectLicense Sample",
       "description": "GetUserListDirectLicense retrieves a user list direct license.\n\nThis feature is only available to data partners.",
       "file": "UserListDirectLicenseClient/GetUserListDirectLicense/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetUserListDirectLicense",
-        "fullName": "google.ads.datamanager.v1.UserListDirectLicenseClient.GetUserListDirectLicense",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "datamanagerpb.GetUserListDirectLicenseRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*datamanagerpb.UserListDirectLicense",
-        "client": {
-          "shortName": "UserListDirectLicenseClient",
-          "fullName": "google.ads.datamanager.v1.UserListDirectLicenseClient"
-        },
-        "method": {
-          "shortName": "GetUserListDirectLicense",
-          "fullName": "google.ads.datamanager.v1.UserListDirectLicenseService.GetUserListDirectLicense",
-          "service": {
-            "shortName": "UserListDirectLicenseService",
-            "fullName": "google.ads.datamanager.v1.UserListDirectLicenseService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "datamanager_v1_generated_UserListDirectLicenseService_GetUserListDirectLicense_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datamanager GetUserListDirectLicense Sample"
     },
     {
-      "regionTag": "datamanager_v1_generated_UserListDirectLicenseService_ListUserListDirectLicenses_sync",
-      "title": "datamanager ListUserListDirectLicenses Sample",
-      "description": "ListUserListDirectLicenses lists all user list direct licenses owned by the parent account.\n\nThis feature is only available to data partners.",
-      "file": "UserListDirectLicenseClient/ListUserListDirectLicenses/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListUserListDirectLicenses",
+        "client": {
+          "fullName": "google.ads.datamanager.v1.UserListDirectLicenseClient",
+          "shortName": "UserListDirectLicenseClient"
+        },
         "fullName": "google.ads.datamanager.v1.UserListDirectLicenseClient.ListUserListDirectLicenses",
+        "method": {
+          "fullName": "google.ads.datamanager.v1.UserListDirectLicenseService.ListUserListDirectLicenses",
+          "service": {
+            "fullName": "google.ads.datamanager.v1.UserListDirectLicenseService",
+            "shortName": "UserListDirectLicenseService"
+          },
+          "shortName": "ListUserListDirectLicenses"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "datamanagerpb.ListUserListDirectLicensesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "datamanagerpb.ListUserListDirectLicensesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UserListDirectLicenseIterator",
-        "client": {
-          "shortName": "UserListDirectLicenseClient",
-          "fullName": "google.ads.datamanager.v1.UserListDirectLicenseClient"
-        },
-        "method": {
-          "shortName": "ListUserListDirectLicenses",
-          "fullName": "google.ads.datamanager.v1.UserListDirectLicenseService.ListUserListDirectLicenses",
-          "service": {
-            "shortName": "UserListDirectLicenseService",
-            "fullName": "google.ads.datamanager.v1.UserListDirectLicenseService"
-          }
-        }
+        "shortName": "ListUserListDirectLicenses"
       },
+      "description": "ListUserListDirectLicenses lists all user list direct licenses owned by the parent account.\n\nThis feature is only available to data partners.",
+      "file": "UserListDirectLicenseClient/ListUserListDirectLicenses/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "datamanager_v1_generated_UserListDirectLicenseService_ListUserListDirectLicenses_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datamanager ListUserListDirectLicenses Sample"
     },
     {
-      "regionTag": "datamanager_v1_generated_UserListDirectLicenseService_UpdateUserListDirectLicense_sync",
-      "title": "datamanager UpdateUserListDirectLicense Sample",
-      "description": "UpdateUserListDirectLicense updates a user list direct license.\n\nThis feature is only available to data partners.",
-      "file": "UserListDirectLicenseClient/UpdateUserListDirectLicense/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateUserListDirectLicense",
+        "client": {
+          "fullName": "google.ads.datamanager.v1.UserListDirectLicenseClient",
+          "shortName": "UserListDirectLicenseClient"
+        },
         "fullName": "google.ads.datamanager.v1.UserListDirectLicenseClient.UpdateUserListDirectLicense",
+        "method": {
+          "fullName": "google.ads.datamanager.v1.UserListDirectLicenseService.UpdateUserListDirectLicense",
+          "service": {
+            "fullName": "google.ads.datamanager.v1.UserListDirectLicenseService",
+            "shortName": "UserListDirectLicenseService"
+          },
+          "shortName": "UpdateUserListDirectLicense"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "datamanagerpb.UpdateUserListDirectLicenseRequest",
-            "name": "req"
+            "name": "req",
+            "type": "datamanagerpb.UpdateUserListDirectLicenseRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*datamanagerpb.UserListDirectLicense",
-        "client": {
-          "shortName": "UserListDirectLicenseClient",
-          "fullName": "google.ads.datamanager.v1.UserListDirectLicenseClient"
-        },
-        "method": {
-          "shortName": "UpdateUserListDirectLicense",
-          "fullName": "google.ads.datamanager.v1.UserListDirectLicenseService.UpdateUserListDirectLicense",
-          "service": {
-            "shortName": "UserListDirectLicenseService",
-            "fullName": "google.ads.datamanager.v1.UserListDirectLicenseService"
-          }
-        }
+        "shortName": "UpdateUserListDirectLicense"
       },
+      "description": "UpdateUserListDirectLicense updates a user list direct license.\n\nThis feature is only available to data partners.",
+      "file": "UserListDirectLicenseClient/UpdateUserListDirectLicense/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "datamanager_v1_generated_UserListDirectLicenseService_UpdateUserListDirectLicense_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datamanager UpdateUserListDirectLicense Sample"
     },
     {
-      "regionTag": "datamanager_v1_generated_UserListGlobalLicenseService_CreateUserListGlobalLicense_sync",
-      "title": "datamanager CreateUserListGlobalLicense Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.ads.datamanager.v1.UserListGlobalLicenseClient",
+          "shortName": "UserListGlobalLicenseClient"
+        },
+        "fullName": "google.ads.datamanager.v1.UserListGlobalLicenseClient.CreateUserListGlobalLicense",
+        "method": {
+          "fullName": "google.ads.datamanager.v1.UserListGlobalLicenseService.CreateUserListGlobalLicense",
+          "service": {
+            "fullName": "google.ads.datamanager.v1.UserListGlobalLicenseService",
+            "shortName": "UserListGlobalLicenseService"
+          },
+          "shortName": "CreateUserListGlobalLicense"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datamanagerpb.CreateUserListGlobalLicenseRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*datamanagerpb.UserListGlobalLicense",
+        "shortName": "CreateUserListGlobalLicense"
+      },
       "description": "CreateUserListGlobalLicense creates a user list global license.\n\nThis feature is only available to data partners.",
       "file": "UserListGlobalLicenseClient/CreateUserListGlobalLicense/main.go",
       "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "datamanager_v1_generated_UserListGlobalLicenseService_CreateUserListGlobalLicense_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "datamanager CreateUserListGlobalLicense Sample"
+    },
+    {
       "clientMethod": {
-        "shortName": "CreateUserListGlobalLicense",
-        "fullName": "google.ads.datamanager.v1.UserListGlobalLicenseClient.CreateUserListGlobalLicense",
+        "client": {
+          "fullName": "google.ads.datamanager.v1.UserListGlobalLicenseClient",
+          "shortName": "UserListGlobalLicenseClient"
+        },
+        "fullName": "google.ads.datamanager.v1.UserListGlobalLicenseClient.GetUserListGlobalLicense",
+        "method": {
+          "fullName": "google.ads.datamanager.v1.UserListGlobalLicenseService.GetUserListGlobalLicense",
+          "service": {
+            "fullName": "google.ads.datamanager.v1.UserListGlobalLicenseService",
+            "shortName": "UserListGlobalLicenseService"
+          },
+          "shortName": "GetUserListGlobalLicense"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "datamanagerpb.CreateUserListGlobalLicenseRequest",
-            "name": "req"
+            "name": "req",
+            "type": "datamanagerpb.GetUserListGlobalLicenseRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*datamanagerpb.UserListGlobalLicense",
-        "client": {
-          "shortName": "UserListGlobalLicenseClient",
-          "fullName": "google.ads.datamanager.v1.UserListGlobalLicenseClient"
-        },
-        "method": {
-          "shortName": "CreateUserListGlobalLicense",
-          "fullName": "google.ads.datamanager.v1.UserListGlobalLicenseService.CreateUserListGlobalLicense",
-          "service": {
-            "shortName": "UserListGlobalLicenseService",
-            "fullName": "google.ads.datamanager.v1.UserListGlobalLicenseService"
-          }
-        }
+        "shortName": "GetUserListGlobalLicense"
       },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "datamanager_v1_generated_UserListGlobalLicenseService_GetUserListGlobalLicense_sync",
-      "title": "datamanager GetUserListGlobalLicense Sample",
       "description": "GetUserListGlobalLicense retrieves a user list global license.\n\nThis feature is only available to data partners.",
       "file": "UserListGlobalLicenseClient/GetUserListGlobalLicense/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetUserListGlobalLicense",
-        "fullName": "google.ads.datamanager.v1.UserListGlobalLicenseClient.GetUserListGlobalLicense",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "datamanagerpb.GetUserListGlobalLicenseRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*datamanagerpb.UserListGlobalLicense",
-        "client": {
-          "shortName": "UserListGlobalLicenseClient",
-          "fullName": "google.ads.datamanager.v1.UserListGlobalLicenseClient"
-        },
-        "method": {
-          "shortName": "GetUserListGlobalLicense",
-          "fullName": "google.ads.datamanager.v1.UserListGlobalLicenseService.GetUserListGlobalLicense",
-          "service": {
-            "shortName": "UserListGlobalLicenseService",
-            "fullName": "google.ads.datamanager.v1.UserListGlobalLicenseService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "datamanager_v1_generated_UserListGlobalLicenseService_GetUserListGlobalLicense_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datamanager GetUserListGlobalLicense Sample"
     },
     {
-      "regionTag": "datamanager_v1_generated_UserListGlobalLicenseService_ListUserListGlobalLicenseCustomerInfos_sync",
-      "title": "datamanager ListUserListGlobalLicenseCustomerInfos Sample",
-      "description": "ListUserListGlobalLicenseCustomerInfos lists all customer info for a user list global license.\n\nThis feature is only available to data partners.",
-      "file": "UserListGlobalLicenseClient/ListUserListGlobalLicenseCustomerInfos/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListUserListGlobalLicenseCustomerInfos",
+        "client": {
+          "fullName": "google.ads.datamanager.v1.UserListGlobalLicenseClient",
+          "shortName": "UserListGlobalLicenseClient"
+        },
         "fullName": "google.ads.datamanager.v1.UserListGlobalLicenseClient.ListUserListGlobalLicenseCustomerInfos",
+        "method": {
+          "fullName": "google.ads.datamanager.v1.UserListGlobalLicenseService.ListUserListGlobalLicenseCustomerInfos",
+          "service": {
+            "fullName": "google.ads.datamanager.v1.UserListGlobalLicenseService",
+            "shortName": "UserListGlobalLicenseService"
+          },
+          "shortName": "ListUserListGlobalLicenseCustomerInfos"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "datamanagerpb.ListUserListGlobalLicenseCustomerInfosRequest",
-            "name": "req"
+            "name": "req",
+            "type": "datamanagerpb.ListUserListGlobalLicenseCustomerInfosRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UserListGlobalLicenseCustomerInfoIterator",
-        "client": {
-          "shortName": "UserListGlobalLicenseClient",
-          "fullName": "google.ads.datamanager.v1.UserListGlobalLicenseClient"
-        },
-        "method": {
-          "shortName": "ListUserListGlobalLicenseCustomerInfos",
-          "fullName": "google.ads.datamanager.v1.UserListGlobalLicenseService.ListUserListGlobalLicenseCustomerInfos",
-          "service": {
-            "shortName": "UserListGlobalLicenseService",
-            "fullName": "google.ads.datamanager.v1.UserListGlobalLicenseService"
-          }
-        }
+        "shortName": "ListUserListGlobalLicenseCustomerInfos"
       },
+      "description": "ListUserListGlobalLicenseCustomerInfos lists all customer info for a user list global license.\n\nThis feature is only available to data partners.",
+      "file": "UserListGlobalLicenseClient/ListUserListGlobalLicenseCustomerInfos/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "datamanager_v1_generated_UserListGlobalLicenseService_ListUserListGlobalLicenseCustomerInfos_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datamanager ListUserListGlobalLicenseCustomerInfos Sample"
     },
     {
-      "regionTag": "datamanager_v1_generated_UserListGlobalLicenseService_ListUserListGlobalLicenses_sync",
-      "title": "datamanager ListUserListGlobalLicenses Sample",
-      "description": "ListUserListGlobalLicenses lists all user list global licenses owned by the parent account.\n\nThis feature is only available to data partners.",
-      "file": "UserListGlobalLicenseClient/ListUserListGlobalLicenses/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListUserListGlobalLicenses",
+        "client": {
+          "fullName": "google.ads.datamanager.v1.UserListGlobalLicenseClient",
+          "shortName": "UserListGlobalLicenseClient"
+        },
         "fullName": "google.ads.datamanager.v1.UserListGlobalLicenseClient.ListUserListGlobalLicenses",
+        "method": {
+          "fullName": "google.ads.datamanager.v1.UserListGlobalLicenseService.ListUserListGlobalLicenses",
+          "service": {
+            "fullName": "google.ads.datamanager.v1.UserListGlobalLicenseService",
+            "shortName": "UserListGlobalLicenseService"
+          },
+          "shortName": "ListUserListGlobalLicenses"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "datamanagerpb.ListUserListGlobalLicensesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "datamanagerpb.ListUserListGlobalLicensesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UserListGlobalLicenseIterator",
-        "client": {
-          "shortName": "UserListGlobalLicenseClient",
-          "fullName": "google.ads.datamanager.v1.UserListGlobalLicenseClient"
-        },
-        "method": {
-          "shortName": "ListUserListGlobalLicenses",
-          "fullName": "google.ads.datamanager.v1.UserListGlobalLicenseService.ListUserListGlobalLicenses",
-          "service": {
-            "shortName": "UserListGlobalLicenseService",
-            "fullName": "google.ads.datamanager.v1.UserListGlobalLicenseService"
-          }
-        }
+        "shortName": "ListUserListGlobalLicenses"
       },
+      "description": "ListUserListGlobalLicenses lists all user list global licenses owned by the parent account.\n\nThis feature is only available to data partners.",
+      "file": "UserListGlobalLicenseClient/ListUserListGlobalLicenses/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "datamanager_v1_generated_UserListGlobalLicenseService_ListUserListGlobalLicenses_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datamanager ListUserListGlobalLicenses Sample"
     },
     {
-      "regionTag": "datamanager_v1_generated_UserListGlobalLicenseService_UpdateUserListGlobalLicense_sync",
-      "title": "datamanager UpdateUserListGlobalLicense Sample",
-      "description": "UpdateUserListGlobalLicense updates a user list global license.\n\nThis feature is only available to data partners.",
-      "file": "UserListGlobalLicenseClient/UpdateUserListGlobalLicense/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateUserListGlobalLicense",
+        "client": {
+          "fullName": "google.ads.datamanager.v1.UserListGlobalLicenseClient",
+          "shortName": "UserListGlobalLicenseClient"
+        },
         "fullName": "google.ads.datamanager.v1.UserListGlobalLicenseClient.UpdateUserListGlobalLicense",
+        "method": {
+          "fullName": "google.ads.datamanager.v1.UserListGlobalLicenseService.UpdateUserListGlobalLicense",
+          "service": {
+            "fullName": "google.ads.datamanager.v1.UserListGlobalLicenseService",
+            "shortName": "UserListGlobalLicenseService"
+          },
+          "shortName": "UpdateUserListGlobalLicense"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "datamanagerpb.UpdateUserListGlobalLicenseRequest",
-            "name": "req"
+            "name": "req",
+            "type": "datamanagerpb.UpdateUserListGlobalLicenseRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*datamanagerpb.UserListGlobalLicense",
-        "client": {
-          "shortName": "UserListGlobalLicenseClient",
-          "fullName": "google.ads.datamanager.v1.UserListGlobalLicenseClient"
-        },
-        "method": {
-          "shortName": "UpdateUserListGlobalLicense",
-          "fullName": "google.ads.datamanager.v1.UserListGlobalLicenseService.UpdateUserListGlobalLicense",
-          "service": {
-            "shortName": "UserListGlobalLicenseService",
-            "fullName": "google.ads.datamanager.v1.UserListGlobalLicenseService"
-          }
-        }
+        "shortName": "UpdateUserListGlobalLicense"
       },
+      "description": "UpdateUserListGlobalLicense updates a user list global license.\n\nThis feature is only available to data partners.",
+      "file": "UserListGlobalLicenseClient/UpdateUserListGlobalLicense/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "datamanager_v1_generated_UserListGlobalLicenseService_UpdateUserListGlobalLicense_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datamanager UpdateUserListGlobalLicense Sample"
     },
     {
-      "regionTag": "datamanager_v1_generated_UserListService_CreateUserList_sync",
-      "title": "datamanager CreateUserList Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.ads.datamanager.v1.UserListClient",
+          "shortName": "UserListClient"
+        },
+        "fullName": "google.ads.datamanager.v1.UserListClient.CreateUserList",
+        "method": {
+          "fullName": "google.ads.datamanager.v1.UserListService.CreateUserList",
+          "service": {
+            "fullName": "google.ads.datamanager.v1.UserListService",
+            "shortName": "UserListService"
+          },
+          "shortName": "CreateUserList"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datamanagerpb.CreateUserListRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*datamanagerpb.UserList",
+        "shortName": "CreateUserList"
+      },
       "description": "CreateUserList creates a UserList.\n\nAuthorization Headers: \n\nThis method supports the following optional headers to define how the API\nauthorizes access for the request: \n\n* `login-account`: (Optional) The resource name of the account where the\nGoogle Account of the credentials is a user. If not set, defaults to the\naccount of the request. Format: \n`accountTypes/{loginAccountType}/accounts/{loginAccountId}`\n* `linked-account`: (Optional) The resource name of the account with an\nestablished product link to the `login-account`. Format: \n`accountTypes/{linkedAccountType}/accounts/{linkedAccountId}`",
       "file": "UserListClient/CreateUserList/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateUserList",
-        "fullName": "google.ads.datamanager.v1.UserListClient.CreateUserList",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "datamanagerpb.CreateUserListRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*datamanagerpb.UserList",
-        "client": {
-          "shortName": "UserListClient",
-          "fullName": "google.ads.datamanager.v1.UserListClient"
-        },
-        "method": {
-          "shortName": "CreateUserList",
-          "fullName": "google.ads.datamanager.v1.UserListService.CreateUserList",
-          "service": {
-            "shortName": "UserListService",
-            "fullName": "google.ads.datamanager.v1.UserListService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "datamanager_v1_generated_UserListService_CreateUserList_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datamanager CreateUserList Sample"
     },
     {
-      "regionTag": "datamanager_v1_generated_UserListService_DeleteUserList_sync",
-      "title": "datamanager DeleteUserList Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.ads.datamanager.v1.UserListClient",
+          "shortName": "UserListClient"
+        },
+        "fullName": "google.ads.datamanager.v1.UserListClient.DeleteUserList",
+        "method": {
+          "fullName": "google.ads.datamanager.v1.UserListService.DeleteUserList",
+          "service": {
+            "fullName": "google.ads.datamanager.v1.UserListService",
+            "shortName": "UserListService"
+          },
+          "shortName": "DeleteUserList"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datamanagerpb.DeleteUserListRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteUserList"
+      },
       "description": "DeleteUserList deletes a UserList.\n\nAuthorization Headers: \n\nThis method supports the following optional headers to define how the API\nauthorizes access for the request: \n\n* `login-account`: (Optional) The resource name of the account where the\nGoogle Account of the credentials is a user. If not set, defaults to the\naccount of the request. Format: \n`accountTypes/{loginAccountType}/accounts/{loginAccountId}`\n* `linked-account`: (Optional) The resource name of the account with an\nestablished product link to the `login-account`. Format: \n`accountTypes/{linkedAccountType}/accounts/{linkedAccountId}`",
       "file": "UserListClient/DeleteUserList/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteUserList",
-        "fullName": "google.ads.datamanager.v1.UserListClient.DeleteUserList",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "datamanagerpb.DeleteUserListRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "UserListClient",
-          "fullName": "google.ads.datamanager.v1.UserListClient"
-        },
-        "method": {
-          "shortName": "DeleteUserList",
-          "fullName": "google.ads.datamanager.v1.UserListService.DeleteUserList",
-          "service": {
-            "shortName": "UserListService",
-            "fullName": "google.ads.datamanager.v1.UserListService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "datamanager_v1_generated_UserListService_DeleteUserList_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datamanager DeleteUserList Sample"
     },
     {
-      "regionTag": "datamanager_v1_generated_UserListService_GetUserList_sync",
-      "title": "datamanager GetUserList Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.ads.datamanager.v1.UserListClient",
+          "shortName": "UserListClient"
+        },
+        "fullName": "google.ads.datamanager.v1.UserListClient.GetUserList",
+        "method": {
+          "fullName": "google.ads.datamanager.v1.UserListService.GetUserList",
+          "service": {
+            "fullName": "google.ads.datamanager.v1.UserListService",
+            "shortName": "UserListService"
+          },
+          "shortName": "GetUserList"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datamanagerpb.GetUserListRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*datamanagerpb.UserList",
+        "shortName": "GetUserList"
+      },
       "description": "GetUserList gets a UserList.\n\nAuthorization Headers: \n\nThis method supports the following optional headers to define how the API\nauthorizes access for the request: \n\n* `login-account`: (Optional) The resource name of the account where the\nGoogle Account of the credentials is a user. If not set, defaults to the\naccount of the request. Format: \n`accountTypes/{loginAccountType}/accounts/{loginAccountId}`\n* `linked-account`: (Optional) The resource name of the account with an\nestablished product link to the `login-account`. Format: \n`accountTypes/{linkedAccountType}/accounts/{linkedAccountId}`",
       "file": "UserListClient/GetUserList/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetUserList",
-        "fullName": "google.ads.datamanager.v1.UserListClient.GetUserList",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "datamanagerpb.GetUserListRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*datamanagerpb.UserList",
-        "client": {
-          "shortName": "UserListClient",
-          "fullName": "google.ads.datamanager.v1.UserListClient"
-        },
-        "method": {
-          "shortName": "GetUserList",
-          "fullName": "google.ads.datamanager.v1.UserListService.GetUserList",
-          "service": {
-            "shortName": "UserListService",
-            "fullName": "google.ads.datamanager.v1.UserListService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "datamanager_v1_generated_UserListService_GetUserList_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datamanager GetUserList Sample"
     },
     {
-      "regionTag": "datamanager_v1_generated_UserListService_ListUserLists_sync",
-      "title": "datamanager ListUserLists Sample",
-      "description": "ListUserLists lists UserLists.\n\nAuthorization Headers: \n\nThis method supports the following optional headers to define how the API\nauthorizes access for the request: \n\n* `login-account`: (Optional) The resource name of the account where the\nGoogle Account of the credentials is a user. If not set, defaults to the\naccount of the request. Format: \n`accountTypes/{loginAccountType}/accounts/{loginAccountId}`\n* `linked-account`: (Optional) The resource name of the account with an\nestablished product link to the `login-account`. Format: \n`accountTypes/{linkedAccountType}/accounts/{linkedAccountId}`",
-      "file": "UserListClient/ListUserLists/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListUserLists",
+        "client": {
+          "fullName": "google.ads.datamanager.v1.UserListClient",
+          "shortName": "UserListClient"
+        },
         "fullName": "google.ads.datamanager.v1.UserListClient.ListUserLists",
+        "method": {
+          "fullName": "google.ads.datamanager.v1.UserListService.ListUserLists",
+          "service": {
+            "fullName": "google.ads.datamanager.v1.UserListService",
+            "shortName": "UserListService"
+          },
+          "shortName": "ListUserLists"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "datamanagerpb.ListUserListsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "datamanagerpb.ListUserListsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UserListIterator",
-        "client": {
-          "shortName": "UserListClient",
-          "fullName": "google.ads.datamanager.v1.UserListClient"
-        },
-        "method": {
-          "shortName": "ListUserLists",
-          "fullName": "google.ads.datamanager.v1.UserListService.ListUserLists",
-          "service": {
-            "shortName": "UserListService",
-            "fullName": "google.ads.datamanager.v1.UserListService"
-          }
-        }
+        "shortName": "ListUserLists"
       },
+      "description": "ListUserLists lists UserLists.\n\nAuthorization Headers: \n\nThis method supports the following optional headers to define how the API\nauthorizes access for the request: \n\n* `login-account`: (Optional) The resource name of the account where the\nGoogle Account of the credentials is a user. If not set, defaults to the\naccount of the request. Format: \n`accountTypes/{loginAccountType}/accounts/{loginAccountId}`\n* `linked-account`: (Optional) The resource name of the account with an\nestablished product link to the `login-account`. Format: \n`accountTypes/{linkedAccountType}/accounts/{linkedAccountId}`",
+      "file": "UserListClient/ListUserLists/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "datamanager_v1_generated_UserListService_ListUserLists_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datamanager ListUserLists Sample"
     },
     {
-      "regionTag": "datamanager_v1_generated_UserListService_UpdateUserList_sync",
-      "title": "datamanager UpdateUserList Sample",
-      "description": "UpdateUserList updates a UserList.\n\nAuthorization Headers: \n\nThis method supports the following optional headers to define how the API\nauthorizes access for the request: \n\n* `login-account`: (Optional) The resource name of the account where the\nGoogle Account of the credentials is a user. If not set, defaults to the\naccount of the request. Format: \n`accountTypes/{loginAccountType}/accounts/{loginAccountId}`\n* `linked-account`: (Optional) The resource name of the account with an\nestablished product link to the `login-account`. Format: \n`accountTypes/{linkedAccountType}/accounts/{linkedAccountId}`",
-      "file": "UserListClient/UpdateUserList/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateUserList",
+        "client": {
+          "fullName": "google.ads.datamanager.v1.UserListClient",
+          "shortName": "UserListClient"
+        },
         "fullName": "google.ads.datamanager.v1.UserListClient.UpdateUserList",
+        "method": {
+          "fullName": "google.ads.datamanager.v1.UserListService.UpdateUserList",
+          "service": {
+            "fullName": "google.ads.datamanager.v1.UserListService",
+            "shortName": "UserListService"
+          },
+          "shortName": "UpdateUserList"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "datamanagerpb.UpdateUserListRequest",
-            "name": "req"
+            "name": "req",
+            "type": "datamanagerpb.UpdateUserListRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*datamanagerpb.UserList",
-        "client": {
-          "shortName": "UserListClient",
-          "fullName": "google.ads.datamanager.v1.UserListClient"
-        },
-        "method": {
-          "shortName": "UpdateUserList",
-          "fullName": "google.ads.datamanager.v1.UserListService.UpdateUserList",
-          "service": {
-            "shortName": "UserListService",
-            "fullName": "google.ads.datamanager.v1.UserListService"
-          }
-        }
+        "shortName": "UpdateUserList"
       },
+      "description": "UpdateUserList updates a UserList.\n\nAuthorization Headers: \n\nThis method supports the following optional headers to define how the API\nauthorizes access for the request: \n\n* `login-account`: (Optional) The resource name of the account where the\nGoogle Account of the credentials is a user. If not set, defaults to the\naccount of the request. Format: \n`accountTypes/{loginAccountType}/accounts/{loginAccountId}`\n* `linked-account`: (Optional) The resource name of the account with an\nestablished product link to the `login-account`. Format: \n`accountTypes/{linkedAccountType}/accounts/{linkedAccountId}`",
+      "file": "UserListClient/UpdateUserList/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "datamanager_v1_generated_UserListService_UpdateUserList_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datamanager UpdateUserList Sample"
     }
   ]
 }

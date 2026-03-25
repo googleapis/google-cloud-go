@@ -1,475 +1,475 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/networkconnectivity/apiv1alpha1",
-    "version": "1.21.0",
-    "language": "GO",
     "apis": [
       {
         "id": "google.cloud.networkconnectivity.v1alpha1",
         "version": "v1alpha1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/networkconnectivity/apiv1alpha1",
+    "version": "1.21.0"
   },
   "snippets": [
     {
-      "regionTag": "networkconnectivity_v1alpha1_generated_HubService_CreateHub_sync",
-      "title": "networkconnectivity CreateHub Sample",
-      "description": "CreateHub creates a new Hub in a given project and location.",
-      "file": "HubClient/CreateHub/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateHub",
+        "client": {
+          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubClient",
+          "shortName": "HubClient"
+        },
         "fullName": "google.cloud.networkconnectivity.v1alpha1.HubClient.CreateHub",
+        "method": {
+          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService.CreateHub",
+          "service": {
+            "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService",
+            "shortName": "HubService"
+          },
+          "shortName": "CreateHub"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "networkconnectivitypb.CreateHubRequest",
-            "name": "req"
+            "name": "req",
+            "type": "networkconnectivitypb.CreateHubRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateHubOperation",
-        "client": {
-          "shortName": "HubClient",
-          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubClient"
-        },
-        "method": {
-          "shortName": "CreateHub",
-          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService.CreateHub",
-          "service": {
-            "shortName": "HubService",
-            "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService"
-          }
-        }
+        "shortName": "CreateHub"
       },
+      "description": "CreateHub creates a new Hub in a given project and location.",
+      "file": "HubClient/CreateHub/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networkconnectivity_v1alpha1_generated_HubService_CreateHub_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkconnectivity CreateHub Sample"
     },
     {
-      "regionTag": "networkconnectivity_v1alpha1_generated_HubService_CreateSpoke_sync",
-      "title": "networkconnectivity CreateSpoke Sample",
-      "description": "CreateSpoke creates a new Spoke in a given project and location.",
-      "file": "HubClient/CreateSpoke/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateSpoke",
+        "client": {
+          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubClient",
+          "shortName": "HubClient"
+        },
         "fullName": "google.cloud.networkconnectivity.v1alpha1.HubClient.CreateSpoke",
+        "method": {
+          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService.CreateSpoke",
+          "service": {
+            "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService",
+            "shortName": "HubService"
+          },
+          "shortName": "CreateSpoke"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "networkconnectivitypb.CreateSpokeRequest",
-            "name": "req"
+            "name": "req",
+            "type": "networkconnectivitypb.CreateSpokeRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateSpokeOperation",
-        "client": {
-          "shortName": "HubClient",
-          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubClient"
-        },
-        "method": {
-          "shortName": "CreateSpoke",
-          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService.CreateSpoke",
-          "service": {
-            "shortName": "HubService",
-            "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService"
-          }
-        }
+        "shortName": "CreateSpoke"
       },
+      "description": "CreateSpoke creates a new Spoke in a given project and location.",
+      "file": "HubClient/CreateSpoke/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networkconnectivity_v1alpha1_generated_HubService_CreateSpoke_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkconnectivity CreateSpoke Sample"
     },
     {
-      "regionTag": "networkconnectivity_v1alpha1_generated_HubService_DeleteHub_sync",
-      "title": "networkconnectivity DeleteHub Sample",
-      "description": "DeleteHub deletes a single Hub.",
-      "file": "HubClient/DeleteHub/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteHub",
+        "client": {
+          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubClient",
+          "shortName": "HubClient"
+        },
         "fullName": "google.cloud.networkconnectivity.v1alpha1.HubClient.DeleteHub",
+        "method": {
+          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService.DeleteHub",
+          "service": {
+            "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService",
+            "shortName": "HubService"
+          },
+          "shortName": "DeleteHub"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "networkconnectivitypb.DeleteHubRequest",
-            "name": "req"
+            "name": "req",
+            "type": "networkconnectivitypb.DeleteHubRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteHubOperation",
-        "client": {
-          "shortName": "HubClient",
-          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubClient"
-        },
-        "method": {
-          "shortName": "DeleteHub",
-          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService.DeleteHub",
-          "service": {
-            "shortName": "HubService",
-            "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService"
-          }
-        }
+        "shortName": "DeleteHub"
       },
+      "description": "DeleteHub deletes a single Hub.",
+      "file": "HubClient/DeleteHub/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networkconnectivity_v1alpha1_generated_HubService_DeleteHub_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkconnectivity DeleteHub Sample"
     },
     {
-      "regionTag": "networkconnectivity_v1alpha1_generated_HubService_DeleteSpoke_sync",
-      "title": "networkconnectivity DeleteSpoke Sample",
-      "description": "DeleteSpoke deletes a single Spoke.",
-      "file": "HubClient/DeleteSpoke/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteSpoke",
+        "client": {
+          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubClient",
+          "shortName": "HubClient"
+        },
         "fullName": "google.cloud.networkconnectivity.v1alpha1.HubClient.DeleteSpoke",
+        "method": {
+          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService.DeleteSpoke",
+          "service": {
+            "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService",
+            "shortName": "HubService"
+          },
+          "shortName": "DeleteSpoke"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "networkconnectivitypb.DeleteSpokeRequest",
-            "name": "req"
+            "name": "req",
+            "type": "networkconnectivitypb.DeleteSpokeRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteSpokeOperation",
-        "client": {
-          "shortName": "HubClient",
-          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubClient"
-        },
-        "method": {
-          "shortName": "DeleteSpoke",
-          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService.DeleteSpoke",
-          "service": {
-            "shortName": "HubService",
-            "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService"
-          }
-        }
+        "shortName": "DeleteSpoke"
       },
+      "description": "DeleteSpoke deletes a single Spoke.",
+      "file": "HubClient/DeleteSpoke/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networkconnectivity_v1alpha1_generated_HubService_DeleteSpoke_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkconnectivity DeleteSpoke Sample"
     },
     {
-      "regionTag": "networkconnectivity_v1alpha1_generated_HubService_GetHub_sync",
-      "title": "networkconnectivity GetHub Sample",
-      "description": "GetHub gets details of a single Hub.",
-      "file": "HubClient/GetHub/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetHub",
+        "client": {
+          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubClient",
+          "shortName": "HubClient"
+        },
         "fullName": "google.cloud.networkconnectivity.v1alpha1.HubClient.GetHub",
+        "method": {
+          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService.GetHub",
+          "service": {
+            "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService",
+            "shortName": "HubService"
+          },
+          "shortName": "GetHub"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "networkconnectivitypb.GetHubRequest",
-            "name": "req"
+            "name": "req",
+            "type": "networkconnectivitypb.GetHubRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*networkconnectivitypb.Hub",
-        "client": {
-          "shortName": "HubClient",
-          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubClient"
-        },
-        "method": {
-          "shortName": "GetHub",
-          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService.GetHub",
-          "service": {
-            "shortName": "HubService",
-            "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService"
-          }
-        }
+        "shortName": "GetHub"
       },
+      "description": "GetHub gets details of a single Hub.",
+      "file": "HubClient/GetHub/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networkconnectivity_v1alpha1_generated_HubService_GetHub_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkconnectivity GetHub Sample"
     },
     {
-      "regionTag": "networkconnectivity_v1alpha1_generated_HubService_GetSpoke_sync",
-      "title": "networkconnectivity GetSpoke Sample",
-      "description": "GetSpoke gets details of a single Spoke.",
-      "file": "HubClient/GetSpoke/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetSpoke",
+        "client": {
+          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubClient",
+          "shortName": "HubClient"
+        },
         "fullName": "google.cloud.networkconnectivity.v1alpha1.HubClient.GetSpoke",
+        "method": {
+          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService.GetSpoke",
+          "service": {
+            "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService",
+            "shortName": "HubService"
+          },
+          "shortName": "GetSpoke"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "networkconnectivitypb.GetSpokeRequest",
-            "name": "req"
+            "name": "req",
+            "type": "networkconnectivitypb.GetSpokeRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*networkconnectivitypb.Spoke",
-        "client": {
-          "shortName": "HubClient",
-          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubClient"
-        },
-        "method": {
-          "shortName": "GetSpoke",
-          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService.GetSpoke",
-          "service": {
-            "shortName": "HubService",
-            "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService"
-          }
-        }
+        "shortName": "GetSpoke"
       },
+      "description": "GetSpoke gets details of a single Spoke.",
+      "file": "HubClient/GetSpoke/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networkconnectivity_v1alpha1_generated_HubService_GetSpoke_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkconnectivity GetSpoke Sample"
     },
     {
-      "regionTag": "networkconnectivity_v1alpha1_generated_HubService_ListHubs_sync",
-      "title": "networkconnectivity ListHubs Sample",
-      "description": "ListHubs lists Hubs in a given project and location.",
-      "file": "HubClient/ListHubs/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListHubs",
+        "client": {
+          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubClient",
+          "shortName": "HubClient"
+        },
         "fullName": "google.cloud.networkconnectivity.v1alpha1.HubClient.ListHubs",
+        "method": {
+          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService.ListHubs",
+          "service": {
+            "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService",
+            "shortName": "HubService"
+          },
+          "shortName": "ListHubs"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "networkconnectivitypb.ListHubsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "networkconnectivitypb.ListHubsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "HubIterator",
-        "client": {
-          "shortName": "HubClient",
-          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubClient"
-        },
-        "method": {
-          "shortName": "ListHubs",
-          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService.ListHubs",
-          "service": {
-            "shortName": "HubService",
-            "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService"
-          }
-        }
+        "shortName": "ListHubs"
       },
+      "description": "ListHubs lists Hubs in a given project and location.",
+      "file": "HubClient/ListHubs/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networkconnectivity_v1alpha1_generated_HubService_ListHubs_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkconnectivity ListHubs Sample"
     },
     {
-      "regionTag": "networkconnectivity_v1alpha1_generated_HubService_ListSpokes_sync",
-      "title": "networkconnectivity ListSpokes Sample",
-      "description": "ListSpokes lists Spokes in a given project and location.",
-      "file": "HubClient/ListSpokes/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListSpokes",
+        "client": {
+          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubClient",
+          "shortName": "HubClient"
+        },
         "fullName": "google.cloud.networkconnectivity.v1alpha1.HubClient.ListSpokes",
+        "method": {
+          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService.ListSpokes",
+          "service": {
+            "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService",
+            "shortName": "HubService"
+          },
+          "shortName": "ListSpokes"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "networkconnectivitypb.ListSpokesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "networkconnectivitypb.ListSpokesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "SpokeIterator",
-        "client": {
-          "shortName": "HubClient",
-          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubClient"
-        },
-        "method": {
-          "shortName": "ListSpokes",
-          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService.ListSpokes",
-          "service": {
-            "shortName": "HubService",
-            "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService"
-          }
-        }
+        "shortName": "ListSpokes"
       },
+      "description": "ListSpokes lists Spokes in a given project and location.",
+      "file": "HubClient/ListSpokes/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networkconnectivity_v1alpha1_generated_HubService_ListSpokes_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkconnectivity ListSpokes Sample"
     },
     {
-      "regionTag": "networkconnectivity_v1alpha1_generated_HubService_UpdateHub_sync",
-      "title": "networkconnectivity UpdateHub Sample",
-      "description": "UpdateHub updates the parameters of a single Hub.",
-      "file": "HubClient/UpdateHub/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateHub",
+        "client": {
+          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubClient",
+          "shortName": "HubClient"
+        },
         "fullName": "google.cloud.networkconnectivity.v1alpha1.HubClient.UpdateHub",
+        "method": {
+          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService.UpdateHub",
+          "service": {
+            "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService",
+            "shortName": "HubService"
+          },
+          "shortName": "UpdateHub"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "networkconnectivitypb.UpdateHubRequest",
-            "name": "req"
+            "name": "req",
+            "type": "networkconnectivitypb.UpdateHubRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UpdateHubOperation",
-        "client": {
-          "shortName": "HubClient",
-          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubClient"
-        },
-        "method": {
-          "shortName": "UpdateHub",
-          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService.UpdateHub",
-          "service": {
-            "shortName": "HubService",
-            "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService"
-          }
-        }
+        "shortName": "UpdateHub"
       },
+      "description": "UpdateHub updates the parameters of a single Hub.",
+      "file": "HubClient/UpdateHub/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networkconnectivity_v1alpha1_generated_HubService_UpdateHub_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkconnectivity UpdateHub Sample"
     },
     {
-      "regionTag": "networkconnectivity_v1alpha1_generated_HubService_UpdateSpoke_sync",
-      "title": "networkconnectivity UpdateSpoke Sample",
-      "description": "UpdateSpoke updates the parameters of a single Spoke.",
-      "file": "HubClient/UpdateSpoke/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateSpoke",
+        "client": {
+          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubClient",
+          "shortName": "HubClient"
+        },
         "fullName": "google.cloud.networkconnectivity.v1alpha1.HubClient.UpdateSpoke",
+        "method": {
+          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService.UpdateSpoke",
+          "service": {
+            "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService",
+            "shortName": "HubService"
+          },
+          "shortName": "UpdateSpoke"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "networkconnectivitypb.UpdateSpokeRequest",
-            "name": "req"
+            "name": "req",
+            "type": "networkconnectivitypb.UpdateSpokeRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UpdateSpokeOperation",
-        "client": {
-          "shortName": "HubClient",
-          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubClient"
-        },
-        "method": {
-          "shortName": "UpdateSpoke",
-          "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService.UpdateSpoke",
-          "service": {
-            "shortName": "HubService",
-            "fullName": "google.cloud.networkconnectivity.v1alpha1.HubService"
-          }
-        }
+        "shortName": "UpdateSpoke"
       },
+      "description": "UpdateSpoke updates the parameters of a single Spoke.",
+      "file": "HubClient/UpdateSpoke/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "networkconnectivity_v1alpha1_generated_HubService_UpdateSpoke_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "networkconnectivity UpdateSpoke Sample"
     }
   ]
 }

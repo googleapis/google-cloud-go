@@ -1,565 +1,565 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/maps/fleetengine/delivery/apiv1",
-    "version": "1.29.0",
-    "language": "GO",
     "apis": [
       {
         "id": "maps.fleetengine.delivery.v1",
         "version": "v1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/maps/fleetengine/delivery/apiv1",
+    "version": "1.29.0"
   },
   "snippets": [
     {
-      "regionTag": "fleetengine_v1_generated_DeliveryService_BatchCreateTasks_sync",
-      "title": "fleetengine BatchCreateTasks Sample",
-      "description": "BatchCreateTasks creates and returns a batch of new `Task` objects.",
-      "file": "Client/BatchCreateTasks/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "BatchCreateTasks",
+        "client": {
+          "fullName": "maps.fleetengine.delivery.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "maps.fleetengine.delivery.v1.Client.BatchCreateTasks",
+        "method": {
+          "fullName": "maps.fleetengine.delivery.v1.DeliveryService.BatchCreateTasks",
+          "service": {
+            "fullName": "maps.fleetengine.delivery.v1.DeliveryService",
+            "shortName": "DeliveryService"
+          },
+          "shortName": "BatchCreateTasks"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "deliverypb.BatchCreateTasksRequest",
-            "name": "req"
+            "name": "req",
+            "type": "deliverypb.BatchCreateTasksRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*deliverypb.BatchCreateTasksResponse",
-        "client": {
-          "shortName": "Client",
-          "fullName": "maps.fleetengine.delivery.v1.Client"
-        },
-        "method": {
-          "shortName": "BatchCreateTasks",
-          "fullName": "maps.fleetengine.delivery.v1.DeliveryService.BatchCreateTasks",
-          "service": {
-            "shortName": "DeliveryService",
-            "fullName": "maps.fleetengine.delivery.v1.DeliveryService"
-          }
-        }
+        "shortName": "BatchCreateTasks"
       },
+      "description": "BatchCreateTasks creates and returns a batch of new `Task` objects.",
+      "file": "Client/BatchCreateTasks/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "fleetengine_v1_generated_DeliveryService_BatchCreateTasks_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "fleetengine BatchCreateTasks Sample"
     },
     {
-      "regionTag": "fleetengine_v1_generated_DeliveryService_CreateDeliveryVehicle_sync",
-      "title": "fleetengine CreateDeliveryVehicle Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "maps.fleetengine.delivery.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "maps.fleetengine.delivery.v1.Client.CreateDeliveryVehicle",
+        "method": {
+          "fullName": "maps.fleetengine.delivery.v1.DeliveryService.CreateDeliveryVehicle",
+          "service": {
+            "fullName": "maps.fleetengine.delivery.v1.DeliveryService",
+            "shortName": "DeliveryService"
+          },
+          "shortName": "CreateDeliveryVehicle"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "deliverypb.CreateDeliveryVehicleRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*deliverypb.DeliveryVehicle",
+        "shortName": "CreateDeliveryVehicle"
+      },
       "description": "CreateDeliveryVehicle creates and returns a new `DeliveryVehicle`.",
       "file": "Client/CreateDeliveryVehicle/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateDeliveryVehicle",
-        "fullName": "maps.fleetengine.delivery.v1.Client.CreateDeliveryVehicle",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "deliverypb.CreateDeliveryVehicleRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*deliverypb.DeliveryVehicle",
-        "client": {
-          "shortName": "Client",
-          "fullName": "maps.fleetengine.delivery.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateDeliveryVehicle",
-          "fullName": "maps.fleetengine.delivery.v1.DeliveryService.CreateDeliveryVehicle",
-          "service": {
-            "shortName": "DeliveryService",
-            "fullName": "maps.fleetengine.delivery.v1.DeliveryService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "fleetengine_v1_generated_DeliveryService_CreateDeliveryVehicle_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "fleetengine CreateDeliveryVehicle Sample"
     },
     {
-      "regionTag": "fleetengine_v1_generated_DeliveryService_CreateTask_sync",
-      "title": "fleetengine CreateTask Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "maps.fleetengine.delivery.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "maps.fleetengine.delivery.v1.Client.CreateTask",
+        "method": {
+          "fullName": "maps.fleetengine.delivery.v1.DeliveryService.CreateTask",
+          "service": {
+            "fullName": "maps.fleetengine.delivery.v1.DeliveryService",
+            "shortName": "DeliveryService"
+          },
+          "shortName": "CreateTask"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "deliverypb.CreateTaskRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*deliverypb.Task",
+        "shortName": "CreateTask"
+      },
       "description": "CreateTask creates and returns a new `Task` object.",
       "file": "Client/CreateTask/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateTask",
-        "fullName": "maps.fleetengine.delivery.v1.Client.CreateTask",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "deliverypb.CreateTaskRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*deliverypb.Task",
-        "client": {
-          "shortName": "Client",
-          "fullName": "maps.fleetengine.delivery.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateTask",
-          "fullName": "maps.fleetengine.delivery.v1.DeliveryService.CreateTask",
-          "service": {
-            "shortName": "DeliveryService",
-            "fullName": "maps.fleetengine.delivery.v1.DeliveryService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "fleetengine_v1_generated_DeliveryService_CreateTask_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "fleetengine CreateTask Sample"
     },
     {
-      "regionTag": "fleetengine_v1_generated_DeliveryService_DeleteDeliveryVehicle_sync",
-      "title": "fleetengine DeleteDeliveryVehicle Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "maps.fleetengine.delivery.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "maps.fleetengine.delivery.v1.Client.DeleteDeliveryVehicle",
+        "method": {
+          "fullName": "maps.fleetengine.delivery.v1.DeliveryService.DeleteDeliveryVehicle",
+          "service": {
+            "fullName": "maps.fleetengine.delivery.v1.DeliveryService",
+            "shortName": "DeliveryService"
+          },
+          "shortName": "DeleteDeliveryVehicle"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "deliverypb.DeleteDeliveryVehicleRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteDeliveryVehicle"
+      },
       "description": "DeleteDeliveryVehicle deletes a DeliveryVehicle from the Fleet Engine.\n\nReturns FAILED_PRECONDITION if the DeliveryVehicle has OPEN Tasks\nassigned to it.",
       "file": "Client/DeleteDeliveryVehicle/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteDeliveryVehicle",
-        "fullName": "maps.fleetengine.delivery.v1.Client.DeleteDeliveryVehicle",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "deliverypb.DeleteDeliveryVehicleRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "maps.fleetengine.delivery.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteDeliveryVehicle",
-          "fullName": "maps.fleetengine.delivery.v1.DeliveryService.DeleteDeliveryVehicle",
-          "service": {
-            "shortName": "DeliveryService",
-            "fullName": "maps.fleetengine.delivery.v1.DeliveryService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "fleetengine_v1_generated_DeliveryService_DeleteDeliveryVehicle_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "fleetengine DeleteDeliveryVehicle Sample"
     },
     {
-      "regionTag": "fleetengine_v1_generated_DeliveryService_DeleteTask_sync",
-      "title": "fleetengine DeleteTask Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "maps.fleetengine.delivery.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "maps.fleetengine.delivery.v1.Client.DeleteTask",
+        "method": {
+          "fullName": "maps.fleetengine.delivery.v1.DeliveryService.DeleteTask",
+          "service": {
+            "fullName": "maps.fleetengine.delivery.v1.DeliveryService",
+            "shortName": "DeliveryService"
+          },
+          "shortName": "DeleteTask"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "deliverypb.DeleteTaskRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteTask"
+      },
       "description": "DeleteTask deletes a single Task.\n\nReturns FAILED_PRECONDITION if the Task is OPEN and assigned to a\nDeliveryVehicle.",
       "file": "Client/DeleteTask/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteTask",
-        "fullName": "maps.fleetengine.delivery.v1.Client.DeleteTask",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "deliverypb.DeleteTaskRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "maps.fleetengine.delivery.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteTask",
-          "fullName": "maps.fleetengine.delivery.v1.DeliveryService.DeleteTask",
-          "service": {
-            "shortName": "DeliveryService",
-            "fullName": "maps.fleetengine.delivery.v1.DeliveryService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "fleetengine_v1_generated_DeliveryService_DeleteTask_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "fleetengine DeleteTask Sample"
     },
     {
-      "regionTag": "fleetengine_v1_generated_DeliveryService_GetDeliveryVehicle_sync",
-      "title": "fleetengine GetDeliveryVehicle Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "maps.fleetengine.delivery.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "maps.fleetengine.delivery.v1.Client.GetDeliveryVehicle",
+        "method": {
+          "fullName": "maps.fleetengine.delivery.v1.DeliveryService.GetDeliveryVehicle",
+          "service": {
+            "fullName": "maps.fleetengine.delivery.v1.DeliveryService",
+            "shortName": "DeliveryService"
+          },
+          "shortName": "GetDeliveryVehicle"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "deliverypb.GetDeliveryVehicleRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*deliverypb.DeliveryVehicle",
+        "shortName": "GetDeliveryVehicle"
+      },
       "description": "GetDeliveryVehicle returns the specified `DeliveryVehicle` instance.",
       "file": "Client/GetDeliveryVehicle/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetDeliveryVehicle",
-        "fullName": "maps.fleetengine.delivery.v1.Client.GetDeliveryVehicle",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "deliverypb.GetDeliveryVehicleRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*deliverypb.DeliveryVehicle",
-        "client": {
-          "shortName": "Client",
-          "fullName": "maps.fleetengine.delivery.v1.Client"
-        },
-        "method": {
-          "shortName": "GetDeliveryVehicle",
-          "fullName": "maps.fleetengine.delivery.v1.DeliveryService.GetDeliveryVehicle",
-          "service": {
-            "shortName": "DeliveryService",
-            "fullName": "maps.fleetengine.delivery.v1.DeliveryService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "fleetengine_v1_generated_DeliveryService_GetDeliveryVehicle_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "fleetengine GetDeliveryVehicle Sample"
     },
     {
-      "regionTag": "fleetengine_v1_generated_DeliveryService_GetTask_sync",
-      "title": "fleetengine GetTask Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "maps.fleetengine.delivery.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "maps.fleetengine.delivery.v1.Client.GetTask",
+        "method": {
+          "fullName": "maps.fleetengine.delivery.v1.DeliveryService.GetTask",
+          "service": {
+            "fullName": "maps.fleetengine.delivery.v1.DeliveryService",
+            "shortName": "DeliveryService"
+          },
+          "shortName": "GetTask"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "deliverypb.GetTaskRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*deliverypb.Task",
+        "shortName": "GetTask"
+      },
       "description": "GetTask gets information about a `Task`.",
       "file": "Client/GetTask/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetTask",
-        "fullName": "maps.fleetengine.delivery.v1.Client.GetTask",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "deliverypb.GetTaskRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*deliverypb.Task",
-        "client": {
-          "shortName": "Client",
-          "fullName": "maps.fleetengine.delivery.v1.Client"
-        },
-        "method": {
-          "shortName": "GetTask",
-          "fullName": "maps.fleetengine.delivery.v1.DeliveryService.GetTask",
-          "service": {
-            "shortName": "DeliveryService",
-            "fullName": "maps.fleetengine.delivery.v1.DeliveryService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "fleetengine_v1_generated_DeliveryService_GetTask_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "fleetengine GetTask Sample"
     },
     {
-      "regionTag": "fleetengine_v1_generated_DeliveryService_GetTaskTrackingInfo_sync",
-      "title": "fleetengine GetTaskTrackingInfo Sample",
-      "description": "GetTaskTrackingInfo returns the specified `TaskTrackingInfo` instance.",
-      "file": "Client/GetTaskTrackingInfo/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetTaskTrackingInfo",
+        "client": {
+          "fullName": "maps.fleetengine.delivery.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "maps.fleetengine.delivery.v1.Client.GetTaskTrackingInfo",
+        "method": {
+          "fullName": "maps.fleetengine.delivery.v1.DeliveryService.GetTaskTrackingInfo",
+          "service": {
+            "fullName": "maps.fleetengine.delivery.v1.DeliveryService",
+            "shortName": "DeliveryService"
+          },
+          "shortName": "GetTaskTrackingInfo"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "deliverypb.GetTaskTrackingInfoRequest",
-            "name": "req"
+            "name": "req",
+            "type": "deliverypb.GetTaskTrackingInfoRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*deliverypb.TaskTrackingInfo",
-        "client": {
-          "shortName": "Client",
-          "fullName": "maps.fleetengine.delivery.v1.Client"
-        },
-        "method": {
-          "shortName": "GetTaskTrackingInfo",
-          "fullName": "maps.fleetengine.delivery.v1.DeliveryService.GetTaskTrackingInfo",
-          "service": {
-            "shortName": "DeliveryService",
-            "fullName": "maps.fleetengine.delivery.v1.DeliveryService"
-          }
-        }
+        "shortName": "GetTaskTrackingInfo"
       },
+      "description": "GetTaskTrackingInfo returns the specified `TaskTrackingInfo` instance.",
+      "file": "Client/GetTaskTrackingInfo/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "fleetengine_v1_generated_DeliveryService_GetTaskTrackingInfo_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "fleetengine GetTaskTrackingInfo Sample"
     },
     {
-      "regionTag": "fleetengine_v1_generated_DeliveryService_ListDeliveryVehicles_sync",
-      "title": "fleetengine ListDeliveryVehicles Sample",
-      "description": "ListDeliveryVehicles gets all `DeliveryVehicle`s that meet the specified filtering criteria.",
-      "file": "Client/ListDeliveryVehicles/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListDeliveryVehicles",
+        "client": {
+          "fullName": "maps.fleetengine.delivery.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "maps.fleetengine.delivery.v1.Client.ListDeliveryVehicles",
+        "method": {
+          "fullName": "maps.fleetengine.delivery.v1.DeliveryService.ListDeliveryVehicles",
+          "service": {
+            "fullName": "maps.fleetengine.delivery.v1.DeliveryService",
+            "shortName": "DeliveryService"
+          },
+          "shortName": "ListDeliveryVehicles"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "deliverypb.ListDeliveryVehiclesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "deliverypb.ListDeliveryVehiclesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeliveryVehicleIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "maps.fleetengine.delivery.v1.Client"
-        },
-        "method": {
-          "shortName": "ListDeliveryVehicles",
-          "fullName": "maps.fleetengine.delivery.v1.DeliveryService.ListDeliveryVehicles",
-          "service": {
-            "shortName": "DeliveryService",
-            "fullName": "maps.fleetengine.delivery.v1.DeliveryService"
-          }
-        }
+        "shortName": "ListDeliveryVehicles"
       },
+      "description": "ListDeliveryVehicles gets all `DeliveryVehicle`s that meet the specified filtering criteria.",
+      "file": "Client/ListDeliveryVehicles/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "fleetengine_v1_generated_DeliveryService_ListDeliveryVehicles_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "fleetengine ListDeliveryVehicles Sample"
     },
     {
-      "regionTag": "fleetengine_v1_generated_DeliveryService_ListTasks_sync",
-      "title": "fleetengine ListTasks Sample",
-      "description": "ListTasks gets all `Task`s that meet the specified filtering criteria.",
-      "file": "Client/ListTasks/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListTasks",
+        "client": {
+          "fullName": "maps.fleetengine.delivery.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "maps.fleetengine.delivery.v1.Client.ListTasks",
+        "method": {
+          "fullName": "maps.fleetengine.delivery.v1.DeliveryService.ListTasks",
+          "service": {
+            "fullName": "maps.fleetengine.delivery.v1.DeliveryService",
+            "shortName": "DeliveryService"
+          },
+          "shortName": "ListTasks"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "deliverypb.ListTasksRequest",
-            "name": "req"
+            "name": "req",
+            "type": "deliverypb.ListTasksRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "TaskIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "maps.fleetengine.delivery.v1.Client"
-        },
-        "method": {
-          "shortName": "ListTasks",
-          "fullName": "maps.fleetengine.delivery.v1.DeliveryService.ListTasks",
-          "service": {
-            "shortName": "DeliveryService",
-            "fullName": "maps.fleetengine.delivery.v1.DeliveryService"
-          }
-        }
+        "shortName": "ListTasks"
       },
+      "description": "ListTasks gets all `Task`s that meet the specified filtering criteria.",
+      "file": "Client/ListTasks/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "fleetengine_v1_generated_DeliveryService_ListTasks_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "fleetengine ListTasks Sample"
     },
     {
-      "regionTag": "fleetengine_v1_generated_DeliveryService_UpdateDeliveryVehicle_sync",
-      "title": "fleetengine UpdateDeliveryVehicle Sample",
-      "description": "UpdateDeliveryVehicle writes updated `DeliveryVehicle` data to Fleet Engine, and assigns\n`Tasks` to the `DeliveryVehicle`. You cannot update the name of the\n`DeliveryVehicle`. You *can* update `remaining_vehicle_journey_segments`,\nbut it must contain all of the `VehicleJourneySegment`s to be persisted on\nthe `DeliveryVehicle`. The `task_id`s are retrieved from\n`remaining_vehicle_journey_segments`, and their corresponding `Tasks` are\nassigned to the `DeliveryVehicle` if they have not yet been assigned.",
-      "file": "Client/UpdateDeliveryVehicle/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateDeliveryVehicle",
+        "client": {
+          "fullName": "maps.fleetengine.delivery.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "maps.fleetengine.delivery.v1.Client.UpdateDeliveryVehicle",
+        "method": {
+          "fullName": "maps.fleetengine.delivery.v1.DeliveryService.UpdateDeliveryVehicle",
+          "service": {
+            "fullName": "maps.fleetengine.delivery.v1.DeliveryService",
+            "shortName": "DeliveryService"
+          },
+          "shortName": "UpdateDeliveryVehicle"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "deliverypb.UpdateDeliveryVehicleRequest",
-            "name": "req"
+            "name": "req",
+            "type": "deliverypb.UpdateDeliveryVehicleRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*deliverypb.DeliveryVehicle",
-        "client": {
-          "shortName": "Client",
-          "fullName": "maps.fleetengine.delivery.v1.Client"
-        },
-        "method": {
-          "shortName": "UpdateDeliveryVehicle",
-          "fullName": "maps.fleetengine.delivery.v1.DeliveryService.UpdateDeliveryVehicle",
-          "service": {
-            "shortName": "DeliveryService",
-            "fullName": "maps.fleetengine.delivery.v1.DeliveryService"
-          }
-        }
+        "shortName": "UpdateDeliveryVehicle"
       },
+      "description": "UpdateDeliveryVehicle writes updated `DeliveryVehicle` data to Fleet Engine, and assigns\n`Tasks` to the `DeliveryVehicle`. You cannot update the name of the\n`DeliveryVehicle`. You *can* update `remaining_vehicle_journey_segments`,\nbut it must contain all of the `VehicleJourneySegment`s to be persisted on\nthe `DeliveryVehicle`. The `task_id`s are retrieved from\n`remaining_vehicle_journey_segments`, and their corresponding `Tasks` are\nassigned to the `DeliveryVehicle` if they have not yet been assigned.",
+      "file": "Client/UpdateDeliveryVehicle/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "fleetengine_v1_generated_DeliveryService_UpdateDeliveryVehicle_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "fleetengine UpdateDeliveryVehicle Sample"
     },
     {
-      "regionTag": "fleetengine_v1_generated_DeliveryService_UpdateTask_sync",
-      "title": "fleetengine UpdateTask Sample",
-      "description": "UpdateTask updates `Task` data.",
-      "file": "Client/UpdateTask/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateTask",
+        "client": {
+          "fullName": "maps.fleetengine.delivery.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "maps.fleetengine.delivery.v1.Client.UpdateTask",
+        "method": {
+          "fullName": "maps.fleetengine.delivery.v1.DeliveryService.UpdateTask",
+          "service": {
+            "fullName": "maps.fleetengine.delivery.v1.DeliveryService",
+            "shortName": "DeliveryService"
+          },
+          "shortName": "UpdateTask"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "deliverypb.UpdateTaskRequest",
-            "name": "req"
+            "name": "req",
+            "type": "deliverypb.UpdateTaskRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*deliverypb.Task",
-        "client": {
-          "shortName": "Client",
-          "fullName": "maps.fleetengine.delivery.v1.Client"
-        },
-        "method": {
-          "shortName": "UpdateTask",
-          "fullName": "maps.fleetengine.delivery.v1.DeliveryService.UpdateTask",
-          "service": {
-            "shortName": "DeliveryService",
-            "fullName": "maps.fleetengine.delivery.v1.DeliveryService"
-          }
-        }
+        "shortName": "UpdateTask"
       },
+      "description": "UpdateTask updates `Task` data.",
+      "file": "Client/UpdateTask/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "fleetengine_v1_generated_DeliveryService_UpdateTask_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "fleetengine UpdateTask Sample"
     }
   ]
 }

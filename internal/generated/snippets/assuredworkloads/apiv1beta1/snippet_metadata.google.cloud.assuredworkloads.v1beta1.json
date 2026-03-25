@@ -1,428 +1,428 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/assuredworkloads/apiv1beta1",
-    "version": "1.13.0",
-    "language": "GO",
     "apis": [
       {
         "id": "google.cloud.assuredworkloads.v1beta1",
         "version": "v1beta1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/assuredworkloads/apiv1beta1",
+    "version": "1.13.0"
   },
   "snippets": [
     {
-      "regionTag": "assuredworkloads_v1beta1_generated_AssuredWorkloadsService_AnalyzeWorkloadMove_sync",
-      "title": "assuredworkloads AnalyzeWorkloadMove Sample",
-      "description": "AnalyzeWorkloadMove analyze if the source Assured Workloads can be moved to the target Assured\nWorkload",
-      "file": "Client/AnalyzeWorkloadMove/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "AnalyzeWorkloadMove",
+        "client": {
+          "fullName": "google.cloud.assuredworkloads.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.assuredworkloads.v1beta1.Client.AnalyzeWorkloadMove",
+        "method": {
+          "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService.AnalyzeWorkloadMove",
+          "service": {
+            "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService",
+            "shortName": "AssuredWorkloadsService"
+          },
+          "shortName": "AnalyzeWorkloadMove"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "assuredworkloadspb.AnalyzeWorkloadMoveRequest",
-            "name": "req"
+            "name": "req",
+            "type": "assuredworkloadspb.AnalyzeWorkloadMoveRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*assuredworkloadspb.AnalyzeWorkloadMoveResponse",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.assuredworkloads.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "AnalyzeWorkloadMove",
-          "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService.AnalyzeWorkloadMove",
-          "service": {
-            "shortName": "AssuredWorkloadsService",
-            "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService"
-          }
-        }
+        "shortName": "AnalyzeWorkloadMove"
       },
+      "description": "AnalyzeWorkloadMove analyze if the source Assured Workloads can be moved to the target Assured\nWorkload",
+      "file": "Client/AnalyzeWorkloadMove/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "assuredworkloads_v1beta1_generated_AssuredWorkloadsService_AnalyzeWorkloadMove_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "assuredworkloads AnalyzeWorkloadMove Sample"
     },
     {
-      "regionTag": "assuredworkloads_v1beta1_generated_AssuredWorkloadsService_CreateWorkload_sync",
-      "title": "assuredworkloads CreateWorkload Sample",
-      "description": "CreateWorkload creates Assured Workload.",
-      "file": "Client/CreateWorkload/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateWorkload",
+        "client": {
+          "fullName": "google.cloud.assuredworkloads.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.assuredworkloads.v1beta1.Client.CreateWorkload",
+        "method": {
+          "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService.CreateWorkload",
+          "service": {
+            "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService",
+            "shortName": "AssuredWorkloadsService"
+          },
+          "shortName": "CreateWorkload"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "assuredworkloadspb.CreateWorkloadRequest",
-            "name": "req"
+            "name": "req",
+            "type": "assuredworkloadspb.CreateWorkloadRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateWorkloadOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.assuredworkloads.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "CreateWorkload",
-          "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService.CreateWorkload",
-          "service": {
-            "shortName": "AssuredWorkloadsService",
-            "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService"
-          }
-        }
+        "shortName": "CreateWorkload"
       },
+      "description": "CreateWorkload creates Assured Workload.",
+      "file": "Client/CreateWorkload/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "assuredworkloads_v1beta1_generated_AssuredWorkloadsService_CreateWorkload_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "assuredworkloads CreateWorkload Sample"
     },
     {
-      "regionTag": "assuredworkloads_v1beta1_generated_AssuredWorkloadsService_DeleteWorkload_sync",
-      "title": "assuredworkloads DeleteWorkload Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.assuredworkloads.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.assuredworkloads.v1beta1.Client.DeleteWorkload",
+        "method": {
+          "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService.DeleteWorkload",
+          "service": {
+            "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService",
+            "shortName": "AssuredWorkloadsService"
+          },
+          "shortName": "DeleteWorkload"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "assuredworkloadspb.DeleteWorkloadRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteWorkload"
+      },
       "description": "DeleteWorkload deletes the workload. Make sure that workload's direct children are already\nin a deleted state, otherwise the request will fail with a\nFAILED_PRECONDITION error.\nIn addition to assuredworkloads.workload.delete permission, the user should\nalso have orgpolicy.policy.set permission on the deleted folder to remove\nAssured Workloads OrgPolicies.",
       "file": "Client/DeleteWorkload/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteWorkload",
-        "fullName": "google.cloud.assuredworkloads.v1beta1.Client.DeleteWorkload",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "assuredworkloadspb.DeleteWorkloadRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.assuredworkloads.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "DeleteWorkload",
-          "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService.DeleteWorkload",
-          "service": {
-            "shortName": "AssuredWorkloadsService",
-            "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "assuredworkloads_v1beta1_generated_AssuredWorkloadsService_DeleteWorkload_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "assuredworkloads DeleteWorkload Sample"
     },
     {
-      "regionTag": "assuredworkloads_v1beta1_generated_AssuredWorkloadsService_GetOperation_sync",
-      "title": "assuredworkloads GetOperation Sample",
-      "description": "GetOperation is a utility method from google.longrunning.Operations.",
-      "file": "Client/GetOperation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetOperation",
+        "client": {
+          "fullName": "google.cloud.assuredworkloads.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.assuredworkloads.v1beta1.Client.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.GetOperationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*longrunningpb.Operation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.assuredworkloads.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "GetOperation",
-          "fullName": "google.longrunning.Operations.GetOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "GetOperation"
       },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "assuredworkloads_v1beta1_generated_AssuredWorkloadsService_GetOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "assuredworkloads GetOperation Sample"
     },
     {
-      "regionTag": "assuredworkloads_v1beta1_generated_AssuredWorkloadsService_GetWorkload_sync",
-      "title": "assuredworkloads GetWorkload Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.assuredworkloads.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.assuredworkloads.v1beta1.Client.GetWorkload",
+        "method": {
+          "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService.GetWorkload",
+          "service": {
+            "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService",
+            "shortName": "AssuredWorkloadsService"
+          },
+          "shortName": "GetWorkload"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "assuredworkloadspb.GetWorkloadRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*assuredworkloadspb.Workload",
+        "shortName": "GetWorkload"
+      },
       "description": "GetWorkload gets Assured Workload associated with a CRM Node",
       "file": "Client/GetWorkload/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetWorkload",
-        "fullName": "google.cloud.assuredworkloads.v1beta1.Client.GetWorkload",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "assuredworkloadspb.GetWorkloadRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*assuredworkloadspb.Workload",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.assuredworkloads.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "GetWorkload",
-          "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService.GetWorkload",
-          "service": {
-            "shortName": "AssuredWorkloadsService",
-            "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "assuredworkloads_v1beta1_generated_AssuredWorkloadsService_GetWorkload_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "assuredworkloads GetWorkload Sample"
     },
     {
-      "regionTag": "assuredworkloads_v1beta1_generated_AssuredWorkloadsService_ListOperations_sync",
-      "title": "assuredworkloads ListOperations Sample",
-      "description": "ListOperations is a utility method from google.longrunning.Operations.",
-      "file": "Client/ListOperations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListOperations",
+        "client": {
+          "fullName": "google.cloud.assuredworkloads.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.assuredworkloads.v1beta1.Client.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.ListOperationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "OperationIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.assuredworkloads.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "ListOperations",
-          "fullName": "google.longrunning.Operations.ListOperations",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "ListOperations"
       },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "assuredworkloads_v1beta1_generated_AssuredWorkloadsService_ListOperations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "assuredworkloads ListOperations Sample"
     },
     {
-      "regionTag": "assuredworkloads_v1beta1_generated_AssuredWorkloadsService_ListWorkloads_sync",
-      "title": "assuredworkloads ListWorkloads Sample",
-      "description": "ListWorkloads lists Assured Workloads under a CRM Node.",
-      "file": "Client/ListWorkloads/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListWorkloads",
+        "client": {
+          "fullName": "google.cloud.assuredworkloads.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.assuredworkloads.v1beta1.Client.ListWorkloads",
+        "method": {
+          "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService.ListWorkloads",
+          "service": {
+            "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService",
+            "shortName": "AssuredWorkloadsService"
+          },
+          "shortName": "ListWorkloads"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "assuredworkloadspb.ListWorkloadsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "assuredworkloadspb.ListWorkloadsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "WorkloadIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.assuredworkloads.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "ListWorkloads",
-          "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService.ListWorkloads",
-          "service": {
-            "shortName": "AssuredWorkloadsService",
-            "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService"
-          }
-        }
+        "shortName": "ListWorkloads"
       },
+      "description": "ListWorkloads lists Assured Workloads under a CRM Node.",
+      "file": "Client/ListWorkloads/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "assuredworkloads_v1beta1_generated_AssuredWorkloadsService_ListWorkloads_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "assuredworkloads ListWorkloads Sample"
     },
     {
-      "regionTag": "assuredworkloads_v1beta1_generated_AssuredWorkloadsService_RestrictAllowedResources_sync",
-      "title": "assuredworkloads RestrictAllowedResources Sample",
-      "description": "RestrictAllowedResources restrict the list of resources allowed in the Workload environment.\nThe current list of allowed products can be found at\nhttps: //cloud.google.com/assured-workloads/docs/supported-products\nIn addition to assuredworkloads.workload.update permission, the user should\nalso have orgpolicy.policy.set permission on the folder resource\nto use this functionality.",
-      "file": "Client/RestrictAllowedResources/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "RestrictAllowedResources",
+        "client": {
+          "fullName": "google.cloud.assuredworkloads.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.assuredworkloads.v1beta1.Client.RestrictAllowedResources",
+        "method": {
+          "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService.RestrictAllowedResources",
+          "service": {
+            "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService",
+            "shortName": "AssuredWorkloadsService"
+          },
+          "shortName": "RestrictAllowedResources"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "assuredworkloadspb.RestrictAllowedResourcesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "assuredworkloadspb.RestrictAllowedResourcesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*assuredworkloadspb.RestrictAllowedResourcesResponse",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.assuredworkloads.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "RestrictAllowedResources",
-          "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService.RestrictAllowedResources",
-          "service": {
-            "shortName": "AssuredWorkloadsService",
-            "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService"
-          }
-        }
+        "shortName": "RestrictAllowedResources"
       },
+      "description": "RestrictAllowedResources restrict the list of resources allowed in the Workload environment.\nThe current list of allowed products can be found at\nhttps: //cloud.google.com/assured-workloads/docs/supported-products\nIn addition to assuredworkloads.workload.update permission, the user should\nalso have orgpolicy.policy.set permission on the folder resource\nto use this functionality.",
+      "file": "Client/RestrictAllowedResources/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "assuredworkloads_v1beta1_generated_AssuredWorkloadsService_RestrictAllowedResources_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "assuredworkloads RestrictAllowedResources Sample"
     },
     {
-      "regionTag": "assuredworkloads_v1beta1_generated_AssuredWorkloadsService_UpdateWorkload_sync",
-      "title": "assuredworkloads UpdateWorkload Sample",
-      "description": "UpdateWorkload updates an existing workload.\nCurrently allows updating of workload display_name and labels.\nFor force updates don't set etag field in the Workload.\nOnly one update operation per workload can be in progress.",
-      "file": "Client/UpdateWorkload/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateWorkload",
+        "client": {
+          "fullName": "google.cloud.assuredworkloads.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.assuredworkloads.v1beta1.Client.UpdateWorkload",
+        "method": {
+          "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService.UpdateWorkload",
+          "service": {
+            "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService",
+            "shortName": "AssuredWorkloadsService"
+          },
+          "shortName": "UpdateWorkload"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "assuredworkloadspb.UpdateWorkloadRequest",
-            "name": "req"
+            "name": "req",
+            "type": "assuredworkloadspb.UpdateWorkloadRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*assuredworkloadspb.Workload",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.assuredworkloads.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "UpdateWorkload",
-          "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService.UpdateWorkload",
-          "service": {
-            "shortName": "AssuredWorkloadsService",
-            "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService"
-          }
-        }
+        "shortName": "UpdateWorkload"
       },
+      "description": "UpdateWorkload updates an existing workload.\nCurrently allows updating of workload display_name and labels.\nFor force updates don't set etag field in the Workload.\nOnly one update operation per workload can be in progress.",
+      "file": "Client/UpdateWorkload/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "assuredworkloads_v1beta1_generated_AssuredWorkloadsService_UpdateWorkload_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "assuredworkloads UpdateWorkload Sample"
     }
   ]
 }

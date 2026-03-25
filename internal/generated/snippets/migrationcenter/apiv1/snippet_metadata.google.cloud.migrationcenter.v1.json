@@ -1,2495 +1,2495 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/migrationcenter/apiv1",
-    "version": "1.1.6",
-    "language": "GO",
     "apis": [
       {
         "id": "google.cloud.migrationcenter.v1",
         "version": "v1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/migrationcenter/apiv1",
+    "version": "1.1.6"
   },
   "snippets": [
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_AddAssetsToGroup_sync",
-      "title": "migrationcenter AddAssetsToGroup Sample",
-      "description": "AddAssetsToGroup adds assets to a group.",
-      "file": "Client/AddAssetsToGroup/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "AddAssetsToGroup",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.AddAssetsToGroup",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.AddAssetsToGroup",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "AddAssetsToGroup"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.AddAssetsToGroupRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.AddAssetsToGroupRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "AddAssetsToGroupOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "AddAssetsToGroup",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.AddAssetsToGroup",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "AddAssetsToGroup"
       },
+      "description": "AddAssetsToGroup adds assets to a group.",
+      "file": "Client/AddAssetsToGroup/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_AddAssetsToGroup_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter AddAssetsToGroup Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_AggregateAssetsValues_sync",
-      "title": "migrationcenter AggregateAssetsValues Sample",
-      "description": "AggregateAssetsValues aggregates the requested fields based on provided function.",
-      "file": "Client/AggregateAssetsValues/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "AggregateAssetsValues",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.AggregateAssetsValues",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.AggregateAssetsValues",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "AggregateAssetsValues"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.AggregateAssetsValuesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.AggregateAssetsValuesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*migrationcenterpb.AggregateAssetsValuesResponse",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "AggregateAssetsValues",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.AggregateAssetsValues",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "AggregateAssetsValues"
       },
+      "description": "AggregateAssetsValues aggregates the requested fields based on provided function.",
+      "file": "Client/AggregateAssetsValues/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_AggregateAssetsValues_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter AggregateAssetsValues Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_BatchDeleteAssets_sync",
-      "title": "migrationcenter BatchDeleteAssets Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.migrationcenter.v1.Client.BatchDeleteAssets",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.BatchDeleteAssets",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "BatchDeleteAssets"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "migrationcenterpb.BatchDeleteAssetsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "BatchDeleteAssets"
+      },
       "description": "BatchDeleteAssets deletes list of Assets.",
       "file": "Client/BatchDeleteAssets/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "BatchDeleteAssets",
-        "fullName": "google.cloud.migrationcenter.v1.Client.BatchDeleteAssets",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "migrationcenterpb.BatchDeleteAssetsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "BatchDeleteAssets",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.BatchDeleteAssets",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_BatchDeleteAssets_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter BatchDeleteAssets Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_BatchUpdateAssets_sync",
-      "title": "migrationcenter BatchUpdateAssets Sample",
-      "description": "BatchUpdateAssets updates the parameters of a list of assets.",
-      "file": "Client/BatchUpdateAssets/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "BatchUpdateAssets",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.BatchUpdateAssets",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.BatchUpdateAssets",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "BatchUpdateAssets"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.BatchUpdateAssetsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.BatchUpdateAssetsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*migrationcenterpb.BatchUpdateAssetsResponse",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "BatchUpdateAssets",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.BatchUpdateAssets",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "BatchUpdateAssets"
       },
+      "description": "BatchUpdateAssets updates the parameters of a list of assets.",
+      "file": "Client/BatchUpdateAssets/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_BatchUpdateAssets_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter BatchUpdateAssets Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_CancelOperation_sync",
-      "title": "migrationcenter CancelOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.migrationcenter.v1.Client.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
       "file": "Client/CancelOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CancelOperation",
-        "fullName": "google.cloud.migrationcenter.v1.Client.CancelOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.CancelOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "CancelOperation",
-          "fullName": "google.longrunning.Operations.CancelOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_CancelOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter CancelOperation Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_CreateGroup_sync",
-      "title": "migrationcenter CreateGroup Sample",
-      "description": "CreateGroup creates a new group in a given project and location.",
-      "file": "Client/CreateGroup/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateGroup",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.CreateGroup",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.CreateGroup",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "CreateGroup"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.CreateGroupRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.CreateGroupRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateGroupOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateGroup",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.CreateGroup",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "CreateGroup"
       },
+      "description": "CreateGroup creates a new group in a given project and location.",
+      "file": "Client/CreateGroup/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_CreateGroup_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter CreateGroup Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_CreateImportDataFile_sync",
-      "title": "migrationcenter CreateImportDataFile Sample",
-      "description": "CreateImportDataFile creates an import data file.",
-      "file": "Client/CreateImportDataFile/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateImportDataFile",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.CreateImportDataFile",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.CreateImportDataFile",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "CreateImportDataFile"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.CreateImportDataFileRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.CreateImportDataFileRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateImportDataFileOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateImportDataFile",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.CreateImportDataFile",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "CreateImportDataFile"
       },
+      "description": "CreateImportDataFile creates an import data file.",
+      "file": "Client/CreateImportDataFile/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_CreateImportDataFile_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter CreateImportDataFile Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_CreateImportJob_sync",
-      "title": "migrationcenter CreateImportJob Sample",
-      "description": "CreateImportJob creates an import job.",
-      "file": "Client/CreateImportJob/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateImportJob",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.CreateImportJob",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.CreateImportJob",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "CreateImportJob"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.CreateImportJobRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.CreateImportJobRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateImportJobOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateImportJob",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.CreateImportJob",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "CreateImportJob"
       },
+      "description": "CreateImportJob creates an import job.",
+      "file": "Client/CreateImportJob/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_CreateImportJob_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter CreateImportJob Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_CreatePreferenceSet_sync",
-      "title": "migrationcenter CreatePreferenceSet Sample",
-      "description": "CreatePreferenceSet creates a new preference set in a given project and location.",
-      "file": "Client/CreatePreferenceSet/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreatePreferenceSet",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.CreatePreferenceSet",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.CreatePreferenceSet",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "CreatePreferenceSet"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.CreatePreferenceSetRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.CreatePreferenceSetRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreatePreferenceSetOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "CreatePreferenceSet",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.CreatePreferenceSet",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "CreatePreferenceSet"
       },
+      "description": "CreatePreferenceSet creates a new preference set in a given project and location.",
+      "file": "Client/CreatePreferenceSet/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_CreatePreferenceSet_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter CreatePreferenceSet Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_CreateReport_sync",
-      "title": "migrationcenter CreateReport Sample",
-      "description": "CreateReport creates a report.",
-      "file": "Client/CreateReport/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateReport",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.CreateReport",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.CreateReport",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "CreateReport"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.CreateReportRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.CreateReportRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateReportOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateReport",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.CreateReport",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "CreateReport"
       },
+      "description": "CreateReport creates a report.",
+      "file": "Client/CreateReport/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_CreateReport_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter CreateReport Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_CreateReportConfig_sync",
-      "title": "migrationcenter CreateReportConfig Sample",
-      "description": "CreateReportConfig creates a report configuration.",
-      "file": "Client/CreateReportConfig/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateReportConfig",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.CreateReportConfig",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.CreateReportConfig",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "CreateReportConfig"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.CreateReportConfigRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.CreateReportConfigRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateReportConfigOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateReportConfig",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.CreateReportConfig",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "CreateReportConfig"
       },
+      "description": "CreateReportConfig creates a report configuration.",
+      "file": "Client/CreateReportConfig/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_CreateReportConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter CreateReportConfig Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_CreateSource_sync",
-      "title": "migrationcenter CreateSource Sample",
-      "description": "CreateSource creates a new source in a given project and location.",
-      "file": "Client/CreateSource/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateSource",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.CreateSource",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.CreateSource",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "CreateSource"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.CreateSourceRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.CreateSourceRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateSourceOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateSource",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.CreateSource",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "CreateSource"
       },
+      "description": "CreateSource creates a new source in a given project and location.",
+      "file": "Client/CreateSource/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_CreateSource_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter CreateSource Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_DeleteAsset_sync",
-      "title": "migrationcenter DeleteAsset Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.migrationcenter.v1.Client.DeleteAsset",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.DeleteAsset",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "DeleteAsset"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "migrationcenterpb.DeleteAssetRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteAsset"
+      },
       "description": "DeleteAsset deletes an asset.",
       "file": "Client/DeleteAsset/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteAsset",
-        "fullName": "google.cloud.migrationcenter.v1.Client.DeleteAsset",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "migrationcenterpb.DeleteAssetRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteAsset",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.DeleteAsset",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_DeleteAsset_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter DeleteAsset Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_DeleteGroup_sync",
-      "title": "migrationcenter DeleteGroup Sample",
-      "description": "DeleteGroup deletes a group.",
-      "file": "Client/DeleteGroup/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteGroup",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.DeleteGroup",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.DeleteGroup",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "DeleteGroup"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.DeleteGroupRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.DeleteGroupRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteGroupOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteGroup",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.DeleteGroup",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "DeleteGroup"
       },
+      "description": "DeleteGroup deletes a group.",
+      "file": "Client/DeleteGroup/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_DeleteGroup_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter DeleteGroup Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_DeleteImportDataFile_sync",
-      "title": "migrationcenter DeleteImportDataFile Sample",
-      "description": "DeleteImportDataFile delete an import data file.",
-      "file": "Client/DeleteImportDataFile/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteImportDataFile",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.DeleteImportDataFile",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.DeleteImportDataFile",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "DeleteImportDataFile"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.DeleteImportDataFileRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.DeleteImportDataFileRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteImportDataFileOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteImportDataFile",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.DeleteImportDataFile",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "DeleteImportDataFile"
       },
+      "description": "DeleteImportDataFile delete an import data file.",
+      "file": "Client/DeleteImportDataFile/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_DeleteImportDataFile_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter DeleteImportDataFile Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_DeleteImportJob_sync",
-      "title": "migrationcenter DeleteImportJob Sample",
-      "description": "DeleteImportJob deletes an import job.",
-      "file": "Client/DeleteImportJob/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteImportJob",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.DeleteImportJob",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.DeleteImportJob",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "DeleteImportJob"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.DeleteImportJobRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.DeleteImportJobRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteImportJobOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteImportJob",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.DeleteImportJob",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "DeleteImportJob"
       },
+      "description": "DeleteImportJob deletes an import job.",
+      "file": "Client/DeleteImportJob/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_DeleteImportJob_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter DeleteImportJob Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_DeleteOperation_sync",
-      "title": "migrationcenter DeleteOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.migrationcenter.v1.Client.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
       "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
       "file": "Client/DeleteOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteOperation",
-        "fullName": "google.cloud.migrationcenter.v1.Client.DeleteOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.DeleteOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteOperation",
-          "fullName": "google.longrunning.Operations.DeleteOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_DeleteOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter DeleteOperation Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_DeletePreferenceSet_sync",
-      "title": "migrationcenter DeletePreferenceSet Sample",
-      "description": "DeletePreferenceSet deletes a preference set.",
-      "file": "Client/DeletePreferenceSet/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeletePreferenceSet",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.DeletePreferenceSet",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.DeletePreferenceSet",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "DeletePreferenceSet"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.DeletePreferenceSetRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.DeletePreferenceSetRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeletePreferenceSetOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "DeletePreferenceSet",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.DeletePreferenceSet",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "DeletePreferenceSet"
       },
+      "description": "DeletePreferenceSet deletes a preference set.",
+      "file": "Client/DeletePreferenceSet/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_DeletePreferenceSet_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter DeletePreferenceSet Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_DeleteReport_sync",
-      "title": "migrationcenter DeleteReport Sample",
-      "description": "DeleteReport deletes a Report.",
-      "file": "Client/DeleteReport/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteReport",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.DeleteReport",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.DeleteReport",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "DeleteReport"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.DeleteReportRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.DeleteReportRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteReportOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteReport",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.DeleteReport",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "DeleteReport"
       },
+      "description": "DeleteReport deletes a Report.",
+      "file": "Client/DeleteReport/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_DeleteReport_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter DeleteReport Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_DeleteReportConfig_sync",
-      "title": "migrationcenter DeleteReportConfig Sample",
-      "description": "DeleteReportConfig deletes a ReportConfig.",
-      "file": "Client/DeleteReportConfig/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteReportConfig",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.DeleteReportConfig",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.DeleteReportConfig",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "DeleteReportConfig"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.DeleteReportConfigRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.DeleteReportConfigRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteReportConfigOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteReportConfig",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.DeleteReportConfig",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "DeleteReportConfig"
       },
+      "description": "DeleteReportConfig deletes a ReportConfig.",
+      "file": "Client/DeleteReportConfig/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_DeleteReportConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter DeleteReportConfig Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_DeleteSource_sync",
-      "title": "migrationcenter DeleteSource Sample",
-      "description": "DeleteSource deletes a source.",
-      "file": "Client/DeleteSource/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteSource",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.DeleteSource",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.DeleteSource",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "DeleteSource"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.DeleteSourceRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.DeleteSourceRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteSourceOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteSource",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.DeleteSource",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "DeleteSource"
       },
+      "description": "DeleteSource deletes a source.",
+      "file": "Client/DeleteSource/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_DeleteSource_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter DeleteSource Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_GetAsset_sync",
-      "title": "migrationcenter GetAsset Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.migrationcenter.v1.Client.GetAsset",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.GetAsset",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "GetAsset"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "migrationcenterpb.GetAssetRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*migrationcenterpb.Asset",
+        "shortName": "GetAsset"
+      },
       "description": "GetAsset gets the details of an asset.",
       "file": "Client/GetAsset/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetAsset",
-        "fullName": "google.cloud.migrationcenter.v1.Client.GetAsset",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "migrationcenterpb.GetAssetRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*migrationcenterpb.Asset",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "GetAsset",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.GetAsset",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_GetAsset_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter GetAsset Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_GetErrorFrame_sync",
-      "title": "migrationcenter GetErrorFrame Sample",
-      "description": "GetErrorFrame gets the details of an error frame.",
-      "file": "Client/GetErrorFrame/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetErrorFrame",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.GetErrorFrame",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.GetErrorFrame",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "GetErrorFrame"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.GetErrorFrameRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.GetErrorFrameRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*migrationcenterpb.ErrorFrame",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "GetErrorFrame",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.GetErrorFrame",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "GetErrorFrame"
       },
+      "description": "GetErrorFrame gets the details of an error frame.",
+      "file": "Client/GetErrorFrame/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_GetErrorFrame_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter GetErrorFrame Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_GetGroup_sync",
-      "title": "migrationcenter GetGroup Sample",
-      "description": "GetGroup gets the details of a group.",
-      "file": "Client/GetGroup/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetGroup",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.GetGroup",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.GetGroup",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "GetGroup"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.GetGroupRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.GetGroupRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*migrationcenterpb.Group",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "GetGroup",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.GetGroup",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "GetGroup"
       },
+      "description": "GetGroup gets the details of a group.",
+      "file": "Client/GetGroup/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_GetGroup_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter GetGroup Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_GetImportDataFile_sync",
-      "title": "migrationcenter GetImportDataFile Sample",
-      "description": "GetImportDataFile gets an import data file.",
-      "file": "Client/GetImportDataFile/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetImportDataFile",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.GetImportDataFile",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.GetImportDataFile",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "GetImportDataFile"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.GetImportDataFileRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.GetImportDataFileRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*migrationcenterpb.ImportDataFile",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "GetImportDataFile",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.GetImportDataFile",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "GetImportDataFile"
       },
+      "description": "GetImportDataFile gets an import data file.",
+      "file": "Client/GetImportDataFile/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_GetImportDataFile_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter GetImportDataFile Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_GetImportJob_sync",
-      "title": "migrationcenter GetImportJob Sample",
-      "description": "GetImportJob gets the details of an import job.",
-      "file": "Client/GetImportJob/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetImportJob",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.GetImportJob",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.GetImportJob",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "GetImportJob"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.GetImportJobRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.GetImportJobRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*migrationcenterpb.ImportJob",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "GetImportJob",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.GetImportJob",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "GetImportJob"
       },
+      "description": "GetImportJob gets the details of an import job.",
+      "file": "Client/GetImportJob/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_GetImportJob_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter GetImportJob Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_GetLocation_sync",
-      "title": "migrationcenter GetLocation Sample",
-      "description": "GetLocation gets information about a location.",
-      "file": "Client/GetLocation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetLocation",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "locationpb.GetLocationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*locationpb.Location",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "GetLocation",
-          "fullName": "google.cloud.location.Locations.GetLocation",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
+        "shortName": "GetLocation"
       },
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_GetLocation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter GetLocation Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_GetOperation_sync",
-      "title": "migrationcenter GetOperation Sample",
-      "description": "GetOperation is a utility method from google.longrunning.Operations.",
-      "file": "Client/GetOperation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetOperation",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.GetOperationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*longrunningpb.Operation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "GetOperation",
-          "fullName": "google.longrunning.Operations.GetOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "GetOperation"
       },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_GetOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter GetOperation Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_GetPreferenceSet_sync",
-      "title": "migrationcenter GetPreferenceSet Sample",
-      "description": "GetPreferenceSet gets the details of a preference set.",
-      "file": "Client/GetPreferenceSet/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetPreferenceSet",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.GetPreferenceSet",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.GetPreferenceSet",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "GetPreferenceSet"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.GetPreferenceSetRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.GetPreferenceSetRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*migrationcenterpb.PreferenceSet",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "GetPreferenceSet",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.GetPreferenceSet",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "GetPreferenceSet"
       },
+      "description": "GetPreferenceSet gets the details of a preference set.",
+      "file": "Client/GetPreferenceSet/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_GetPreferenceSet_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter GetPreferenceSet Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_GetReport_sync",
-      "title": "migrationcenter GetReport Sample",
-      "description": "GetReport gets details of a single Report.",
-      "file": "Client/GetReport/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetReport",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.GetReport",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.GetReport",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "GetReport"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.GetReportRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.GetReportRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*migrationcenterpb.Report",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "GetReport",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.GetReport",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "GetReport"
       },
+      "description": "GetReport gets details of a single Report.",
+      "file": "Client/GetReport/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_GetReport_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter GetReport Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_GetReportConfig_sync",
-      "title": "migrationcenter GetReportConfig Sample",
-      "description": "GetReportConfig gets details of a single ReportConfig.",
-      "file": "Client/GetReportConfig/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetReportConfig",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.GetReportConfig",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.GetReportConfig",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "GetReportConfig"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.GetReportConfigRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.GetReportConfigRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*migrationcenterpb.ReportConfig",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "GetReportConfig",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.GetReportConfig",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "GetReportConfig"
       },
+      "description": "GetReportConfig gets details of a single ReportConfig.",
+      "file": "Client/GetReportConfig/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_GetReportConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter GetReportConfig Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_GetSettings_sync",
-      "title": "migrationcenter GetSettings Sample",
-      "description": "GetSettings gets the details of regional settings.",
-      "file": "Client/GetSettings/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetSettings",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.GetSettings",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.GetSettings",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "GetSettings"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.GetSettingsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.GetSettingsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*migrationcenterpb.Settings",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "GetSettings",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.GetSettings",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "GetSettings"
       },
+      "description": "GetSettings gets the details of regional settings.",
+      "file": "Client/GetSettings/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_GetSettings_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter GetSettings Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_GetSource_sync",
-      "title": "migrationcenter GetSource Sample",
-      "description": "GetSource gets the details of a source.",
-      "file": "Client/GetSource/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetSource",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.GetSource",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.GetSource",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "GetSource"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.GetSourceRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.GetSourceRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*migrationcenterpb.Source",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "GetSource",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.GetSource",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "GetSource"
       },
+      "description": "GetSource gets the details of a source.",
+      "file": "Client/GetSource/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_GetSource_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter GetSource Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_ListAssets_sync",
-      "title": "migrationcenter ListAssets Sample",
-      "description": "ListAssets lists all the assets in a given project and location.",
-      "file": "Client/ListAssets/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListAssets",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.ListAssets",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.ListAssets",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "ListAssets"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.ListAssetsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.ListAssetsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "AssetIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "ListAssets",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.ListAssets",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "ListAssets"
       },
+      "description": "ListAssets lists all the assets in a given project and location.",
+      "file": "Client/ListAssets/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_ListAssets_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter ListAssets Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_ListErrorFrames_sync",
-      "title": "migrationcenter ListErrorFrames Sample",
-      "description": "ListErrorFrames lists all error frames in a given source and location.",
-      "file": "Client/ListErrorFrames/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListErrorFrames",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.ListErrorFrames",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.ListErrorFrames",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "ListErrorFrames"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.ListErrorFramesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.ListErrorFramesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ErrorFrameIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "ListErrorFrames",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.ListErrorFrames",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "ListErrorFrames"
       },
+      "description": "ListErrorFrames lists all error frames in a given source and location.",
+      "file": "Client/ListErrorFrames/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_ListErrorFrames_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter ListErrorFrames Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_ListGroups_sync",
-      "title": "migrationcenter ListGroups Sample",
-      "description": "ListGroups lists all groups in a given project and location.",
-      "file": "Client/ListGroups/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListGroups",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.ListGroups",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.ListGroups",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "ListGroups"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.ListGroupsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.ListGroupsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "GroupIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "ListGroups",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.ListGroups",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "ListGroups"
       },
+      "description": "ListGroups lists all groups in a given project and location.",
+      "file": "Client/ListGroups/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_ListGroups_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter ListGroups Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_ListImportDataFiles_sync",
-      "title": "migrationcenter ListImportDataFiles Sample",
-      "description": "ListImportDataFiles list import data files.",
-      "file": "Client/ListImportDataFiles/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListImportDataFiles",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.ListImportDataFiles",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.ListImportDataFiles",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "ListImportDataFiles"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.ListImportDataFilesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.ListImportDataFilesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ImportDataFileIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "ListImportDataFiles",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.ListImportDataFiles",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "ListImportDataFiles"
       },
+      "description": "ListImportDataFiles list import data files.",
+      "file": "Client/ListImportDataFiles/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_ListImportDataFiles_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter ListImportDataFiles Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_ListImportJobs_sync",
-      "title": "migrationcenter ListImportJobs Sample",
-      "description": "ListImportJobs lists all import jobs.",
-      "file": "Client/ListImportJobs/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListImportJobs",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.ListImportJobs",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.ListImportJobs",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "ListImportJobs"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.ListImportJobsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.ListImportJobsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ImportJobIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "ListImportJobs",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.ListImportJobs",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "ListImportJobs"
       },
+      "description": "ListImportJobs lists all import jobs.",
+      "file": "Client/ListImportJobs/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_ListImportJobs_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter ListImportJobs Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_ListLocations_sync",
-      "title": "migrationcenter ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
-      "file": "Client/ListLocations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListLocations",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "locationpb.ListLocationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "LocationIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "ListLocations",
-          "fullName": "google.cloud.location.Locations.ListLocations",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
+        "shortName": "ListLocations"
       },
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_ListLocations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter ListLocations Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_ListOperations_sync",
-      "title": "migrationcenter ListOperations Sample",
-      "description": "ListOperations is a utility method from google.longrunning.Operations.",
-      "file": "Client/ListOperations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListOperations",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.ListOperationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "OperationIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "ListOperations",
-          "fullName": "google.longrunning.Operations.ListOperations",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "ListOperations"
       },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_ListOperations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter ListOperations Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_ListPreferenceSets_sync",
-      "title": "migrationcenter ListPreferenceSets Sample",
-      "description": "ListPreferenceSets lists all the preference sets in a given project and location.",
-      "file": "Client/ListPreferenceSets/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListPreferenceSets",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.ListPreferenceSets",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.ListPreferenceSets",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "ListPreferenceSets"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.ListPreferenceSetsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.ListPreferenceSetsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "PreferenceSetIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "ListPreferenceSets",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.ListPreferenceSets",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "ListPreferenceSets"
       },
+      "description": "ListPreferenceSets lists all the preference sets in a given project and location.",
+      "file": "Client/ListPreferenceSets/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_ListPreferenceSets_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter ListPreferenceSets Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_ListReportConfigs_sync",
-      "title": "migrationcenter ListReportConfigs Sample",
-      "description": "ListReportConfigs lists ReportConfigs in a given project and location.",
-      "file": "Client/ListReportConfigs/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListReportConfigs",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.ListReportConfigs",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.ListReportConfigs",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "ListReportConfigs"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.ListReportConfigsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.ListReportConfigsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ReportConfigIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "ListReportConfigs",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.ListReportConfigs",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "ListReportConfigs"
       },
+      "description": "ListReportConfigs lists ReportConfigs in a given project and location.",
+      "file": "Client/ListReportConfigs/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_ListReportConfigs_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter ListReportConfigs Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_ListReports_sync",
-      "title": "migrationcenter ListReports Sample",
-      "description": "ListReports lists Reports in a given ReportConfig.",
-      "file": "Client/ListReports/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListReports",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.ListReports",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.ListReports",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "ListReports"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.ListReportsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.ListReportsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ReportIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "ListReports",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.ListReports",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "ListReports"
       },
+      "description": "ListReports lists Reports in a given ReportConfig.",
+      "file": "Client/ListReports/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_ListReports_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter ListReports Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_ListSources_sync",
-      "title": "migrationcenter ListSources Sample",
-      "description": "ListSources lists all the sources in a given project and location.",
-      "file": "Client/ListSources/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListSources",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.ListSources",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.ListSources",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "ListSources"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.ListSourcesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.ListSourcesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "SourceIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "ListSources",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.ListSources",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "ListSources"
       },
+      "description": "ListSources lists all the sources in a given project and location.",
+      "file": "Client/ListSources/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_ListSources_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter ListSources Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_RemoveAssetsFromGroup_sync",
-      "title": "migrationcenter RemoveAssetsFromGroup Sample",
-      "description": "RemoveAssetsFromGroup removes assets from a group.",
-      "file": "Client/RemoveAssetsFromGroup/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "RemoveAssetsFromGroup",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.RemoveAssetsFromGroup",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.RemoveAssetsFromGroup",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "RemoveAssetsFromGroup"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.RemoveAssetsFromGroupRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.RemoveAssetsFromGroupRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "RemoveAssetsFromGroupOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "RemoveAssetsFromGroup",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.RemoveAssetsFromGroup",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "RemoveAssetsFromGroup"
       },
+      "description": "RemoveAssetsFromGroup removes assets from a group.",
+      "file": "Client/RemoveAssetsFromGroup/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_RemoveAssetsFromGroup_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter RemoveAssetsFromGroup Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_ReportAssetFrames_sync",
-      "title": "migrationcenter ReportAssetFrames Sample",
-      "description": "ReportAssetFrames reports a set of frames.",
-      "file": "Client/ReportAssetFrames/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ReportAssetFrames",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.ReportAssetFrames",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.ReportAssetFrames",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "ReportAssetFrames"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.ReportAssetFramesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.ReportAssetFramesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*migrationcenterpb.ReportAssetFramesResponse",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "ReportAssetFrames",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.ReportAssetFrames",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "ReportAssetFrames"
       },
+      "description": "ReportAssetFrames reports a set of frames.",
+      "file": "Client/ReportAssetFrames/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_ReportAssetFrames_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter ReportAssetFrames Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_RunImportJob_sync",
-      "title": "migrationcenter RunImportJob Sample",
-      "description": "RunImportJob runs an import job.",
-      "file": "Client/RunImportJob/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "RunImportJob",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.RunImportJob",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.RunImportJob",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "RunImportJob"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.RunImportJobRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.RunImportJobRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "RunImportJobOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "RunImportJob",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.RunImportJob",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "RunImportJob"
       },
+      "description": "RunImportJob runs an import job.",
+      "file": "Client/RunImportJob/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_RunImportJob_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter RunImportJob Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_UpdateAsset_sync",
-      "title": "migrationcenter UpdateAsset Sample",
-      "description": "UpdateAsset updates the parameters of an asset.",
-      "file": "Client/UpdateAsset/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateAsset",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.UpdateAsset",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.UpdateAsset",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "UpdateAsset"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.UpdateAssetRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.UpdateAssetRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*migrationcenterpb.Asset",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "UpdateAsset",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.UpdateAsset",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "UpdateAsset"
       },
+      "description": "UpdateAsset updates the parameters of an asset.",
+      "file": "Client/UpdateAsset/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_UpdateAsset_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter UpdateAsset Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_UpdateGroup_sync",
-      "title": "migrationcenter UpdateGroup Sample",
-      "description": "UpdateGroup updates the parameters of a group.",
-      "file": "Client/UpdateGroup/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateGroup",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.UpdateGroup",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.UpdateGroup",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "UpdateGroup"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.UpdateGroupRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.UpdateGroupRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UpdateGroupOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "UpdateGroup",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.UpdateGroup",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "UpdateGroup"
       },
+      "description": "UpdateGroup updates the parameters of a group.",
+      "file": "Client/UpdateGroup/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_UpdateGroup_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter UpdateGroup Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_UpdateImportJob_sync",
-      "title": "migrationcenter UpdateImportJob Sample",
-      "description": "UpdateImportJob updates an import job.",
-      "file": "Client/UpdateImportJob/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateImportJob",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.UpdateImportJob",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.UpdateImportJob",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "UpdateImportJob"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.UpdateImportJobRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.UpdateImportJobRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UpdateImportJobOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "UpdateImportJob",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.UpdateImportJob",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "UpdateImportJob"
       },
+      "description": "UpdateImportJob updates an import job.",
+      "file": "Client/UpdateImportJob/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_UpdateImportJob_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter UpdateImportJob Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_UpdatePreferenceSet_sync",
-      "title": "migrationcenter UpdatePreferenceSet Sample",
-      "description": "UpdatePreferenceSet updates the parameters of a preference set.",
-      "file": "Client/UpdatePreferenceSet/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdatePreferenceSet",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.UpdatePreferenceSet",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.UpdatePreferenceSet",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "UpdatePreferenceSet"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.UpdatePreferenceSetRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.UpdatePreferenceSetRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UpdatePreferenceSetOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "UpdatePreferenceSet",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.UpdatePreferenceSet",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "UpdatePreferenceSet"
       },
+      "description": "UpdatePreferenceSet updates the parameters of a preference set.",
+      "file": "Client/UpdatePreferenceSet/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_UpdatePreferenceSet_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter UpdatePreferenceSet Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_UpdateSettings_sync",
-      "title": "migrationcenter UpdateSettings Sample",
-      "description": "UpdateSettings updates the regional-level project settings.",
-      "file": "Client/UpdateSettings/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateSettings",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.UpdateSettings",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.UpdateSettings",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "UpdateSettings"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.UpdateSettingsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.UpdateSettingsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UpdateSettingsOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "UpdateSettings",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.UpdateSettings",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "UpdateSettings"
       },
+      "description": "UpdateSettings updates the regional-level project settings.",
+      "file": "Client/UpdateSettings/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_UpdateSettings_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter UpdateSettings Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_UpdateSource_sync",
-      "title": "migrationcenter UpdateSource Sample",
-      "description": "UpdateSource updates the parameters of a source.",
-      "file": "Client/UpdateSource/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateSource",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.UpdateSource",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.UpdateSource",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "UpdateSource"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.UpdateSourceRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.UpdateSourceRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UpdateSourceOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "UpdateSource",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.UpdateSource",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "UpdateSource"
       },
+      "description": "UpdateSource updates the parameters of a source.",
+      "file": "Client/UpdateSource/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_UpdateSource_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter UpdateSource Sample"
     },
     {
-      "regionTag": "migrationcenter_v1_generated_MigrationCenter_ValidateImportJob_sync",
-      "title": "migrationcenter ValidateImportJob Sample",
-      "description": "ValidateImportJob validates an import job.",
-      "file": "Client/ValidateImportJob/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ValidateImportJob",
+        "client": {
+          "fullName": "google.cloud.migrationcenter.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.migrationcenter.v1.Client.ValidateImportJob",
+        "method": {
+          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.ValidateImportJob",
+          "service": {
+            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter",
+            "shortName": "MigrationCenter"
+          },
+          "shortName": "ValidateImportJob"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "migrationcenterpb.ValidateImportJobRequest",
-            "name": "req"
+            "name": "req",
+            "type": "migrationcenterpb.ValidateImportJobRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ValidateImportJobOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.migrationcenter.v1.Client"
-        },
-        "method": {
-          "shortName": "ValidateImportJob",
-          "fullName": "google.cloud.migrationcenter.v1.MigrationCenter.ValidateImportJob",
-          "service": {
-            "shortName": "MigrationCenter",
-            "fullName": "google.cloud.migrationcenter.v1.MigrationCenter"
-          }
-        }
+        "shortName": "ValidateImportJob"
       },
+      "description": "ValidateImportJob validates an import job.",
+      "file": "Client/ValidateImportJob/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "migrationcenter_v1_generated_MigrationCenter_ValidateImportJob_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "migrationcenter ValidateImportJob Sample"
     }
   ]
 }

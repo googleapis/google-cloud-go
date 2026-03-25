@@ -1,1986 +1,1986 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/datacatalog/apiv1beta1",
-    "version": "1.26.1",
-    "language": "GO",
     "apis": [
       {
         "id": "google.cloud.datacatalog.v1beta1",
         "version": "v1beta1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/datacatalog/apiv1beta1",
+    "version": "1.26.1"
   },
   "snippets": [
     {
-      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_CreateEntry_sync",
-      "title": "datacatalog CreateEntry Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datacatalog.v1beta1.Client.CreateEntry",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.CreateEntry",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog",
+            "shortName": "DataCatalog"
+          },
+          "shortName": "CreateEntry"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datacatalogpb.CreateEntryRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*datacatalogpb.Entry",
+        "shortName": "CreateEntry"
+      },
       "description": "CreateEntry creates an entry. Only entries of 'FILESET' type or user-specified type can\nbe created.\n\nUsers should enable the Data Catalog API in the project identified by\nthe `parent` parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).\n\nA maximum of 100,000 entries may be created per entry group.\n\n\nDeprecated: CreateEntry may be removed in a future version.",
       "file": "Client/CreateEntry/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateEntry",
-        "fullName": "google.cloud.datacatalog.v1beta1.Client.CreateEntry",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "datacatalogpb.CreateEntryRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*datacatalogpb.Entry",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.datacatalog.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "CreateEntry",
-          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.CreateEntry",
-          "service": {
-            "shortName": "DataCatalog",
-            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_CreateEntry_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog CreateEntry Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_CreateEntryGroup_sync",
-      "title": "datacatalog CreateEntryGroup Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datacatalog.v1beta1.Client.CreateEntryGroup",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.CreateEntryGroup",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog",
+            "shortName": "DataCatalog"
+          },
+          "shortName": "CreateEntryGroup"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datacatalogpb.CreateEntryGroupRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*datacatalogpb.EntryGroup",
+        "shortName": "CreateEntryGroup"
+      },
       "description": "CreateEntryGroup a maximum of 10,000 entry groups may be created per organization across all\nlocations.\n\nUsers should enable the Data Catalog API in the project identified by\nthe `parent` parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).\n\n\nDeprecated: CreateEntryGroup may be removed in a future version.",
       "file": "Client/CreateEntryGroup/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateEntryGroup",
-        "fullName": "google.cloud.datacatalog.v1beta1.Client.CreateEntryGroup",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "datacatalogpb.CreateEntryGroupRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*datacatalogpb.EntryGroup",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.datacatalog.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "CreateEntryGroup",
-          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.CreateEntryGroup",
-          "service": {
-            "shortName": "DataCatalog",
-            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_CreateEntryGroup_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog CreateEntryGroup Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_CreateTag_sync",
-      "title": "datacatalog CreateTag Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datacatalog.v1beta1.Client.CreateTag",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.CreateTag",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog",
+            "shortName": "DataCatalog"
+          },
+          "shortName": "CreateTag"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datacatalogpb.CreateTagRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*datacatalogpb.Tag",
+        "shortName": "CreateTag"
+      },
       "description": "CreateTag creates a tag on an [Entry][google.cloud.datacatalog.v1beta1.Entry].\nNote: The project identified by the `parent` parameter for the\n[tag](https: //cloud.google.com/data-catalog/docs/reference/rest/v1beta1/projects.locations.entryGroups.entries.tags/create#path-parameters)\nand the\n[tag\ntemplate](https: //cloud.google.com/data-catalog/docs/reference/rest/v1beta1/projects.locations.tagTemplates/create#path-parameters)\nused to create the tag must be from the same organization.\n\n\nDeprecated: CreateTag may be removed in a future version.",
       "file": "Client/CreateTag/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateTag",
-        "fullName": "google.cloud.datacatalog.v1beta1.Client.CreateTag",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "datacatalogpb.CreateTagRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*datacatalogpb.Tag",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.datacatalog.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "CreateTag",
-          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.CreateTag",
-          "service": {
-            "shortName": "DataCatalog",
-            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_CreateTag_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog CreateTag Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_CreateTagTemplate_sync",
-      "title": "datacatalog CreateTagTemplate Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datacatalog.v1beta1.Client.CreateTagTemplate",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.CreateTagTemplate",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog",
+            "shortName": "DataCatalog"
+          },
+          "shortName": "CreateTagTemplate"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datacatalogpb.CreateTagTemplateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*datacatalogpb.TagTemplate",
+        "shortName": "CreateTagTemplate"
+      },
       "description": "CreateTagTemplate creates a tag template. The user should enable the Data Catalog API in\nthe project identified by the `parent` parameter (see [Data Catalog\nResource\nProject](https: //cloud.google.com/data-catalog/docs/concepts/resource-project)\nfor more information).\n\n\nDeprecated: CreateTagTemplate may be removed in a future version.",
       "file": "Client/CreateTagTemplate/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateTagTemplate",
-        "fullName": "google.cloud.datacatalog.v1beta1.Client.CreateTagTemplate",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "datacatalogpb.CreateTagTemplateRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*datacatalogpb.TagTemplate",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.datacatalog.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "CreateTagTemplate",
-          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.CreateTagTemplate",
-          "service": {
-            "shortName": "DataCatalog",
-            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_CreateTagTemplate_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog CreateTagTemplate Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_CreateTagTemplateField_sync",
-      "title": "datacatalog CreateTagTemplateField Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datacatalog.v1beta1.Client.CreateTagTemplateField",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.CreateTagTemplateField",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog",
+            "shortName": "DataCatalog"
+          },
+          "shortName": "CreateTagTemplateField"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datacatalogpb.CreateTagTemplateFieldRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*datacatalogpb.TagTemplateField",
+        "shortName": "CreateTagTemplateField"
+      },
       "description": "CreateTagTemplateField creates a field in a tag template. The user should enable the Data Catalog\nAPI in the project identified by the `parent` parameter (see\n[Data Catalog Resource\nProject](https: //cloud.google.com/data-catalog/docs/concepts/resource-project)\nfor more information).\n\n\nDeprecated: CreateTagTemplateField may be removed in a future version.",
       "file": "Client/CreateTagTemplateField/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateTagTemplateField",
-        "fullName": "google.cloud.datacatalog.v1beta1.Client.CreateTagTemplateField",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "datacatalogpb.CreateTagTemplateFieldRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*datacatalogpb.TagTemplateField",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.datacatalog.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "CreateTagTemplateField",
-          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.CreateTagTemplateField",
-          "service": {
-            "shortName": "DataCatalog",
-            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_CreateTagTemplateField_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog CreateTagTemplateField Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_DeleteEntry_sync",
-      "title": "datacatalog DeleteEntry Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datacatalog.v1beta1.Client.DeleteEntry",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.DeleteEntry",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog",
+            "shortName": "DataCatalog"
+          },
+          "shortName": "DeleteEntry"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datacatalogpb.DeleteEntryRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteEntry"
+      },
       "description": "DeleteEntry deletes an existing entry. Only entries created through\n[CreateEntry][google.cloud.datacatalog.v1beta1.DataCatalog.CreateEntry]\nmethod can be deleted.\nUsers should enable the Data Catalog API in the project identified by\nthe `name` parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).\n\n\nDeprecated: DeleteEntry may be removed in a future version.",
       "file": "Client/DeleteEntry/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteEntry",
-        "fullName": "google.cloud.datacatalog.v1beta1.Client.DeleteEntry",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "datacatalogpb.DeleteEntryRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.datacatalog.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "DeleteEntry",
-          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.DeleteEntry",
-          "service": {
-            "shortName": "DataCatalog",
-            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_DeleteEntry_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog DeleteEntry Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_DeleteEntryGroup_sync",
-      "title": "datacatalog DeleteEntryGroup Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datacatalog.v1beta1.Client.DeleteEntryGroup",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.DeleteEntryGroup",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog",
+            "shortName": "DataCatalog"
+          },
+          "shortName": "DeleteEntryGroup"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datacatalogpb.DeleteEntryGroupRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteEntryGroup"
+      },
       "description": "DeleteEntryGroup deletes an EntryGroup. Only entry groups that do not contain entries can be\ndeleted. Users should enable the Data Catalog API in the project\nidentified by the `name` parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).\n\n\nDeprecated: DeleteEntryGroup may be removed in a future version.",
       "file": "Client/DeleteEntryGroup/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteEntryGroup",
-        "fullName": "google.cloud.datacatalog.v1beta1.Client.DeleteEntryGroup",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "datacatalogpb.DeleteEntryGroupRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.datacatalog.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "DeleteEntryGroup",
-          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.DeleteEntryGroup",
-          "service": {
-            "shortName": "DataCatalog",
-            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_DeleteEntryGroup_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog DeleteEntryGroup Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_DeleteTag_sync",
-      "title": "datacatalog DeleteTag Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datacatalog.v1beta1.Client.DeleteTag",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.DeleteTag",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog",
+            "shortName": "DataCatalog"
+          },
+          "shortName": "DeleteTag"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datacatalogpb.DeleteTagRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteTag"
+      },
       "description": "DeleteTag deletes a tag.\n\n\nDeprecated: DeleteTag may be removed in a future version.",
       "file": "Client/DeleteTag/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteTag",
-        "fullName": "google.cloud.datacatalog.v1beta1.Client.DeleteTag",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "datacatalogpb.DeleteTagRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.datacatalog.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "DeleteTag",
-          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.DeleteTag",
-          "service": {
-            "shortName": "DataCatalog",
-            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_DeleteTag_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog DeleteTag Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_DeleteTagTemplate_sync",
-      "title": "datacatalog DeleteTagTemplate Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datacatalog.v1beta1.Client.DeleteTagTemplate",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.DeleteTagTemplate",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog",
+            "shortName": "DataCatalog"
+          },
+          "shortName": "DeleteTagTemplate"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datacatalogpb.DeleteTagTemplateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteTagTemplate"
+      },
       "description": "DeleteTagTemplate deletes a tag template and all tags using the template.\nUsers should enable the Data Catalog API in the project identified by\nthe `name` parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).\n\n\nDeprecated: DeleteTagTemplate may be removed in a future version.",
       "file": "Client/DeleteTagTemplate/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteTagTemplate",
-        "fullName": "google.cloud.datacatalog.v1beta1.Client.DeleteTagTemplate",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "datacatalogpb.DeleteTagTemplateRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.datacatalog.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "DeleteTagTemplate",
-          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.DeleteTagTemplate",
-          "service": {
-            "shortName": "DataCatalog",
-            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_DeleteTagTemplate_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog DeleteTagTemplate Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_DeleteTagTemplateField_sync",
-      "title": "datacatalog DeleteTagTemplateField Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datacatalog.v1beta1.Client.DeleteTagTemplateField",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.DeleteTagTemplateField",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog",
+            "shortName": "DataCatalog"
+          },
+          "shortName": "DeleteTagTemplateField"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datacatalogpb.DeleteTagTemplateFieldRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteTagTemplateField"
+      },
       "description": "DeleteTagTemplateField deletes a field in a tag template and all uses of that field.\nUsers should enable the Data Catalog API in the project identified by\nthe `name` parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).\n\n\nDeprecated: DeleteTagTemplateField may be removed in a future version.",
       "file": "Client/DeleteTagTemplateField/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteTagTemplateField",
-        "fullName": "google.cloud.datacatalog.v1beta1.Client.DeleteTagTemplateField",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "datacatalogpb.DeleteTagTemplateFieldRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.datacatalog.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "DeleteTagTemplateField",
-          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.DeleteTagTemplateField",
-          "service": {
-            "shortName": "DataCatalog",
-            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_DeleteTagTemplateField_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog DeleteTagTemplateField Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_GetEntry_sync",
-      "title": "datacatalog GetEntry Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datacatalog.v1beta1.Client.GetEntry",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.GetEntry",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog",
+            "shortName": "DataCatalog"
+          },
+          "shortName": "GetEntry"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datacatalogpb.GetEntryRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*datacatalogpb.Entry",
+        "shortName": "GetEntry"
+      },
       "description": "GetEntry gets an entry.\n\n\nDeprecated: GetEntry may be removed in a future version.",
       "file": "Client/GetEntry/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetEntry",
-        "fullName": "google.cloud.datacatalog.v1beta1.Client.GetEntry",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "datacatalogpb.GetEntryRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*datacatalogpb.Entry",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.datacatalog.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "GetEntry",
-          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.GetEntry",
-          "service": {
-            "shortName": "DataCatalog",
-            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_GetEntry_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog GetEntry Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_GetEntryGroup_sync",
-      "title": "datacatalog GetEntryGroup Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datacatalog.v1beta1.Client.GetEntryGroup",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.GetEntryGroup",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog",
+            "shortName": "DataCatalog"
+          },
+          "shortName": "GetEntryGroup"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datacatalogpb.GetEntryGroupRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*datacatalogpb.EntryGroup",
+        "shortName": "GetEntryGroup"
+      },
       "description": "GetEntryGroup gets an EntryGroup.\n\n\nDeprecated: GetEntryGroup may be removed in a future version.",
       "file": "Client/GetEntryGroup/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetEntryGroup",
-        "fullName": "google.cloud.datacatalog.v1beta1.Client.GetEntryGroup",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "datacatalogpb.GetEntryGroupRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*datacatalogpb.EntryGroup",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.datacatalog.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "GetEntryGroup",
-          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.GetEntryGroup",
-          "service": {
-            "shortName": "DataCatalog",
-            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_GetEntryGroup_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog GetEntryGroup Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_GetIamPolicy_sync",
-      "title": "datacatalog GetIamPolicy Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datacatalog.v1beta1.Client.GetIamPolicy",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.GetIamPolicy",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog",
+            "shortName": "DataCatalog"
+          },
+          "shortName": "GetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.GetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "GetIamPolicy"
+      },
       "description": "GetIamPolicy gets the access control policy for a resource. A `NOT_FOUND` error\nis returned if the resource does not exist. An empty policy is returned\nif the resource exists but does not have a policy set on it.\n\nSupported resources are: \n- Tag templates.\n- Entries.\n- Entry groups.\nNote, this method cannot be used to manage policies for BigQuery, Pub/Sub\nand any external Google Cloud Platform resources synced to Data Catalog.\n\nCallers must have following Google IAM permission\n- `datacatalog.tagTemplates.getIamPolicy` to get policies on tag\ntemplates.\n- `datacatalog.entries.getIamPolicy` to get policies on entries.\n- `datacatalog.entryGroups.getIamPolicy` to get policies on entry groups.\n\n\nDeprecated: GetIamPolicy may be removed in a future version.",
       "file": "Client/GetIamPolicy/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetIamPolicy",
-        "fullName": "google.cloud.datacatalog.v1beta1.Client.GetIamPolicy",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "iampb.GetIamPolicyRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*iampb.Policy",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.datacatalog.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "GetIamPolicy",
-          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.GetIamPolicy",
-          "service": {
-            "shortName": "DataCatalog",
-            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_GetIamPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog GetIamPolicy Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_GetTagTemplate_sync",
-      "title": "datacatalog GetTagTemplate Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datacatalog.v1beta1.Client.GetTagTemplate",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.GetTagTemplate",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog",
+            "shortName": "DataCatalog"
+          },
+          "shortName": "GetTagTemplate"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datacatalogpb.GetTagTemplateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*datacatalogpb.TagTemplate",
+        "shortName": "GetTagTemplate"
+      },
       "description": "GetTagTemplate gets a tag template.\n\n\nDeprecated: GetTagTemplate may be removed in a future version.",
       "file": "Client/GetTagTemplate/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetTagTemplate",
-        "fullName": "google.cloud.datacatalog.v1beta1.Client.GetTagTemplate",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "datacatalogpb.GetTagTemplateRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*datacatalogpb.TagTemplate",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.datacatalog.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "GetTagTemplate",
-          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.GetTagTemplate",
-          "service": {
-            "shortName": "DataCatalog",
-            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_GetTagTemplate_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog GetTagTemplate Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_ListEntries_sync",
-      "title": "datacatalog ListEntries Sample",
-      "description": "ListEntries lists entries.\n\n\nDeprecated: ListEntries may be removed in a future version.",
-      "file": "Client/ListEntries/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListEntries",
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.datacatalog.v1beta1.Client.ListEntries",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.ListEntries",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog",
+            "shortName": "DataCatalog"
+          },
+          "shortName": "ListEntries"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "datacatalogpb.ListEntriesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "datacatalogpb.ListEntriesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "EntryIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.datacatalog.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "ListEntries",
-          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.ListEntries",
-          "service": {
-            "shortName": "DataCatalog",
-            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog"
-          }
-        }
+        "shortName": "ListEntries"
       },
+      "description": "ListEntries lists entries.\n\n\nDeprecated: ListEntries may be removed in a future version.",
+      "file": "Client/ListEntries/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_ListEntries_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog ListEntries Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_ListEntryGroups_sync",
-      "title": "datacatalog ListEntryGroups Sample",
-      "description": "ListEntryGroups lists entry groups.\n\n\nDeprecated: ListEntryGroups may be removed in a future version.",
-      "file": "Client/ListEntryGroups/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListEntryGroups",
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.datacatalog.v1beta1.Client.ListEntryGroups",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.ListEntryGroups",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog",
+            "shortName": "DataCatalog"
+          },
+          "shortName": "ListEntryGroups"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "datacatalogpb.ListEntryGroupsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "datacatalogpb.ListEntryGroupsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "EntryGroupIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.datacatalog.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "ListEntryGroups",
-          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.ListEntryGroups",
-          "service": {
-            "shortName": "DataCatalog",
-            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog"
-          }
-        }
+        "shortName": "ListEntryGroups"
       },
+      "description": "ListEntryGroups lists entry groups.\n\n\nDeprecated: ListEntryGroups may be removed in a future version.",
+      "file": "Client/ListEntryGroups/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_ListEntryGroups_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog ListEntryGroups Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_ListTags_sync",
-      "title": "datacatalog ListTags Sample",
-      "description": "ListTags lists tags assigned to an [Entry][google.cloud.datacatalog.v1beta1.Entry].\nThe [columns][google.cloud.datacatalog.v1beta1.Tag.column] in the response\nare lowercased.\n\n\nDeprecated: ListTags may be removed in a future version.",
-      "file": "Client/ListTags/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListTags",
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.datacatalog.v1beta1.Client.ListTags",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.ListTags",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog",
+            "shortName": "DataCatalog"
+          },
+          "shortName": "ListTags"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "datacatalogpb.ListTagsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "datacatalogpb.ListTagsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "TagIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.datacatalog.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "ListTags",
-          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.ListTags",
-          "service": {
-            "shortName": "DataCatalog",
-            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog"
-          }
-        }
+        "shortName": "ListTags"
       },
+      "description": "ListTags lists tags assigned to an [Entry][google.cloud.datacatalog.v1beta1.Entry].\nThe [columns][google.cloud.datacatalog.v1beta1.Tag.column] in the response\nare lowercased.\n\n\nDeprecated: ListTags may be removed in a future version.",
+      "file": "Client/ListTags/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_ListTags_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog ListTags Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_LookupEntry_sync",
-      "title": "datacatalog LookupEntry Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datacatalog.v1beta1.Client.LookupEntry",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.LookupEntry",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog",
+            "shortName": "DataCatalog"
+          },
+          "shortName": "LookupEntry"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datacatalogpb.LookupEntryRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*datacatalogpb.Entry",
+        "shortName": "LookupEntry"
+      },
       "description": "LookupEntry get an entry by target resource name. This method allows clients to use\nthe resource name from the source Google Cloud Platform service to get the\nData Catalog Entry.\n\n\nDeprecated: LookupEntry may be removed in a future version.",
       "file": "Client/LookupEntry/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "LookupEntry",
-        "fullName": "google.cloud.datacatalog.v1beta1.Client.LookupEntry",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "datacatalogpb.LookupEntryRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*datacatalogpb.Entry",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.datacatalog.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "LookupEntry",
-          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.LookupEntry",
-          "service": {
-            "shortName": "DataCatalog",
-            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_LookupEntry_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog LookupEntry Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_RenameTagTemplateField_sync",
-      "title": "datacatalog RenameTagTemplateField Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datacatalog.v1beta1.Client.RenameTagTemplateField",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.RenameTagTemplateField",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog",
+            "shortName": "DataCatalog"
+          },
+          "shortName": "RenameTagTemplateField"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datacatalogpb.RenameTagTemplateFieldRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*datacatalogpb.TagTemplateField",
+        "shortName": "RenameTagTemplateField"
+      },
       "description": "RenameTagTemplateField renames a field in a tag template. The user should enable the Data Catalog\nAPI in the project identified by the `name` parameter (see [Data Catalog\nResource\nProject](https: //cloud.google.com/data-catalog/docs/concepts/resource-project)\nfor more information).\n\n\nDeprecated: RenameTagTemplateField may be removed in a future version.",
       "file": "Client/RenameTagTemplateField/main.go",
       "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_RenameTagTemplateField_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "datacatalog RenameTagTemplateField Sample"
+    },
+    {
       "clientMethod": {
-        "shortName": "RenameTagTemplateField",
-        "fullName": "google.cloud.datacatalog.v1beta1.Client.RenameTagTemplateField",
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datacatalog.v1beta1.Client.RenameTagTemplateFieldEnumValue",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.RenameTagTemplateFieldEnumValue",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog",
+            "shortName": "DataCatalog"
+          },
+          "shortName": "RenameTagTemplateFieldEnumValue"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "datacatalogpb.RenameTagTemplateFieldRequest",
-            "name": "req"
+            "name": "req",
+            "type": "datacatalogpb.RenameTagTemplateFieldEnumValueRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*datacatalogpb.TagTemplateField",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.datacatalog.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "RenameTagTemplateField",
-          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.RenameTagTemplateField",
-          "service": {
-            "shortName": "DataCatalog",
-            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog"
-          }
-        }
+        "shortName": "RenameTagTemplateFieldEnumValue"
       },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_RenameTagTemplateFieldEnumValue_sync",
-      "title": "datacatalog RenameTagTemplateFieldEnumValue Sample",
       "description": "RenameTagTemplateFieldEnumValue renames an enum value in a tag template. The enum values have to be unique\nwithin one enum field. Thus, an enum value cannot be renamed with a name\nused in any other enum value within the same enum field.\n\n\nDeprecated: RenameTagTemplateFieldEnumValue may be removed in a future version.",
       "file": "Client/RenameTagTemplateFieldEnumValue/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "RenameTagTemplateFieldEnumValue",
-        "fullName": "google.cloud.datacatalog.v1beta1.Client.RenameTagTemplateFieldEnumValue",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "datacatalogpb.RenameTagTemplateFieldEnumValueRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*datacatalogpb.TagTemplateField",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.datacatalog.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "RenameTagTemplateFieldEnumValue",
-          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.RenameTagTemplateFieldEnumValue",
-          "service": {
-            "shortName": "DataCatalog",
-            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_RenameTagTemplateFieldEnumValue_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog RenameTagTemplateFieldEnumValue Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_SearchCatalog_sync",
-      "title": "datacatalog SearchCatalog Sample",
-      "description": "SearchCatalog searches Data Catalog for multiple resources like entries, tags that\nmatch a query.\n\nThis is a custom method\n(https: //cloud.google.com/apis/design/custom_methods) and does not return\nthe complete resource, only the resource identifier and high level\nfields. Clients can subsequently call `Get` methods.\n\nNote that Data Catalog search queries do not guarantee full recall. Query\nresults that match your query may not be returned, even in subsequent\nresult pages. Also note that results returned (and not returned) can vary\nacross repeated search queries.\n\nSee [Data Catalog Search\nSyntax](https: //cloud.google.com/data-catalog/docs/how-to/search-reference)\nfor more information.\n\n\nDeprecated: SearchCatalog may be removed in a future version.",
-      "file": "Client/SearchCatalog/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "SearchCatalog",
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.datacatalog.v1beta1.Client.SearchCatalog",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.SearchCatalog",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog",
+            "shortName": "DataCatalog"
+          },
+          "shortName": "SearchCatalog"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "datacatalogpb.SearchCatalogRequest",
-            "name": "req"
+            "name": "req",
+            "type": "datacatalogpb.SearchCatalogRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "SearchCatalogResultIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.datacatalog.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "SearchCatalog",
-          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.SearchCatalog",
-          "service": {
-            "shortName": "DataCatalog",
-            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog"
-          }
-        }
+        "shortName": "SearchCatalog"
       },
+      "description": "SearchCatalog searches Data Catalog for multiple resources like entries, tags that\nmatch a query.\n\nThis is a custom method\n(https: //cloud.google.com/apis/design/custom_methods) and does not return\nthe complete resource, only the resource identifier and high level\nfields. Clients can subsequently call `Get` methods.\n\nNote that Data Catalog search queries do not guarantee full recall. Query\nresults that match your query may not be returned, even in subsequent\nresult pages. Also note that results returned (and not returned) can vary\nacross repeated search queries.\n\nSee [Data Catalog Search\nSyntax](https: //cloud.google.com/data-catalog/docs/how-to/search-reference)\nfor more information.\n\n\nDeprecated: SearchCatalog may be removed in a future version.",
+      "file": "Client/SearchCatalog/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_SearchCatalog_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog SearchCatalog Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_SetIamPolicy_sync",
-      "title": "datacatalog SetIamPolicy Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datacatalog.v1beta1.Client.SetIamPolicy",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.SetIamPolicy",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog",
+            "shortName": "DataCatalog"
+          },
+          "shortName": "SetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.SetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "SetIamPolicy"
+      },
       "description": "SetIamPolicy sets the access control policy for a resource. Replaces any existing\npolicy.\nSupported resources are: \n- Tag templates.\n- Entries.\n- Entry groups.\nNote, this method cannot be used to manage policies for BigQuery, Pub/Sub\nand any external Google Cloud Platform resources synced to Data Catalog.\n\nCallers must have following Google IAM permission\n- `datacatalog.tagTemplates.setIamPolicy` to set policies on tag\ntemplates.\n- `datacatalog.entries.setIamPolicy` to set policies on entries.\n- `datacatalog.entryGroups.setIamPolicy` to set policies on entry groups.\n\n\nDeprecated: SetIamPolicy may be removed in a future version.",
       "file": "Client/SetIamPolicy/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "SetIamPolicy",
-        "fullName": "google.cloud.datacatalog.v1beta1.Client.SetIamPolicy",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "iampb.SetIamPolicyRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*iampb.Policy",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.datacatalog.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "SetIamPolicy",
-          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.SetIamPolicy",
-          "service": {
-            "shortName": "DataCatalog",
-            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_SetIamPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog SetIamPolicy Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_TestIamPermissions_sync",
-      "title": "datacatalog TestIamPermissions Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datacatalog.v1beta1.Client.TestIamPermissions",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.TestIamPermissions",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog",
+            "shortName": "DataCatalog"
+          },
+          "shortName": "TestIamPermissions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.TestIamPermissionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "shortName": "TestIamPermissions"
+      },
       "description": "TestIamPermissions returns the caller's permissions on a resource.\nIf the resource does not exist, an empty set of permissions is returned\n(We don't return a `NOT_FOUND` error).\n\nSupported resources are: \n- Tag templates.\n- Entries.\n- Entry groups.\nNote, this method cannot be used to manage policies for BigQuery, Pub/Sub\nand any external Google Cloud Platform resources synced to Data Catalog.\n\nA caller is not required to have Google IAM permission to make this\nrequest.\n\n\nDeprecated: TestIamPermissions may be removed in a future version.",
       "file": "Client/TestIamPermissions/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "TestIamPermissions",
-        "fullName": "google.cloud.datacatalog.v1beta1.Client.TestIamPermissions",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "iampb.TestIamPermissionsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*iampb.TestIamPermissionsResponse",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.datacatalog.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "TestIamPermissions",
-          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.TestIamPermissions",
-          "service": {
-            "shortName": "DataCatalog",
-            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_TestIamPermissions_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog TestIamPermissions Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_UpdateEntry_sync",
-      "title": "datacatalog UpdateEntry Sample",
-      "description": "UpdateEntry updates an existing entry.\nUsers should enable the Data Catalog API in the project identified by\nthe `entry.name` parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).\n\n\nDeprecated: UpdateEntry may be removed in a future version.",
-      "file": "Client/UpdateEntry/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateEntry",
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.datacatalog.v1beta1.Client.UpdateEntry",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.UpdateEntry",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog",
+            "shortName": "DataCatalog"
+          },
+          "shortName": "UpdateEntry"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "datacatalogpb.UpdateEntryRequest",
-            "name": "req"
+            "name": "req",
+            "type": "datacatalogpb.UpdateEntryRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*datacatalogpb.Entry",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.datacatalog.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "UpdateEntry",
-          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.UpdateEntry",
-          "service": {
-            "shortName": "DataCatalog",
-            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog"
-          }
-        }
+        "shortName": "UpdateEntry"
       },
+      "description": "UpdateEntry updates an existing entry.\nUsers should enable the Data Catalog API in the project identified by\nthe `entry.name` parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).\n\n\nDeprecated: UpdateEntry may be removed in a future version.",
+      "file": "Client/UpdateEntry/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_UpdateEntry_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog UpdateEntry Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_UpdateEntryGroup_sync",
-      "title": "datacatalog UpdateEntryGroup Sample",
-      "description": "UpdateEntryGroup updates an EntryGroup. The user should enable the Data Catalog API in the\nproject identified by the `entry_group.name` parameter (see [Data Catalog\nResource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).\n\n\nDeprecated: UpdateEntryGroup may be removed in a future version.",
-      "file": "Client/UpdateEntryGroup/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateEntryGroup",
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.datacatalog.v1beta1.Client.UpdateEntryGroup",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.UpdateEntryGroup",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog",
+            "shortName": "DataCatalog"
+          },
+          "shortName": "UpdateEntryGroup"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "datacatalogpb.UpdateEntryGroupRequest",
-            "name": "req"
+            "name": "req",
+            "type": "datacatalogpb.UpdateEntryGroupRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*datacatalogpb.EntryGroup",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.datacatalog.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "UpdateEntryGroup",
-          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.UpdateEntryGroup",
-          "service": {
-            "shortName": "DataCatalog",
-            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog"
-          }
-        }
+        "shortName": "UpdateEntryGroup"
       },
+      "description": "UpdateEntryGroup updates an EntryGroup. The user should enable the Data Catalog API in the\nproject identified by the `entry_group.name` parameter (see [Data Catalog\nResource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).\n\n\nDeprecated: UpdateEntryGroup may be removed in a future version.",
+      "file": "Client/UpdateEntryGroup/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_UpdateEntryGroup_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog UpdateEntryGroup Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_UpdateTag_sync",
-      "title": "datacatalog UpdateTag Sample",
-      "description": "UpdateTag updates an existing tag.\n\n\nDeprecated: UpdateTag may be removed in a future version.",
-      "file": "Client/UpdateTag/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateTag",
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.datacatalog.v1beta1.Client.UpdateTag",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.UpdateTag",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog",
+            "shortName": "DataCatalog"
+          },
+          "shortName": "UpdateTag"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "datacatalogpb.UpdateTagRequest",
-            "name": "req"
+            "name": "req",
+            "type": "datacatalogpb.UpdateTagRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*datacatalogpb.Tag",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.datacatalog.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "UpdateTag",
-          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.UpdateTag",
-          "service": {
-            "shortName": "DataCatalog",
-            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog"
-          }
-        }
+        "shortName": "UpdateTag"
       },
+      "description": "UpdateTag updates an existing tag.\n\n\nDeprecated: UpdateTag may be removed in a future version.",
+      "file": "Client/UpdateTag/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_UpdateTag_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog UpdateTag Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_UpdateTagTemplate_sync",
-      "title": "datacatalog UpdateTagTemplate Sample",
-      "description": "UpdateTagTemplate updates a tag template. This method cannot be used to update the fields of\na template. The tag template fields are represented as separate resources\nand should be updated using their own create/update/delete methods.\nUsers should enable the Data Catalog API in the project identified by\nthe `tag_template.name` parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).\n\n\nDeprecated: UpdateTagTemplate may be removed in a future version.",
-      "file": "Client/UpdateTagTemplate/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateTagTemplate",
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.datacatalog.v1beta1.Client.UpdateTagTemplate",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.UpdateTagTemplate",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog",
+            "shortName": "DataCatalog"
+          },
+          "shortName": "UpdateTagTemplate"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "datacatalogpb.UpdateTagTemplateRequest",
-            "name": "req"
+            "name": "req",
+            "type": "datacatalogpb.UpdateTagTemplateRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*datacatalogpb.TagTemplate",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.datacatalog.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "UpdateTagTemplate",
-          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.UpdateTagTemplate",
-          "service": {
-            "shortName": "DataCatalog",
-            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog"
-          }
-        }
+        "shortName": "UpdateTagTemplate"
       },
+      "description": "UpdateTagTemplate updates a tag template. This method cannot be used to update the fields of\na template. The tag template fields are represented as separate resources\nand should be updated using their own create/update/delete methods.\nUsers should enable the Data Catalog API in the project identified by\nthe `tag_template.name` parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).\n\n\nDeprecated: UpdateTagTemplate may be removed in a future version.",
+      "file": "Client/UpdateTagTemplate/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_UpdateTagTemplate_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog UpdateTagTemplate Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_UpdateTagTemplateField_sync",
-      "title": "datacatalog UpdateTagTemplateField Sample",
-      "description": "UpdateTagTemplateField updates a field in a tag template. This method cannot be used to update the\nfield type. Users should enable the Data Catalog API in the project\nidentified by the `name` parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).\n\n\nDeprecated: UpdateTagTemplateField may be removed in a future version.",
-      "file": "Client/UpdateTagTemplateField/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateTagTemplateField",
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.datacatalog.v1beta1.Client.UpdateTagTemplateField",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.UpdateTagTemplateField",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog",
+            "shortName": "DataCatalog"
+          },
+          "shortName": "UpdateTagTemplateField"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "datacatalogpb.UpdateTagTemplateFieldRequest",
-            "name": "req"
+            "name": "req",
+            "type": "datacatalogpb.UpdateTagTemplateFieldRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*datacatalogpb.TagTemplateField",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.datacatalog.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "UpdateTagTemplateField",
-          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.UpdateTagTemplateField",
-          "service": {
-            "shortName": "DataCatalog",
-            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog"
-          }
-        }
+        "shortName": "UpdateTagTemplateField"
       },
+      "description": "UpdateTagTemplateField updates a field in a tag template. This method cannot be used to update the\nfield type. Users should enable the Data Catalog API in the project\nidentified by the `name` parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).\n\n\nDeprecated: UpdateTagTemplateField may be removed in a future version.",
+      "file": "Client/UpdateTagTemplateField/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_UpdateTagTemplateField_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog UpdateTagTemplateField Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_PolicyTagManager_CreatePolicyTag_sync",
-      "title": "datacatalog CreatePolicyTag Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient",
+          "shortName": "PolicyTagManagerClient"
+        },
+        "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient.CreatePolicyTag",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager.CreatePolicyTag",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager",
+            "shortName": "PolicyTagManager"
+          },
+          "shortName": "CreatePolicyTag"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datacatalogpb.CreatePolicyTagRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*datacatalogpb.PolicyTag",
+        "shortName": "CreatePolicyTag"
+      },
       "description": "CreatePolicyTag creates a policy tag in the specified taxonomy.",
       "file": "PolicyTagManagerClient/CreatePolicyTag/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreatePolicyTag",
-        "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient.CreatePolicyTag",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "datacatalogpb.CreatePolicyTagRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*datacatalogpb.PolicyTag",
-        "client": {
-          "shortName": "PolicyTagManagerClient",
-          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient"
-        },
-        "method": {
-          "shortName": "CreatePolicyTag",
-          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager.CreatePolicyTag",
-          "service": {
-            "shortName": "PolicyTagManager",
-            "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_PolicyTagManager_CreatePolicyTag_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog CreatePolicyTag Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_PolicyTagManager_CreateTaxonomy_sync",
-      "title": "datacatalog CreateTaxonomy Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient",
+          "shortName": "PolicyTagManagerClient"
+        },
+        "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient.CreateTaxonomy",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager.CreateTaxonomy",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager",
+            "shortName": "PolicyTagManager"
+          },
+          "shortName": "CreateTaxonomy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datacatalogpb.CreateTaxonomyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*datacatalogpb.Taxonomy",
+        "shortName": "CreateTaxonomy"
+      },
       "description": "CreateTaxonomy creates a taxonomy in the specified project.",
       "file": "PolicyTagManagerClient/CreateTaxonomy/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateTaxonomy",
-        "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient.CreateTaxonomy",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "datacatalogpb.CreateTaxonomyRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*datacatalogpb.Taxonomy",
-        "client": {
-          "shortName": "PolicyTagManagerClient",
-          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient"
-        },
-        "method": {
-          "shortName": "CreateTaxonomy",
-          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager.CreateTaxonomy",
-          "service": {
-            "shortName": "PolicyTagManager",
-            "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_PolicyTagManager_CreateTaxonomy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog CreateTaxonomy Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_PolicyTagManager_DeletePolicyTag_sync",
-      "title": "datacatalog DeletePolicyTag Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient",
+          "shortName": "PolicyTagManagerClient"
+        },
+        "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient.DeletePolicyTag",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager.DeletePolicyTag",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager",
+            "shortName": "PolicyTagManager"
+          },
+          "shortName": "DeletePolicyTag"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datacatalogpb.DeletePolicyTagRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeletePolicyTag"
+      },
       "description": "DeletePolicyTag deletes a policy tag. Also deletes all of its descendant policy tags.",
       "file": "PolicyTagManagerClient/DeletePolicyTag/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeletePolicyTag",
-        "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient.DeletePolicyTag",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "datacatalogpb.DeletePolicyTagRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "PolicyTagManagerClient",
-          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient"
-        },
-        "method": {
-          "shortName": "DeletePolicyTag",
-          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager.DeletePolicyTag",
-          "service": {
-            "shortName": "PolicyTagManager",
-            "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_PolicyTagManager_DeletePolicyTag_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog DeletePolicyTag Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_PolicyTagManager_DeleteTaxonomy_sync",
-      "title": "datacatalog DeleteTaxonomy Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient",
+          "shortName": "PolicyTagManagerClient"
+        },
+        "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient.DeleteTaxonomy",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager.DeleteTaxonomy",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager",
+            "shortName": "PolicyTagManager"
+          },
+          "shortName": "DeleteTaxonomy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datacatalogpb.DeleteTaxonomyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteTaxonomy"
+      },
       "description": "DeleteTaxonomy deletes a taxonomy. This operation will also delete all\npolicy tags in this taxonomy along with their associated policies.",
       "file": "PolicyTagManagerClient/DeleteTaxonomy/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteTaxonomy",
-        "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient.DeleteTaxonomy",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "datacatalogpb.DeleteTaxonomyRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "PolicyTagManagerClient",
-          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient"
-        },
-        "method": {
-          "shortName": "DeleteTaxonomy",
-          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager.DeleteTaxonomy",
-          "service": {
-            "shortName": "PolicyTagManager",
-            "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_PolicyTagManager_DeleteTaxonomy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog DeleteTaxonomy Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_PolicyTagManager_GetIamPolicy_sync",
-      "title": "datacatalog GetIamPolicy Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient",
+          "shortName": "PolicyTagManagerClient"
+        },
+        "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient.GetIamPolicy",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager.GetIamPolicy",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager",
+            "shortName": "PolicyTagManager"
+          },
+          "shortName": "GetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.GetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "GetIamPolicy"
+      },
       "description": "GetIamPolicy gets the IAM policy for a taxonomy or a policy tag.",
       "file": "PolicyTagManagerClient/GetIamPolicy/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetIamPolicy",
-        "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient.GetIamPolicy",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "iampb.GetIamPolicyRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*iampb.Policy",
-        "client": {
-          "shortName": "PolicyTagManagerClient",
-          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient"
-        },
-        "method": {
-          "shortName": "GetIamPolicy",
-          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager.GetIamPolicy",
-          "service": {
-            "shortName": "PolicyTagManager",
-            "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_PolicyTagManager_GetIamPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog GetIamPolicy Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_PolicyTagManager_GetPolicyTag_sync",
-      "title": "datacatalog GetPolicyTag Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient",
+          "shortName": "PolicyTagManagerClient"
+        },
+        "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient.GetPolicyTag",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager.GetPolicyTag",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager",
+            "shortName": "PolicyTagManager"
+          },
+          "shortName": "GetPolicyTag"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datacatalogpb.GetPolicyTagRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*datacatalogpb.PolicyTag",
+        "shortName": "GetPolicyTag"
+      },
       "description": "GetPolicyTag gets a policy tag.",
       "file": "PolicyTagManagerClient/GetPolicyTag/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetPolicyTag",
-        "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient.GetPolicyTag",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "datacatalogpb.GetPolicyTagRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*datacatalogpb.PolicyTag",
-        "client": {
-          "shortName": "PolicyTagManagerClient",
-          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient"
-        },
-        "method": {
-          "shortName": "GetPolicyTag",
-          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager.GetPolicyTag",
-          "service": {
-            "shortName": "PolicyTagManager",
-            "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_PolicyTagManager_GetPolicyTag_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog GetPolicyTag Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_PolicyTagManager_GetTaxonomy_sync",
-      "title": "datacatalog GetTaxonomy Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient",
+          "shortName": "PolicyTagManagerClient"
+        },
+        "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient.GetTaxonomy",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager.GetTaxonomy",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager",
+            "shortName": "PolicyTagManager"
+          },
+          "shortName": "GetTaxonomy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datacatalogpb.GetTaxonomyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*datacatalogpb.Taxonomy",
+        "shortName": "GetTaxonomy"
+      },
       "description": "GetTaxonomy gets a taxonomy.",
       "file": "PolicyTagManagerClient/GetTaxonomy/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetTaxonomy",
-        "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient.GetTaxonomy",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "datacatalogpb.GetTaxonomyRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*datacatalogpb.Taxonomy",
-        "client": {
-          "shortName": "PolicyTagManagerClient",
-          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient"
-        },
-        "method": {
-          "shortName": "GetTaxonomy",
-          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager.GetTaxonomy",
-          "service": {
-            "shortName": "PolicyTagManager",
-            "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_PolicyTagManager_GetTaxonomy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog GetTaxonomy Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_PolicyTagManager_ListPolicyTags_sync",
-      "title": "datacatalog ListPolicyTags Sample",
-      "description": "ListPolicyTags lists all policy tags in a taxonomy.",
-      "file": "PolicyTagManagerClient/ListPolicyTags/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListPolicyTags",
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient",
+          "shortName": "PolicyTagManagerClient"
+        },
         "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient.ListPolicyTags",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager.ListPolicyTags",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager",
+            "shortName": "PolicyTagManager"
+          },
+          "shortName": "ListPolicyTags"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "datacatalogpb.ListPolicyTagsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "datacatalogpb.ListPolicyTagsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "PolicyTagIterator",
-        "client": {
-          "shortName": "PolicyTagManagerClient",
-          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient"
-        },
-        "method": {
-          "shortName": "ListPolicyTags",
-          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager.ListPolicyTags",
-          "service": {
-            "shortName": "PolicyTagManager",
-            "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager"
-          }
-        }
+        "shortName": "ListPolicyTags"
       },
+      "description": "ListPolicyTags lists all policy tags in a taxonomy.",
+      "file": "PolicyTagManagerClient/ListPolicyTags/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_PolicyTagManager_ListPolicyTags_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog ListPolicyTags Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_PolicyTagManager_ListTaxonomies_sync",
-      "title": "datacatalog ListTaxonomies Sample",
-      "description": "ListTaxonomies lists all taxonomies in a project in a particular location that the caller\nhas permission to view.",
-      "file": "PolicyTagManagerClient/ListTaxonomies/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListTaxonomies",
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient",
+          "shortName": "PolicyTagManagerClient"
+        },
         "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient.ListTaxonomies",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager.ListTaxonomies",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager",
+            "shortName": "PolicyTagManager"
+          },
+          "shortName": "ListTaxonomies"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "datacatalogpb.ListTaxonomiesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "datacatalogpb.ListTaxonomiesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "TaxonomyIterator",
-        "client": {
-          "shortName": "PolicyTagManagerClient",
-          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient"
-        },
-        "method": {
-          "shortName": "ListTaxonomies",
-          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager.ListTaxonomies",
-          "service": {
-            "shortName": "PolicyTagManager",
-            "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager"
-          }
-        }
+        "shortName": "ListTaxonomies"
       },
+      "description": "ListTaxonomies lists all taxonomies in a project in a particular location that the caller\nhas permission to view.",
+      "file": "PolicyTagManagerClient/ListTaxonomies/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_PolicyTagManager_ListTaxonomies_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog ListTaxonomies Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_PolicyTagManager_SetIamPolicy_sync",
-      "title": "datacatalog SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the IAM policy for a taxonomy or a policy tag.",
-      "file": "PolicyTagManagerClient/SetIamPolicy/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "SetIamPolicy",
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient",
+          "shortName": "PolicyTagManagerClient"
+        },
         "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient.SetIamPolicy",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager.SetIamPolicy",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager",
+            "shortName": "PolicyTagManager"
+          },
+          "shortName": "SetIamPolicy"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "iampb.SetIamPolicyRequest",
-            "name": "req"
+            "name": "req",
+            "type": "iampb.SetIamPolicyRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*iampb.Policy",
-        "client": {
-          "shortName": "PolicyTagManagerClient",
-          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient"
-        },
-        "method": {
-          "shortName": "SetIamPolicy",
-          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager.SetIamPolicy",
-          "service": {
-            "shortName": "PolicyTagManager",
-            "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager"
-          }
-        }
+        "shortName": "SetIamPolicy"
       },
+      "description": "SetIamPolicy sets the IAM policy for a taxonomy or a policy tag.",
+      "file": "PolicyTagManagerClient/SetIamPolicy/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_PolicyTagManager_SetIamPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog SetIamPolicy Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_PolicyTagManager_TestIamPermissions_sync",
-      "title": "datacatalog TestIamPermissions Sample",
-      "description": "TestIamPermissions returns the permissions that a caller has on the specified taxonomy or\npolicy tag.",
-      "file": "PolicyTagManagerClient/TestIamPermissions/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "TestIamPermissions",
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient",
+          "shortName": "PolicyTagManagerClient"
+        },
         "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient.TestIamPermissions",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager.TestIamPermissions",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager",
+            "shortName": "PolicyTagManager"
+          },
+          "shortName": "TestIamPermissions"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "iampb.TestIamPermissionsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "iampb.TestIamPermissionsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*iampb.TestIamPermissionsResponse",
-        "client": {
-          "shortName": "PolicyTagManagerClient",
-          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient"
-        },
-        "method": {
-          "shortName": "TestIamPermissions",
-          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager.TestIamPermissions",
-          "service": {
-            "shortName": "PolicyTagManager",
-            "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager"
-          }
-        }
+        "shortName": "TestIamPermissions"
       },
+      "description": "TestIamPermissions returns the permissions that a caller has on the specified taxonomy or\npolicy tag.",
+      "file": "PolicyTagManagerClient/TestIamPermissions/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_PolicyTagManager_TestIamPermissions_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog TestIamPermissions Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_PolicyTagManager_UpdatePolicyTag_sync",
-      "title": "datacatalog UpdatePolicyTag Sample",
-      "description": "UpdatePolicyTag updates a policy tag.",
-      "file": "PolicyTagManagerClient/UpdatePolicyTag/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdatePolicyTag",
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient",
+          "shortName": "PolicyTagManagerClient"
+        },
         "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient.UpdatePolicyTag",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager.UpdatePolicyTag",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager",
+            "shortName": "PolicyTagManager"
+          },
+          "shortName": "UpdatePolicyTag"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "datacatalogpb.UpdatePolicyTagRequest",
-            "name": "req"
+            "name": "req",
+            "type": "datacatalogpb.UpdatePolicyTagRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*datacatalogpb.PolicyTag",
-        "client": {
-          "shortName": "PolicyTagManagerClient",
-          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient"
-        },
-        "method": {
-          "shortName": "UpdatePolicyTag",
-          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager.UpdatePolicyTag",
-          "service": {
-            "shortName": "PolicyTagManager",
-            "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager"
-          }
-        }
+        "shortName": "UpdatePolicyTag"
       },
+      "description": "UpdatePolicyTag updates a policy tag.",
+      "file": "PolicyTagManagerClient/UpdatePolicyTag/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_PolicyTagManager_UpdatePolicyTag_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog UpdatePolicyTag Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_PolicyTagManager_UpdateTaxonomy_sync",
-      "title": "datacatalog UpdateTaxonomy Sample",
-      "description": "UpdateTaxonomy updates a taxonomy.",
-      "file": "PolicyTagManagerClient/UpdateTaxonomy/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateTaxonomy",
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient",
+          "shortName": "PolicyTagManagerClient"
+        },
         "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient.UpdateTaxonomy",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager.UpdateTaxonomy",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager",
+            "shortName": "PolicyTagManager"
+          },
+          "shortName": "UpdateTaxonomy"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "datacatalogpb.UpdateTaxonomyRequest",
-            "name": "req"
+            "name": "req",
+            "type": "datacatalogpb.UpdateTaxonomyRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*datacatalogpb.Taxonomy",
-        "client": {
-          "shortName": "PolicyTagManagerClient",
-          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient"
-        },
-        "method": {
-          "shortName": "UpdateTaxonomy",
-          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager.UpdateTaxonomy",
-          "service": {
-            "shortName": "PolicyTagManager",
-            "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManager"
-          }
-        }
+        "shortName": "UpdateTaxonomy"
       },
+      "description": "UpdateTaxonomy updates a taxonomy.",
+      "file": "PolicyTagManagerClient/UpdateTaxonomy/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_PolicyTagManager_UpdateTaxonomy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog UpdateTaxonomy Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_PolicyTagManagerSerialization_ExportTaxonomies_sync",
-      "title": "datacatalog ExportTaxonomies Sample",
-      "description": "ExportTaxonomies exports all taxonomies and their policy tags in a project.\n\nThis method generates SerializedTaxonomy protos with nested policy tags\nthat can be used as an input for future ImportTaxonomies calls.",
-      "file": "PolicyTagManagerSerializationClient/ExportTaxonomies/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ExportTaxonomies",
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerSerializationClient",
+          "shortName": "PolicyTagManagerSerializationClient"
+        },
         "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerSerializationClient.ExportTaxonomies",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerSerialization.ExportTaxonomies",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerSerialization",
+            "shortName": "PolicyTagManagerSerialization"
+          },
+          "shortName": "ExportTaxonomies"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "datacatalogpb.ExportTaxonomiesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "datacatalogpb.ExportTaxonomiesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*datacatalogpb.ExportTaxonomiesResponse",
-        "client": {
-          "shortName": "PolicyTagManagerSerializationClient",
-          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerSerializationClient"
-        },
-        "method": {
-          "shortName": "ExportTaxonomies",
-          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerSerialization.ExportTaxonomies",
-          "service": {
-            "shortName": "PolicyTagManagerSerialization",
-            "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerSerialization"
-          }
-        }
+        "shortName": "ExportTaxonomies"
       },
+      "description": "ExportTaxonomies exports all taxonomies and their policy tags in a project.\n\nThis method generates SerializedTaxonomy protos with nested policy tags\nthat can be used as an input for future ImportTaxonomies calls.",
+      "file": "PolicyTagManagerSerializationClient/ExportTaxonomies/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_PolicyTagManagerSerialization_ExportTaxonomies_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog ExportTaxonomies Sample"
     },
     {
-      "regionTag": "datacatalog_v1beta1_generated_PolicyTagManagerSerialization_ImportTaxonomies_sync",
-      "title": "datacatalog ImportTaxonomies Sample",
-      "description": "ImportTaxonomies imports all taxonomies and their policy tags to a project as new\ntaxonomies.\n\nThis method provides a bulk taxonomy / policy tag creation using nested\nproto structure.",
-      "file": "PolicyTagManagerSerializationClient/ImportTaxonomies/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ImportTaxonomies",
+        "client": {
+          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerSerializationClient",
+          "shortName": "PolicyTagManagerSerializationClient"
+        },
         "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerSerializationClient.ImportTaxonomies",
+        "method": {
+          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerSerialization.ImportTaxonomies",
+          "service": {
+            "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerSerialization",
+            "shortName": "PolicyTagManagerSerialization"
+          },
+          "shortName": "ImportTaxonomies"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "datacatalogpb.ImportTaxonomiesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "datacatalogpb.ImportTaxonomiesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*datacatalogpb.ImportTaxonomiesResponse",
-        "client": {
-          "shortName": "PolicyTagManagerSerializationClient",
-          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerSerializationClient"
-        },
-        "method": {
-          "shortName": "ImportTaxonomies",
-          "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerSerialization.ImportTaxonomies",
-          "service": {
-            "shortName": "PolicyTagManagerSerialization",
-            "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerSerialization"
-          }
-        }
+        "shortName": "ImportTaxonomies"
       },
+      "description": "ImportTaxonomies imports all taxonomies and their policy tags to a project as new\ntaxonomies.\n\nThis method provides a bulk taxonomy / policy tag creation using nested\nproto structure.",
+      "file": "PolicyTagManagerSerializationClient/ImportTaxonomies/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "datacatalog_v1beta1_generated_PolicyTagManagerSerialization_ImportTaxonomies_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "datacatalog ImportTaxonomies Sample"
     }
   ]
 }

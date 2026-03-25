@@ -1,153 +1,153 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/eventarc/publishing/apiv1",
-    "version": "1.18.0",
-    "language": "GO",
     "apis": [
       {
         "id": "google.cloud.eventarc.publishing.v1",
         "version": "v1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/eventarc/publishing/apiv1",
+    "version": "1.18.0"
   },
   "snippets": [
     {
-      "regionTag": "eventarcpublishing_v1_generated_Publisher_Publish_sync",
-      "title": "eventarcpublishing Publish Sample",
-      "description": "Publish publish events to a message bus.",
-      "file": "PublisherClient/Publish/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "Publish",
+        "client": {
+          "fullName": "google.cloud.eventarc.publishing.v1.PublisherClient",
+          "shortName": "PublisherClient"
+        },
         "fullName": "google.cloud.eventarc.publishing.v1.PublisherClient.Publish",
+        "method": {
+          "fullName": "google.cloud.eventarc.publishing.v1.Publisher.Publish",
+          "service": {
+            "fullName": "google.cloud.eventarc.publishing.v1.Publisher",
+            "shortName": "Publisher"
+          },
+          "shortName": "Publish"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "publishingpb.PublishRequest",
-            "name": "req"
+            "name": "req",
+            "type": "publishingpb.PublishRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*publishingpb.PublishResponse",
-        "client": {
-          "shortName": "PublisherClient",
-          "fullName": "google.cloud.eventarc.publishing.v1.PublisherClient"
-        },
-        "method": {
-          "shortName": "Publish",
-          "fullName": "google.cloud.eventarc.publishing.v1.Publisher.Publish",
-          "service": {
-            "shortName": "Publisher",
-            "fullName": "google.cloud.eventarc.publishing.v1.Publisher"
-          }
-        }
+        "shortName": "Publish"
       },
+      "description": "Publish publish events to a message bus.",
+      "file": "PublisherClient/Publish/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "eventarcpublishing_v1_generated_Publisher_Publish_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "eventarcpublishing Publish Sample"
     },
     {
-      "regionTag": "eventarcpublishing_v1_generated_Publisher_PublishChannelConnectionEvents_sync",
-      "title": "eventarcpublishing PublishChannelConnectionEvents Sample",
-      "description": "PublishChannelConnectionEvents publish events to a ChannelConnection in a partner's project.",
-      "file": "PublisherClient/PublishChannelConnectionEvents/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "PublishChannelConnectionEvents",
+        "client": {
+          "fullName": "google.cloud.eventarc.publishing.v1.PublisherClient",
+          "shortName": "PublisherClient"
+        },
         "fullName": "google.cloud.eventarc.publishing.v1.PublisherClient.PublishChannelConnectionEvents",
+        "method": {
+          "fullName": "google.cloud.eventarc.publishing.v1.Publisher.PublishChannelConnectionEvents",
+          "service": {
+            "fullName": "google.cloud.eventarc.publishing.v1.Publisher",
+            "shortName": "Publisher"
+          },
+          "shortName": "PublishChannelConnectionEvents"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "publishingpb.PublishChannelConnectionEventsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "publishingpb.PublishChannelConnectionEventsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*publishingpb.PublishChannelConnectionEventsResponse",
-        "client": {
-          "shortName": "PublisherClient",
-          "fullName": "google.cloud.eventarc.publishing.v1.PublisherClient"
-        },
-        "method": {
-          "shortName": "PublishChannelConnectionEvents",
-          "fullName": "google.cloud.eventarc.publishing.v1.Publisher.PublishChannelConnectionEvents",
-          "service": {
-            "shortName": "Publisher",
-            "fullName": "google.cloud.eventarc.publishing.v1.Publisher"
-          }
-        }
+        "shortName": "PublishChannelConnectionEvents"
       },
+      "description": "PublishChannelConnectionEvents publish events to a ChannelConnection in a partner's project.",
+      "file": "PublisherClient/PublishChannelConnectionEvents/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "eventarcpublishing_v1_generated_Publisher_PublishChannelConnectionEvents_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "eventarcpublishing PublishChannelConnectionEvents Sample"
     },
     {
-      "regionTag": "eventarcpublishing_v1_generated_Publisher_PublishEvents_sync",
-      "title": "eventarcpublishing PublishEvents Sample",
-      "description": "PublishEvents publish events to a subscriber's channel.",
-      "file": "PublisherClient/PublishEvents/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "PublishEvents",
+        "client": {
+          "fullName": "google.cloud.eventarc.publishing.v1.PublisherClient",
+          "shortName": "PublisherClient"
+        },
         "fullName": "google.cloud.eventarc.publishing.v1.PublisherClient.PublishEvents",
+        "method": {
+          "fullName": "google.cloud.eventarc.publishing.v1.Publisher.PublishEvents",
+          "service": {
+            "fullName": "google.cloud.eventarc.publishing.v1.Publisher",
+            "shortName": "Publisher"
+          },
+          "shortName": "PublishEvents"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "publishingpb.PublishEventsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "publishingpb.PublishEventsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*publishingpb.PublishEventsResponse",
-        "client": {
-          "shortName": "PublisherClient",
-          "fullName": "google.cloud.eventarc.publishing.v1.PublisherClient"
-        },
-        "method": {
-          "shortName": "PublishEvents",
-          "fullName": "google.cloud.eventarc.publishing.v1.Publisher.PublishEvents",
-          "service": {
-            "shortName": "Publisher",
-            "fullName": "google.cloud.eventarc.publishing.v1.Publisher"
-          }
-        }
+        "shortName": "PublishEvents"
       },
+      "description": "PublishEvents publish events to a subscriber's channel.",
+      "file": "PublisherClient/PublishEvents/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "eventarcpublishing_v1_generated_Publisher_PublishEvents_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "eventarcpublishing PublishEvents Sample"
     }
   ]
 }

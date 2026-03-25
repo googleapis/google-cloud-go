@@ -1,657 +1,657 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/memcache/apiv1",
-    "version": "1.11.7",
-    "language": "GO",
     "apis": [
       {
         "id": "google.cloud.memcache.v1",
         "version": "v1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/memcache/apiv1",
+    "version": "1.11.7"
   },
   "snippets": [
     {
-      "regionTag": "memcache_v1_generated_CloudMemcache_ApplyParameters_sync",
-      "title": "memcache ApplyParameters Sample",
-      "description": "ApplyParameters `ApplyParameters` restarts the set of specified nodes in order to update\nthem to the current set of parameters for the Memcached Instance.",
-      "file": "CloudMemcacheClient/ApplyParameters/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ApplyParameters",
+        "client": {
+          "fullName": "google.cloud.memcache.v1.CloudMemcacheClient",
+          "shortName": "CloudMemcacheClient"
+        },
         "fullName": "google.cloud.memcache.v1.CloudMemcacheClient.ApplyParameters",
+        "method": {
+          "fullName": "google.cloud.memcache.v1.CloudMemcache.ApplyParameters",
+          "service": {
+            "fullName": "google.cloud.memcache.v1.CloudMemcache",
+            "shortName": "CloudMemcache"
+          },
+          "shortName": "ApplyParameters"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "memcachepb.ApplyParametersRequest",
-            "name": "req"
+            "name": "req",
+            "type": "memcachepb.ApplyParametersRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ApplyParametersOperation",
-        "client": {
-          "shortName": "CloudMemcacheClient",
-          "fullName": "google.cloud.memcache.v1.CloudMemcacheClient"
-        },
-        "method": {
-          "shortName": "ApplyParameters",
-          "fullName": "google.cloud.memcache.v1.CloudMemcache.ApplyParameters",
-          "service": {
-            "shortName": "CloudMemcache",
-            "fullName": "google.cloud.memcache.v1.CloudMemcache"
-          }
-        }
+        "shortName": "ApplyParameters"
       },
+      "description": "ApplyParameters `ApplyParameters` restarts the set of specified nodes in order to update\nthem to the current set of parameters for the Memcached Instance.",
+      "file": "CloudMemcacheClient/ApplyParameters/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "memcache_v1_generated_CloudMemcache_ApplyParameters_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "memcache ApplyParameters Sample"
     },
     {
-      "regionTag": "memcache_v1_generated_CloudMemcache_CancelOperation_sync",
-      "title": "memcache CancelOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memcache.v1.CloudMemcacheClient",
+          "shortName": "CloudMemcacheClient"
+        },
+        "fullName": "google.cloud.memcache.v1.CloudMemcacheClient.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
       "file": "CloudMemcacheClient/CancelOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CancelOperation",
-        "fullName": "google.cloud.memcache.v1.CloudMemcacheClient.CancelOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.CancelOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "CloudMemcacheClient",
-          "fullName": "google.cloud.memcache.v1.CloudMemcacheClient"
-        },
-        "method": {
-          "shortName": "CancelOperation",
-          "fullName": "google.longrunning.Operations.CancelOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "memcache_v1_generated_CloudMemcache_CancelOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "memcache CancelOperation Sample"
     },
     {
-      "regionTag": "memcache_v1_generated_CloudMemcache_CreateInstance_sync",
-      "title": "memcache CreateInstance Sample",
-      "description": "CreateInstance creates a new Instance in a given location.",
-      "file": "CloudMemcacheClient/CreateInstance/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateInstance",
+        "client": {
+          "fullName": "google.cloud.memcache.v1.CloudMemcacheClient",
+          "shortName": "CloudMemcacheClient"
+        },
         "fullName": "google.cloud.memcache.v1.CloudMemcacheClient.CreateInstance",
+        "method": {
+          "fullName": "google.cloud.memcache.v1.CloudMemcache.CreateInstance",
+          "service": {
+            "fullName": "google.cloud.memcache.v1.CloudMemcache",
+            "shortName": "CloudMemcache"
+          },
+          "shortName": "CreateInstance"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "memcachepb.CreateInstanceRequest",
-            "name": "req"
+            "name": "req",
+            "type": "memcachepb.CreateInstanceRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateInstanceOperation",
-        "client": {
-          "shortName": "CloudMemcacheClient",
-          "fullName": "google.cloud.memcache.v1.CloudMemcacheClient"
-        },
-        "method": {
-          "shortName": "CreateInstance",
-          "fullName": "google.cloud.memcache.v1.CloudMemcache.CreateInstance",
-          "service": {
-            "shortName": "CloudMemcache",
-            "fullName": "google.cloud.memcache.v1.CloudMemcache"
-          }
-        }
+        "shortName": "CreateInstance"
       },
+      "description": "CreateInstance creates a new Instance in a given location.",
+      "file": "CloudMemcacheClient/CreateInstance/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "memcache_v1_generated_CloudMemcache_CreateInstance_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "memcache CreateInstance Sample"
     },
     {
-      "regionTag": "memcache_v1_generated_CloudMemcache_DeleteInstance_sync",
-      "title": "memcache DeleteInstance Sample",
-      "description": "DeleteInstance deletes a single Instance.",
-      "file": "CloudMemcacheClient/DeleteInstance/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteInstance",
+        "client": {
+          "fullName": "google.cloud.memcache.v1.CloudMemcacheClient",
+          "shortName": "CloudMemcacheClient"
+        },
         "fullName": "google.cloud.memcache.v1.CloudMemcacheClient.DeleteInstance",
+        "method": {
+          "fullName": "google.cloud.memcache.v1.CloudMemcache.DeleteInstance",
+          "service": {
+            "fullName": "google.cloud.memcache.v1.CloudMemcache",
+            "shortName": "CloudMemcache"
+          },
+          "shortName": "DeleteInstance"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "memcachepb.DeleteInstanceRequest",
-            "name": "req"
+            "name": "req",
+            "type": "memcachepb.DeleteInstanceRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteInstanceOperation",
-        "client": {
-          "shortName": "CloudMemcacheClient",
-          "fullName": "google.cloud.memcache.v1.CloudMemcacheClient"
-        },
-        "method": {
-          "shortName": "DeleteInstance",
-          "fullName": "google.cloud.memcache.v1.CloudMemcache.DeleteInstance",
-          "service": {
-            "shortName": "CloudMemcache",
-            "fullName": "google.cloud.memcache.v1.CloudMemcache"
-          }
-        }
+        "shortName": "DeleteInstance"
       },
+      "description": "DeleteInstance deletes a single Instance.",
+      "file": "CloudMemcacheClient/DeleteInstance/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "memcache_v1_generated_CloudMemcache_DeleteInstance_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "memcache DeleteInstance Sample"
     },
     {
-      "regionTag": "memcache_v1_generated_CloudMemcache_DeleteOperation_sync",
-      "title": "memcache DeleteOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memcache.v1.CloudMemcacheClient",
+          "shortName": "CloudMemcacheClient"
+        },
+        "fullName": "google.cloud.memcache.v1.CloudMemcacheClient.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
       "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
       "file": "CloudMemcacheClient/DeleteOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteOperation",
-        "fullName": "google.cloud.memcache.v1.CloudMemcacheClient.DeleteOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.DeleteOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "CloudMemcacheClient",
-          "fullName": "google.cloud.memcache.v1.CloudMemcacheClient"
-        },
-        "method": {
-          "shortName": "DeleteOperation",
-          "fullName": "google.longrunning.Operations.DeleteOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "memcache_v1_generated_CloudMemcache_DeleteOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "memcache DeleteOperation Sample"
     },
     {
-      "regionTag": "memcache_v1_generated_CloudMemcache_GetInstance_sync",
-      "title": "memcache GetInstance Sample",
-      "description": "GetInstance gets details of a single Instance.",
-      "file": "CloudMemcacheClient/GetInstance/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetInstance",
+        "client": {
+          "fullName": "google.cloud.memcache.v1.CloudMemcacheClient",
+          "shortName": "CloudMemcacheClient"
+        },
         "fullName": "google.cloud.memcache.v1.CloudMemcacheClient.GetInstance",
+        "method": {
+          "fullName": "google.cloud.memcache.v1.CloudMemcache.GetInstance",
+          "service": {
+            "fullName": "google.cloud.memcache.v1.CloudMemcache",
+            "shortName": "CloudMemcache"
+          },
+          "shortName": "GetInstance"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "memcachepb.GetInstanceRequest",
-            "name": "req"
+            "name": "req",
+            "type": "memcachepb.GetInstanceRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*memcachepb.Instance",
-        "client": {
-          "shortName": "CloudMemcacheClient",
-          "fullName": "google.cloud.memcache.v1.CloudMemcacheClient"
-        },
-        "method": {
-          "shortName": "GetInstance",
-          "fullName": "google.cloud.memcache.v1.CloudMemcache.GetInstance",
-          "service": {
-            "shortName": "CloudMemcache",
-            "fullName": "google.cloud.memcache.v1.CloudMemcache"
-          }
-        }
+        "shortName": "GetInstance"
       },
+      "description": "GetInstance gets details of a single Instance.",
+      "file": "CloudMemcacheClient/GetInstance/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "memcache_v1_generated_CloudMemcache_GetInstance_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "memcache GetInstance Sample"
     },
     {
-      "regionTag": "memcache_v1_generated_CloudMemcache_GetLocation_sync",
-      "title": "memcache GetLocation Sample",
-      "description": "GetLocation gets information about a location.",
-      "file": "CloudMemcacheClient/GetLocation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetLocation",
+        "client": {
+          "fullName": "google.cloud.memcache.v1.CloudMemcacheClient",
+          "shortName": "CloudMemcacheClient"
+        },
         "fullName": "google.cloud.memcache.v1.CloudMemcacheClient.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "locationpb.GetLocationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*locationpb.Location",
-        "client": {
-          "shortName": "CloudMemcacheClient",
-          "fullName": "google.cloud.memcache.v1.CloudMemcacheClient"
-        },
-        "method": {
-          "shortName": "GetLocation",
-          "fullName": "google.cloud.location.Locations.GetLocation",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
+        "shortName": "GetLocation"
       },
+      "description": "GetLocation gets information about a location.",
+      "file": "CloudMemcacheClient/GetLocation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "memcache_v1_generated_CloudMemcache_GetLocation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "memcache GetLocation Sample"
     },
     {
-      "regionTag": "memcache_v1_generated_CloudMemcache_GetOperation_sync",
-      "title": "memcache GetOperation Sample",
-      "description": "GetOperation is a utility method from google.longrunning.Operations.",
-      "file": "CloudMemcacheClient/GetOperation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetOperation",
+        "client": {
+          "fullName": "google.cloud.memcache.v1.CloudMemcacheClient",
+          "shortName": "CloudMemcacheClient"
+        },
         "fullName": "google.cloud.memcache.v1.CloudMemcacheClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.GetOperationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*longrunningpb.Operation",
-        "client": {
-          "shortName": "CloudMemcacheClient",
-          "fullName": "google.cloud.memcache.v1.CloudMemcacheClient"
-        },
-        "method": {
-          "shortName": "GetOperation",
-          "fullName": "google.longrunning.Operations.GetOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "GetOperation"
       },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "CloudMemcacheClient/GetOperation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "memcache_v1_generated_CloudMemcache_GetOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "memcache GetOperation Sample"
     },
     {
-      "regionTag": "memcache_v1_generated_CloudMemcache_ListInstances_sync",
-      "title": "memcache ListInstances Sample",
-      "description": "ListInstances lists Instances in a given location.",
-      "file": "CloudMemcacheClient/ListInstances/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListInstances",
+        "client": {
+          "fullName": "google.cloud.memcache.v1.CloudMemcacheClient",
+          "shortName": "CloudMemcacheClient"
+        },
         "fullName": "google.cloud.memcache.v1.CloudMemcacheClient.ListInstances",
+        "method": {
+          "fullName": "google.cloud.memcache.v1.CloudMemcache.ListInstances",
+          "service": {
+            "fullName": "google.cloud.memcache.v1.CloudMemcache",
+            "shortName": "CloudMemcache"
+          },
+          "shortName": "ListInstances"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "memcachepb.ListInstancesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "memcachepb.ListInstancesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "InstanceIterator",
-        "client": {
-          "shortName": "CloudMemcacheClient",
-          "fullName": "google.cloud.memcache.v1.CloudMemcacheClient"
-        },
-        "method": {
-          "shortName": "ListInstances",
-          "fullName": "google.cloud.memcache.v1.CloudMemcache.ListInstances",
-          "service": {
-            "shortName": "CloudMemcache",
-            "fullName": "google.cloud.memcache.v1.CloudMemcache"
-          }
-        }
+        "shortName": "ListInstances"
       },
+      "description": "ListInstances lists Instances in a given location.",
+      "file": "CloudMemcacheClient/ListInstances/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "memcache_v1_generated_CloudMemcache_ListInstances_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "memcache ListInstances Sample"
     },
     {
-      "regionTag": "memcache_v1_generated_CloudMemcache_ListLocations_sync",
-      "title": "memcache ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
-      "file": "CloudMemcacheClient/ListLocations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListLocations",
+        "client": {
+          "fullName": "google.cloud.memcache.v1.CloudMemcacheClient",
+          "shortName": "CloudMemcacheClient"
+        },
         "fullName": "google.cloud.memcache.v1.CloudMemcacheClient.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "locationpb.ListLocationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "LocationIterator",
-        "client": {
-          "shortName": "CloudMemcacheClient",
-          "fullName": "google.cloud.memcache.v1.CloudMemcacheClient"
-        },
-        "method": {
-          "shortName": "ListLocations",
-          "fullName": "google.cloud.location.Locations.ListLocations",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
+        "shortName": "ListLocations"
       },
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "CloudMemcacheClient/ListLocations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "memcache_v1_generated_CloudMemcache_ListLocations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "memcache ListLocations Sample"
     },
     {
-      "regionTag": "memcache_v1_generated_CloudMemcache_ListOperations_sync",
-      "title": "memcache ListOperations Sample",
-      "description": "ListOperations is a utility method from google.longrunning.Operations.",
-      "file": "CloudMemcacheClient/ListOperations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListOperations",
+        "client": {
+          "fullName": "google.cloud.memcache.v1.CloudMemcacheClient",
+          "shortName": "CloudMemcacheClient"
+        },
         "fullName": "google.cloud.memcache.v1.CloudMemcacheClient.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.ListOperationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "OperationIterator",
-        "client": {
-          "shortName": "CloudMemcacheClient",
-          "fullName": "google.cloud.memcache.v1.CloudMemcacheClient"
-        },
-        "method": {
-          "shortName": "ListOperations",
-          "fullName": "google.longrunning.Operations.ListOperations",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "ListOperations"
       },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "CloudMemcacheClient/ListOperations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "memcache_v1_generated_CloudMemcache_ListOperations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "memcache ListOperations Sample"
     },
     {
-      "regionTag": "memcache_v1_generated_CloudMemcache_RescheduleMaintenance_sync",
-      "title": "memcache RescheduleMaintenance Sample",
-      "description": "RescheduleMaintenance reschedules upcoming maintenance event.",
-      "file": "CloudMemcacheClient/RescheduleMaintenance/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "RescheduleMaintenance",
+        "client": {
+          "fullName": "google.cloud.memcache.v1.CloudMemcacheClient",
+          "shortName": "CloudMemcacheClient"
+        },
         "fullName": "google.cloud.memcache.v1.CloudMemcacheClient.RescheduleMaintenance",
+        "method": {
+          "fullName": "google.cloud.memcache.v1.CloudMemcache.RescheduleMaintenance",
+          "service": {
+            "fullName": "google.cloud.memcache.v1.CloudMemcache",
+            "shortName": "CloudMemcache"
+          },
+          "shortName": "RescheduleMaintenance"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "memcachepb.RescheduleMaintenanceRequest",
-            "name": "req"
+            "name": "req",
+            "type": "memcachepb.RescheduleMaintenanceRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "RescheduleMaintenanceOperation",
-        "client": {
-          "shortName": "CloudMemcacheClient",
-          "fullName": "google.cloud.memcache.v1.CloudMemcacheClient"
-        },
-        "method": {
-          "shortName": "RescheduleMaintenance",
-          "fullName": "google.cloud.memcache.v1.CloudMemcache.RescheduleMaintenance",
-          "service": {
-            "shortName": "CloudMemcache",
-            "fullName": "google.cloud.memcache.v1.CloudMemcache"
-          }
-        }
+        "shortName": "RescheduleMaintenance"
       },
+      "description": "RescheduleMaintenance reschedules upcoming maintenance event.",
+      "file": "CloudMemcacheClient/RescheduleMaintenance/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "memcache_v1_generated_CloudMemcache_RescheduleMaintenance_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "memcache RescheduleMaintenance Sample"
     },
     {
-      "regionTag": "memcache_v1_generated_CloudMemcache_UpdateInstance_sync",
-      "title": "memcache UpdateInstance Sample",
-      "description": "UpdateInstance updates an existing Instance in a given project and location.",
-      "file": "CloudMemcacheClient/UpdateInstance/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateInstance",
+        "client": {
+          "fullName": "google.cloud.memcache.v1.CloudMemcacheClient",
+          "shortName": "CloudMemcacheClient"
+        },
         "fullName": "google.cloud.memcache.v1.CloudMemcacheClient.UpdateInstance",
+        "method": {
+          "fullName": "google.cloud.memcache.v1.CloudMemcache.UpdateInstance",
+          "service": {
+            "fullName": "google.cloud.memcache.v1.CloudMemcache",
+            "shortName": "CloudMemcache"
+          },
+          "shortName": "UpdateInstance"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "memcachepb.UpdateInstanceRequest",
-            "name": "req"
+            "name": "req",
+            "type": "memcachepb.UpdateInstanceRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UpdateInstanceOperation",
-        "client": {
-          "shortName": "CloudMemcacheClient",
-          "fullName": "google.cloud.memcache.v1.CloudMemcacheClient"
-        },
-        "method": {
-          "shortName": "UpdateInstance",
-          "fullName": "google.cloud.memcache.v1.CloudMemcache.UpdateInstance",
-          "service": {
-            "shortName": "CloudMemcache",
-            "fullName": "google.cloud.memcache.v1.CloudMemcache"
-          }
-        }
+        "shortName": "UpdateInstance"
       },
+      "description": "UpdateInstance updates an existing Instance in a given project and location.",
+      "file": "CloudMemcacheClient/UpdateInstance/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "memcache_v1_generated_CloudMemcache_UpdateInstance_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "memcache UpdateInstance Sample"
     },
     {
-      "regionTag": "memcache_v1_generated_CloudMemcache_UpdateParameters_sync",
-      "title": "memcache UpdateParameters Sample",
-      "description": "UpdateParameters updates the defined Memcached parameters for an existing instance.\nThis method only stages the parameters, it must be followed by\n`ApplyParameters` to apply the parameters to nodes of the Memcached\ninstance.",
-      "file": "CloudMemcacheClient/UpdateParameters/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateParameters",
+        "client": {
+          "fullName": "google.cloud.memcache.v1.CloudMemcacheClient",
+          "shortName": "CloudMemcacheClient"
+        },
         "fullName": "google.cloud.memcache.v1.CloudMemcacheClient.UpdateParameters",
+        "method": {
+          "fullName": "google.cloud.memcache.v1.CloudMemcache.UpdateParameters",
+          "service": {
+            "fullName": "google.cloud.memcache.v1.CloudMemcache",
+            "shortName": "CloudMemcache"
+          },
+          "shortName": "UpdateParameters"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "memcachepb.UpdateParametersRequest",
-            "name": "req"
+            "name": "req",
+            "type": "memcachepb.UpdateParametersRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UpdateParametersOperation",
-        "client": {
-          "shortName": "CloudMemcacheClient",
-          "fullName": "google.cloud.memcache.v1.CloudMemcacheClient"
-        },
-        "method": {
-          "shortName": "UpdateParameters",
-          "fullName": "google.cloud.memcache.v1.CloudMemcache.UpdateParameters",
-          "service": {
-            "shortName": "CloudMemcache",
-            "fullName": "google.cloud.memcache.v1.CloudMemcache"
-          }
-        }
+        "shortName": "UpdateParameters"
       },
+      "description": "UpdateParameters updates the defined Memcached parameters for an existing instance.\nThis method only stages the parameters, it must be followed by\n`ApplyParameters` to apply the parameters to nodes of the Memcached\ninstance.",
+      "file": "CloudMemcacheClient/UpdateParameters/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "memcache_v1_generated_CloudMemcache_UpdateParameters_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "memcache UpdateParameters Sample"
     }
   ]
 }

@@ -1,1485 +1,1485 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/edgenetwork/apiv1",
-    "version": "1.3.0",
-    "language": "GO",
     "apis": [
       {
         "id": "google.cloud.edgenetwork.v1",
         "version": "v1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/edgenetwork/apiv1",
+    "version": "1.3.0"
   },
   "snippets": [
     {
-      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_CancelOperation_sync",
-      "title": "edgenetwork CancelOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.edgenetwork.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.edgenetwork.v1.Client.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
       "file": "Client/CancelOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CancelOperation",
-        "fullName": "google.cloud.edgenetwork.v1.Client.CancelOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.CancelOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.edgenetwork.v1.Client"
-        },
-        "method": {
-          "shortName": "CancelOperation",
-          "fullName": "google.longrunning.Operations.CancelOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_CancelOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "edgenetwork CancelOperation Sample"
     },
     {
-      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_CreateInterconnectAttachment_sync",
-      "title": "edgenetwork CreateInterconnectAttachment Sample",
-      "description": "CreateInterconnectAttachment creates a new InterconnectAttachment in a given project and location.",
-      "file": "Client/CreateInterconnectAttachment/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateInterconnectAttachment",
+        "client": {
+          "fullName": "google.cloud.edgenetwork.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.edgenetwork.v1.Client.CreateInterconnectAttachment",
+        "method": {
+          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.CreateInterconnectAttachment",
+          "service": {
+            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork",
+            "shortName": "EdgeNetwork"
+          },
+          "shortName": "CreateInterconnectAttachment"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "edgenetworkpb.CreateInterconnectAttachmentRequest",
-            "name": "req"
+            "name": "req",
+            "type": "edgenetworkpb.CreateInterconnectAttachmentRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateInterconnectAttachmentOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.edgenetwork.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateInterconnectAttachment",
-          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.CreateInterconnectAttachment",
-          "service": {
-            "shortName": "EdgeNetwork",
-            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork"
-          }
-        }
+        "shortName": "CreateInterconnectAttachment"
       },
+      "description": "CreateInterconnectAttachment creates a new InterconnectAttachment in a given project and location.",
+      "file": "Client/CreateInterconnectAttachment/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_CreateInterconnectAttachment_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "edgenetwork CreateInterconnectAttachment Sample"
     },
     {
-      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_CreateNetwork_sync",
-      "title": "edgenetwork CreateNetwork Sample",
-      "description": "CreateNetwork creates a new Network in a given project and location.",
-      "file": "Client/CreateNetwork/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateNetwork",
+        "client": {
+          "fullName": "google.cloud.edgenetwork.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.edgenetwork.v1.Client.CreateNetwork",
+        "method": {
+          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.CreateNetwork",
+          "service": {
+            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork",
+            "shortName": "EdgeNetwork"
+          },
+          "shortName": "CreateNetwork"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "edgenetworkpb.CreateNetworkRequest",
-            "name": "req"
+            "name": "req",
+            "type": "edgenetworkpb.CreateNetworkRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateNetworkOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.edgenetwork.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateNetwork",
-          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.CreateNetwork",
-          "service": {
-            "shortName": "EdgeNetwork",
-            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork"
-          }
-        }
+        "shortName": "CreateNetwork"
       },
+      "description": "CreateNetwork creates a new Network in a given project and location.",
+      "file": "Client/CreateNetwork/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_CreateNetwork_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "edgenetwork CreateNetwork Sample"
     },
     {
-      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_CreateRouter_sync",
-      "title": "edgenetwork CreateRouter Sample",
-      "description": "CreateRouter creates a new Router in a given project and location.",
-      "file": "Client/CreateRouter/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateRouter",
+        "client": {
+          "fullName": "google.cloud.edgenetwork.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.edgenetwork.v1.Client.CreateRouter",
+        "method": {
+          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.CreateRouter",
+          "service": {
+            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork",
+            "shortName": "EdgeNetwork"
+          },
+          "shortName": "CreateRouter"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "edgenetworkpb.CreateRouterRequest",
-            "name": "req"
+            "name": "req",
+            "type": "edgenetworkpb.CreateRouterRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateRouterOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.edgenetwork.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateRouter",
-          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.CreateRouter",
-          "service": {
-            "shortName": "EdgeNetwork",
-            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork"
-          }
-        }
+        "shortName": "CreateRouter"
       },
+      "description": "CreateRouter creates a new Router in a given project and location.",
+      "file": "Client/CreateRouter/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_CreateRouter_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "edgenetwork CreateRouter Sample"
     },
     {
-      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_CreateSubnet_sync",
-      "title": "edgenetwork CreateSubnet Sample",
-      "description": "CreateSubnet creates a new Subnet in a given project and location.",
-      "file": "Client/CreateSubnet/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateSubnet",
+        "client": {
+          "fullName": "google.cloud.edgenetwork.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.edgenetwork.v1.Client.CreateSubnet",
+        "method": {
+          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.CreateSubnet",
+          "service": {
+            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork",
+            "shortName": "EdgeNetwork"
+          },
+          "shortName": "CreateSubnet"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "edgenetworkpb.CreateSubnetRequest",
-            "name": "req"
+            "name": "req",
+            "type": "edgenetworkpb.CreateSubnetRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateSubnetOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.edgenetwork.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateSubnet",
-          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.CreateSubnet",
-          "service": {
-            "shortName": "EdgeNetwork",
-            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork"
-          }
-        }
+        "shortName": "CreateSubnet"
       },
+      "description": "CreateSubnet creates a new Subnet in a given project and location.",
+      "file": "Client/CreateSubnet/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_CreateSubnet_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "edgenetwork CreateSubnet Sample"
     },
     {
-      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_DeleteInterconnectAttachment_sync",
-      "title": "edgenetwork DeleteInterconnectAttachment Sample",
-      "description": "DeleteInterconnectAttachment deletes a single InterconnectAttachment.",
-      "file": "Client/DeleteInterconnectAttachment/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteInterconnectAttachment",
+        "client": {
+          "fullName": "google.cloud.edgenetwork.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.edgenetwork.v1.Client.DeleteInterconnectAttachment",
+        "method": {
+          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.DeleteInterconnectAttachment",
+          "service": {
+            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork",
+            "shortName": "EdgeNetwork"
+          },
+          "shortName": "DeleteInterconnectAttachment"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "edgenetworkpb.DeleteInterconnectAttachmentRequest",
-            "name": "req"
+            "name": "req",
+            "type": "edgenetworkpb.DeleteInterconnectAttachmentRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteInterconnectAttachmentOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.edgenetwork.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteInterconnectAttachment",
-          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.DeleteInterconnectAttachment",
-          "service": {
-            "shortName": "EdgeNetwork",
-            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork"
-          }
-        }
+        "shortName": "DeleteInterconnectAttachment"
       },
+      "description": "DeleteInterconnectAttachment deletes a single InterconnectAttachment.",
+      "file": "Client/DeleteInterconnectAttachment/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_DeleteInterconnectAttachment_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "edgenetwork DeleteInterconnectAttachment Sample"
     },
     {
-      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_DeleteNetwork_sync",
-      "title": "edgenetwork DeleteNetwork Sample",
-      "description": "DeleteNetwork deletes a single Network.",
-      "file": "Client/DeleteNetwork/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteNetwork",
+        "client": {
+          "fullName": "google.cloud.edgenetwork.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.edgenetwork.v1.Client.DeleteNetwork",
+        "method": {
+          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.DeleteNetwork",
+          "service": {
+            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork",
+            "shortName": "EdgeNetwork"
+          },
+          "shortName": "DeleteNetwork"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "edgenetworkpb.DeleteNetworkRequest",
-            "name": "req"
+            "name": "req",
+            "type": "edgenetworkpb.DeleteNetworkRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteNetworkOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.edgenetwork.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteNetwork",
-          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.DeleteNetwork",
-          "service": {
-            "shortName": "EdgeNetwork",
-            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork"
-          }
-        }
+        "shortName": "DeleteNetwork"
       },
+      "description": "DeleteNetwork deletes a single Network.",
+      "file": "Client/DeleteNetwork/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_DeleteNetwork_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "edgenetwork DeleteNetwork Sample"
     },
     {
-      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_DeleteOperation_sync",
-      "title": "edgenetwork DeleteOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.edgenetwork.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.edgenetwork.v1.Client.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
       "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
       "file": "Client/DeleteOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteOperation",
-        "fullName": "google.cloud.edgenetwork.v1.Client.DeleteOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.DeleteOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.edgenetwork.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteOperation",
-          "fullName": "google.longrunning.Operations.DeleteOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_DeleteOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "edgenetwork DeleteOperation Sample"
     },
     {
-      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_DeleteRouter_sync",
-      "title": "edgenetwork DeleteRouter Sample",
-      "description": "DeleteRouter deletes a single Router.",
-      "file": "Client/DeleteRouter/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteRouter",
+        "client": {
+          "fullName": "google.cloud.edgenetwork.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.edgenetwork.v1.Client.DeleteRouter",
+        "method": {
+          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.DeleteRouter",
+          "service": {
+            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork",
+            "shortName": "EdgeNetwork"
+          },
+          "shortName": "DeleteRouter"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "edgenetworkpb.DeleteRouterRequest",
-            "name": "req"
+            "name": "req",
+            "type": "edgenetworkpb.DeleteRouterRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteRouterOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.edgenetwork.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteRouter",
-          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.DeleteRouter",
-          "service": {
-            "shortName": "EdgeNetwork",
-            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork"
-          }
-        }
+        "shortName": "DeleteRouter"
       },
+      "description": "DeleteRouter deletes a single Router.",
+      "file": "Client/DeleteRouter/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_DeleteRouter_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "edgenetwork DeleteRouter Sample"
     },
     {
-      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_DeleteSubnet_sync",
-      "title": "edgenetwork DeleteSubnet Sample",
-      "description": "DeleteSubnet deletes a single Subnet.",
-      "file": "Client/DeleteSubnet/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteSubnet",
+        "client": {
+          "fullName": "google.cloud.edgenetwork.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.edgenetwork.v1.Client.DeleteSubnet",
+        "method": {
+          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.DeleteSubnet",
+          "service": {
+            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork",
+            "shortName": "EdgeNetwork"
+          },
+          "shortName": "DeleteSubnet"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "edgenetworkpb.DeleteSubnetRequest",
-            "name": "req"
+            "name": "req",
+            "type": "edgenetworkpb.DeleteSubnetRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteSubnetOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.edgenetwork.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteSubnet",
-          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.DeleteSubnet",
-          "service": {
-            "shortName": "EdgeNetwork",
-            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork"
-          }
-        }
+        "shortName": "DeleteSubnet"
       },
+      "description": "DeleteSubnet deletes a single Subnet.",
+      "file": "Client/DeleteSubnet/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_DeleteSubnet_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "edgenetwork DeleteSubnet Sample"
     },
     {
-      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_DiagnoseInterconnect_sync",
-      "title": "edgenetwork DiagnoseInterconnect Sample",
-      "description": "DiagnoseInterconnect get the diagnostics of a single interconnect resource.",
-      "file": "Client/DiagnoseInterconnect/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DiagnoseInterconnect",
+        "client": {
+          "fullName": "google.cloud.edgenetwork.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.edgenetwork.v1.Client.DiagnoseInterconnect",
+        "method": {
+          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.DiagnoseInterconnect",
+          "service": {
+            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork",
+            "shortName": "EdgeNetwork"
+          },
+          "shortName": "DiagnoseInterconnect"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "edgenetworkpb.DiagnoseInterconnectRequest",
-            "name": "req"
+            "name": "req",
+            "type": "edgenetworkpb.DiagnoseInterconnectRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*edgenetworkpb.DiagnoseInterconnectResponse",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.edgenetwork.v1.Client"
-        },
-        "method": {
-          "shortName": "DiagnoseInterconnect",
-          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.DiagnoseInterconnect",
-          "service": {
-            "shortName": "EdgeNetwork",
-            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork"
-          }
-        }
+        "shortName": "DiagnoseInterconnect"
       },
+      "description": "DiagnoseInterconnect get the diagnostics of a single interconnect resource.",
+      "file": "Client/DiagnoseInterconnect/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_DiagnoseInterconnect_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "edgenetwork DiagnoseInterconnect Sample"
     },
     {
-      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_DiagnoseNetwork_sync",
-      "title": "edgenetwork DiagnoseNetwork Sample",
-      "description": "DiagnoseNetwork get the diagnostics of a single network resource.",
-      "file": "Client/DiagnoseNetwork/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DiagnoseNetwork",
+        "client": {
+          "fullName": "google.cloud.edgenetwork.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.edgenetwork.v1.Client.DiagnoseNetwork",
+        "method": {
+          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.DiagnoseNetwork",
+          "service": {
+            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork",
+            "shortName": "EdgeNetwork"
+          },
+          "shortName": "DiagnoseNetwork"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "edgenetworkpb.DiagnoseNetworkRequest",
-            "name": "req"
+            "name": "req",
+            "type": "edgenetworkpb.DiagnoseNetworkRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*edgenetworkpb.DiagnoseNetworkResponse",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.edgenetwork.v1.Client"
-        },
-        "method": {
-          "shortName": "DiagnoseNetwork",
-          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.DiagnoseNetwork",
-          "service": {
-            "shortName": "EdgeNetwork",
-            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork"
-          }
-        }
+        "shortName": "DiagnoseNetwork"
       },
+      "description": "DiagnoseNetwork get the diagnostics of a single network resource.",
+      "file": "Client/DiagnoseNetwork/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_DiagnoseNetwork_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "edgenetwork DiagnoseNetwork Sample"
     },
     {
-      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_DiagnoseRouter_sync",
-      "title": "edgenetwork DiagnoseRouter Sample",
-      "description": "DiagnoseRouter get the diagnostics of a single router resource.",
-      "file": "Client/DiagnoseRouter/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DiagnoseRouter",
+        "client": {
+          "fullName": "google.cloud.edgenetwork.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.edgenetwork.v1.Client.DiagnoseRouter",
+        "method": {
+          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.DiagnoseRouter",
+          "service": {
+            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork",
+            "shortName": "EdgeNetwork"
+          },
+          "shortName": "DiagnoseRouter"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "edgenetworkpb.DiagnoseRouterRequest",
-            "name": "req"
+            "name": "req",
+            "type": "edgenetworkpb.DiagnoseRouterRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*edgenetworkpb.DiagnoseRouterResponse",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.edgenetwork.v1.Client"
-        },
-        "method": {
-          "shortName": "DiagnoseRouter",
-          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.DiagnoseRouter",
-          "service": {
-            "shortName": "EdgeNetwork",
-            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork"
-          }
-        }
+        "shortName": "DiagnoseRouter"
       },
+      "description": "DiagnoseRouter get the diagnostics of a single router resource.",
+      "file": "Client/DiagnoseRouter/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_DiagnoseRouter_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "edgenetwork DiagnoseRouter Sample"
     },
     {
-      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_GetInterconnect_sync",
-      "title": "edgenetwork GetInterconnect Sample",
-      "description": "GetInterconnect gets details of a single Interconnect.",
-      "file": "Client/GetInterconnect/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetInterconnect",
+        "client": {
+          "fullName": "google.cloud.edgenetwork.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.edgenetwork.v1.Client.GetInterconnect",
+        "method": {
+          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.GetInterconnect",
+          "service": {
+            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork",
+            "shortName": "EdgeNetwork"
+          },
+          "shortName": "GetInterconnect"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "edgenetworkpb.GetInterconnectRequest",
-            "name": "req"
+            "name": "req",
+            "type": "edgenetworkpb.GetInterconnectRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*edgenetworkpb.Interconnect",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.edgenetwork.v1.Client"
-        },
-        "method": {
-          "shortName": "GetInterconnect",
-          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.GetInterconnect",
-          "service": {
-            "shortName": "EdgeNetwork",
-            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork"
-          }
-        }
+        "shortName": "GetInterconnect"
       },
+      "description": "GetInterconnect gets details of a single Interconnect.",
+      "file": "Client/GetInterconnect/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_GetInterconnect_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "edgenetwork GetInterconnect Sample"
     },
     {
-      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_GetInterconnectAttachment_sync",
-      "title": "edgenetwork GetInterconnectAttachment Sample",
-      "description": "GetInterconnectAttachment gets details of a single InterconnectAttachment.",
-      "file": "Client/GetInterconnectAttachment/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetInterconnectAttachment",
+        "client": {
+          "fullName": "google.cloud.edgenetwork.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.edgenetwork.v1.Client.GetInterconnectAttachment",
+        "method": {
+          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.GetInterconnectAttachment",
+          "service": {
+            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork",
+            "shortName": "EdgeNetwork"
+          },
+          "shortName": "GetInterconnectAttachment"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "edgenetworkpb.GetInterconnectAttachmentRequest",
-            "name": "req"
+            "name": "req",
+            "type": "edgenetworkpb.GetInterconnectAttachmentRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*edgenetworkpb.InterconnectAttachment",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.edgenetwork.v1.Client"
-        },
-        "method": {
-          "shortName": "GetInterconnectAttachment",
-          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.GetInterconnectAttachment",
-          "service": {
-            "shortName": "EdgeNetwork",
-            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork"
-          }
-        }
+        "shortName": "GetInterconnectAttachment"
       },
+      "description": "GetInterconnectAttachment gets details of a single InterconnectAttachment.",
+      "file": "Client/GetInterconnectAttachment/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_GetInterconnectAttachment_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "edgenetwork GetInterconnectAttachment Sample"
     },
     {
-      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_GetLocation_sync",
-      "title": "edgenetwork GetLocation Sample",
-      "description": "GetLocation gets information about a location.",
-      "file": "Client/GetLocation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetLocation",
+        "client": {
+          "fullName": "google.cloud.edgenetwork.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.edgenetwork.v1.Client.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "locationpb.GetLocationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*locationpb.Location",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.edgenetwork.v1.Client"
-        },
-        "method": {
-          "shortName": "GetLocation",
-          "fullName": "google.cloud.location.Locations.GetLocation",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
+        "shortName": "GetLocation"
       },
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_GetLocation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "edgenetwork GetLocation Sample"
     },
     {
-      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_GetNetwork_sync",
-      "title": "edgenetwork GetNetwork Sample",
-      "description": "GetNetwork gets details of a single Network.",
-      "file": "Client/GetNetwork/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetNetwork",
+        "client": {
+          "fullName": "google.cloud.edgenetwork.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.edgenetwork.v1.Client.GetNetwork",
+        "method": {
+          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.GetNetwork",
+          "service": {
+            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork",
+            "shortName": "EdgeNetwork"
+          },
+          "shortName": "GetNetwork"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "edgenetworkpb.GetNetworkRequest",
-            "name": "req"
+            "name": "req",
+            "type": "edgenetworkpb.GetNetworkRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*edgenetworkpb.Network",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.edgenetwork.v1.Client"
-        },
-        "method": {
-          "shortName": "GetNetwork",
-          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.GetNetwork",
-          "service": {
-            "shortName": "EdgeNetwork",
-            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork"
-          }
-        }
+        "shortName": "GetNetwork"
       },
+      "description": "GetNetwork gets details of a single Network.",
+      "file": "Client/GetNetwork/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_GetNetwork_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "edgenetwork GetNetwork Sample"
     },
     {
-      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_GetOperation_sync",
-      "title": "edgenetwork GetOperation Sample",
-      "description": "GetOperation is a utility method from google.longrunning.Operations.",
-      "file": "Client/GetOperation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetOperation",
+        "client": {
+          "fullName": "google.cloud.edgenetwork.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.edgenetwork.v1.Client.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.GetOperationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*longrunningpb.Operation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.edgenetwork.v1.Client"
-        },
-        "method": {
-          "shortName": "GetOperation",
-          "fullName": "google.longrunning.Operations.GetOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "GetOperation"
       },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_GetOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "edgenetwork GetOperation Sample"
     },
     {
-      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_GetRouter_sync",
-      "title": "edgenetwork GetRouter Sample",
-      "description": "GetRouter gets details of a single Router.",
-      "file": "Client/GetRouter/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetRouter",
+        "client": {
+          "fullName": "google.cloud.edgenetwork.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.edgenetwork.v1.Client.GetRouter",
+        "method": {
+          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.GetRouter",
+          "service": {
+            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork",
+            "shortName": "EdgeNetwork"
+          },
+          "shortName": "GetRouter"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "edgenetworkpb.GetRouterRequest",
-            "name": "req"
+            "name": "req",
+            "type": "edgenetworkpb.GetRouterRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*edgenetworkpb.Router",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.edgenetwork.v1.Client"
-        },
-        "method": {
-          "shortName": "GetRouter",
-          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.GetRouter",
-          "service": {
-            "shortName": "EdgeNetwork",
-            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork"
-          }
-        }
+        "shortName": "GetRouter"
       },
+      "description": "GetRouter gets details of a single Router.",
+      "file": "Client/GetRouter/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_GetRouter_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "edgenetwork GetRouter Sample"
     },
     {
-      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_GetSubnet_sync",
-      "title": "edgenetwork GetSubnet Sample",
-      "description": "GetSubnet gets details of a single Subnet.",
-      "file": "Client/GetSubnet/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetSubnet",
+        "client": {
+          "fullName": "google.cloud.edgenetwork.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.edgenetwork.v1.Client.GetSubnet",
+        "method": {
+          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.GetSubnet",
+          "service": {
+            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork",
+            "shortName": "EdgeNetwork"
+          },
+          "shortName": "GetSubnet"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "edgenetworkpb.GetSubnetRequest",
-            "name": "req"
+            "name": "req",
+            "type": "edgenetworkpb.GetSubnetRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*edgenetworkpb.Subnet",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.edgenetwork.v1.Client"
-        },
-        "method": {
-          "shortName": "GetSubnet",
-          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.GetSubnet",
-          "service": {
-            "shortName": "EdgeNetwork",
-            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork"
-          }
-        }
+        "shortName": "GetSubnet"
       },
+      "description": "GetSubnet gets details of a single Subnet.",
+      "file": "Client/GetSubnet/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_GetSubnet_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "edgenetwork GetSubnet Sample"
     },
     {
-      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_GetZone_sync",
-      "title": "edgenetwork GetZone Sample",
-      "description": "GetZone deprecated: not implemented.\nGets details of a single Zone.\n\n\nDeprecated: GetZone may be removed in a future version.",
-      "file": "Client/GetZone/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetZone",
+        "client": {
+          "fullName": "google.cloud.edgenetwork.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.edgenetwork.v1.Client.GetZone",
+        "method": {
+          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.GetZone",
+          "service": {
+            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork",
+            "shortName": "EdgeNetwork"
+          },
+          "shortName": "GetZone"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "edgenetworkpb.GetZoneRequest",
-            "name": "req"
+            "name": "req",
+            "type": "edgenetworkpb.GetZoneRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*edgenetworkpb.Zone",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.edgenetwork.v1.Client"
-        },
-        "method": {
-          "shortName": "GetZone",
-          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.GetZone",
-          "service": {
-            "shortName": "EdgeNetwork",
-            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork"
-          }
-        }
+        "shortName": "GetZone"
       },
+      "description": "GetZone deprecated: not implemented.\nGets details of a single Zone.\n\n\nDeprecated: GetZone may be removed in a future version.",
+      "file": "Client/GetZone/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_GetZone_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "edgenetwork GetZone Sample"
     },
     {
-      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_InitializeZone_sync",
-      "title": "edgenetwork InitializeZone Sample",
-      "description": "InitializeZone initializeZone will initialize resources for a zone in a project.",
-      "file": "Client/InitializeZone/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "InitializeZone",
+        "client": {
+          "fullName": "google.cloud.edgenetwork.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.edgenetwork.v1.Client.InitializeZone",
+        "method": {
+          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.InitializeZone",
+          "service": {
+            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork",
+            "shortName": "EdgeNetwork"
+          },
+          "shortName": "InitializeZone"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "edgenetworkpb.InitializeZoneRequest",
-            "name": "req"
+            "name": "req",
+            "type": "edgenetworkpb.InitializeZoneRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*edgenetworkpb.InitializeZoneResponse",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.edgenetwork.v1.Client"
-        },
-        "method": {
-          "shortName": "InitializeZone",
-          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.InitializeZone",
-          "service": {
-            "shortName": "EdgeNetwork",
-            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork"
-          }
-        }
+        "shortName": "InitializeZone"
       },
+      "description": "InitializeZone initializeZone will initialize resources for a zone in a project.",
+      "file": "Client/InitializeZone/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_InitializeZone_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "edgenetwork InitializeZone Sample"
     },
     {
-      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_ListInterconnectAttachments_sync",
-      "title": "edgenetwork ListInterconnectAttachments Sample",
-      "description": "ListInterconnectAttachments lists InterconnectAttachments in a given project and location.",
-      "file": "Client/ListInterconnectAttachments/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListInterconnectAttachments",
+        "client": {
+          "fullName": "google.cloud.edgenetwork.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.edgenetwork.v1.Client.ListInterconnectAttachments",
+        "method": {
+          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.ListInterconnectAttachments",
+          "service": {
+            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork",
+            "shortName": "EdgeNetwork"
+          },
+          "shortName": "ListInterconnectAttachments"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "edgenetworkpb.ListInterconnectAttachmentsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "edgenetworkpb.ListInterconnectAttachmentsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "InterconnectAttachmentIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.edgenetwork.v1.Client"
-        },
-        "method": {
-          "shortName": "ListInterconnectAttachments",
-          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.ListInterconnectAttachments",
-          "service": {
-            "shortName": "EdgeNetwork",
-            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork"
-          }
-        }
+        "shortName": "ListInterconnectAttachments"
       },
+      "description": "ListInterconnectAttachments lists InterconnectAttachments in a given project and location.",
+      "file": "Client/ListInterconnectAttachments/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_ListInterconnectAttachments_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "edgenetwork ListInterconnectAttachments Sample"
     },
     {
-      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_ListInterconnects_sync",
-      "title": "edgenetwork ListInterconnects Sample",
-      "description": "ListInterconnects lists Interconnects in a given project and location.",
-      "file": "Client/ListInterconnects/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListInterconnects",
+        "client": {
+          "fullName": "google.cloud.edgenetwork.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.edgenetwork.v1.Client.ListInterconnects",
+        "method": {
+          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.ListInterconnects",
+          "service": {
+            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork",
+            "shortName": "EdgeNetwork"
+          },
+          "shortName": "ListInterconnects"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "edgenetworkpb.ListInterconnectsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "edgenetworkpb.ListInterconnectsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "InterconnectIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.edgenetwork.v1.Client"
-        },
-        "method": {
-          "shortName": "ListInterconnects",
-          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.ListInterconnects",
-          "service": {
-            "shortName": "EdgeNetwork",
-            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork"
-          }
-        }
+        "shortName": "ListInterconnects"
       },
+      "description": "ListInterconnects lists Interconnects in a given project and location.",
+      "file": "Client/ListInterconnects/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_ListInterconnects_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "edgenetwork ListInterconnects Sample"
     },
     {
-      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_ListLocations_sync",
-      "title": "edgenetwork ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
-      "file": "Client/ListLocations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListLocations",
+        "client": {
+          "fullName": "google.cloud.edgenetwork.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.edgenetwork.v1.Client.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "locationpb.ListLocationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "LocationIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.edgenetwork.v1.Client"
-        },
-        "method": {
-          "shortName": "ListLocations",
-          "fullName": "google.cloud.location.Locations.ListLocations",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
+        "shortName": "ListLocations"
       },
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_ListLocations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "edgenetwork ListLocations Sample"
     },
     {
-      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_ListNetworks_sync",
-      "title": "edgenetwork ListNetworks Sample",
-      "description": "ListNetworks lists Networks in a given project and location.",
-      "file": "Client/ListNetworks/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListNetworks",
+        "client": {
+          "fullName": "google.cloud.edgenetwork.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.edgenetwork.v1.Client.ListNetworks",
+        "method": {
+          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.ListNetworks",
+          "service": {
+            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork",
+            "shortName": "EdgeNetwork"
+          },
+          "shortName": "ListNetworks"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "edgenetworkpb.ListNetworksRequest",
-            "name": "req"
+            "name": "req",
+            "type": "edgenetworkpb.ListNetworksRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "NetworkIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.edgenetwork.v1.Client"
-        },
-        "method": {
-          "shortName": "ListNetworks",
-          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.ListNetworks",
-          "service": {
-            "shortName": "EdgeNetwork",
-            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork"
-          }
-        }
+        "shortName": "ListNetworks"
       },
+      "description": "ListNetworks lists Networks in a given project and location.",
+      "file": "Client/ListNetworks/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_ListNetworks_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "edgenetwork ListNetworks Sample"
     },
     {
-      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_ListOperations_sync",
-      "title": "edgenetwork ListOperations Sample",
-      "description": "ListOperations is a utility method from google.longrunning.Operations.",
-      "file": "Client/ListOperations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListOperations",
+        "client": {
+          "fullName": "google.cloud.edgenetwork.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.edgenetwork.v1.Client.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.ListOperationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "OperationIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.edgenetwork.v1.Client"
-        },
-        "method": {
-          "shortName": "ListOperations",
-          "fullName": "google.longrunning.Operations.ListOperations",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "ListOperations"
       },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_ListOperations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "edgenetwork ListOperations Sample"
     },
     {
-      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_ListRouters_sync",
-      "title": "edgenetwork ListRouters Sample",
-      "description": "ListRouters lists Routers in a given project and location.",
-      "file": "Client/ListRouters/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListRouters",
+        "client": {
+          "fullName": "google.cloud.edgenetwork.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.edgenetwork.v1.Client.ListRouters",
+        "method": {
+          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.ListRouters",
+          "service": {
+            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork",
+            "shortName": "EdgeNetwork"
+          },
+          "shortName": "ListRouters"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "edgenetworkpb.ListRoutersRequest",
-            "name": "req"
+            "name": "req",
+            "type": "edgenetworkpb.ListRoutersRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "RouterIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.edgenetwork.v1.Client"
-        },
-        "method": {
-          "shortName": "ListRouters",
-          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.ListRouters",
-          "service": {
-            "shortName": "EdgeNetwork",
-            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork"
-          }
-        }
+        "shortName": "ListRouters"
       },
+      "description": "ListRouters lists Routers in a given project and location.",
+      "file": "Client/ListRouters/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_ListRouters_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "edgenetwork ListRouters Sample"
     },
     {
-      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_ListSubnets_sync",
-      "title": "edgenetwork ListSubnets Sample",
-      "description": "ListSubnets lists Subnets in a given project and location.",
-      "file": "Client/ListSubnets/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListSubnets",
+        "client": {
+          "fullName": "google.cloud.edgenetwork.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.edgenetwork.v1.Client.ListSubnets",
+        "method": {
+          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.ListSubnets",
+          "service": {
+            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork",
+            "shortName": "EdgeNetwork"
+          },
+          "shortName": "ListSubnets"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "edgenetworkpb.ListSubnetsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "edgenetworkpb.ListSubnetsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "SubnetIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.edgenetwork.v1.Client"
-        },
-        "method": {
-          "shortName": "ListSubnets",
-          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.ListSubnets",
-          "service": {
-            "shortName": "EdgeNetwork",
-            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork"
-          }
-        }
+        "shortName": "ListSubnets"
       },
+      "description": "ListSubnets lists Subnets in a given project and location.",
+      "file": "Client/ListSubnets/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_ListSubnets_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "edgenetwork ListSubnets Sample"
     },
     {
-      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_ListZones_sync",
-      "title": "edgenetwork ListZones Sample",
-      "description": "ListZones deprecated: not implemented.\nLists Zones in a given project and location.\n\n\nDeprecated: ListZones may be removed in a future version.",
-      "file": "Client/ListZones/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListZones",
+        "client": {
+          "fullName": "google.cloud.edgenetwork.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.edgenetwork.v1.Client.ListZones",
+        "method": {
+          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.ListZones",
+          "service": {
+            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork",
+            "shortName": "EdgeNetwork"
+          },
+          "shortName": "ListZones"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "edgenetworkpb.ListZonesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "edgenetworkpb.ListZonesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ZoneIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.edgenetwork.v1.Client"
-        },
-        "method": {
-          "shortName": "ListZones",
-          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.ListZones",
-          "service": {
-            "shortName": "EdgeNetwork",
-            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork"
-          }
-        }
+        "shortName": "ListZones"
       },
+      "description": "ListZones deprecated: not implemented.\nLists Zones in a given project and location.\n\n\nDeprecated: ListZones may be removed in a future version.",
+      "file": "Client/ListZones/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_ListZones_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "edgenetwork ListZones Sample"
     },
     {
-      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_UpdateRouter_sync",
-      "title": "edgenetwork UpdateRouter Sample",
-      "description": "UpdateRouter updates the parameters of a single Router.",
-      "file": "Client/UpdateRouter/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateRouter",
+        "client": {
+          "fullName": "google.cloud.edgenetwork.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.edgenetwork.v1.Client.UpdateRouter",
+        "method": {
+          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.UpdateRouter",
+          "service": {
+            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork",
+            "shortName": "EdgeNetwork"
+          },
+          "shortName": "UpdateRouter"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "edgenetworkpb.UpdateRouterRequest",
-            "name": "req"
+            "name": "req",
+            "type": "edgenetworkpb.UpdateRouterRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UpdateRouterOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.edgenetwork.v1.Client"
-        },
-        "method": {
-          "shortName": "UpdateRouter",
-          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.UpdateRouter",
-          "service": {
-            "shortName": "EdgeNetwork",
-            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork"
-          }
-        }
+        "shortName": "UpdateRouter"
       },
+      "description": "UpdateRouter updates the parameters of a single Router.",
+      "file": "Client/UpdateRouter/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_UpdateRouter_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "edgenetwork UpdateRouter Sample"
     },
     {
-      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_UpdateSubnet_sync",
-      "title": "edgenetwork UpdateSubnet Sample",
-      "description": "UpdateSubnet updates the parameters of a single Subnet.",
-      "file": "Client/UpdateSubnet/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateSubnet",
+        "client": {
+          "fullName": "google.cloud.edgenetwork.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.edgenetwork.v1.Client.UpdateSubnet",
+        "method": {
+          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.UpdateSubnet",
+          "service": {
+            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork",
+            "shortName": "EdgeNetwork"
+          },
+          "shortName": "UpdateSubnet"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "edgenetworkpb.UpdateSubnetRequest",
-            "name": "req"
+            "name": "req",
+            "type": "edgenetworkpb.UpdateSubnetRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UpdateSubnetOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.edgenetwork.v1.Client"
-        },
-        "method": {
-          "shortName": "UpdateSubnet",
-          "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork.UpdateSubnet",
-          "service": {
-            "shortName": "EdgeNetwork",
-            "fullName": "google.cloud.edgenetwork.v1.EdgeNetwork"
-          }
-        }
+        "shortName": "UpdateSubnet"
       },
+      "description": "UpdateSubnet updates the parameters of a single Subnet.",
+      "file": "Client/UpdateSubnet/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "edgenetwork_v1_generated_EdgeNetwork_UpdateSubnet_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "edgenetwork UpdateSubnet Sample"
     }
   ]
 }

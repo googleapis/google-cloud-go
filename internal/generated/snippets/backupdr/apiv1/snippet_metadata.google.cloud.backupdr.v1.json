@@ -1,2587 +1,2587 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/backupdr/apiv1",
-    "version": "1.8.0",
-    "language": "GO",
     "apis": [
       {
         "id": "google.cloud.backupdr.v1",
         "version": "v1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/backupdr/apiv1",
+    "version": "1.8.0"
   },
   "snippets": [
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_CancelOperation_sync",
-      "title": "backupdr CancelOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.backupdr.v1.Client.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
       "file": "Client/CancelOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CancelOperation",
-        "fullName": "google.cloud.backupdr.v1.Client.CancelOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.CancelOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "CancelOperation",
-          "fullName": "google.longrunning.Operations.CancelOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_CancelOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr CancelOperation Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_CreateBackupPlan_sync",
-      "title": "backupdr CreateBackupPlan Sample",
-      "description": "CreateBackupPlan create a BackupPlan",
-      "file": "Client/CreateBackupPlan/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateBackupPlan",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.backupdr.v1.Client.CreateBackupPlan",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1.BackupDR.CreateBackupPlan",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "CreateBackupPlan"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "backupdrpb.CreateBackupPlanRequest",
-            "name": "req"
+            "name": "req",
+            "type": "backupdrpb.CreateBackupPlanRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateBackupPlanOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateBackupPlan",
-          "fullName": "google.cloud.backupdr.v1.BackupDR.CreateBackupPlan",
-          "service": {
-            "shortName": "BackupDR",
-            "fullName": "google.cloud.backupdr.v1.BackupDR"
-          }
-        }
+        "shortName": "CreateBackupPlan"
       },
+      "description": "CreateBackupPlan create a BackupPlan",
+      "file": "Client/CreateBackupPlan/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_CreateBackupPlan_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr CreateBackupPlan Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_CreateBackupPlanAssociation_sync",
-      "title": "backupdr CreateBackupPlanAssociation Sample",
-      "description": "CreateBackupPlanAssociation create a BackupPlanAssociation",
-      "file": "Client/CreateBackupPlanAssociation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateBackupPlanAssociation",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.backupdr.v1.Client.CreateBackupPlanAssociation",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1.BackupDR.CreateBackupPlanAssociation",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "CreateBackupPlanAssociation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "backupdrpb.CreateBackupPlanAssociationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "backupdrpb.CreateBackupPlanAssociationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateBackupPlanAssociationOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateBackupPlanAssociation",
-          "fullName": "google.cloud.backupdr.v1.BackupDR.CreateBackupPlanAssociation",
-          "service": {
-            "shortName": "BackupDR",
-            "fullName": "google.cloud.backupdr.v1.BackupDR"
-          }
-        }
+        "shortName": "CreateBackupPlanAssociation"
       },
+      "description": "CreateBackupPlanAssociation create a BackupPlanAssociation",
+      "file": "Client/CreateBackupPlanAssociation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_CreateBackupPlanAssociation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr CreateBackupPlanAssociation Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_CreateBackupVault_sync",
-      "title": "backupdr CreateBackupVault Sample",
-      "description": "CreateBackupVault creates a new BackupVault in a given project and location.",
-      "file": "Client/CreateBackupVault/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateBackupVault",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.backupdr.v1.Client.CreateBackupVault",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1.BackupDR.CreateBackupVault",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "CreateBackupVault"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "backupdrpb.CreateBackupVaultRequest",
-            "name": "req"
+            "name": "req",
+            "type": "backupdrpb.CreateBackupVaultRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateBackupVaultOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateBackupVault",
-          "fullName": "google.cloud.backupdr.v1.BackupDR.CreateBackupVault",
-          "service": {
-            "shortName": "BackupDR",
-            "fullName": "google.cloud.backupdr.v1.BackupDR"
-          }
-        }
+        "shortName": "CreateBackupVault"
       },
+      "description": "CreateBackupVault creates a new BackupVault in a given project and location.",
+      "file": "Client/CreateBackupVault/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_CreateBackupVault_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr CreateBackupVault Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_CreateManagementServer_sync",
-      "title": "backupdr CreateManagementServer Sample",
-      "description": "CreateManagementServer creates a new ManagementServer in a given project and location.",
-      "file": "Client/CreateManagementServer/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateManagementServer",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.backupdr.v1.Client.CreateManagementServer",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1.BackupDR.CreateManagementServer",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "CreateManagementServer"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "backupdrpb.CreateManagementServerRequest",
-            "name": "req"
+            "name": "req",
+            "type": "backupdrpb.CreateManagementServerRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateManagementServerOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateManagementServer",
-          "fullName": "google.cloud.backupdr.v1.BackupDR.CreateManagementServer",
-          "service": {
-            "shortName": "BackupDR",
-            "fullName": "google.cloud.backupdr.v1.BackupDR"
-          }
-        }
+        "shortName": "CreateManagementServer"
       },
+      "description": "CreateManagementServer creates a new ManagementServer in a given project and location.",
+      "file": "Client/CreateManagementServer/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_CreateManagementServer_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr CreateManagementServer Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_DeleteBackup_sync",
-      "title": "backupdr DeleteBackup Sample",
-      "description": "DeleteBackup deletes a Backup.",
-      "file": "Client/DeleteBackup/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteBackup",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.backupdr.v1.Client.DeleteBackup",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1.BackupDR.DeleteBackup",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "DeleteBackup"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "backupdrpb.DeleteBackupRequest",
-            "name": "req"
+            "name": "req",
+            "type": "backupdrpb.DeleteBackupRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteBackupOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteBackup",
-          "fullName": "google.cloud.backupdr.v1.BackupDR.DeleteBackup",
-          "service": {
-            "shortName": "BackupDR",
-            "fullName": "google.cloud.backupdr.v1.BackupDR"
-          }
-        }
+        "shortName": "DeleteBackup"
       },
+      "description": "DeleteBackup deletes a Backup.",
+      "file": "Client/DeleteBackup/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_DeleteBackup_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr DeleteBackup Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_DeleteBackupPlan_sync",
-      "title": "backupdr DeleteBackupPlan Sample",
-      "description": "DeleteBackupPlan deletes a single BackupPlan.",
-      "file": "Client/DeleteBackupPlan/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteBackupPlan",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.backupdr.v1.Client.DeleteBackupPlan",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1.BackupDR.DeleteBackupPlan",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "DeleteBackupPlan"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "backupdrpb.DeleteBackupPlanRequest",
-            "name": "req"
+            "name": "req",
+            "type": "backupdrpb.DeleteBackupPlanRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteBackupPlanOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteBackupPlan",
-          "fullName": "google.cloud.backupdr.v1.BackupDR.DeleteBackupPlan",
-          "service": {
-            "shortName": "BackupDR",
-            "fullName": "google.cloud.backupdr.v1.BackupDR"
-          }
-        }
+        "shortName": "DeleteBackupPlan"
       },
+      "description": "DeleteBackupPlan deletes a single BackupPlan.",
+      "file": "Client/DeleteBackupPlan/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_DeleteBackupPlan_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr DeleteBackupPlan Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_DeleteBackupPlanAssociation_sync",
-      "title": "backupdr DeleteBackupPlanAssociation Sample",
-      "description": "DeleteBackupPlanAssociation deletes a single BackupPlanAssociation.",
-      "file": "Client/DeleteBackupPlanAssociation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteBackupPlanAssociation",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.backupdr.v1.Client.DeleteBackupPlanAssociation",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1.BackupDR.DeleteBackupPlanAssociation",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "DeleteBackupPlanAssociation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "backupdrpb.DeleteBackupPlanAssociationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "backupdrpb.DeleteBackupPlanAssociationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteBackupPlanAssociationOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteBackupPlanAssociation",
-          "fullName": "google.cloud.backupdr.v1.BackupDR.DeleteBackupPlanAssociation",
-          "service": {
-            "shortName": "BackupDR",
-            "fullName": "google.cloud.backupdr.v1.BackupDR"
-          }
-        }
+        "shortName": "DeleteBackupPlanAssociation"
       },
+      "description": "DeleteBackupPlanAssociation deletes a single BackupPlanAssociation.",
+      "file": "Client/DeleteBackupPlanAssociation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_DeleteBackupPlanAssociation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr DeleteBackupPlanAssociation Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_DeleteBackupVault_sync",
-      "title": "backupdr DeleteBackupVault Sample",
-      "description": "DeleteBackupVault deletes a BackupVault.",
-      "file": "Client/DeleteBackupVault/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteBackupVault",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.backupdr.v1.Client.DeleteBackupVault",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1.BackupDR.DeleteBackupVault",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "DeleteBackupVault"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "backupdrpb.DeleteBackupVaultRequest",
-            "name": "req"
+            "name": "req",
+            "type": "backupdrpb.DeleteBackupVaultRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteBackupVaultOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteBackupVault",
-          "fullName": "google.cloud.backupdr.v1.BackupDR.DeleteBackupVault",
-          "service": {
-            "shortName": "BackupDR",
-            "fullName": "google.cloud.backupdr.v1.BackupDR"
-          }
-        }
+        "shortName": "DeleteBackupVault"
       },
+      "description": "DeleteBackupVault deletes a BackupVault.",
+      "file": "Client/DeleteBackupVault/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_DeleteBackupVault_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr DeleteBackupVault Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_DeleteManagementServer_sync",
-      "title": "backupdr DeleteManagementServer Sample",
-      "description": "DeleteManagementServer deletes a single ManagementServer.",
-      "file": "Client/DeleteManagementServer/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteManagementServer",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.backupdr.v1.Client.DeleteManagementServer",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1.BackupDR.DeleteManagementServer",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "DeleteManagementServer"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "backupdrpb.DeleteManagementServerRequest",
-            "name": "req"
+            "name": "req",
+            "type": "backupdrpb.DeleteManagementServerRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteManagementServerOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteManagementServer",
-          "fullName": "google.cloud.backupdr.v1.BackupDR.DeleteManagementServer",
-          "service": {
-            "shortName": "BackupDR",
-            "fullName": "google.cloud.backupdr.v1.BackupDR"
-          }
-        }
+        "shortName": "DeleteManagementServer"
       },
+      "description": "DeleteManagementServer deletes a single ManagementServer.",
+      "file": "Client/DeleteManagementServer/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_DeleteManagementServer_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr DeleteManagementServer Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_DeleteOperation_sync",
-      "title": "backupdr DeleteOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.backupdr.v1.Client.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
       "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
       "file": "Client/DeleteOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteOperation",
-        "fullName": "google.cloud.backupdr.v1.Client.DeleteOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.DeleteOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteOperation",
-          "fullName": "google.longrunning.Operations.DeleteOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_DeleteOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr DeleteOperation Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_FetchBackupPlanAssociationsForResourceType_sync",
-      "title": "backupdr FetchBackupPlanAssociationsForResourceType Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.backupdr.v1.Client.FetchBackupPlanAssociationsForResourceType",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1.BackupDR.FetchBackupPlanAssociationsForResourceType",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "FetchBackupPlanAssociationsForResourceType"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "backupdrpb.FetchBackupPlanAssociationsForResourceTypeRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "BackupPlanAssociationIterator",
+        "shortName": "FetchBackupPlanAssociationsForResourceType"
+      },
       "description": "FetchBackupPlanAssociationsForResourceType list BackupPlanAssociations for a given resource type.",
       "file": "Client/FetchBackupPlanAssociationsForResourceType/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "FetchBackupPlanAssociationsForResourceType",
-        "fullName": "google.cloud.backupdr.v1.Client.FetchBackupPlanAssociationsForResourceType",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "backupdrpb.FetchBackupPlanAssociationsForResourceTypeRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "BackupPlanAssociationIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "FetchBackupPlanAssociationsForResourceType",
-          "fullName": "google.cloud.backupdr.v1.BackupDR.FetchBackupPlanAssociationsForResourceType",
-          "service": {
-            "shortName": "BackupDR",
-            "fullName": "google.cloud.backupdr.v1.BackupDR"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_FetchBackupPlanAssociationsForResourceType_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr FetchBackupPlanAssociationsForResourceType Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_FetchBackupsForResourceType_sync",
-      "title": "backupdr FetchBackupsForResourceType Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.backupdr.v1.Client.FetchBackupsForResourceType",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1.BackupDR.FetchBackupsForResourceType",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "FetchBackupsForResourceType"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "backupdrpb.FetchBackupsForResourceTypeRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "BackupIterator",
+        "shortName": "FetchBackupsForResourceType"
+      },
       "description": "FetchBackupsForResourceType fetch Backups for a given resource type.",
       "file": "Client/FetchBackupsForResourceType/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "FetchBackupsForResourceType",
-        "fullName": "google.cloud.backupdr.v1.Client.FetchBackupsForResourceType",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "backupdrpb.FetchBackupsForResourceTypeRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "BackupIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "FetchBackupsForResourceType",
-          "fullName": "google.cloud.backupdr.v1.BackupDR.FetchBackupsForResourceType",
-          "service": {
-            "shortName": "BackupDR",
-            "fullName": "google.cloud.backupdr.v1.BackupDR"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_FetchBackupsForResourceType_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr FetchBackupsForResourceType Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_FetchDataSourceReferencesForResourceType_sync",
-      "title": "backupdr FetchDataSourceReferencesForResourceType Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.backupdr.v1.Client.FetchDataSourceReferencesForResourceType",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1.BackupDR.FetchDataSourceReferencesForResourceType",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "FetchDataSourceReferencesForResourceType"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "backupdrpb.FetchDataSourceReferencesForResourceTypeRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DataSourceReferenceIterator",
+        "shortName": "FetchDataSourceReferencesForResourceType"
+      },
       "description": "FetchDataSourceReferencesForResourceType fetch DataSourceReferences for a given project, location and resource type.",
       "file": "Client/FetchDataSourceReferencesForResourceType/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "FetchDataSourceReferencesForResourceType",
-        "fullName": "google.cloud.backupdr.v1.Client.FetchDataSourceReferencesForResourceType",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "backupdrpb.FetchDataSourceReferencesForResourceTypeRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "DataSourceReferenceIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "FetchDataSourceReferencesForResourceType",
-          "fullName": "google.cloud.backupdr.v1.BackupDR.FetchDataSourceReferencesForResourceType",
-          "service": {
-            "shortName": "BackupDR",
-            "fullName": "google.cloud.backupdr.v1.BackupDR"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_FetchDataSourceReferencesForResourceType_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr FetchDataSourceReferencesForResourceType Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_FetchUsableBackupVaults_sync",
-      "title": "backupdr FetchUsableBackupVaults Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.backupdr.v1.Client.FetchUsableBackupVaults",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1.BackupDR.FetchUsableBackupVaults",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "FetchUsableBackupVaults"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "backupdrpb.FetchUsableBackupVaultsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "BackupVaultIterator",
+        "shortName": "FetchUsableBackupVaults"
+      },
       "description": "FetchUsableBackupVaults fetchUsableBackupVaults lists usable BackupVaults in a given project and\nlocation. Usable BackupVault are the ones that user has\nbackupdr.backupVaults.get permission.",
       "file": "Client/FetchUsableBackupVaults/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "FetchUsableBackupVaults",
-        "fullName": "google.cloud.backupdr.v1.Client.FetchUsableBackupVaults",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "backupdrpb.FetchUsableBackupVaultsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "BackupVaultIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "FetchUsableBackupVaults",
-          "fullName": "google.cloud.backupdr.v1.BackupDR.FetchUsableBackupVaults",
-          "service": {
-            "shortName": "BackupDR",
-            "fullName": "google.cloud.backupdr.v1.BackupDR"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_FetchUsableBackupVaults_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr FetchUsableBackupVaults Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_GetBackup_sync",
-      "title": "backupdr GetBackup Sample",
-      "description": "GetBackup gets details of a Backup.",
-      "file": "Client/GetBackup/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetBackup",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.backupdr.v1.Client.GetBackup",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1.BackupDR.GetBackup",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "GetBackup"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "backupdrpb.GetBackupRequest",
-            "name": "req"
+            "name": "req",
+            "type": "backupdrpb.GetBackupRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*backupdrpb.Backup",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "GetBackup",
-          "fullName": "google.cloud.backupdr.v1.BackupDR.GetBackup",
-          "service": {
-            "shortName": "BackupDR",
-            "fullName": "google.cloud.backupdr.v1.BackupDR"
-          }
-        }
+        "shortName": "GetBackup"
       },
+      "description": "GetBackup gets details of a Backup.",
+      "file": "Client/GetBackup/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_GetBackup_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr GetBackup Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_GetBackupPlan_sync",
-      "title": "backupdr GetBackupPlan Sample",
-      "description": "GetBackupPlan gets details of a single BackupPlan.",
-      "file": "Client/GetBackupPlan/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetBackupPlan",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.backupdr.v1.Client.GetBackupPlan",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1.BackupDR.GetBackupPlan",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "GetBackupPlan"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "backupdrpb.GetBackupPlanRequest",
-            "name": "req"
+            "name": "req",
+            "type": "backupdrpb.GetBackupPlanRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*backupdrpb.BackupPlan",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "GetBackupPlan",
-          "fullName": "google.cloud.backupdr.v1.BackupDR.GetBackupPlan",
-          "service": {
-            "shortName": "BackupDR",
-            "fullName": "google.cloud.backupdr.v1.BackupDR"
-          }
-        }
+        "shortName": "GetBackupPlan"
       },
+      "description": "GetBackupPlan gets details of a single BackupPlan.",
+      "file": "Client/GetBackupPlan/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_GetBackupPlan_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr GetBackupPlan Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_GetBackupPlanAssociation_sync",
-      "title": "backupdr GetBackupPlanAssociation Sample",
-      "description": "GetBackupPlanAssociation gets details of a single BackupPlanAssociation.",
-      "file": "Client/GetBackupPlanAssociation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetBackupPlanAssociation",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.backupdr.v1.Client.GetBackupPlanAssociation",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1.BackupDR.GetBackupPlanAssociation",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "GetBackupPlanAssociation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "backupdrpb.GetBackupPlanAssociationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "backupdrpb.GetBackupPlanAssociationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*backupdrpb.BackupPlanAssociation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "GetBackupPlanAssociation",
-          "fullName": "google.cloud.backupdr.v1.BackupDR.GetBackupPlanAssociation",
-          "service": {
-            "shortName": "BackupDR",
-            "fullName": "google.cloud.backupdr.v1.BackupDR"
-          }
-        }
+        "shortName": "GetBackupPlanAssociation"
       },
+      "description": "GetBackupPlanAssociation gets details of a single BackupPlanAssociation.",
+      "file": "Client/GetBackupPlanAssociation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_GetBackupPlanAssociation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr GetBackupPlanAssociation Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_GetBackupPlanRevision_sync",
-      "title": "backupdr GetBackupPlanRevision Sample",
-      "description": "GetBackupPlanRevision gets details of a single BackupPlanRevision.",
-      "file": "Client/GetBackupPlanRevision/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetBackupPlanRevision",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.backupdr.v1.Client.GetBackupPlanRevision",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1.BackupDR.GetBackupPlanRevision",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "GetBackupPlanRevision"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "backupdrpb.GetBackupPlanRevisionRequest",
-            "name": "req"
+            "name": "req",
+            "type": "backupdrpb.GetBackupPlanRevisionRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*backupdrpb.BackupPlanRevision",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "GetBackupPlanRevision",
-          "fullName": "google.cloud.backupdr.v1.BackupDR.GetBackupPlanRevision",
-          "service": {
-            "shortName": "BackupDR",
-            "fullName": "google.cloud.backupdr.v1.BackupDR"
-          }
-        }
+        "shortName": "GetBackupPlanRevision"
       },
+      "description": "GetBackupPlanRevision gets details of a single BackupPlanRevision.",
+      "file": "Client/GetBackupPlanRevision/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_GetBackupPlanRevision_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr GetBackupPlanRevision Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_GetBackupVault_sync",
-      "title": "backupdr GetBackupVault Sample",
-      "description": "GetBackupVault gets details of a BackupVault.",
-      "file": "Client/GetBackupVault/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetBackupVault",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.backupdr.v1.Client.GetBackupVault",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1.BackupDR.GetBackupVault",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "GetBackupVault"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "backupdrpb.GetBackupVaultRequest",
-            "name": "req"
+            "name": "req",
+            "type": "backupdrpb.GetBackupVaultRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*backupdrpb.BackupVault",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "GetBackupVault",
-          "fullName": "google.cloud.backupdr.v1.BackupDR.GetBackupVault",
-          "service": {
-            "shortName": "BackupDR",
-            "fullName": "google.cloud.backupdr.v1.BackupDR"
-          }
-        }
+        "shortName": "GetBackupVault"
       },
+      "description": "GetBackupVault gets details of a BackupVault.",
+      "file": "Client/GetBackupVault/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_GetBackupVault_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr GetBackupVault Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_GetDataSource_sync",
-      "title": "backupdr GetDataSource Sample",
-      "description": "GetDataSource gets details of a DataSource.",
-      "file": "Client/GetDataSource/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetDataSource",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.backupdr.v1.Client.GetDataSource",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1.BackupDR.GetDataSource",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "GetDataSource"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "backupdrpb.GetDataSourceRequest",
-            "name": "req"
+            "name": "req",
+            "type": "backupdrpb.GetDataSourceRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*backupdrpb.DataSource",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "GetDataSource",
-          "fullName": "google.cloud.backupdr.v1.BackupDR.GetDataSource",
-          "service": {
-            "shortName": "BackupDR",
-            "fullName": "google.cloud.backupdr.v1.BackupDR"
-          }
-        }
+        "shortName": "GetDataSource"
       },
+      "description": "GetDataSource gets details of a DataSource.",
+      "file": "Client/GetDataSource/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_GetDataSource_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr GetDataSource Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_GetDataSourceReference_sync",
-      "title": "backupdr GetDataSourceReference Sample",
-      "description": "GetDataSourceReference gets details of a single DataSourceReference.",
-      "file": "Client/GetDataSourceReference/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetDataSourceReference",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.backupdr.v1.Client.GetDataSourceReference",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1.BackupDR.GetDataSourceReference",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "GetDataSourceReference"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "backupdrpb.GetDataSourceReferenceRequest",
-            "name": "req"
+            "name": "req",
+            "type": "backupdrpb.GetDataSourceReferenceRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*backupdrpb.DataSourceReference",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "GetDataSourceReference",
-          "fullName": "google.cloud.backupdr.v1.BackupDR.GetDataSourceReference",
-          "service": {
-            "shortName": "BackupDR",
-            "fullName": "google.cloud.backupdr.v1.BackupDR"
-          }
-        }
+        "shortName": "GetDataSourceReference"
       },
+      "description": "GetDataSourceReference gets details of a single DataSourceReference.",
+      "file": "Client/GetDataSourceReference/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_GetDataSourceReference_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr GetDataSourceReference Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_GetIamPolicy_sync",
-      "title": "backupdr GetIamPolicy Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.backupdr.v1.Client.GetIamPolicy",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "GetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.GetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "GetIamPolicy"
+      },
       "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
       "file": "Client/GetIamPolicy/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetIamPolicy",
-        "fullName": "google.cloud.backupdr.v1.Client.GetIamPolicy",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "iampb.GetIamPolicyRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*iampb.Policy",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "GetIamPolicy",
-          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.iam.v1.IAMPolicy"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_GetIamPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr GetIamPolicy Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_GetLocation_sync",
-      "title": "backupdr GetLocation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.backupdr.v1.Client.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "shortName": "GetLocation"
+      },
       "description": "GetLocation gets information about a location.",
       "file": "Client/GetLocation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetLocation",
-        "fullName": "google.cloud.backupdr.v1.Client.GetLocation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "locationpb.GetLocationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*locationpb.Location",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "GetLocation",
-          "fullName": "google.cloud.location.Locations.GetLocation",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_GetLocation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr GetLocation Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_GetManagementServer_sync",
-      "title": "backupdr GetManagementServer Sample",
-      "description": "GetManagementServer gets details of a single ManagementServer.",
-      "file": "Client/GetManagementServer/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetManagementServer",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.backupdr.v1.Client.GetManagementServer",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1.BackupDR.GetManagementServer",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "GetManagementServer"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "backupdrpb.GetManagementServerRequest",
-            "name": "req"
+            "name": "req",
+            "type": "backupdrpb.GetManagementServerRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*backupdrpb.ManagementServer",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "GetManagementServer",
-          "fullName": "google.cloud.backupdr.v1.BackupDR.GetManagementServer",
-          "service": {
-            "shortName": "BackupDR",
-            "fullName": "google.cloud.backupdr.v1.BackupDR"
-          }
-        }
+        "shortName": "GetManagementServer"
       },
+      "description": "GetManagementServer gets details of a single ManagementServer.",
+      "file": "Client/GetManagementServer/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_GetManagementServer_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr GetManagementServer Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_GetOperation_sync",
-      "title": "backupdr GetOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.backupdr.v1.Client.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
       "description": "GetOperation is a utility method from google.longrunning.Operations.",
       "file": "Client/GetOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetOperation",
-        "fullName": "google.cloud.backupdr.v1.Client.GetOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.GetOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*longrunningpb.Operation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "GetOperation",
-          "fullName": "google.longrunning.Operations.GetOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_GetOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr GetOperation Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_InitializeService_sync",
-      "title": "backupdr InitializeService Sample",
-      "description": "InitializeService initializes the service related config for a project.",
-      "file": "Client/InitializeService/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "InitializeService",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.backupdr.v1.Client.InitializeService",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1.BackupDR.InitializeService",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "InitializeService"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "backupdrpb.InitializeServiceRequest",
-            "name": "req"
+            "name": "req",
+            "type": "backupdrpb.InitializeServiceRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "InitializeServiceOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "InitializeService",
-          "fullName": "google.cloud.backupdr.v1.BackupDR.InitializeService",
-          "service": {
-            "shortName": "BackupDR",
-            "fullName": "google.cloud.backupdr.v1.BackupDR"
-          }
-        }
+        "shortName": "InitializeService"
       },
+      "description": "InitializeService initializes the service related config for a project.",
+      "file": "Client/InitializeService/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_InitializeService_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr InitializeService Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_ListBackupPlanAssociations_sync",
-      "title": "backupdr ListBackupPlanAssociations Sample",
-      "description": "ListBackupPlanAssociations lists BackupPlanAssociations in a given project and location.",
-      "file": "Client/ListBackupPlanAssociations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListBackupPlanAssociations",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.backupdr.v1.Client.ListBackupPlanAssociations",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1.BackupDR.ListBackupPlanAssociations",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "ListBackupPlanAssociations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "backupdrpb.ListBackupPlanAssociationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "backupdrpb.ListBackupPlanAssociationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "BackupPlanAssociationIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "ListBackupPlanAssociations",
-          "fullName": "google.cloud.backupdr.v1.BackupDR.ListBackupPlanAssociations",
-          "service": {
-            "shortName": "BackupDR",
-            "fullName": "google.cloud.backupdr.v1.BackupDR"
-          }
-        }
+        "shortName": "ListBackupPlanAssociations"
       },
+      "description": "ListBackupPlanAssociations lists BackupPlanAssociations in a given project and location.",
+      "file": "Client/ListBackupPlanAssociations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_ListBackupPlanAssociations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr ListBackupPlanAssociations Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_ListBackupPlanRevisions_sync",
-      "title": "backupdr ListBackupPlanRevisions Sample",
-      "description": "ListBackupPlanRevisions lists BackupPlanRevisions in a given project and location.",
-      "file": "Client/ListBackupPlanRevisions/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListBackupPlanRevisions",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.backupdr.v1.Client.ListBackupPlanRevisions",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1.BackupDR.ListBackupPlanRevisions",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "ListBackupPlanRevisions"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "backupdrpb.ListBackupPlanRevisionsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "backupdrpb.ListBackupPlanRevisionsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "BackupPlanRevisionIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "ListBackupPlanRevisions",
-          "fullName": "google.cloud.backupdr.v1.BackupDR.ListBackupPlanRevisions",
-          "service": {
-            "shortName": "BackupDR",
-            "fullName": "google.cloud.backupdr.v1.BackupDR"
-          }
-        }
+        "shortName": "ListBackupPlanRevisions"
       },
+      "description": "ListBackupPlanRevisions lists BackupPlanRevisions in a given project and location.",
+      "file": "Client/ListBackupPlanRevisions/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_ListBackupPlanRevisions_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr ListBackupPlanRevisions Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_ListBackupPlans_sync",
-      "title": "backupdr ListBackupPlans Sample",
-      "description": "ListBackupPlans lists BackupPlans in a given project and location.",
-      "file": "Client/ListBackupPlans/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListBackupPlans",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.backupdr.v1.Client.ListBackupPlans",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1.BackupDR.ListBackupPlans",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "ListBackupPlans"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "backupdrpb.ListBackupPlansRequest",
-            "name": "req"
+            "name": "req",
+            "type": "backupdrpb.ListBackupPlansRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "BackupPlanIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "ListBackupPlans",
-          "fullName": "google.cloud.backupdr.v1.BackupDR.ListBackupPlans",
-          "service": {
-            "shortName": "BackupDR",
-            "fullName": "google.cloud.backupdr.v1.BackupDR"
-          }
-        }
+        "shortName": "ListBackupPlans"
       },
+      "description": "ListBackupPlans lists BackupPlans in a given project and location.",
+      "file": "Client/ListBackupPlans/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_ListBackupPlans_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr ListBackupPlans Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_ListBackupVaults_sync",
-      "title": "backupdr ListBackupVaults Sample",
-      "description": "ListBackupVaults lists BackupVaults in a given project and location.",
-      "file": "Client/ListBackupVaults/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListBackupVaults",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.backupdr.v1.Client.ListBackupVaults",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1.BackupDR.ListBackupVaults",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "ListBackupVaults"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "backupdrpb.ListBackupVaultsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "backupdrpb.ListBackupVaultsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "BackupVaultIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "ListBackupVaults",
-          "fullName": "google.cloud.backupdr.v1.BackupDR.ListBackupVaults",
-          "service": {
-            "shortName": "BackupDR",
-            "fullName": "google.cloud.backupdr.v1.BackupDR"
-          }
-        }
+        "shortName": "ListBackupVaults"
       },
+      "description": "ListBackupVaults lists BackupVaults in a given project and location.",
+      "file": "Client/ListBackupVaults/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_ListBackupVaults_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr ListBackupVaults Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_ListBackups_sync",
-      "title": "backupdr ListBackups Sample",
-      "description": "ListBackups lists Backups in a given project and location.",
-      "file": "Client/ListBackups/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListBackups",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.backupdr.v1.Client.ListBackups",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1.BackupDR.ListBackups",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "ListBackups"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "backupdrpb.ListBackupsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "backupdrpb.ListBackupsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "BackupIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "ListBackups",
-          "fullName": "google.cloud.backupdr.v1.BackupDR.ListBackups",
-          "service": {
-            "shortName": "BackupDR",
-            "fullName": "google.cloud.backupdr.v1.BackupDR"
-          }
-        }
+        "shortName": "ListBackups"
       },
+      "description": "ListBackups lists Backups in a given project and location.",
+      "file": "Client/ListBackups/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_ListBackups_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr ListBackups Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_ListDataSourceReferences_sync",
-      "title": "backupdr ListDataSourceReferences Sample",
-      "description": "ListDataSourceReferences lists DataSourceReferences for a given project and location.",
-      "file": "Client/ListDataSourceReferences/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListDataSourceReferences",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.backupdr.v1.Client.ListDataSourceReferences",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1.BackupDR.ListDataSourceReferences",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "ListDataSourceReferences"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "backupdrpb.ListDataSourceReferencesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "backupdrpb.ListDataSourceReferencesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DataSourceReferenceIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "ListDataSourceReferences",
-          "fullName": "google.cloud.backupdr.v1.BackupDR.ListDataSourceReferences",
-          "service": {
-            "shortName": "BackupDR",
-            "fullName": "google.cloud.backupdr.v1.BackupDR"
-          }
-        }
+        "shortName": "ListDataSourceReferences"
       },
+      "description": "ListDataSourceReferences lists DataSourceReferences for a given project and location.",
+      "file": "Client/ListDataSourceReferences/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_ListDataSourceReferences_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr ListDataSourceReferences Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_ListDataSources_sync",
-      "title": "backupdr ListDataSources Sample",
-      "description": "ListDataSources lists DataSources in a given project and location.",
-      "file": "Client/ListDataSources/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListDataSources",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.backupdr.v1.Client.ListDataSources",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1.BackupDR.ListDataSources",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "ListDataSources"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "backupdrpb.ListDataSourcesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "backupdrpb.ListDataSourcesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DataSourceIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "ListDataSources",
-          "fullName": "google.cloud.backupdr.v1.BackupDR.ListDataSources",
-          "service": {
-            "shortName": "BackupDR",
-            "fullName": "google.cloud.backupdr.v1.BackupDR"
-          }
-        }
+        "shortName": "ListDataSources"
       },
+      "description": "ListDataSources lists DataSources in a given project and location.",
+      "file": "Client/ListDataSources/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_ListDataSources_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr ListDataSources Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_ListLocations_sync",
-      "title": "backupdr ListLocations Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.backupdr.v1.Client.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "shortName": "ListLocations"
+      },
       "description": "ListLocations lists information about the supported locations for this service.",
       "file": "Client/ListLocations/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "ListLocations",
-        "fullName": "google.cloud.backupdr.v1.Client.ListLocations",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "locationpb.ListLocationsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "LocationIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "ListLocations",
-          "fullName": "google.cloud.location.Locations.ListLocations",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_ListLocations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr ListLocations Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_ListManagementServers_sync",
-      "title": "backupdr ListManagementServers Sample",
-      "description": "ListManagementServers lists ManagementServers in a given project and location.",
-      "file": "Client/ListManagementServers/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListManagementServers",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.backupdr.v1.Client.ListManagementServers",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1.BackupDR.ListManagementServers",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "ListManagementServers"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "backupdrpb.ListManagementServersRequest",
-            "name": "req"
+            "name": "req",
+            "type": "backupdrpb.ListManagementServersRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ManagementServerIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "ListManagementServers",
-          "fullName": "google.cloud.backupdr.v1.BackupDR.ListManagementServers",
-          "service": {
-            "shortName": "BackupDR",
-            "fullName": "google.cloud.backupdr.v1.BackupDR"
-          }
-        }
+        "shortName": "ListManagementServers"
       },
+      "description": "ListManagementServers lists ManagementServers in a given project and location.",
+      "file": "Client/ListManagementServers/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_ListManagementServers_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr ListManagementServers Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_ListOperations_sync",
-      "title": "backupdr ListOperations Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.backupdr.v1.Client.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
       "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "Client/ListOperations/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "ListOperations",
-        "fullName": "google.cloud.backupdr.v1.Client.ListOperations",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.ListOperationsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "OperationIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "ListOperations",
-          "fullName": "google.longrunning.Operations.ListOperations",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_ListOperations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr ListOperations Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_RestoreBackup_sync",
-      "title": "backupdr RestoreBackup Sample",
-      "description": "RestoreBackup restore from a Backup",
-      "file": "Client/RestoreBackup/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "RestoreBackup",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.backupdr.v1.Client.RestoreBackup",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1.BackupDR.RestoreBackup",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "RestoreBackup"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "backupdrpb.RestoreBackupRequest",
-            "name": "req"
+            "name": "req",
+            "type": "backupdrpb.RestoreBackupRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "RestoreBackupOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "RestoreBackup",
-          "fullName": "google.cloud.backupdr.v1.BackupDR.RestoreBackup",
-          "service": {
-            "shortName": "BackupDR",
-            "fullName": "google.cloud.backupdr.v1.BackupDR"
-          }
-        }
+        "shortName": "RestoreBackup"
       },
+      "description": "RestoreBackup restore from a Backup",
+      "file": "Client/RestoreBackup/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_RestoreBackup_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr RestoreBackup Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_SetIamPolicy_sync",
-      "title": "backupdr SetIamPolicy Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.backupdr.v1.Client.SetIamPolicy",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "SetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.SetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "SetIamPolicy"
+      },
       "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
       "file": "Client/SetIamPolicy/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "SetIamPolicy",
-        "fullName": "google.cloud.backupdr.v1.Client.SetIamPolicy",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "iampb.SetIamPolicyRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*iampb.Policy",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "SetIamPolicy",
-          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.iam.v1.IAMPolicy"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_SetIamPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr SetIamPolicy Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_TestIamPermissions_sync",
-      "title": "backupdr TestIamPermissions Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.backupdr.v1.Client.TestIamPermissions",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "TestIamPermissions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.TestIamPermissionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "shortName": "TestIamPermissions"
+      },
       "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
       "file": "Client/TestIamPermissions/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "TestIamPermissions",
-        "fullName": "google.cloud.backupdr.v1.Client.TestIamPermissions",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "iampb.TestIamPermissionsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*iampb.TestIamPermissionsResponse",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "TestIamPermissions",
-          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.iam.v1.IAMPolicy"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_TestIamPermissions_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr TestIamPermissions Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_TriggerBackup_sync",
-      "title": "backupdr TriggerBackup Sample",
-      "description": "TriggerBackup triggers a new Backup.",
-      "file": "Client/TriggerBackup/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "TriggerBackup",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.backupdr.v1.Client.TriggerBackup",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1.BackupDR.TriggerBackup",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "TriggerBackup"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "backupdrpb.TriggerBackupRequest",
-            "name": "req"
+            "name": "req",
+            "type": "backupdrpb.TriggerBackupRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "TriggerBackupOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "TriggerBackup",
-          "fullName": "google.cloud.backupdr.v1.BackupDR.TriggerBackup",
-          "service": {
-            "shortName": "BackupDR",
-            "fullName": "google.cloud.backupdr.v1.BackupDR"
-          }
-        }
+        "shortName": "TriggerBackup"
       },
+      "description": "TriggerBackup triggers a new Backup.",
+      "file": "Client/TriggerBackup/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_TriggerBackup_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr TriggerBackup Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_UpdateBackup_sync",
-      "title": "backupdr UpdateBackup Sample",
-      "description": "UpdateBackup updates the settings of a Backup.",
-      "file": "Client/UpdateBackup/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateBackup",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.backupdr.v1.Client.UpdateBackup",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1.BackupDR.UpdateBackup",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "UpdateBackup"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "backupdrpb.UpdateBackupRequest",
-            "name": "req"
+            "name": "req",
+            "type": "backupdrpb.UpdateBackupRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UpdateBackupOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "UpdateBackup",
-          "fullName": "google.cloud.backupdr.v1.BackupDR.UpdateBackup",
-          "service": {
-            "shortName": "BackupDR",
-            "fullName": "google.cloud.backupdr.v1.BackupDR"
-          }
-        }
+        "shortName": "UpdateBackup"
       },
+      "description": "UpdateBackup updates the settings of a Backup.",
+      "file": "Client/UpdateBackup/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_UpdateBackup_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr UpdateBackup Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_UpdateBackupPlan_sync",
-      "title": "backupdr UpdateBackupPlan Sample",
-      "description": "UpdateBackupPlan update a BackupPlan.",
-      "file": "Client/UpdateBackupPlan/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateBackupPlan",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.backupdr.v1.Client.UpdateBackupPlan",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1.BackupDR.UpdateBackupPlan",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "UpdateBackupPlan"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "backupdrpb.UpdateBackupPlanRequest",
-            "name": "req"
+            "name": "req",
+            "type": "backupdrpb.UpdateBackupPlanRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UpdateBackupPlanOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "UpdateBackupPlan",
-          "fullName": "google.cloud.backupdr.v1.BackupDR.UpdateBackupPlan",
-          "service": {
-            "shortName": "BackupDR",
-            "fullName": "google.cloud.backupdr.v1.BackupDR"
-          }
-        }
+        "shortName": "UpdateBackupPlan"
       },
+      "description": "UpdateBackupPlan update a BackupPlan.",
+      "file": "Client/UpdateBackupPlan/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_UpdateBackupPlan_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr UpdateBackupPlan Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_UpdateBackupPlanAssociation_sync",
-      "title": "backupdr UpdateBackupPlanAssociation Sample",
-      "description": "UpdateBackupPlanAssociation update a BackupPlanAssociation.",
-      "file": "Client/UpdateBackupPlanAssociation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateBackupPlanAssociation",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.backupdr.v1.Client.UpdateBackupPlanAssociation",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1.BackupDR.UpdateBackupPlanAssociation",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "UpdateBackupPlanAssociation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "backupdrpb.UpdateBackupPlanAssociationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "backupdrpb.UpdateBackupPlanAssociationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UpdateBackupPlanAssociationOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "UpdateBackupPlanAssociation",
-          "fullName": "google.cloud.backupdr.v1.BackupDR.UpdateBackupPlanAssociation",
-          "service": {
-            "shortName": "BackupDR",
-            "fullName": "google.cloud.backupdr.v1.BackupDR"
-          }
-        }
+        "shortName": "UpdateBackupPlanAssociation"
       },
+      "description": "UpdateBackupPlanAssociation update a BackupPlanAssociation.",
+      "file": "Client/UpdateBackupPlanAssociation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_UpdateBackupPlanAssociation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr UpdateBackupPlanAssociation Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_UpdateBackupVault_sync",
-      "title": "backupdr UpdateBackupVault Sample",
-      "description": "UpdateBackupVault updates the settings of a BackupVault.",
-      "file": "Client/UpdateBackupVault/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateBackupVault",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.backupdr.v1.Client.UpdateBackupVault",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1.BackupDR.UpdateBackupVault",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "UpdateBackupVault"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "backupdrpb.UpdateBackupVaultRequest",
-            "name": "req"
+            "name": "req",
+            "type": "backupdrpb.UpdateBackupVaultRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UpdateBackupVaultOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "UpdateBackupVault",
-          "fullName": "google.cloud.backupdr.v1.BackupDR.UpdateBackupVault",
-          "service": {
-            "shortName": "BackupDR",
-            "fullName": "google.cloud.backupdr.v1.BackupDR"
-          }
-        }
+        "shortName": "UpdateBackupVault"
       },
+      "description": "UpdateBackupVault updates the settings of a BackupVault.",
+      "file": "Client/UpdateBackupVault/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_UpdateBackupVault_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr UpdateBackupVault Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDR_UpdateDataSource_sync",
-      "title": "backupdr UpdateDataSource Sample",
-      "description": "UpdateDataSource updates the settings of a DataSource.",
-      "file": "Client/UpdateDataSource/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateDataSource",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.backupdr.v1.Client.UpdateDataSource",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1.BackupDR.UpdateDataSource",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1.BackupDR",
+            "shortName": "BackupDR"
+          },
+          "shortName": "UpdateDataSource"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "backupdrpb.UpdateDataSourceRequest",
-            "name": "req"
+            "name": "req",
+            "type": "backupdrpb.UpdateDataSourceRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UpdateDataSourceOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.backupdr.v1.Client"
-        },
-        "method": {
-          "shortName": "UpdateDataSource",
-          "fullName": "google.cloud.backupdr.v1.BackupDR.UpdateDataSource",
-          "service": {
-            "shortName": "BackupDR",
-            "fullName": "google.cloud.backupdr.v1.BackupDR"
-          }
-        }
+        "shortName": "UpdateDataSource"
       },
+      "description": "UpdateDataSource updates the settings of a DataSource.",
+      "file": "Client/UpdateDataSource/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDR_UpdateDataSource_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr UpdateDataSource Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDrProtectionSummary_CancelOperation_sync",
-      "title": "backupdr CancelOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.BackupDrProtectionSummaryClient",
+          "shortName": "BackupDrProtectionSummaryClient"
+        },
+        "fullName": "google.cloud.backupdr.v1.BackupDrProtectionSummaryClient.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
       "file": "BackupDrProtectionSummaryClient/CancelOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CancelOperation",
-        "fullName": "google.cloud.backupdr.v1.BackupDrProtectionSummaryClient.CancelOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.CancelOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "BackupDrProtectionSummaryClient",
-          "fullName": "google.cloud.backupdr.v1.BackupDrProtectionSummaryClient"
-        },
-        "method": {
-          "shortName": "CancelOperation",
-          "fullName": "google.longrunning.Operations.CancelOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDrProtectionSummary_CancelOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr CancelOperation Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDrProtectionSummary_DeleteOperation_sync",
-      "title": "backupdr DeleteOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.BackupDrProtectionSummaryClient",
+          "shortName": "BackupDrProtectionSummaryClient"
+        },
+        "fullName": "google.cloud.backupdr.v1.BackupDrProtectionSummaryClient.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
       "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
       "file": "BackupDrProtectionSummaryClient/DeleteOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteOperation",
-        "fullName": "google.cloud.backupdr.v1.BackupDrProtectionSummaryClient.DeleteOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.DeleteOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "BackupDrProtectionSummaryClient",
-          "fullName": "google.cloud.backupdr.v1.BackupDrProtectionSummaryClient"
-        },
-        "method": {
-          "shortName": "DeleteOperation",
-          "fullName": "google.longrunning.Operations.DeleteOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDrProtectionSummary_DeleteOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr DeleteOperation Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDrProtectionSummary_GetIamPolicy_sync",
-      "title": "backupdr GetIamPolicy Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.BackupDrProtectionSummaryClient",
+          "shortName": "BackupDrProtectionSummaryClient"
+        },
+        "fullName": "google.cloud.backupdr.v1.BackupDrProtectionSummaryClient.GetIamPolicy",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "GetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.GetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "GetIamPolicy"
+      },
       "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
       "file": "BackupDrProtectionSummaryClient/GetIamPolicy/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetIamPolicy",
-        "fullName": "google.cloud.backupdr.v1.BackupDrProtectionSummaryClient.GetIamPolicy",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "iampb.GetIamPolicyRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*iampb.Policy",
-        "client": {
-          "shortName": "BackupDrProtectionSummaryClient",
-          "fullName": "google.cloud.backupdr.v1.BackupDrProtectionSummaryClient"
-        },
-        "method": {
-          "shortName": "GetIamPolicy",
-          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.iam.v1.IAMPolicy"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDrProtectionSummary_GetIamPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr GetIamPolicy Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDrProtectionSummary_GetLocation_sync",
-      "title": "backupdr GetLocation Sample",
-      "description": "GetLocation gets information about a location.",
-      "file": "BackupDrProtectionSummaryClient/GetLocation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetLocation",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.BackupDrProtectionSummaryClient",
+          "shortName": "BackupDrProtectionSummaryClient"
+        },
         "fullName": "google.cloud.backupdr.v1.BackupDrProtectionSummaryClient.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "locationpb.GetLocationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*locationpb.Location",
-        "client": {
-          "shortName": "BackupDrProtectionSummaryClient",
-          "fullName": "google.cloud.backupdr.v1.BackupDrProtectionSummaryClient"
-        },
-        "method": {
-          "shortName": "GetLocation",
-          "fullName": "google.cloud.location.Locations.GetLocation",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
+        "shortName": "GetLocation"
       },
+      "description": "GetLocation gets information about a location.",
+      "file": "BackupDrProtectionSummaryClient/GetLocation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDrProtectionSummary_GetLocation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr GetLocation Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDrProtectionSummary_GetOperation_sync",
-      "title": "backupdr GetOperation Sample",
-      "description": "GetOperation is a utility method from google.longrunning.Operations.",
-      "file": "BackupDrProtectionSummaryClient/GetOperation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetOperation",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.BackupDrProtectionSummaryClient",
+          "shortName": "BackupDrProtectionSummaryClient"
+        },
         "fullName": "google.cloud.backupdr.v1.BackupDrProtectionSummaryClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.GetOperationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*longrunningpb.Operation",
-        "client": {
-          "shortName": "BackupDrProtectionSummaryClient",
-          "fullName": "google.cloud.backupdr.v1.BackupDrProtectionSummaryClient"
-        },
-        "method": {
-          "shortName": "GetOperation",
-          "fullName": "google.longrunning.Operations.GetOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "GetOperation"
       },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "BackupDrProtectionSummaryClient/GetOperation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDrProtectionSummary_GetOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr GetOperation Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDrProtectionSummary_ListLocations_sync",
-      "title": "backupdr ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
-      "file": "BackupDrProtectionSummaryClient/ListLocations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListLocations",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.BackupDrProtectionSummaryClient",
+          "shortName": "BackupDrProtectionSummaryClient"
+        },
         "fullName": "google.cloud.backupdr.v1.BackupDrProtectionSummaryClient.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "locationpb.ListLocationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "LocationIterator",
-        "client": {
-          "shortName": "BackupDrProtectionSummaryClient",
-          "fullName": "google.cloud.backupdr.v1.BackupDrProtectionSummaryClient"
-        },
-        "method": {
-          "shortName": "ListLocations",
-          "fullName": "google.cloud.location.Locations.ListLocations",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
+        "shortName": "ListLocations"
       },
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "BackupDrProtectionSummaryClient/ListLocations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDrProtectionSummary_ListLocations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr ListLocations Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDrProtectionSummary_ListOperations_sync",
-      "title": "backupdr ListOperations Sample",
-      "description": "ListOperations is a utility method from google.longrunning.Operations.",
-      "file": "BackupDrProtectionSummaryClient/ListOperations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListOperations",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.BackupDrProtectionSummaryClient",
+          "shortName": "BackupDrProtectionSummaryClient"
+        },
         "fullName": "google.cloud.backupdr.v1.BackupDrProtectionSummaryClient.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.ListOperationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "OperationIterator",
-        "client": {
-          "shortName": "BackupDrProtectionSummaryClient",
-          "fullName": "google.cloud.backupdr.v1.BackupDrProtectionSummaryClient"
-        },
-        "method": {
-          "shortName": "ListOperations",
-          "fullName": "google.longrunning.Operations.ListOperations",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "ListOperations"
       },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "BackupDrProtectionSummaryClient/ListOperations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDrProtectionSummary_ListOperations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr ListOperations Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDrProtectionSummary_ListResourceBackupConfigs_sync",
-      "title": "backupdr ListResourceBackupConfigs Sample",
-      "description": "ListResourceBackupConfigs lists ResourceBackupConfigs.",
-      "file": "BackupDrProtectionSummaryClient/ListResourceBackupConfigs/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListResourceBackupConfigs",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.BackupDrProtectionSummaryClient",
+          "shortName": "BackupDrProtectionSummaryClient"
+        },
         "fullName": "google.cloud.backupdr.v1.BackupDrProtectionSummaryClient.ListResourceBackupConfigs",
+        "method": {
+          "fullName": "google.cloud.backupdr.v1.BackupDrProtectionSummary.ListResourceBackupConfigs",
+          "service": {
+            "fullName": "google.cloud.backupdr.v1.BackupDrProtectionSummary",
+            "shortName": "BackupDrProtectionSummary"
+          },
+          "shortName": "ListResourceBackupConfigs"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "backupdrpb.ListResourceBackupConfigsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "backupdrpb.ListResourceBackupConfigsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ResourceBackupConfigIterator",
-        "client": {
-          "shortName": "BackupDrProtectionSummaryClient",
-          "fullName": "google.cloud.backupdr.v1.BackupDrProtectionSummaryClient"
-        },
-        "method": {
-          "shortName": "ListResourceBackupConfigs",
-          "fullName": "google.cloud.backupdr.v1.BackupDrProtectionSummary.ListResourceBackupConfigs",
-          "service": {
-            "shortName": "BackupDrProtectionSummary",
-            "fullName": "google.cloud.backupdr.v1.BackupDrProtectionSummary"
-          }
-        }
+        "shortName": "ListResourceBackupConfigs"
       },
+      "description": "ListResourceBackupConfigs lists ResourceBackupConfigs.",
+      "file": "BackupDrProtectionSummaryClient/ListResourceBackupConfigs/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDrProtectionSummary_ListResourceBackupConfigs_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr ListResourceBackupConfigs Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDrProtectionSummary_SetIamPolicy_sync",
-      "title": "backupdr SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
-      "file": "BackupDrProtectionSummaryClient/SetIamPolicy/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "SetIamPolicy",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.BackupDrProtectionSummaryClient",
+          "shortName": "BackupDrProtectionSummaryClient"
+        },
         "fullName": "google.cloud.backupdr.v1.BackupDrProtectionSummaryClient.SetIamPolicy",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "SetIamPolicy"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "iampb.SetIamPolicyRequest",
-            "name": "req"
+            "name": "req",
+            "type": "iampb.SetIamPolicyRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*iampb.Policy",
-        "client": {
-          "shortName": "BackupDrProtectionSummaryClient",
-          "fullName": "google.cloud.backupdr.v1.BackupDrProtectionSummaryClient"
-        },
-        "method": {
-          "shortName": "SetIamPolicy",
-          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.iam.v1.IAMPolicy"
-          }
-        }
+        "shortName": "SetIamPolicy"
       },
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "BackupDrProtectionSummaryClient/SetIamPolicy/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDrProtectionSummary_SetIamPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr SetIamPolicy Sample"
     },
     {
-      "regionTag": "backupdr_v1_generated_BackupDrProtectionSummary_TestIamPermissions_sync",
-      "title": "backupdr TestIamPermissions Sample",
-      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
-      "file": "BackupDrProtectionSummaryClient/TestIamPermissions/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "TestIamPermissions",
+        "client": {
+          "fullName": "google.cloud.backupdr.v1.BackupDrProtectionSummaryClient",
+          "shortName": "BackupDrProtectionSummaryClient"
+        },
         "fullName": "google.cloud.backupdr.v1.BackupDrProtectionSummaryClient.TestIamPermissions",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "TestIamPermissions"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "iampb.TestIamPermissionsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "iampb.TestIamPermissionsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*iampb.TestIamPermissionsResponse",
-        "client": {
-          "shortName": "BackupDrProtectionSummaryClient",
-          "fullName": "google.cloud.backupdr.v1.BackupDrProtectionSummaryClient"
-        },
-        "method": {
-          "shortName": "TestIamPermissions",
-          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.iam.v1.IAMPolicy"
-          }
-        }
+        "shortName": "TestIamPermissions"
       },
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "BackupDrProtectionSummaryClient/TestIamPermissions/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "backupdr_v1_generated_BackupDrProtectionSummary_TestIamPermissions_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "backupdr TestIamPermissions Sample"
     }
   ]
 }

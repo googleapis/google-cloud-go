@@ -1,153 +1,153 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/shopping/merchant/quota/apiv1",
-    "version": "1.6.0",
-    "language": "GO",
     "apis": [
       {
         "id": "google.shopping.merchant.quota.v1",
         "version": "v1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/shopping/merchant/quota/apiv1",
+    "version": "1.6.0"
   },
   "snippets": [
     {
-      "regionTag": "merchantapi_v1_generated_AccountLimitsService_GetAccountLimit_sync",
-      "title": "merchantapi GetAccountLimit Sample",
-      "description": "GetAccountLimit retrieves an account limit.",
-      "file": "AccountLimitsClient/GetAccountLimit/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetAccountLimit",
+        "client": {
+          "fullName": "google.shopping.merchant.quota.v1.AccountLimitsClient",
+          "shortName": "AccountLimitsClient"
+        },
         "fullName": "google.shopping.merchant.quota.v1.AccountLimitsClient.GetAccountLimit",
+        "method": {
+          "fullName": "google.shopping.merchant.quota.v1.AccountLimitsService.GetAccountLimit",
+          "service": {
+            "fullName": "google.shopping.merchant.quota.v1.AccountLimitsService",
+            "shortName": "AccountLimitsService"
+          },
+          "shortName": "GetAccountLimit"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "quotapb.GetAccountLimitRequest",
-            "name": "req"
+            "name": "req",
+            "type": "quotapb.GetAccountLimitRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*quotapb.AccountLimit",
-        "client": {
-          "shortName": "AccountLimitsClient",
-          "fullName": "google.shopping.merchant.quota.v1.AccountLimitsClient"
-        },
-        "method": {
-          "shortName": "GetAccountLimit",
-          "fullName": "google.shopping.merchant.quota.v1.AccountLimitsService.GetAccountLimit",
-          "service": {
-            "shortName": "AccountLimitsService",
-            "fullName": "google.shopping.merchant.quota.v1.AccountLimitsService"
-          }
-        }
+        "shortName": "GetAccountLimit"
       },
+      "description": "GetAccountLimit retrieves an account limit.",
+      "file": "AccountLimitsClient/GetAccountLimit/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "merchantapi_v1_generated_AccountLimitsService_GetAccountLimit_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "merchantapi GetAccountLimit Sample"
     },
     {
-      "regionTag": "merchantapi_v1_generated_AccountLimitsService_ListAccountLimits_sync",
-      "title": "merchantapi ListAccountLimits Sample",
-      "description": "ListAccountLimits lists the limits of an account.",
-      "file": "AccountLimitsClient/ListAccountLimits/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListAccountLimits",
+        "client": {
+          "fullName": "google.shopping.merchant.quota.v1.AccountLimitsClient",
+          "shortName": "AccountLimitsClient"
+        },
         "fullName": "google.shopping.merchant.quota.v1.AccountLimitsClient.ListAccountLimits",
+        "method": {
+          "fullName": "google.shopping.merchant.quota.v1.AccountLimitsService.ListAccountLimits",
+          "service": {
+            "fullName": "google.shopping.merchant.quota.v1.AccountLimitsService",
+            "shortName": "AccountLimitsService"
+          },
+          "shortName": "ListAccountLimits"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "quotapb.ListAccountLimitsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "quotapb.ListAccountLimitsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "AccountLimitIterator",
-        "client": {
-          "shortName": "AccountLimitsClient",
-          "fullName": "google.shopping.merchant.quota.v1.AccountLimitsClient"
-        },
-        "method": {
-          "shortName": "ListAccountLimits",
-          "fullName": "google.shopping.merchant.quota.v1.AccountLimitsService.ListAccountLimits",
-          "service": {
-            "shortName": "AccountLimitsService",
-            "fullName": "google.shopping.merchant.quota.v1.AccountLimitsService"
-          }
-        }
+        "shortName": "ListAccountLimits"
       },
+      "description": "ListAccountLimits lists the limits of an account.",
+      "file": "AccountLimitsClient/ListAccountLimits/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "merchantapi_v1_generated_AccountLimitsService_ListAccountLimits_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "merchantapi ListAccountLimits Sample"
     },
     {
-      "regionTag": "merchantapi_v1_generated_QuotaService_ListQuotaGroups_sync",
-      "title": "merchantapi ListQuotaGroups Sample",
-      "description": "ListQuotaGroups lists the daily call quota and usage per group for your Merchant\nCenter account.",
-      "file": "Client/ListQuotaGroups/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListQuotaGroups",
+        "client": {
+          "fullName": "google.shopping.merchant.quota.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.shopping.merchant.quota.v1.Client.ListQuotaGroups",
+        "method": {
+          "fullName": "google.shopping.merchant.quota.v1.QuotaService.ListQuotaGroups",
+          "service": {
+            "fullName": "google.shopping.merchant.quota.v1.QuotaService",
+            "shortName": "QuotaService"
+          },
+          "shortName": "ListQuotaGroups"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "quotapb.ListQuotaGroupsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "quotapb.ListQuotaGroupsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "QuotaGroupIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.shopping.merchant.quota.v1.Client"
-        },
-        "method": {
-          "shortName": "ListQuotaGroups",
-          "fullName": "google.shopping.merchant.quota.v1.QuotaService.ListQuotaGroups",
-          "service": {
-            "shortName": "QuotaService",
-            "fullName": "google.shopping.merchant.quota.v1.QuotaService"
-          }
-        }
+        "shortName": "ListQuotaGroups"
       },
+      "description": "ListQuotaGroups lists the daily call quota and usage per group for your Merchant\nCenter account.",
+      "file": "Client/ListQuotaGroups/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "merchantapi_v1_generated_QuotaService_ListQuotaGroups_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "merchantapi ListQuotaGroups Sample"
     }
   ]
 }

@@ -1,750 +1,750 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/apps/meet/apiv2",
-    "version": "0.8.0",
-    "language": "GO",
     "apis": [
       {
         "id": "google.apps.meet.v2",
         "version": "v2"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/apps/meet/apiv2",
+    "version": "0.8.0"
   },
   "snippets": [
     {
-      "regionTag": "meet_v2_generated_ConferenceRecordsService_GetConferenceRecord_sync",
-      "title": "meet GetConferenceRecord Sample",
-      "description": "GetConferenceRecord gets a conference record by conference ID.",
-      "file": "ConferenceRecordsClient/GetConferenceRecord/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetConferenceRecord",
+        "client": {
+          "fullName": "google.apps.meet.v2.ConferenceRecordsClient",
+          "shortName": "ConferenceRecordsClient"
+        },
         "fullName": "google.apps.meet.v2.ConferenceRecordsClient.GetConferenceRecord",
+        "method": {
+          "fullName": "google.apps.meet.v2.ConferenceRecordsService.GetConferenceRecord",
+          "service": {
+            "fullName": "google.apps.meet.v2.ConferenceRecordsService",
+            "shortName": "ConferenceRecordsService"
+          },
+          "shortName": "GetConferenceRecord"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "meetpb.GetConferenceRecordRequest",
-            "name": "req"
+            "name": "req",
+            "type": "meetpb.GetConferenceRecordRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*meetpb.ConferenceRecord",
-        "client": {
-          "shortName": "ConferenceRecordsClient",
-          "fullName": "google.apps.meet.v2.ConferenceRecordsClient"
-        },
-        "method": {
-          "shortName": "GetConferenceRecord",
-          "fullName": "google.apps.meet.v2.ConferenceRecordsService.GetConferenceRecord",
-          "service": {
-            "shortName": "ConferenceRecordsService",
-            "fullName": "google.apps.meet.v2.ConferenceRecordsService"
-          }
-        }
+        "shortName": "GetConferenceRecord"
       },
+      "description": "GetConferenceRecord gets a conference record by conference ID.",
+      "file": "ConferenceRecordsClient/GetConferenceRecord/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "meet_v2_generated_ConferenceRecordsService_GetConferenceRecord_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "meet GetConferenceRecord Sample"
     },
     {
-      "regionTag": "meet_v2_generated_ConferenceRecordsService_GetParticipant_sync",
-      "title": "meet GetParticipant Sample",
-      "description": "GetParticipant gets a participant by participant ID.",
-      "file": "ConferenceRecordsClient/GetParticipant/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetParticipant",
+        "client": {
+          "fullName": "google.apps.meet.v2.ConferenceRecordsClient",
+          "shortName": "ConferenceRecordsClient"
+        },
         "fullName": "google.apps.meet.v2.ConferenceRecordsClient.GetParticipant",
+        "method": {
+          "fullName": "google.apps.meet.v2.ConferenceRecordsService.GetParticipant",
+          "service": {
+            "fullName": "google.apps.meet.v2.ConferenceRecordsService",
+            "shortName": "ConferenceRecordsService"
+          },
+          "shortName": "GetParticipant"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "meetpb.GetParticipantRequest",
-            "name": "req"
+            "name": "req",
+            "type": "meetpb.GetParticipantRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*meetpb.Participant",
-        "client": {
-          "shortName": "ConferenceRecordsClient",
-          "fullName": "google.apps.meet.v2.ConferenceRecordsClient"
-        },
-        "method": {
-          "shortName": "GetParticipant",
-          "fullName": "google.apps.meet.v2.ConferenceRecordsService.GetParticipant",
-          "service": {
-            "shortName": "ConferenceRecordsService",
-            "fullName": "google.apps.meet.v2.ConferenceRecordsService"
-          }
-        }
+        "shortName": "GetParticipant"
       },
+      "description": "GetParticipant gets a participant by participant ID.",
+      "file": "ConferenceRecordsClient/GetParticipant/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "meet_v2_generated_ConferenceRecordsService_GetParticipant_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "meet GetParticipant Sample"
     },
     {
-      "regionTag": "meet_v2_generated_ConferenceRecordsService_GetParticipantSession_sync",
-      "title": "meet GetParticipantSession Sample",
-      "description": "GetParticipantSession gets a participant session by participant session ID.",
-      "file": "ConferenceRecordsClient/GetParticipantSession/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetParticipantSession",
+        "client": {
+          "fullName": "google.apps.meet.v2.ConferenceRecordsClient",
+          "shortName": "ConferenceRecordsClient"
+        },
         "fullName": "google.apps.meet.v2.ConferenceRecordsClient.GetParticipantSession",
+        "method": {
+          "fullName": "google.apps.meet.v2.ConferenceRecordsService.GetParticipantSession",
+          "service": {
+            "fullName": "google.apps.meet.v2.ConferenceRecordsService",
+            "shortName": "ConferenceRecordsService"
+          },
+          "shortName": "GetParticipantSession"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "meetpb.GetParticipantSessionRequest",
-            "name": "req"
+            "name": "req",
+            "type": "meetpb.GetParticipantSessionRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*meetpb.ParticipantSession",
-        "client": {
-          "shortName": "ConferenceRecordsClient",
-          "fullName": "google.apps.meet.v2.ConferenceRecordsClient"
-        },
-        "method": {
-          "shortName": "GetParticipantSession",
-          "fullName": "google.apps.meet.v2.ConferenceRecordsService.GetParticipantSession",
-          "service": {
-            "shortName": "ConferenceRecordsService",
-            "fullName": "google.apps.meet.v2.ConferenceRecordsService"
-          }
-        }
+        "shortName": "GetParticipantSession"
       },
+      "description": "GetParticipantSession gets a participant session by participant session ID.",
+      "file": "ConferenceRecordsClient/GetParticipantSession/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "meet_v2_generated_ConferenceRecordsService_GetParticipantSession_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "meet GetParticipantSession Sample"
     },
     {
-      "regionTag": "meet_v2_generated_ConferenceRecordsService_GetRecording_sync",
-      "title": "meet GetRecording Sample",
-      "description": "GetRecording gets a recording by recording ID.",
-      "file": "ConferenceRecordsClient/GetRecording/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetRecording",
+        "client": {
+          "fullName": "google.apps.meet.v2.ConferenceRecordsClient",
+          "shortName": "ConferenceRecordsClient"
+        },
         "fullName": "google.apps.meet.v2.ConferenceRecordsClient.GetRecording",
+        "method": {
+          "fullName": "google.apps.meet.v2.ConferenceRecordsService.GetRecording",
+          "service": {
+            "fullName": "google.apps.meet.v2.ConferenceRecordsService",
+            "shortName": "ConferenceRecordsService"
+          },
+          "shortName": "GetRecording"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "meetpb.GetRecordingRequest",
-            "name": "req"
+            "name": "req",
+            "type": "meetpb.GetRecordingRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*meetpb.Recording",
-        "client": {
-          "shortName": "ConferenceRecordsClient",
-          "fullName": "google.apps.meet.v2.ConferenceRecordsClient"
-        },
-        "method": {
-          "shortName": "GetRecording",
-          "fullName": "google.apps.meet.v2.ConferenceRecordsService.GetRecording",
-          "service": {
-            "shortName": "ConferenceRecordsService",
-            "fullName": "google.apps.meet.v2.ConferenceRecordsService"
-          }
-        }
+        "shortName": "GetRecording"
       },
+      "description": "GetRecording gets a recording by recording ID.",
+      "file": "ConferenceRecordsClient/GetRecording/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "meet_v2_generated_ConferenceRecordsService_GetRecording_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "meet GetRecording Sample"
     },
     {
-      "regionTag": "meet_v2_generated_ConferenceRecordsService_GetTranscript_sync",
-      "title": "meet GetTranscript Sample",
-      "description": "GetTranscript gets a transcript by transcript ID.",
-      "file": "ConferenceRecordsClient/GetTranscript/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetTranscript",
+        "client": {
+          "fullName": "google.apps.meet.v2.ConferenceRecordsClient",
+          "shortName": "ConferenceRecordsClient"
+        },
         "fullName": "google.apps.meet.v2.ConferenceRecordsClient.GetTranscript",
+        "method": {
+          "fullName": "google.apps.meet.v2.ConferenceRecordsService.GetTranscript",
+          "service": {
+            "fullName": "google.apps.meet.v2.ConferenceRecordsService",
+            "shortName": "ConferenceRecordsService"
+          },
+          "shortName": "GetTranscript"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "meetpb.GetTranscriptRequest",
-            "name": "req"
+            "name": "req",
+            "type": "meetpb.GetTranscriptRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*meetpb.Transcript",
-        "client": {
-          "shortName": "ConferenceRecordsClient",
-          "fullName": "google.apps.meet.v2.ConferenceRecordsClient"
-        },
-        "method": {
-          "shortName": "GetTranscript",
-          "fullName": "google.apps.meet.v2.ConferenceRecordsService.GetTranscript",
-          "service": {
-            "shortName": "ConferenceRecordsService",
-            "fullName": "google.apps.meet.v2.ConferenceRecordsService"
-          }
-        }
+        "shortName": "GetTranscript"
       },
+      "description": "GetTranscript gets a transcript by transcript ID.",
+      "file": "ConferenceRecordsClient/GetTranscript/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "meet_v2_generated_ConferenceRecordsService_GetTranscript_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "meet GetTranscript Sample"
     },
     {
-      "regionTag": "meet_v2_generated_ConferenceRecordsService_GetTranscriptEntry_sync",
-      "title": "meet GetTranscriptEntry Sample",
-      "description": "GetTranscriptEntry gets a `TranscriptEntry` resource by entry ID.\n\nNote: The transcript entries returned by the Google Meet API might not\nmatch the transcription found in the Google Docs transcript file. This can\noccur when the Google Docs transcript file is modified after generation.",
-      "file": "ConferenceRecordsClient/GetTranscriptEntry/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetTranscriptEntry",
+        "client": {
+          "fullName": "google.apps.meet.v2.ConferenceRecordsClient",
+          "shortName": "ConferenceRecordsClient"
+        },
         "fullName": "google.apps.meet.v2.ConferenceRecordsClient.GetTranscriptEntry",
+        "method": {
+          "fullName": "google.apps.meet.v2.ConferenceRecordsService.GetTranscriptEntry",
+          "service": {
+            "fullName": "google.apps.meet.v2.ConferenceRecordsService",
+            "shortName": "ConferenceRecordsService"
+          },
+          "shortName": "GetTranscriptEntry"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "meetpb.GetTranscriptEntryRequest",
-            "name": "req"
+            "name": "req",
+            "type": "meetpb.GetTranscriptEntryRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*meetpb.TranscriptEntry",
-        "client": {
-          "shortName": "ConferenceRecordsClient",
-          "fullName": "google.apps.meet.v2.ConferenceRecordsClient"
-        },
-        "method": {
-          "shortName": "GetTranscriptEntry",
-          "fullName": "google.apps.meet.v2.ConferenceRecordsService.GetTranscriptEntry",
-          "service": {
-            "shortName": "ConferenceRecordsService",
-            "fullName": "google.apps.meet.v2.ConferenceRecordsService"
-          }
-        }
+        "shortName": "GetTranscriptEntry"
       },
+      "description": "GetTranscriptEntry gets a `TranscriptEntry` resource by entry ID.\n\nNote: The transcript entries returned by the Google Meet API might not\nmatch the transcription found in the Google Docs transcript file. This can\noccur when the Google Docs transcript file is modified after generation.",
+      "file": "ConferenceRecordsClient/GetTranscriptEntry/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "meet_v2_generated_ConferenceRecordsService_GetTranscriptEntry_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "meet GetTranscriptEntry Sample"
     },
     {
-      "regionTag": "meet_v2_generated_ConferenceRecordsService_ListConferenceRecords_sync",
-      "title": "meet ListConferenceRecords Sample",
-      "description": "ListConferenceRecords lists the conference records. By default, ordered by start time and in\ndescending order.",
-      "file": "ConferenceRecordsClient/ListConferenceRecords/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListConferenceRecords",
+        "client": {
+          "fullName": "google.apps.meet.v2.ConferenceRecordsClient",
+          "shortName": "ConferenceRecordsClient"
+        },
         "fullName": "google.apps.meet.v2.ConferenceRecordsClient.ListConferenceRecords",
+        "method": {
+          "fullName": "google.apps.meet.v2.ConferenceRecordsService.ListConferenceRecords",
+          "service": {
+            "fullName": "google.apps.meet.v2.ConferenceRecordsService",
+            "shortName": "ConferenceRecordsService"
+          },
+          "shortName": "ListConferenceRecords"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "meetpb.ListConferenceRecordsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "meetpb.ListConferenceRecordsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ConferenceRecordIterator",
-        "client": {
-          "shortName": "ConferenceRecordsClient",
-          "fullName": "google.apps.meet.v2.ConferenceRecordsClient"
-        },
-        "method": {
-          "shortName": "ListConferenceRecords",
-          "fullName": "google.apps.meet.v2.ConferenceRecordsService.ListConferenceRecords",
-          "service": {
-            "shortName": "ConferenceRecordsService",
-            "fullName": "google.apps.meet.v2.ConferenceRecordsService"
-          }
-        }
+        "shortName": "ListConferenceRecords"
       },
+      "description": "ListConferenceRecords lists the conference records. By default, ordered by start time and in\ndescending order.",
+      "file": "ConferenceRecordsClient/ListConferenceRecords/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "meet_v2_generated_ConferenceRecordsService_ListConferenceRecords_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "meet ListConferenceRecords Sample"
     },
     {
-      "regionTag": "meet_v2_generated_ConferenceRecordsService_ListParticipantSessions_sync",
-      "title": "meet ListParticipantSessions Sample",
-      "description": "ListParticipantSessions lists the participant sessions of a participant in a conference record. By\ndefault, ordered by join time and in descending order. This API supports\n`fields` as standard parameters like every other API. However, when the\n`fields` request parameter is omitted this API defaults to\n`'participantsessions/*, next_page_token'`.",
-      "file": "ConferenceRecordsClient/ListParticipantSessions/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListParticipantSessions",
+        "client": {
+          "fullName": "google.apps.meet.v2.ConferenceRecordsClient",
+          "shortName": "ConferenceRecordsClient"
+        },
         "fullName": "google.apps.meet.v2.ConferenceRecordsClient.ListParticipantSessions",
+        "method": {
+          "fullName": "google.apps.meet.v2.ConferenceRecordsService.ListParticipantSessions",
+          "service": {
+            "fullName": "google.apps.meet.v2.ConferenceRecordsService",
+            "shortName": "ConferenceRecordsService"
+          },
+          "shortName": "ListParticipantSessions"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "meetpb.ListParticipantSessionsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "meetpb.ListParticipantSessionsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ParticipantSessionIterator",
-        "client": {
-          "shortName": "ConferenceRecordsClient",
-          "fullName": "google.apps.meet.v2.ConferenceRecordsClient"
-        },
-        "method": {
-          "shortName": "ListParticipantSessions",
-          "fullName": "google.apps.meet.v2.ConferenceRecordsService.ListParticipantSessions",
-          "service": {
-            "shortName": "ConferenceRecordsService",
-            "fullName": "google.apps.meet.v2.ConferenceRecordsService"
-          }
-        }
+        "shortName": "ListParticipantSessions"
       },
+      "description": "ListParticipantSessions lists the participant sessions of a participant in a conference record. By\ndefault, ordered by join time and in descending order. This API supports\n`fields` as standard parameters like every other API. However, when the\n`fields` request parameter is omitted this API defaults to\n`'participantsessions/*, next_page_token'`.",
+      "file": "ConferenceRecordsClient/ListParticipantSessions/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "meet_v2_generated_ConferenceRecordsService_ListParticipantSessions_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "meet ListParticipantSessions Sample"
     },
     {
-      "regionTag": "meet_v2_generated_ConferenceRecordsService_ListParticipants_sync",
-      "title": "meet ListParticipants Sample",
-      "description": "ListParticipants lists the participants in a conference record. By default, ordered by join\ntime and in descending order. This API supports `fields` as standard\nparameters like every other API. However, when the `fields` request\nparameter is omitted, this API defaults to `'participants/*,\nnext_page_token'`.",
-      "file": "ConferenceRecordsClient/ListParticipants/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListParticipants",
+        "client": {
+          "fullName": "google.apps.meet.v2.ConferenceRecordsClient",
+          "shortName": "ConferenceRecordsClient"
+        },
         "fullName": "google.apps.meet.v2.ConferenceRecordsClient.ListParticipants",
+        "method": {
+          "fullName": "google.apps.meet.v2.ConferenceRecordsService.ListParticipants",
+          "service": {
+            "fullName": "google.apps.meet.v2.ConferenceRecordsService",
+            "shortName": "ConferenceRecordsService"
+          },
+          "shortName": "ListParticipants"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "meetpb.ListParticipantsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "meetpb.ListParticipantsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ParticipantIterator",
-        "client": {
-          "shortName": "ConferenceRecordsClient",
-          "fullName": "google.apps.meet.v2.ConferenceRecordsClient"
-        },
-        "method": {
-          "shortName": "ListParticipants",
-          "fullName": "google.apps.meet.v2.ConferenceRecordsService.ListParticipants",
-          "service": {
-            "shortName": "ConferenceRecordsService",
-            "fullName": "google.apps.meet.v2.ConferenceRecordsService"
-          }
-        }
+        "shortName": "ListParticipants"
       },
+      "description": "ListParticipants lists the participants in a conference record. By default, ordered by join\ntime and in descending order. This API supports `fields` as standard\nparameters like every other API. However, when the `fields` request\nparameter is omitted, this API defaults to `'participants/*,\nnext_page_token'`.",
+      "file": "ConferenceRecordsClient/ListParticipants/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "meet_v2_generated_ConferenceRecordsService_ListParticipants_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "meet ListParticipants Sample"
     },
     {
-      "regionTag": "meet_v2_generated_ConferenceRecordsService_ListRecordings_sync",
-      "title": "meet ListRecordings Sample",
-      "description": "ListRecordings lists the recording resources from the conference record. By default,\nordered by start time and in ascending order.",
-      "file": "ConferenceRecordsClient/ListRecordings/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListRecordings",
+        "client": {
+          "fullName": "google.apps.meet.v2.ConferenceRecordsClient",
+          "shortName": "ConferenceRecordsClient"
+        },
         "fullName": "google.apps.meet.v2.ConferenceRecordsClient.ListRecordings",
+        "method": {
+          "fullName": "google.apps.meet.v2.ConferenceRecordsService.ListRecordings",
+          "service": {
+            "fullName": "google.apps.meet.v2.ConferenceRecordsService",
+            "shortName": "ConferenceRecordsService"
+          },
+          "shortName": "ListRecordings"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "meetpb.ListRecordingsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "meetpb.ListRecordingsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "RecordingIterator",
-        "client": {
-          "shortName": "ConferenceRecordsClient",
-          "fullName": "google.apps.meet.v2.ConferenceRecordsClient"
-        },
-        "method": {
-          "shortName": "ListRecordings",
-          "fullName": "google.apps.meet.v2.ConferenceRecordsService.ListRecordings",
-          "service": {
-            "shortName": "ConferenceRecordsService",
-            "fullName": "google.apps.meet.v2.ConferenceRecordsService"
-          }
-        }
+        "shortName": "ListRecordings"
       },
+      "description": "ListRecordings lists the recording resources from the conference record. By default,\nordered by start time and in ascending order.",
+      "file": "ConferenceRecordsClient/ListRecordings/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "meet_v2_generated_ConferenceRecordsService_ListRecordings_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "meet ListRecordings Sample"
     },
     {
-      "regionTag": "meet_v2_generated_ConferenceRecordsService_ListTranscriptEntries_sync",
-      "title": "meet ListTranscriptEntries Sample",
-      "description": "ListTranscriptEntries lists the structured transcript entries per transcript. By default, ordered\nby start time and in ascending order.\n\nNote: The transcript entries returned by the Google Meet API might not\nmatch the transcription found in the Google Docs transcript file. This can\noccur when the Google Docs transcript file is modified after generation.",
-      "file": "ConferenceRecordsClient/ListTranscriptEntries/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListTranscriptEntries",
+        "client": {
+          "fullName": "google.apps.meet.v2.ConferenceRecordsClient",
+          "shortName": "ConferenceRecordsClient"
+        },
         "fullName": "google.apps.meet.v2.ConferenceRecordsClient.ListTranscriptEntries",
+        "method": {
+          "fullName": "google.apps.meet.v2.ConferenceRecordsService.ListTranscriptEntries",
+          "service": {
+            "fullName": "google.apps.meet.v2.ConferenceRecordsService",
+            "shortName": "ConferenceRecordsService"
+          },
+          "shortName": "ListTranscriptEntries"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "meetpb.ListTranscriptEntriesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "meetpb.ListTranscriptEntriesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "TranscriptEntryIterator",
-        "client": {
-          "shortName": "ConferenceRecordsClient",
-          "fullName": "google.apps.meet.v2.ConferenceRecordsClient"
-        },
-        "method": {
-          "shortName": "ListTranscriptEntries",
-          "fullName": "google.apps.meet.v2.ConferenceRecordsService.ListTranscriptEntries",
-          "service": {
-            "shortName": "ConferenceRecordsService",
-            "fullName": "google.apps.meet.v2.ConferenceRecordsService"
-          }
-        }
+        "shortName": "ListTranscriptEntries"
       },
+      "description": "ListTranscriptEntries lists the structured transcript entries per transcript. By default, ordered\nby start time and in ascending order.\n\nNote: The transcript entries returned by the Google Meet API might not\nmatch the transcription found in the Google Docs transcript file. This can\noccur when the Google Docs transcript file is modified after generation.",
+      "file": "ConferenceRecordsClient/ListTranscriptEntries/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "meet_v2_generated_ConferenceRecordsService_ListTranscriptEntries_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "meet ListTranscriptEntries Sample"
     },
     {
-      "regionTag": "meet_v2_generated_ConferenceRecordsService_ListTranscripts_sync",
-      "title": "meet ListTranscripts Sample",
-      "description": "ListTranscripts lists the set of transcripts from the conference record. By default,\nordered by start time and in ascending order.",
-      "file": "ConferenceRecordsClient/ListTranscripts/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListTranscripts",
+        "client": {
+          "fullName": "google.apps.meet.v2.ConferenceRecordsClient",
+          "shortName": "ConferenceRecordsClient"
+        },
         "fullName": "google.apps.meet.v2.ConferenceRecordsClient.ListTranscripts",
+        "method": {
+          "fullName": "google.apps.meet.v2.ConferenceRecordsService.ListTranscripts",
+          "service": {
+            "fullName": "google.apps.meet.v2.ConferenceRecordsService",
+            "shortName": "ConferenceRecordsService"
+          },
+          "shortName": "ListTranscripts"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "meetpb.ListTranscriptsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "meetpb.ListTranscriptsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "TranscriptIterator",
-        "client": {
-          "shortName": "ConferenceRecordsClient",
-          "fullName": "google.apps.meet.v2.ConferenceRecordsClient"
-        },
-        "method": {
-          "shortName": "ListTranscripts",
-          "fullName": "google.apps.meet.v2.ConferenceRecordsService.ListTranscripts",
-          "service": {
-            "shortName": "ConferenceRecordsService",
-            "fullName": "google.apps.meet.v2.ConferenceRecordsService"
-          }
-        }
+        "shortName": "ListTranscripts"
       },
+      "description": "ListTranscripts lists the set of transcripts from the conference record. By default,\nordered by start time and in ascending order.",
+      "file": "ConferenceRecordsClient/ListTranscripts/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "meet_v2_generated_ConferenceRecordsService_ListTranscripts_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "meet ListTranscripts Sample"
     },
     {
-      "regionTag": "meet_v2_generated_SpacesService_CreateSpace_sync",
-      "title": "meet CreateSpace Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.apps.meet.v2.SpacesClient",
+          "shortName": "SpacesClient"
+        },
+        "fullName": "google.apps.meet.v2.SpacesClient.CreateSpace",
+        "method": {
+          "fullName": "google.apps.meet.v2.SpacesService.CreateSpace",
+          "service": {
+            "fullName": "google.apps.meet.v2.SpacesService",
+            "shortName": "SpacesService"
+          },
+          "shortName": "CreateSpace"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "meetpb.CreateSpaceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*meetpb.Space",
+        "shortName": "CreateSpace"
+      },
       "description": "CreateSpace creates a space.",
       "file": "SpacesClient/CreateSpace/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateSpace",
-        "fullName": "google.apps.meet.v2.SpacesClient.CreateSpace",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "meetpb.CreateSpaceRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*meetpb.Space",
-        "client": {
-          "shortName": "SpacesClient",
-          "fullName": "google.apps.meet.v2.SpacesClient"
-        },
-        "method": {
-          "shortName": "CreateSpace",
-          "fullName": "google.apps.meet.v2.SpacesService.CreateSpace",
-          "service": {
-            "shortName": "SpacesService",
-            "fullName": "google.apps.meet.v2.SpacesService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "meet_v2_generated_SpacesService_CreateSpace_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "meet CreateSpace Sample"
     },
     {
-      "regionTag": "meet_v2_generated_SpacesService_EndActiveConference_sync",
-      "title": "meet EndActiveConference Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.apps.meet.v2.SpacesClient",
+          "shortName": "SpacesClient"
+        },
+        "fullName": "google.apps.meet.v2.SpacesClient.EndActiveConference",
+        "method": {
+          "fullName": "google.apps.meet.v2.SpacesService.EndActiveConference",
+          "service": {
+            "fullName": "google.apps.meet.v2.SpacesService",
+            "shortName": "SpacesService"
+          },
+          "shortName": "EndActiveConference"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "meetpb.EndActiveConferenceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "EndActiveConference"
+      },
       "description": "EndActiveConference ends an active conference (if there's one).\n\nFor an example, see [End active\nconference](https: //developers.google.com/meet/api/guides/meeting-spaces#end-active-conference).",
       "file": "SpacesClient/EndActiveConference/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "EndActiveConference",
-        "fullName": "google.apps.meet.v2.SpacesClient.EndActiveConference",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "meetpb.EndActiveConferenceRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "SpacesClient",
-          "fullName": "google.apps.meet.v2.SpacesClient"
-        },
-        "method": {
-          "shortName": "EndActiveConference",
-          "fullName": "google.apps.meet.v2.SpacesService.EndActiveConference",
-          "service": {
-            "shortName": "SpacesService",
-            "fullName": "google.apps.meet.v2.SpacesService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "meet_v2_generated_SpacesService_EndActiveConference_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "meet EndActiveConference Sample"
     },
     {
-      "regionTag": "meet_v2_generated_SpacesService_GetSpace_sync",
-      "title": "meet GetSpace Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.apps.meet.v2.SpacesClient",
+          "shortName": "SpacesClient"
+        },
+        "fullName": "google.apps.meet.v2.SpacesClient.GetSpace",
+        "method": {
+          "fullName": "google.apps.meet.v2.SpacesService.GetSpace",
+          "service": {
+            "fullName": "google.apps.meet.v2.SpacesService",
+            "shortName": "SpacesService"
+          },
+          "shortName": "GetSpace"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "meetpb.GetSpaceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*meetpb.Space",
+        "shortName": "GetSpace"
+      },
       "description": "GetSpace gets details about a meeting space.\n\nFor an example, see [Get a meeting\nspace](https: //developers.google.com/meet/api/guides/meeting-spaces#get-meeting-space).",
       "file": "SpacesClient/GetSpace/main.go",
       "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "meet_v2_generated_SpacesService_GetSpace_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "meet GetSpace Sample"
+    },
+    {
       "clientMethod": {
-        "shortName": "GetSpace",
-        "fullName": "google.apps.meet.v2.SpacesClient.GetSpace",
+        "client": {
+          "fullName": "google.apps.meet.v2.SpacesClient",
+          "shortName": "SpacesClient"
+        },
+        "fullName": "google.apps.meet.v2.SpacesClient.UpdateSpace",
+        "method": {
+          "fullName": "google.apps.meet.v2.SpacesService.UpdateSpace",
+          "service": {
+            "fullName": "google.apps.meet.v2.SpacesService",
+            "shortName": "SpacesService"
+          },
+          "shortName": "UpdateSpace"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "meetpb.GetSpaceRequest",
-            "name": "req"
+            "name": "req",
+            "type": "meetpb.UpdateSpaceRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*meetpb.Space",
-        "client": {
-          "shortName": "SpacesClient",
-          "fullName": "google.apps.meet.v2.SpacesClient"
-        },
-        "method": {
-          "shortName": "GetSpace",
-          "fullName": "google.apps.meet.v2.SpacesService.GetSpace",
-          "service": {
-            "shortName": "SpacesService",
-            "fullName": "google.apps.meet.v2.SpacesService"
-          }
-        }
+        "shortName": "UpdateSpace"
       },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "meet_v2_generated_SpacesService_UpdateSpace_sync",
-      "title": "meet UpdateSpace Sample",
       "description": "UpdateSpace updates details about a meeting space.\n\nFor an example, see [Update a meeting\nspace](https: //developers.google.com/meet/api/guides/meeting-spaces#update-meeting-space).",
       "file": "SpacesClient/UpdateSpace/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "UpdateSpace",
-        "fullName": "google.apps.meet.v2.SpacesClient.UpdateSpace",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "meetpb.UpdateSpaceRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*meetpb.Space",
-        "client": {
-          "shortName": "SpacesClient",
-          "fullName": "google.apps.meet.v2.SpacesClient"
-        },
-        "method": {
-          "shortName": "UpdateSpace",
-          "fullName": "google.apps.meet.v2.SpacesService.UpdateSpace",
-          "service": {
-            "shortName": "SpacesService",
-            "fullName": "google.apps.meet.v2.SpacesService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "meet_v2_generated_SpacesService_UpdateSpace_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "meet UpdateSpace Sample"
     }
   ]
 }

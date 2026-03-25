@@ -1,1255 +1,1255 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/storage/control/apiv2",
-    "version": "1.61.3",
-    "language": "GO",
     "apis": [
       {
         "id": "google.storage.control.v2",
         "version": "v2"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/storage/control/apiv2",
+    "version": "1.61.3"
   },
   "snippets": [
     {
-      "regionTag": "storage_v2_generated_StorageControl_CreateAnywhereCache_sync",
-      "title": "storage CreateAnywhereCache Sample",
-      "description": "CreateAnywhereCache creates an Anywhere Cache instance.",
-      "file": "StorageControlClient/CreateAnywhereCache/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateAnywhereCache",
+        "client": {
+          "fullName": "google.storage.control.v2.StorageControlClient",
+          "shortName": "StorageControlClient"
+        },
         "fullName": "google.storage.control.v2.StorageControlClient.CreateAnywhereCache",
+        "method": {
+          "fullName": "google.storage.control.v2.StorageControl.CreateAnywhereCache",
+          "service": {
+            "fullName": "google.storage.control.v2.StorageControl",
+            "shortName": "StorageControl"
+          },
+          "shortName": "CreateAnywhereCache"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "controlpb.CreateAnywhereCacheRequest",
-            "name": "req"
+            "name": "req",
+            "type": "controlpb.CreateAnywhereCacheRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateAnywhereCacheOperation",
-        "client": {
-          "shortName": "StorageControlClient",
-          "fullName": "google.storage.control.v2.StorageControlClient"
-        },
-        "method": {
-          "shortName": "CreateAnywhereCache",
-          "fullName": "google.storage.control.v2.StorageControl.CreateAnywhereCache",
-          "service": {
-            "shortName": "StorageControl",
-            "fullName": "google.storage.control.v2.StorageControl"
-          }
-        }
+        "shortName": "CreateAnywhereCache"
       },
+      "description": "CreateAnywhereCache creates an Anywhere Cache instance.",
+      "file": "StorageControlClient/CreateAnywhereCache/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "storage_v2_generated_StorageControl_CreateAnywhereCache_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storage CreateAnywhereCache Sample"
     },
     {
-      "regionTag": "storage_v2_generated_StorageControl_CreateFolder_sync",
-      "title": "storage CreateFolder Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.storage.control.v2.StorageControlClient",
+          "shortName": "StorageControlClient"
+        },
+        "fullName": "google.storage.control.v2.StorageControlClient.CreateFolder",
+        "method": {
+          "fullName": "google.storage.control.v2.StorageControl.CreateFolder",
+          "service": {
+            "fullName": "google.storage.control.v2.StorageControl",
+            "shortName": "StorageControl"
+          },
+          "shortName": "CreateFolder"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "controlpb.CreateFolderRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*controlpb.Folder",
+        "shortName": "CreateFolder"
+      },
       "description": "CreateFolder creates a new folder. This operation is only applicable to a hierarchical\nnamespace enabled bucket.",
       "file": "StorageControlClient/CreateFolder/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateFolder",
-        "fullName": "google.storage.control.v2.StorageControlClient.CreateFolder",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "controlpb.CreateFolderRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*controlpb.Folder",
-        "client": {
-          "shortName": "StorageControlClient",
-          "fullName": "google.storage.control.v2.StorageControlClient"
-        },
-        "method": {
-          "shortName": "CreateFolder",
-          "fullName": "google.storage.control.v2.StorageControl.CreateFolder",
-          "service": {
-            "shortName": "StorageControl",
-            "fullName": "google.storage.control.v2.StorageControl"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "storage_v2_generated_StorageControl_CreateFolder_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storage CreateFolder Sample"
     },
     {
-      "regionTag": "storage_v2_generated_StorageControl_CreateManagedFolder_sync",
-      "title": "storage CreateManagedFolder Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.storage.control.v2.StorageControlClient",
+          "shortName": "StorageControlClient"
+        },
+        "fullName": "google.storage.control.v2.StorageControlClient.CreateManagedFolder",
+        "method": {
+          "fullName": "google.storage.control.v2.StorageControl.CreateManagedFolder",
+          "service": {
+            "fullName": "google.storage.control.v2.StorageControl",
+            "shortName": "StorageControl"
+          },
+          "shortName": "CreateManagedFolder"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "controlpb.CreateManagedFolderRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*controlpb.ManagedFolder",
+        "shortName": "CreateManagedFolder"
+      },
       "description": "CreateManagedFolder creates a new managed folder.",
       "file": "StorageControlClient/CreateManagedFolder/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateManagedFolder",
-        "fullName": "google.storage.control.v2.StorageControlClient.CreateManagedFolder",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "controlpb.CreateManagedFolderRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*controlpb.ManagedFolder",
-        "client": {
-          "shortName": "StorageControlClient",
-          "fullName": "google.storage.control.v2.StorageControlClient"
-        },
-        "method": {
-          "shortName": "CreateManagedFolder",
-          "fullName": "google.storage.control.v2.StorageControl.CreateManagedFolder",
-          "service": {
-            "shortName": "StorageControl",
-            "fullName": "google.storage.control.v2.StorageControl"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "storage_v2_generated_StorageControl_CreateManagedFolder_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storage CreateManagedFolder Sample"
     },
     {
-      "regionTag": "storage_v2_generated_StorageControl_DeleteFolder_sync",
-      "title": "storage DeleteFolder Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.storage.control.v2.StorageControlClient",
+          "shortName": "StorageControlClient"
+        },
+        "fullName": "google.storage.control.v2.StorageControlClient.DeleteFolder",
+        "method": {
+          "fullName": "google.storage.control.v2.StorageControl.DeleteFolder",
+          "service": {
+            "fullName": "google.storage.control.v2.StorageControl",
+            "shortName": "StorageControl"
+          },
+          "shortName": "DeleteFolder"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "controlpb.DeleteFolderRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteFolder"
+      },
       "description": "DeleteFolder permanently deletes an empty folder. This operation is only applicable to a\nhierarchical namespace enabled bucket.",
       "file": "StorageControlClient/DeleteFolder/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteFolder",
-        "fullName": "google.storage.control.v2.StorageControlClient.DeleteFolder",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "controlpb.DeleteFolderRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "StorageControlClient",
-          "fullName": "google.storage.control.v2.StorageControlClient"
-        },
-        "method": {
-          "shortName": "DeleteFolder",
-          "fullName": "google.storage.control.v2.StorageControl.DeleteFolder",
-          "service": {
-            "shortName": "StorageControl",
-            "fullName": "google.storage.control.v2.StorageControl"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "storage_v2_generated_StorageControl_DeleteFolder_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storage DeleteFolder Sample"
     },
     {
-      "regionTag": "storage_v2_generated_StorageControl_DeleteFolderRecursive_sync",
-      "title": "storage DeleteFolderRecursive Sample",
-      "description": "DeleteFolderRecursive deletes a folder recursively. This operation is only applicable to a\nhierarchical namespace enabled bucket.",
-      "file": "StorageControlClient/DeleteFolderRecursive/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteFolderRecursive",
+        "client": {
+          "fullName": "google.storage.control.v2.StorageControlClient",
+          "shortName": "StorageControlClient"
+        },
         "fullName": "google.storage.control.v2.StorageControlClient.DeleteFolderRecursive",
+        "method": {
+          "fullName": "google.storage.control.v2.StorageControl.DeleteFolderRecursive",
+          "service": {
+            "fullName": "google.storage.control.v2.StorageControl",
+            "shortName": "StorageControl"
+          },
+          "shortName": "DeleteFolderRecursive"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "controlpb.DeleteFolderRecursiveRequest",
-            "name": "req"
+            "name": "req",
+            "type": "controlpb.DeleteFolderRecursiveRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteFolderRecursiveOperation",
-        "client": {
-          "shortName": "StorageControlClient",
-          "fullName": "google.storage.control.v2.StorageControlClient"
-        },
-        "method": {
-          "shortName": "DeleteFolderRecursive",
-          "fullName": "google.storage.control.v2.StorageControl.DeleteFolderRecursive",
-          "service": {
-            "shortName": "StorageControl",
-            "fullName": "google.storage.control.v2.StorageControl"
-          }
-        }
+        "shortName": "DeleteFolderRecursive"
       },
+      "description": "DeleteFolderRecursive deletes a folder recursively. This operation is only applicable to a\nhierarchical namespace enabled bucket.",
+      "file": "StorageControlClient/DeleteFolderRecursive/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "storage_v2_generated_StorageControl_DeleteFolderRecursive_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storage DeleteFolderRecursive Sample"
     },
     {
-      "regionTag": "storage_v2_generated_StorageControl_DeleteManagedFolder_sync",
-      "title": "storage DeleteManagedFolder Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.storage.control.v2.StorageControlClient",
+          "shortName": "StorageControlClient"
+        },
+        "fullName": "google.storage.control.v2.StorageControlClient.DeleteManagedFolder",
+        "method": {
+          "fullName": "google.storage.control.v2.StorageControl.DeleteManagedFolder",
+          "service": {
+            "fullName": "google.storage.control.v2.StorageControl",
+            "shortName": "StorageControl"
+          },
+          "shortName": "DeleteManagedFolder"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "controlpb.DeleteManagedFolderRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteManagedFolder"
+      },
       "description": "DeleteManagedFolder permanently deletes an empty managed folder.",
       "file": "StorageControlClient/DeleteManagedFolder/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteManagedFolder",
-        "fullName": "google.storage.control.v2.StorageControlClient.DeleteManagedFolder",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "controlpb.DeleteManagedFolderRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "StorageControlClient",
-          "fullName": "google.storage.control.v2.StorageControlClient"
-        },
-        "method": {
-          "shortName": "DeleteManagedFolder",
-          "fullName": "google.storage.control.v2.StorageControl.DeleteManagedFolder",
-          "service": {
-            "shortName": "StorageControl",
-            "fullName": "google.storage.control.v2.StorageControl"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "storage_v2_generated_StorageControl_DeleteManagedFolder_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storage DeleteManagedFolder Sample"
     },
     {
-      "regionTag": "storage_v2_generated_StorageControl_DisableAnywhereCache_sync",
-      "title": "storage DisableAnywhereCache Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.storage.control.v2.StorageControlClient",
+          "shortName": "StorageControlClient"
+        },
+        "fullName": "google.storage.control.v2.StorageControlClient.DisableAnywhereCache",
+        "method": {
+          "fullName": "google.storage.control.v2.StorageControl.DisableAnywhereCache",
+          "service": {
+            "fullName": "google.storage.control.v2.StorageControl",
+            "shortName": "StorageControl"
+          },
+          "shortName": "DisableAnywhereCache"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "controlpb.DisableAnywhereCacheRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*controlpb.AnywhereCache",
+        "shortName": "DisableAnywhereCache"
+      },
       "description": "DisableAnywhereCache disables an Anywhere Cache instance. A disabled instance is read-only. The\ndisablement could be revoked by calling ResumeAnywhereCache. The cache\ninstance will be deleted automatically if it remains in the disabled state\nfor at least one hour.",
       "file": "StorageControlClient/DisableAnywhereCache/main.go",
       "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "storage_v2_generated_StorageControl_DisableAnywhereCache_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "storage DisableAnywhereCache Sample"
+    },
+    {
       "clientMethod": {
-        "shortName": "DisableAnywhereCache",
-        "fullName": "google.storage.control.v2.StorageControlClient.DisableAnywhereCache",
+        "client": {
+          "fullName": "google.storage.control.v2.StorageControlClient",
+          "shortName": "StorageControlClient"
+        },
+        "fullName": "google.storage.control.v2.StorageControlClient.GetAnywhereCache",
+        "method": {
+          "fullName": "google.storage.control.v2.StorageControl.GetAnywhereCache",
+          "service": {
+            "fullName": "google.storage.control.v2.StorageControl",
+            "shortName": "StorageControl"
+          },
+          "shortName": "GetAnywhereCache"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "controlpb.DisableAnywhereCacheRequest",
-            "name": "req"
+            "name": "req",
+            "type": "controlpb.GetAnywhereCacheRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*controlpb.AnywhereCache",
-        "client": {
-          "shortName": "StorageControlClient",
-          "fullName": "google.storage.control.v2.StorageControlClient"
-        },
-        "method": {
-          "shortName": "DisableAnywhereCache",
-          "fullName": "google.storage.control.v2.StorageControl.DisableAnywhereCache",
-          "service": {
-            "shortName": "StorageControl",
-            "fullName": "google.storage.control.v2.StorageControl"
-          }
-        }
+        "shortName": "GetAnywhereCache"
       },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "storage_v2_generated_StorageControl_GetAnywhereCache_sync",
-      "title": "storage GetAnywhereCache Sample",
       "description": "GetAnywhereCache gets an Anywhere Cache instance.",
       "file": "StorageControlClient/GetAnywhereCache/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetAnywhereCache",
-        "fullName": "google.storage.control.v2.StorageControlClient.GetAnywhereCache",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "controlpb.GetAnywhereCacheRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*controlpb.AnywhereCache",
-        "client": {
-          "shortName": "StorageControlClient",
-          "fullName": "google.storage.control.v2.StorageControlClient"
-        },
-        "method": {
-          "shortName": "GetAnywhereCache",
-          "fullName": "google.storage.control.v2.StorageControl.GetAnywhereCache",
-          "service": {
-            "shortName": "StorageControl",
-            "fullName": "google.storage.control.v2.StorageControl"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "storage_v2_generated_StorageControl_GetAnywhereCache_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storage GetAnywhereCache Sample"
     },
     {
-      "regionTag": "storage_v2_generated_StorageControl_GetFolder_sync",
-      "title": "storage GetFolder Sample",
-      "description": "GetFolder returns metadata for the specified folder. This operation is only\napplicable to a hierarchical namespace enabled bucket.",
-      "file": "StorageControlClient/GetFolder/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetFolder",
+        "client": {
+          "fullName": "google.storage.control.v2.StorageControlClient",
+          "shortName": "StorageControlClient"
+        },
         "fullName": "google.storage.control.v2.StorageControlClient.GetFolder",
+        "method": {
+          "fullName": "google.storage.control.v2.StorageControl.GetFolder",
+          "service": {
+            "fullName": "google.storage.control.v2.StorageControl",
+            "shortName": "StorageControl"
+          },
+          "shortName": "GetFolder"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "controlpb.GetFolderRequest",
-            "name": "req"
+            "name": "req",
+            "type": "controlpb.GetFolderRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*controlpb.Folder",
-        "client": {
-          "shortName": "StorageControlClient",
-          "fullName": "google.storage.control.v2.StorageControlClient"
-        },
-        "method": {
-          "shortName": "GetFolder",
-          "fullName": "google.storage.control.v2.StorageControl.GetFolder",
-          "service": {
-            "shortName": "StorageControl",
-            "fullName": "google.storage.control.v2.StorageControl"
-          }
-        }
+        "shortName": "GetFolder"
       },
+      "description": "GetFolder returns metadata for the specified folder. This operation is only\napplicable to a hierarchical namespace enabled bucket.",
+      "file": "StorageControlClient/GetFolder/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "storage_v2_generated_StorageControl_GetFolder_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storage GetFolder Sample"
     },
     {
-      "regionTag": "storage_v2_generated_StorageControl_GetFolderIntelligenceConfig_sync",
-      "title": "storage GetFolderIntelligenceConfig Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.storage.control.v2.StorageControlClient",
+          "shortName": "StorageControlClient"
+        },
+        "fullName": "google.storage.control.v2.StorageControlClient.GetFolderIntelligenceConfig",
+        "method": {
+          "fullName": "google.storage.control.v2.StorageControl.GetFolderIntelligenceConfig",
+          "service": {
+            "fullName": "google.storage.control.v2.StorageControl",
+            "shortName": "StorageControl"
+          },
+          "shortName": "GetFolderIntelligenceConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "controlpb.GetFolderIntelligenceConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*controlpb.IntelligenceConfig",
+        "shortName": "GetFolderIntelligenceConfig"
+      },
       "description": "GetFolderIntelligenceConfig returns the Folder scoped singleton IntelligenceConfig resource.",
       "file": "StorageControlClient/GetFolderIntelligenceConfig/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetFolderIntelligenceConfig",
-        "fullName": "google.storage.control.v2.StorageControlClient.GetFolderIntelligenceConfig",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "controlpb.GetFolderIntelligenceConfigRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*controlpb.IntelligenceConfig",
-        "client": {
-          "shortName": "StorageControlClient",
-          "fullName": "google.storage.control.v2.StorageControlClient"
-        },
-        "method": {
-          "shortName": "GetFolderIntelligenceConfig",
-          "fullName": "google.storage.control.v2.StorageControl.GetFolderIntelligenceConfig",
-          "service": {
-            "shortName": "StorageControl",
-            "fullName": "google.storage.control.v2.StorageControl"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "storage_v2_generated_StorageControl_GetFolderIntelligenceConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storage GetFolderIntelligenceConfig Sample"
     },
     {
-      "regionTag": "storage_v2_generated_StorageControl_GetIamPolicy_sync",
-      "title": "storage GetIamPolicy Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.storage.control.v2.StorageControlClient",
+          "shortName": "StorageControlClient"
+        },
+        "fullName": "google.storage.control.v2.StorageControlClient.GetIamPolicy",
+        "method": {
+          "fullName": "google.storage.control.v2.StorageControl.GetIamPolicy",
+          "service": {
+            "fullName": "google.storage.control.v2.StorageControl",
+            "shortName": "StorageControl"
+          },
+          "shortName": "GetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.GetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "GetIamPolicy"
+      },
       "description": "GetIamPolicy gets the IAM policy for a specified bucket.\nThe `resource` field in the request should be\n`projects/_/buckets/{bucket}` for a bucket, or\n`projects/_/buckets/{bucket}/managedFolders/{managedFolder}`\nfor a managed folder.",
       "file": "StorageControlClient/GetIamPolicy/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetIamPolicy",
-        "fullName": "google.storage.control.v2.StorageControlClient.GetIamPolicy",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "iampb.GetIamPolicyRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*iampb.Policy",
-        "client": {
-          "shortName": "StorageControlClient",
-          "fullName": "google.storage.control.v2.StorageControlClient"
-        },
-        "method": {
-          "shortName": "GetIamPolicy",
-          "fullName": "google.storage.control.v2.StorageControl.GetIamPolicy",
-          "service": {
-            "shortName": "StorageControl",
-            "fullName": "google.storage.control.v2.StorageControl"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "storage_v2_generated_StorageControl_GetIamPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storage GetIamPolicy Sample"
     },
     {
-      "regionTag": "storage_v2_generated_StorageControl_GetManagedFolder_sync",
-      "title": "storage GetManagedFolder Sample",
-      "description": "GetManagedFolder returns metadata for the specified managed folder.",
-      "file": "StorageControlClient/GetManagedFolder/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetManagedFolder",
+        "client": {
+          "fullName": "google.storage.control.v2.StorageControlClient",
+          "shortName": "StorageControlClient"
+        },
         "fullName": "google.storage.control.v2.StorageControlClient.GetManagedFolder",
+        "method": {
+          "fullName": "google.storage.control.v2.StorageControl.GetManagedFolder",
+          "service": {
+            "fullName": "google.storage.control.v2.StorageControl",
+            "shortName": "StorageControl"
+          },
+          "shortName": "GetManagedFolder"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "controlpb.GetManagedFolderRequest",
-            "name": "req"
+            "name": "req",
+            "type": "controlpb.GetManagedFolderRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*controlpb.ManagedFolder",
-        "client": {
-          "shortName": "StorageControlClient",
-          "fullName": "google.storage.control.v2.StorageControlClient"
-        },
-        "method": {
-          "shortName": "GetManagedFolder",
-          "fullName": "google.storage.control.v2.StorageControl.GetManagedFolder",
-          "service": {
-            "shortName": "StorageControl",
-            "fullName": "google.storage.control.v2.StorageControl"
-          }
-        }
+        "shortName": "GetManagedFolder"
       },
+      "description": "GetManagedFolder returns metadata for the specified managed folder.",
+      "file": "StorageControlClient/GetManagedFolder/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "storage_v2_generated_StorageControl_GetManagedFolder_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storage GetManagedFolder Sample"
     },
     {
-      "regionTag": "storage_v2_generated_StorageControl_GetOrganizationIntelligenceConfig_sync",
-      "title": "storage GetOrganizationIntelligenceConfig Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.storage.control.v2.StorageControlClient",
+          "shortName": "StorageControlClient"
+        },
+        "fullName": "google.storage.control.v2.StorageControlClient.GetOrganizationIntelligenceConfig",
+        "method": {
+          "fullName": "google.storage.control.v2.StorageControl.GetOrganizationIntelligenceConfig",
+          "service": {
+            "fullName": "google.storage.control.v2.StorageControl",
+            "shortName": "StorageControl"
+          },
+          "shortName": "GetOrganizationIntelligenceConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "controlpb.GetOrganizationIntelligenceConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*controlpb.IntelligenceConfig",
+        "shortName": "GetOrganizationIntelligenceConfig"
+      },
       "description": "GetOrganizationIntelligenceConfig returns the Organization scoped singleton IntelligenceConfig resource.",
       "file": "StorageControlClient/GetOrganizationIntelligenceConfig/main.go",
       "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "storage_v2_generated_StorageControl_GetOrganizationIntelligenceConfig_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "storage GetOrganizationIntelligenceConfig Sample"
+    },
+    {
       "clientMethod": {
-        "shortName": "GetOrganizationIntelligenceConfig",
-        "fullName": "google.storage.control.v2.StorageControlClient.GetOrganizationIntelligenceConfig",
+        "client": {
+          "fullName": "google.storage.control.v2.StorageControlClient",
+          "shortName": "StorageControlClient"
+        },
+        "fullName": "google.storage.control.v2.StorageControlClient.GetProjectIntelligenceConfig",
+        "method": {
+          "fullName": "google.storage.control.v2.StorageControl.GetProjectIntelligenceConfig",
+          "service": {
+            "fullName": "google.storage.control.v2.StorageControl",
+            "shortName": "StorageControl"
+          },
+          "shortName": "GetProjectIntelligenceConfig"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "controlpb.GetOrganizationIntelligenceConfigRequest",
-            "name": "req"
+            "name": "req",
+            "type": "controlpb.GetProjectIntelligenceConfigRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*controlpb.IntelligenceConfig",
-        "client": {
-          "shortName": "StorageControlClient",
-          "fullName": "google.storage.control.v2.StorageControlClient"
-        },
-        "method": {
-          "shortName": "GetOrganizationIntelligenceConfig",
-          "fullName": "google.storage.control.v2.StorageControl.GetOrganizationIntelligenceConfig",
-          "service": {
-            "shortName": "StorageControl",
-            "fullName": "google.storage.control.v2.StorageControl"
-          }
-        }
+        "shortName": "GetProjectIntelligenceConfig"
       },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "storage_v2_generated_StorageControl_GetProjectIntelligenceConfig_sync",
-      "title": "storage GetProjectIntelligenceConfig Sample",
       "description": "GetProjectIntelligenceConfig returns the Project scoped singleton IntelligenceConfig resource.",
       "file": "StorageControlClient/GetProjectIntelligenceConfig/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetProjectIntelligenceConfig",
-        "fullName": "google.storage.control.v2.StorageControlClient.GetProjectIntelligenceConfig",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "controlpb.GetProjectIntelligenceConfigRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*controlpb.IntelligenceConfig",
-        "client": {
-          "shortName": "StorageControlClient",
-          "fullName": "google.storage.control.v2.StorageControlClient"
-        },
-        "method": {
-          "shortName": "GetProjectIntelligenceConfig",
-          "fullName": "google.storage.control.v2.StorageControl.GetProjectIntelligenceConfig",
-          "service": {
-            "shortName": "StorageControl",
-            "fullName": "google.storage.control.v2.StorageControl"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "storage_v2_generated_StorageControl_GetProjectIntelligenceConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storage GetProjectIntelligenceConfig Sample"
     },
     {
-      "regionTag": "storage_v2_generated_StorageControl_GetStorageLayout_sync",
-      "title": "storage GetStorageLayout Sample",
-      "description": "GetStorageLayout returns the storage layout configuration for a given bucket.",
-      "file": "StorageControlClient/GetStorageLayout/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetStorageLayout",
+        "client": {
+          "fullName": "google.storage.control.v2.StorageControlClient",
+          "shortName": "StorageControlClient"
+        },
         "fullName": "google.storage.control.v2.StorageControlClient.GetStorageLayout",
+        "method": {
+          "fullName": "google.storage.control.v2.StorageControl.GetStorageLayout",
+          "service": {
+            "fullName": "google.storage.control.v2.StorageControl",
+            "shortName": "StorageControl"
+          },
+          "shortName": "GetStorageLayout"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "controlpb.GetStorageLayoutRequest",
-            "name": "req"
+            "name": "req",
+            "type": "controlpb.GetStorageLayoutRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*controlpb.StorageLayout",
-        "client": {
-          "shortName": "StorageControlClient",
-          "fullName": "google.storage.control.v2.StorageControlClient"
-        },
-        "method": {
-          "shortName": "GetStorageLayout",
-          "fullName": "google.storage.control.v2.StorageControl.GetStorageLayout",
-          "service": {
-            "shortName": "StorageControl",
-            "fullName": "google.storage.control.v2.StorageControl"
-          }
-        }
+        "shortName": "GetStorageLayout"
       },
+      "description": "GetStorageLayout returns the storage layout configuration for a given bucket.",
+      "file": "StorageControlClient/GetStorageLayout/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "storage_v2_generated_StorageControl_GetStorageLayout_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storage GetStorageLayout Sample"
     },
     {
-      "regionTag": "storage_v2_generated_StorageControl_ListAnywhereCaches_sync",
-      "title": "storage ListAnywhereCaches Sample",
-      "description": "ListAnywhereCaches lists Anywhere Cache instances for a given bucket.",
-      "file": "StorageControlClient/ListAnywhereCaches/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListAnywhereCaches",
+        "client": {
+          "fullName": "google.storage.control.v2.StorageControlClient",
+          "shortName": "StorageControlClient"
+        },
         "fullName": "google.storage.control.v2.StorageControlClient.ListAnywhereCaches",
+        "method": {
+          "fullName": "google.storage.control.v2.StorageControl.ListAnywhereCaches",
+          "service": {
+            "fullName": "google.storage.control.v2.StorageControl",
+            "shortName": "StorageControl"
+          },
+          "shortName": "ListAnywhereCaches"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "controlpb.ListAnywhereCachesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "controlpb.ListAnywhereCachesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "AnywhereCacheIterator",
-        "client": {
-          "shortName": "StorageControlClient",
-          "fullName": "google.storage.control.v2.StorageControlClient"
-        },
-        "method": {
-          "shortName": "ListAnywhereCaches",
-          "fullName": "google.storage.control.v2.StorageControl.ListAnywhereCaches",
-          "service": {
-            "shortName": "StorageControl",
-            "fullName": "google.storage.control.v2.StorageControl"
-          }
-        }
+        "shortName": "ListAnywhereCaches"
       },
+      "description": "ListAnywhereCaches lists Anywhere Cache instances for a given bucket.",
+      "file": "StorageControlClient/ListAnywhereCaches/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "storage_v2_generated_StorageControl_ListAnywhereCaches_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storage ListAnywhereCaches Sample"
     },
     {
-      "regionTag": "storage_v2_generated_StorageControl_ListFolders_sync",
-      "title": "storage ListFolders Sample",
-      "description": "ListFolders retrieves a list of folders. This operation is only applicable to a\nhierarchical namespace enabled bucket.",
-      "file": "StorageControlClient/ListFolders/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListFolders",
+        "client": {
+          "fullName": "google.storage.control.v2.StorageControlClient",
+          "shortName": "StorageControlClient"
+        },
         "fullName": "google.storage.control.v2.StorageControlClient.ListFolders",
+        "method": {
+          "fullName": "google.storage.control.v2.StorageControl.ListFolders",
+          "service": {
+            "fullName": "google.storage.control.v2.StorageControl",
+            "shortName": "StorageControl"
+          },
+          "shortName": "ListFolders"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "controlpb.ListFoldersRequest",
-            "name": "req"
+            "name": "req",
+            "type": "controlpb.ListFoldersRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "FolderIterator",
-        "client": {
-          "shortName": "StorageControlClient",
-          "fullName": "google.storage.control.v2.StorageControlClient"
-        },
-        "method": {
-          "shortName": "ListFolders",
-          "fullName": "google.storage.control.v2.StorageControl.ListFolders",
-          "service": {
-            "shortName": "StorageControl",
-            "fullName": "google.storage.control.v2.StorageControl"
-          }
-        }
+        "shortName": "ListFolders"
       },
+      "description": "ListFolders retrieves a list of folders. This operation is only applicable to a\nhierarchical namespace enabled bucket.",
+      "file": "StorageControlClient/ListFolders/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "storage_v2_generated_StorageControl_ListFolders_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storage ListFolders Sample"
     },
     {
-      "regionTag": "storage_v2_generated_StorageControl_ListManagedFolders_sync",
-      "title": "storage ListManagedFolders Sample",
-      "description": "ListManagedFolders retrieves a list of managed folders for a given bucket.",
-      "file": "StorageControlClient/ListManagedFolders/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListManagedFolders",
+        "client": {
+          "fullName": "google.storage.control.v2.StorageControlClient",
+          "shortName": "StorageControlClient"
+        },
         "fullName": "google.storage.control.v2.StorageControlClient.ListManagedFolders",
+        "method": {
+          "fullName": "google.storage.control.v2.StorageControl.ListManagedFolders",
+          "service": {
+            "fullName": "google.storage.control.v2.StorageControl",
+            "shortName": "StorageControl"
+          },
+          "shortName": "ListManagedFolders"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "controlpb.ListManagedFoldersRequest",
-            "name": "req"
+            "name": "req",
+            "type": "controlpb.ListManagedFoldersRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ManagedFolderIterator",
-        "client": {
-          "shortName": "StorageControlClient",
-          "fullName": "google.storage.control.v2.StorageControlClient"
-        },
-        "method": {
-          "shortName": "ListManagedFolders",
-          "fullName": "google.storage.control.v2.StorageControl.ListManagedFolders",
-          "service": {
-            "shortName": "StorageControl",
-            "fullName": "google.storage.control.v2.StorageControl"
-          }
-        }
+        "shortName": "ListManagedFolders"
       },
+      "description": "ListManagedFolders retrieves a list of managed folders for a given bucket.",
+      "file": "StorageControlClient/ListManagedFolders/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "storage_v2_generated_StorageControl_ListManagedFolders_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storage ListManagedFolders Sample"
     },
     {
-      "regionTag": "storage_v2_generated_StorageControl_PauseAnywhereCache_sync",
-      "title": "storage PauseAnywhereCache Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.storage.control.v2.StorageControlClient",
+          "shortName": "StorageControlClient"
+        },
+        "fullName": "google.storage.control.v2.StorageControlClient.PauseAnywhereCache",
+        "method": {
+          "fullName": "google.storage.control.v2.StorageControl.PauseAnywhereCache",
+          "service": {
+            "fullName": "google.storage.control.v2.StorageControl",
+            "shortName": "StorageControl"
+          },
+          "shortName": "PauseAnywhereCache"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "controlpb.PauseAnywhereCacheRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*controlpb.AnywhereCache",
+        "shortName": "PauseAnywhereCache"
+      },
       "description": "PauseAnywhereCache pauses an Anywhere Cache instance.",
       "file": "StorageControlClient/PauseAnywhereCache/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "PauseAnywhereCache",
-        "fullName": "google.storage.control.v2.StorageControlClient.PauseAnywhereCache",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "controlpb.PauseAnywhereCacheRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*controlpb.AnywhereCache",
-        "client": {
-          "shortName": "StorageControlClient",
-          "fullName": "google.storage.control.v2.StorageControlClient"
-        },
-        "method": {
-          "shortName": "PauseAnywhereCache",
-          "fullName": "google.storage.control.v2.StorageControl.PauseAnywhereCache",
-          "service": {
-            "shortName": "StorageControl",
-            "fullName": "google.storage.control.v2.StorageControl"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "storage_v2_generated_StorageControl_PauseAnywhereCache_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storage PauseAnywhereCache Sample"
     },
     {
-      "regionTag": "storage_v2_generated_StorageControl_RenameFolder_sync",
-      "title": "storage RenameFolder Sample",
-      "description": "RenameFolder renames a source folder to a destination folder. This operation is only\napplicable to a hierarchical namespace enabled bucket. During a rename, the\nsource and destination folders are locked until the long running operation\ncompletes.",
-      "file": "StorageControlClient/RenameFolder/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "RenameFolder",
+        "client": {
+          "fullName": "google.storage.control.v2.StorageControlClient",
+          "shortName": "StorageControlClient"
+        },
         "fullName": "google.storage.control.v2.StorageControlClient.RenameFolder",
+        "method": {
+          "fullName": "google.storage.control.v2.StorageControl.RenameFolder",
+          "service": {
+            "fullName": "google.storage.control.v2.StorageControl",
+            "shortName": "StorageControl"
+          },
+          "shortName": "RenameFolder"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "controlpb.RenameFolderRequest",
-            "name": "req"
+            "name": "req",
+            "type": "controlpb.RenameFolderRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "RenameFolderOperation",
-        "client": {
-          "shortName": "StorageControlClient",
-          "fullName": "google.storage.control.v2.StorageControlClient"
-        },
-        "method": {
-          "shortName": "RenameFolder",
-          "fullName": "google.storage.control.v2.StorageControl.RenameFolder",
-          "service": {
-            "shortName": "StorageControl",
-            "fullName": "google.storage.control.v2.StorageControl"
-          }
-        }
+        "shortName": "RenameFolder"
       },
+      "description": "RenameFolder renames a source folder to a destination folder. This operation is only\napplicable to a hierarchical namespace enabled bucket. During a rename, the\nsource and destination folders are locked until the long running operation\ncompletes.",
+      "file": "StorageControlClient/RenameFolder/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "storage_v2_generated_StorageControl_RenameFolder_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storage RenameFolder Sample"
     },
     {
-      "regionTag": "storage_v2_generated_StorageControl_ResumeAnywhereCache_sync",
-      "title": "storage ResumeAnywhereCache Sample",
-      "description": "ResumeAnywhereCache resumes a disabled or paused Anywhere Cache instance.",
-      "file": "StorageControlClient/ResumeAnywhereCache/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ResumeAnywhereCache",
+        "client": {
+          "fullName": "google.storage.control.v2.StorageControlClient",
+          "shortName": "StorageControlClient"
+        },
         "fullName": "google.storage.control.v2.StorageControlClient.ResumeAnywhereCache",
+        "method": {
+          "fullName": "google.storage.control.v2.StorageControl.ResumeAnywhereCache",
+          "service": {
+            "fullName": "google.storage.control.v2.StorageControl",
+            "shortName": "StorageControl"
+          },
+          "shortName": "ResumeAnywhereCache"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "controlpb.ResumeAnywhereCacheRequest",
-            "name": "req"
+            "name": "req",
+            "type": "controlpb.ResumeAnywhereCacheRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*controlpb.AnywhereCache",
-        "client": {
-          "shortName": "StorageControlClient",
-          "fullName": "google.storage.control.v2.StorageControlClient"
-        },
-        "method": {
-          "shortName": "ResumeAnywhereCache",
-          "fullName": "google.storage.control.v2.StorageControl.ResumeAnywhereCache",
-          "service": {
-            "shortName": "StorageControl",
-            "fullName": "google.storage.control.v2.StorageControl"
-          }
-        }
+        "shortName": "ResumeAnywhereCache"
       },
+      "description": "ResumeAnywhereCache resumes a disabled or paused Anywhere Cache instance.",
+      "file": "StorageControlClient/ResumeAnywhereCache/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "storage_v2_generated_StorageControl_ResumeAnywhereCache_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storage ResumeAnywhereCache Sample"
     },
     {
-      "regionTag": "storage_v2_generated_StorageControl_SetIamPolicy_sync",
-      "title": "storage SetIamPolicy Sample",
-      "description": "SetIamPolicy updates an IAM policy for the specified bucket.\nThe `resource` field in the request should be\n`projects/_/buckets/{bucket}` for a bucket, or\n`projects/_/buckets/{bucket}/managedFolders/{managedFolder}`\nfor a managed folder.",
-      "file": "StorageControlClient/SetIamPolicy/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "SetIamPolicy",
+        "client": {
+          "fullName": "google.storage.control.v2.StorageControlClient",
+          "shortName": "StorageControlClient"
+        },
         "fullName": "google.storage.control.v2.StorageControlClient.SetIamPolicy",
+        "method": {
+          "fullName": "google.storage.control.v2.StorageControl.SetIamPolicy",
+          "service": {
+            "fullName": "google.storage.control.v2.StorageControl",
+            "shortName": "StorageControl"
+          },
+          "shortName": "SetIamPolicy"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "iampb.SetIamPolicyRequest",
-            "name": "req"
+            "name": "req",
+            "type": "iampb.SetIamPolicyRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*iampb.Policy",
-        "client": {
-          "shortName": "StorageControlClient",
-          "fullName": "google.storage.control.v2.StorageControlClient"
-        },
-        "method": {
-          "shortName": "SetIamPolicy",
-          "fullName": "google.storage.control.v2.StorageControl.SetIamPolicy",
-          "service": {
-            "shortName": "StorageControl",
-            "fullName": "google.storage.control.v2.StorageControl"
-          }
-        }
+        "shortName": "SetIamPolicy"
       },
+      "description": "SetIamPolicy updates an IAM policy for the specified bucket.\nThe `resource` field in the request should be\n`projects/_/buckets/{bucket}` for a bucket, or\n`projects/_/buckets/{bucket}/managedFolders/{managedFolder}`\nfor a managed folder.",
+      "file": "StorageControlClient/SetIamPolicy/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "storage_v2_generated_StorageControl_SetIamPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storage SetIamPolicy Sample"
     },
     {
-      "regionTag": "storage_v2_generated_StorageControl_TestIamPermissions_sync",
-      "title": "storage TestIamPermissions Sample",
-      "description": "TestIamPermissions tests a set of permissions on the given bucket, object, or managed folder\nto see which, if any, are held by the caller.\nThe `resource` field in the request should be\n`projects/_/buckets/{bucket}` for a bucket,\n`projects/_/buckets/{bucket}/objects/{object}` for an object, or\n`projects/_/buckets/{bucket}/managedFolders/{managedFolder}`\nfor a managed folder.",
-      "file": "StorageControlClient/TestIamPermissions/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "TestIamPermissions",
+        "client": {
+          "fullName": "google.storage.control.v2.StorageControlClient",
+          "shortName": "StorageControlClient"
+        },
         "fullName": "google.storage.control.v2.StorageControlClient.TestIamPermissions",
+        "method": {
+          "fullName": "google.storage.control.v2.StorageControl.TestIamPermissions",
+          "service": {
+            "fullName": "google.storage.control.v2.StorageControl",
+            "shortName": "StorageControl"
+          },
+          "shortName": "TestIamPermissions"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "iampb.TestIamPermissionsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "iampb.TestIamPermissionsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*iampb.TestIamPermissionsResponse",
-        "client": {
-          "shortName": "StorageControlClient",
-          "fullName": "google.storage.control.v2.StorageControlClient"
-        },
-        "method": {
-          "shortName": "TestIamPermissions",
-          "fullName": "google.storage.control.v2.StorageControl.TestIamPermissions",
-          "service": {
-            "shortName": "StorageControl",
-            "fullName": "google.storage.control.v2.StorageControl"
-          }
-        }
+        "shortName": "TestIamPermissions"
       },
+      "description": "TestIamPermissions tests a set of permissions on the given bucket, object, or managed folder\nto see which, if any, are held by the caller.\nThe `resource` field in the request should be\n`projects/_/buckets/{bucket}` for a bucket,\n`projects/_/buckets/{bucket}/objects/{object}` for an object, or\n`projects/_/buckets/{bucket}/managedFolders/{managedFolder}`\nfor a managed folder.",
+      "file": "StorageControlClient/TestIamPermissions/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "storage_v2_generated_StorageControl_TestIamPermissions_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storage TestIamPermissions Sample"
     },
     {
-      "regionTag": "storage_v2_generated_StorageControl_UpdateAnywhereCache_sync",
-      "title": "storage UpdateAnywhereCache Sample",
-      "description": "UpdateAnywhereCache updates an Anywhere Cache instance. Mutable fields include `ttl` and\n`admission_policy`.",
-      "file": "StorageControlClient/UpdateAnywhereCache/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateAnywhereCache",
+        "client": {
+          "fullName": "google.storage.control.v2.StorageControlClient",
+          "shortName": "StorageControlClient"
+        },
         "fullName": "google.storage.control.v2.StorageControlClient.UpdateAnywhereCache",
+        "method": {
+          "fullName": "google.storage.control.v2.StorageControl.UpdateAnywhereCache",
+          "service": {
+            "fullName": "google.storage.control.v2.StorageControl",
+            "shortName": "StorageControl"
+          },
+          "shortName": "UpdateAnywhereCache"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "controlpb.UpdateAnywhereCacheRequest",
-            "name": "req"
+            "name": "req",
+            "type": "controlpb.UpdateAnywhereCacheRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UpdateAnywhereCacheOperation",
-        "client": {
-          "shortName": "StorageControlClient",
-          "fullName": "google.storage.control.v2.StorageControlClient"
-        },
-        "method": {
-          "shortName": "UpdateAnywhereCache",
-          "fullName": "google.storage.control.v2.StorageControl.UpdateAnywhereCache",
-          "service": {
-            "shortName": "StorageControl",
-            "fullName": "google.storage.control.v2.StorageControl"
-          }
-        }
+        "shortName": "UpdateAnywhereCache"
       },
+      "description": "UpdateAnywhereCache updates an Anywhere Cache instance. Mutable fields include `ttl` and\n`admission_policy`.",
+      "file": "StorageControlClient/UpdateAnywhereCache/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "storage_v2_generated_StorageControl_UpdateAnywhereCache_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storage UpdateAnywhereCache Sample"
     },
     {
-      "regionTag": "storage_v2_generated_StorageControl_UpdateFolderIntelligenceConfig_sync",
-      "title": "storage UpdateFolderIntelligenceConfig Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.storage.control.v2.StorageControlClient",
+          "shortName": "StorageControlClient"
+        },
+        "fullName": "google.storage.control.v2.StorageControlClient.UpdateFolderIntelligenceConfig",
+        "method": {
+          "fullName": "google.storage.control.v2.StorageControl.UpdateFolderIntelligenceConfig",
+          "service": {
+            "fullName": "google.storage.control.v2.StorageControl",
+            "shortName": "StorageControl"
+          },
+          "shortName": "UpdateFolderIntelligenceConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "controlpb.UpdateFolderIntelligenceConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*controlpb.IntelligenceConfig",
+        "shortName": "UpdateFolderIntelligenceConfig"
+      },
       "description": "UpdateFolderIntelligenceConfig updates the Folder scoped singleton IntelligenceConfig resource.",
       "file": "StorageControlClient/UpdateFolderIntelligenceConfig/main.go",
       "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "storage_v2_generated_StorageControl_UpdateFolderIntelligenceConfig_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "storage UpdateFolderIntelligenceConfig Sample"
+    },
+    {
       "clientMethod": {
-        "shortName": "UpdateFolderIntelligenceConfig",
-        "fullName": "google.storage.control.v2.StorageControlClient.UpdateFolderIntelligenceConfig",
+        "client": {
+          "fullName": "google.storage.control.v2.StorageControlClient",
+          "shortName": "StorageControlClient"
+        },
+        "fullName": "google.storage.control.v2.StorageControlClient.UpdateOrganizationIntelligenceConfig",
+        "method": {
+          "fullName": "google.storage.control.v2.StorageControl.UpdateOrganizationIntelligenceConfig",
+          "service": {
+            "fullName": "google.storage.control.v2.StorageControl",
+            "shortName": "StorageControl"
+          },
+          "shortName": "UpdateOrganizationIntelligenceConfig"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "controlpb.UpdateFolderIntelligenceConfigRequest",
-            "name": "req"
+            "name": "req",
+            "type": "controlpb.UpdateOrganizationIntelligenceConfigRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*controlpb.IntelligenceConfig",
-        "client": {
-          "shortName": "StorageControlClient",
-          "fullName": "google.storage.control.v2.StorageControlClient"
-        },
-        "method": {
-          "shortName": "UpdateFolderIntelligenceConfig",
-          "fullName": "google.storage.control.v2.StorageControl.UpdateFolderIntelligenceConfig",
-          "service": {
-            "shortName": "StorageControl",
-            "fullName": "google.storage.control.v2.StorageControl"
-          }
-        }
+        "shortName": "UpdateOrganizationIntelligenceConfig"
       },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "storage_v2_generated_StorageControl_UpdateOrganizationIntelligenceConfig_sync",
-      "title": "storage UpdateOrganizationIntelligenceConfig Sample",
       "description": "UpdateOrganizationIntelligenceConfig updates the Organization scoped singleton IntelligenceConfig resource.",
       "file": "StorageControlClient/UpdateOrganizationIntelligenceConfig/main.go",
       "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "storage_v2_generated_StorageControl_UpdateOrganizationIntelligenceConfig_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "storage UpdateOrganizationIntelligenceConfig Sample"
+    },
+    {
       "clientMethod": {
-        "shortName": "UpdateOrganizationIntelligenceConfig",
-        "fullName": "google.storage.control.v2.StorageControlClient.UpdateOrganizationIntelligenceConfig",
+        "client": {
+          "fullName": "google.storage.control.v2.StorageControlClient",
+          "shortName": "StorageControlClient"
+        },
+        "fullName": "google.storage.control.v2.StorageControlClient.UpdateProjectIntelligenceConfig",
+        "method": {
+          "fullName": "google.storage.control.v2.StorageControl.UpdateProjectIntelligenceConfig",
+          "service": {
+            "fullName": "google.storage.control.v2.StorageControl",
+            "shortName": "StorageControl"
+          },
+          "shortName": "UpdateProjectIntelligenceConfig"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "controlpb.UpdateOrganizationIntelligenceConfigRequest",
-            "name": "req"
+            "name": "req",
+            "type": "controlpb.UpdateProjectIntelligenceConfigRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*controlpb.IntelligenceConfig",
-        "client": {
-          "shortName": "StorageControlClient",
-          "fullName": "google.storage.control.v2.StorageControlClient"
-        },
-        "method": {
-          "shortName": "UpdateOrganizationIntelligenceConfig",
-          "fullName": "google.storage.control.v2.StorageControl.UpdateOrganizationIntelligenceConfig",
-          "service": {
-            "shortName": "StorageControl",
-            "fullName": "google.storage.control.v2.StorageControl"
-          }
-        }
+        "shortName": "UpdateProjectIntelligenceConfig"
       },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "storage_v2_generated_StorageControl_UpdateProjectIntelligenceConfig_sync",
-      "title": "storage UpdateProjectIntelligenceConfig Sample",
       "description": "UpdateProjectIntelligenceConfig updates the Project scoped singleton IntelligenceConfig resource.",
       "file": "StorageControlClient/UpdateProjectIntelligenceConfig/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "UpdateProjectIntelligenceConfig",
-        "fullName": "google.storage.control.v2.StorageControlClient.UpdateProjectIntelligenceConfig",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "controlpb.UpdateProjectIntelligenceConfigRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*controlpb.IntelligenceConfig",
-        "client": {
-          "shortName": "StorageControlClient",
-          "fullName": "google.storage.control.v2.StorageControlClient"
-        },
-        "method": {
-          "shortName": "UpdateProjectIntelligenceConfig",
-          "fullName": "google.storage.control.v2.StorageControl.UpdateProjectIntelligenceConfig",
-          "service": {
-            "shortName": "StorageControl",
-            "fullName": "google.storage.control.v2.StorageControl"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "storage_v2_generated_StorageControl_UpdateProjectIntelligenceConfig_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "storage UpdateProjectIntelligenceConfig Sample"
     }
   ]
 }

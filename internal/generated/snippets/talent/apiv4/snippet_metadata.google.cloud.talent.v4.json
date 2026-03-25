@@ -1,1254 +1,1254 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/talent/apiv4",
-    "version": "1.8.4",
-    "language": "GO",
     "apis": [
       {
         "id": "google.cloud.talent.v4",
         "version": "v4"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/talent/apiv4",
+    "version": "1.8.4"
   },
   "snippets": [
     {
-      "regionTag": "jobs_v4_generated_CompanyService_CreateCompany_sync",
-      "title": "jobs CreateCompany Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.talent.v4.CompanyClient",
+          "shortName": "CompanyClient"
+        },
+        "fullName": "google.cloud.talent.v4.CompanyClient.CreateCompany",
+        "method": {
+          "fullName": "google.cloud.talent.v4.CompanyService.CreateCompany",
+          "service": {
+            "fullName": "google.cloud.talent.v4.CompanyService",
+            "shortName": "CompanyService"
+          },
+          "shortName": "CreateCompany"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "talentpb.CreateCompanyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*talentpb.Company",
+        "shortName": "CreateCompany"
+      },
       "description": "CreateCompany creates a new company entity.",
       "file": "CompanyClient/CreateCompany/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateCompany",
-        "fullName": "google.cloud.talent.v4.CompanyClient.CreateCompany",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "talentpb.CreateCompanyRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*talentpb.Company",
-        "client": {
-          "shortName": "CompanyClient",
-          "fullName": "google.cloud.talent.v4.CompanyClient"
-        },
-        "method": {
-          "shortName": "CreateCompany",
-          "fullName": "google.cloud.talent.v4.CompanyService.CreateCompany",
-          "service": {
-            "shortName": "CompanyService",
-            "fullName": "google.cloud.talent.v4.CompanyService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "jobs_v4_generated_CompanyService_CreateCompany_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "jobs CreateCompany Sample"
     },
     {
-      "regionTag": "jobs_v4_generated_CompanyService_DeleteCompany_sync",
-      "title": "jobs DeleteCompany Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.talent.v4.CompanyClient",
+          "shortName": "CompanyClient"
+        },
+        "fullName": "google.cloud.talent.v4.CompanyClient.DeleteCompany",
+        "method": {
+          "fullName": "google.cloud.talent.v4.CompanyService.DeleteCompany",
+          "service": {
+            "fullName": "google.cloud.talent.v4.CompanyService",
+            "shortName": "CompanyService"
+          },
+          "shortName": "DeleteCompany"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "talentpb.DeleteCompanyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteCompany"
+      },
       "description": "DeleteCompany deletes specified company.\nPrerequisite: The company has no jobs associated with it.",
       "file": "CompanyClient/DeleteCompany/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteCompany",
-        "fullName": "google.cloud.talent.v4.CompanyClient.DeleteCompany",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "talentpb.DeleteCompanyRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "CompanyClient",
-          "fullName": "google.cloud.talent.v4.CompanyClient"
-        },
-        "method": {
-          "shortName": "DeleteCompany",
-          "fullName": "google.cloud.talent.v4.CompanyService.DeleteCompany",
-          "service": {
-            "shortName": "CompanyService",
-            "fullName": "google.cloud.talent.v4.CompanyService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "jobs_v4_generated_CompanyService_DeleteCompany_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "jobs DeleteCompany Sample"
     },
     {
-      "regionTag": "jobs_v4_generated_CompanyService_GetCompany_sync",
-      "title": "jobs GetCompany Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.talent.v4.CompanyClient",
+          "shortName": "CompanyClient"
+        },
+        "fullName": "google.cloud.talent.v4.CompanyClient.GetCompany",
+        "method": {
+          "fullName": "google.cloud.talent.v4.CompanyService.GetCompany",
+          "service": {
+            "fullName": "google.cloud.talent.v4.CompanyService",
+            "shortName": "CompanyService"
+          },
+          "shortName": "GetCompany"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "talentpb.GetCompanyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*talentpb.Company",
+        "shortName": "GetCompany"
+      },
       "description": "GetCompany retrieves specified company.",
       "file": "CompanyClient/GetCompany/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetCompany",
-        "fullName": "google.cloud.talent.v4.CompanyClient.GetCompany",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "talentpb.GetCompanyRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*talentpb.Company",
-        "client": {
-          "shortName": "CompanyClient",
-          "fullName": "google.cloud.talent.v4.CompanyClient"
-        },
-        "method": {
-          "shortName": "GetCompany",
-          "fullName": "google.cloud.talent.v4.CompanyService.GetCompany",
-          "service": {
-            "shortName": "CompanyService",
-            "fullName": "google.cloud.talent.v4.CompanyService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "jobs_v4_generated_CompanyService_GetCompany_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "jobs GetCompany Sample"
     },
     {
-      "regionTag": "jobs_v4_generated_CompanyService_GetOperation_sync",
-      "title": "jobs GetOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.talent.v4.CompanyClient",
+          "shortName": "CompanyClient"
+        },
+        "fullName": "google.cloud.talent.v4.CompanyClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
       "description": "GetOperation is a utility method from google.longrunning.Operations.",
       "file": "CompanyClient/GetOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetOperation",
-        "fullName": "google.cloud.talent.v4.CompanyClient.GetOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.GetOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*longrunningpb.Operation",
-        "client": {
-          "shortName": "CompanyClient",
-          "fullName": "google.cloud.talent.v4.CompanyClient"
-        },
-        "method": {
-          "shortName": "GetOperation",
-          "fullName": "google.longrunning.Operations.GetOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "jobs_v4_generated_CompanyService_GetOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "jobs GetOperation Sample"
     },
     {
-      "regionTag": "jobs_v4_generated_CompanyService_ListCompanies_sync",
-      "title": "jobs ListCompanies Sample",
-      "description": "ListCompanies lists all companies associated with the project.",
-      "file": "CompanyClient/ListCompanies/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListCompanies",
+        "client": {
+          "fullName": "google.cloud.talent.v4.CompanyClient",
+          "shortName": "CompanyClient"
+        },
         "fullName": "google.cloud.talent.v4.CompanyClient.ListCompanies",
+        "method": {
+          "fullName": "google.cloud.talent.v4.CompanyService.ListCompanies",
+          "service": {
+            "fullName": "google.cloud.talent.v4.CompanyService",
+            "shortName": "CompanyService"
+          },
+          "shortName": "ListCompanies"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "talentpb.ListCompaniesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "talentpb.ListCompaniesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CompanyIterator",
-        "client": {
-          "shortName": "CompanyClient",
-          "fullName": "google.cloud.talent.v4.CompanyClient"
-        },
-        "method": {
-          "shortName": "ListCompanies",
-          "fullName": "google.cloud.talent.v4.CompanyService.ListCompanies",
-          "service": {
-            "shortName": "CompanyService",
-            "fullName": "google.cloud.talent.v4.CompanyService"
-          }
-        }
+        "shortName": "ListCompanies"
       },
+      "description": "ListCompanies lists all companies associated with the project.",
+      "file": "CompanyClient/ListCompanies/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "jobs_v4_generated_CompanyService_ListCompanies_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "jobs ListCompanies Sample"
     },
     {
-      "regionTag": "jobs_v4_generated_CompanyService_UpdateCompany_sync",
-      "title": "jobs UpdateCompany Sample",
-      "description": "UpdateCompany updates specified company.",
-      "file": "CompanyClient/UpdateCompany/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateCompany",
+        "client": {
+          "fullName": "google.cloud.talent.v4.CompanyClient",
+          "shortName": "CompanyClient"
+        },
         "fullName": "google.cloud.talent.v4.CompanyClient.UpdateCompany",
+        "method": {
+          "fullName": "google.cloud.talent.v4.CompanyService.UpdateCompany",
+          "service": {
+            "fullName": "google.cloud.talent.v4.CompanyService",
+            "shortName": "CompanyService"
+          },
+          "shortName": "UpdateCompany"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "talentpb.UpdateCompanyRequest",
-            "name": "req"
+            "name": "req",
+            "type": "talentpb.UpdateCompanyRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*talentpb.Company",
-        "client": {
-          "shortName": "CompanyClient",
-          "fullName": "google.cloud.talent.v4.CompanyClient"
-        },
-        "method": {
-          "shortName": "UpdateCompany",
-          "fullName": "google.cloud.talent.v4.CompanyService.UpdateCompany",
-          "service": {
-            "shortName": "CompanyService",
-            "fullName": "google.cloud.talent.v4.CompanyService"
-          }
-        }
+        "shortName": "UpdateCompany"
       },
+      "description": "UpdateCompany updates specified company.",
+      "file": "CompanyClient/UpdateCompany/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "jobs_v4_generated_CompanyService_UpdateCompany_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "jobs UpdateCompany Sample"
     },
     {
-      "regionTag": "jobs_v4_generated_Completion_CompleteQuery_sync",
-      "title": "jobs CompleteQuery Sample",
-      "description": "CompleteQuery completes the specified prefix with keyword suggestions.\nIntended for use by a job search auto-complete search box.",
-      "file": "CompletionClient/CompleteQuery/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CompleteQuery",
+        "client": {
+          "fullName": "google.cloud.talent.v4.CompletionClient",
+          "shortName": "CompletionClient"
+        },
         "fullName": "google.cloud.talent.v4.CompletionClient.CompleteQuery",
+        "method": {
+          "fullName": "google.cloud.talent.v4.Completion.CompleteQuery",
+          "service": {
+            "fullName": "google.cloud.talent.v4.Completion",
+            "shortName": "Completion"
+          },
+          "shortName": "CompleteQuery"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "talentpb.CompleteQueryRequest",
-            "name": "req"
+            "name": "req",
+            "type": "talentpb.CompleteQueryRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*talentpb.CompleteQueryResponse",
-        "client": {
-          "shortName": "CompletionClient",
-          "fullName": "google.cloud.talent.v4.CompletionClient"
-        },
-        "method": {
-          "shortName": "CompleteQuery",
-          "fullName": "google.cloud.talent.v4.Completion.CompleteQuery",
-          "service": {
-            "shortName": "Completion",
-            "fullName": "google.cloud.talent.v4.Completion"
-          }
-        }
+        "shortName": "CompleteQuery"
       },
+      "description": "CompleteQuery completes the specified prefix with keyword suggestions.\nIntended for use by a job search auto-complete search box.",
+      "file": "CompletionClient/CompleteQuery/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "jobs_v4_generated_Completion_CompleteQuery_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "jobs CompleteQuery Sample"
     },
     {
-      "regionTag": "jobs_v4_generated_Completion_GetOperation_sync",
-      "title": "jobs GetOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.talent.v4.CompletionClient",
+          "shortName": "CompletionClient"
+        },
+        "fullName": "google.cloud.talent.v4.CompletionClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
       "description": "GetOperation is a utility method from google.longrunning.Operations.",
       "file": "CompletionClient/GetOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetOperation",
-        "fullName": "google.cloud.talent.v4.CompletionClient.GetOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.GetOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*longrunningpb.Operation",
-        "client": {
-          "shortName": "CompletionClient",
-          "fullName": "google.cloud.talent.v4.CompletionClient"
-        },
-        "method": {
-          "shortName": "GetOperation",
-          "fullName": "google.longrunning.Operations.GetOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "jobs_v4_generated_Completion_GetOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "jobs GetOperation Sample"
     },
     {
-      "regionTag": "jobs_v4_generated_EventService_CreateClientEvent_sync",
-      "title": "jobs CreateClientEvent Sample",
-      "description": "CreateClientEvent report events issued when end user interacts with customer's application\nthat uses Cloud Talent Solution. You may inspect the created events in\n[self service\ntools](https: //console.cloud.google.com/talent-solution/overview).\n[Learn\nmore](https: //cloud.google.com/talent-solution/docs/management-tools)\nabout self service tools.",
-      "file": "EventClient/CreateClientEvent/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateClientEvent",
+        "client": {
+          "fullName": "google.cloud.talent.v4.EventClient",
+          "shortName": "EventClient"
+        },
         "fullName": "google.cloud.talent.v4.EventClient.CreateClientEvent",
+        "method": {
+          "fullName": "google.cloud.talent.v4.EventService.CreateClientEvent",
+          "service": {
+            "fullName": "google.cloud.talent.v4.EventService",
+            "shortName": "EventService"
+          },
+          "shortName": "CreateClientEvent"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "talentpb.CreateClientEventRequest",
-            "name": "req"
+            "name": "req",
+            "type": "talentpb.CreateClientEventRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*talentpb.ClientEvent",
-        "client": {
-          "shortName": "EventClient",
-          "fullName": "google.cloud.talent.v4.EventClient"
-        },
-        "method": {
-          "shortName": "CreateClientEvent",
-          "fullName": "google.cloud.talent.v4.EventService.CreateClientEvent",
-          "service": {
-            "shortName": "EventService",
-            "fullName": "google.cloud.talent.v4.EventService"
-          }
-        }
+        "shortName": "CreateClientEvent"
       },
+      "description": "CreateClientEvent report events issued when end user interacts with customer's application\nthat uses Cloud Talent Solution. You may inspect the created events in\n[self service\ntools](https: //console.cloud.google.com/talent-solution/overview).\n[Learn\nmore](https: //cloud.google.com/talent-solution/docs/management-tools)\nabout self service tools.",
+      "file": "EventClient/CreateClientEvent/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "jobs_v4_generated_EventService_CreateClientEvent_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "jobs CreateClientEvent Sample"
     },
     {
-      "regionTag": "jobs_v4_generated_EventService_GetOperation_sync",
-      "title": "jobs GetOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.talent.v4.EventClient",
+          "shortName": "EventClient"
+        },
+        "fullName": "google.cloud.talent.v4.EventClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
       "description": "GetOperation is a utility method from google.longrunning.Operations.",
       "file": "EventClient/GetOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetOperation",
-        "fullName": "google.cloud.talent.v4.EventClient.GetOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.GetOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*longrunningpb.Operation",
-        "client": {
-          "shortName": "EventClient",
-          "fullName": "google.cloud.talent.v4.EventClient"
-        },
-        "method": {
-          "shortName": "GetOperation",
-          "fullName": "google.longrunning.Operations.GetOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "jobs_v4_generated_EventService_GetOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "jobs GetOperation Sample"
     },
     {
-      "regionTag": "jobs_v4_generated_JobService_BatchCreateJobs_sync",
-      "title": "jobs BatchCreateJobs Sample",
-      "description": "BatchCreateJobs begins executing a batch create jobs operation.",
-      "file": "JobClient/BatchCreateJobs/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "BatchCreateJobs",
+        "client": {
+          "fullName": "google.cloud.talent.v4.JobClient",
+          "shortName": "JobClient"
+        },
         "fullName": "google.cloud.talent.v4.JobClient.BatchCreateJobs",
+        "method": {
+          "fullName": "google.cloud.talent.v4.JobService.BatchCreateJobs",
+          "service": {
+            "fullName": "google.cloud.talent.v4.JobService",
+            "shortName": "JobService"
+          },
+          "shortName": "BatchCreateJobs"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "talentpb.BatchCreateJobsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "talentpb.BatchCreateJobsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "BatchCreateJobsOperation",
-        "client": {
-          "shortName": "JobClient",
-          "fullName": "google.cloud.talent.v4.JobClient"
-        },
-        "method": {
-          "shortName": "BatchCreateJobs",
-          "fullName": "google.cloud.talent.v4.JobService.BatchCreateJobs",
-          "service": {
-            "shortName": "JobService",
-            "fullName": "google.cloud.talent.v4.JobService"
-          }
-        }
+        "shortName": "BatchCreateJobs"
       },
+      "description": "BatchCreateJobs begins executing a batch create jobs operation.",
+      "file": "JobClient/BatchCreateJobs/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "jobs_v4_generated_JobService_BatchCreateJobs_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "jobs BatchCreateJobs Sample"
     },
     {
-      "regionTag": "jobs_v4_generated_JobService_BatchDeleteJobs_sync",
-      "title": "jobs BatchDeleteJobs Sample",
-      "description": "BatchDeleteJobs begins executing a batch delete jobs operation.",
-      "file": "JobClient/BatchDeleteJobs/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "BatchDeleteJobs",
+        "client": {
+          "fullName": "google.cloud.talent.v4.JobClient",
+          "shortName": "JobClient"
+        },
         "fullName": "google.cloud.talent.v4.JobClient.BatchDeleteJobs",
+        "method": {
+          "fullName": "google.cloud.talent.v4.JobService.BatchDeleteJobs",
+          "service": {
+            "fullName": "google.cloud.talent.v4.JobService",
+            "shortName": "JobService"
+          },
+          "shortName": "BatchDeleteJobs"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "talentpb.BatchDeleteJobsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "talentpb.BatchDeleteJobsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "BatchDeleteJobsOperation",
-        "client": {
-          "shortName": "JobClient",
-          "fullName": "google.cloud.talent.v4.JobClient"
-        },
-        "method": {
-          "shortName": "BatchDeleteJobs",
-          "fullName": "google.cloud.talent.v4.JobService.BatchDeleteJobs",
-          "service": {
-            "shortName": "JobService",
-            "fullName": "google.cloud.talent.v4.JobService"
-          }
-        }
+        "shortName": "BatchDeleteJobs"
       },
+      "description": "BatchDeleteJobs begins executing a batch delete jobs operation.",
+      "file": "JobClient/BatchDeleteJobs/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "jobs_v4_generated_JobService_BatchDeleteJobs_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "jobs BatchDeleteJobs Sample"
     },
     {
-      "regionTag": "jobs_v4_generated_JobService_BatchUpdateJobs_sync",
-      "title": "jobs BatchUpdateJobs Sample",
-      "description": "BatchUpdateJobs begins executing a batch update jobs operation.",
-      "file": "JobClient/BatchUpdateJobs/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "BatchUpdateJobs",
+        "client": {
+          "fullName": "google.cloud.talent.v4.JobClient",
+          "shortName": "JobClient"
+        },
         "fullName": "google.cloud.talent.v4.JobClient.BatchUpdateJobs",
+        "method": {
+          "fullName": "google.cloud.talent.v4.JobService.BatchUpdateJobs",
+          "service": {
+            "fullName": "google.cloud.talent.v4.JobService",
+            "shortName": "JobService"
+          },
+          "shortName": "BatchUpdateJobs"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "talentpb.BatchUpdateJobsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "talentpb.BatchUpdateJobsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "BatchUpdateJobsOperation",
-        "client": {
-          "shortName": "JobClient",
-          "fullName": "google.cloud.talent.v4.JobClient"
-        },
-        "method": {
-          "shortName": "BatchUpdateJobs",
-          "fullName": "google.cloud.talent.v4.JobService.BatchUpdateJobs",
-          "service": {
-            "shortName": "JobService",
-            "fullName": "google.cloud.talent.v4.JobService"
-          }
-        }
+        "shortName": "BatchUpdateJobs"
       },
+      "description": "BatchUpdateJobs begins executing a batch update jobs operation.",
+      "file": "JobClient/BatchUpdateJobs/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "jobs_v4_generated_JobService_BatchUpdateJobs_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "jobs BatchUpdateJobs Sample"
     },
     {
-      "regionTag": "jobs_v4_generated_JobService_CreateJob_sync",
-      "title": "jobs CreateJob Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.talent.v4.JobClient",
+          "shortName": "JobClient"
+        },
+        "fullName": "google.cloud.talent.v4.JobClient.CreateJob",
+        "method": {
+          "fullName": "google.cloud.talent.v4.JobService.CreateJob",
+          "service": {
+            "fullName": "google.cloud.talent.v4.JobService",
+            "shortName": "JobService"
+          },
+          "shortName": "CreateJob"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "talentpb.CreateJobRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*talentpb.Job",
+        "shortName": "CreateJob"
+      },
       "description": "CreateJob creates a new job.\n\nTypically, the job becomes searchable within 10 seconds, but it may take\nup to 5 minutes.",
       "file": "JobClient/CreateJob/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateJob",
-        "fullName": "google.cloud.talent.v4.JobClient.CreateJob",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "talentpb.CreateJobRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*talentpb.Job",
-        "client": {
-          "shortName": "JobClient",
-          "fullName": "google.cloud.talent.v4.JobClient"
-        },
-        "method": {
-          "shortName": "CreateJob",
-          "fullName": "google.cloud.talent.v4.JobService.CreateJob",
-          "service": {
-            "shortName": "JobService",
-            "fullName": "google.cloud.talent.v4.JobService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "jobs_v4_generated_JobService_CreateJob_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "jobs CreateJob Sample"
     },
     {
-      "regionTag": "jobs_v4_generated_JobService_DeleteJob_sync",
-      "title": "jobs DeleteJob Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.talent.v4.JobClient",
+          "shortName": "JobClient"
+        },
+        "fullName": "google.cloud.talent.v4.JobClient.DeleteJob",
+        "method": {
+          "fullName": "google.cloud.talent.v4.JobService.DeleteJob",
+          "service": {
+            "fullName": "google.cloud.talent.v4.JobService",
+            "shortName": "JobService"
+          },
+          "shortName": "DeleteJob"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "talentpb.DeleteJobRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteJob"
+      },
       "description": "DeleteJob deletes the specified job.\n\nTypically, the job becomes unsearchable within 10 seconds, but it may take\nup to 5 minutes.",
       "file": "JobClient/DeleteJob/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteJob",
-        "fullName": "google.cloud.talent.v4.JobClient.DeleteJob",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "talentpb.DeleteJobRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "JobClient",
-          "fullName": "google.cloud.talent.v4.JobClient"
-        },
-        "method": {
-          "shortName": "DeleteJob",
-          "fullName": "google.cloud.talent.v4.JobService.DeleteJob",
-          "service": {
-            "shortName": "JobService",
-            "fullName": "google.cloud.talent.v4.JobService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "jobs_v4_generated_JobService_DeleteJob_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "jobs DeleteJob Sample"
     },
     {
-      "regionTag": "jobs_v4_generated_JobService_GetJob_sync",
-      "title": "jobs GetJob Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.talent.v4.JobClient",
+          "shortName": "JobClient"
+        },
+        "fullName": "google.cloud.talent.v4.JobClient.GetJob",
+        "method": {
+          "fullName": "google.cloud.talent.v4.JobService.GetJob",
+          "service": {
+            "fullName": "google.cloud.talent.v4.JobService",
+            "shortName": "JobService"
+          },
+          "shortName": "GetJob"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "talentpb.GetJobRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*talentpb.Job",
+        "shortName": "GetJob"
+      },
       "description": "GetJob retrieves the specified job, whose status is OPEN or recently EXPIRED\nwithin the last 90 days.",
       "file": "JobClient/GetJob/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetJob",
-        "fullName": "google.cloud.talent.v4.JobClient.GetJob",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "talentpb.GetJobRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*talentpb.Job",
-        "client": {
-          "shortName": "JobClient",
-          "fullName": "google.cloud.talent.v4.JobClient"
-        },
-        "method": {
-          "shortName": "GetJob",
-          "fullName": "google.cloud.talent.v4.JobService.GetJob",
-          "service": {
-            "shortName": "JobService",
-            "fullName": "google.cloud.talent.v4.JobService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "jobs_v4_generated_JobService_GetJob_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "jobs GetJob Sample"
     },
     {
-      "regionTag": "jobs_v4_generated_JobService_GetOperation_sync",
-      "title": "jobs GetOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.talent.v4.JobClient",
+          "shortName": "JobClient"
+        },
+        "fullName": "google.cloud.talent.v4.JobClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
       "description": "GetOperation is a utility method from google.longrunning.Operations.",
       "file": "JobClient/GetOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetOperation",
-        "fullName": "google.cloud.talent.v4.JobClient.GetOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.GetOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*longrunningpb.Operation",
-        "client": {
-          "shortName": "JobClient",
-          "fullName": "google.cloud.talent.v4.JobClient"
-        },
-        "method": {
-          "shortName": "GetOperation",
-          "fullName": "google.longrunning.Operations.GetOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "jobs_v4_generated_JobService_GetOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "jobs GetOperation Sample"
     },
     {
-      "regionTag": "jobs_v4_generated_JobService_ListJobs_sync",
-      "title": "jobs ListJobs Sample",
-      "description": "ListJobs lists jobs by filter.",
-      "file": "JobClient/ListJobs/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListJobs",
+        "client": {
+          "fullName": "google.cloud.talent.v4.JobClient",
+          "shortName": "JobClient"
+        },
         "fullName": "google.cloud.talent.v4.JobClient.ListJobs",
+        "method": {
+          "fullName": "google.cloud.talent.v4.JobService.ListJobs",
+          "service": {
+            "fullName": "google.cloud.talent.v4.JobService",
+            "shortName": "JobService"
+          },
+          "shortName": "ListJobs"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "talentpb.ListJobsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "talentpb.ListJobsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "JobIterator",
-        "client": {
-          "shortName": "JobClient",
-          "fullName": "google.cloud.talent.v4.JobClient"
-        },
-        "method": {
-          "shortName": "ListJobs",
-          "fullName": "google.cloud.talent.v4.JobService.ListJobs",
-          "service": {
-            "shortName": "JobService",
-            "fullName": "google.cloud.talent.v4.JobService"
-          }
-        }
+        "shortName": "ListJobs"
       },
+      "description": "ListJobs lists jobs by filter.",
+      "file": "JobClient/ListJobs/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "jobs_v4_generated_JobService_ListJobs_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "jobs ListJobs Sample"
     },
     {
-      "regionTag": "jobs_v4_generated_JobService_SearchJobs_sync",
-      "title": "jobs SearchJobs Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.talent.v4.JobClient",
+          "shortName": "JobClient"
+        },
+        "fullName": "google.cloud.talent.v4.JobClient.SearchJobs",
+        "method": {
+          "fullName": "google.cloud.talent.v4.JobService.SearchJobs",
+          "service": {
+            "fullName": "google.cloud.talent.v4.JobService",
+            "shortName": "JobService"
+          },
+          "shortName": "SearchJobs"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "talentpb.SearchJobsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*talentpb.SearchJobsResponse",
+        "shortName": "SearchJobs"
+      },
       "description": "SearchJobs searches for jobs using the provided\n[SearchJobsRequest][google.cloud.talent.v4.SearchJobsRequest].\n\nThis call constrains the\n[visibility][google.cloud.talent.v4.Job.visibility] of jobs present in the\ndatabase, and only returns jobs that the caller has permission to search\nagainst.",
       "file": "JobClient/SearchJobs/main.go",
       "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "jobs_v4_generated_JobService_SearchJobs_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "jobs SearchJobs Sample"
+    },
+    {
       "clientMethod": {
-        "shortName": "SearchJobs",
-        "fullName": "google.cloud.talent.v4.JobClient.SearchJobs",
+        "client": {
+          "fullName": "google.cloud.talent.v4.JobClient",
+          "shortName": "JobClient"
+        },
+        "fullName": "google.cloud.talent.v4.JobClient.SearchJobsForAlert",
+        "method": {
+          "fullName": "google.cloud.talent.v4.JobService.SearchJobsForAlert",
+          "service": {
+            "fullName": "google.cloud.talent.v4.JobService",
+            "shortName": "JobService"
+          },
+          "shortName": "SearchJobsForAlert"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "talentpb.SearchJobsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "talentpb.SearchJobsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*talentpb.SearchJobsResponse",
-        "client": {
-          "shortName": "JobClient",
-          "fullName": "google.cloud.talent.v4.JobClient"
-        },
-        "method": {
-          "shortName": "SearchJobs",
-          "fullName": "google.cloud.talent.v4.JobService.SearchJobs",
-          "service": {
-            "shortName": "JobService",
-            "fullName": "google.cloud.talent.v4.JobService"
-          }
-        }
+        "shortName": "SearchJobsForAlert"
       },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "jobs_v4_generated_JobService_SearchJobsForAlert_sync",
-      "title": "jobs SearchJobsForAlert Sample",
       "description": "SearchJobsForAlert searches for jobs using the provided\n[SearchJobsRequest][google.cloud.talent.v4.SearchJobsRequest].\n\nThis API call is intended for the use case of targeting passive job\nseekers (for example, job seekers who have signed up to receive email\nalerts about potential job opportunities), it has different algorithmic\nadjustments that are designed to specifically target passive job seekers.\n\nThis call constrains the\n[visibility][google.cloud.talent.v4.Job.visibility] of jobs present in the\ndatabase, and only returns jobs the caller has permission to search\nagainst.",
       "file": "JobClient/SearchJobsForAlert/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "SearchJobsForAlert",
-        "fullName": "google.cloud.talent.v4.JobClient.SearchJobsForAlert",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "talentpb.SearchJobsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*talentpb.SearchJobsResponse",
-        "client": {
-          "shortName": "JobClient",
-          "fullName": "google.cloud.talent.v4.JobClient"
-        },
-        "method": {
-          "shortName": "SearchJobsForAlert",
-          "fullName": "google.cloud.talent.v4.JobService.SearchJobsForAlert",
-          "service": {
-            "shortName": "JobService",
-            "fullName": "google.cloud.talent.v4.JobService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "jobs_v4_generated_JobService_SearchJobsForAlert_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "jobs SearchJobsForAlert Sample"
     },
     {
-      "regionTag": "jobs_v4_generated_JobService_UpdateJob_sync",
-      "title": "jobs UpdateJob Sample",
-      "description": "UpdateJob updates specified job.\n\nTypically, updated contents become visible in search results within 10\nseconds, but it may take up to 5 minutes.",
-      "file": "JobClient/UpdateJob/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateJob",
+        "client": {
+          "fullName": "google.cloud.talent.v4.JobClient",
+          "shortName": "JobClient"
+        },
         "fullName": "google.cloud.talent.v4.JobClient.UpdateJob",
+        "method": {
+          "fullName": "google.cloud.talent.v4.JobService.UpdateJob",
+          "service": {
+            "fullName": "google.cloud.talent.v4.JobService",
+            "shortName": "JobService"
+          },
+          "shortName": "UpdateJob"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "talentpb.UpdateJobRequest",
-            "name": "req"
+            "name": "req",
+            "type": "talentpb.UpdateJobRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*talentpb.Job",
-        "client": {
-          "shortName": "JobClient",
-          "fullName": "google.cloud.talent.v4.JobClient"
-        },
-        "method": {
-          "shortName": "UpdateJob",
-          "fullName": "google.cloud.talent.v4.JobService.UpdateJob",
-          "service": {
-            "shortName": "JobService",
-            "fullName": "google.cloud.talent.v4.JobService"
-          }
-        }
+        "shortName": "UpdateJob"
       },
+      "description": "UpdateJob updates specified job.\n\nTypically, updated contents become visible in search results within 10\nseconds, but it may take up to 5 minutes.",
+      "file": "JobClient/UpdateJob/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "jobs_v4_generated_JobService_UpdateJob_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "jobs UpdateJob Sample"
     },
     {
-      "regionTag": "jobs_v4_generated_TenantService_CreateTenant_sync",
-      "title": "jobs CreateTenant Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.talent.v4.TenantClient",
+          "shortName": "TenantClient"
+        },
+        "fullName": "google.cloud.talent.v4.TenantClient.CreateTenant",
+        "method": {
+          "fullName": "google.cloud.talent.v4.TenantService.CreateTenant",
+          "service": {
+            "fullName": "google.cloud.talent.v4.TenantService",
+            "shortName": "TenantService"
+          },
+          "shortName": "CreateTenant"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "talentpb.CreateTenantRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*talentpb.Tenant",
+        "shortName": "CreateTenant"
+      },
       "description": "CreateTenant creates a new tenant entity.",
       "file": "TenantClient/CreateTenant/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateTenant",
-        "fullName": "google.cloud.talent.v4.TenantClient.CreateTenant",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "talentpb.CreateTenantRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*talentpb.Tenant",
-        "client": {
-          "shortName": "TenantClient",
-          "fullName": "google.cloud.talent.v4.TenantClient"
-        },
-        "method": {
-          "shortName": "CreateTenant",
-          "fullName": "google.cloud.talent.v4.TenantService.CreateTenant",
-          "service": {
-            "shortName": "TenantService",
-            "fullName": "google.cloud.talent.v4.TenantService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "jobs_v4_generated_TenantService_CreateTenant_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "jobs CreateTenant Sample"
     },
     {
-      "regionTag": "jobs_v4_generated_TenantService_DeleteTenant_sync",
-      "title": "jobs DeleteTenant Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.talent.v4.TenantClient",
+          "shortName": "TenantClient"
+        },
+        "fullName": "google.cloud.talent.v4.TenantClient.DeleteTenant",
+        "method": {
+          "fullName": "google.cloud.talent.v4.TenantService.DeleteTenant",
+          "service": {
+            "fullName": "google.cloud.talent.v4.TenantService",
+            "shortName": "TenantService"
+          },
+          "shortName": "DeleteTenant"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "talentpb.DeleteTenantRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteTenant"
+      },
       "description": "DeleteTenant deletes specified tenant.",
       "file": "TenantClient/DeleteTenant/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteTenant",
-        "fullName": "google.cloud.talent.v4.TenantClient.DeleteTenant",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "talentpb.DeleteTenantRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "TenantClient",
-          "fullName": "google.cloud.talent.v4.TenantClient"
-        },
-        "method": {
-          "shortName": "DeleteTenant",
-          "fullName": "google.cloud.talent.v4.TenantService.DeleteTenant",
-          "service": {
-            "shortName": "TenantService",
-            "fullName": "google.cloud.talent.v4.TenantService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "jobs_v4_generated_TenantService_DeleteTenant_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "jobs DeleteTenant Sample"
     },
     {
-      "regionTag": "jobs_v4_generated_TenantService_GetOperation_sync",
-      "title": "jobs GetOperation Sample",
-      "description": "GetOperation is a utility method from google.longrunning.Operations.",
-      "file": "TenantClient/GetOperation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetOperation",
+        "client": {
+          "fullName": "google.cloud.talent.v4.TenantClient",
+          "shortName": "TenantClient"
+        },
         "fullName": "google.cloud.talent.v4.TenantClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.GetOperationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*longrunningpb.Operation",
-        "client": {
-          "shortName": "TenantClient",
-          "fullName": "google.cloud.talent.v4.TenantClient"
-        },
-        "method": {
-          "shortName": "GetOperation",
-          "fullName": "google.longrunning.Operations.GetOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "GetOperation"
       },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "TenantClient/GetOperation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "jobs_v4_generated_TenantService_GetOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "jobs GetOperation Sample"
     },
     {
-      "regionTag": "jobs_v4_generated_TenantService_GetTenant_sync",
-      "title": "jobs GetTenant Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.talent.v4.TenantClient",
+          "shortName": "TenantClient"
+        },
+        "fullName": "google.cloud.talent.v4.TenantClient.GetTenant",
+        "method": {
+          "fullName": "google.cloud.talent.v4.TenantService.GetTenant",
+          "service": {
+            "fullName": "google.cloud.talent.v4.TenantService",
+            "shortName": "TenantService"
+          },
+          "shortName": "GetTenant"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "talentpb.GetTenantRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*talentpb.Tenant",
+        "shortName": "GetTenant"
+      },
       "description": "GetTenant retrieves specified tenant.",
       "file": "TenantClient/GetTenant/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetTenant",
-        "fullName": "google.cloud.talent.v4.TenantClient.GetTenant",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "talentpb.GetTenantRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*talentpb.Tenant",
-        "client": {
-          "shortName": "TenantClient",
-          "fullName": "google.cloud.talent.v4.TenantClient"
-        },
-        "method": {
-          "shortName": "GetTenant",
-          "fullName": "google.cloud.talent.v4.TenantService.GetTenant",
-          "service": {
-            "shortName": "TenantService",
-            "fullName": "google.cloud.talent.v4.TenantService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "jobs_v4_generated_TenantService_GetTenant_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "jobs GetTenant Sample"
     },
     {
-      "regionTag": "jobs_v4_generated_TenantService_ListTenants_sync",
-      "title": "jobs ListTenants Sample",
-      "description": "ListTenants lists all tenants associated with the project.",
-      "file": "TenantClient/ListTenants/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListTenants",
+        "client": {
+          "fullName": "google.cloud.talent.v4.TenantClient",
+          "shortName": "TenantClient"
+        },
         "fullName": "google.cloud.talent.v4.TenantClient.ListTenants",
+        "method": {
+          "fullName": "google.cloud.talent.v4.TenantService.ListTenants",
+          "service": {
+            "fullName": "google.cloud.talent.v4.TenantService",
+            "shortName": "TenantService"
+          },
+          "shortName": "ListTenants"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "talentpb.ListTenantsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "talentpb.ListTenantsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "TenantIterator",
-        "client": {
-          "shortName": "TenantClient",
-          "fullName": "google.cloud.talent.v4.TenantClient"
-        },
-        "method": {
-          "shortName": "ListTenants",
-          "fullName": "google.cloud.talent.v4.TenantService.ListTenants",
-          "service": {
-            "shortName": "TenantService",
-            "fullName": "google.cloud.talent.v4.TenantService"
-          }
-        }
+        "shortName": "ListTenants"
       },
+      "description": "ListTenants lists all tenants associated with the project.",
+      "file": "TenantClient/ListTenants/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "jobs_v4_generated_TenantService_ListTenants_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "jobs ListTenants Sample"
     },
     {
-      "regionTag": "jobs_v4_generated_TenantService_UpdateTenant_sync",
-      "title": "jobs UpdateTenant Sample",
-      "description": "UpdateTenant updates specified tenant.",
-      "file": "TenantClient/UpdateTenant/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateTenant",
+        "client": {
+          "fullName": "google.cloud.talent.v4.TenantClient",
+          "shortName": "TenantClient"
+        },
         "fullName": "google.cloud.talent.v4.TenantClient.UpdateTenant",
+        "method": {
+          "fullName": "google.cloud.talent.v4.TenantService.UpdateTenant",
+          "service": {
+            "fullName": "google.cloud.talent.v4.TenantService",
+            "shortName": "TenantService"
+          },
+          "shortName": "UpdateTenant"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "talentpb.UpdateTenantRequest",
-            "name": "req"
+            "name": "req",
+            "type": "talentpb.UpdateTenantRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*talentpb.Tenant",
-        "client": {
-          "shortName": "TenantClient",
-          "fullName": "google.cloud.talent.v4.TenantClient"
-        },
-        "method": {
-          "shortName": "UpdateTenant",
-          "fullName": "google.cloud.talent.v4.TenantService.UpdateTenant",
-          "service": {
-            "shortName": "TenantService",
-            "fullName": "google.cloud.talent.v4.TenantService"
-          }
-        }
+        "shortName": "UpdateTenant"
       },
+      "description": "UpdateTenant updates specified tenant.",
+      "file": "TenantClient/UpdateTenant/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "jobs_v4_generated_TenantService_UpdateTenant_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "jobs UpdateTenant Sample"
     }
   ]
 }

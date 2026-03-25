@@ -1,244 +1,244 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/billing/budgets/apiv1",
-    "version": "1.21.0",
-    "language": "GO",
     "apis": [
       {
         "id": "google.cloud.billing.budgets.v1",
         "version": "v1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/billing/budgets/apiv1",
+    "version": "1.21.0"
   },
   "snippets": [
     {
-      "regionTag": "billingbudgets_v1_generated_BudgetService_CreateBudget_sync",
-      "title": "billingbudgets CreateBudget Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.billing.budgets.v1.BudgetClient",
+          "shortName": "BudgetClient"
+        },
+        "fullName": "google.cloud.billing.budgets.v1.BudgetClient.CreateBudget",
+        "method": {
+          "fullName": "google.cloud.billing.budgets.v1.BudgetService.CreateBudget",
+          "service": {
+            "fullName": "google.cloud.billing.budgets.v1.BudgetService",
+            "shortName": "BudgetService"
+          },
+          "shortName": "CreateBudget"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "budgetspb.CreateBudgetRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*budgetspb.Budget",
+        "shortName": "CreateBudget"
+      },
       "description": "CreateBudget creates a new budget. See\n[Quotas and limits](https: //cloud.google.com/billing/quotas)\nfor more information on the limits of the number of budgets you can create.",
       "file": "BudgetClient/CreateBudget/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateBudget",
-        "fullName": "google.cloud.billing.budgets.v1.BudgetClient.CreateBudget",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "budgetspb.CreateBudgetRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*budgetspb.Budget",
-        "client": {
-          "shortName": "BudgetClient",
-          "fullName": "google.cloud.billing.budgets.v1.BudgetClient"
-        },
-        "method": {
-          "shortName": "CreateBudget",
-          "fullName": "google.cloud.billing.budgets.v1.BudgetService.CreateBudget",
-          "service": {
-            "shortName": "BudgetService",
-            "fullName": "google.cloud.billing.budgets.v1.BudgetService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "billingbudgets_v1_generated_BudgetService_CreateBudget_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "billingbudgets CreateBudget Sample"
     },
     {
-      "regionTag": "billingbudgets_v1_generated_BudgetService_DeleteBudget_sync",
-      "title": "billingbudgets DeleteBudget Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.billing.budgets.v1.BudgetClient",
+          "shortName": "BudgetClient"
+        },
+        "fullName": "google.cloud.billing.budgets.v1.BudgetClient.DeleteBudget",
+        "method": {
+          "fullName": "google.cloud.billing.budgets.v1.BudgetService.DeleteBudget",
+          "service": {
+            "fullName": "google.cloud.billing.budgets.v1.BudgetService",
+            "shortName": "BudgetService"
+          },
+          "shortName": "DeleteBudget"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "budgetspb.DeleteBudgetRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteBudget"
+      },
       "description": "DeleteBudget deletes a budget. Returns successfully if already deleted.",
       "file": "BudgetClient/DeleteBudget/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteBudget",
-        "fullName": "google.cloud.billing.budgets.v1.BudgetClient.DeleteBudget",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "budgetspb.DeleteBudgetRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "BudgetClient",
-          "fullName": "google.cloud.billing.budgets.v1.BudgetClient"
-        },
-        "method": {
-          "shortName": "DeleteBudget",
-          "fullName": "google.cloud.billing.budgets.v1.BudgetService.DeleteBudget",
-          "service": {
-            "shortName": "BudgetService",
-            "fullName": "google.cloud.billing.budgets.v1.BudgetService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "billingbudgets_v1_generated_BudgetService_DeleteBudget_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "billingbudgets DeleteBudget Sample"
     },
     {
-      "regionTag": "billingbudgets_v1_generated_BudgetService_GetBudget_sync",
-      "title": "billingbudgets GetBudget Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.billing.budgets.v1.BudgetClient",
+          "shortName": "BudgetClient"
+        },
+        "fullName": "google.cloud.billing.budgets.v1.BudgetClient.GetBudget",
+        "method": {
+          "fullName": "google.cloud.billing.budgets.v1.BudgetService.GetBudget",
+          "service": {
+            "fullName": "google.cloud.billing.budgets.v1.BudgetService",
+            "shortName": "BudgetService"
+          },
+          "shortName": "GetBudget"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "budgetspb.GetBudgetRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*budgetspb.Budget",
+        "shortName": "GetBudget"
+      },
       "description": "GetBudget returns a budget.\n\nWARNING: There are some fields exposed on the Google Cloud Console that\naren't available on this API. When reading from the API, you will not\nsee these fields in the return value, though they may have been set\nin the Cloud Console.",
       "file": "BudgetClient/GetBudget/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetBudget",
-        "fullName": "google.cloud.billing.budgets.v1.BudgetClient.GetBudget",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "budgetspb.GetBudgetRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*budgetspb.Budget",
-        "client": {
-          "shortName": "BudgetClient",
-          "fullName": "google.cloud.billing.budgets.v1.BudgetClient"
-        },
-        "method": {
-          "shortName": "GetBudget",
-          "fullName": "google.cloud.billing.budgets.v1.BudgetService.GetBudget",
-          "service": {
-            "shortName": "BudgetService",
-            "fullName": "google.cloud.billing.budgets.v1.BudgetService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "billingbudgets_v1_generated_BudgetService_GetBudget_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "billingbudgets GetBudget Sample"
     },
     {
-      "regionTag": "billingbudgets_v1_generated_BudgetService_ListBudgets_sync",
-      "title": "billingbudgets ListBudgets Sample",
-      "description": "ListBudgets returns a list of budgets for a billing account.\n\nWARNING: There are some fields exposed on the Google Cloud Console that\naren't available on this API. When reading from the API, you will not\nsee these fields in the return value, though they may have been set\nin the Cloud Console.",
-      "file": "BudgetClient/ListBudgets/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListBudgets",
+        "client": {
+          "fullName": "google.cloud.billing.budgets.v1.BudgetClient",
+          "shortName": "BudgetClient"
+        },
         "fullName": "google.cloud.billing.budgets.v1.BudgetClient.ListBudgets",
+        "method": {
+          "fullName": "google.cloud.billing.budgets.v1.BudgetService.ListBudgets",
+          "service": {
+            "fullName": "google.cloud.billing.budgets.v1.BudgetService",
+            "shortName": "BudgetService"
+          },
+          "shortName": "ListBudgets"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "budgetspb.ListBudgetsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "budgetspb.ListBudgetsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "BudgetIterator",
-        "client": {
-          "shortName": "BudgetClient",
-          "fullName": "google.cloud.billing.budgets.v1.BudgetClient"
-        },
-        "method": {
-          "shortName": "ListBudgets",
-          "fullName": "google.cloud.billing.budgets.v1.BudgetService.ListBudgets",
-          "service": {
-            "shortName": "BudgetService",
-            "fullName": "google.cloud.billing.budgets.v1.BudgetService"
-          }
-        }
+        "shortName": "ListBudgets"
       },
+      "description": "ListBudgets returns a list of budgets for a billing account.\n\nWARNING: There are some fields exposed on the Google Cloud Console that\naren't available on this API. When reading from the API, you will not\nsee these fields in the return value, though they may have been set\nin the Cloud Console.",
+      "file": "BudgetClient/ListBudgets/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "billingbudgets_v1_generated_BudgetService_ListBudgets_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "billingbudgets ListBudgets Sample"
     },
     {
-      "regionTag": "billingbudgets_v1_generated_BudgetService_UpdateBudget_sync",
-      "title": "billingbudgets UpdateBudget Sample",
-      "description": "UpdateBudget updates a budget and returns the updated budget.\n\nWARNING: There are some fields exposed on the Google Cloud Console that\naren't available on this API. Budget fields that are not exposed in\nthis API will not be changed by this method.",
-      "file": "BudgetClient/UpdateBudget/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateBudget",
+        "client": {
+          "fullName": "google.cloud.billing.budgets.v1.BudgetClient",
+          "shortName": "BudgetClient"
+        },
         "fullName": "google.cloud.billing.budgets.v1.BudgetClient.UpdateBudget",
+        "method": {
+          "fullName": "google.cloud.billing.budgets.v1.BudgetService.UpdateBudget",
+          "service": {
+            "fullName": "google.cloud.billing.budgets.v1.BudgetService",
+            "shortName": "BudgetService"
+          },
+          "shortName": "UpdateBudget"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "budgetspb.UpdateBudgetRequest",
-            "name": "req"
+            "name": "req",
+            "type": "budgetspb.UpdateBudgetRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*budgetspb.Budget",
-        "client": {
-          "shortName": "BudgetClient",
-          "fullName": "google.cloud.billing.budgets.v1.BudgetClient"
-        },
-        "method": {
-          "shortName": "UpdateBudget",
-          "fullName": "google.cloud.billing.budgets.v1.BudgetService.UpdateBudget",
-          "service": {
-            "shortName": "BudgetService",
-            "fullName": "google.cloud.billing.budgets.v1.BudgetService"
-          }
-        }
+        "shortName": "UpdateBudget"
       },
+      "description": "UpdateBudget updates a budget and returns the updated budget.\n\nWARNING: There are some fields exposed on the Google Cloud Console that\naren't available on this API. Budget fields that are not exposed in\nthis API will not be changed by this method.",
+      "file": "BudgetClient/UpdateBudget/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "billingbudgets_v1_generated_BudgetService_UpdateBudget_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "billingbudgets UpdateBudget Sample"
     }
   ]
 }

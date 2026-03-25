@@ -1,749 +1,749 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/rapidmigrationassessment/apiv1",
-    "version": "1.1.8",
-    "language": "GO",
     "apis": [
       {
         "id": "google.cloud.rapidmigrationassessment.v1",
         "version": "v1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/rapidmigrationassessment/apiv1",
+    "version": "1.1.8"
   },
   "snippets": [
     {
-      "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_CancelOperation_sync",
-      "title": "rapidmigrationassessment CancelOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.rapidmigrationassessment.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.rapidmigrationassessment.v1.Client.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
       "file": "Client/CancelOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CancelOperation",
-        "fullName": "google.cloud.rapidmigrationassessment.v1.Client.CancelOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.CancelOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.rapidmigrationassessment.v1.Client"
-        },
-        "method": {
-          "shortName": "CancelOperation",
-          "fullName": "google.longrunning.Operations.CancelOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_CancelOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "rapidmigrationassessment CancelOperation Sample"
     },
     {
-      "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_CreateAnnotation_sync",
-      "title": "rapidmigrationassessment CreateAnnotation Sample",
-      "description": "CreateAnnotation creates an Annotation",
-      "file": "Client/CreateAnnotation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateAnnotation",
+        "client": {
+          "fullName": "google.cloud.rapidmigrationassessment.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.rapidmigrationassessment.v1.Client.CreateAnnotation",
+        "method": {
+          "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment.CreateAnnotation",
+          "service": {
+            "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment",
+            "shortName": "RapidMigrationAssessment"
+          },
+          "shortName": "CreateAnnotation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "rapidmigrationassessmentpb.CreateAnnotationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "rapidmigrationassessmentpb.CreateAnnotationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateAnnotationOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.rapidmigrationassessment.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateAnnotation",
-          "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment.CreateAnnotation",
-          "service": {
-            "shortName": "RapidMigrationAssessment",
-            "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment"
-          }
-        }
+        "shortName": "CreateAnnotation"
       },
+      "description": "CreateAnnotation creates an Annotation",
+      "file": "Client/CreateAnnotation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_CreateAnnotation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "rapidmigrationassessment CreateAnnotation Sample"
     },
     {
-      "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_CreateCollector_sync",
-      "title": "rapidmigrationassessment CreateCollector Sample",
-      "description": "CreateCollector create a Collector to manage the on-prem appliance which collects\ninformation about Customer assets.",
-      "file": "Client/CreateCollector/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateCollector",
+        "client": {
+          "fullName": "google.cloud.rapidmigrationassessment.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.rapidmigrationassessment.v1.Client.CreateCollector",
+        "method": {
+          "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment.CreateCollector",
+          "service": {
+            "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment",
+            "shortName": "RapidMigrationAssessment"
+          },
+          "shortName": "CreateCollector"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "rapidmigrationassessmentpb.CreateCollectorRequest",
-            "name": "req"
+            "name": "req",
+            "type": "rapidmigrationassessmentpb.CreateCollectorRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateCollectorOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.rapidmigrationassessment.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateCollector",
-          "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment.CreateCollector",
-          "service": {
-            "shortName": "RapidMigrationAssessment",
-            "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment"
-          }
-        }
+        "shortName": "CreateCollector"
       },
+      "description": "CreateCollector create a Collector to manage the on-prem appliance which collects\ninformation about Customer assets.",
+      "file": "Client/CreateCollector/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_CreateCollector_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "rapidmigrationassessment CreateCollector Sample"
     },
     {
-      "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_DeleteCollector_sync",
-      "title": "rapidmigrationassessment DeleteCollector Sample",
-      "description": "DeleteCollector deletes a single Collector - changes state of collector to \"Deleting\".\nBackground jobs does final deletion through producer API.",
-      "file": "Client/DeleteCollector/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteCollector",
+        "client": {
+          "fullName": "google.cloud.rapidmigrationassessment.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.rapidmigrationassessment.v1.Client.DeleteCollector",
+        "method": {
+          "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment.DeleteCollector",
+          "service": {
+            "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment",
+            "shortName": "RapidMigrationAssessment"
+          },
+          "shortName": "DeleteCollector"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "rapidmigrationassessmentpb.DeleteCollectorRequest",
-            "name": "req"
+            "name": "req",
+            "type": "rapidmigrationassessmentpb.DeleteCollectorRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteCollectorOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.rapidmigrationassessment.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteCollector",
-          "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment.DeleteCollector",
-          "service": {
-            "shortName": "RapidMigrationAssessment",
-            "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment"
-          }
-        }
+        "shortName": "DeleteCollector"
       },
+      "description": "DeleteCollector deletes a single Collector - changes state of collector to \"Deleting\".\nBackground jobs does final deletion through producer API.",
+      "file": "Client/DeleteCollector/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_DeleteCollector_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "rapidmigrationassessment DeleteCollector Sample"
     },
     {
-      "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_DeleteOperation_sync",
-      "title": "rapidmigrationassessment DeleteOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.rapidmigrationassessment.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.rapidmigrationassessment.v1.Client.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
       "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
       "file": "Client/DeleteOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteOperation",
-        "fullName": "google.cloud.rapidmigrationassessment.v1.Client.DeleteOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.DeleteOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.rapidmigrationassessment.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteOperation",
-          "fullName": "google.longrunning.Operations.DeleteOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_DeleteOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "rapidmigrationassessment DeleteOperation Sample"
     },
     {
-      "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_GetAnnotation_sync",
-      "title": "rapidmigrationassessment GetAnnotation Sample",
-      "description": "GetAnnotation gets details of a single Annotation.",
-      "file": "Client/GetAnnotation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetAnnotation",
+        "client": {
+          "fullName": "google.cloud.rapidmigrationassessment.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.rapidmigrationassessment.v1.Client.GetAnnotation",
+        "method": {
+          "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment.GetAnnotation",
+          "service": {
+            "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment",
+            "shortName": "RapidMigrationAssessment"
+          },
+          "shortName": "GetAnnotation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "rapidmigrationassessmentpb.GetAnnotationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "rapidmigrationassessmentpb.GetAnnotationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*rapidmigrationassessmentpb.Annotation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.rapidmigrationassessment.v1.Client"
-        },
-        "method": {
-          "shortName": "GetAnnotation",
-          "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment.GetAnnotation",
-          "service": {
-            "shortName": "RapidMigrationAssessment",
-            "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment"
-          }
-        }
+        "shortName": "GetAnnotation"
       },
+      "description": "GetAnnotation gets details of a single Annotation.",
+      "file": "Client/GetAnnotation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_GetAnnotation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "rapidmigrationassessment GetAnnotation Sample"
     },
     {
-      "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_GetCollector_sync",
-      "title": "rapidmigrationassessment GetCollector Sample",
-      "description": "GetCollector gets details of a single Collector.",
-      "file": "Client/GetCollector/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetCollector",
+        "client": {
+          "fullName": "google.cloud.rapidmigrationassessment.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.rapidmigrationassessment.v1.Client.GetCollector",
+        "method": {
+          "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment.GetCollector",
+          "service": {
+            "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment",
+            "shortName": "RapidMigrationAssessment"
+          },
+          "shortName": "GetCollector"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "rapidmigrationassessmentpb.GetCollectorRequest",
-            "name": "req"
+            "name": "req",
+            "type": "rapidmigrationassessmentpb.GetCollectorRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*rapidmigrationassessmentpb.Collector",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.rapidmigrationassessment.v1.Client"
-        },
-        "method": {
-          "shortName": "GetCollector",
-          "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment.GetCollector",
-          "service": {
-            "shortName": "RapidMigrationAssessment",
-            "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment"
-          }
-        }
+        "shortName": "GetCollector"
       },
+      "description": "GetCollector gets details of a single Collector.",
+      "file": "Client/GetCollector/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_GetCollector_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "rapidmigrationassessment GetCollector Sample"
     },
     {
-      "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_GetLocation_sync",
-      "title": "rapidmigrationassessment GetLocation Sample",
-      "description": "GetLocation gets information about a location.",
-      "file": "Client/GetLocation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetLocation",
+        "client": {
+          "fullName": "google.cloud.rapidmigrationassessment.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.rapidmigrationassessment.v1.Client.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "locationpb.GetLocationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*locationpb.Location",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.rapidmigrationassessment.v1.Client"
-        },
-        "method": {
-          "shortName": "GetLocation",
-          "fullName": "google.cloud.location.Locations.GetLocation",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
+        "shortName": "GetLocation"
       },
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_GetLocation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "rapidmigrationassessment GetLocation Sample"
     },
     {
-      "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_GetOperation_sync",
-      "title": "rapidmigrationassessment GetOperation Sample",
-      "description": "GetOperation is a utility method from google.longrunning.Operations.",
-      "file": "Client/GetOperation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetOperation",
+        "client": {
+          "fullName": "google.cloud.rapidmigrationassessment.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.rapidmigrationassessment.v1.Client.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.GetOperationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*longrunningpb.Operation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.rapidmigrationassessment.v1.Client"
-        },
-        "method": {
-          "shortName": "GetOperation",
-          "fullName": "google.longrunning.Operations.GetOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "GetOperation"
       },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_GetOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "rapidmigrationassessment GetOperation Sample"
     },
     {
-      "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_ListCollectors_sync",
-      "title": "rapidmigrationassessment ListCollectors Sample",
-      "description": "ListCollectors lists Collectors in a given project and location.",
-      "file": "Client/ListCollectors/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListCollectors",
+        "client": {
+          "fullName": "google.cloud.rapidmigrationassessment.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.rapidmigrationassessment.v1.Client.ListCollectors",
+        "method": {
+          "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment.ListCollectors",
+          "service": {
+            "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment",
+            "shortName": "RapidMigrationAssessment"
+          },
+          "shortName": "ListCollectors"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "rapidmigrationassessmentpb.ListCollectorsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "rapidmigrationassessmentpb.ListCollectorsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CollectorIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.rapidmigrationassessment.v1.Client"
-        },
-        "method": {
-          "shortName": "ListCollectors",
-          "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment.ListCollectors",
-          "service": {
-            "shortName": "RapidMigrationAssessment",
-            "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment"
-          }
-        }
+        "shortName": "ListCollectors"
       },
+      "description": "ListCollectors lists Collectors in a given project and location.",
+      "file": "Client/ListCollectors/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_ListCollectors_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "rapidmigrationassessment ListCollectors Sample"
     },
     {
-      "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_ListLocations_sync",
-      "title": "rapidmigrationassessment ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
-      "file": "Client/ListLocations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListLocations",
+        "client": {
+          "fullName": "google.cloud.rapidmigrationassessment.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.rapidmigrationassessment.v1.Client.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "locationpb.ListLocationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "LocationIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.rapidmigrationassessment.v1.Client"
-        },
-        "method": {
-          "shortName": "ListLocations",
-          "fullName": "google.cloud.location.Locations.ListLocations",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
+        "shortName": "ListLocations"
       },
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_ListLocations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "rapidmigrationassessment ListLocations Sample"
     },
     {
-      "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_ListOperations_sync",
-      "title": "rapidmigrationassessment ListOperations Sample",
-      "description": "ListOperations is a utility method from google.longrunning.Operations.",
-      "file": "Client/ListOperations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListOperations",
+        "client": {
+          "fullName": "google.cloud.rapidmigrationassessment.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.rapidmigrationassessment.v1.Client.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.ListOperationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "OperationIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.rapidmigrationassessment.v1.Client"
-        },
-        "method": {
-          "shortName": "ListOperations",
-          "fullName": "google.longrunning.Operations.ListOperations",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "ListOperations"
       },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_ListOperations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "rapidmigrationassessment ListOperations Sample"
     },
     {
-      "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_PauseCollector_sync",
-      "title": "rapidmigrationassessment PauseCollector Sample",
-      "description": "PauseCollector pauses the given collector.",
-      "file": "Client/PauseCollector/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "PauseCollector",
+        "client": {
+          "fullName": "google.cloud.rapidmigrationassessment.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.rapidmigrationassessment.v1.Client.PauseCollector",
+        "method": {
+          "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment.PauseCollector",
+          "service": {
+            "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment",
+            "shortName": "RapidMigrationAssessment"
+          },
+          "shortName": "PauseCollector"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "rapidmigrationassessmentpb.PauseCollectorRequest",
-            "name": "req"
+            "name": "req",
+            "type": "rapidmigrationassessmentpb.PauseCollectorRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "PauseCollectorOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.rapidmigrationassessment.v1.Client"
-        },
-        "method": {
-          "shortName": "PauseCollector",
-          "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment.PauseCollector",
-          "service": {
-            "shortName": "RapidMigrationAssessment",
-            "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment"
-          }
-        }
+        "shortName": "PauseCollector"
       },
+      "description": "PauseCollector pauses the given collector.",
+      "file": "Client/PauseCollector/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_PauseCollector_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "rapidmigrationassessment PauseCollector Sample"
     },
     {
-      "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_RegisterCollector_sync",
-      "title": "rapidmigrationassessment RegisterCollector Sample",
-      "description": "RegisterCollector registers the given collector.",
-      "file": "Client/RegisterCollector/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "RegisterCollector",
+        "client": {
+          "fullName": "google.cloud.rapidmigrationassessment.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.rapidmigrationassessment.v1.Client.RegisterCollector",
+        "method": {
+          "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment.RegisterCollector",
+          "service": {
+            "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment",
+            "shortName": "RapidMigrationAssessment"
+          },
+          "shortName": "RegisterCollector"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "rapidmigrationassessmentpb.RegisterCollectorRequest",
-            "name": "req"
+            "name": "req",
+            "type": "rapidmigrationassessmentpb.RegisterCollectorRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "RegisterCollectorOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.rapidmigrationassessment.v1.Client"
-        },
-        "method": {
-          "shortName": "RegisterCollector",
-          "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment.RegisterCollector",
-          "service": {
-            "shortName": "RapidMigrationAssessment",
-            "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment"
-          }
-        }
+        "shortName": "RegisterCollector"
       },
+      "description": "RegisterCollector registers the given collector.",
+      "file": "Client/RegisterCollector/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_RegisterCollector_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "rapidmigrationassessment RegisterCollector Sample"
     },
     {
-      "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_ResumeCollector_sync",
-      "title": "rapidmigrationassessment ResumeCollector Sample",
-      "description": "ResumeCollector resumes the given collector.",
-      "file": "Client/ResumeCollector/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ResumeCollector",
+        "client": {
+          "fullName": "google.cloud.rapidmigrationassessment.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.rapidmigrationassessment.v1.Client.ResumeCollector",
+        "method": {
+          "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment.ResumeCollector",
+          "service": {
+            "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment",
+            "shortName": "RapidMigrationAssessment"
+          },
+          "shortName": "ResumeCollector"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "rapidmigrationassessmentpb.ResumeCollectorRequest",
-            "name": "req"
+            "name": "req",
+            "type": "rapidmigrationassessmentpb.ResumeCollectorRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ResumeCollectorOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.rapidmigrationassessment.v1.Client"
-        },
-        "method": {
-          "shortName": "ResumeCollector",
-          "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment.ResumeCollector",
-          "service": {
-            "shortName": "RapidMigrationAssessment",
-            "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment"
-          }
-        }
+        "shortName": "ResumeCollector"
       },
+      "description": "ResumeCollector resumes the given collector.",
+      "file": "Client/ResumeCollector/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_ResumeCollector_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "rapidmigrationassessment ResumeCollector Sample"
     },
     {
-      "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_UpdateCollector_sync",
-      "title": "rapidmigrationassessment UpdateCollector Sample",
-      "description": "UpdateCollector updates the parameters of a single Collector.",
-      "file": "Client/UpdateCollector/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateCollector",
+        "client": {
+          "fullName": "google.cloud.rapidmigrationassessment.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.rapidmigrationassessment.v1.Client.UpdateCollector",
+        "method": {
+          "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment.UpdateCollector",
+          "service": {
+            "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment",
+            "shortName": "RapidMigrationAssessment"
+          },
+          "shortName": "UpdateCollector"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "rapidmigrationassessmentpb.UpdateCollectorRequest",
-            "name": "req"
+            "name": "req",
+            "type": "rapidmigrationassessmentpb.UpdateCollectorRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UpdateCollectorOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.rapidmigrationassessment.v1.Client"
-        },
-        "method": {
-          "shortName": "UpdateCollector",
-          "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment.UpdateCollector",
-          "service": {
-            "shortName": "RapidMigrationAssessment",
-            "fullName": "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment"
-          }
-        }
+        "shortName": "UpdateCollector"
       },
+      "description": "UpdateCollector updates the parameters of a single Collector.",
+      "file": "Client/UpdateCollector/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_UpdateCollector_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "rapidmigrationassessment UpdateCollector Sample"
     }
   ]
 }

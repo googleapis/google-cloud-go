@@ -1,428 +1,428 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/accessapproval/apiv1",
-    "version": "1.8.8",
-    "language": "GO",
     "apis": [
       {
         "id": "google.cloud.accessapproval.v1",
         "version": "v1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/accessapproval/apiv1",
+    "version": "1.8.8"
   },
   "snippets": [
     {
-      "regionTag": "accessapproval_v1_generated_AccessApproval_ApproveApprovalRequest_sync",
-      "title": "accessapproval ApproveApprovalRequest Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.accessapproval.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.accessapproval.v1.Client.ApproveApprovalRequest",
+        "method": {
+          "fullName": "google.cloud.accessapproval.v1.AccessApproval.ApproveApprovalRequest",
+          "service": {
+            "fullName": "google.cloud.accessapproval.v1.AccessApproval",
+            "shortName": "AccessApproval"
+          },
+          "shortName": "ApproveApprovalRequest"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "accessapprovalpb.ApproveApprovalRequestMessage"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*accessapprovalpb.ApprovalRequest",
+        "shortName": "ApproveApprovalRequest"
+      },
       "description": "ApproveApprovalRequest approves a request and returns the updated ApprovalRequest.\n\nReturns NOT_FOUND if the request does not exist. Returns\nFAILED_PRECONDITION if the request exists but is not in a pending state.",
       "file": "Client/ApproveApprovalRequest/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "ApproveApprovalRequest",
-        "fullName": "google.cloud.accessapproval.v1.Client.ApproveApprovalRequest",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "accessapprovalpb.ApproveApprovalRequestMessage",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*accessapprovalpb.ApprovalRequest",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.accessapproval.v1.Client"
-        },
-        "method": {
-          "shortName": "ApproveApprovalRequest",
-          "fullName": "google.cloud.accessapproval.v1.AccessApproval.ApproveApprovalRequest",
-          "service": {
-            "shortName": "AccessApproval",
-            "fullName": "google.cloud.accessapproval.v1.AccessApproval"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "accessapproval_v1_generated_AccessApproval_ApproveApprovalRequest_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "accessapproval ApproveApprovalRequest Sample"
     },
     {
-      "regionTag": "accessapproval_v1_generated_AccessApproval_DeleteAccessApprovalSettings_sync",
-      "title": "accessapproval DeleteAccessApprovalSettings Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.accessapproval.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.accessapproval.v1.Client.DeleteAccessApprovalSettings",
+        "method": {
+          "fullName": "google.cloud.accessapproval.v1.AccessApproval.DeleteAccessApprovalSettings",
+          "service": {
+            "fullName": "google.cloud.accessapproval.v1.AccessApproval",
+            "shortName": "AccessApproval"
+          },
+          "shortName": "DeleteAccessApprovalSettings"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "accessapprovalpb.DeleteAccessApprovalSettingsMessage"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteAccessApprovalSettings"
+      },
       "description": "DeleteAccessApprovalSettings deletes the settings associated with a project, folder, or organization.\nThis will have the effect of disabling Access Approval for the project,\nfolder, or organization, but only if all ancestors also have Access\nApproval disabled. If Access Approval is enabled at a higher level of the\nhierarchy, then Access Approval will still be enabled at this level as\nthe settings are inherited.",
       "file": "Client/DeleteAccessApprovalSettings/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteAccessApprovalSettings",
-        "fullName": "google.cloud.accessapproval.v1.Client.DeleteAccessApprovalSettings",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "accessapprovalpb.DeleteAccessApprovalSettingsMessage",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.accessapproval.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteAccessApprovalSettings",
-          "fullName": "google.cloud.accessapproval.v1.AccessApproval.DeleteAccessApprovalSettings",
-          "service": {
-            "shortName": "AccessApproval",
-            "fullName": "google.cloud.accessapproval.v1.AccessApproval"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "accessapproval_v1_generated_AccessApproval_DeleteAccessApprovalSettings_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "accessapproval DeleteAccessApprovalSettings Sample"
     },
     {
-      "regionTag": "accessapproval_v1_generated_AccessApproval_DismissApprovalRequest_sync",
-      "title": "accessapproval DismissApprovalRequest Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.accessapproval.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.accessapproval.v1.Client.DismissApprovalRequest",
+        "method": {
+          "fullName": "google.cloud.accessapproval.v1.AccessApproval.DismissApprovalRequest",
+          "service": {
+            "fullName": "google.cloud.accessapproval.v1.AccessApproval",
+            "shortName": "AccessApproval"
+          },
+          "shortName": "DismissApprovalRequest"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "accessapprovalpb.DismissApprovalRequestMessage"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*accessapprovalpb.ApprovalRequest",
+        "shortName": "DismissApprovalRequest"
+      },
       "description": "DismissApprovalRequest dismisses a request. Returns the updated ApprovalRequest.\n\nNOTE: This does not deny access to the resource if another request has been\nmade and approved. It is equivalent in effect to ignoring the request\naltogether.\n\nReturns NOT_FOUND if the request does not exist.\n\nReturns FAILED_PRECONDITION if the request exists but is not in a pending\nstate.",
       "file": "Client/DismissApprovalRequest/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DismissApprovalRequest",
-        "fullName": "google.cloud.accessapproval.v1.Client.DismissApprovalRequest",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "accessapprovalpb.DismissApprovalRequestMessage",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*accessapprovalpb.ApprovalRequest",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.accessapproval.v1.Client"
-        },
-        "method": {
-          "shortName": "DismissApprovalRequest",
-          "fullName": "google.cloud.accessapproval.v1.AccessApproval.DismissApprovalRequest",
-          "service": {
-            "shortName": "AccessApproval",
-            "fullName": "google.cloud.accessapproval.v1.AccessApproval"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "accessapproval_v1_generated_AccessApproval_DismissApprovalRequest_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "accessapproval DismissApprovalRequest Sample"
     },
     {
-      "regionTag": "accessapproval_v1_generated_AccessApproval_GetAccessApprovalServiceAccount_sync",
-      "title": "accessapproval GetAccessApprovalServiceAccount Sample",
-      "description": "GetAccessApprovalServiceAccount retrieves the service account that is used by Access Approval to access KMS\nkeys for signing approved approval requests.",
-      "file": "Client/GetAccessApprovalServiceAccount/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetAccessApprovalServiceAccount",
+        "client": {
+          "fullName": "google.cloud.accessapproval.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.accessapproval.v1.Client.GetAccessApprovalServiceAccount",
+        "method": {
+          "fullName": "google.cloud.accessapproval.v1.AccessApproval.GetAccessApprovalServiceAccount",
+          "service": {
+            "fullName": "google.cloud.accessapproval.v1.AccessApproval",
+            "shortName": "AccessApproval"
+          },
+          "shortName": "GetAccessApprovalServiceAccount"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "accessapprovalpb.GetAccessApprovalServiceAccountMessage",
-            "name": "req"
+            "name": "req",
+            "type": "accessapprovalpb.GetAccessApprovalServiceAccountMessage"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*accessapprovalpb.AccessApprovalServiceAccount",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.accessapproval.v1.Client"
-        },
-        "method": {
-          "shortName": "GetAccessApprovalServiceAccount",
-          "fullName": "google.cloud.accessapproval.v1.AccessApproval.GetAccessApprovalServiceAccount",
-          "service": {
-            "shortName": "AccessApproval",
-            "fullName": "google.cloud.accessapproval.v1.AccessApproval"
-          }
-        }
+        "shortName": "GetAccessApprovalServiceAccount"
       },
+      "description": "GetAccessApprovalServiceAccount retrieves the service account that is used by Access Approval to access KMS\nkeys for signing approved approval requests.",
+      "file": "Client/GetAccessApprovalServiceAccount/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "accessapproval_v1_generated_AccessApproval_GetAccessApprovalServiceAccount_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "accessapproval GetAccessApprovalServiceAccount Sample"
     },
     {
-      "regionTag": "accessapproval_v1_generated_AccessApproval_GetAccessApprovalSettings_sync",
-      "title": "accessapproval GetAccessApprovalSettings Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.accessapproval.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.accessapproval.v1.Client.GetAccessApprovalSettings",
+        "method": {
+          "fullName": "google.cloud.accessapproval.v1.AccessApproval.GetAccessApprovalSettings",
+          "service": {
+            "fullName": "google.cloud.accessapproval.v1.AccessApproval",
+            "shortName": "AccessApproval"
+          },
+          "shortName": "GetAccessApprovalSettings"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "accessapprovalpb.GetAccessApprovalSettingsMessage"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*accessapprovalpb.AccessApprovalSettings",
+        "shortName": "GetAccessApprovalSettings"
+      },
       "description": "GetAccessApprovalSettings gets the settings associated with a project, folder, or organization.",
       "file": "Client/GetAccessApprovalSettings/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetAccessApprovalSettings",
-        "fullName": "google.cloud.accessapproval.v1.Client.GetAccessApprovalSettings",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "accessapprovalpb.GetAccessApprovalSettingsMessage",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*accessapprovalpb.AccessApprovalSettings",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.accessapproval.v1.Client"
-        },
-        "method": {
-          "shortName": "GetAccessApprovalSettings",
-          "fullName": "google.cloud.accessapproval.v1.AccessApproval.GetAccessApprovalSettings",
-          "service": {
-            "shortName": "AccessApproval",
-            "fullName": "google.cloud.accessapproval.v1.AccessApproval"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "accessapproval_v1_generated_AccessApproval_GetAccessApprovalSettings_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "accessapproval GetAccessApprovalSettings Sample"
     },
     {
-      "regionTag": "accessapproval_v1_generated_AccessApproval_GetApprovalRequest_sync",
-      "title": "accessapproval GetApprovalRequest Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.accessapproval.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.accessapproval.v1.Client.GetApprovalRequest",
+        "method": {
+          "fullName": "google.cloud.accessapproval.v1.AccessApproval.GetApprovalRequest",
+          "service": {
+            "fullName": "google.cloud.accessapproval.v1.AccessApproval",
+            "shortName": "AccessApproval"
+          },
+          "shortName": "GetApprovalRequest"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "accessapprovalpb.GetApprovalRequestMessage"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*accessapprovalpb.ApprovalRequest",
+        "shortName": "GetApprovalRequest"
+      },
       "description": "GetApprovalRequest gets an approval request. Returns NOT_FOUND if the request does not exist.",
       "file": "Client/GetApprovalRequest/main.go",
       "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "accessapproval_v1_generated_AccessApproval_GetApprovalRequest_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "accessapproval GetApprovalRequest Sample"
+    },
+    {
       "clientMethod": {
-        "shortName": "GetApprovalRequest",
-        "fullName": "google.cloud.accessapproval.v1.Client.GetApprovalRequest",
+        "client": {
+          "fullName": "google.cloud.accessapproval.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.accessapproval.v1.Client.InvalidateApprovalRequest",
+        "method": {
+          "fullName": "google.cloud.accessapproval.v1.AccessApproval.InvalidateApprovalRequest",
+          "service": {
+            "fullName": "google.cloud.accessapproval.v1.AccessApproval",
+            "shortName": "AccessApproval"
+          },
+          "shortName": "InvalidateApprovalRequest"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "accessapprovalpb.GetApprovalRequestMessage",
-            "name": "req"
+            "name": "req",
+            "type": "accessapprovalpb.InvalidateApprovalRequestMessage"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*accessapprovalpb.ApprovalRequest",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.accessapproval.v1.Client"
-        },
-        "method": {
-          "shortName": "GetApprovalRequest",
-          "fullName": "google.cloud.accessapproval.v1.AccessApproval.GetApprovalRequest",
-          "service": {
-            "shortName": "AccessApproval",
-            "fullName": "google.cloud.accessapproval.v1.AccessApproval"
-          }
-        }
+        "shortName": "InvalidateApprovalRequest"
       },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "accessapproval_v1_generated_AccessApproval_InvalidateApprovalRequest_sync",
-      "title": "accessapproval InvalidateApprovalRequest Sample",
       "description": "InvalidateApprovalRequest invalidates an existing ApprovalRequest. Returns the updated\nApprovalRequest.\n\nNOTE: This does not deny access to the resource if another request has been\nmade and approved. It only invalidates a single approval.\n\nReturns FAILED_PRECONDITION if the request exists but is not in an approved\nstate.",
       "file": "Client/InvalidateApprovalRequest/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "InvalidateApprovalRequest",
-        "fullName": "google.cloud.accessapproval.v1.Client.InvalidateApprovalRequest",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "accessapprovalpb.InvalidateApprovalRequestMessage",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*accessapprovalpb.ApprovalRequest",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.accessapproval.v1.Client"
-        },
-        "method": {
-          "shortName": "InvalidateApprovalRequest",
-          "fullName": "google.cloud.accessapproval.v1.AccessApproval.InvalidateApprovalRequest",
-          "service": {
-            "shortName": "AccessApproval",
-            "fullName": "google.cloud.accessapproval.v1.AccessApproval"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "accessapproval_v1_generated_AccessApproval_InvalidateApprovalRequest_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "accessapproval InvalidateApprovalRequest Sample"
     },
     {
-      "regionTag": "accessapproval_v1_generated_AccessApproval_ListApprovalRequests_sync",
-      "title": "accessapproval ListApprovalRequests Sample",
-      "description": "ListApprovalRequests lists approval requests associated with a project, folder, or organization.\nApproval requests can be filtered by state (pending, active, dismissed).\nThe order is reverse chronological.",
-      "file": "Client/ListApprovalRequests/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListApprovalRequests",
+        "client": {
+          "fullName": "google.cloud.accessapproval.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.accessapproval.v1.Client.ListApprovalRequests",
+        "method": {
+          "fullName": "google.cloud.accessapproval.v1.AccessApproval.ListApprovalRequests",
+          "service": {
+            "fullName": "google.cloud.accessapproval.v1.AccessApproval",
+            "shortName": "AccessApproval"
+          },
+          "shortName": "ListApprovalRequests"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "accessapprovalpb.ListApprovalRequestsMessage",
-            "name": "req"
+            "name": "req",
+            "type": "accessapprovalpb.ListApprovalRequestsMessage"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ApprovalRequestIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.accessapproval.v1.Client"
-        },
-        "method": {
-          "shortName": "ListApprovalRequests",
-          "fullName": "google.cloud.accessapproval.v1.AccessApproval.ListApprovalRequests",
-          "service": {
-            "shortName": "AccessApproval",
-            "fullName": "google.cloud.accessapproval.v1.AccessApproval"
-          }
-        }
+        "shortName": "ListApprovalRequests"
       },
+      "description": "ListApprovalRequests lists approval requests associated with a project, folder, or organization.\nApproval requests can be filtered by state (pending, active, dismissed).\nThe order is reverse chronological.",
+      "file": "Client/ListApprovalRequests/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "accessapproval_v1_generated_AccessApproval_ListApprovalRequests_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "accessapproval ListApprovalRequests Sample"
     },
     {
-      "regionTag": "accessapproval_v1_generated_AccessApproval_UpdateAccessApprovalSettings_sync",
-      "title": "accessapproval UpdateAccessApprovalSettings Sample",
-      "description": "UpdateAccessApprovalSettings updates the settings associated with a project, folder, or organization.\nSettings to update are determined by the value of field_mask.",
-      "file": "Client/UpdateAccessApprovalSettings/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateAccessApprovalSettings",
+        "client": {
+          "fullName": "google.cloud.accessapproval.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.accessapproval.v1.Client.UpdateAccessApprovalSettings",
+        "method": {
+          "fullName": "google.cloud.accessapproval.v1.AccessApproval.UpdateAccessApprovalSettings",
+          "service": {
+            "fullName": "google.cloud.accessapproval.v1.AccessApproval",
+            "shortName": "AccessApproval"
+          },
+          "shortName": "UpdateAccessApprovalSettings"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "accessapprovalpb.UpdateAccessApprovalSettingsMessage",
-            "name": "req"
+            "name": "req",
+            "type": "accessapprovalpb.UpdateAccessApprovalSettingsMessage"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*accessapprovalpb.AccessApprovalSettings",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.accessapproval.v1.Client"
-        },
-        "method": {
-          "shortName": "UpdateAccessApprovalSettings",
-          "fullName": "google.cloud.accessapproval.v1.AccessApproval.UpdateAccessApprovalSettings",
-          "service": {
-            "shortName": "AccessApproval",
-            "fullName": "google.cloud.accessapproval.v1.AccessApproval"
-          }
-        }
+        "shortName": "UpdateAccessApprovalSettings"
       },
+      "description": "UpdateAccessApprovalSettings updates the settings associated with a project, folder, or organization.\nSettings to update are determined by the value of field_mask.",
+      "file": "Client/UpdateAccessApprovalSettings/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "accessapproval_v1_generated_AccessApproval_UpdateAccessApprovalSettings_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "accessapproval UpdateAccessApprovalSettings Sample"
     }
   ]
 }

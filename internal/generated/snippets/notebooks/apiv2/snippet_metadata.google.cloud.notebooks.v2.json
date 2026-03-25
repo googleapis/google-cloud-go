@@ -1,979 +1,979 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/notebooks/apiv2",
-    "version": "1.12.7",
-    "language": "GO",
     "apis": [
       {
         "id": "google.cloud.notebooks.v2",
         "version": "v2"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/notebooks/apiv2",
+    "version": "1.12.7"
   },
   "snippets": [
     {
-      "regionTag": "notebooks_v2_generated_NotebookService_CancelOperation_sync",
-      "title": "notebooks CancelOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.notebooks.v2.NotebookClient",
+          "shortName": "NotebookClient"
+        },
+        "fullName": "google.cloud.notebooks.v2.NotebookClient.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
       "file": "NotebookClient/CancelOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CancelOperation",
-        "fullName": "google.cloud.notebooks.v2.NotebookClient.CancelOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.CancelOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "NotebookClient",
-          "fullName": "google.cloud.notebooks.v2.NotebookClient"
-        },
-        "method": {
-          "shortName": "CancelOperation",
-          "fullName": "google.longrunning.Operations.CancelOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "notebooks_v2_generated_NotebookService_CancelOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "notebooks CancelOperation Sample"
     },
     {
-      "regionTag": "notebooks_v2_generated_NotebookService_CheckInstanceUpgradability_sync",
-      "title": "notebooks CheckInstanceUpgradability Sample",
-      "description": "CheckInstanceUpgradability checks whether a notebook instance is upgradable.",
-      "file": "NotebookClient/CheckInstanceUpgradability/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CheckInstanceUpgradability",
+        "client": {
+          "fullName": "google.cloud.notebooks.v2.NotebookClient",
+          "shortName": "NotebookClient"
+        },
         "fullName": "google.cloud.notebooks.v2.NotebookClient.CheckInstanceUpgradability",
+        "method": {
+          "fullName": "google.cloud.notebooks.v2.NotebookService.CheckInstanceUpgradability",
+          "service": {
+            "fullName": "google.cloud.notebooks.v2.NotebookService",
+            "shortName": "NotebookService"
+          },
+          "shortName": "CheckInstanceUpgradability"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "notebookspb.CheckInstanceUpgradabilityRequest",
-            "name": "req"
+            "name": "req",
+            "type": "notebookspb.CheckInstanceUpgradabilityRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*notebookspb.CheckInstanceUpgradabilityResponse",
-        "client": {
-          "shortName": "NotebookClient",
-          "fullName": "google.cloud.notebooks.v2.NotebookClient"
-        },
-        "method": {
-          "shortName": "CheckInstanceUpgradability",
-          "fullName": "google.cloud.notebooks.v2.NotebookService.CheckInstanceUpgradability",
-          "service": {
-            "shortName": "NotebookService",
-            "fullName": "google.cloud.notebooks.v2.NotebookService"
-          }
-        }
+        "shortName": "CheckInstanceUpgradability"
       },
+      "description": "CheckInstanceUpgradability checks whether a notebook instance is upgradable.",
+      "file": "NotebookClient/CheckInstanceUpgradability/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "notebooks_v2_generated_NotebookService_CheckInstanceUpgradability_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "notebooks CheckInstanceUpgradability Sample"
     },
     {
-      "regionTag": "notebooks_v2_generated_NotebookService_CreateInstance_sync",
-      "title": "notebooks CreateInstance Sample",
-      "description": "CreateInstance creates a new Instance in a given project and location.",
-      "file": "NotebookClient/CreateInstance/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateInstance",
+        "client": {
+          "fullName": "google.cloud.notebooks.v2.NotebookClient",
+          "shortName": "NotebookClient"
+        },
         "fullName": "google.cloud.notebooks.v2.NotebookClient.CreateInstance",
+        "method": {
+          "fullName": "google.cloud.notebooks.v2.NotebookService.CreateInstance",
+          "service": {
+            "fullName": "google.cloud.notebooks.v2.NotebookService",
+            "shortName": "NotebookService"
+          },
+          "shortName": "CreateInstance"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "notebookspb.CreateInstanceRequest",
-            "name": "req"
+            "name": "req",
+            "type": "notebookspb.CreateInstanceRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateInstanceOperation",
-        "client": {
-          "shortName": "NotebookClient",
-          "fullName": "google.cloud.notebooks.v2.NotebookClient"
-        },
-        "method": {
-          "shortName": "CreateInstance",
-          "fullName": "google.cloud.notebooks.v2.NotebookService.CreateInstance",
-          "service": {
-            "shortName": "NotebookService",
-            "fullName": "google.cloud.notebooks.v2.NotebookService"
-          }
-        }
+        "shortName": "CreateInstance"
       },
+      "description": "CreateInstance creates a new Instance in a given project and location.",
+      "file": "NotebookClient/CreateInstance/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "notebooks_v2_generated_NotebookService_CreateInstance_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "notebooks CreateInstance Sample"
     },
     {
-      "regionTag": "notebooks_v2_generated_NotebookService_DeleteInstance_sync",
-      "title": "notebooks DeleteInstance Sample",
-      "description": "DeleteInstance deletes a single Instance.",
-      "file": "NotebookClient/DeleteInstance/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteInstance",
+        "client": {
+          "fullName": "google.cloud.notebooks.v2.NotebookClient",
+          "shortName": "NotebookClient"
+        },
         "fullName": "google.cloud.notebooks.v2.NotebookClient.DeleteInstance",
+        "method": {
+          "fullName": "google.cloud.notebooks.v2.NotebookService.DeleteInstance",
+          "service": {
+            "fullName": "google.cloud.notebooks.v2.NotebookService",
+            "shortName": "NotebookService"
+          },
+          "shortName": "DeleteInstance"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "notebookspb.DeleteInstanceRequest",
-            "name": "req"
+            "name": "req",
+            "type": "notebookspb.DeleteInstanceRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteInstanceOperation",
-        "client": {
-          "shortName": "NotebookClient",
-          "fullName": "google.cloud.notebooks.v2.NotebookClient"
-        },
-        "method": {
-          "shortName": "DeleteInstance",
-          "fullName": "google.cloud.notebooks.v2.NotebookService.DeleteInstance",
-          "service": {
-            "shortName": "NotebookService",
-            "fullName": "google.cloud.notebooks.v2.NotebookService"
-          }
-        }
+        "shortName": "DeleteInstance"
       },
+      "description": "DeleteInstance deletes a single Instance.",
+      "file": "NotebookClient/DeleteInstance/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "notebooks_v2_generated_NotebookService_DeleteInstance_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "notebooks DeleteInstance Sample"
     },
     {
-      "regionTag": "notebooks_v2_generated_NotebookService_DeleteOperation_sync",
-      "title": "notebooks DeleteOperation Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.notebooks.v2.NotebookClient",
+          "shortName": "NotebookClient"
+        },
+        "fullName": "google.cloud.notebooks.v2.NotebookClient.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
       "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
       "file": "NotebookClient/DeleteOperation/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteOperation",
-        "fullName": "google.cloud.notebooks.v2.NotebookClient.DeleteOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.DeleteOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "NotebookClient",
-          "fullName": "google.cloud.notebooks.v2.NotebookClient"
-        },
-        "method": {
-          "shortName": "DeleteOperation",
-          "fullName": "google.longrunning.Operations.DeleteOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "notebooks_v2_generated_NotebookService_DeleteOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "notebooks DeleteOperation Sample"
     },
     {
-      "regionTag": "notebooks_v2_generated_NotebookService_DiagnoseInstance_sync",
-      "title": "notebooks DiagnoseInstance Sample",
-      "description": "DiagnoseInstance creates a Diagnostic File and runs Diagnostic Tool given an Instance.",
-      "file": "NotebookClient/DiagnoseInstance/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DiagnoseInstance",
+        "client": {
+          "fullName": "google.cloud.notebooks.v2.NotebookClient",
+          "shortName": "NotebookClient"
+        },
         "fullName": "google.cloud.notebooks.v2.NotebookClient.DiagnoseInstance",
+        "method": {
+          "fullName": "google.cloud.notebooks.v2.NotebookService.DiagnoseInstance",
+          "service": {
+            "fullName": "google.cloud.notebooks.v2.NotebookService",
+            "shortName": "NotebookService"
+          },
+          "shortName": "DiagnoseInstance"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "notebookspb.DiagnoseInstanceRequest",
-            "name": "req"
+            "name": "req",
+            "type": "notebookspb.DiagnoseInstanceRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DiagnoseInstanceOperation",
-        "client": {
-          "shortName": "NotebookClient",
-          "fullName": "google.cloud.notebooks.v2.NotebookClient"
-        },
-        "method": {
-          "shortName": "DiagnoseInstance",
-          "fullName": "google.cloud.notebooks.v2.NotebookService.DiagnoseInstance",
-          "service": {
-            "shortName": "NotebookService",
-            "fullName": "google.cloud.notebooks.v2.NotebookService"
-          }
-        }
+        "shortName": "DiagnoseInstance"
       },
+      "description": "DiagnoseInstance creates a Diagnostic File and runs Diagnostic Tool given an Instance.",
+      "file": "NotebookClient/DiagnoseInstance/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "notebooks_v2_generated_NotebookService_DiagnoseInstance_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "notebooks DiagnoseInstance Sample"
     },
     {
-      "regionTag": "notebooks_v2_generated_NotebookService_GetIamPolicy_sync",
-      "title": "notebooks GetIamPolicy Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.notebooks.v2.NotebookClient",
+          "shortName": "NotebookClient"
+        },
+        "fullName": "google.cloud.notebooks.v2.NotebookClient.GetIamPolicy",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "GetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.GetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "GetIamPolicy"
+      },
       "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
       "file": "NotebookClient/GetIamPolicy/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetIamPolicy",
-        "fullName": "google.cloud.notebooks.v2.NotebookClient.GetIamPolicy",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "iampb.GetIamPolicyRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*iampb.Policy",
-        "client": {
-          "shortName": "NotebookClient",
-          "fullName": "google.cloud.notebooks.v2.NotebookClient"
-        },
-        "method": {
-          "shortName": "GetIamPolicy",
-          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.iam.v1.IAMPolicy"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "notebooks_v2_generated_NotebookService_GetIamPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "notebooks GetIamPolicy Sample"
     },
     {
-      "regionTag": "notebooks_v2_generated_NotebookService_GetInstance_sync",
-      "title": "notebooks GetInstance Sample",
-      "description": "GetInstance gets details of a single Instance.",
-      "file": "NotebookClient/GetInstance/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetInstance",
+        "client": {
+          "fullName": "google.cloud.notebooks.v2.NotebookClient",
+          "shortName": "NotebookClient"
+        },
         "fullName": "google.cloud.notebooks.v2.NotebookClient.GetInstance",
+        "method": {
+          "fullName": "google.cloud.notebooks.v2.NotebookService.GetInstance",
+          "service": {
+            "fullName": "google.cloud.notebooks.v2.NotebookService",
+            "shortName": "NotebookService"
+          },
+          "shortName": "GetInstance"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "notebookspb.GetInstanceRequest",
-            "name": "req"
+            "name": "req",
+            "type": "notebookspb.GetInstanceRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*notebookspb.Instance",
-        "client": {
-          "shortName": "NotebookClient",
-          "fullName": "google.cloud.notebooks.v2.NotebookClient"
-        },
-        "method": {
-          "shortName": "GetInstance",
-          "fullName": "google.cloud.notebooks.v2.NotebookService.GetInstance",
-          "service": {
-            "shortName": "NotebookService",
-            "fullName": "google.cloud.notebooks.v2.NotebookService"
-          }
-        }
+        "shortName": "GetInstance"
       },
+      "description": "GetInstance gets details of a single Instance.",
+      "file": "NotebookClient/GetInstance/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "notebooks_v2_generated_NotebookService_GetInstance_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "notebooks GetInstance Sample"
     },
     {
-      "regionTag": "notebooks_v2_generated_NotebookService_GetLocation_sync",
-      "title": "notebooks GetLocation Sample",
-      "description": "GetLocation gets information about a location.",
-      "file": "NotebookClient/GetLocation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetLocation",
+        "client": {
+          "fullName": "google.cloud.notebooks.v2.NotebookClient",
+          "shortName": "NotebookClient"
+        },
         "fullName": "google.cloud.notebooks.v2.NotebookClient.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "locationpb.GetLocationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*locationpb.Location",
-        "client": {
-          "shortName": "NotebookClient",
-          "fullName": "google.cloud.notebooks.v2.NotebookClient"
-        },
-        "method": {
-          "shortName": "GetLocation",
-          "fullName": "google.cloud.location.Locations.GetLocation",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
+        "shortName": "GetLocation"
       },
+      "description": "GetLocation gets information about a location.",
+      "file": "NotebookClient/GetLocation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "notebooks_v2_generated_NotebookService_GetLocation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "notebooks GetLocation Sample"
     },
     {
-      "regionTag": "notebooks_v2_generated_NotebookService_GetOperation_sync",
-      "title": "notebooks GetOperation Sample",
-      "description": "GetOperation is a utility method from google.longrunning.Operations.",
-      "file": "NotebookClient/GetOperation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetOperation",
+        "client": {
+          "fullName": "google.cloud.notebooks.v2.NotebookClient",
+          "shortName": "NotebookClient"
+        },
         "fullName": "google.cloud.notebooks.v2.NotebookClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.GetOperationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*longrunningpb.Operation",
-        "client": {
-          "shortName": "NotebookClient",
-          "fullName": "google.cloud.notebooks.v2.NotebookClient"
-        },
-        "method": {
-          "shortName": "GetOperation",
-          "fullName": "google.longrunning.Operations.GetOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "GetOperation"
       },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "NotebookClient/GetOperation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "notebooks_v2_generated_NotebookService_GetOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "notebooks GetOperation Sample"
     },
     {
-      "regionTag": "notebooks_v2_generated_NotebookService_ListInstances_sync",
-      "title": "notebooks ListInstances Sample",
-      "description": "ListInstances lists instances in a given project and location.",
-      "file": "NotebookClient/ListInstances/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListInstances",
+        "client": {
+          "fullName": "google.cloud.notebooks.v2.NotebookClient",
+          "shortName": "NotebookClient"
+        },
         "fullName": "google.cloud.notebooks.v2.NotebookClient.ListInstances",
+        "method": {
+          "fullName": "google.cloud.notebooks.v2.NotebookService.ListInstances",
+          "service": {
+            "fullName": "google.cloud.notebooks.v2.NotebookService",
+            "shortName": "NotebookService"
+          },
+          "shortName": "ListInstances"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "notebookspb.ListInstancesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "notebookspb.ListInstancesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "InstanceIterator",
-        "client": {
-          "shortName": "NotebookClient",
-          "fullName": "google.cloud.notebooks.v2.NotebookClient"
-        },
-        "method": {
-          "shortName": "ListInstances",
-          "fullName": "google.cloud.notebooks.v2.NotebookService.ListInstances",
-          "service": {
-            "shortName": "NotebookService",
-            "fullName": "google.cloud.notebooks.v2.NotebookService"
-          }
-        }
+        "shortName": "ListInstances"
       },
+      "description": "ListInstances lists instances in a given project and location.",
+      "file": "NotebookClient/ListInstances/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "notebooks_v2_generated_NotebookService_ListInstances_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "notebooks ListInstances Sample"
     },
     {
-      "regionTag": "notebooks_v2_generated_NotebookService_ListLocations_sync",
-      "title": "notebooks ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
-      "file": "NotebookClient/ListLocations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListLocations",
+        "client": {
+          "fullName": "google.cloud.notebooks.v2.NotebookClient",
+          "shortName": "NotebookClient"
+        },
         "fullName": "google.cloud.notebooks.v2.NotebookClient.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "locationpb.ListLocationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "LocationIterator",
-        "client": {
-          "shortName": "NotebookClient",
-          "fullName": "google.cloud.notebooks.v2.NotebookClient"
-        },
-        "method": {
-          "shortName": "ListLocations",
-          "fullName": "google.cloud.location.Locations.ListLocations",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
+        "shortName": "ListLocations"
       },
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "NotebookClient/ListLocations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "notebooks_v2_generated_NotebookService_ListLocations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "notebooks ListLocations Sample"
     },
     {
-      "regionTag": "notebooks_v2_generated_NotebookService_ListOperations_sync",
-      "title": "notebooks ListOperations Sample",
-      "description": "ListOperations is a utility method from google.longrunning.Operations.",
-      "file": "NotebookClient/ListOperations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListOperations",
+        "client": {
+          "fullName": "google.cloud.notebooks.v2.NotebookClient",
+          "shortName": "NotebookClient"
+        },
         "fullName": "google.cloud.notebooks.v2.NotebookClient.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.ListOperationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "OperationIterator",
-        "client": {
-          "shortName": "NotebookClient",
-          "fullName": "google.cloud.notebooks.v2.NotebookClient"
-        },
-        "method": {
-          "shortName": "ListOperations",
-          "fullName": "google.longrunning.Operations.ListOperations",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "ListOperations"
       },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "NotebookClient/ListOperations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "notebooks_v2_generated_NotebookService_ListOperations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "notebooks ListOperations Sample"
     },
     {
-      "regionTag": "notebooks_v2_generated_NotebookService_ResetInstance_sync",
-      "title": "notebooks ResetInstance Sample",
-      "description": "ResetInstance resets a notebook instance.",
-      "file": "NotebookClient/ResetInstance/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ResetInstance",
+        "client": {
+          "fullName": "google.cloud.notebooks.v2.NotebookClient",
+          "shortName": "NotebookClient"
+        },
         "fullName": "google.cloud.notebooks.v2.NotebookClient.ResetInstance",
+        "method": {
+          "fullName": "google.cloud.notebooks.v2.NotebookService.ResetInstance",
+          "service": {
+            "fullName": "google.cloud.notebooks.v2.NotebookService",
+            "shortName": "NotebookService"
+          },
+          "shortName": "ResetInstance"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "notebookspb.ResetInstanceRequest",
-            "name": "req"
+            "name": "req",
+            "type": "notebookspb.ResetInstanceRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ResetInstanceOperation",
-        "client": {
-          "shortName": "NotebookClient",
-          "fullName": "google.cloud.notebooks.v2.NotebookClient"
-        },
-        "method": {
-          "shortName": "ResetInstance",
-          "fullName": "google.cloud.notebooks.v2.NotebookService.ResetInstance",
-          "service": {
-            "shortName": "NotebookService",
-            "fullName": "google.cloud.notebooks.v2.NotebookService"
-          }
-        }
+        "shortName": "ResetInstance"
       },
+      "description": "ResetInstance resets a notebook instance.",
+      "file": "NotebookClient/ResetInstance/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "notebooks_v2_generated_NotebookService_ResetInstance_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "notebooks ResetInstance Sample"
     },
     {
-      "regionTag": "notebooks_v2_generated_NotebookService_RollbackInstance_sync",
-      "title": "notebooks RollbackInstance Sample",
-      "description": "RollbackInstance rollbacks a notebook instance to the previous version.",
-      "file": "NotebookClient/RollbackInstance/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "RollbackInstance",
+        "client": {
+          "fullName": "google.cloud.notebooks.v2.NotebookClient",
+          "shortName": "NotebookClient"
+        },
         "fullName": "google.cloud.notebooks.v2.NotebookClient.RollbackInstance",
+        "method": {
+          "fullName": "google.cloud.notebooks.v2.NotebookService.RollbackInstance",
+          "service": {
+            "fullName": "google.cloud.notebooks.v2.NotebookService",
+            "shortName": "NotebookService"
+          },
+          "shortName": "RollbackInstance"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "notebookspb.RollbackInstanceRequest",
-            "name": "req"
+            "name": "req",
+            "type": "notebookspb.RollbackInstanceRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "RollbackInstanceOperation",
-        "client": {
-          "shortName": "NotebookClient",
-          "fullName": "google.cloud.notebooks.v2.NotebookClient"
-        },
-        "method": {
-          "shortName": "RollbackInstance",
-          "fullName": "google.cloud.notebooks.v2.NotebookService.RollbackInstance",
-          "service": {
-            "shortName": "NotebookService",
-            "fullName": "google.cloud.notebooks.v2.NotebookService"
-          }
-        }
+        "shortName": "RollbackInstance"
       },
+      "description": "RollbackInstance rollbacks a notebook instance to the previous version.",
+      "file": "NotebookClient/RollbackInstance/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "notebooks_v2_generated_NotebookService_RollbackInstance_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "notebooks RollbackInstance Sample"
     },
     {
-      "regionTag": "notebooks_v2_generated_NotebookService_SetIamPolicy_sync",
-      "title": "notebooks SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
-      "file": "NotebookClient/SetIamPolicy/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "SetIamPolicy",
+        "client": {
+          "fullName": "google.cloud.notebooks.v2.NotebookClient",
+          "shortName": "NotebookClient"
+        },
         "fullName": "google.cloud.notebooks.v2.NotebookClient.SetIamPolicy",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "SetIamPolicy"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "iampb.SetIamPolicyRequest",
-            "name": "req"
+            "name": "req",
+            "type": "iampb.SetIamPolicyRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*iampb.Policy",
-        "client": {
-          "shortName": "NotebookClient",
-          "fullName": "google.cloud.notebooks.v2.NotebookClient"
-        },
-        "method": {
-          "shortName": "SetIamPolicy",
-          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.iam.v1.IAMPolicy"
-          }
-        }
+        "shortName": "SetIamPolicy"
       },
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "NotebookClient/SetIamPolicy/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "notebooks_v2_generated_NotebookService_SetIamPolicy_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "notebooks SetIamPolicy Sample"
     },
     {
-      "regionTag": "notebooks_v2_generated_NotebookService_StartInstance_sync",
-      "title": "notebooks StartInstance Sample",
-      "description": "StartInstance starts a notebook instance.",
-      "file": "NotebookClient/StartInstance/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "StartInstance",
+        "client": {
+          "fullName": "google.cloud.notebooks.v2.NotebookClient",
+          "shortName": "NotebookClient"
+        },
         "fullName": "google.cloud.notebooks.v2.NotebookClient.StartInstance",
+        "method": {
+          "fullName": "google.cloud.notebooks.v2.NotebookService.StartInstance",
+          "service": {
+            "fullName": "google.cloud.notebooks.v2.NotebookService",
+            "shortName": "NotebookService"
+          },
+          "shortName": "StartInstance"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "notebookspb.StartInstanceRequest",
-            "name": "req"
+            "name": "req",
+            "type": "notebookspb.StartInstanceRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "StartInstanceOperation",
-        "client": {
-          "shortName": "NotebookClient",
-          "fullName": "google.cloud.notebooks.v2.NotebookClient"
-        },
-        "method": {
-          "shortName": "StartInstance",
-          "fullName": "google.cloud.notebooks.v2.NotebookService.StartInstance",
-          "service": {
-            "shortName": "NotebookService",
-            "fullName": "google.cloud.notebooks.v2.NotebookService"
-          }
-        }
+        "shortName": "StartInstance"
       },
+      "description": "StartInstance starts a notebook instance.",
+      "file": "NotebookClient/StartInstance/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "notebooks_v2_generated_NotebookService_StartInstance_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "notebooks StartInstance Sample"
     },
     {
-      "regionTag": "notebooks_v2_generated_NotebookService_StopInstance_sync",
-      "title": "notebooks StopInstance Sample",
-      "description": "StopInstance stops a notebook instance.",
-      "file": "NotebookClient/StopInstance/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "StopInstance",
+        "client": {
+          "fullName": "google.cloud.notebooks.v2.NotebookClient",
+          "shortName": "NotebookClient"
+        },
         "fullName": "google.cloud.notebooks.v2.NotebookClient.StopInstance",
+        "method": {
+          "fullName": "google.cloud.notebooks.v2.NotebookService.StopInstance",
+          "service": {
+            "fullName": "google.cloud.notebooks.v2.NotebookService",
+            "shortName": "NotebookService"
+          },
+          "shortName": "StopInstance"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "notebookspb.StopInstanceRequest",
-            "name": "req"
+            "name": "req",
+            "type": "notebookspb.StopInstanceRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "StopInstanceOperation",
-        "client": {
-          "shortName": "NotebookClient",
-          "fullName": "google.cloud.notebooks.v2.NotebookClient"
-        },
-        "method": {
-          "shortName": "StopInstance",
-          "fullName": "google.cloud.notebooks.v2.NotebookService.StopInstance",
-          "service": {
-            "shortName": "NotebookService",
-            "fullName": "google.cloud.notebooks.v2.NotebookService"
-          }
-        }
+        "shortName": "StopInstance"
       },
+      "description": "StopInstance stops a notebook instance.",
+      "file": "NotebookClient/StopInstance/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "notebooks_v2_generated_NotebookService_StopInstance_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "notebooks StopInstance Sample"
     },
     {
-      "regionTag": "notebooks_v2_generated_NotebookService_TestIamPermissions_sync",
-      "title": "notebooks TestIamPermissions Sample",
-      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
-      "file": "NotebookClient/TestIamPermissions/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "TestIamPermissions",
+        "client": {
+          "fullName": "google.cloud.notebooks.v2.NotebookClient",
+          "shortName": "NotebookClient"
+        },
         "fullName": "google.cloud.notebooks.v2.NotebookClient.TestIamPermissions",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "TestIamPermissions"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "iampb.TestIamPermissionsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "iampb.TestIamPermissionsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*iampb.TestIamPermissionsResponse",
-        "client": {
-          "shortName": "NotebookClient",
-          "fullName": "google.cloud.notebooks.v2.NotebookClient"
-        },
-        "method": {
-          "shortName": "TestIamPermissions",
-          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.iam.v1.IAMPolicy"
-          }
-        }
+        "shortName": "TestIamPermissions"
       },
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "NotebookClient/TestIamPermissions/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "notebooks_v2_generated_NotebookService_TestIamPermissions_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "notebooks TestIamPermissions Sample"
     },
     {
-      "regionTag": "notebooks_v2_generated_NotebookService_UpdateInstance_sync",
-      "title": "notebooks UpdateInstance Sample",
-      "description": "UpdateInstance updateInstance updates an Instance.",
-      "file": "NotebookClient/UpdateInstance/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateInstance",
+        "client": {
+          "fullName": "google.cloud.notebooks.v2.NotebookClient",
+          "shortName": "NotebookClient"
+        },
         "fullName": "google.cloud.notebooks.v2.NotebookClient.UpdateInstance",
+        "method": {
+          "fullName": "google.cloud.notebooks.v2.NotebookService.UpdateInstance",
+          "service": {
+            "fullName": "google.cloud.notebooks.v2.NotebookService",
+            "shortName": "NotebookService"
+          },
+          "shortName": "UpdateInstance"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "notebookspb.UpdateInstanceRequest",
-            "name": "req"
+            "name": "req",
+            "type": "notebookspb.UpdateInstanceRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UpdateInstanceOperation",
-        "client": {
-          "shortName": "NotebookClient",
-          "fullName": "google.cloud.notebooks.v2.NotebookClient"
-        },
-        "method": {
-          "shortName": "UpdateInstance",
-          "fullName": "google.cloud.notebooks.v2.NotebookService.UpdateInstance",
-          "service": {
-            "shortName": "NotebookService",
-            "fullName": "google.cloud.notebooks.v2.NotebookService"
-          }
-        }
+        "shortName": "UpdateInstance"
       },
+      "description": "UpdateInstance updateInstance updates an Instance.",
+      "file": "NotebookClient/UpdateInstance/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "notebooks_v2_generated_NotebookService_UpdateInstance_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "notebooks UpdateInstance Sample"
     },
     {
-      "regionTag": "notebooks_v2_generated_NotebookService_UpgradeInstance_sync",
-      "title": "notebooks UpgradeInstance Sample",
-      "description": "UpgradeInstance upgrades a notebook instance to the latest version.",
-      "file": "NotebookClient/UpgradeInstance/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpgradeInstance",
+        "client": {
+          "fullName": "google.cloud.notebooks.v2.NotebookClient",
+          "shortName": "NotebookClient"
+        },
         "fullName": "google.cloud.notebooks.v2.NotebookClient.UpgradeInstance",
+        "method": {
+          "fullName": "google.cloud.notebooks.v2.NotebookService.UpgradeInstance",
+          "service": {
+            "fullName": "google.cloud.notebooks.v2.NotebookService",
+            "shortName": "NotebookService"
+          },
+          "shortName": "UpgradeInstance"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "notebookspb.UpgradeInstanceRequest",
-            "name": "req"
+            "name": "req",
+            "type": "notebookspb.UpgradeInstanceRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UpgradeInstanceOperation",
-        "client": {
-          "shortName": "NotebookClient",
-          "fullName": "google.cloud.notebooks.v2.NotebookClient"
-        },
-        "method": {
-          "shortName": "UpgradeInstance",
-          "fullName": "google.cloud.notebooks.v2.NotebookService.UpgradeInstance",
-          "service": {
-            "shortName": "NotebookService",
-            "fullName": "google.cloud.notebooks.v2.NotebookService"
-          }
-        }
+        "shortName": "UpgradeInstance"
       },
+      "description": "UpgradeInstance upgrades a notebook instance to the latest version.",
+      "file": "NotebookClient/UpgradeInstance/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "notebooks_v2_generated_NotebookService_UpgradeInstance_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "notebooks UpgradeInstance Sample"
     }
   ]
 }

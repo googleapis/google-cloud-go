@@ -1,1118 +1,1118 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/osconfig/apiv1",
-    "version": "1.16.0",
-    "language": "GO",
     "apis": [
       {
         "id": "google.cloud.osconfig.v1",
         "version": "v1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/osconfig/apiv1",
+    "version": "1.16.0"
   },
   "snippets": [
     {
-      "regionTag": "osconfig_v1_generated_OsConfigService_CancelPatchJob_sync",
-      "title": "osconfig CancelPatchJob Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.osconfig.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.osconfig.v1.Client.CancelPatchJob",
+        "method": {
+          "fullName": "google.cloud.osconfig.v1.OsConfigService.CancelPatchJob",
+          "service": {
+            "fullName": "google.cloud.osconfig.v1.OsConfigService",
+            "shortName": "OsConfigService"
+          },
+          "shortName": "CancelPatchJob"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "osconfigpb.CancelPatchJobRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*osconfigpb.PatchJob",
+        "shortName": "CancelPatchJob"
+      },
       "description": "CancelPatchJob cancel a patch job. The patch job must be active. Canceled patch jobs\ncannot be restarted.",
       "file": "Client/CancelPatchJob/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CancelPatchJob",
-        "fullName": "google.cloud.osconfig.v1.Client.CancelPatchJob",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "osconfigpb.CancelPatchJobRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*osconfigpb.PatchJob",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.osconfig.v1.Client"
-        },
-        "method": {
-          "shortName": "CancelPatchJob",
-          "fullName": "google.cloud.osconfig.v1.OsConfigService.CancelPatchJob",
-          "service": {
-            "shortName": "OsConfigService",
-            "fullName": "google.cloud.osconfig.v1.OsConfigService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "osconfig_v1_generated_OsConfigService_CancelPatchJob_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "osconfig CancelPatchJob Sample"
     },
     {
-      "regionTag": "osconfig_v1_generated_OsConfigService_CreatePatchDeployment_sync",
-      "title": "osconfig CreatePatchDeployment Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.osconfig.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.osconfig.v1.Client.CreatePatchDeployment",
+        "method": {
+          "fullName": "google.cloud.osconfig.v1.OsConfigService.CreatePatchDeployment",
+          "service": {
+            "fullName": "google.cloud.osconfig.v1.OsConfigService",
+            "shortName": "OsConfigService"
+          },
+          "shortName": "CreatePatchDeployment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "osconfigpb.CreatePatchDeploymentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*osconfigpb.PatchDeployment",
+        "shortName": "CreatePatchDeployment"
+      },
       "description": "CreatePatchDeployment create an OS Config patch deployment.",
       "file": "Client/CreatePatchDeployment/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "CreatePatchDeployment",
-        "fullName": "google.cloud.osconfig.v1.Client.CreatePatchDeployment",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "osconfigpb.CreatePatchDeploymentRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*osconfigpb.PatchDeployment",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.osconfig.v1.Client"
-        },
-        "method": {
-          "shortName": "CreatePatchDeployment",
-          "fullName": "google.cloud.osconfig.v1.OsConfigService.CreatePatchDeployment",
-          "service": {
-            "shortName": "OsConfigService",
-            "fullName": "google.cloud.osconfig.v1.OsConfigService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "osconfig_v1_generated_OsConfigService_CreatePatchDeployment_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "osconfig CreatePatchDeployment Sample"
     },
     {
-      "regionTag": "osconfig_v1_generated_OsConfigService_DeletePatchDeployment_sync",
-      "title": "osconfig DeletePatchDeployment Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.osconfig.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.osconfig.v1.Client.DeletePatchDeployment",
+        "method": {
+          "fullName": "google.cloud.osconfig.v1.OsConfigService.DeletePatchDeployment",
+          "service": {
+            "fullName": "google.cloud.osconfig.v1.OsConfigService",
+            "shortName": "OsConfigService"
+          },
+          "shortName": "DeletePatchDeployment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "osconfigpb.DeletePatchDeploymentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeletePatchDeployment"
+      },
       "description": "DeletePatchDeployment delete an OS Config patch deployment.",
       "file": "Client/DeletePatchDeployment/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "DeletePatchDeployment",
-        "fullName": "google.cloud.osconfig.v1.Client.DeletePatchDeployment",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "osconfigpb.DeletePatchDeploymentRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.osconfig.v1.Client"
-        },
-        "method": {
-          "shortName": "DeletePatchDeployment",
-          "fullName": "google.cloud.osconfig.v1.OsConfigService.DeletePatchDeployment",
-          "service": {
-            "shortName": "OsConfigService",
-            "fullName": "google.cloud.osconfig.v1.OsConfigService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "osconfig_v1_generated_OsConfigService_DeletePatchDeployment_sync",
       "segments": [
         {
-          "start": 18,
           "end": 51,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "osconfig DeletePatchDeployment Sample"
     },
     {
-      "regionTag": "osconfig_v1_generated_OsConfigService_ExecutePatchJob_sync",
-      "title": "osconfig ExecutePatchJob Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.osconfig.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.osconfig.v1.Client.ExecutePatchJob",
+        "method": {
+          "fullName": "google.cloud.osconfig.v1.OsConfigService.ExecutePatchJob",
+          "service": {
+            "fullName": "google.cloud.osconfig.v1.OsConfigService",
+            "shortName": "OsConfigService"
+          },
+          "shortName": "ExecutePatchJob"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "osconfigpb.ExecutePatchJobRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*osconfigpb.PatchJob",
+        "shortName": "ExecutePatchJob"
+      },
       "description": "ExecutePatchJob patch VM instances by creating and running a patch job.",
       "file": "Client/ExecutePatchJob/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "ExecutePatchJob",
-        "fullName": "google.cloud.osconfig.v1.Client.ExecutePatchJob",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "osconfigpb.ExecutePatchJobRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*osconfigpb.PatchJob",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.osconfig.v1.Client"
-        },
-        "method": {
-          "shortName": "ExecutePatchJob",
-          "fullName": "google.cloud.osconfig.v1.OsConfigService.ExecutePatchJob",
-          "service": {
-            "shortName": "OsConfigService",
-            "fullName": "google.cloud.osconfig.v1.OsConfigService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "osconfig_v1_generated_OsConfigService_ExecutePatchJob_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "osconfig ExecutePatchJob Sample"
     },
     {
-      "regionTag": "osconfig_v1_generated_OsConfigService_GetPatchDeployment_sync",
-      "title": "osconfig GetPatchDeployment Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.osconfig.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.osconfig.v1.Client.GetPatchDeployment",
+        "method": {
+          "fullName": "google.cloud.osconfig.v1.OsConfigService.GetPatchDeployment",
+          "service": {
+            "fullName": "google.cloud.osconfig.v1.OsConfigService",
+            "shortName": "OsConfigService"
+          },
+          "shortName": "GetPatchDeployment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "osconfigpb.GetPatchDeploymentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*osconfigpb.PatchDeployment",
+        "shortName": "GetPatchDeployment"
+      },
       "description": "GetPatchDeployment get an OS Config patch deployment.",
       "file": "Client/GetPatchDeployment/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "GetPatchDeployment",
-        "fullName": "google.cloud.osconfig.v1.Client.GetPatchDeployment",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "osconfigpb.GetPatchDeploymentRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*osconfigpb.PatchDeployment",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.osconfig.v1.Client"
-        },
-        "method": {
-          "shortName": "GetPatchDeployment",
-          "fullName": "google.cloud.osconfig.v1.OsConfigService.GetPatchDeployment",
-          "service": {
-            "shortName": "OsConfigService",
-            "fullName": "google.cloud.osconfig.v1.OsConfigService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "osconfig_v1_generated_OsConfigService_GetPatchDeployment_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "osconfig GetPatchDeployment Sample"
     },
     {
-      "regionTag": "osconfig_v1_generated_OsConfigService_GetPatchJob_sync",
-      "title": "osconfig GetPatchJob Sample",
-      "description": "GetPatchJob get the patch job. This can be used to track the progress of an\nongoing patch job or review the details of completed jobs.",
-      "file": "Client/GetPatchJob/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetPatchJob",
+        "client": {
+          "fullName": "google.cloud.osconfig.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.osconfig.v1.Client.GetPatchJob",
+        "method": {
+          "fullName": "google.cloud.osconfig.v1.OsConfigService.GetPatchJob",
+          "service": {
+            "fullName": "google.cloud.osconfig.v1.OsConfigService",
+            "shortName": "OsConfigService"
+          },
+          "shortName": "GetPatchJob"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "osconfigpb.GetPatchJobRequest",
-            "name": "req"
+            "name": "req",
+            "type": "osconfigpb.GetPatchJobRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*osconfigpb.PatchJob",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.osconfig.v1.Client"
-        },
-        "method": {
-          "shortName": "GetPatchJob",
-          "fullName": "google.cloud.osconfig.v1.OsConfigService.GetPatchJob",
-          "service": {
-            "shortName": "OsConfigService",
-            "fullName": "google.cloud.osconfig.v1.OsConfigService"
-          }
-        }
+        "shortName": "GetPatchJob"
       },
+      "description": "GetPatchJob get the patch job. This can be used to track the progress of an\nongoing patch job or review the details of completed jobs.",
+      "file": "Client/GetPatchJob/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "osconfig_v1_generated_OsConfigService_GetPatchJob_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "osconfig GetPatchJob Sample"
     },
     {
-      "regionTag": "osconfig_v1_generated_OsConfigService_ListPatchDeployments_sync",
-      "title": "osconfig ListPatchDeployments Sample",
-      "description": "ListPatchDeployments get a page of OS Config patch deployments.",
-      "file": "Client/ListPatchDeployments/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListPatchDeployments",
+        "client": {
+          "fullName": "google.cloud.osconfig.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.osconfig.v1.Client.ListPatchDeployments",
+        "method": {
+          "fullName": "google.cloud.osconfig.v1.OsConfigService.ListPatchDeployments",
+          "service": {
+            "fullName": "google.cloud.osconfig.v1.OsConfigService",
+            "shortName": "OsConfigService"
+          },
+          "shortName": "ListPatchDeployments"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "osconfigpb.ListPatchDeploymentsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "osconfigpb.ListPatchDeploymentsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "PatchDeploymentIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.osconfig.v1.Client"
-        },
-        "method": {
-          "shortName": "ListPatchDeployments",
-          "fullName": "google.cloud.osconfig.v1.OsConfigService.ListPatchDeployments",
-          "service": {
-            "shortName": "OsConfigService",
-            "fullName": "google.cloud.osconfig.v1.OsConfigService"
-          }
-        }
+        "shortName": "ListPatchDeployments"
       },
+      "description": "ListPatchDeployments get a page of OS Config patch deployments.",
+      "file": "Client/ListPatchDeployments/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "osconfig_v1_generated_OsConfigService_ListPatchDeployments_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "osconfig ListPatchDeployments Sample"
     },
     {
-      "regionTag": "osconfig_v1_generated_OsConfigService_ListPatchJobInstanceDetails_sync",
-      "title": "osconfig ListPatchJobInstanceDetails Sample",
-      "description": "ListPatchJobInstanceDetails get a list of instance details for a given patch job.",
-      "file": "Client/ListPatchJobInstanceDetails/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListPatchJobInstanceDetails",
+        "client": {
+          "fullName": "google.cloud.osconfig.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.osconfig.v1.Client.ListPatchJobInstanceDetails",
+        "method": {
+          "fullName": "google.cloud.osconfig.v1.OsConfigService.ListPatchJobInstanceDetails",
+          "service": {
+            "fullName": "google.cloud.osconfig.v1.OsConfigService",
+            "shortName": "OsConfigService"
+          },
+          "shortName": "ListPatchJobInstanceDetails"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "osconfigpb.ListPatchJobInstanceDetailsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "osconfigpb.ListPatchJobInstanceDetailsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "PatchJobInstanceDetailsIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.osconfig.v1.Client"
-        },
-        "method": {
-          "shortName": "ListPatchJobInstanceDetails",
-          "fullName": "google.cloud.osconfig.v1.OsConfigService.ListPatchJobInstanceDetails",
-          "service": {
-            "shortName": "OsConfigService",
-            "fullName": "google.cloud.osconfig.v1.OsConfigService"
-          }
-        }
+        "shortName": "ListPatchJobInstanceDetails"
       },
+      "description": "ListPatchJobInstanceDetails get a list of instance details for a given patch job.",
+      "file": "Client/ListPatchJobInstanceDetails/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "osconfig_v1_generated_OsConfigService_ListPatchJobInstanceDetails_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "osconfig ListPatchJobInstanceDetails Sample"
     },
     {
-      "regionTag": "osconfig_v1_generated_OsConfigService_ListPatchJobs_sync",
-      "title": "osconfig ListPatchJobs Sample",
-      "description": "ListPatchJobs get a list of patch jobs.",
-      "file": "Client/ListPatchJobs/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListPatchJobs",
+        "client": {
+          "fullName": "google.cloud.osconfig.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.osconfig.v1.Client.ListPatchJobs",
+        "method": {
+          "fullName": "google.cloud.osconfig.v1.OsConfigService.ListPatchJobs",
+          "service": {
+            "fullName": "google.cloud.osconfig.v1.OsConfigService",
+            "shortName": "OsConfigService"
+          },
+          "shortName": "ListPatchJobs"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "osconfigpb.ListPatchJobsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "osconfigpb.ListPatchJobsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "PatchJobIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.osconfig.v1.Client"
-        },
-        "method": {
-          "shortName": "ListPatchJobs",
-          "fullName": "google.cloud.osconfig.v1.OsConfigService.ListPatchJobs",
-          "service": {
-            "shortName": "OsConfigService",
-            "fullName": "google.cloud.osconfig.v1.OsConfigService"
-          }
-        }
+        "shortName": "ListPatchJobs"
       },
+      "description": "ListPatchJobs get a list of patch jobs.",
+      "file": "Client/ListPatchJobs/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "osconfig_v1_generated_OsConfigService_ListPatchJobs_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "osconfig ListPatchJobs Sample"
     },
     {
-      "regionTag": "osconfig_v1_generated_OsConfigService_PausePatchDeployment_sync",
-      "title": "osconfig PausePatchDeployment Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.osconfig.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.osconfig.v1.Client.PausePatchDeployment",
+        "method": {
+          "fullName": "google.cloud.osconfig.v1.OsConfigService.PausePatchDeployment",
+          "service": {
+            "fullName": "google.cloud.osconfig.v1.OsConfigService",
+            "shortName": "OsConfigService"
+          },
+          "shortName": "PausePatchDeployment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "osconfigpb.PausePatchDeploymentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*osconfigpb.PatchDeployment",
+        "shortName": "PausePatchDeployment"
+      },
       "description": "PausePatchDeployment change state of patch deployment to \"PAUSED\".\nPatch deployment in paused state doesn't generate patch jobs.",
       "file": "Client/PausePatchDeployment/main.go",
       "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "osconfig_v1_generated_OsConfigService_PausePatchDeployment_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "osconfig PausePatchDeployment Sample"
+    },
+    {
       "clientMethod": {
-        "shortName": "PausePatchDeployment",
-        "fullName": "google.cloud.osconfig.v1.Client.PausePatchDeployment",
+        "client": {
+          "fullName": "google.cloud.osconfig.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.osconfig.v1.Client.ResumePatchDeployment",
+        "method": {
+          "fullName": "google.cloud.osconfig.v1.OsConfigService.ResumePatchDeployment",
+          "service": {
+            "fullName": "google.cloud.osconfig.v1.OsConfigService",
+            "shortName": "OsConfigService"
+          },
+          "shortName": "ResumePatchDeployment"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "osconfigpb.PausePatchDeploymentRequest",
-            "name": "req"
+            "name": "req",
+            "type": "osconfigpb.ResumePatchDeploymentRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*osconfigpb.PatchDeployment",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.osconfig.v1.Client"
-        },
-        "method": {
-          "shortName": "PausePatchDeployment",
-          "fullName": "google.cloud.osconfig.v1.OsConfigService.PausePatchDeployment",
-          "service": {
-            "shortName": "OsConfigService",
-            "fullName": "google.cloud.osconfig.v1.OsConfigService"
-          }
-        }
+        "shortName": "ResumePatchDeployment"
       },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "osconfig_v1_generated_OsConfigService_ResumePatchDeployment_sync",
-      "title": "osconfig ResumePatchDeployment Sample",
       "description": "ResumePatchDeployment change state of patch deployment back to \"ACTIVE\".\nPatch deployment in active state continues to generate patch jobs.",
       "file": "Client/ResumePatchDeployment/main.go",
       "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "osconfig_v1_generated_OsConfigService_ResumePatchDeployment_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "osconfig ResumePatchDeployment Sample"
+    },
+    {
       "clientMethod": {
-        "shortName": "ResumePatchDeployment",
-        "fullName": "google.cloud.osconfig.v1.Client.ResumePatchDeployment",
+        "client": {
+          "fullName": "google.cloud.osconfig.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.osconfig.v1.Client.UpdatePatchDeployment",
+        "method": {
+          "fullName": "google.cloud.osconfig.v1.OsConfigService.UpdatePatchDeployment",
+          "service": {
+            "fullName": "google.cloud.osconfig.v1.OsConfigService",
+            "shortName": "OsConfigService"
+          },
+          "shortName": "UpdatePatchDeployment"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "osconfigpb.ResumePatchDeploymentRequest",
-            "name": "req"
+            "name": "req",
+            "type": "osconfigpb.UpdatePatchDeploymentRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*osconfigpb.PatchDeployment",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.osconfig.v1.Client"
-        },
-        "method": {
-          "shortName": "ResumePatchDeployment",
-          "fullName": "google.cloud.osconfig.v1.OsConfigService.ResumePatchDeployment",
-          "service": {
-            "shortName": "OsConfigService",
-            "fullName": "google.cloud.osconfig.v1.OsConfigService"
-          }
-        }
+        "shortName": "UpdatePatchDeployment"
       },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "osconfig_v1_generated_OsConfigService_UpdatePatchDeployment_sync",
-      "title": "osconfig UpdatePatchDeployment Sample",
       "description": "UpdatePatchDeployment update an OS Config patch deployment.",
       "file": "Client/UpdatePatchDeployment/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "UpdatePatchDeployment",
-        "fullName": "google.cloud.osconfig.v1.Client.UpdatePatchDeployment",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "osconfigpb.UpdatePatchDeploymentRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*osconfigpb.PatchDeployment",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.osconfig.v1.Client"
-        },
-        "method": {
-          "shortName": "UpdatePatchDeployment",
-          "fullName": "google.cloud.osconfig.v1.OsConfigService.UpdatePatchDeployment",
-          "service": {
-            "shortName": "OsConfigService",
-            "fullName": "google.cloud.osconfig.v1.OsConfigService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "osconfig_v1_generated_OsConfigService_UpdatePatchDeployment_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "osconfig UpdatePatchDeployment Sample"
     },
     {
-      "regionTag": "osconfig_v1_generated_OsConfigZonalService_CreateOSPolicyAssignment_sync",
-      "title": "osconfig CreateOSPolicyAssignment Sample",
-      "description": "CreateOSPolicyAssignment create an OS policy assignment.\n\nThis method also creates the first revision of the OS policy assignment.\n\nThis method returns a long running operation (LRO) that contains the\nrollout details. The rollout can be cancelled by cancelling the LRO.\n\nFor more information, see [Method: \nprojects.locations.osPolicyAssignments.operations.cancel](https: //cloud.google.com/compute/docs/osconfig/rest/v1/projects.locations.osPolicyAssignments.operations/cancel).",
-      "file": "OsConfigZonalClient/CreateOSPolicyAssignment/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateOSPolicyAssignment",
+        "client": {
+          "fullName": "google.cloud.osconfig.v1.OsConfigZonalClient",
+          "shortName": "OsConfigZonalClient"
+        },
         "fullName": "google.cloud.osconfig.v1.OsConfigZonalClient.CreateOSPolicyAssignment",
+        "method": {
+          "fullName": "google.cloud.osconfig.v1.OsConfigZonalService.CreateOSPolicyAssignment",
+          "service": {
+            "fullName": "google.cloud.osconfig.v1.OsConfigZonalService",
+            "shortName": "OsConfigZonalService"
+          },
+          "shortName": "CreateOSPolicyAssignment"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "osconfigpb.CreateOSPolicyAssignmentRequest",
-            "name": "req"
+            "name": "req",
+            "type": "osconfigpb.CreateOSPolicyAssignmentRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateOSPolicyAssignmentOperation",
-        "client": {
-          "shortName": "OsConfigZonalClient",
-          "fullName": "google.cloud.osconfig.v1.OsConfigZonalClient"
-        },
-        "method": {
-          "shortName": "CreateOSPolicyAssignment",
-          "fullName": "google.cloud.osconfig.v1.OsConfigZonalService.CreateOSPolicyAssignment",
-          "service": {
-            "shortName": "OsConfigZonalService",
-            "fullName": "google.cloud.osconfig.v1.OsConfigZonalService"
-          }
-        }
+        "shortName": "CreateOSPolicyAssignment"
       },
+      "description": "CreateOSPolicyAssignment create an OS policy assignment.\n\nThis method also creates the first revision of the OS policy assignment.\n\nThis method returns a long running operation (LRO) that contains the\nrollout details. The rollout can be cancelled by cancelling the LRO.\n\nFor more information, see [Method: \nprojects.locations.osPolicyAssignments.operations.cancel](https: //cloud.google.com/compute/docs/osconfig/rest/v1/projects.locations.osPolicyAssignments.operations/cancel).",
+      "file": "OsConfigZonalClient/CreateOSPolicyAssignment/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "osconfig_v1_generated_OsConfigZonalService_CreateOSPolicyAssignment_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "osconfig CreateOSPolicyAssignment Sample"
     },
     {
-      "regionTag": "osconfig_v1_generated_OsConfigZonalService_DeleteOSPolicyAssignment_sync",
-      "title": "osconfig DeleteOSPolicyAssignment Sample",
-      "description": "DeleteOSPolicyAssignment delete the OS policy assignment.\n\nThis method creates a new revision of the OS policy assignment.\n\nThis method returns a long running operation (LRO) that contains the\nrollout details. The rollout can be cancelled by cancelling the LRO.\n\nIf the LRO completes and is not cancelled, all revisions associated with\nthe OS policy assignment are deleted.\n\nFor more information, see [Method: \nprojects.locations.osPolicyAssignments.operations.cancel](https: //cloud.google.com/compute/docs/osconfig/rest/v1/projects.locations.osPolicyAssignments.operations/cancel).",
-      "file": "OsConfigZonalClient/DeleteOSPolicyAssignment/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteOSPolicyAssignment",
+        "client": {
+          "fullName": "google.cloud.osconfig.v1.OsConfigZonalClient",
+          "shortName": "OsConfigZonalClient"
+        },
         "fullName": "google.cloud.osconfig.v1.OsConfigZonalClient.DeleteOSPolicyAssignment",
+        "method": {
+          "fullName": "google.cloud.osconfig.v1.OsConfigZonalService.DeleteOSPolicyAssignment",
+          "service": {
+            "fullName": "google.cloud.osconfig.v1.OsConfigZonalService",
+            "shortName": "OsConfigZonalService"
+          },
+          "shortName": "DeleteOSPolicyAssignment"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "osconfigpb.DeleteOSPolicyAssignmentRequest",
-            "name": "req"
+            "name": "req",
+            "type": "osconfigpb.DeleteOSPolicyAssignmentRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteOSPolicyAssignmentOperation",
-        "client": {
-          "shortName": "OsConfigZonalClient",
-          "fullName": "google.cloud.osconfig.v1.OsConfigZonalClient"
-        },
-        "method": {
-          "shortName": "DeleteOSPolicyAssignment",
-          "fullName": "google.cloud.osconfig.v1.OsConfigZonalService.DeleteOSPolicyAssignment",
-          "service": {
-            "shortName": "OsConfigZonalService",
-            "fullName": "google.cloud.osconfig.v1.OsConfigZonalService"
-          }
-        }
+        "shortName": "DeleteOSPolicyAssignment"
       },
+      "description": "DeleteOSPolicyAssignment delete the OS policy assignment.\n\nThis method creates a new revision of the OS policy assignment.\n\nThis method returns a long running operation (LRO) that contains the\nrollout details. The rollout can be cancelled by cancelling the LRO.\n\nIf the LRO completes and is not cancelled, all revisions associated with\nthe OS policy assignment are deleted.\n\nFor more information, see [Method: \nprojects.locations.osPolicyAssignments.operations.cancel](https: //cloud.google.com/compute/docs/osconfig/rest/v1/projects.locations.osPolicyAssignments.operations/cancel).",
+      "file": "OsConfigZonalClient/DeleteOSPolicyAssignment/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "osconfig_v1_generated_OsConfigZonalService_DeleteOSPolicyAssignment_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "osconfig DeleteOSPolicyAssignment Sample"
     },
     {
-      "regionTag": "osconfig_v1_generated_OsConfigZonalService_GetInventory_sync",
-      "title": "osconfig GetInventory Sample",
-      "description": "GetInventory get inventory data for the specified VM instance. If the VM has no\nassociated inventory, the message `NOT_FOUND` is returned.",
-      "file": "OsConfigZonalClient/GetInventory/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetInventory",
+        "client": {
+          "fullName": "google.cloud.osconfig.v1.OsConfigZonalClient",
+          "shortName": "OsConfigZonalClient"
+        },
         "fullName": "google.cloud.osconfig.v1.OsConfigZonalClient.GetInventory",
+        "method": {
+          "fullName": "google.cloud.osconfig.v1.OsConfigZonalService.GetInventory",
+          "service": {
+            "fullName": "google.cloud.osconfig.v1.OsConfigZonalService",
+            "shortName": "OsConfigZonalService"
+          },
+          "shortName": "GetInventory"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "osconfigpb.GetInventoryRequest",
-            "name": "req"
+            "name": "req",
+            "type": "osconfigpb.GetInventoryRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*osconfigpb.Inventory",
-        "client": {
-          "shortName": "OsConfigZonalClient",
-          "fullName": "google.cloud.osconfig.v1.OsConfigZonalClient"
-        },
-        "method": {
-          "shortName": "GetInventory",
-          "fullName": "google.cloud.osconfig.v1.OsConfigZonalService.GetInventory",
-          "service": {
-            "shortName": "OsConfigZonalService",
-            "fullName": "google.cloud.osconfig.v1.OsConfigZonalService"
-          }
-        }
+        "shortName": "GetInventory"
       },
+      "description": "GetInventory get inventory data for the specified VM instance. If the VM has no\nassociated inventory, the message `NOT_FOUND` is returned.",
+      "file": "OsConfigZonalClient/GetInventory/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "osconfig_v1_generated_OsConfigZonalService_GetInventory_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "osconfig GetInventory Sample"
     },
     {
-      "regionTag": "osconfig_v1_generated_OsConfigZonalService_GetOSPolicyAssignment_sync",
-      "title": "osconfig GetOSPolicyAssignment Sample",
-      "description": "GetOSPolicyAssignment retrieve an existing OS policy assignment.\n\nThis method always returns the latest revision. In order to retrieve a\nprevious revision of the assignment, also provide the revision ID in the\n`name` parameter.",
-      "file": "OsConfigZonalClient/GetOSPolicyAssignment/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetOSPolicyAssignment",
+        "client": {
+          "fullName": "google.cloud.osconfig.v1.OsConfigZonalClient",
+          "shortName": "OsConfigZonalClient"
+        },
         "fullName": "google.cloud.osconfig.v1.OsConfigZonalClient.GetOSPolicyAssignment",
+        "method": {
+          "fullName": "google.cloud.osconfig.v1.OsConfigZonalService.GetOSPolicyAssignment",
+          "service": {
+            "fullName": "google.cloud.osconfig.v1.OsConfigZonalService",
+            "shortName": "OsConfigZonalService"
+          },
+          "shortName": "GetOSPolicyAssignment"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "osconfigpb.GetOSPolicyAssignmentRequest",
-            "name": "req"
+            "name": "req",
+            "type": "osconfigpb.GetOSPolicyAssignmentRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*osconfigpb.OSPolicyAssignment",
-        "client": {
-          "shortName": "OsConfigZonalClient",
-          "fullName": "google.cloud.osconfig.v1.OsConfigZonalClient"
-        },
-        "method": {
-          "shortName": "GetOSPolicyAssignment",
-          "fullName": "google.cloud.osconfig.v1.OsConfigZonalService.GetOSPolicyAssignment",
-          "service": {
-            "shortName": "OsConfigZonalService",
-            "fullName": "google.cloud.osconfig.v1.OsConfigZonalService"
-          }
-        }
+        "shortName": "GetOSPolicyAssignment"
       },
+      "description": "GetOSPolicyAssignment retrieve an existing OS policy assignment.\n\nThis method always returns the latest revision. In order to retrieve a\nprevious revision of the assignment, also provide the revision ID in the\n`name` parameter.",
+      "file": "OsConfigZonalClient/GetOSPolicyAssignment/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "osconfig_v1_generated_OsConfigZonalService_GetOSPolicyAssignment_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "osconfig GetOSPolicyAssignment Sample"
     },
     {
-      "regionTag": "osconfig_v1_generated_OsConfigZonalService_GetOSPolicyAssignmentReport_sync",
-      "title": "osconfig GetOSPolicyAssignmentReport Sample",
-      "description": "GetOSPolicyAssignmentReport get the OS policy asssignment report for the specified Compute Engine VM\ninstance.",
-      "file": "OsConfigZonalClient/GetOSPolicyAssignmentReport/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetOSPolicyAssignmentReport",
+        "client": {
+          "fullName": "google.cloud.osconfig.v1.OsConfigZonalClient",
+          "shortName": "OsConfigZonalClient"
+        },
         "fullName": "google.cloud.osconfig.v1.OsConfigZonalClient.GetOSPolicyAssignmentReport",
+        "method": {
+          "fullName": "google.cloud.osconfig.v1.OsConfigZonalService.GetOSPolicyAssignmentReport",
+          "service": {
+            "fullName": "google.cloud.osconfig.v1.OsConfigZonalService",
+            "shortName": "OsConfigZonalService"
+          },
+          "shortName": "GetOSPolicyAssignmentReport"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "osconfigpb.GetOSPolicyAssignmentReportRequest",
-            "name": "req"
+            "name": "req",
+            "type": "osconfigpb.GetOSPolicyAssignmentReportRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*osconfigpb.OSPolicyAssignmentReport",
-        "client": {
-          "shortName": "OsConfigZonalClient",
-          "fullName": "google.cloud.osconfig.v1.OsConfigZonalClient"
-        },
-        "method": {
-          "shortName": "GetOSPolicyAssignmentReport",
-          "fullName": "google.cloud.osconfig.v1.OsConfigZonalService.GetOSPolicyAssignmentReport",
-          "service": {
-            "shortName": "OsConfigZonalService",
-            "fullName": "google.cloud.osconfig.v1.OsConfigZonalService"
-          }
-        }
+        "shortName": "GetOSPolicyAssignmentReport"
       },
+      "description": "GetOSPolicyAssignmentReport get the OS policy asssignment report for the specified Compute Engine VM\ninstance.",
+      "file": "OsConfigZonalClient/GetOSPolicyAssignmentReport/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "osconfig_v1_generated_OsConfigZonalService_GetOSPolicyAssignmentReport_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "osconfig GetOSPolicyAssignmentReport Sample"
     },
     {
-      "regionTag": "osconfig_v1_generated_OsConfigZonalService_GetVulnerabilityReport_sync",
-      "title": "osconfig GetVulnerabilityReport Sample",
-      "description": "GetVulnerabilityReport gets the vulnerability report for the specified VM instance. Only VMs with\ninventory data have vulnerability reports associated with them.",
-      "file": "OsConfigZonalClient/GetVulnerabilityReport/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetVulnerabilityReport",
+        "client": {
+          "fullName": "google.cloud.osconfig.v1.OsConfigZonalClient",
+          "shortName": "OsConfigZonalClient"
+        },
         "fullName": "google.cloud.osconfig.v1.OsConfigZonalClient.GetVulnerabilityReport",
+        "method": {
+          "fullName": "google.cloud.osconfig.v1.OsConfigZonalService.GetVulnerabilityReport",
+          "service": {
+            "fullName": "google.cloud.osconfig.v1.OsConfigZonalService",
+            "shortName": "OsConfigZonalService"
+          },
+          "shortName": "GetVulnerabilityReport"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "osconfigpb.GetVulnerabilityReportRequest",
-            "name": "req"
+            "name": "req",
+            "type": "osconfigpb.GetVulnerabilityReportRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*osconfigpb.VulnerabilityReport",
-        "client": {
-          "shortName": "OsConfigZonalClient",
-          "fullName": "google.cloud.osconfig.v1.OsConfigZonalClient"
-        },
-        "method": {
-          "shortName": "GetVulnerabilityReport",
-          "fullName": "google.cloud.osconfig.v1.OsConfigZonalService.GetVulnerabilityReport",
-          "service": {
-            "shortName": "OsConfigZonalService",
-            "fullName": "google.cloud.osconfig.v1.OsConfigZonalService"
-          }
-        }
+        "shortName": "GetVulnerabilityReport"
       },
+      "description": "GetVulnerabilityReport gets the vulnerability report for the specified VM instance. Only VMs with\ninventory data have vulnerability reports associated with them.",
+      "file": "OsConfigZonalClient/GetVulnerabilityReport/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "osconfig_v1_generated_OsConfigZonalService_GetVulnerabilityReport_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "osconfig GetVulnerabilityReport Sample"
     },
     {
-      "regionTag": "osconfig_v1_generated_OsConfigZonalService_ListInventories_sync",
-      "title": "osconfig ListInventories Sample",
-      "description": "ListInventories list inventory data for all VM instances in the specified zone.",
-      "file": "OsConfigZonalClient/ListInventories/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListInventories",
+        "client": {
+          "fullName": "google.cloud.osconfig.v1.OsConfigZonalClient",
+          "shortName": "OsConfigZonalClient"
+        },
         "fullName": "google.cloud.osconfig.v1.OsConfigZonalClient.ListInventories",
+        "method": {
+          "fullName": "google.cloud.osconfig.v1.OsConfigZonalService.ListInventories",
+          "service": {
+            "fullName": "google.cloud.osconfig.v1.OsConfigZonalService",
+            "shortName": "OsConfigZonalService"
+          },
+          "shortName": "ListInventories"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "osconfigpb.ListInventoriesRequest",
-            "name": "req"
+            "name": "req",
+            "type": "osconfigpb.ListInventoriesRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "InventoryIterator",
-        "client": {
-          "shortName": "OsConfigZonalClient",
-          "fullName": "google.cloud.osconfig.v1.OsConfigZonalClient"
-        },
-        "method": {
-          "shortName": "ListInventories",
-          "fullName": "google.cloud.osconfig.v1.OsConfigZonalService.ListInventories",
-          "service": {
-            "shortName": "OsConfigZonalService",
-            "fullName": "google.cloud.osconfig.v1.OsConfigZonalService"
-          }
-        }
+        "shortName": "ListInventories"
       },
+      "description": "ListInventories list inventory data for all VM instances in the specified zone.",
+      "file": "OsConfigZonalClient/ListInventories/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "osconfig_v1_generated_OsConfigZonalService_ListInventories_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "osconfig ListInventories Sample"
     },
     {
-      "regionTag": "osconfig_v1_generated_OsConfigZonalService_ListOSPolicyAssignmentReports_sync",
-      "title": "osconfig ListOSPolicyAssignmentReports Sample",
-      "description": "ListOSPolicyAssignmentReports list OS policy asssignment reports for all Compute Engine VM instances in\nthe specified zone.",
-      "file": "OsConfigZonalClient/ListOSPolicyAssignmentReports/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListOSPolicyAssignmentReports",
+        "client": {
+          "fullName": "google.cloud.osconfig.v1.OsConfigZonalClient",
+          "shortName": "OsConfigZonalClient"
+        },
         "fullName": "google.cloud.osconfig.v1.OsConfigZonalClient.ListOSPolicyAssignmentReports",
+        "method": {
+          "fullName": "google.cloud.osconfig.v1.OsConfigZonalService.ListOSPolicyAssignmentReports",
+          "service": {
+            "fullName": "google.cloud.osconfig.v1.OsConfigZonalService",
+            "shortName": "OsConfigZonalService"
+          },
+          "shortName": "ListOSPolicyAssignmentReports"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "osconfigpb.ListOSPolicyAssignmentReportsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "osconfigpb.ListOSPolicyAssignmentReportsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "OSPolicyAssignmentReportIterator",
-        "client": {
-          "shortName": "OsConfigZonalClient",
-          "fullName": "google.cloud.osconfig.v1.OsConfigZonalClient"
-        },
-        "method": {
-          "shortName": "ListOSPolicyAssignmentReports",
-          "fullName": "google.cloud.osconfig.v1.OsConfigZonalService.ListOSPolicyAssignmentReports",
-          "service": {
-            "shortName": "OsConfigZonalService",
-            "fullName": "google.cloud.osconfig.v1.OsConfigZonalService"
-          }
-        }
+        "shortName": "ListOSPolicyAssignmentReports"
       },
+      "description": "ListOSPolicyAssignmentReports list OS policy asssignment reports for all Compute Engine VM instances in\nthe specified zone.",
+      "file": "OsConfigZonalClient/ListOSPolicyAssignmentReports/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "osconfig_v1_generated_OsConfigZonalService_ListOSPolicyAssignmentReports_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "osconfig ListOSPolicyAssignmentReports Sample"
     },
     {
-      "regionTag": "osconfig_v1_generated_OsConfigZonalService_ListOSPolicyAssignmentRevisions_sync",
-      "title": "osconfig ListOSPolicyAssignmentRevisions Sample",
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.osconfig.v1.OsConfigZonalClient",
+          "shortName": "OsConfigZonalClient"
+        },
+        "fullName": "google.cloud.osconfig.v1.OsConfigZonalClient.ListOSPolicyAssignmentRevisions",
+        "method": {
+          "fullName": "google.cloud.osconfig.v1.OsConfigZonalService.ListOSPolicyAssignmentRevisions",
+          "service": {
+            "fullName": "google.cloud.osconfig.v1.OsConfigZonalService",
+            "shortName": "OsConfigZonalService"
+          },
+          "shortName": "ListOSPolicyAssignmentRevisions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "osconfigpb.ListOSPolicyAssignmentRevisionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OSPolicyAssignmentIterator",
+        "shortName": "ListOSPolicyAssignmentRevisions"
+      },
       "description": "ListOSPolicyAssignmentRevisions list the OS policy assignment revisions for a given OS policy assignment.",
       "file": "OsConfigZonalClient/ListOSPolicyAssignmentRevisions/main.go",
       "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "osconfig_v1_generated_OsConfigZonalService_ListOSPolicyAssignmentRevisions_sync",
+      "segments": [
+        {
+          "end": 66,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "osconfig ListOSPolicyAssignmentRevisions Sample"
+    },
+    {
       "clientMethod": {
-        "shortName": "ListOSPolicyAssignmentRevisions",
-        "fullName": "google.cloud.osconfig.v1.OsConfigZonalClient.ListOSPolicyAssignmentRevisions",
+        "client": {
+          "fullName": "google.cloud.osconfig.v1.OsConfigZonalClient",
+          "shortName": "OsConfigZonalClient"
+        },
+        "fullName": "google.cloud.osconfig.v1.OsConfigZonalClient.ListOSPolicyAssignments",
+        "method": {
+          "fullName": "google.cloud.osconfig.v1.OsConfigZonalService.ListOSPolicyAssignments",
+          "service": {
+            "fullName": "google.cloud.osconfig.v1.OsConfigZonalService",
+            "shortName": "OsConfigZonalService"
+          },
+          "shortName": "ListOSPolicyAssignments"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "osconfigpb.ListOSPolicyAssignmentRevisionsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "osconfigpb.ListOSPolicyAssignmentsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "OSPolicyAssignmentIterator",
-        "client": {
-          "shortName": "OsConfigZonalClient",
-          "fullName": "google.cloud.osconfig.v1.OsConfigZonalClient"
-        },
-        "method": {
-          "shortName": "ListOSPolicyAssignmentRevisions",
-          "fullName": "google.cloud.osconfig.v1.OsConfigZonalService.ListOSPolicyAssignmentRevisions",
-          "service": {
-            "shortName": "OsConfigZonalService",
-            "fullName": "google.cloud.osconfig.v1.OsConfigZonalService"
-          }
-        }
+        "shortName": "ListOSPolicyAssignments"
       },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 66,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "osconfig_v1_generated_OsConfigZonalService_ListOSPolicyAssignments_sync",
-      "title": "osconfig ListOSPolicyAssignments Sample",
       "description": "ListOSPolicyAssignments list the OS policy assignments under the parent resource.\n\nFor each OS policy assignment, the latest revision is returned.",
       "file": "OsConfigZonalClient/ListOSPolicyAssignments/main.go",
       "language": "GO",
-      "clientMethod": {
-        "shortName": "ListOSPolicyAssignments",
-        "fullName": "google.cloud.osconfig.v1.OsConfigZonalClient.ListOSPolicyAssignments",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "osconfigpb.ListOSPolicyAssignmentsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "OSPolicyAssignmentIterator",
-        "client": {
-          "shortName": "OsConfigZonalClient",
-          "fullName": "google.cloud.osconfig.v1.OsConfigZonalClient"
-        },
-        "method": {
-          "shortName": "ListOSPolicyAssignments",
-          "fullName": "google.cloud.osconfig.v1.OsConfigZonalService.ListOSPolicyAssignments",
-          "service": {
-            "shortName": "OsConfigZonalService",
-            "fullName": "google.cloud.osconfig.v1.OsConfigZonalService"
-          }
-        }
-      },
       "origin": "API_DEFINITION",
+      "regionTag": "osconfig_v1_generated_OsConfigZonalService_ListOSPolicyAssignments_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "osconfig ListOSPolicyAssignments Sample"
     },
     {
-      "regionTag": "osconfig_v1_generated_OsConfigZonalService_ListVulnerabilityReports_sync",
-      "title": "osconfig ListVulnerabilityReports Sample",
-      "description": "ListVulnerabilityReports list vulnerability reports for all VM instances in the specified zone.",
-      "file": "OsConfigZonalClient/ListVulnerabilityReports/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListVulnerabilityReports",
+        "client": {
+          "fullName": "google.cloud.osconfig.v1.OsConfigZonalClient",
+          "shortName": "OsConfigZonalClient"
+        },
         "fullName": "google.cloud.osconfig.v1.OsConfigZonalClient.ListVulnerabilityReports",
+        "method": {
+          "fullName": "google.cloud.osconfig.v1.OsConfigZonalService.ListVulnerabilityReports",
+          "service": {
+            "fullName": "google.cloud.osconfig.v1.OsConfigZonalService",
+            "shortName": "OsConfigZonalService"
+          },
+          "shortName": "ListVulnerabilityReports"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "osconfigpb.ListVulnerabilityReportsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "osconfigpb.ListVulnerabilityReportsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "VulnerabilityReportIterator",
-        "client": {
-          "shortName": "OsConfigZonalClient",
-          "fullName": "google.cloud.osconfig.v1.OsConfigZonalClient"
-        },
-        "method": {
-          "shortName": "ListVulnerabilityReports",
-          "fullName": "google.cloud.osconfig.v1.OsConfigZonalService.ListVulnerabilityReports",
-          "service": {
-            "shortName": "OsConfigZonalService",
-            "fullName": "google.cloud.osconfig.v1.OsConfigZonalService"
-          }
-        }
+        "shortName": "ListVulnerabilityReports"
       },
+      "description": "ListVulnerabilityReports list vulnerability reports for all VM instances in the specified zone.",
+      "file": "OsConfigZonalClient/ListVulnerabilityReports/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "osconfig_v1_generated_OsConfigZonalService_ListVulnerabilityReports_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "osconfig ListVulnerabilityReports Sample"
     },
     {
-      "regionTag": "osconfig_v1_generated_OsConfigZonalService_UpdateOSPolicyAssignment_sync",
-      "title": "osconfig UpdateOSPolicyAssignment Sample",
-      "description": "UpdateOSPolicyAssignment update an existing OS policy assignment.\n\nThis method creates a new revision of the OS policy assignment.\n\nThis method returns a long running operation (LRO) that contains the\nrollout details. The rollout can be cancelled by cancelling the LRO.\n\nFor more information, see [Method: \nprojects.locations.osPolicyAssignments.operations.cancel](https: //cloud.google.com/compute/docs/osconfig/rest/v1/projects.locations.osPolicyAssignments.operations/cancel).",
-      "file": "OsConfigZonalClient/UpdateOSPolicyAssignment/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateOSPolicyAssignment",
+        "client": {
+          "fullName": "google.cloud.osconfig.v1.OsConfigZonalClient",
+          "shortName": "OsConfigZonalClient"
+        },
         "fullName": "google.cloud.osconfig.v1.OsConfigZonalClient.UpdateOSPolicyAssignment",
+        "method": {
+          "fullName": "google.cloud.osconfig.v1.OsConfigZonalService.UpdateOSPolicyAssignment",
+          "service": {
+            "fullName": "google.cloud.osconfig.v1.OsConfigZonalService",
+            "shortName": "OsConfigZonalService"
+          },
+          "shortName": "UpdateOSPolicyAssignment"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "osconfigpb.UpdateOSPolicyAssignmentRequest",
-            "name": "req"
+            "name": "req",
+            "type": "osconfigpb.UpdateOSPolicyAssignmentRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "UpdateOSPolicyAssignmentOperation",
-        "client": {
-          "shortName": "OsConfigZonalClient",
-          "fullName": "google.cloud.osconfig.v1.OsConfigZonalClient"
-        },
-        "method": {
-          "shortName": "UpdateOSPolicyAssignment",
-          "fullName": "google.cloud.osconfig.v1.OsConfigZonalService.UpdateOSPolicyAssignment",
-          "service": {
-            "shortName": "OsConfigZonalService",
-            "fullName": "google.cloud.osconfig.v1.OsConfigZonalService"
-          }
-        }
+        "shortName": "UpdateOSPolicyAssignment"
       },
+      "description": "UpdateOSPolicyAssignment update an existing OS policy assignment.\n\nThis method creates a new revision of the OS policy assignment.\n\nThis method returns a long running operation (LRO) that contains the\nrollout details. The rollout can be cancelled by cancelling the LRO.\n\nFor more information, see [Method: \nprojects.locations.osPolicyAssignments.operations.cancel](https: //cloud.google.com/compute/docs/osconfig/rest/v1/projects.locations.osPolicyAssignments.operations/cancel).",
+      "file": "OsConfigZonalClient/UpdateOSPolicyAssignment/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "osconfig_v1_generated_OsConfigZonalService_UpdateOSPolicyAssignment_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "osconfig UpdateOSPolicyAssignment Sample"
     }
   ]
 }

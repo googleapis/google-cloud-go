@@ -1,337 +1,337 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/vpcaccess/apiv1",
-    "version": "1.8.7",
-    "language": "GO",
     "apis": [
       {
         "id": "google.cloud.vpcaccess.v1",
         "version": "v1"
       }
-    ]
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/vpcaccess/apiv1",
+    "version": "1.8.7"
   },
   "snippets": [
     {
-      "regionTag": "vpcaccess_v1_generated_VpcAccessService_CreateConnector_sync",
-      "title": "vpcaccess CreateConnector Sample",
-      "description": "CreateConnector creates a Serverless VPC Access connector, returns an operation.",
-      "file": "Client/CreateConnector/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "CreateConnector",
+        "client": {
+          "fullName": "google.cloud.vpcaccess.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.vpcaccess.v1.Client.CreateConnector",
+        "method": {
+          "fullName": "google.cloud.vpcaccess.v1.VpcAccessService.CreateConnector",
+          "service": {
+            "fullName": "google.cloud.vpcaccess.v1.VpcAccessService",
+            "shortName": "VpcAccessService"
+          },
+          "shortName": "CreateConnector"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "vpcaccesspb.CreateConnectorRequest",
-            "name": "req"
+            "name": "req",
+            "type": "vpcaccesspb.CreateConnectorRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "CreateConnectorOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.vpcaccess.v1.Client"
-        },
-        "method": {
-          "shortName": "CreateConnector",
-          "fullName": "google.cloud.vpcaccess.v1.VpcAccessService.CreateConnector",
-          "service": {
-            "shortName": "VpcAccessService",
-            "fullName": "google.cloud.vpcaccess.v1.VpcAccessService"
-          }
-        }
+        "shortName": "CreateConnector"
       },
+      "description": "CreateConnector creates a Serverless VPC Access connector, returns an operation.",
+      "file": "Client/CreateConnector/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "vpcaccess_v1_generated_VpcAccessService_CreateConnector_sync",
       "segments": [
         {
-          "start": 18,
           "end": 58,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "vpcaccess CreateConnector Sample"
     },
     {
-      "regionTag": "vpcaccess_v1_generated_VpcAccessService_DeleteConnector_sync",
-      "title": "vpcaccess DeleteConnector Sample",
-      "description": "DeleteConnector deletes a Serverless VPC Access connector. Returns NOT_FOUND if the\nresource does not exist.",
-      "file": "Client/DeleteConnector/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteConnector",
+        "client": {
+          "fullName": "google.cloud.vpcaccess.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.vpcaccess.v1.Client.DeleteConnector",
+        "method": {
+          "fullName": "google.cloud.vpcaccess.v1.VpcAccessService.DeleteConnector",
+          "service": {
+            "fullName": "google.cloud.vpcaccess.v1.VpcAccessService",
+            "shortName": "VpcAccessService"
+          },
+          "shortName": "DeleteConnector"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "vpcaccesspb.DeleteConnectorRequest",
-            "name": "req"
+            "name": "req",
+            "type": "vpcaccesspb.DeleteConnectorRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "DeleteConnectorOperation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.vpcaccess.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteConnector",
-          "fullName": "google.cloud.vpcaccess.v1.VpcAccessService.DeleteConnector",
-          "service": {
-            "shortName": "VpcAccessService",
-            "fullName": "google.cloud.vpcaccess.v1.VpcAccessService"
-          }
-        }
+        "shortName": "DeleteConnector"
       },
+      "description": "DeleteConnector deletes a Serverless VPC Access connector. Returns NOT_FOUND if the\nresource does not exist.",
+      "file": "Client/DeleteConnector/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "vpcaccess_v1_generated_VpcAccessService_DeleteConnector_sync",
       "segments": [
         {
-          "start": 18,
           "end": 56,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "vpcaccess DeleteConnector Sample"
     },
     {
-      "regionTag": "vpcaccess_v1_generated_VpcAccessService_GetConnector_sync",
-      "title": "vpcaccess GetConnector Sample",
-      "description": "GetConnector gets a Serverless VPC Access connector. Returns NOT_FOUND if the resource\ndoes not exist.",
-      "file": "Client/GetConnector/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetConnector",
+        "client": {
+          "fullName": "google.cloud.vpcaccess.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.vpcaccess.v1.Client.GetConnector",
+        "method": {
+          "fullName": "google.cloud.vpcaccess.v1.VpcAccessService.GetConnector",
+          "service": {
+            "fullName": "google.cloud.vpcaccess.v1.VpcAccessService",
+            "shortName": "VpcAccessService"
+          },
+          "shortName": "GetConnector"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "vpcaccesspb.GetConnectorRequest",
-            "name": "req"
+            "name": "req",
+            "type": "vpcaccesspb.GetConnectorRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*vpcaccesspb.Connector",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.vpcaccess.v1.Client"
-        },
-        "method": {
-          "shortName": "GetConnector",
-          "fullName": "google.cloud.vpcaccess.v1.VpcAccessService.GetConnector",
-          "service": {
-            "shortName": "VpcAccessService",
-            "fullName": "google.cloud.vpcaccess.v1.VpcAccessService"
-          }
-        }
+        "shortName": "GetConnector"
       },
+      "description": "GetConnector gets a Serverless VPC Access connector. Returns NOT_FOUND if the resource\ndoes not exist.",
+      "file": "Client/GetConnector/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "vpcaccess_v1_generated_VpcAccessService_GetConnector_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "vpcaccess GetConnector Sample"
     },
     {
-      "regionTag": "vpcaccess_v1_generated_VpcAccessService_GetOperation_sync",
-      "title": "vpcaccess GetOperation Sample",
-      "description": "GetOperation is a utility method from google.longrunning.Operations.",
-      "file": "Client/GetOperation/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "GetOperation",
+        "client": {
+          "fullName": "google.cloud.vpcaccess.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.vpcaccess.v1.Client.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.GetOperationRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "*longrunningpb.Operation",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.vpcaccess.v1.Client"
-        },
-        "method": {
-          "shortName": "GetOperation",
-          "fullName": "google.longrunning.Operations.GetOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "GetOperation"
       },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "vpcaccess_v1_generated_VpcAccessService_GetOperation_sync",
       "segments": [
         {
-          "start": 18,
           "end": 53,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "vpcaccess GetOperation Sample"
     },
     {
-      "regionTag": "vpcaccess_v1_generated_VpcAccessService_ListConnectors_sync",
-      "title": "vpcaccess ListConnectors Sample",
-      "description": "ListConnectors lists Serverless VPC Access connectors.",
-      "file": "Client/ListConnectors/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListConnectors",
+        "client": {
+          "fullName": "google.cloud.vpcaccess.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.vpcaccess.v1.Client.ListConnectors",
+        "method": {
+          "fullName": "google.cloud.vpcaccess.v1.VpcAccessService.ListConnectors",
+          "service": {
+            "fullName": "google.cloud.vpcaccess.v1.VpcAccessService",
+            "shortName": "VpcAccessService"
+          },
+          "shortName": "ListConnectors"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "vpcaccesspb.ListConnectorsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "vpcaccesspb.ListConnectorsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "ConnectorIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.vpcaccess.v1.Client"
-        },
-        "method": {
-          "shortName": "ListConnectors",
-          "fullName": "google.cloud.vpcaccess.v1.VpcAccessService.ListConnectors",
-          "service": {
-            "shortName": "VpcAccessService",
-            "fullName": "google.cloud.vpcaccess.v1.VpcAccessService"
-          }
-        }
+        "shortName": "ListConnectors"
       },
+      "description": "ListConnectors lists Serverless VPC Access connectors.",
+      "file": "Client/ListConnectors/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "vpcaccess_v1_generated_VpcAccessService_ListConnectors_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "vpcaccess ListConnectors Sample"
     },
     {
-      "regionTag": "vpcaccess_v1_generated_VpcAccessService_ListLocations_sync",
-      "title": "vpcaccess ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
-      "file": "Client/ListLocations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListLocations",
+        "client": {
+          "fullName": "google.cloud.vpcaccess.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.vpcaccess.v1.Client.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "locationpb.ListLocationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "LocationIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.vpcaccess.v1.Client"
-        },
-        "method": {
-          "shortName": "ListLocations",
-          "fullName": "google.cloud.location.Locations.ListLocations",
-          "service": {
-            "shortName": "Locations",
-            "fullName": "google.cloud.location.Locations"
-          }
-        }
+        "shortName": "ListLocations"
       },
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "vpcaccess_v1_generated_VpcAccessService_ListLocations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "vpcaccess ListLocations Sample"
     },
     {
-      "regionTag": "vpcaccess_v1_generated_VpcAccessService_ListOperations_sync",
-      "title": "vpcaccess ListOperations Sample",
-      "description": "ListOperations is a utility method from google.longrunning.Operations.",
-      "file": "Client/ListOperations/main.go",
-      "language": "GO",
       "clientMethod": {
-        "shortName": "ListOperations",
+        "client": {
+          "fullName": "google.cloud.vpcaccess.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.vpcaccess.v1.Client.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
         "parameters": [
           {
-            "type": "context.Context",
-            "name": "ctx"
+            "name": "ctx",
+            "type": "context.Context"
           },
           {
-            "type": "longrunningpb.ListOperationsRequest",
-            "name": "req"
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
           },
           {
-            "type": "...gax.CallOption",
-            "name": "opts"
+            "name": "opts",
+            "type": "...gax.CallOption"
           }
         ],
         "resultType": "OperationIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.vpcaccess.v1.Client"
-        },
-        "method": {
-          "shortName": "ListOperations",
-          "fullName": "google.longrunning.Operations.ListOperations",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
+        "shortName": "ListOperations"
       },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
       "origin": "API_DEFINITION",
+      "regionTag": "vpcaccess_v1_generated_VpcAccessService_ListOperations_sync",
       "segments": [
         {
-          "start": 18,
           "end": 66,
+          "start": 18,
           "type": "FULL"
         }
-      ]
+      ],
+      "title": "vpcaccess ListOperations Sample"
     }
   ]
 }
