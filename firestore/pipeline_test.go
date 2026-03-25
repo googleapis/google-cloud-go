@@ -358,7 +358,7 @@ func TestPipeline_Aggregate(t *testing.T) {
 	}
 }
 
-func TestPipeline_AggregateWith(t *testing.T) {
+func TestPipeline_AggregateWithSpec(t *testing.T) {
 	client := newTestClient()
 	ps := &PipelineSource{client: client}
 	spec := NewAggregateSpec(Average("rating").As("avg_rating")).WithGroups("genre")

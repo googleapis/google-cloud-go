@@ -1890,7 +1890,7 @@ func (q *Query) toPipeline() *Pipeline {
 			}
 			fields = append(fields, fp)
 		}
-		p = p.Select(fields...)
+		p = p.Select(fields[0], fields[1:]...)
 	}
 
 	// FindNearest

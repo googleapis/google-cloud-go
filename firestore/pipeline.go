@@ -323,11 +323,12 @@ func (p *Pipeline) Offset(offset int) *Pipeline {
 //
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
-func (p *Pipeline) Select(fieldpathsOrSelectables ...any) *Pipeline {
+func (p *Pipeline) Select(fieldpathOrSelectable any, fieldpathsOrSelectables ...any) *Pipeline {
 	if p.err != nil {
 		return p
 	}
-	stage, err := newSelectStage(fieldpathsOrSelectables...)
+	all := append([]any{fieldpathOrSelectable}, fieldpathsOrSelectables...)
+	stage, err := newSelectStage(all...)
 	if err != nil {
 		p.err = err
 		return p
@@ -364,11 +365,12 @@ func (p *Pipeline) Distinct(fieldpathsOrSelectables ...any) *Pipeline {
 //
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
-func (p *Pipeline) AddFields(selectables ...Selectable) *Pipeline {
+func (p *Pipeline) AddFields(selectable Selectable, selectables ...Selectable) *Pipeline {
 	if p.err != nil {
 		return p
 	}
-	stage, err := newAddFieldsStage(selectables...)
+	all := append([]Selectable{selectable}, selectables...)
+	stage, err := newAddFieldsStage(all...)
 	if err != nil {
 		p.err = err
 		return p
@@ -381,11 +383,12 @@ func (p *Pipeline) AddFields(selectables ...Selectable) *Pipeline {
 //
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
-func (p *Pipeline) RemoveFields(fields ...any) *Pipeline {
+func (p *Pipeline) RemoveFields(field any, fields ...any) *Pipeline {
 	if p.err != nil {
 		return p
 	}
-	stage, err := newRemoveFieldsStage(fields...)
+	all := append([]any{field}, fields...)
+	stage, err := newRemoveFieldsStage(all...)
 	if err != nil {
 		p.err = err
 		return p
