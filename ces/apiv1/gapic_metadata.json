@@ -603,6 +603,11 @@
               "methods": [
                 "RunSession"
               ]
+            },
+            "StreamRunSession": {
+              "methods": [
+                "StreamRunSession"
+              ]
             }
           }
         },
@@ -647,6 +652,11 @@
             "RunSession": {
               "methods": [
                 "RunSession"
+              ]
+            },
+            "StreamRunSession": {
+              "methods": [
+                "StreamRunSession"
               ]
             }
           }

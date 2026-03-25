@@ -151,7 +151,7 @@ func (x *RunEvaluationResponse) GetEvaluationRun() string {
 }
 
 // Operation metadata for
-// [EvaluationService.RunEvaluation][google.cloud.ces.v1beta.EvaluationService.RunEvaluation]
+// [EvaluationService.RunEvaluation][google.cloud.ces.v1beta.EvaluationService.RunEvaluation].
 type RunEvaluationOperationMetadata struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

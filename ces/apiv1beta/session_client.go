@@ -38,6 +38,7 @@ import (
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -46,14 +47,15 @@ var newSessionClientHook clientHook
 
 // SessionCallOptions contains the retry settings for each method of SessionClient.
 type SessionCallOptions struct {
-	RunSession      []gax.CallOption
-	BidiRunSession  []gax.CallOption
-	GetLocation     []gax.CallOption
-	ListLocations   []gax.CallOption
-	CancelOperation []gax.CallOption
-	DeleteOperation []gax.CallOption
-	GetOperation    []gax.CallOption
-	ListOperations  []gax.CallOption
+	RunSession       []gax.CallOption
+	StreamRunSession []gax.CallOption
+	BidiRunSession   []gax.CallOption
+	GetLocation      []gax.CallOption
+	ListLocations    []gax.CallOption
+	CancelOperation  []gax.CallOption
+	DeleteOperation  []gax.CallOption
+	GetOperation     []gax.CallOption
+	ListOperations   []gax.CallOption
 }
 
 func defaultSessionGRPCClientOptions() []option.ClientOption {
@@ -83,6 +85,18 @@ func defaultSessionCallOptions() *SessionCallOptions {
 				})
 			}),
 		},
+		StreamRunSession: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		BidiRunSession: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{}, gax.Backoff{
@@ -106,6 +120,18 @@ func defaultSessionRESTCallOptions() *SessionCallOptions {
 		RunSession: []gax.CallOption{
 			gax.WithTimeout(220000 * time.Millisecond),
 		},
+		StreamRunSession: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 		BidiRunSession: []gax.CallOption{
 			gax.WithTimeout(3600000 * time.Millisecond),
 		},
@@ -124,6 +150,7 @@ type internalSessionClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	RunSession(context.Context, *cespb.RunSessionRequest, ...gax.CallOption) (*cespb.RunSessionResponse, error)
+	StreamRunSession(context.Context, *cespb.RunSessionRequest, ...gax.CallOption) (cespb.SessionService_StreamRunSessionClient, error)
 	BidiRunSession(context.Context, ...gax.CallOption) (cespb.SessionService_BidiRunSessionClient, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
@@ -168,10 +195,22 @@ func (c *SessionClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// RunSession initiates a single turn interaction with the CES agent within a
-// session.
+// RunSession initiates a single-turn interaction with the CES agent within a session.
 func (c *SessionClient) RunSession(ctx context.Context, req *cespb.RunSessionRequest, opts ...gax.CallOption) (*cespb.RunSessionResponse, error) {
 	return c.internalClient.RunSession(ctx, req, opts...)
+}
+
+// StreamRunSession initiates a single-turn interaction with the CES agent. Uses server-side
+// streaming to deliver incremental results and partial responses as they are
+// generated.
+//
+// By default, complete responses (e.g., messages from callbacks or full LLM
+// responses) are sent to the client as soon as they are available. To enable
+// streaming individual text chunks directly from the model, set
+// enable_text_streaming
+// to true.
+func (c *SessionClient) StreamRunSession(ctx context.Context, req *cespb.RunSessionRequest, opts ...gax.CallOption) (cespb.SessionService_StreamRunSessionClient, error) {
+	return c.internalClient.StreamRunSession(ctx, req, opts...)
 }
 
 // BidiRunSession establishes a bidirectional streaming connection with the CES agent.
@@ -251,14 +290,22 @@ func (c *SessionClient) GetLocation(ctx context.Context, req *locationpb.GetLoca
 }
 
 // ListLocations lists information about the supported locations for this service.
-// This method can be called in two ways:
 //
-//	List all public locations: Use the path GET /v1/locations.
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)] field:
 //
-//	List project-visible locations: Use the path
-//	GET /v1/projects/{project_id}/locations. This may include public
-//	locations as well as private or other locations specifically visible
-//	to the project.
+//	Global locations: If name is empty, the method lists the
+//	public locations available to all projects. * Project-specific
+//	locations: If name follows the format
+//	projects/{project}, the method lists locations visible to that
+//	specific project. This includes public, private, or other
+//	project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *SessionClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -460,6 +507,26 @@ func (c *sessionGRPCClient) RunSession(ctx context.Context, req *cespb.RunSessio
 	return resp, nil
 }
 
+func (c *sessionGRPCClient) StreamRunSession(ctx context.Context, req *cespb.RunSessionRequest, opts ...gax.CallOption) (cespb.SessionService_StreamRunSessionClient, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "config.session", url.QueryEscape(req.GetConfig().GetSession()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).StreamRunSession[0:len((*c.CallOptions).StreamRunSession):len((*c.CallOptions).StreamRunSession)], opts...)
+	var resp cespb.SessionService_StreamRunSessionClient
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "StreamRunSession")
+		resp, err = c.sessionClient.StreamRunSession(ctx, req, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "StreamRunSession")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *sessionGRPCClient) BidiRunSession(ctx context.Context, opts ...gax.CallOption) (cespb.SessionService_BidiRunSessionClient, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	var resp cespb.SessionService_BidiRunSessionClient
@@ -633,8 +700,7 @@ func (c *sessionGRPCClient) ListOperations(ctx context.Context, req *longrunning
 	return it
 }
 
-// RunSession initiates a single turn interaction with the CES agent within a
-// session.
+// RunSession initiates a single-turn interaction with the CES agent within a session.
 func (c *sessionRESTClient) RunSession(ctx context.Context, req *cespb.RunSessionRequest, opts ...gax.CallOption) (*cespb.RunSessionResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -688,6 +754,116 @@ func (c *sessionRESTClient) RunSession(ctx context.Context, req *cespb.RunSessio
 		return nil, e
 	}
 	return resp, nil
+}
+
+// StreamRunSession initiates a single-turn interaction with the CES agent. Uses server-side
+// streaming to deliver incremental results and partial responses as they are
+// generated.
+//
+// By default, complete responses (e.g., messages from callbacks or full LLM
+// responses) are sent to the client as soon as they are available. To enable
+// streaming individual text chunks directly from the model, set
+// enable_text_streaming
+// to true.
+func (c *sessionRESTClient) StreamRunSession(ctx context.Context, req *cespb.RunSessionRequest, opts ...gax.CallOption) (cespb.SessionService_StreamRunSessionClient, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v:streamRunSession", req.GetConfig().GetSession())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "config.session", url.QueryEscape(req.GetConfig().GetSession()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	var streamClient *streamRunSessionRESTStreamClient
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := executeStreamingHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "StreamRunSession")
+		if err != nil {
+			return err
+		}
+
+		streamClient = &streamRunSessionRESTStreamClient{
+			ctx:    ctx,
+			md:     metadata.MD(httpRsp.Header),
+			stream: gax.NewProtoJSONStreamReader(httpRsp.Body, (&cespb.RunSessionResponse{}).ProtoReflect().Type()),
+		}
+		return nil
+	}, opts...)
+
+	return streamClient, e
+}
+
+// streamRunSessionRESTStreamClient is the stream client used to consume the server stream created by
+// the REST implementation of StreamRunSession.
+type streamRunSessionRESTStreamClient struct {
+	ctx    context.Context
+	md     metadata.MD
+	stream *gax.ProtoJSONStream
+}
+
+func (c *streamRunSessionRESTStreamClient) Recv() (*cespb.RunSessionResponse, error) {
+	if err := c.ctx.Err(); err != nil {
+		defer c.stream.Close()
+		return nil, err
+	}
+	msg, err := c.stream.Recv()
+	if err != nil {
+		defer c.stream.Close()
+		return nil, err
+	}
+	res := msg.(*cespb.RunSessionResponse)
+	return res, nil
+}
+
+func (c *streamRunSessionRESTStreamClient) Header() (metadata.MD, error) {
+	return c.md, nil
+}
+
+func (c *streamRunSessionRESTStreamClient) Trailer() metadata.MD {
+	return c.md
+}
+
+func (c *streamRunSessionRESTStreamClient) CloseSend() error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented for a server-stream")
+}
+
+func (c *streamRunSessionRESTStreamClient) Context() context.Context {
+	return c.ctx
+}
+
+func (c *streamRunSessionRESTStreamClient) SendMsg(m interface{}) error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented for a server-stream")
+}
+
+func (c *streamRunSessionRESTStreamClient) RecvMsg(m interface{}) error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented, use Recv")
 }
 
 // BidiRunSession establishes a bidirectional streaming connection with the CES agent.
@@ -812,14 +988,22 @@ func (c *sessionRESTClient) GetLocation(ctx context.Context, req *locationpb.Get
 }
 
 // ListLocations lists information about the supported locations for this service.
-// This method can be called in two ways:
 //
-//	List all public locations: Use the path GET /v1/locations.
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)] field:
 //
-//	List project-visible locations: Use the path
-//	GET /v1/projects/{project_id}/locations. This may include public
-//	locations as well as private or other locations specifically visible
-//	to the project.
+//	Global locations: If name is empty, the method lists the
+//	public locations available to all projects. * Project-specific
+//	locations: If name follows the format
+//	projects/{project}, the method lists locations visible to that
+//	specific project. This includes public, private, or other
+//	project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *sessionRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)

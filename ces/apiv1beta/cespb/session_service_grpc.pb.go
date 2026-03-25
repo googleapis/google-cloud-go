@@ -34,17 +34,27 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	SessionService_RunSession_FullMethodName     = "/google.cloud.ces.v1beta.SessionService/RunSession"
-	SessionService_BidiRunSession_FullMethodName = "/google.cloud.ces.v1beta.SessionService/BidiRunSession"
+	SessionService_RunSession_FullMethodName       = "/google.cloud.ces.v1beta.SessionService/RunSession"
+	SessionService_StreamRunSession_FullMethodName = "/google.cloud.ces.v1beta.SessionService/StreamRunSession"
+	SessionService_BidiRunSession_FullMethodName   = "/google.cloud.ces.v1beta.SessionService/BidiRunSession"
 )
 
 // SessionServiceClient is the client API for SessionService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type SessionServiceClient interface {
-	// Initiates a single turn interaction with the CES agent within a
-	// session.
+	// Initiates a single-turn interaction with the CES agent within a session.
 	RunSession(ctx context.Context, in *RunSessionRequest, opts ...grpc.CallOption) (*RunSessionResponse, error)
+	// Initiates a single-turn interaction with the CES agent. Uses server-side
+	// streaming to deliver incremental results and partial responses as they are
+	// generated.
+	//
+	// By default, complete responses (e.g., messages from callbacks or full LLM
+	// responses) are sent to the client as soon as they are available. To enable
+	// streaming individual text chunks directly from the model, set
+	// [enable_text_streaming][google.cloud.ces.v1beta.SessionConfig.enable_text_streaming]
+	// to true.
+	StreamRunSession(ctx context.Context, in *RunSessionRequest, opts ...grpc.CallOption) (SessionService_StreamRunSessionClient, error)
 	// Establishes a bidirectional streaming connection with the CES agent.
 	// The agent processes continuous multimodal inputs (e.g., text, audio) and
 	// generates real-time multimodal output streams.
@@ -129,8 +139,40 @@ func (c *sessionServiceClient) RunSession(ctx context.Context, in *RunSessionReq
 	return out, nil
 }
 
+func (c *sessionServiceClient) StreamRunSession(ctx context.Context, in *RunSessionRequest, opts ...grpc.CallOption) (SessionService_StreamRunSessionClient, error) {
+	stream, err := c.cc.NewStream(ctx, &SessionService_ServiceDesc.Streams[0], SessionService_StreamRunSession_FullMethodName, opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &sessionServiceStreamRunSessionClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type SessionService_StreamRunSessionClient interface {
+	Recv() (*RunSessionResponse, error)
+	grpc.ClientStream
+}
+
+type sessionServiceStreamRunSessionClient struct {
+	grpc.ClientStream
+}
+
+func (x *sessionServiceStreamRunSessionClient) Recv() (*RunSessionResponse, error) {
+	m := new(RunSessionResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 func (c *sessionServiceClient) BidiRunSession(ctx context.Context, opts ...grpc.CallOption) (SessionService_BidiRunSessionClient, error) {
-	stream, err := c.cc.NewStream(ctx, &SessionService_ServiceDesc.Streams[0], SessionService_BidiRunSession_FullMethodName, opts...)
+	stream, err := c.cc.NewStream(ctx, &SessionService_ServiceDesc.Streams[1], SessionService_BidiRunSession_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -164,9 +206,18 @@ func (x *sessionServiceBidiRunSessionClient) Recv() (*BidiSessionServerMessage, 
 // All implementations should embed UnimplementedSessionServiceServer
 // for forward compatibility
 type SessionServiceServer interface {
-	// Initiates a single turn interaction with the CES agent within a
-	// session.
+	// Initiates a single-turn interaction with the CES agent within a session.
 	RunSession(context.Context, *RunSessionRequest) (*RunSessionResponse, error)
+	// Initiates a single-turn interaction with the CES agent. Uses server-side
+	// streaming to deliver incremental results and partial responses as they are
+	// generated.
+	//
+	// By default, complete responses (e.g., messages from callbacks or full LLM
+	// responses) are sent to the client as soon as they are available. To enable
+	// streaming individual text chunks directly from the model, set
+	// [enable_text_streaming][google.cloud.ces.v1beta.SessionConfig.enable_text_streaming]
+	// to true.
+	StreamRunSession(*RunSessionRequest, SessionService_StreamRunSessionServer) error
 	// Establishes a bidirectional streaming connection with the CES agent.
 	// The agent processes continuous multimodal inputs (e.g., text, audio) and
 	// generates real-time multimodal output streams.
@@ -241,6 +292,9 @@ type UnimplementedSessionServiceServer struct {
 func (UnimplementedSessionServiceServer) RunSession(context.Context, *RunSessionRequest) (*RunSessionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RunSession not implemented")
 }
+func (UnimplementedSessionServiceServer) StreamRunSession(*RunSessionRequest, SessionService_StreamRunSessionServer) error {
+	return status.Errorf(codes.Unimplemented, "method StreamRunSession not implemented")
+}
 func (UnimplementedSessionServiceServer) BidiRunSession(SessionService_BidiRunSessionServer) error {
 	return status.Errorf(codes.Unimplemented, "method BidiRunSession not implemented")
 }
@@ -272,6 +326,27 @@ func _SessionService_RunSession_Handler(srv interface{}, ctx context.Context, de
 		return srv.(SessionServiceServer).RunSession(ctx, req.(*RunSessionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
+}
+
+func _SessionService_StreamRunSession_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(RunSessionRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(SessionServiceServer).StreamRunSession(m, &sessionServiceStreamRunSessionServer{stream})
+}
+
+type SessionService_StreamRunSessionServer interface {
+	Send(*RunSessionResponse) error
+	grpc.ServerStream
+}
+
+type sessionServiceStreamRunSessionServer struct {
+	grpc.ServerStream
+}
+
+func (x *sessionServiceStreamRunSessionServer) Send(m *RunSessionResponse) error {
+	return x.ServerStream.SendMsg(m)
 }
 
 func _SessionService_BidiRunSession_Handler(srv interface{}, stream grpc.ServerStream) error {
@@ -313,6 +388,11 @@ var SessionService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "StreamRunSession",
+			Handler:       _SessionService_StreamRunSession_Handler,
+			ServerStreams: true,
+		},
 		{
 			StreamName:    "BidiRunSession",
 			Handler:       _SessionService_BidiRunSession_Handler,
