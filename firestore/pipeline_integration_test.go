@@ -26,6 +26,8 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/api/iterator"
 	"google.golang.org/genproto/googleapis/type/latlng"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func skipIfNotEnterprise(t *testing.T) {
@@ -126,7 +128,7 @@ func TestIntegration_PipelineExecute(t *testing.T) {
 			t.Fatal(err)
 		}
 	})
-	t.Run("ExplainStats", func(t *testing.T) {
+	t.Run("ExplainModeAnalyze", func(t *testing.T) {
 		docRef := coll.NewDoc()
 		h := testHelper{t}
 		h.mustCreate(docRef, map[string]any{"a": 1})
@@ -136,8 +138,7 @@ func TestIntegration_PipelineExecute(t *testing.T) {
 
 		snap := client.Pipeline().Collection(coll.ID).
 			Limit(1).
-			WithExecuteOptions(WithExplainMode(ExplainModeAnalyze)).
-			Execute(ctx)
+			Execute(ctx, WithExplainMode(ExplainModeAnalyze))
 
 		_, err := snap.Results().GetAll()
 		if err != nil {
@@ -151,6 +152,25 @@ func TestIntegration_PipelineExecute(t *testing.T) {
 		}
 		if text == "" {
 			t.Error("ExplainStats Text is empty")
+		}
+	})
+
+	t.Run("WithRawExecuteOptions", func(t *testing.T) {
+		if useEmulator {
+			t.Skip("Explain with error is not supported against the emulator")
+		}
+		pipeline := client.Pipeline().Collection(coll.ID).Sort(Ascending(FieldOf("rating")))
+		snap := pipeline.Execute(ctx,
+			WithExplainMode(ExplainModeAnalyze),
+			WithRawExecuteOptions(map[string]any{"memory_limit": 1}),
+		)
+
+		_, err := snap.Results().GetAll()
+		if err == nil {
+			t.Fatal("expected error, got nil")
+		}
+		if status.Code(err) != codes.ResourceExhausted {
+			t.Errorf("got error code %v, want %v", status.Code(err), codes.ResourceExhausted)
 		}
 	})
 

@@ -17,6 +17,7 @@ package firestore
 import (
 	"context"
 	"fmt"
+	"reflect"
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 )
@@ -60,6 +61,7 @@ func newPipeline(client *Client, initialStage pipelineStage) *Pipeline {
 type executeSettings struct {
 	ExplainOptions *executeExplainOptions
 	IndexMode      string
+	RawOptions     map[string]any
 }
 
 // ExecuteOption is an option for executing a pipeline query.
@@ -110,17 +112,44 @@ func WithExplainMode(mode ExplainMode) ExecuteOption {
 	})
 }
 
+// WithRawExecuteOptions specifies raw options to be passed to the Firestore backend.
+// These options are not validated by the SDK and are passed directly to the backend.
+// Options specified here will take precedence over any options with the same name set by the SDK.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func WithRawExecuteOptions(options map[string]any) ExecuteOption {
+	return newFuncExecuteOption(func(eo *executeSettings) {
+		if eo.RawOptions == nil {
+			eo.RawOptions = make(map[string]any)
+		}
+		for k, v := range options {
+			eo.RawOptions[k] = v
+		}
+	})
+}
+
 // Execute executes the pipeline and returns a snapshot of the results.
 //
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
-func (p *Pipeline) Execute(ctx context.Context) *PipelineSnapshot {
-	ctx = withResourceHeader(ctx, p.c.path())
-	ctx = withRequestParamsHeader(ctx, reqParamsHeaderVal(p.c.path()))
+func (p *Pipeline) Execute(ctx context.Context, opts ...ExecuteOption) *PipelineSnapshot {
+	newP := p
+	if len(opts) > 0 {
+		newP = p.copy()
+		for _, opt := range opts {
+			if opt != nil {
+				opt.apply(newP.executeSettings)
+			}
+		}
+	}
+
+	ctx = withResourceHeader(ctx, newP.c.path())
+	ctx = withRequestParamsHeader(ctx, reqParamsHeaderVal(newP.c.path()))
 
 	return &PipelineSnapshot{
 		iter: &PipelineResultIterator{
-			iter: newStreamPipelineResultIterator(ctx, p),
+			iter: newStreamPipelineResultIterator(ctx, newP),
 		},
 	}
 }
@@ -141,6 +170,14 @@ func (p *Pipeline) toExecutePipelineRequest() (*pb.ExecutePipelineRequest, error
 	}
 	if p.executeSettings.IndexMode != "" {
 		options["index_mode"] = &pb.Value{ValueType: &pb.Value_StringValue{StringValue: p.executeSettings.IndexMode}}
+	}
+
+	for k, v := range p.executeSettings.RawOptions {
+		pbVal, _, err := toProtoValue(reflect.ValueOf(v))
+		if err != nil {
+			return nil, fmt.Errorf("firestore: error converting raw option %q: %w", k, err)
+		}
+		options[k] = pbVal
 	}
 
 	req := &pb.ExecutePipelineRequest{
@@ -191,6 +228,17 @@ func (p *Pipeline) copy() *Pipeline {
 	copy(newP.stages, p.stages)
 	*newP.readSettings = *p.readSettings
 	*newP.executeSettings = *p.executeSettings
+	if p.executeSettings.RawOptions != nil {
+		newRawOptions := make(map[string]any, len(p.executeSettings.RawOptions))
+		for k, v := range p.executeSettings.RawOptions {
+			newRawOptions[k] = v
+		}
+		newP.executeSettings.RawOptions = newRawOptions
+	}
+	if p.executeSettings.ExplainOptions != nil {
+		newExplainOpts := *p.executeSettings.ExplainOptions
+		newP.executeSettings.ExplainOptions = &newExplainOpts
+	}
 	return newP
 }
 
@@ -204,20 +252,6 @@ func (p *Pipeline) WithReadOptions(opts ...ReadOption) *Pipeline {
 	for _, opt := range opts {
 		if opt != nil {
 			opt.apply(newP.readSettings)
-		}
-	}
-	return newP
-}
-
-// WithExecuteOptions specifies options for executing a pipeline.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
-func (p *Pipeline) WithExecuteOptions(opts ...ExecuteOption) *Pipeline {
-	newP := p.copy()
-	for _, opt := range opts {
-		if opt != nil {
-			opt.apply(newP.executeSettings)
 		}
 	}
 	return newP

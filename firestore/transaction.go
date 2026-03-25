@@ -355,7 +355,7 @@ func (t *Transaction) WithReadOptions(opts ...ReadOption) *Transaction {
 }
 
 // Execute runs the given pipeline in the context of the transaction.
-func (t *Transaction) Execute(p *Pipeline) *PipelineSnapshot {
+func (t *Transaction) Execute(p *Pipeline, opts ...ExecuteOption) *PipelineSnapshot {
 	if len(t.writes) > 0 {
 		t.readAfterWrite = true
 		return &PipelineSnapshot{
@@ -364,5 +364,5 @@ func (t *Transaction) Execute(p *Pipeline) *PipelineSnapshot {
 	}
 	p2 := p.copy()
 	p2.tx = t
-	return p2.Execute(t.ctx)
+	return p2.Execute(t.ctx, opts...)
 }
