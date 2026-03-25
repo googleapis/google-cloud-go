@@ -70,11 +70,12 @@ const DefaultDatabaseID = "(default)"
 
 // A Client provides access to the Firestore service.
 type Client struct {
-	c            *vkit.Client
-	projectID    string
-	databaseID   string        // A client is tied to a single database.
-	readSettings *readSettings // readSettings allows setting a snapshot time to read the database
-	UsesEmulator bool          // a boolean that indicates if the client is using the emulator
+	c                        *vkit.Client
+	projectID                string
+	databaseID               string        // A client is tied to a single database.
+	readSettings             *readSettings // readSettings allows setting a snapshot time to read the database
+	UsesEmulator             bool          // a boolean that indicates if the client is using the emulator
+	alwaysUseImplicitOrderBy bool          // configuration flag to always append implicit OrderBy clauses
 }
 
 // newClient creates a new Firestore client, using the given createClient function to create the underlying client.
@@ -416,6 +417,18 @@ func (c *Client) WithReadOptions(opts ...ReadOption) *Client {
 	for _, ro := range opts {
 		ro.apply(c.readSettings)
 	}
+	return c
+}
+
+// WithAlwaysUseImplicitOrderBy configures the default behavior for queries.
+// If enabled, queries will automatically inject an OrderBy clause for the
+// Document ID (`__name__`) if one is not explicitly provided. In addition,
+// it will automatically inject OrderBy clauses for any inequality filters
+// (e.g. >, <, !=) present in the query if they are missing from the explicit
+// orders. This ensures strictly deterministic query results and is especially
+// useful when executing backwards pagination (e.g. limitToLast) without cursors.
+func (c *Client) WithAlwaysUseImplicitOrderBy(b bool) *Client {
+	c.alwaysUseImplicitOrderBy = b
 	return c
 }
 

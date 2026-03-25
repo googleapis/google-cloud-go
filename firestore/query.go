@@ -21,6 +21,8 @@ import (
 	"io"
 	"math"
 	"reflect"
+	"sort"
+	"strings"
 	"time"
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
@@ -807,7 +809,7 @@ func (q Query) toProto() (*pb.StructuredQuery, error) {
 		cf.Filters = append(cf.Filters, q.filters...)
 	}
 	orders := q.orders
-	if q.startDoc != nil || q.endDoc != nil {
+	if q.startDoc != nil || q.endDoc != nil || (q.c != nil && q.c.alwaysUseImplicitOrderBy) {
 		orders = q.adjustOrders()
 	}
 	for _, ord := range orders {
@@ -850,19 +852,62 @@ func (q *Query) adjustOrders() []order {
 		})
 	}
 	// If there are no OrderBy clauses but there is an inequality, add an OrderBy clause
-	// for the field of the first inequality.
+	// for the field of ALL inequalities.
 	var orders []order
-	for _, f := range q.filters {
-		if fieldFilter := f.GetFieldFilter(); fieldFilter != nil {
-			if fieldFilter.Op != pb.StructuredQuery_FieldFilter_EQUAL {
-				fp := f.GetFieldFilter().Field
-				orders = []order{{fieldReference: fp, dir: Asc}}
-				break
-			}
-		}
+	ineqFields := q.getInequalityFilterFields()
+	for _, fp := range ineqFields {
+		orders = append(orders, order{fieldPath: fp, dir: Asc})
 	}
 	// Add an ascending OrderBy(DocumentID).
 	return append(orders, order{fieldPath: FieldPath{DocumentID}, dir: Asc})
+}
+
+func isInequalityFilter(op pb.StructuredQuery_FieldFilter_Operator) bool {
+	switch op {
+	case pb.StructuredQuery_FieldFilter_LESS_THAN, pb.StructuredQuery_FieldFilter_LESS_THAN_OR_EQUAL,
+		pb.StructuredQuery_FieldFilter_GREATER_THAN, pb.StructuredQuery_FieldFilter_GREATER_THAN_OR_EQUAL,
+		pb.StructuredQuery_FieldFilter_NOT_EQUAL, pb.StructuredQuery_FieldFilter_NOT_IN:
+		return true
+	default:
+		return false
+	}
+}
+
+func (q *Query) getInequalityFilterFields() []FieldPath {
+	fieldMap := make(map[string]FieldPath)
+	var extract func(filters []*pb.StructuredQuery_Filter)
+	extract = func(filters []*pb.StructuredQuery_Filter) {
+		for _, f := range filters {
+			if ff := f.GetFieldFilter(); ff != nil {
+				if isInequalityFilter(ff.Op) {
+					fp, err := fieldPathFromFieldRef(ff.Field)
+					if err == nil {
+						// Store string representation to deduplicate
+						fieldMap[strings.Join(fp, "\x00")] = fp
+					}
+				}
+			} else if cf := f.GetCompositeFilter(); cf != nil {
+				extract(cf.Filters)
+			}
+		}
+	}
+	extract(q.filters)
+
+	var result []FieldPath
+	for _, fp := range fieldMap {
+		result = append(result, fp)
+	}
+
+	sort.Slice(result, func(i, j int) bool {
+		p1, p2 := result[i], result[j]
+		for k := 0; k < len(p1) && k < len(p2); k++ {
+			if p1[k] != p2[k] {
+				return p1[k] < p2[k]
+			}
+		}
+		return len(p1) < len(p2)
+	})
+	return result
 }
 
 func (q *Query) toCursor(fieldValues []interface{}, ds *DocumentSnapshot, before bool, orders []order) (*pb.Cursor, error) {
@@ -1837,31 +1882,29 @@ func (q *Query) toPipeline() *Pipeline {
 	}
 
 	// Order by
-	if len(q.orders) > 0 {
-		var orders []Ordering
-		for _, o := range q.orders {
-			var fp FieldPath
-			if o.fieldReference != nil {
-				var err error
-				fp, err = fieldPathFromFieldRef(o.fieldReference)
-				if err != nil {
-					p.err = err
-					return p
-				}
-			} else {
-				fp = o.fieldPath
+	var orders []Ordering
+	for _, o := range q.adjustOrders() {
+		var fp FieldPath
+		if o.fieldReference != nil {
+			var err error
+			fp, err = fieldPathFromFieldRef(o.fieldReference)
+			if err != nil {
+				p.err = err
+				return p
 			}
-			field := FieldOf(fp)
-			var direction OrderingDirection
-			if o.dir == Asc {
-				direction = OrderingAsc
-			} else {
-				direction = OrderingDesc
-			}
-			orders = append(orders, Ordering{Expr: field, Direction: direction})
+		} else {
+			fp = o.fieldPath
 		}
-		p = p.Sort(orders...)
+		field := FieldOf(fp)
+		var direction OrderingDirection
+		if o.dir == Asc {
+			direction = OrderingAsc
+		} else {
+			direction = OrderingDesc
+		}
+		orders = append(orders, Ordering{Expr: field, Direction: direction})
 	}
+	p = p.Sort(orders...)
 	// Combine all filters
 	if len(allFilters) == 1 {
 		p = p.Where(allFilters[0])
