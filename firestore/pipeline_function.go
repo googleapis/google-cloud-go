@@ -573,7 +573,7 @@ func ArrayFilter(array any, param string, body BooleanExpression) Expression {
 	return newBaseFunction("array_filter", []Expression{asFieldExpr(array), ConstantOf(param), body})
 }
 
-// ArrayIndexOf creates an expression that returns the index of a search value in an array.
+// ArrayIndexOf creates an expression that returns the first index of a search value in an array.
 // - exprOrFieldPath can be a field path string, [FieldPath] or an [Expression] that evaluates to an array.
 // - search is the value to search for. It can be a constant or [Expression].
 //

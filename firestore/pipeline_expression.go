@@ -178,10 +178,9 @@ type Expression interface {
 	// The parameter 'offset' is the 0-based index of the first element to include. It can be an int, int32, int64 or [Expression].
 	// The parameter 'length' is the number of elements to include. It can be an int, int32, int64 or [Expression].
 	ArraySliceWithLength(offset, length any) Expression
-	// ArrayIndexOf creates an expression that returns the index of a search value in an array.
+	// ArrayIndexOf creates an expression that returns the first index of a search value in an array.
 	//
 	// The parameter 'search' is the value to search for. It can be a constant or [Expression].
-	// The parameter 'direction' is the search direction. It can be "first", "last" or [Expression].
 	ArrayIndexOf(search any) Expression
 	// ArrayIndexOfAll creates an expression that returns the indices of all occurrences of a search value in an array.
 	//
