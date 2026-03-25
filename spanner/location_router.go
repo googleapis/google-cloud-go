@@ -90,11 +90,11 @@ func (r *locationRouter) prepareBeginTransactionRequest(ctx context.Context, req
 	return r.finder.findServerBeginTransaction(ctx, req)
 }
 
-func (r *locationRouter) prepareCommitRequest(ctx context.Context, req *sppb.CommitRequest) {
+func (r *locationRouter) prepareCommitRequest(ctx context.Context, req *sppb.CommitRequest) channelEndpoint {
 	if r == nil || req == nil {
-		return
+		return nil
 	}
-	r.finder.fillCommitRoutingHint(ctx, req)
+	return r.finder.fillCommitRoutingHint(ctx, req)
 }
 
 func (r *locationRouter) observePartialResultSet(prs *sppb.PartialResultSet) {

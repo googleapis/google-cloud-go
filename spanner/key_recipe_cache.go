@@ -191,11 +191,7 @@ func (c *keyRecipeCache) computeReadKeys(req *sppb.ReadRequest) {
 	if target == nil {
 		return
 	}
-	hint.Key = append(hint.Key[:0], target.start...)
-	hint.LimitKey = hint.LimitKey[:0]
-	if len(target.limit) > 0 {
-		hint.LimitKey = append(hint.LimitKey, target.limit...)
-	}
+	c.applyTargetRange(hint, target)
 }
 
 func (c *keyRecipeCache) computeQueryKeys(req *sppb.ExecuteSqlRequest) {
@@ -229,11 +225,7 @@ func (c *keyRecipeCache) computeQueryKeys(req *sppb.ExecuteSqlRequest) {
 	if target == nil {
 		return
 	}
-	hint.Key = append(hint.Key[:0], target.start...)
-	hint.LimitKey = hint.LimitKey[:0]
-	if len(target.limit) > 0 {
-		hint.LimitKey = append(hint.LimitKey, target.limit...)
-	}
+	c.applyTargetRange(hint, target)
 }
 
 func (c *keyRecipeCache) mutationToTargetRange(mutation *sppb.Mutation) *targetRange {
@@ -253,26 +245,26 @@ func (c *keyRecipeCache) mutationToTargetRange(mutation *sppb.Mutation) *targetR
 	return recipe.mutationToTargetRange(mutation)
 }
 
-func (c *keyRecipeCache) computeMutationKeys(hint *sppb.RoutingHint, mutation *sppb.Mutation) bool {
-	if hint == nil || mutation == nil {
-		return false
+func (c *keyRecipeCache) applySchemaGeneration(hint *sppb.RoutingHint) {
+	if hint == nil {
+		return
 	}
 	c.mu.Lock()
 	if len(c.schemaGeneration) > 0 {
 		hint.SchemaGeneration = append([]byte(nil), c.schemaGeneration...)
 	}
 	c.mu.Unlock()
+}
 
-	target := c.mutationToTargetRange(mutation)
-	if target == nil {
-		return false
+func (c *keyRecipeCache) applyTargetRange(hint *sppb.RoutingHint, target *targetRange) {
+	if hint == nil || target == nil {
+		return
 	}
 	hint.Key = append(hint.Key[:0], target.start...)
 	hint.LimitKey = hint.LimitKey[:0]
 	if len(target.limit) > 0 {
 		hint.LimitKey = append(hint.LimitKey, target.limit...)
 	}
-	return true
 }
 
 func (c *keyRecipeCache) clear() {

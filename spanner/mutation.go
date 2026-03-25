@@ -592,18 +592,24 @@ func mutationsProto(ms []*Mutation) ([]*sppb.Mutation, *sppb.Mutation, error) {
 	if n == 0 {
 		return out, nil, nil
 	}
-	maxInsertIdx := -1
-	maxInsertVals := -1
-	nonInsertCount := 0
-	selectedNonInsertIdx := -1
-	for i, m := range ms {
+	for _, m := range ms {
 		pb, err := m.proto()
 		if err != nil {
 			return nil, nil, err
 		}
 		out = append(out, pb)
-		if m.op == opInsert {
-			if v := len(m.values); v >= maxInsertVals {
+	}
+	return out, selectMutationProtoForRouting(out), nil
+}
+
+func selectMutationProtoForRouting(mutations []*sppb.Mutation) *sppb.Mutation {
+	maxInsertIdx := -1
+	maxInsertVals := -1
+	nonInsertCount := 0
+	selectedNonInsertIdx := -1
+	for i, mutation := range mutations {
+		if mutation.GetInsert() != nil {
+			if v := len(mutation.GetInsert().GetValues()); v >= maxInsertVals {
 				maxInsertVals, maxInsertIdx = v, i
 			}
 			continue
@@ -614,12 +620,12 @@ func mutationsProto(ms []*Mutation) ([]*sppb.Mutation, *sppb.Mutation, error) {
 		}
 	}
 	if nonInsertCount > 0 {
-		return out, out[selectedNonInsertIdx], nil
+		return mutations[selectedNonInsertIdx]
 	}
 	if maxInsertIdx >= 0 {
-		return out, out[maxInsertIdx], nil
+		return mutations[maxInsertIdx]
 	}
-	return out, nil, nil
+	return nil
 }
 
 // mutationGroupsProto turns a spanner.MutationGroup array into a

@@ -243,8 +243,13 @@ func (c *locationAwareSpannerClient) BeginTransaction(ctx context.Context, req *
 // --- Affinity RPCs ---
 
 func (c *locationAwareSpannerClient) Commit(ctx context.Context, req *spannerpb.CommitRequest, opts ...gax.CallOption) (*spannerpb.CommitResponse, error) {
-	c.router.prepareCommitRequest(ctx, req)
-	client := c.affinityClient(req.GetTransactionId())
+	ep := c.router.prepareCommitRequest(ctx, req)
+	if txID := req.GetTransactionId(); len(txID) > 0 {
+		if affinityEndpoint := c.router.getTransactionAffinity(string(txID)); affinityEndpoint != nil {
+			ep = affinityEndpoint
+		}
+	}
+	client := c.clientForEndpoint(ep)
 	resp, err := client.Commit(ctx, req, opts...)
 	c.router.observeCommitResponse(resp)
 	c.router.clearTransactionAffinity(string(req.GetTransactionId()))

@@ -100,22 +100,31 @@ func (f *channelFinder) findServerBeginTransaction(ctx context.Context, req *spp
 	if req == nil || req.GetMutationKey() == nil {
 		return nil
 	}
-	hint := ensureBeginTransactionRoutingHint(req)
-	if !f.recipeCache.computeMutationKeys(hint, req.GetMutationKey()) {
-		return nil
-	}
-	return f.fillRoutingHint(ctx, preferLeaderFromTransactionOptions(req.GetOptions()), rangeModeCoveringSplit, &sppb.DirectedReadOptions{}, hint)
+	return f.routeMutation(ctx, req.GetMutationKey(), preferLeaderFromTransactionOptions(req.GetOptions()), ensureBeginTransactionRoutingHint(req))
 }
 
-func (f *channelFinder) fillCommitRoutingHint(ctx context.Context, req *sppb.CommitRequest) {
-	if req == nil || len(req.GetMutations()) == 0 {
-		return
+func (f *channelFinder) fillCommitRoutingHint(ctx context.Context, req *sppb.CommitRequest) channelEndpoint {
+	if req == nil {
+		return nil
 	}
-	hint := ensureCommitRoutingHint(req)
-	if !f.recipeCache.computeMutationKeys(hint, req.GetMutations()[0]) {
-		return
+	mutation := selectMutationProtoForRouting(req.GetMutations())
+	if mutation == nil {
+		return nil
 	}
-	_ = f.fillRoutingHint(ctx, true, rangeModeCoveringSplit, &sppb.DirectedReadOptions{}, hint)
+	return f.routeMutation(ctx, mutation, true, ensureCommitRoutingHint(req))
+}
+
+func (f *channelFinder) routeMutation(ctx context.Context, mutation *sppb.Mutation, preferLeader bool, hint *sppb.RoutingHint) channelEndpoint {
+	if mutation == nil || hint == nil {
+		return nil
+	}
+	f.recipeCache.applySchemaGeneration(hint)
+	target := f.recipeCache.mutationToTargetRange(mutation)
+	if target == nil {
+		return nil
+	}
+	f.recipeCache.applyTargetRange(hint, target)
+	return f.fillRoutingHint(ctx, preferLeader, rangeModeCoveringSplit, &sppb.DirectedReadOptions{}, hint)
 }
 
 func (f *channelFinder) fillRoutingHint(ctx context.Context, preferLeader bool, mode rangeMode, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint) channelEndpoint {
