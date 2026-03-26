@@ -8786,6 +8786,24 @@ func TestIntegration_ParallelUpload(t *testing.T) {
 					t.Errorf("Object size mismatch: got %d, want %d", attrs.Size, tc.expected)
 				}
 
+				// Verify contents.
+				r, err := obj.NewReader(ctx)
+				if err != nil {
+					t.Fatalf("NewReader failed: %v", err)
+				}
+				defer r.Close()
+				gotContent, err := io.ReadAll(r)
+				if err != nil {
+					t.Fatalf("ReadAll failed: %v", err)
+				}
+				if !bytes.Equal(gotContent, tc.content) {
+					if len(gotContent) == len(tc.content) {
+						t.Errorf("content mismatch: lengths match (%d bytes) but bytes differ", len(gotContent))
+					} else {
+						t.Errorf("content mismatch: got %d bytes, want %d bytes", len(gotContent), len(tc.content))
+					}
+				}
+				
 				// Verify cleanup of intermediate/part objects.
 				// Since cleanup runs in the background, we retry for a few seconds.
 				var count int
@@ -8816,29 +8834,13 @@ func TestIntegration_ParallelUpload(t *testing.T) {
 				if err != nil {
 					t.Error(err)
 				}
-
-				// Verify contents.
-				r, err := obj.NewReader(ctx)
-				if err != nil {
-					t.Fatalf("NewReader failed: %v", err)
-				}
-				defer r.Close()
-				gotContent, err := io.ReadAll(r)
-				if err != nil {
-					t.Fatalf("ReadAll failed: %v", err)
-				}
-				if !bytes.Equal(gotContent, tc.content) {
-					if len(gotContent) == len(tc.content) {
-						t.Errorf("content mismatch: lengths match (%d bytes) but bytes differ", len(gotContent))
-					} else {
-						t.Errorf("content mismatch: got %d bytes, want %d bytes", len(gotContent), len(tc.content))
-					}
-				}
 			})
 		}
 	})
 }
 
+// TestIntegration_ParallelUploadConcurrency verifies that multiple parallel uploads
+// can occur simultaneously to different objects without resource interference or leaks.
 func TestIntegration_ParallelUploadConcurrency(t *testing.T) {
 	ctx := skipExtraReadAPIs(skipHTTP("PCU only supported for gRPC"), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
@@ -8905,17 +8907,17 @@ func TestIntegration_ParallelUpload_ChecksumValidation(t *testing.T) {
 		testCases := []struct {
 			name        string
 			crc32c      uint32
-			expectError bool
+			expectedErr string
 		}{
 			{
 				name:        "correct checksum",
 				crc32c:      correctCRC,
-				expectError: false,
+				expectedErr: "",
 			},
 			{
 				name:        "incorrect checksum",
 				crc32c:      correctCRC + 1,
-				expectError: true,
+				expectedErr: "does not match the expected CRC32C",
 			},
 		}
 
@@ -8938,14 +8940,13 @@ func TestIntegration_ParallelUpload_ChecksumValidation(t *testing.T) {
 				}
 
 				err := w.Close()
-				if tc.expectError {
-					if err == nil {
-						t.Fatalf("expected error due to incorrect checksum, got nil")
-					}
-					// User provided CRC32C is verified client-side after compose returns.
-					if !strings.Contains(err.Error(), "does not match the expected CRC32C") {
-						t.Fatalf("expected a CRC32C mismatch error, but got %v", err)
-					}
+				if tc.expectedErr != "" {
+            		if err == nil {
+            	    	t.Fatalf("expected error containing %q, got nil", tc.expectedErr)
+            		}
+            		if !strings.Contains(err.Error(), tc.expectedErr) {
+                		t.Fatalf("expected error containing %q, but got %v", tc.expectedErr, err)
+            		}
 				} else {
 					if err != nil {
 						t.Fatalf("Writer.Close: %v", err)
