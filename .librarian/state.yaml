@@ -5760,7 +5760,7 @@ libraries:
       - internal/generated/snippets/shopping/
     tag_format: '{id}/v{version}'
   - id: spanner
-    version: 1.88.0
+    version: 1.89.0
     last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
     apis:
       - path: google/spanner/adapter/v1

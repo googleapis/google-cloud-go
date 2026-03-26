@@ -1,5 +1,28 @@
 # Changes
 
+## [1.89.0](https://github.com/googleapis/google-cloud-go/releases/tag/spanner%2Fv1.89.0) (2026-03-26)
+
+### Features
+
+* Add E2E fallback to the spanner client. (#13518) ([16af6a1](https://github.com/googleapis/google-cloud-go/commit/16af6a1cac04c2a7aea93b0c6f151ac7d42f471b))
+* Add gRPC A66/A94 metrics (#13825) ([d695802](https://github.com/googleapis/google-cloud-go/commit/d695802a29815599e60132d13dc114a03a2366de))
+* add SI, adapt, split point related proto ([d3eb851](https://github.com/googleapis/google-cloud-go/commit/d3eb851d1b09f28ae2b6c7c63d694eb67b0c11c7))
+* include cache updates and routing hint into BeginTransaction and Commit request/response respectively ([9c80b8b](https://github.com/googleapis/google-cloud-go/commit/9c80b8b4442a54c610826c1bb89cec5158b49314))
+* support Scan from string to NullUUID (#14128) ([d897b6d](https://github.com/googleapis/google-cloud-go/commit/d897b6db5a01291e151f09d8491ea1dd195d55ea))
+
+### Bug Fixes
+
+* guard rollback when aborted commit cleared session handle (#14218) ([6315105](https://github.com/googleapis/google-cloud-go/commit/63151055c1d238f1a89dc8bd96eba0f05512bd7b))
+* replace multiplexed session request loop with shared in-flight creation (#14215) ([3e3bd2d](https://github.com/googleapis/google-cloud-go/commit/3e3bd2d33a7b36e9d7ed4568603bae800268073a))
+
+### Documentation
+
+* A comment for field `execution_options` in message `.google.spanner.executor.v1.StartTransactionAction` is changed ([d3eb851](https://github.com/googleapis/google-cloud-go/commit/d3eb851d1b09f28ae2b6c7c63d694eb67b0c11c7))
+* A comment for field `routing_hint` in messages `.google.spanner.v1.ResultSet` and `.google.spanner.v1.PartialResultSet` are changed ([9c80b8b](https://github.com/googleapis/google-cloud-go/commit/9c80b8b4442a54c610826c1bb89cec5158b49314))
+* A comment for message `ListCloudInstancesAction` is changed ([d3eb851](https://github.com/googleapis/google-cloud-go/commit/d3eb851d1b09f28ae2b6c7c63d694eb67b0c11c7))
+* A comment for message `TransactionExecutionOptions` is changed ([d3eb851](https://github.com/googleapis/google-cloud-go/commit/d3eb851d1b09f28ae2b6c7c63d694eb67b0c11c7))
+* A comment in message `.google.spanner.v1.TransactionOptions.ReadWrite.ReadLockMode` is changed ([9c80b8b](https://github.com/googleapis/google-cloud-go/commit/9c80b8b4442a54c610826c1bb89cec5158b49314))
+
 ## [1.88.0](https://github.com/googleapis/google-cloud-go/releases/tag/spanner%2Fv1.88.0) (2026-02-11)
 
 ### Features
