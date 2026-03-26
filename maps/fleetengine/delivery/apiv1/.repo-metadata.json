@@ -1,5 +1,5 @@
 {
-    "api_shortname": "fleetengine",
+    "api_shortname": "fleetengine-delivery",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/maps/latest/fleetengine/delivery/apiv1",
     "client_library_type": "generated",
     "description": "Last Mile Fleet Solution Delivery API",

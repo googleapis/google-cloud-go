@@ -1,0 +1,8 @@
+{
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/shopping/latest/type",
+    "client_library_type": "generated",
+    "distribution_name": "cloud.google.com/go/shopping/type",
+    "language": "go",
+    "library_type": "GAPIC_AUTO",
+    "release_level": "stable"
+}

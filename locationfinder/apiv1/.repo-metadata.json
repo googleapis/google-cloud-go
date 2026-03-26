@@ -1,5 +1,5 @@
 {
-    "api_shortname": "cloudlocationfinder",
+    "api_shortname": "locationfinder",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/locationfinder/latest/apiv1",
     "client_library_type": "generated",
     "description": "Cloud Location Finder API",
