@@ -1,5 +1,5 @@
 # Hand-maintained configuration for libraries.
-
+release_only_mode: true
 global_files_allowlist:
  # Paths (currently just one) that need to modified during configure
  - path: "internal/generated/snippets/go.mod"
