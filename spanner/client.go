@@ -643,6 +643,9 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	var locationRouter *locationRouter
 	if isExperimentalLocationAPIEnabled() {
 		sc.baseClientOpts = endpointClientOpts
+		if conn := pool.Conn(); conn != nil {
+			sc.endpointAuthority = normalizeAuthorityTarget(conn.Target())
+		}
 		epCache := newEndpointClientCache(sc.createEndpointClient)
 		locationRouter = newLocationRouter(epCache)
 	}
@@ -692,6 +695,16 @@ Multiplexed session enabled: true
 		locationRouter:       locationRouter,
 	}
 	return c, nil
+}
+
+func normalizeAuthorityTarget(target string) string {
+	if idx := strings.Index(target, ":///"); idx >= 0 {
+		return strings.TrimSuffix(target[idx+4:], "/")
+	}
+	if idx := strings.Index(target, "://"); idx >= 0 {
+		return strings.TrimSuffix(target[idx+3:], "/")
+	}
+	return strings.TrimSuffix(target, "/")
 }
 
 // NewMultiEndpointClient is the same as NewMultiEndpointClientWithConfig with

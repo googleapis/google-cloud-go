@@ -109,6 +109,9 @@ type sessionClient struct {
 	// baseClientOpts holds the client options used for creating endpoint-specific
 	// gRPC connections in location-aware routing.
 	baseClientOpts []option.ClientOption
+	// endpointAuthority preserves the default endpoint authority for routed
+	// endpoint clients so TLS/SNI continues to use the original host identity.
+	endpointAuthority string
 
 	// These fields are for request-id propagation.
 	nthClient int
@@ -311,6 +314,9 @@ func (sc *sessionClient) nextClient() (spannerClient, error) {
 func (sc *sessionClient) createEndpointClient(ctx context.Context, address string) (spannerClient, error) {
 	opts := make([]option.ClientOption, len(sc.baseClientOpts))
 	copy(opts, sc.baseClientOpts)
+	if sc.endpointAuthority != "" {
+		opts = append(opts, option.WithGRPCDialOption(grpc.WithAuthority(sc.endpointAuthority)))
+	}
 	opts = append(opts, option.WithEndpoint(address))
 	if _, ok := sc.connPool.(*gmeWrapper); ok {
 		// Endpoint-specific clients should keep a single connection per endpoint
