@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/dataform/apiv1beta1",
-    "version": "0.13.0"
+    "version": "0.14.0"
   },
   "snippets": [
     {

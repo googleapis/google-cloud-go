@@ -3,6 +3,12 @@
 
 
 
+## [1.9.0](https://github.com/googleapis/google-cloud-go/releases/tag/backupdr%2Fv1.9.0) (2026-03-26)
+
+### Features
+
+* Adding new workload specific fields for AlloyDB ([5e50d57](https://github.com/googleapis/google-cloud-go/commit/5e50d57d4ca4bceff2e7dfe4118c281c24375b99))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/releases/tag/backupdr%2Fv1.8.0) (2026-02-05)
 
 ### Features

@@ -783,7 +783,7 @@ libraries:
       - internal/generated/snippets/automl/
     tag_format: '{id}/v{version}'
   - id: backupdr
-    version: 1.8.0
+    version: 1.9.0
     last_generated_commit: 59d5f2b46924714af627ac29ea6de78641a00835
     apis:
       - path: google/cloud/backupdr/v1
@@ -1362,7 +1362,7 @@ libraries:
       - internal/generated/snippets/certificatemanager/
     tag_format: '{id}/v{version}'
   - id: ces
-    version: 0.3.0
+    version: 0.4.0
     last_generated_commit: 59d5f2b46924714af627ac29ea6de78641a00835
     apis:
       - path: google/cloud/ces/v1beta
@@ -2028,7 +2028,7 @@ libraries:
       - internal/generated/snippets/dataflow/
     tag_format: '{id}/v{version}'
   - id: dataform
-    version: 0.13.0
+    version: 0.14.0
     last_generated_commit: 59d5f2b46924714af627ac29ea6de78641a00835
     apis:
       - path: google/cloud/dataform/v1
@@ -2363,7 +2363,7 @@ libraries:
       - internal/generated/snippets/devicestreaming/
     tag_format: '{id}/v{version}'
   - id: dialogflow
-    version: 1.76.0
+    version: 1.77.0
     last_generated_commit: 59d5f2b46924714af627ac29ea6de78641a00835
     apis:
       - path: google/cloud/dialogflow/cx/v3
@@ -2424,7 +2424,7 @@ libraries:
       - internal/generated/snippets/dialogflow/
     tag_format: '{id}/v{version}'
   - id: discoveryengine
-    version: 1.23.0
+    version: 1.24.0
     last_generated_commit: 59d5f2b46924714af627ac29ea6de78641a00835
     apis:
       - path: google/cloud/discoveryengine/v1
@@ -2473,7 +2473,7 @@ libraries:
       - internal/generated/snippets/discoveryengine/
     tag_format: '{id}/v{version}'
   - id: dlp
-    version: 1.28.0
+    version: 1.29.0
     last_generated_commit: 59d5f2b46924714af627ac29ea6de78641a00835
     apis:
       - path: google/privacy/dlp/v2
@@ -3070,7 +3070,7 @@ libraries:
       - ^hypercomputecluster/apiv1/hypercomputeclusterpb/.*$
     tag_format: '{id}/v{version}'
   - id: iam
-    version: 1.5.3
+    version: 1.6.0
     last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
     apis:
       - path: google/iam/credentials/v1
@@ -3576,7 +3576,7 @@ libraries:
       - internal/generated/snippets/managedkafka/
     tag_format: '{id}/v{version}'
   - id: maps
-    version: 1.29.0
+    version: 1.30.0
     last_generated_commit: 59d5f2b46924714af627ac29ea6de78641a00835
     apis:
       - path: google/maps/addressvalidation/v1
@@ -4937,7 +4937,7 @@ libraries:
       - internal/version
     tag_format: v{version}
   - id: run
-    version: 1.15.0
+    version: 1.16.0
     last_generated_commit: 59d5f2b46924714af627ac29ea6de78641a00835
     apis:
       - path: google/cloud/run/v2

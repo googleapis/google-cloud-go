@@ -1,5 +1,14 @@
 # Changes
 
+## [1.77.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.77.0) (2026-03-26)
+
+### Features
+
+* updated v2 dialogflow client libraries ([5e50d57](https://github.com/googleapis/google-cloud-go/commit/5e50d57d4ca4bceff2e7dfe4118c281c24375b99))
+* updated v2beta1 dialogflow client libraries ([5e50d57](https://github.com/googleapis/google-cloud-go/commit/5e50d57d4ca4bceff2e7dfe4118c281c24375b99))
+* updated v3 dialogflow client libraries with `dtmf_pattern` and `trace_blocks` ([5e50d57](https://github.com/googleapis/google-cloud-go/commit/5e50d57d4ca4bceff2e7dfe4118c281c24375b99))
+* updated v3beta1 dialogflow client libraries with `dtmf_pattern` and `trace_blocks` ([5e50d57](https://github.com/googleapis/google-cloud-go/commit/5e50d57d4ca4bceff2e7dfe4118c281c24375b99))
+
 ## [1.76.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.76.0) (2026-02-19)
 
 ### Features

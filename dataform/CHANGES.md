@@ -1,5 +1,15 @@
 # Changes
 
+## [0.14.0](https://github.com/googleapis/google-cloud-go/releases/tag/dataform%2Fv0.14.0) (2026-03-26)
+
+### Features
+
+* add folders and teamFolders related changes to v1 ([5e50d57](https://github.com/googleapis/google-cloud-go/commit/5e50d57d4ca4bceff2e7dfe4118c281c24375b99))
+
+### Documentation
+
+* A comment for field `force` in message `.google.cloud.dataform.v1.DeleteRepositoryRequest` is changed ([5e50d57](https://github.com/googleapis/google-cloud-go/commit/5e50d57d4ca4bceff2e7dfe4118c281c24375b99))
+
 ## [0.13.0](https://github.com/googleapis/google-cloud-go/releases/tag/dataform%2Fv0.13.0) (2026-02-19)
 
 ### Features

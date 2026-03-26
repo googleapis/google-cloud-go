@@ -2,6 +2,16 @@
 
 
 
+## [1.24.0](https://github.com/googleapis/google-cloud-go/releases/tag/discoveryengine%2Fv1.24.0) (2026-03-26)
+
+### Features
+
+* Update DataStoreSpec and add BoostSpec to SearchService ([5e50d57](https://github.com/googleapis/google-cloud-go/commit/5e50d57d4ca4bceff2e7dfe4118c281c24375b99))
+
+### Documentation
+
+* Clarify project number requirement for data_store field ([5e50d57](https://github.com/googleapis/google-cloud-go/commit/5e50d57d4ca4bceff2e7dfe4118c281c24375b99))
+
 ## [1.23.0](https://github.com/googleapis/google-cloud-go/releases/tag/discoveryengine%2Fv1.23.0) (2026-02-12)
 
 ### Features

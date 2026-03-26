@@ -1,6 +1,12 @@
 # Changes
 
 
+## [1.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/run%2Fv1.16.0) (2026-03-26)
+
+### Documentation
+
+* An existing repeated string field custom_audiences is marked deprecated for WorkerPools API ([5e50d57](https://github.com/googleapis/google-cloud-go/commit/5e50d57d4ca4bceff2e7dfe4118c281c24375b99))
+
 ## [1.15.0](https://github.com/googleapis/google-cloud-go/releases/tag/run%2Fv1.15.0) (2026-01-22)
 
 ### Features

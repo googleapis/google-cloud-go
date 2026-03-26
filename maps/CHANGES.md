@@ -2,6 +2,13 @@
 
 
 
+## [1.30.0](https://github.com/googleapis/google-cloud-go/releases/tag/maps%2Fv1.30.0) (2026-03-26)
+
+### Features
+
+* add a new `include_future_opening_businesses` flag to Nearby Search, Text Search, and AutocompletPlaces. When true, businesses opening in the future are included in the results. ([5e50d57](https://github.com/googleapis/google-cloud-go/commit/5e50d57d4ca4bceff2e7dfe4118c281c24375b99))
+* add a new business status `FUTURE_OPENING` for places, along with an `opening_date` field to indicate when the establishment will open in the future ([5e50d57](https://github.com/googleapis/google-cloud-go/commit/5e50d57d4ca4bceff2e7dfe4118c281c24375b99))
+
 ## [1.29.0](https://github.com/googleapis/google-cloud-go/releases/tag/maps%2Fv1.29.0) (2026-03-12)
 
 ### Features
