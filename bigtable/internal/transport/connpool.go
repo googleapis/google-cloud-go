@@ -42,6 +42,7 @@ import (
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
 
+	"cloud.google.com/go/bigtable/internal/directaccess"
 	btopt "cloud.google.com/go/bigtable/internal/option"
 
 	"google.golang.org/grpc"
@@ -448,22 +449,25 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 	var firstConn *BigtableConn
 
 	if pool.directAccessDialer != nil {
-		directAccessConn, isDirectAccess := pool.checkIfDirectAccessCompatible()
 		disableDirectAccess := os.Getenv("CBT_ENABLE_DIRECTPATH") == "false"
-
-		if isDirectAccess && !disableDirectAccess {
-			btopt.Debugf(pool.logger, "bigtable_connpool: Direct Access is available. Using Direct Access now.")
-			factoryDial = pool.directAccessDialer
-			factoryFeatureFlagsMD = pool.directAccessFeatureFlagsMD
-			// transfer
-			firstConn = directAccessConn
+		if disableDirectAccess {
+			btopt.Debugf(pool.logger, "bigtable_connpool: Direct Access manually disabled via CBT_ENABLE_DIRECTPATH.")
+			pool.reportDirectAccessFailure("manually_disabled")
 		} else {
-			// If we opened a connection but won't use it, close it now.
-			if directAccessConn != nil {
-				btopt.Debugf(pool.logger, "bigtable_connpool: Closing probe connection (Direct Access disabled or unavailable).")
-				directAccessConn.Close()
-			}
-			if !isDirectAccess {
+			directAccessConn, isDirectAccess := pool.checkIfDirectAccessCompatible()
+
+			if isDirectAccess {
+				btopt.Debugf(pool.logger, "bigtable_connpool: Direct Access is available. Using Direct Access now.")
+				factoryDial = pool.directAccessDialer
+				factoryFeatureFlagsMD = pool.directAccessFeatureFlagsMD
+				// transfer
+				firstConn = directAccessConn
+			} else {
+				// If we opened a connection but won't use it, close it now.
+				if directAccessConn != nil {
+					btopt.Debugf(pool.logger, "bigtable_connpool: Closing probe connection (Direct Access unavailable).")
+					directAccessConn.Close()
+				}
 				btopt.Debugf(pool.logger, "bigtable_connpool: Direct Access is not available. Using standard path")
 			}
 		}
@@ -568,35 +572,42 @@ func (p *BigtableChannelPool) checkIfDirectAccessCompatible() (*BigtableConn, bo
 	if err != nil {
 		btopt.Debugf(p.logger, "bigtable_connpool: Prime() failed during Direct Access check: %v", err)
 		conn.Close()
-		p.reportDirectAccessMetric(false, "")
+		go p.investigateDirectAccessFailure(err) // Kick off investigation
 		return nil, false
 	}
 
 	if conn.isALTSConn.Load() {
 		ipProtocol := conn.ipProtocol()
-		p.reportDirectAccessMetric(true, ipProtocol)
+		p.reportDirectAccessSuccess(ipProtocol)
 		return conn, true
 	}
 
 	// If not ALTS, discard
 	conn.Close()
-	// sent empty ip protocol
-	p.reportDirectAccessMetric(false, "")
+	go p.investigateDirectAccessFailure(err) // Kick off investigation
 	return nil, false
 }
 
-// reportDirectAccessMetric records the direct_access/compatible metric.
-func (p *BigtableChannelPool) reportDirectAccessMetric(isEligible bool, ipPreference string) {
-	// Check if the instrument was successfully created during pool initialization
+// reportDirectAccessSuccess records a successful direct_access/compatible metric.
+func (p *BigtableChannelPool) reportDirectAccessSuccess(ipPreference string) {
 	if p.daEligibleGauge == nil {
 		return
 	}
-	val := int64(0)
-	if isEligible {
-		val = 1
+	p.daEligibleGauge.Record(p.poolCtx, 1, metric.WithAttributes(
+		attribute.String("ip_preference", ipPreference),
+		attribute.String("reason", ""),
+	))
+}
+
+// reportDirectAccessFailure records a failed direct_access/compatible metric.
+func (p *BigtableChannelPool) reportDirectAccessFailure(reason string) {
+	if p.daEligibleGauge == nil {
+		return
 	}
-	p.daEligibleGauge.Record(p.poolCtx, val, metric.WithAttributes(
-		attribute.String("ip_preference", ipPreference)))
+	p.daEligibleGauge.Record(p.poolCtx, 0, metric.WithAttributes(
+		attribute.String("ip_preference", ""),
+		attribute.String("reason", reason),
+	))
 }
 
 func (p *BigtableChannelPool) recordClientStartUp(clientCreationTimestamp time.Time, transportType string) {
@@ -1112,6 +1123,77 @@ func (cf *connectionFactory) primeWithRetry(ctx context.Context, conn *BigtableC
 
 	return fmt.Errorf("factory prime failed after %d attempts: %w", maxAttempts, lastErr)
 
+}
+
+// investigateDirectAccessFailure runs asynchronously to determine why Direct Access failed.
+// It reports the failure reason to the metric payload.
+func (p *BigtableChannelPool) investigateDirectAccessFailure(originalErr error) {
+	if err := directaccess.IsRunningOnGCP(); err != nil {
+		btopt.Debugf(p.logger, "bigtable_connpool: Direct Access investigation: %v. Original error: %v", err, originalErr)
+		// Report the specific reason "not_in_gcp"
+		p.reportDirectAccessFailure("not_in_gcp")
+		return
+	}
+
+	if err := directaccess.CheckMetadataServerReachability(); err != nil {
+		btopt.Debugf(p.logger, "bigtable_connpool: Direct Access investigation: Metadata unreachable: %v", err)
+		p.reportDirectAccessFailure("metadata_unreachable")
+		return
+	}
+
+	ipv4, errV4 := directaccess.FetchIPFromMetadataServer("IPv4")
+	ipv6, errV6 := directaccess.FetchIPFromMetadataServer("IPv6")
+
+	if errV4 != nil && errV6 != nil {
+		btopt.Debugf(p.logger, "bigtable_connpool: Direct Access investigation: Neither IPv4 nor IPv6 assigned. v4Err: %v, v6Err: %v", errV4, errV6)
+		p.reportDirectAccessFailure("no_ip_assigned")
+		return
+	}
+
+	if err := directaccess.CheckLoopbackInterfaceUp(); err != nil {
+		btopt.Debugf(p.logger, "bigtable_connpool: Direct Access investigation: Loopback interface down: %v", err)
+		p.reportDirectAccessFailure("loopback_misconfigured")
+		return
+	}
+	if err := directaccess.CheckLocalIPv4LoopbackAddress(); err != nil {
+		btopt.Debugf(p.logger, "bigtable_connpool: Direct Access investigation: IPv4 loopback missing: %v", err)
+		p.reportDirectAccessFailure("loopback_misconfigured")
+		return
+	}
+	if err := directaccess.CheckLocalIPv6LoopbackAddress(); err != nil {
+		btopt.Debugf(p.logger, "bigtable_connpool: Direct Access investigation: IPv6 loopback missing: %v", err)
+		p.reportDirectAccessFailure("loopback_misconfigured")
+		return
+	}
+
+	v4Plumbed := false
+	v6Plumbed := false
+
+	if ipv4 != nil {
+		if _, err := directaccess.CheckLocalIPv4Addresses(ipv4); err == nil {
+			v4Plumbed = true
+		} else {
+			btopt.Debugf(p.logger, "bigtable_connpool: Direct Access investigation: IPv4 assigned by metadata but not found on NIC: %v", err)
+		}
+	}
+
+	if ipv6 != nil {
+		if _, err := directaccess.CheckLocalIPv6Addresses(ipv6); err == nil {
+			v6Plumbed = true
+		} else {
+			btopt.Debugf(p.logger, "bigtable_connpool: Direct Access investigation: IPv6 assigned by metadata but not found on NIC: %v", err)
+		}
+	}
+
+	// If the metadata server assigned IPs, but the guest OS hasn't configured any of them on an interface
+	if !v4Plumbed && !v6Plumbed {
+		btopt.Debugf(p.logger, "bigtable_connpool: Direct Access investigation: No metadata IPs are plumbed to local interfaces. Original error: %v", originalErr)
+		p.reportDirectAccessFailure("nic_misconfigured")
+		return
+	}
+
+	btopt.Debugf(p.logger, "bigtable_connpool: Direct Access investigation: Running on GCP, metadata reachable, IPs assigned and plumbed, but Direct Access still failed. Original error: %v", originalErr)
+	p.reportDirectAccessFailure("")
 }
 
 type multiError []error
