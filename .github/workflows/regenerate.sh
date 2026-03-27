@@ -18,11 +18,11 @@ set -ev
 echo "==== Install protoc ===="
 curl -fsSL --retry 5 --retry-delay 15 -o /tmp/protoc.zip https://github.com/protocolbuffers/protobuf/releases/download/v25.7/protoc-25.7-linux-x86_64.zip
 sha256sum -c <(echo 877408bab02767938d1e5555f11c39dfe05e96f2a9571bc59dd2639f33d9954e /tmp/protoc.zip)
-env -C /usr/local unzip -x /tmp/protoc.zip
+sudo unzip -o /tmp/protoc.zip -d /usr/local
 protoc --version
 
 echo "==== Regenerate all the code ===="
-version=$(sed -n 's/^version: *//p' /workspace/librarian.yaml)
+version=$(sed -n 's/^version: *//p' librarian.yaml)
 go run github.com/googleapis/librarian/cmd/librarian@${version} generate --all
 
 # If there is any difference between the generated code and the
