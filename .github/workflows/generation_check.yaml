@@ -1,0 +1,24 @@
+---
+name: generation-check
+on:
+  pull_request:
+
+permissions:
+  contents: read  #  to fetch code (actions/checkout)
+
+jobs:
+  vet:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version: '1.26.x'
+      - name: Install tools
+        run: |
+          go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.11 && \
+          go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.3.0 && \
+          go install github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic@v0.57.0 && \
+          go install golang.org/x/tools/cmd/goimports@latest
+      - name: Execute vet.sh
+        run: ./.github/workflows/vet.sh
