@@ -1,5 +1,18 @@
 # Changes
 
+## [2.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/bigtable%2Fv2.0.0) (2026-03-27)
+
+### Features
+
+* add locations field to AutomatedBackupPolicy ([5e50d57](https://github.com/googleapis/google-cloud-go/commit/5e50d57d4ca4bceff2e7dfe4118c281c24375b99))
+* obey if user want to disable directpath and populate reason ([2507934](https://github.com/googleapis/google-cloud-go/commit/25079346ab69a3f5dedce34b3a9ab48b04686632))
+* update admin.go to support automatedbackuppolicy locations (#14274) ([269dd2d](https://github.com/googleapis/google-cloud-go/commit/269dd2de0bb639288a609712543668cd21fe16e3))
+
+### Documentation
+
+* A comment for field `frequency` in message `.google.bigtable.admin.v2.Table` is changed ([5e50d57](https://github.com/googleapis/google-cloud-go/commit/5e50d57d4ca4bceff2e7dfe4118c281c24375b99))
+* A comment for field `retention_period` in message `.google.bigtable.admin.v2.Table` is changed ([5e50d57](https://github.com/googleapis/google-cloud-go/commit/5e50d57d4ca4bceff2e7dfe4118c281c24375b99))
+
 ## [1.43.0](https://github.com/googleapis/google-cloud-go/releases/tag/bigtable%2Fv1.43.0) (2026-03-16)
 
 ### Features
