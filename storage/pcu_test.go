@@ -428,7 +428,7 @@ func TestPCUWorker_WriteContextCancellation(t *testing.T) {
 		settings: &pcuSettings{bufferPoolSize: 2},
 		partMap:  make(map[int]*ObjectHandle),
 		doCleanupFn: func(s *pcuState) {
-			// Mock cleanup to prevent nil pointer dereference
+			// Mock cleanup to prevent nil pointer dereference.
 		},
 		uploadPartFn: func(s *pcuState, task uploadTask) (*ObjectHandle, *ObjectAttrs, error) {
 			close(uploadStarted)
