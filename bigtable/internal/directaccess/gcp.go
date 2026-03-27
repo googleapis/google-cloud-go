@@ -11,11 +11,11 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 package directaccess
 
 import (
 	"fmt"
-	"log"
 
 	"cloud.google.com/go/compute/metadata"
 )
@@ -24,7 +24,6 @@ import (
 // Basically, reads /sys/class/dmi/id/product_name
 func IsRunningOnGCP() error {
 	if metadata.OnGCE() {
-		log.Println("Detected running on GCE via metadata.OnGCE()")
 		return nil
 	}
 	return fmt.Errorf("not running on GCE according to metadata.OnGCE()")

@@ -11,6 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 package directaccess
 
 import (
@@ -78,7 +79,7 @@ func FetchIPFromMetadataServer(addrFamilyStr string) (*net.IP, error) {
 	}
 
 	if resp.StatusCode == 200 {
-		address := net.ParseIP(strings.TrimSuffix(string(body), "\n"))
+		address := net.ParseIP(strings.TrimSpace(string(body)))
 		if address == nil {
 			return nil, fmt.Errorf("failed to parse IP: %s", string(body))
 		}

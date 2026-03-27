@@ -1155,15 +1155,19 @@ func (p *BigtableChannelPool) investigateDirectAccessFailure(originalErr error) 
 		p.reportDirectAccessFailure("loopback_misconfigured")
 		return
 	}
-	if err := directaccess.CheckLocalIPv4LoopbackAddress(); err != nil {
-		btopt.Debugf(p.logger, "bigtable_connpool: Direct Access investigation: IPv4 loopback missing: %v", err)
-		p.reportDirectAccessFailure("loopback_misconfigured")
-		return
+	if ipv4 != nil {
+		if err := directaccess.CheckLocalIPv4LoopbackAddress(); err != nil {
+			btopt.Debugf(p.logger, "bigtable_connpool: Direct Access investigation: IPv4 loopback missing: %v", err)
+			p.reportDirectAccessFailure("loopback_misconfigured")
+			return
+		}
 	}
-	if err := directaccess.CheckLocalIPv6LoopbackAddress(); err != nil {
-		btopt.Debugf(p.logger, "bigtable_connpool: Direct Access investigation: IPv6 loopback missing: %v", err)
-		p.reportDirectAccessFailure("loopback_misconfigured")
-		return
+	if ipv6 != nil {
+		if err := directaccess.CheckLocalIPv6LoopbackAddress(); err != nil {
+			btopt.Debugf(p.logger, "bigtable_connpool: Direct Access investigation: IPv6 loopback missing: %v", err)
+			p.reportDirectAccessFailure("loopback_misconfigured")
+			return
+		}
 	}
 
 	v4Plumbed := false
@@ -1193,7 +1197,7 @@ func (p *BigtableChannelPool) investigateDirectAccessFailure(originalErr error) 
 	}
 
 	btopt.Debugf(p.logger, "bigtable_connpool: Direct Access investigation: Running on GCP, metadata reachable, IPs assigned and plumbed, but Direct Access still failed. Original error: %v", originalErr)
-	p.reportDirectAccessFailure("")
+	p.reportDirectAccessFailure("unknown")
 }
 
 type multiError []error
