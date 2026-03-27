@@ -1,405 +1,48 @@
-# This file is being migrated to librarian@latest, and is no longer maintained by hand.
-
+# Hand-maintained configuration for libraries.
 release_only_mode: true
 global_files_allowlist:
-  - path: internal/generated/snippets/go.mod
-    permissions: read-write
-  - path: CHANGES.md
-    permissions: read-write
+ # Paths (currently just one) that need to modified during configure
+ - path: "internal/generated/snippets/go.mod"
+   permissions: "read-write"
+ # Allow CHANGES.md to be rewritten. This is only used for the root module.
+ # We don't want to add a source path of "." to the state file,
+ # as that would include everything that's *not* in the module
+ # as well. The root module includes a source path of "internal"
+ # despite several subdirectories being tools which don't need
+ # to be released as such; those are listed as released exclusion
+ # paths in state.yaml.
+ - path: "CHANGES.md"
+   permissions: "read-write"
+
+# All libraries with handwritten code (core, hybrid and handwritten)
+# libraries have "release_blocked: true" so that releases are
+# explicitly initiated
 libraries:
-  - generate_blocked: true
-    id: auth
+  - id: "auth"
     release_blocked: true
-  - generate_blocked: true
-    id: auth/oauth2adapt
+  - id: "auth/oauth2adapt"
     release_blocked: true
-  - generate_blocked: true
-    id: bigtable
+  - id: "bigtable"
     release_blocked: true
-  - generate_blocked: true
-    id: bigquery
+  - id: "bigquery"
     release_blocked: true
-  - generate_blocked: true
-    id: bigquery/v2
+  - id: "bigquery/v2"
     release_blocked: true
-  - generate_blocked: true
-    id: compute/metadata
+  - id: "compute/metadata"
     release_blocked: true
-  - generate_blocked: true
-    id: datastore
+  - id: "datastore"
     release_blocked: true
-  - generate_blocked: true
-    id: firestore
+  - id: "firestore"
     release_blocked: true
-  - generate_blocked: true
-    id: pubsub
+  - id: "pubsub"
     release_blocked: true
-  - generate_blocked: true
-    id: pubsub/v2
+  - id: "pubsub/v2"
     release_blocked: true
-  - generate_blocked: true
-    id: pubsublite
+  - id: "pubsublite"
     release_blocked: true
-  - generate_blocked: true
-    id: root-module
+  - id: "root-module"
     release_blocked: true
-  - generate_blocked: true
-    id: spanner
+  - id: "spanner"
     release_blocked: true
-  - generate_blocked: true
-    id: storage
+  - id: "storage"
     release_blocked: true
-  - generate_blocked: true
-    id: accessapproval
-  - generate_blocked: true
-    id: accesscontextmanager
-  - generate_blocked: true
-    id: advisorynotifications
-  - generate_blocked: true
-    id: ai
-  - generate_blocked: true
-    id: aiplatform
-  - generate_blocked: true
-    id: alloydb
-  - generate_blocked: true
-    id: analytics
-  - generate_blocked: true
-    id: apigateway
-  - generate_blocked: true
-    id: apigeeconnect
-  - generate_blocked: true
-    id: apigeeregistry
-  - generate_blocked: true
-    id: apihub
-  - generate_blocked: true
-    id: apikeys
-  - generate_blocked: true
-    id: apiregistry
-  - generate_blocked: true
-    id: appengine
-  - generate_blocked: true
-    id: apphub
-  - generate_blocked: true
-    id: apps
-  - generate_blocked: true
-    id: area120
-  - generate_blocked: true
-    id: artifactregistry
-  - generate_blocked: true
-    id: asset
-  - generate_blocked: true
-    id: assuredworkloads
-  - generate_blocked: true
-    id: auditmanager
-  - generate_blocked: true
-    id: automl
-  - generate_blocked: true
-    id: backupdr
-  - generate_blocked: true
-    id: baremetalsolution
-  - generate_blocked: true
-    id: batch
-  - generate_blocked: true
-    id: beyondcorp
-  - generate_blocked: true
-    id: billing
-  - generate_blocked: true
-    id: binaryauthorization
-  - generate_blocked: true
-    id: capacityplanner
-  - generate_blocked: true
-    id: certificatemanager
-  - generate_blocked: true
-    id: ces
-  - generate_blocked: true
-    id: channel
-  - generate_blocked: true
-    id: chat
-  - generate_blocked: true
-    id: chronicle
-  - generate_blocked: true
-    id: cloudbuild
-  - generate_blocked: true
-    id: cloudcontrolspartner
-  - generate_blocked: true
-    id: clouddms
-  - generate_blocked: true
-    id: cloudprofiler
-  - generate_blocked: true
-    id: cloudquotas
-  - generate_blocked: true
-    id: cloudsecuritycompliance
-  - generate_blocked: true
-    id: cloudtasks
-  - generate_blocked: true
-    id: commerce
-  - generate_blocked: true
-    id: compute
-  - generate_blocked: true
-    id: confidentialcomputing
-  - generate_blocked: true
-    id: config
-  - generate_blocked: true
-    id: configdelivery
-  - generate_blocked: true
-    id: contactcenterinsights
-  - generate_blocked: true
-    id: container
-  - generate_blocked: true
-    id: containeranalysis
-  - generate_blocked: true
-    id: datacatalog
-  - generate_blocked: true
-    id: dataflow
-  - generate_blocked: true
-    id: dataform
-  - generate_blocked: true
-    id: datafusion
-  - generate_blocked: true
-    id: datalabeling
-  - generate_blocked: true
-    id: datamanager
-  - generate_blocked: true
-    id: dataplex
-  - generate_blocked: true
-    id: dataproc
-  - generate_blocked: true
-    id: dataqna
-  - generate_blocked: true
-    id: datastream
-  - generate_blocked: true
-    id: deploy
-  - generate_blocked: true
-    id: developerconnect
-  - generate_blocked: true
-    id: devicestreaming
-  - generate_blocked: true
-    id: dialogflow
-  - generate_blocked: true
-    id: discoveryengine
-  - generate_blocked: true
-    id: dlp
-  - generate_blocked: true
-    id: documentai
-  - generate_blocked: true
-    id: domains
-  - generate_blocked: true
-    id: edgecontainer
-  - generate_blocked: true
-    id: edgenetwork
-  - generate_blocked: true
-    id: errorreporting
-  - generate_blocked: true
-    id: essentialcontacts
-  - generate_blocked: true
-    id: eventarc
-  - generate_blocked: true
-    id: filestore
-  - generate_blocked: true
-    id: financialservices
-  - generate_blocked: true
-    id: functions
-  - generate_blocked: true
-    id: geminidataanalytics
-  - generate_blocked: true
-    id: gkebackup
-  - generate_blocked: true
-    id: gkeconnect
-  - generate_blocked: true
-    id: gkehub
-  - generate_blocked: true
-    id: gkemulticloud
-  - generate_blocked: true
-    id: gkerecommender
-  - generate_blocked: true
-    id: grafeas
-  - generate_blocked: true
-    id: gsuiteaddons
-  - generate_blocked: true
-    id: hypercomputecluster
-  - generate_blocked: true
-    id: iam
-  - generate_blocked: true
-    id: iap
-  - generate_blocked: true
-    id: identitytoolkit
-  - generate_blocked: true
-    id: ids
-  - generate_blocked: true
-    id: iot
-  - generate_blocked: true
-    id: kms
-  - generate_blocked: true
-    id: language
-  - generate_blocked: true
-    id: licensemanager
-  - generate_blocked: true
-    id: lifesciences
-  - generate_blocked: true
-    id: locationfinder
-  - generate_blocked: true
-    id: logging
-  - generate_blocked: true
-    id: longrunning
-  - generate_blocked: true
-    id: lustre
-  - generate_blocked: true
-    id: maintenance
-  - generate_blocked: true
-    id: managedidentities
-  - generate_blocked: true
-    id: managedkafka
-  - generate_blocked: true
-    id: maps
-  - generate_blocked: true
-    id: mediatranslation
-  - generate_blocked: true
-    id: memcache
-  - generate_blocked: true
-    id: memorystore
-  - generate_blocked: true
-    id: metastore
-  - generate_blocked: true
-    id: migrationcenter
-  - generate_blocked: true
-    id: modelarmor
-  - generate_blocked: true
-    id: monitoring
-  - generate_blocked: true
-    id: netapp
-  - generate_blocked: true
-    id: networkconnectivity
-  - generate_blocked: true
-    id: networkmanagement
-  - generate_blocked: true
-    id: networksecurity
-  - generate_blocked: true
-    id: networkservices
-  - generate_blocked: true
-    id: notebooks
-  - generate_blocked: true
-    id: optimization
-  - generate_blocked: true
-    id: oracledatabase
-  - generate_blocked: true
-    id: orchestration
-  - generate_blocked: true
-    id: orgpolicy
-  - generate_blocked: true
-    id: osconfig
-  - generate_blocked: true
-    id: oslogin
-  - generate_blocked: true
-    id: parallelstore
-  - generate_blocked: true
-    id: parametermanager
-  - generate_blocked: true
-    id: phishingprotection
-  - generate_blocked: true
-    id: policysimulator
-  - generate_blocked: true
-    id: policytroubleshooter
-  - generate_blocked: true
-    id: privatecatalog
-  - generate_blocked: true
-    id: privilegedaccessmanager
-  - generate_blocked: true
-    id: profiler
-  - generate_blocked: true
-    id: rapidmigrationassessment
-  - generate_blocked: true
-    id: recaptchaenterprise
-  - generate_blocked: true
-    id: recommendationengine
-  - generate_blocked: true
-    id: recommender
-  - generate_blocked: true
-    id: redis
-  - generate_blocked: true
-    id: resourcemanager
-  - generate_blocked: true
-    id: retail
-  - generate_blocked: true
-    id: run
-  - generate_blocked: true
-    id: saasplatform
-  - generate_blocked: true
-    id: scheduler
-  - generate_blocked: true
-    id: secretmanager
-  - generate_blocked: true
-    id: securesourcemanager
-  - generate_blocked: true
-    id: security
-  - generate_blocked: true
-    id: securitycenter
-  - generate_blocked: true
-    id: securitycentermanagement
-  - generate_blocked: true
-    id: securityposture
-  - generate_blocked: true
-    id: servicecontrol
-  - generate_blocked: true
-    id: servicedirectory
-  - generate_blocked: true
-    id: servicehealth
-  - generate_blocked: true
-    id: servicemanagement
-  - generate_blocked: true
-    id: serviceusage
-  - generate_blocked: true
-    id: shell
-  - generate_blocked: true
-    id: shopping
-  - generate_blocked: true
-    id: speech
-  - generate_blocked: true
-    id: storagebatchoperations
-  - generate_blocked: true
-    id: storageinsights
-  - generate_blocked: true
-    id: storagetransfer
-  - generate_blocked: true
-    id: streetview
-  - generate_blocked: true
-    id: support
-  - generate_blocked: true
-    id: talent
-  - generate_blocked: true
-    id: telcoautomation
-  - generate_blocked: true
-    id: texttospeech
-  - generate_blocked: true
-    id: tpu
-  - generate_blocked: true
-    id: trace
-  - generate_blocked: true
-    id: translate
-  - generate_blocked: true
-    id: vectorsearch
-  - generate_blocked: true
-    id: vertexai
-  - generate_blocked: true
-    id: video
-  - generate_blocked: true
-    id: videointelligence
-  - generate_blocked: true
-    id: vision
-  - generate_blocked: true
-    id: visionai
-  - generate_blocked: true
-    id: vmmigration
-  - generate_blocked: true
-    id: vmwareengine
-  - generate_blocked: true
-    id: vpcaccess
-  - generate_blocked: true
-    id: webrisk
-  - generate_blocked: true
-    id: websecurityscanner
-  - generate_blocked: true
-    id: workflows
-  - generate_blocked: true
-    id: workloadmanager
-  - generate_blocked: true
-    id: workstations
