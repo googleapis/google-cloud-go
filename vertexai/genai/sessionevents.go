@@ -55,6 +55,11 @@ func appendAgentEngineSessionEventConfigToVertex(fromObject map[string]any, pare
 		genai.InternalSetValueByPath(parentObject, []string{"eventMetadata"}, fromEventMetadata)
 	}
 
+	fromRawEvent := genai.InternalGetValueByPath(fromObject, []string{"rawEvent"})
+	if fromRawEvent != nil {
+		genai.InternalSetValueByPath(parentObject, []string{"rawEvent"}, fromRawEvent)
+	}
+
 	return toObject, nil
 }
 

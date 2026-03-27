@@ -74,6 +74,11 @@ func agentEngineMemoryConfigToVertex(fromObject map[string]any, parentObject map
 		genai.InternalSetValueByPath(parentObject, []string{"metadata"}, fromMetadata)
 	}
 
+	fromMemoryId := genai.InternalGetValueByPath(fromObject, []string{"memoryId"})
+	if fromMemoryId != nil {
+		genai.InternalSetValueByPath(parentObject, []string{"_query", "memoryId"}, fromMemoryId)
+	}
+
 	return toObject, nil
 }
 
@@ -413,6 +418,11 @@ func updateAgentEngineMemoryConfigToVertex(fromObject map[string]any, parentObje
 	fromMetadata := genai.InternalGetValueByPath(fromObject, []string{"metadata"})
 	if fromMetadata != nil {
 		genai.InternalSetValueByPath(parentObject, []string{"metadata"}, fromMetadata)
+	}
+
+	fromMemoryId := genai.InternalGetValueByPath(fromObject, []string{"memoryId"})
+	if fromMemoryId != nil {
+		genai.InternalSetValueByPath(parentObject, []string{"_query", "memoryId"}, fromMemoryId)
 	}
 
 	fromUpdateMask := genai.InternalGetValueByPath(fromObject, []string{"updateMask"})
