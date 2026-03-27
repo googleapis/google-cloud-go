@@ -8803,7 +8803,7 @@ func TestIntegration_ParallelUpload(t *testing.T) {
 						t.Errorf("content mismatch: got %d bytes, want %d bytes", len(gotContent), len(tc.content))
 					}
 				}
-				
+
 				// Verify cleanup of intermediate/part objects.
 				// Since cleanup runs in the background, we retry for a few seconds.
 				var count int
@@ -8941,12 +8941,12 @@ func TestIntegration_ParallelUpload_ChecksumValidation(t *testing.T) {
 
 				err := w.Close()
 				if tc.expectedErr != "" {
-            		if err == nil {
-            	    	t.Fatalf("expected error containing %q, got nil", tc.expectedErr)
-            		}
-            		if !strings.Contains(err.Error(), tc.expectedErr) {
-                		t.Fatalf("expected error containing %q, but got %v", tc.expectedErr, err)
-            		}
+					if err == nil {
+						t.Fatalf("expected error containing %q, got nil", tc.expectedErr)
+					}
+					if !strings.Contains(err.Error(), tc.expectedErr) {
+						t.Fatalf("expected error containing %q, but got %v", tc.expectedErr, err)
+					}
 				} else {
 					if err != nil {
 						t.Fatalf("Writer.Close: %v", err)
