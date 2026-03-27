@@ -20,6 +20,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"log"
 	"path"
 	"runtime"
 	"sort"
@@ -579,9 +580,15 @@ func (s *pcuState) doCleanup() {
 		defer func() { <-sem }()
 
 		// Use WithoutCancel to ensure cleanup isn't killed by parent context cancellation.
-		// Ignore cleanup errors here since its best effort and will rely on bucket
+
+		// Wrap it in a timeout to prevent hanging indefinitely.
+		cleanupCtx, cancel := context.WithTimeout(context.WithoutCancel(s.ctx), 5*time.Minute)
+		defer cancel()
+		// Only log cleanup errors here since its best effort and will rely on bucket
 		// lifecycle policies if cleanup fails.
-		_ = s.deleteFn(context.WithoutCancel(s.ctx), h)
+		if err := s.deleteFn(cleanupCtx, h); err != nil {
+			log.Printf("storage: failed to delete temporary part %q during parallel upload cleanup: %v", h.object, err)
+		}
 	}
 
 	for _, h := range s.partMap {

@@ -183,6 +183,10 @@ type Writer struct {
 	// parallel. Supported exclusively for gRPC clients. If used with a JSON
 	// client, the configuration is ignored and a standard upload is performed.
 	//
+	// Upon completion of a parallel upload, the Writer makes a best-effort attempt to clean up any temporary parts created.
+	// It is recommended to set appropriate bucket lifecycle policies to reliably clean up any leaked objects to avoid unnecessary storage costs.
+	// Temporary parts have the prefix: "gcs-go-sdk-pu-tmp".
+	//
 	// **Note:** This feature is currently experimental and its API surface may change
 	// in future releases. It is not yet recommended for production use.
 	EnableParallelUpload bool
@@ -238,6 +242,17 @@ func (w *Writer) getOrInitPCU() (*pcuState, error) {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	if w.pcu == nil {
+		if !w.EnableParallelUpload {
+			return nil, nil
+		}
+		if !w.isGRPCClient() {
+			// PCU only supported for gRPC.
+			// Nullify the config and proceed with standard upload.
+			// Log prominent warning.
+			log.Printf("storage: ParallelUploadConfig is ignored because Parallel Uploads are only supported for gRPC clients. Proceeding with standard upload.")
+			w.EnableParallelUpload = false
+			return nil, nil
+		}
 		if err := w.initPCU(w.ctx); err != nil {
 			return nil, err
 		}
@@ -273,20 +288,12 @@ func (w *Writer) Write(p []byte) (int, error) {
 	if !w.opened {
 		// First time initialization: freeze the configuration to either PCU or standard.
 		if w.EnableParallelUpload {
-			if !w.isGRPCClient() {
-				// PCU only supported for gRPC.
-				// Nullify the config and proceed with standard upload.
-				// Log prominent warning.
-				log.Println("storage: ParallelUploadConfig is ignored because Parallel Uploads are only supported for gRPC clients. Proceeding with standard upload.")
-				w.EnableParallelUpload = false
-			} else {
-				var err error
-				if pcu, err = w.getOrInitPCU(); err != nil {
-					return 0, err
-				}
-				if pcu != nil {
-					return w.wrapWriteError(pcu.write(p))
-				}
+			var err error
+			if pcu, err = w.getOrInitPCU(); err != nil {
+				return 0, err
+			}
+			if pcu != nil {
+				return w.wrapWriteError(pcu.write(p))
 			}
 		}
 		if err := w.openWriter(); err != nil {
@@ -353,14 +360,12 @@ func (w *Writer) Close() error {
 	}
 
 	if pcu != nil || (!w.opened && w.EnableParallelUpload) {
-		if w.EnableParallelUpload && !w.isGRPCClient() && pcu == nil {
-			w.EnableParallelUpload = false
-		} else {
-			var err error
-			if pcu, err = w.getOrInitPCU(); err != nil {
-				return err
-			}
+		var err error
+		if pcu, err = w.getOrInitPCU(); err != nil {
+			return err
+		}
 
+		if pcu != nil {
 			err = pcu.close()
 			w.mu.Lock()
 			defer w.mu.Unlock()
