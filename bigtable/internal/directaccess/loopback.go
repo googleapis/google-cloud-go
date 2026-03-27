@@ -17,10 +17,13 @@ package directaccess
 import (
 	"fmt"
 	"net"
+
+	btopt "cloud.google.com/go/bigtable/internal/option"
 )
 
 // CheckLoopbackInterfaceUp verifies that at least one loopback interface is UP.
 func CheckLoopbackInterfaceUp() error {
+	btopt.Debugf(nil, "directaccess: Checking for UP loopback interfaces")
 	ifaces, err := net.Interfaces()
 	if err != nil {
 		return fmt.Errorf("failed to list network interfaces: %w", err)
@@ -53,24 +56,42 @@ func onlyLoopback(iface net.Interface) error {
 	return nil
 }
 
+// CheckLocalIPv6Addresses searches the host's non-loopback network interfaces
+// to verify if the specified IPv6 address is currently plumbed and active.
+// It returns the interface where the address is configured, or an error if not
 func CheckLocalIPv6Addresses(ip *net.IP) (*net.Interface, error) {
+	btopt.Debugf(nil, "directaccess: Searching for local IPv6 address: %s", ip.String())
 	return findLocalAddress(func(i net.IP) bool { return i.To4() == nil && i.Equal(*ip) }, skipLoopback)
 }
 
+// CheckLocalIPv4Addresses searches the host's non-loopback network interfaces
+// to verify if the specified IPv4 address is currently plumbed and active.
+// It returns the interface where the address is configured, or an error if not found.
 func CheckLocalIPv4Addresses(ip *net.IP) (*net.Interface, error) {
+	btopt.Debugf(nil, "directaccess: Searching for local IPv4 address: %s", ip.String())
 	return findLocalAddress(func(i net.IP) bool { return i.To4() != nil && i.Equal(*ip) }, skipLoopback)
 }
 
+// CheckLocalIPv6LoopbackAddress verifies that the standard IPv6 loopback
+// address (::1) is configured and assigned to a local loopback interface.
 func CheckLocalIPv6LoopbackAddress() error {
+	btopt.Debugf(nil, "directaccess: Searching for IPv6 loopback (::1)")
 	_, err := findLocalAddress(func(i net.IP) bool { return i.Equal(net.ParseIP("::1")) }, onlyLoopback)
 	return err
 }
 
+// CheckLocalIPv4LoopbackAddress verifies that the standard IPv4 loopback
+// address (127.0.0.1) is configured and assigned to a local loopback interface.
 func CheckLocalIPv4LoopbackAddress() error {
+	btopt.Debugf(nil, "directaccess: Searching for IPv4 loopback (127.0.0.1)")
 	_, err := findLocalAddress(func(i net.IP) bool { return i.Equal(net.ParseIP("127.0.0.1")) }, onlyLoopback)
 	return err
 }
 
+// findLocalAddress is a generic helper that iterates through all local network interfaces.
+// It applies the ifaceFilter to skip unwanted interfaces (e.g., ignoring loopbacks
+// or inactive NICs) and checks if any assigned IP satisfies the ipMatches condition.
+// It returns the first matching network interface, or an error if exhausted.
 func findLocalAddress(ipMatches func(net.IP) bool, ifaceFilter func(net.Interface) error) (*net.Interface, error) {
 	ifaces, err := net.Interfaces()
 	if err != nil {
@@ -90,5 +111,6 @@ func findLocalAddress(ipMatches func(net.IP) bool, ifaceFilter func(net.Interfac
 			}
 		}
 	}
+	btopt.Debugf(nil, "directaccess: Target address not found on any valid interface")
 	return nil, fmt.Errorf("address not found on any interface")
 }
