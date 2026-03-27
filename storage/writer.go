@@ -248,7 +248,6 @@ func (w *Writer) getOrInitPCU() (*pcuState, error) {
 		if !w.isGRPCClient() {
 			// PCU only supported for gRPC.
 			// Nullify the config and proceed with standard upload.
-			// Log prominent warning.
 			log.Printf("storage: ParallelUploadConfig is ignored because Parallel Uploads are only supported for gRPC clients. Proceeding with standard upload.")
 			w.EnableParallelUpload = false
 			return nil, nil

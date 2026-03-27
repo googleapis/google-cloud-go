@@ -580,7 +580,6 @@ func (s *pcuState) doCleanup() {
 		defer func() { <-sem }()
 
 		// Use WithoutCancel to ensure cleanup isn't killed by parent context cancellation.
-
 		// Wrap it in a timeout to prevent hanging indefinitely.
 		cleanupCtx, cancel := context.WithTimeout(context.WithoutCancel(s.ctx), 5*time.Minute)
 		defer cancel()
