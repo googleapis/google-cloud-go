@@ -1,11 +1,13 @@
 ---
 name: generation-check
 on:
-  pull_request:
-
+  schedule:
+    # Runs every day at 4:00 AM UTC
+    - cron: '0 4 * * *'
+  # Allows manual triggering for debugging purpose.
+  workflow_dispatch:
 permissions:
-  contents: read  #  to fetch code (actions/checkout)
-
+  contents: read
 jobs:
   regeneration:
     runs-on: ubuntu-latest
