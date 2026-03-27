@@ -3712,7 +3712,7 @@
         "resultType": "MessageIterator",
         "shortName": "ListMessages"
       },
-      "description": "ListMessages lists messages that belong to a given conversation.\n`messages` are ordered by `create_time` in descending order. To fetch\nupdates without duplication, send request with filter\n`create_time_epoch_microseconds >\n[first item's create_time of previous request]` and empty page_token.",
+      "description": "ListMessages lists messages that belong to a given conversation.\n`messages` are ordered by `create_time` in descending order. To fetch\nupdates without duplication, send request with filter\n`create_time_epoch_microseconds \u003e\n[first item's create_time of previous request]` and empty page_token.",
       "file": "ConversationsClient/ListMessages/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",

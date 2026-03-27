@@ -43,7 +43,7 @@
         "resultType": "CreateServiceOperation",
         "shortName": "CreateService"
       },
-      "description": "CreateService creates a new managed service.\n\nA managed service is immutable, and is subject to mandatory 30-day\ndata retention. You cannot move a service or recreate it within 30 days\nafter deletion.\n\nOne producer project can own no more than 500 services. For security and\nreliability purposes, a production service should be hosted in a\ndedicated producer project.\n\nOperation<response: ManagedService>",
+      "description": "CreateService creates a new managed service.\n\nA managed service is immutable, and is subject to mandatory 30-day\ndata retention. You cannot move a service or recreate it within 30 days\nafter deletion.\n\nOne producer project can own no more than 500 services. For security and\nreliability purposes, a production service should be hosted in a\ndedicated producer project.\n\nOperation\u003cresponse: ManagedService\u003e",
       "file": "ServiceManagerClient/CreateService/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -135,7 +135,7 @@
         "resultType": "CreateServiceRolloutOperation",
         "shortName": "CreateServiceRollout"
       },
-      "description": "CreateServiceRollout creates a new service configuration rollout. Based on rollout, the\nGoogle Service Management will roll out the service configurations to\ndifferent backend services. For example, the logging configuration will be\npushed to Google Cloud Logging.\n\nPlease note that any previous pending and running Rollouts and associated\nOperations will be automatically cancelled so that the latest Rollout will\nnot be blocked by previous Rollouts.\n\nOnly the 100 most recent (in any state) and the last 10 successful (if not\nalready part of the set of 100 most recent) rollouts are kept for each\nservice. The rest will be deleted eventually.\n\nOperation<response: Rollout>",
+      "description": "CreateServiceRollout creates a new service configuration rollout. Based on rollout, the\nGoogle Service Management will roll out the service configurations to\ndifferent backend services. For example, the logging configuration will be\npushed to Google Cloud Logging.\n\nPlease note that any previous pending and running Rollouts and associated\nOperations will be automatically cancelled so that the latest Rollout will\nnot be blocked by previous Rollouts.\n\nOnly the 100 most recent (in any state) and the last 10 successful (if not\nalready part of the set of 100 most recent) rollouts are kept for each\nservice. The rest will be deleted eventually.\n\nOperation\u003cresponse: Rollout\u003e",
       "file": "ServiceManagerClient/CreateServiceRollout/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -181,7 +181,7 @@
         "resultType": "DeleteServiceOperation",
         "shortName": "DeleteService"
       },
-      "description": "DeleteService deletes a managed service. This method will change the service to the\n`Soft-Delete` state for 30 days. Within this period, service producers may\ncall\n[UndeleteService][google.api.servicemanagement.v1.ServiceManager.UndeleteService]\nto restore the service. After 30 days, the service will be permanently\ndeleted.\n\nOperation<response: google.protobuf.Empty>",
+      "description": "DeleteService deletes a managed service. This method will change the service to the\n`Soft-Delete` state for 30 days. Within this period, service producers may\ncall\n[UndeleteService][google.api.servicemanagement.v1.ServiceManager.UndeleteService]\nto restore the service. After 30 days, the service will be permanently\ndeleted.\n\nOperation\u003cresponse: google.protobuf.Empty\u003e",
       "file": "ServiceManagerClient/DeleteService/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -687,7 +687,7 @@
         "resultType": "SubmitConfigSourceOperation",
         "shortName": "SubmitConfigSource"
       },
-      "description": "SubmitConfigSource creates a new service configuration (version) for a managed service based\non\nuser-supplied configuration source files (for example: OpenAPI\nSpecification). This method stores the source configurations as well as the\ngenerated service configuration. To rollout the service configuration to\nother services,\nplease call\n[CreateServiceRollout][google.api.servicemanagement.v1.ServiceManager.CreateServiceRollout].\n\nOnly the 100 most recent configuration sources and ones referenced by\nexisting service configurtions are kept for each service. The rest will be\ndeleted eventually.\n\nOperation<response: SubmitConfigSourceResponse>",
+      "description": "SubmitConfigSource creates a new service configuration (version) for a managed service based\non\nuser-supplied configuration source files (for example: OpenAPI\nSpecification). This method stores the source configurations as well as the\ngenerated service configuration. To rollout the service configuration to\nother services,\nplease call\n[CreateServiceRollout][google.api.servicemanagement.v1.ServiceManager.CreateServiceRollout].\n\nOnly the 100 most recent configuration sources and ones referenced by\nexisting service configurtions are kept for each service. The rest will be\ndeleted eventually.\n\nOperation\u003cresponse: SubmitConfigSourceResponse\u003e",
       "file": "ServiceManagerClient/SubmitConfigSource/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -779,7 +779,7 @@
         "resultType": "UndeleteServiceOperation",
         "shortName": "UndeleteService"
       },
-      "description": "UndeleteService revives a previously deleted managed service. The method restores the\nservice using the configuration at the time the service was deleted.\nThe target service must exist and must have been deleted within the\nlast 30 days.\n\nOperation<response: UndeleteServiceResponse>",
+      "description": "UndeleteService revives a previously deleted managed service. The method restores the\nservice using the configuration at the time the service was deleted.\nThe target service must exist and must have been deleted within the\nlast 30 days.\n\nOperation\u003cresponse: UndeleteServiceResponse\u003e",
       "file": "ServiceManagerClient/UndeleteService/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",

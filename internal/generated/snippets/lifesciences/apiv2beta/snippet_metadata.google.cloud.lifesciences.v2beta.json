@@ -42,7 +42,7 @@
         ],
         "shortName": "CancelOperation"
       },
-      "description": "CancelOperation starts asynchronous cancellation on a long-running operation. The\nserver makes a best effort to cancel the operation, but success is\nnot guaranteed. Clients may use\n[Operations.GetOperation][google.longrunning.Operations.GetOperation] or\n[Operations.ListOperations][google.longrunning.Operations.ListOperations] to\ncheck whether the cancellation succeeded or the operation completed\ndespite cancellation.\nAuthorization requires the following [Google\nIAM](https: //cloud.google.com/iam) permission&#58;\n\n* `lifesciences.operations.cancel`",
+      "description": "CancelOperation starts asynchronous cancellation on a long-running operation. The\nserver makes a best effort to cancel the operation, but success is\nnot guaranteed. Clients may use\n[Operations.GetOperation][google.longrunning.Operations.GetOperation] or\n[Operations.ListOperations][google.longrunning.Operations.ListOperations] to\ncheck whether the cancellation succeeded or the operation completed\ndespite cancellation.\nAuthorization requires the following [Google\nIAM](https: //cloud.google.com/iam) permission\u0026#58;\n\n* `lifesciences.operations.cancel`",
       "file": "WorkflowsServiceV2BetaClient/CancelOperation/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -134,7 +134,7 @@
         "resultType": "*longrunningpb.Operation",
         "shortName": "GetOperation"
       },
-      "description": "GetOperation gets the latest state of a long-running operation. Clients can use this\nmethod to poll the operation result at intervals as recommended by the\nAPI service.\nAuthorization requires the following [Google\nIAM](https: //cloud.google.com/iam) permission&#58;\n\n* `lifesciences.operations.get`",
+      "description": "GetOperation gets the latest state of a long-running operation. Clients can use this\nmethod to poll the operation result at intervals as recommended by the\nAPI service.\nAuthorization requires the following [Google\nIAM](https: //cloud.google.com/iam) permission\u0026#58;\n\n* `lifesciences.operations.get`",
       "file": "WorkflowsServiceV2BetaClient/GetOperation/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -226,7 +226,7 @@
         "resultType": "OperationIterator",
         "shortName": "ListOperations"
       },
-      "description": "ListOperations lists operations that match the specified filter in the\nrequest. Authorization requires the following [Google\nIAM](https: //cloud.google.com/iam) permission&#58;\n\n* `lifesciences.operations.list`",
+      "description": "ListOperations lists operations that match the specified filter in the\nrequest. Authorization requires the following [Google\nIAM](https: //cloud.google.com/iam) permission\u0026#58;\n\n* `lifesciences.operations.list`",
       "file": "WorkflowsServiceV2BetaClient/ListOperations/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",

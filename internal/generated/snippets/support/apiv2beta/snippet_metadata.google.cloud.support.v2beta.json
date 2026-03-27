@@ -365,7 +365,7 @@
         "resultType": "CaseClassificationIterator",
         "shortName": "SearchCaseClassifications"
       },
-      "description": "SearchCaseClassifications retrieve valid classifications to use when creating a support case.\n\nClassifications are hierarchical. Each classification is a string\ncontaining all levels of the hierarchy separated by `\" > \"`. For example,\n`\"Technical Issue > Compute > Compute Engine\"`.\n\nClassification IDs returned by this endpoint are valid for at least six\nmonths. When a classification is deactivated, this endpoint immediately\nstops returning it. After six months, `case.create` requests using the\nclassification will fail.",
+      "description": "SearchCaseClassifications retrieve valid classifications to use when creating a support case.\n\nClassifications are hierarchical. Each classification is a string\ncontaining all levels of the hierarchy separated by `\" \u003e \"`. For example,\n`\"Technical Issue \u003e Compute \u003e Compute Engine\"`.\n\nClassification IDs returned by this endpoint are valid for at least six\nmonths. When a classification is deactivated, this endpoint immediately\nstops returning it. After six months, `case.create` requests using the\nclassification will fail.",
       "file": "CaseClient/SearchCaseClassifications/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",

@@ -453,7 +453,7 @@
         "resultType": "*adminpb.DisplayVideo360AdvertiserLinkProposal",
         "shortName": "CancelDisplayVideo360AdvertiserLinkProposal"
       },
-      "description": "CancelDisplayVideo360AdvertiserLinkProposal cancels a DisplayVideo360AdvertiserLinkProposal.\nCancelling can mean either: \n- Declining a proposal initiated from Display & Video 360\n- Withdrawing a proposal initiated from Google Analytics\nAfter being cancelled, a proposal will eventually be deleted automatically.",
+      "description": "CancelDisplayVideo360AdvertiserLinkProposal cancels a DisplayVideo360AdvertiserLinkProposal.\nCancelling can mean either: \n- Declining a proposal initiated from Display \u0026 Video 360\n- Withdrawing a proposal initiated from Google Analytics\nAfter being cancelled, a proposal will eventually be deleted automatically.",
       "file": "AnalyticsAdminClient/CancelDisplayVideo360AdvertiserLinkProposal/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -959,7 +959,7 @@
         "resultType": "*adminpb.DisplayVideo360AdvertiserLink",
         "shortName": "CreateDisplayVideo360AdvertiserLink"
       },
-      "description": "CreateDisplayVideo360AdvertiserLink creates a DisplayVideo360AdvertiserLink.\nThis can only be utilized by users who have proper authorization both on\nthe Google Analytics property and on the Display & Video 360 advertiser.\nUsers who do not have access to the Display & Video 360 advertiser should\ninstead seek to create a DisplayVideo360LinkProposal.",
+      "description": "CreateDisplayVideo360AdvertiserLink creates a DisplayVideo360AdvertiserLink.\nThis can only be utilized by users who have proper authorization both on\nthe Google Analytics property and on the Display \u0026 Video 360 advertiser.\nUsers who do not have access to the Display \u0026 Video 360 advertiser should\ninstead seek to create a DisplayVideo360LinkProposal.",
       "file": "AnalyticsAdminClient/CreateDisplayVideo360AdvertiserLink/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -5674,7 +5674,7 @@
         "resultType": "*adminpb.RunAccessReportResponse",
         "shortName": "RunAccessReport"
       },
-      "description": "RunAccessReport returns a customized report of data access records. The report provides\nrecords of each time a user reads Google Analytics reporting data. Access\nrecords are retained for up to 2 years.\n\nData Access Reports can be requested for a property. Reports may be\nrequested for any property, but dimensions that aren't related to quota can\nonly be requested on Google Analytics 360 properties. This method is only\navailable to Administrators.\n\nThese data access records include GA UI Reporting, GA UI Explorations,\nGA Data API, and other products like Firebase & Admob that can retrieve\ndata from Google Analytics through a linkage. These records don't include\nproperty configuration changes like adding a stream or changing a\nproperty's time zone. For configuration change history, see\n[searchChangeHistoryEvents](https: //developers.google.com/analytics/devguides/config/admin/v1/rest/v1alpha/accounts/searchChangeHistoryEvents).\n\nTo give your feedback on this API, complete the [Google Analytics Access\nReports\nfeedback](https: //docs.google.com/forms/d/e/1FAIpQLSdmEBUrMzAEdiEKk5TV5dEHvDUZDRlgWYdQdAeSdtR4hVjEhw/viewform)\nform.",
+      "description": "RunAccessReport returns a customized report of data access records. The report provides\nrecords of each time a user reads Google Analytics reporting data. Access\nrecords are retained for up to 2 years.\n\nData Access Reports can be requested for a property. Reports may be\nrequested for any property, but dimensions that aren't related to quota can\nonly be requested on Google Analytics 360 properties. This method is only\navailable to Administrators.\n\nThese data access records include GA UI Reporting, GA UI Explorations,\nGA Data API, and other products like Firebase \u0026 Admob that can retrieve\ndata from Google Analytics through a linkage. These records don't include\nproperty configuration changes like adding a stream or changing a\nproperty's time zone. For configuration change history, see\n[searchChangeHistoryEvents](https: //developers.google.com/analytics/devguides/config/admin/v1/rest/v1alpha/accounts/searchChangeHistoryEvents).\n\nTo give your feedback on this API, complete the [Google Analytics Access\nReports\nfeedback](https: //docs.google.com/forms/d/e/1FAIpQLSdmEBUrMzAEdiEKk5TV5dEHvDUZDRlgWYdQdAeSdtR4hVjEhw/viewform)\nform.",
       "file": "AnalyticsAdminClient/RunAccessReport/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",

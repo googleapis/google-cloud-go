@@ -594,7 +594,7 @@
         "resultType": "ViolationIterator",
         "shortName": "ListViolations"
       },
-      "description": "ListViolations lists Violations for a workload\nCallers may also choose to read across multiple Customers or for a single\ncustomer as per\n[AIP-159](https: //google.aip.dev/159) by using '-' (the hyphen or dash\ncharacter) as a wildcard character instead of {customer} & {workload}.\nFormat: \n`organizations/{organization}/locations/{location}/customers/{customer}/workloads/{workload}`",
+      "description": "ListViolations lists Violations for a workload\nCallers may also choose to read across multiple Customers or for a single\ncustomer as per\n[AIP-159](https: //google.aip.dev/159) by using '-' (the hyphen or dash\ncharacter) as a wildcard character instead of {customer} \u0026 {workload}.\nFormat: \n`organizations/{organization}/locations/{location}/customers/{customer}/workloads/{workload}`",
       "file": "CloudControlsPartnerMonitoringClient/ListViolations/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",

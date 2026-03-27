@@ -21,11 +21,12 @@
 package locationpb
 
 import (
+	reflect "reflect"
+	sync "sync"
+
 	spannerpb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
