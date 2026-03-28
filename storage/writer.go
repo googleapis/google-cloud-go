@@ -184,7 +184,7 @@ type Writer struct {
 	// client, the configuration is ignored and a standard upload is performed.
 	//
 	// Upon completion of a parallel upload, the Writer makes a best-effort attempt to clean up any temporary parts created.
-	// It is recommended to set appropriate bucket lifecycle policies to reliably clean up any leaked objects to avoid unnecessary storage costs.
+	// It is recommended to set appropriate bucket lifecycle policies to reliably clean up any leftover objects to avoid unnecessary storage costs.
 	// Temporary parts have the prefix: "gcs-go-sdk-pu-tmp".
 	//
 	// **Note:** This feature is currently experimental and its API surface may change
