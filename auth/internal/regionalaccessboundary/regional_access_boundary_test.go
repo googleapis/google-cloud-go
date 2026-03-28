@@ -641,11 +641,45 @@ func TestDataProvider_GetHeaderValue(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("Regional endpoint skip", func(t *testing.T) {
-		token := &auth.Token{Value: "base"}
-		provider, _ := NewProvider(http.DefaultClient, &mockConfigProvider{}, nil, &mockTokenProvider{TokenToReturn: token})
-		val := provider.GetHeaderValue(ctx, "https://us-central1.rep.googleapis.com/v1/...", token)
-		if val != "" {
-			t.Errorf("Expected empty header for regional endpoint, got %q", val)
+		tests := []struct {
+			name     string
+			reqURL   string
+			wantCall bool
+		}{
+			{"Standard Regional URL", "https://us-central1.rep.googleapis.com/v1/...", false},
+			{"Regional Host Only", "us-central1.rep.googleapis.com", false},
+			{"Regional with Port", "us-central1.rep.googleapis.com:443", false},
+			{"Injected Query Param", "https://pubsub.googleapis.com/v1/...?tracking=rep.googleapis.com", true},
+		}
+
+		for _, tt := range tests {
+			t.Run(tt.name, func(t *testing.T) {
+				token := &auth.Token{Value: "base"}
+				mockConfig := &mockConfigProvider{universeToReturn: internal.DefaultUniverseDomain}
+				provider, _ := NewProvider(http.DefaultClient, mockConfig, nil, &mockTokenProvider{TokenToReturn: token})
+
+				_ = provider.GetHeaderValue(ctx, tt.reqURL, token)
+
+				if tt.wantCall {
+					deadline := time.Now().Add(1 * time.Second)
+					var gotCall bool
+					for time.Now().Before(deadline) {
+						if mockConfig.endpointCallCount > 0 {
+							gotCall = true
+							break
+						}
+						time.Sleep(10 * time.Millisecond)
+					}
+					if !gotCall {
+						t.Errorf("GetHeaderValue(%q) did not initiate fetch (want fetch)", tt.reqURL)
+					}
+				} else {
+					time.Sleep(50 * time.Millisecond)
+					if mockConfig.endpointCallCount > 0 {
+						t.Errorf("GetHeaderValue(%q) initiated fetch unexpectedly", tt.reqURL)
+					}
+				}
+			})
 		}
 	})
 

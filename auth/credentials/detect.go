@@ -142,7 +142,7 @@ func DetectDefault(opts *DetectOptions) (*auth.Credentials, error) {
 	if err := opts.validate(); err != nil {
 		return nil, err
 	}
-	trustBoundaryEnabled, err := regionalaccessboundary.IsEnabled()
+	regionalAccessBoundaryEnabled, err := regionalaccessboundary.IsEnabled()
 	if err != nil {
 		return nil, err
 	}
@@ -175,7 +175,7 @@ func DetectDefault(opts *DetectOptions) (*auth.Credentials, error) {
 		}
 
 		tp := computeTokenProvider(opts, metadataClient)
-		if trustBoundaryEnabled {
+		if regionalAccessBoundaryEnabled {
 			gceConfigProvider := regionalaccessboundary.NewGCEConfigProvider(gceUniverseDomainProvider)
 			var err error
 			tp, err = regionalaccessboundary.NewProvider(opts.client(), gceConfigProvider, opts.logger(), tp)

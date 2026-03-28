@@ -21,7 +21,9 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 	"sync"
@@ -246,8 +248,18 @@ func (p *DataProvider) Token(ctx context.Context) (*auth.Token, error) {
 // if it is unpopulated or expired.
 func (p *DataProvider) GetHeaderValue(ctx context.Context, reqURL string, accessToken *auth.Token) string {
 	// Skip lookup for regional endpoints.
-	if strings.Contains(reqURL, "rep.googleapis.com") || strings.Contains(reqURL, "rep.sandbox.googleapis.com") {
-		return ""
+	if !strings.Contains(reqURL, "://") {
+		reqURL = "https://" + reqURL
+	}
+	if u, err := url.Parse(reqURL); err == nil {
+		host := u.Host
+		if h, _, err := net.SplitHostPort(host); err == nil {
+			host = h
+		}
+		if host == "rep.googleapis.com" || strings.HasSuffix(host, ".rep.googleapis.com") ||
+			host == "rep.sandbox.googleapis.com" || strings.HasSuffix(host, ".rep.sandbox.googleapis.com") {
+			return ""
+		}
 	}
 
 	// Skip lookup for non-default universe domains.
