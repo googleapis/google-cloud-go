@@ -2,7 +2,7 @@ image: us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-prod/librarian
 libraries:
   - id: accessapproval
     version: 1.8.8
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - accessapproval
@@ -14,7 +14,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: accesscontextmanager
     version: 1.9.7
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - accesscontextmanager
@@ -26,7 +26,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: advisorynotifications
     version: 1.5.6
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - advisorynotifications
@@ -38,7 +38,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: ai
     version: 0.15.0
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - ai
@@ -50,7 +50,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: aiplatform
     version: 1.121.0
-    last_generated_commit: ebfdba37e54d9cd3e78380d226c2c4ab5a5f7fd4
+    last_generated_commit: ""
     apis: []
     source_roots:
       - aiplatform
@@ -62,7 +62,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: alloydb
     version: 1.21.0
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - alloydb
@@ -74,7 +74,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: analytics
     version: 0.30.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - analytics
@@ -86,7 +86,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: apigateway
     version: 1.7.7
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - apigateway
@@ -98,7 +98,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: apigeeconnect
     version: 1.7.7
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - apigeeconnect
@@ -110,7 +110,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: apigeeregistry
     version: 0.10.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - apigeeregistry
@@ -122,7 +122,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: apihub
     version: 0.2.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - apihub
@@ -134,7 +134,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: apikeys
     version: 1.2.7
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - apikeys
@@ -146,7 +146,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: apiregistry
     version: 0.2.0
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - apiregistry
@@ -156,7 +156,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: appengine
     version: 1.9.7
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - appengine
@@ -168,7 +168,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: apphub
     version: 0.4.0
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - apphub
@@ -180,7 +180,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: apps
     version: 0.8.0
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - apps
@@ -192,7 +192,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: area120
     version: 0.10.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - area120
@@ -204,7 +204,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: artifactregistry
     version: 1.20.0
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - artifactregistry
@@ -216,7 +216,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: asset
     version: 1.22.1
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - asset
@@ -228,7 +228,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: assuredworkloads
     version: 1.13.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - assuredworkloads
@@ -240,7 +240,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: auditmanager
     version: 0.2.0
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - auditmanager
@@ -250,7 +250,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: auth
     version: 0.19.0
-    last_generated_commit: 31b413bc4feb03f6849c718048c2b9998561b5fa
+    last_generated_commit: ""
     apis: []
     source_roots:
       - auth
@@ -261,7 +261,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: auth/oauth2adapt
     version: 0.2.8
-    last_generated_commit: 063f9e19c5890182920980ced75828fd7c0588a5
+    last_generated_commit: ""
     apis: []
     source_roots:
       - auth/oauth2adapt
@@ -270,7 +270,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: automl
     version: 1.15.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - automl
@@ -282,7 +282,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: backupdr
     version: 1.9.0
-    last_generated_commit: 59d5f2b46924714af627ac29ea6de78641a00835
+    last_generated_commit: ""
     apis: []
     source_roots:
       - backupdr
@@ -294,7 +294,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: baremetalsolution
     version: 1.4.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - baremetalsolution
@@ -306,7 +306,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: batch
     version: 1.14.0
-    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
+    last_generated_commit: ""
     apis: []
     source_roots:
       - batch
@@ -319,7 +319,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: beyondcorp
     version: 1.2.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - beyondcorp
@@ -331,7 +331,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: bigquery
     version: 1.74.0
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - bigquery
@@ -347,7 +347,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: bigquery/v2
     version: 0.0.0
-    last_generated_commit: 9a477cd3c26a704130e2a2fb44a40281d9312e4c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - bigquery/v2
@@ -360,7 +360,7 @@ libraries:
     tag_format: bigquery/v{version}
   - id: bigtable
     version: 1.43.0
-    last_generated_commit: 59d5f2b46924714af627ac29ea6de78641a00835
+    last_generated_commit: ""
     apis: []
     source_roots:
       - bigtable
@@ -373,7 +373,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: billing
     version: 1.21.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - billing
@@ -385,7 +385,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: binaryauthorization
     version: 1.10.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - binaryauthorization
@@ -397,7 +397,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: capacityplanner
     version: 0.2.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - capacityplanner
@@ -409,7 +409,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: certificatemanager
     version: 1.9.6
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - certificatemanager
@@ -421,7 +421,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: ces
     version: 0.4.0
-    last_generated_commit: 59d5f2b46924714af627ac29ea6de78641a00835
+    last_generated_commit: ""
     apis: []
     source_roots:
       - ces
@@ -431,7 +431,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: channel
     version: 1.21.0
-    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
+    last_generated_commit: ""
     apis: []
     source_roots:
       - channel
@@ -443,7 +443,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: chat
     version: 0.18.0
-    last_generated_commit: 7a5706618f42f482acf583febcc7b977b66c25b2
+    last_generated_commit: ""
     apis: []
     source_roots:
       - chat
@@ -455,7 +455,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: chronicle
     version: 0.2.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - chronicle
@@ -467,7 +467,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: cloudbuild
     version: 1.25.0
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - cloudbuild
@@ -479,7 +479,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: cloudcontrolspartner
     version: 1.5.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - cloudcontrolspartner
@@ -491,7 +491,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: clouddms
     version: 1.8.8
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - clouddms
@@ -503,7 +503,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: cloudprofiler
     version: 0.4.6
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - cloudprofiler
@@ -515,7 +515,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: cloudquotas
     version: 1.6.0
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - cloudquotas
@@ -527,7 +527,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: cloudsecuritycompliance
     version: 0.1.0
-    last_generated_commit: 64f78809d70ea0d49f6ffbc7e6858eb37e350947
+    last_generated_commit: ""
     apis: []
     source_roots:
       - cloudsecuritycompliance
@@ -537,7 +537,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: cloudtasks
     version: 1.13.7
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - cloudtasks
@@ -549,7 +549,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: commerce
     version: 1.2.6
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - commerce
@@ -561,7 +561,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: compute
     version: 1.57.0
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - compute
@@ -574,7 +574,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: compute/metadata
     version: 0.9.0
-    last_generated_commit: 063f9e19c5890182920980ced75828fd7c0588a5
+    last_generated_commit: ""
     apis: []
     source_roots:
       - compute/metadata
@@ -583,7 +583,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: confidentialcomputing
     version: 1.11.0
-    last_generated_commit: 9eea40c74d97622bb0aa406dd313409a376cc73b
+    last_generated_commit: ""
     apis: []
     source_roots:
       - confidentialcomputing
@@ -595,7 +595,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: config
     version: 1.6.0
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - config
@@ -607,7 +607,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: configdelivery
     version: 0.1.1
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - configdelivery
@@ -619,7 +619,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: contactcenterinsights
     version: 1.17.4
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - contactcenterinsights
@@ -631,7 +631,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: container
     version: 1.46.0
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - container
@@ -643,7 +643,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: containeranalysis
     version: 0.14.2
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - containeranalysis
@@ -655,7 +655,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: datacatalog
     version: 1.26.1
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - datacatalog
@@ -668,7 +668,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: dataflow
     version: 0.11.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - dataflow
@@ -680,7 +680,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: dataform
     version: 0.14.0
-    last_generated_commit: 59d5f2b46924714af627ac29ea6de78641a00835
+    last_generated_commit: ""
     apis: []
     source_roots:
       - dataform
@@ -692,7 +692,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: datafusion
     version: 1.8.7
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - datafusion
@@ -704,7 +704,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: datalabeling
     version: 0.9.7
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - datalabeling
@@ -716,7 +716,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: datamanager
     version: 0.3.0
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - datamanager
@@ -726,7 +726,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: dataplex
     version: 1.29.0
-    last_generated_commit: 59d5f2b46924714af627ac29ea6de78641a00835
+    last_generated_commit: ""
     apis: []
     source_roots:
       - dataplex
@@ -738,7 +738,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: dataproc
     version: 2.16.0
-    last_generated_commit: 1133adb136f742df62864f1d9d307df25d451880
+    last_generated_commit: ""
     apis: []
     source_roots:
       - dataproc
@@ -750,7 +750,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: dataqna
     version: 0.9.8
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - dataqna
@@ -762,7 +762,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: datastore
     version: 1.22.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - datastore
@@ -774,7 +774,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: datastream
     version: 1.15.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - datastream
@@ -787,7 +787,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: deploy
     version: 1.27.3
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - deploy
@@ -799,7 +799,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: developerconnect
     version: 0.5.0
-    last_generated_commit: c662840a94dbdf708caa44893a2d49119cdd391c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - developerconnect
@@ -811,7 +811,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: devicestreaming
     version: 0.1.1
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - devicestreaming
@@ -823,7 +823,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: dialogflow
     version: 1.77.0
-    last_generated_commit: 59d5f2b46924714af627ac29ea6de78641a00835
+    last_generated_commit: ""
     apis: []
     source_roots:
       - dialogflow
@@ -835,7 +835,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: discoveryengine
     version: 1.24.0
-    last_generated_commit: 59d5f2b46924714af627ac29ea6de78641a00835
+    last_generated_commit: ""
     apis: []
     source_roots:
       - discoveryengine
@@ -847,7 +847,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: dlp
     version: 1.29.0
-    last_generated_commit: 59d5f2b46924714af627ac29ea6de78641a00835
+    last_generated_commit: ""
     apis: []
     source_roots:
       - dlp
@@ -857,7 +857,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: documentai
     version: 1.43.0
-    last_generated_commit: ebfdba37e54d9cd3e78380d226c2c4ab5a5f7fd4
+    last_generated_commit: ""
     apis: []
     source_roots:
       - documentai
@@ -869,7 +869,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: domains
     version: 0.10.7
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - domains
@@ -881,7 +881,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: edgecontainer
     version: 1.4.4
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - edgecontainer
@@ -893,7 +893,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: edgenetwork
     version: 1.3.0
-    last_generated_commit: b1a9eefc2e1021fb9465bdac5e2984499451ae34
+    last_generated_commit: ""
     apis: []
     source_roots:
       - edgenetwork
@@ -905,7 +905,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: errorreporting
     version: 0.4.0
-    last_generated_commit: 59d5f2b46924714af627ac29ea6de78641a00835
+    last_generated_commit: ""
     apis: []
     source_roots:
       - errorreporting
@@ -917,7 +917,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: essentialcontacts
     version: 1.7.7
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - essentialcontacts
@@ -929,7 +929,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: eventarc
     version: 1.18.0
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - eventarc
@@ -941,7 +941,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: filestore
     version: 1.10.3
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - filestore
@@ -953,7 +953,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: financialservices
     version: 0.1.4
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - financialservices
@@ -965,7 +965,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: firestore
     version: 1.21.0
-    last_generated_commit: 59d5f2b46924714af627ac29ea6de78641a00835
+    last_generated_commit: ""
     apis: []
     source_roots:
       - firestore
@@ -977,7 +977,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: functions
     version: 1.19.7
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - functions
@@ -989,7 +989,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: geminidataanalytics
     version: 0.8.0
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - geminidataanalytics
@@ -1001,7 +1001,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: gkebackup
     version: 1.8.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - gkebackup
@@ -1013,7 +1013,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: gkeconnect
     version: 0.12.5
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - gkeconnect
@@ -1025,7 +1025,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: gkehub
     version: 0.16.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - gkehub
@@ -1037,7 +1037,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: gkemulticloud
     version: 1.6.0
-    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
+    last_generated_commit: ""
     apis: []
     source_roots:
       - gkemulticloud
@@ -1049,7 +1049,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: gkerecommender
     version: 0.1.0
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - gkerecommender
@@ -1059,7 +1059,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: grafeas
     version: 0.3.17
-    last_generated_commit: 4591295cdf3e25890919115dde0e546c94046e2c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - grafeas
@@ -1068,7 +1068,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: gsuiteaddons
     version: 1.7.8
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - gsuiteaddons
@@ -1080,7 +1080,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: hypercomputecluster
     version: 0.2.0
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - hypercomputecluster
@@ -1090,7 +1090,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: iam
     version: 1.6.0
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - iam
@@ -1102,7 +1102,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: iap
     version: 1.12.0
-    last_generated_commit: ebfdba37e54d9cd3e78380d226c2c4ab5a5f7fd4
+    last_generated_commit: ""
     apis: []
     source_roots:
       - iap
@@ -1114,7 +1114,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: identitytoolkit
     version: 0.2.6
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - identitytoolkit
@@ -1126,7 +1126,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: ids
     version: 1.5.7
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - ids
@@ -1138,7 +1138,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: iot
     version: 1.8.7
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - iot
@@ -1150,7 +1150,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: kms
     version: 1.26.0
-    last_generated_commit: 1133adb136f742df62864f1d9d307df25d451880
+    last_generated_commit: ""
     apis: []
     source_roots:
       - kms
@@ -1162,7 +1162,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: language
     version: 1.14.6
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - language
@@ -1174,7 +1174,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: licensemanager
     version: 0.1.1
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - licensemanager
@@ -1186,7 +1186,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: lifesciences
     version: 0.10.7
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - lifesciences
@@ -1198,7 +1198,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: locationfinder
     version: 0.1.1
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - locationfinder
@@ -1210,7 +1210,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: logging
     version: 1.13.2
-    last_generated_commit: 59d5f2b46924714af627ac29ea6de78641a00835
+    last_generated_commit: ""
     apis: []
     source_roots:
       - logging
@@ -1222,7 +1222,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: longrunning
     version: 0.8.0
-    last_generated_commit: 59d5f2b46924714af627ac29ea6de78641a00835
+    last_generated_commit: ""
     apis: []
     source_roots:
       - longrunning
@@ -1234,7 +1234,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: lustre
     version: 0.2.1
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - lustre
@@ -1246,7 +1246,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: maintenance
     version: 0.3.0
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - maintenance
@@ -1256,7 +1256,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: managedidentities
     version: 1.7.7
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - managedidentities
@@ -1268,7 +1268,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: managedkafka
     version: 0.8.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - managedkafka
@@ -1280,7 +1280,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: maps
     version: 1.30.0
-    last_generated_commit: 59d5f2b46924714af627ac29ea6de78641a00835
+    last_generated_commit: ""
     apis: []
     source_roots:
       - maps
@@ -1292,7 +1292,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: mediatranslation
     version: 0.9.7
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - mediatranslation
@@ -1304,7 +1304,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: memcache
     version: 1.11.7
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - memcache
@@ -1316,7 +1316,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: memorystore
     version: 0.4.0
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - memorystore
@@ -1328,7 +1328,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: metastore
     version: 1.14.8
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - metastore
@@ -1340,7 +1340,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: migrationcenter
     version: 1.1.6
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - migrationcenter
@@ -1352,7 +1352,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: modelarmor
     version: 0.6.1
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - modelarmor
@@ -1364,7 +1364,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: monitoring
     version: 1.24.3
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - monitoring
@@ -1376,7 +1376,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: netapp
     version: 1.12.0
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - netapp
@@ -1388,7 +1388,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: networkconnectivity
     version: 1.21.0
-    last_generated_commit: ebfdba37e54d9cd3e78380d226c2c4ab5a5f7fd4
+    last_generated_commit: ""
     apis: []
     source_roots:
       - networkconnectivity
@@ -1398,7 +1398,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: networkmanagement
     version: 1.23.0
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - networkmanagement
@@ -1410,7 +1410,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: networksecurity
     version: 0.11.0
-    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
+    last_generated_commit: ""
     apis: []
     source_roots:
       - networksecurity
@@ -1422,7 +1422,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: networkservices
     version: 0.6.0
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - networkservices
@@ -1434,7 +1434,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: notebooks
     version: 1.12.7
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - notebooks
@@ -1446,7 +1446,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: optimization
     version: 1.7.7
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - optimization
@@ -1458,7 +1458,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: oracledatabase
     version: 0.6.0
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - oracledatabase
@@ -1470,7 +1470,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: orchestration
     version: 1.11.10
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - orchestration
@@ -1482,7 +1482,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: orgpolicy
     version: 1.15.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - orgpolicy
@@ -1494,7 +1494,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: osconfig
     version: 1.16.0
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - osconfig
@@ -1506,7 +1506,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: oslogin
     version: 1.14.7
-    last_generated_commit: e8365a7f88fabe8717cb8322b8ce784b03b6daea
+    last_generated_commit: ""
     apis: []
     source_roots:
       - oslogin
@@ -1518,7 +1518,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: parallelstore
     version: 0.12.0
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - parallelstore
@@ -1530,7 +1530,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: parametermanager
     version: 0.3.1
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - parametermanager
@@ -1542,7 +1542,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: phishingprotection
     version: 0.9.7
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - phishingprotection
@@ -1554,7 +1554,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: policysimulator
     version: 0.4.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - policysimulator
@@ -1566,7 +1566,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: policytroubleshooter
     version: 1.11.7
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - policytroubleshooter
@@ -1578,7 +1578,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: privatecatalog
     version: 0.10.8
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - privatecatalog
@@ -1590,7 +1590,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: privilegedaccessmanager
     version: 0.3.1
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - privilegedaccessmanager
@@ -1602,7 +1602,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: profiler
     version: 0.4.3
-    last_generated_commit: b8a4d56335478100ceb9df549bd18119a4b4b392
+    last_generated_commit: ""
     apis: []
     source_roots:
       - profiler
@@ -1611,7 +1611,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: pubsub
     version: 1.50.1
-    last_generated_commit: a32b926f35bf473f7ba31383e5247175beccd576
+    last_generated_commit: ""
     apis: []
     source_roots:
       - pubsub
@@ -1624,7 +1624,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: pubsub/v2
     version: 2.5.0
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - pubsub/v2
@@ -1636,7 +1636,7 @@ libraries:
     tag_format: pubsub/v{version}
   - id: pubsublite
     version: 1.8.2
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - pubsublite
@@ -1648,7 +1648,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: rapidmigrationassessment
     version: 1.1.8
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - rapidmigrationassessment
@@ -1660,7 +1660,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: recaptchaenterprise
     version: 2.21.0
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - recaptchaenterprise
@@ -1672,7 +1672,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: recommendationengine
     version: 0.9.7
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - recommendationengine
@@ -1684,7 +1684,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: recommender
     version: 1.13.6
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - recommender
@@ -1696,7 +1696,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: redis
     version: 1.18.3
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - redis
@@ -1708,7 +1708,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: resourcemanager
     version: 1.10.7
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - resourcemanager
@@ -1720,7 +1720,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: retail
     version: 1.26.0
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - retail
@@ -1732,7 +1732,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: root-module
     version: 0.123.0
-    last_generated_commit: 3990e05b25dcaf7ba8d6baa4255d9b012a3a6a4f
+    last_generated_commit: ""
     apis: []
     source_roots:
       - civil
@@ -1762,7 +1762,7 @@ libraries:
     tag_format: v{version}
   - id: run
     version: 1.16.0
-    last_generated_commit: 59d5f2b46924714af627ac29ea6de78641a00835
+    last_generated_commit: ""
     apis: []
     source_roots:
       - run
@@ -1775,7 +1775,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: saasplatform
     version: 0.2.0
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - saasplatform
@@ -1785,7 +1785,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: scheduler
     version: 1.11.8
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - scheduler
@@ -1797,7 +1797,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: secretmanager
     version: 1.16.0
-    last_generated_commit: ebfdba37e54d9cd3e78380d226c2c4ab5a5f7fd4
+    last_generated_commit: ""
     apis: []
     source_roots:
       - secretmanager
@@ -1809,7 +1809,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: securesourcemanager
     version: 1.4.1
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - securesourcemanager
@@ -1821,7 +1821,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: security
     version: 1.19.2
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - security
@@ -1833,7 +1833,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: securitycenter
     version: 1.39.0
-    last_generated_commit: ebfdba37e54d9cd3e78380d226c2c4ab5a5f7fd4
+    last_generated_commit: ""
     apis: []
     source_roots:
       - securitycenter
@@ -1845,7 +1845,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: securitycentermanagement
     version: 1.1.6
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - securitycentermanagement
@@ -1857,7 +1857,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: securityposture
     version: 0.2.6
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - securityposture
@@ -1869,7 +1869,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: servicecontrol
     version: 1.14.6
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - servicecontrol
@@ -1881,7 +1881,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: servicedirectory
     version: 1.12.7
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - servicedirectory
@@ -1893,7 +1893,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: servicehealth
     version: 1.2.4
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - servicehealth
@@ -1905,7 +1905,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: servicemanagement
     version: 1.10.7
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - servicemanagement
@@ -1917,7 +1917,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: serviceusage
     version: 1.9.7
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - serviceusage
@@ -1929,7 +1929,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: shell
     version: 1.8.7
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - shell
@@ -1941,7 +1941,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: shopping
     version: 1.6.0
-    last_generated_commit: ebfdba37e54d9cd3e78380d226c2c4ab5a5f7fd4
+    last_generated_commit: ""
     apis: []
     source_roots:
       - shopping
@@ -1953,7 +1953,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: spanner
     version: 1.89.0
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - spanner
@@ -1972,7 +1972,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: speech
     version: 1.30.0
-    last_generated_commit: c662840a94dbdf708caa44893a2d49119cdd391c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - speech
@@ -1984,7 +1984,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: storage
     version: 1.61.3
-    last_generated_commit: 9eea40c74d97622bb0aa406dd313409a376cc73b
+    last_generated_commit: ""
     apis: []
     source_roots:
       - storage
@@ -1998,7 +1998,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: storagebatchoperations
     version: 0.4.0
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - storagebatchoperations
@@ -2010,7 +2010,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: storageinsights
     version: 1.2.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - storageinsights
@@ -2022,7 +2022,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: storagetransfer
     version: 1.13.1
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - storagetransfer
@@ -2034,7 +2034,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: streetview
     version: 0.2.6
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - streetview
@@ -2046,7 +2046,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: support
     version: 1.5.0
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - support
@@ -2058,7 +2058,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: talent
     version: 1.8.4
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - talent
@@ -2070,7 +2070,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: telcoautomation
     version: 1.1.6
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - telcoautomation
@@ -2082,7 +2082,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: texttospeech
     version: 1.16.0
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - texttospeech
@@ -2094,7 +2094,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: tpu
     version: 1.8.4
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - tpu
@@ -2106,7 +2106,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: trace
     version: 1.11.7
-    last_generated_commit: 59d5f2b46924714af627ac29ea6de78641a00835
+    last_generated_commit: ""
     apis: []
     source_roots:
       - trace
@@ -2118,7 +2118,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: translate
     version: 1.12.7
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - translate
@@ -2130,7 +2130,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: vectorsearch
     version: 0.6.0
-    last_generated_commit: ebfdba37e54d9cd3e78380d226c2c4ab5a5f7fd4
+    last_generated_commit: ""
     apis: []
     source_roots:
       - vectorsearch
@@ -2140,7 +2140,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: vertexai
     version: 0.17.0
-    last_generated_commit: e8365a7f88fabe8717cb8322b8ce784b03b6daea
+    last_generated_commit: ""
     apis: []
     source_roots:
       - vertexai
@@ -2149,7 +2149,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: video
     version: 1.27.1
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - video
@@ -2161,7 +2161,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: videointelligence
     version: 1.12.7
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - videointelligence
@@ -2173,7 +2173,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: vision
     version: 2.9.6
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - vision
@@ -2185,7 +2185,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: visionai
     version: 0.5.0
-    last_generated_commit: 59d5f2b46924714af627ac29ea6de78641a00835
+    last_generated_commit: ""
     apis: []
     source_roots:
       - visionai
@@ -2197,7 +2197,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: vmmigration
     version: 1.10.0
-    last_generated_commit: 535d161c24965e9ed1a0b27032cc1c8b4beab818
+    last_generated_commit: ""
     apis: []
     source_roots:
       - vmmigration
@@ -2210,7 +2210,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: vmwareengine
     version: 1.3.6
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - vmwareengine
@@ -2222,7 +2222,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: vpcaccess
     version: 1.8.7
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - vpcaccess
@@ -2234,7 +2234,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: webrisk
     version: 1.11.2
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - webrisk
@@ -2246,7 +2246,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: websecurityscanner
     version: 1.7.7
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - websecurityscanner
@@ -2258,7 +2258,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: workflows
     version: 1.14.3
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - workflows
@@ -2270,7 +2270,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: workloadmanager
     version: 0.1.0
-    last_generated_commit: 6df3ecf4fd43b64826de6a477d1a535ec18b0d7c
+    last_generated_commit: ""
     apis: []
     source_roots:
       - workloadmanager
@@ -2280,7 +2280,7 @@ libraries:
     tag_format: '{id}/v{version}'
   - id: workstations
     version: 1.1.6
-    last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
+    last_generated_commit: ""
     apis: []
     source_roots:
       - workstations
