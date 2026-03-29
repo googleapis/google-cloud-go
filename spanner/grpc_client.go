@@ -34,10 +34,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-const (
-	directPathIPV6Prefix = "[2001:4860:8040"
-	directPathIPV4Prefix = "34.126"
-)
+
 
 type contextKey string
 
