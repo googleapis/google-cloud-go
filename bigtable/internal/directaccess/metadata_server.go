@@ -86,8 +86,8 @@ func FetchIPFromMetadataServer(addrFamilyStr string) (*net.IP, error) {
 
 	if resp.StatusCode == 200 {
 		address := net.ParseIP(strings.TrimSpace(string(body)))
-		btopt.Debugf(nil, "directaccess: Failed to parse metadata response as valid IP: %s", string(body))
 		if address == nil {
+			btopt.Debugf(nil, "directaccess: Failed to parse metadata response as valid IP: %s", string(body))
 			return nil, fmt.Errorf("failed to parse IP: %s", string(body))
 		}
 		btopt.Debugf(nil, "directaccess: Successfully fetched %s address: %s", addrFamilyStr, address.String())
