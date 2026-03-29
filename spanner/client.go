@@ -375,6 +375,8 @@ type ClientConfig struct {
 	ClientContext *sppb.RequestOptions_ClientContext
 
 	// EnableDirectAccess option is used to enable the directpath.
+	// This setting is overridden by the GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS
+	// environment variable if it is set.
 	//
 	// Default: false
 	EnableDirectAccess bool
