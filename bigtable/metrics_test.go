@@ -1179,7 +1179,7 @@ func TestCanonicalString(t *testing.T) {
 	}
 }
 
-func TestFallbackServerLatency(t *testing.T) {
+func TestFallbackT4T7Latency(t *testing.T) {
 	ctx := context.Background()
 	project := "test-project"
 	instance := "test-instance"
@@ -1307,23 +1307,19 @@ func TestClientBlockingLatency(t *testing.T) {
 	appProfile := "test-app-profile-client-blocking"
 	clientUID := "test-uid-client-blocking"
 
-	// Reduce sampling period to reduce test run time
 	origSamplePeriod := defaultSamplePeriod
 	defaultSamplePeriod = 100 * time.Millisecond
 	defer func() { defaultSamplePeriod = origSamplePeriod }()
 
-	// return constant client UID instead of random, so that attributes can be compared
 	origGenerateClientUID := generateClientUID
 	generateClientUID = func() (string, error) { return clientUID, nil }
 	defer func() { generateClientUID = origGenerateClientUID }()
 
-	// Set up a mock error handler to swallow expected shutdown errors
 	mer := &MockErrorHandler{buffer: new(bytes.Buffer)}
 	origErrHandler := otel.GetErrorHandler()
 	otel.SetErrorHandler(mer)
 	t.Cleanup(func() { otel.SetErrorHandler(origErrHandler) })
 
-	// Setup mock monitoring server
 	monitoringServer, err := NewMetricTestServer()
 	if err != nil {
 		t.Fatalf("Error setting up metrics test server: %v", err)
@@ -1331,7 +1327,6 @@ func TestClientBlockingLatency(t *testing.T) {
 	go monitoringServer.Serve()
 	defer monitoringServer.Shutdown()
 
-	// Override exporter options to connect to the mock server
 	origCreateExporterOptions := createExporterOptions
 	createExporterOptions = func(opts ...option.ClientOption) []option.ClientOption {
 		return []option.ClientOption{
@@ -1342,14 +1337,12 @@ func TestClientBlockingLatency(t *testing.T) {
 	}
 	defer func() { createExporterOptions = origCreateExporterOptions }()
 
-	// We can reuse the simple sendTwoRowsHandler for this test
 	tbl, cleanup, err := setupFakeServerWithCustomHandler(project, instance, ClientConfig{AppProfile: appProfile}, sendTwoRowsHandler)
 	defer cleanup()
 	if err != nil {
 		t.Fatalf("setupFakeServerWithCustomHandler error: got: %v, want: nil", err)
 	}
 
-	// Pop out any old requests from the monitoring server
 	monitoringServer.CreateServiceTimeSeriesRequests()
 
 	// Perform read rows operation

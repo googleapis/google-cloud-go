@@ -107,6 +107,13 @@ var (
 		800.0, 1000.0, 2000.0, 5000.0, 10000.0, 20000.0, 50000.0, 100000.0, 200000.0,
 		400000.0, 800000.0, 1600000.0, 3200000.0}
 
+	// clientBlockingBucketBounds bounds optimized for microsecond-scale
+	// latencies (expressed in milliseconds), ranging from 10µs to 10s.
+	clientBlockingBucketBounds = []float64{
+		0.0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.08, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1.0,
+		2.0, 5.0, 10.0, 20.0, 50.0, 100.0, 500.0, 1000.0, 5000.0, 10000.0,
+	}
+
 	// All the built-in metrics have same attributes except 'tag', 'status' and 'streaming'
 	// These attributes need to be added to only few of the metrics
 	metricsDetails = map[string]metricInfo{
@@ -388,7 +395,7 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 		metricNameClientBlockingLatencies,
 		metric.WithDescription("The latencies of requests queued on gRPC channels."),
 		metric.WithUnit(metricUnitMS),
-		metric.WithExplicitBucketBoundaries(bucketBounds...),
+		metric.WithExplicitBucketBoundaries(clientBlockingBucketBounds...),
 	)
 	if err != nil {
 		return err
@@ -663,6 +670,8 @@ func (mt *builtinMetricsTracer) recordAttemptCompletion(attemptHeaderMD, attempT
 	mt.currOp.currAttempt.setZoneID(zoneID)
 
 	// Set server latency in tracer
+	// FYI this is GFE t4t7(not server latency) latency where
+	// it measures the time between initial metadata send (client) - initial metadata recv(server)
 	serverLatency, serverLatencyErr := extractServerLatency(attemptHeaderMD, attempTrailerMD)
 	// If server latency is missing (0), fallback to the client-measured t4t7 latency
 	// t4t7 for directpath measures the time between the OutHeaders and InHeaders
