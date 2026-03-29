@@ -1293,7 +1293,7 @@ func checkKernelRoutes(ipv4, ipv6 *net.IP, v4Plumbed, v6Plumbed bool, host, endp
 
 // probeSingleEndpoint attempts an ALTS-authenticated Prime() request directly against a specific IP.
 func (p *BigtableChannelPool) probeSingleEndpoint(ctx context.Context, targetEndpoint string) error {
-	btopt.Debugf(p.logger, "bigtable_connpool: Direct Access investigation: Creating direct ALTS channel to %s...", targetEndpoint)
+	btopt.Debugf(p.logger, "bigtable_connpool: Direct Access investigation: Creating ALTS channel to %s...", targetEndpoint)
 
 	altsCreds := alts.NewClientCreds(alts.DefaultClientOptions())
 	scopes := []string{
@@ -1308,11 +1308,13 @@ func (p *BigtableChannelPool) probeSingleEndpoint(ctx context.Context, targetEnd
 
 	perRPCCreds := oauth.TokenSource{TokenSource: googleCreds.TokenSource}
 
-	// 1. Create the gRPC Client bypassing normal name resolution, pointing straight at the IP.
+	// we need both perRpcCreds and transport credentials
 	conn, err := grpc.NewClient(targetEndpoint,
 		grpc.WithTransportCredentials(altsCreds),
 		grpc.WithPerRPCCredentials(perRPCCreds),
-		grpc.WithAuthority("test-bigtable.sandbox.googleapis.com"),
+		// alts look at server name and without authority, ALTS will fail.
+		// Technically, it should be data.Endpoint
+		grpc.WithAuthority("bigtable.googleapis.com"),
 	)
 	if err != nil {
 		return fmt.Errorf("grpc.NewClient failed for %s: %w", targetEndpoint, err)
@@ -1326,12 +1328,12 @@ func (p *BigtableChannelPool) probeSingleEndpoint(ctx context.Context, targetEnd
 	primeCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
-	btopt.Debugf(p.logger, "bigtable_connpool: Direct Access investigation: Executing ALTS Prime() on %s...", targetEndpoint)
+	btopt.Debugf(p.logger, "bigtable_connpool: Direct Access investigation: Executing Prime() on %s...", targetEndpoint)
 	if err := btc.Prime(primeCtx, p.instanceName, p.appProfile, p.directAccessFeatureFlagsMD); err != nil {
 		return fmt.Errorf("Prime() failed: %w", err)
 	}
 
-	btopt.Debugf(p.logger, "bigtable_connpool: Direct Access investigation: ALTS Prime() SUCCESS on %s!", targetEndpoint)
+	btopt.Debugf(p.logger, "bigtable_connpool: Direct Access investigation: Prime() SUCCESS on %s!", targetEndpoint)
 	return nil
 }
 
