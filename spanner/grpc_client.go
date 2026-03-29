@@ -34,8 +34,6 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-
-
 type contextKey string
 
 const metricsTracerKey contextKey = "metricsTracer"

@@ -31,8 +31,8 @@ import (
 	"google.golang.org/genproto/googleapis/api/metric"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/credentials/alts"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
 )
@@ -320,9 +320,11 @@ func parseHex(hexStr string) (int64, error) {
 type mockALTSAuthInfo struct {
 	alts.AuthInfo
 }
+
 func (m mockALTSAuthInfo) AuthType() string { return "alts" }
 
 type mockOtherAuthInfo struct{}
+
 func (m mockOtherAuthInfo) AuthType() string { return "other" }
 
 func TestSetDirectPathUsed(t *testing.T) {

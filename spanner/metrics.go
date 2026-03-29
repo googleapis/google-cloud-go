@@ -37,8 +37,8 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/experimental/stats"
 	"google.golang.org/grpc/credentials/alts"
+	"google.golang.org/grpc/experimental/stats"
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/stats/opentelemetry"
 	"google.golang.org/grpc/status"
@@ -534,7 +534,7 @@ func (o *opTracer) incrementAttemptCount() {
 // setDirectPathUsed sets whether DirectPath was used for the attempt.
 func (a *attemptTracer) setDirectPathUsed(ctx context.Context) {
 	peerInfo, ok := peer.FromContext(ctx)
-	if ok && peerInfo.AuthInfo != nil {
+	if ok {
 		if _, isALTS := peerInfo.AuthInfo.(alts.AuthInfo); isALTS {
 			a.directPathUsed = true
 		}
