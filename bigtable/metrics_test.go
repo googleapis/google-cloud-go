@@ -151,7 +151,7 @@ func setupFakeServerWithCustomHandler(projectID, instanceID string, cfg ClientCo
 		return nil, nil, fmt.Errorf("failed to start bttest server: %w", err)
 	}
 
-	conn, err := grpc.Dial(rawGrpcServer.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
+	conn, err := grpc.Dial(rawGrpcServer.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithStatsHandler(sharedLatencyStatsHandler))
 	if err != nil {
 		rawGrpcServer.Close()
 		return nil, nil, fmt.Errorf("failed to dial test server: %w", err)
@@ -1176,5 +1176,220 @@ func TestCanonicalString(t *testing.T) {
 		if got != test.want {
 			t.Errorf("canonicalString(%v) = %q, want %q", test.code, got, test.want)
 		}
+	}
+}
+
+func TestFallbackT4T7Latency(t *testing.T) {
+	ctx := context.Background()
+	project := "test-project"
+	instance := "test-instance"
+	appProfile := "test-app-profile-fallback"
+	clientUID := "test-uid-fallback"
+
+	// We introduce an artificial delay so we can assert the fallback tracker caught it
+	const serverDelay = 150 * time.Millisecond
+
+	// Reduce sampling period to reduce test run time
+	origSamplePeriod := defaultSamplePeriod
+	defaultSamplePeriod = 100 * time.Millisecond
+	defer func() { defaultSamplePeriod = origSamplePeriod }()
+
+	origGenerateClientUID := generateClientUID
+	generateClientUID = func() (string, error) { return clientUID, nil }
+	defer func() { generateClientUID = origGenerateClientUID }()
+
+	mer := &MockErrorHandler{buffer: new(bytes.Buffer)}
+	origErrHandler := otel.GetErrorHandler()
+	otel.SetErrorHandler(mer)
+	t.Cleanup(func() { otel.SetErrorHandler(origErrHandler) })
+
+	monitoringServer, err := NewMetricTestServer()
+	if err != nil {
+		t.Fatalf("Error setting up metrics test server: %v", err)
+	}
+	go monitoringServer.Serve()
+	defer monitoringServer.Shutdown()
+
+	origCreateExporterOptions := createExporterOptions
+	createExporterOptions = func(opts ...option.ClientOption) []option.ClientOption {
+		return []option.ClientOption{
+			option.WithEndpoint(monitoringServer.Endpoint),
+			option.WithoutAuthentication(),
+			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		}
+	}
+	defer func() { createExporterOptions = origCreateExporterOptions }()
+
+	// Custom handler that delays the response and intentionally omits the server-timing header
+	handler := func(_ any, stream btpb.Bigtable_ReadRowsServer) error {
+		time.Sleep(serverDelay) // Induce a t4t7 delay
+
+		// Send the headers, but completely OMIT the serverTimingMDKey
+		if err := stream.SendHeader(metadata.MD{
+			locationMDKey: []string{string(testHeaders)},
+		}); err != nil {
+			return err
+		}
+
+		return stream.Send(&btpb.ReadRowsResponse{
+			Chunks: []*btpb.ReadRowsResponse_CellChunk{{
+				RowKey:     []byte("row1"),
+				FamilyName: &wrapperspb.StringValue{Value: "cf"},
+				Qualifier:  &wrapperspb.BytesValue{Value: []byte("q1")},
+				Value:      []byte("val1"),
+				RowStatus:  &btpb.ReadRowsResponse_CellChunk_CommitRow{CommitRow: true},
+			}},
+		})
+	}
+
+	tbl, cleanup, err := setupFakeServerWithCustomHandler(project, instance, ClientConfig{AppProfile: appProfile}, handler)
+	defer cleanup()
+	if err != nil {
+		t.Fatalf("setupFakeServerWithCustomHandler error: got: %v, want: nil", err)
+	}
+
+	monitoringServer.CreateServiceTimeSeriesRequests()
+
+	readErr := tbl.ReadRows(ctx, NewRange("a", "z"), func(r Row) bool { return true })
+	if readErr != nil {
+		t.Fatalf("ReadRows failed: %v", readErr)
+	}
+
+	time.Sleep(defaultSamplePeriod * 5)
+
+	requests := monitoringServer.CreateServiceTimeSeriesRequests()
+	foundMetric := false
+
+	for _, req := range requests {
+		for _, ts := range req.TimeSeries {
+			metricType := ts.GetMetric().GetType()
+			if !strings.HasSuffix(metricType, metricNameServerLatencies) {
+				continue
+			}
+
+			clientUIDLabel, ok := ts.GetMetric().GetLabels()[metricLabelKeyClientUID]
+			if !ok || clientUIDLabel != clientUID {
+				continue
+			}
+
+			foundMetric = true
+			points := ts.GetPoints()
+			if len(points) == 0 {
+				continue
+			}
+			distVal := points[0].GetValue().GetDistributionValue()
+			if distVal == nil {
+				continue
+			}
+
+			if distVal.GetCount() != 1 {
+				t.Errorf("GetCount(): got %d, want 1", distVal.GetCount())
+			}
+
+			epsilon := 50.0
+			expectedMinDelayMs := float64(serverDelay/time.Millisecond) - epsilon
+
+			if distVal.GetMean() < expectedMinDelayMs {
+				t.Errorf("Server latency metric should reflect the t4t7 fallback delay (>= %v ms). Got: %v ms", expectedMinDelayMs, distVal.GetMean())
+			}
+		}
+	}
+
+	if !foundMetric {
+		t.Fatalf("Failed to find metric %s for client UID %s. The t4t7 fallback latency was not recorded.", metricNameServerLatencies, clientUID)
+	}
+}
+
+func TestClientBlockingLatency(t *testing.T) {
+	ctx := context.Background()
+	project := "test-project"
+	instance := "test-instance"
+	appProfile := "test-app-profile-client-blocking"
+	clientUID := "test-uid-client-blocking"
+
+	origSamplePeriod := defaultSamplePeriod
+	defaultSamplePeriod = 100 * time.Millisecond
+	defer func() { defaultSamplePeriod = origSamplePeriod }()
+
+	origGenerateClientUID := generateClientUID
+	generateClientUID = func() (string, error) { return clientUID, nil }
+	defer func() { generateClientUID = origGenerateClientUID }()
+
+	mer := &MockErrorHandler{buffer: new(bytes.Buffer)}
+	origErrHandler := otel.GetErrorHandler()
+	otel.SetErrorHandler(mer)
+	t.Cleanup(func() { otel.SetErrorHandler(origErrHandler) })
+
+	monitoringServer, err := NewMetricTestServer()
+	if err != nil {
+		t.Fatalf("Error setting up metrics test server: %v", err)
+	}
+	go monitoringServer.Serve()
+	defer monitoringServer.Shutdown()
+
+	origCreateExporterOptions := createExporterOptions
+	createExporterOptions = func(opts ...option.ClientOption) []option.ClientOption {
+		return []option.ClientOption{
+			option.WithEndpoint(monitoringServer.Endpoint),
+			option.WithoutAuthentication(),
+			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		}
+	}
+	defer func() { createExporterOptions = origCreateExporterOptions }()
+
+	tbl, cleanup, err := setupFakeServerWithCustomHandler(project, instance, ClientConfig{AppProfile: appProfile}, sendTwoRowsHandler)
+	defer cleanup()
+	if err != nil {
+		t.Fatalf("setupFakeServerWithCustomHandler error: got: %v, want: nil", err)
+	}
+
+	monitoringServer.CreateServiceTimeSeriesRequests()
+
+	// Perform read rows operation
+	readErr := tbl.ReadRows(ctx, NewRange("a", "z"), func(r Row) bool { return true })
+	if readErr != nil {
+		t.Fatalf("ReadRows failed: %v", readErr)
+	}
+
+	// Allow time for metrics to be exported
+	time.Sleep(defaultSamplePeriod * 5)
+
+	requests := monitoringServer.CreateServiceTimeSeriesRequests()
+	foundMetric := false
+
+	for _, req := range requests {
+		for _, ts := range req.TimeSeries {
+			metricType := ts.GetMetric().GetType()
+			if !strings.HasSuffix(metricType, metricNameClientBlockingLatencies) {
+				continue
+			}
+
+			clientUIDLabel, ok := ts.GetMetric().GetLabels()[metricLabelKeyClientUID]
+			if !ok || clientUIDLabel != clientUID {
+				continue
+			}
+
+			foundMetric = true
+			points := ts.GetPoints()
+			if len(points) == 0 {
+				continue
+			}
+			distVal := points[0].GetValue().GetDistributionValue()
+			if distVal == nil {
+				continue
+			}
+
+			if distVal.GetCount() != 1 {
+				t.Errorf("GetCount(): got %d, want 1", distVal.GetCount())
+			}
+			// Client blocking latency should be measured and strictly >= 0
+			if distVal.GetMean() < 0 {
+				t.Errorf("Client blocking latency should be >= 0, got: %v", distVal.GetMean())
+			}
+		}
+	}
+
+	if !foundMetric {
+		t.Fatalf("Failed to find metric %s for client UID %s", metricNameClientBlockingLatencies, clientUID)
 	}
 }
