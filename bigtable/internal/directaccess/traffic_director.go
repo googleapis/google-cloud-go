@@ -35,8 +35,8 @@ import (
 // xdsTarget is TD address
 const (
 	xdsTarget     = "directpath-pa.googleapis.com:443"
-	xdsCdsTypeUrl = "type.googleapis.com/envoy.config.cluster.v3.Cluster"
-	xdsEdsTypeUrl = "type.googleapis.com/envoy.config.endpoint.v3.ClusterLoadAssignment"
+	xdsCdsTypeURL = "type.googleapis.com/envoy.config.cluster.v3.Cluster"
+	xdsEdsTypeURL = "type.googleapis.com/envoy.config.endpoint.v3.ClusterLoadAssignment"
 )
 
 // FetchXdsEndpoints connects to Traffic Director, performs a CDS check for the given cluster URI,
@@ -85,7 +85,7 @@ func fetchEDSResourceName(stream discoverypb.AggregatedDiscoveryService_StreamAg
 
 	req := &discoverypb.DiscoveryRequest{
 		Node:          node,
-		TypeUrl:       xdsCdsTypeUrl,
+		TypeUrl:       xdsCdsTypeURL,
 		ResourceNames: []string{cdsResourceURI},
 	}
 
@@ -100,7 +100,7 @@ func fetchEDSResourceName(stream discoverypb.AggregatedDiscoveryService_StreamAg
 
 	// Extract the EDS Resource Name from the CDS Response
 	for _, res := range resp.GetResources() {
-		if res.TypeUrl != xdsCdsTypeUrl {
+		if res.TypeUrl != xdsCdsTypeURL {
 			continue
 		}
 
@@ -124,7 +124,7 @@ func fetchEndpoints(stream discoverypb.AggregatedDiscoveryService_StreamAggregat
 
 	req := &discoverypb.DiscoveryRequest{
 		Node:          node,
-		TypeUrl:       xdsEdsTypeUrl,
+		TypeUrl:       xdsEdsTypeURL,
 		ResourceNames: []string{edsResourceName},
 	}
 
@@ -140,7 +140,7 @@ func fetchEndpoints(stream discoverypb.AggregatedDiscoveryService_StreamAggregat
 	var discoveredIPs []string
 
 	for _, res := range resp.GetResources() {
-		if res.TypeUrl != xdsEdsTypeUrl {
+		if res.TypeUrl != xdsEdsTypeURL {
 			continue
 		}
 
