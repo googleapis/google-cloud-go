@@ -32,19 +32,20 @@ import (
 // Note: we do not call the bigtable.googleapis.com (LDS) directly as we don't have RLS proto to send the RLS request and determine the RLS region
 // For simplificity, we just call the client region CDS address and get the endpoints.
 
+// xdsTarget is TD address
 const (
-	XdsTarget     = "directpath-pa.googleapis.com:443"
-	XdsCdsTypeUrl = "type.googleapis.com/envoy.config.cluster.v3.Cluster"
-	XdsEdsTypeUrl = "type.googleapis.com/envoy.config.endpoint.v3.ClusterLoadAssignment"
+	xdsTarget     = "directpath-pa.googleapis.com:443"
+	xdsCdsTypeUrl = "type.googleapis.com/envoy.config.cluster.v3.Cluster"
+	xdsEdsTypeUrl = "type.googleapis.com/envoy.config.endpoint.v3.ClusterLoadAssignment"
 )
 
 // FetchXdsEndpoints connects to Traffic Director, performs a CDS check for the given cluster URI,
 // extracts the EDS service name, and fetches the endpoints (IPs) using a single multiplexed ADS stream.
 func FetchXdsEndpoints(ctx context.Context, nodeID, zone, cdsResourceURI string) ([]string, string, error) {
-	btopt.Debugf(nil, "directaccess: Dialing Traffic Director at %s", XdsTarget)
+	btopt.Debugf(nil, "directaccess: Dialing Traffic Director at %s", xdsTarget)
 
 	// 1. Dial Traffic Director
-	conn, err := grpc.NewClient(XdsTarget, grpc.WithCredentialsBundle(google.NewDefaultCredentials()))
+	conn, err := grpc.NewClient(xdsTarget, grpc.WithCredentialsBundle(google.NewDefaultCredentials()))
 	if err != nil {
 		return nil, "xds_reachability_failed", fmt.Errorf("failed to create xDS client: %w", err)
 	}
@@ -84,7 +85,7 @@ func fetchEDSResourceName(stream discoverypb.AggregatedDiscoveryService_StreamAg
 
 	req := &discoverypb.DiscoveryRequest{
 		Node:          node,
-		TypeUrl:       XdsCdsTypeUrl,
+		TypeUrl:       xdsCdsTypeUrl,
 		ResourceNames: []string{cdsResourceURI},
 	}
 
@@ -99,7 +100,7 @@ func fetchEDSResourceName(stream discoverypb.AggregatedDiscoveryService_StreamAg
 
 	// Extract the EDS Resource Name from the CDS Response
 	for _, res := range resp.GetResources() {
-		if res.TypeUrl != XdsCdsTypeUrl {
+		if res.TypeUrl != xdsCdsTypeUrl {
 			continue
 		}
 
@@ -123,7 +124,7 @@ func fetchEndpoints(stream discoverypb.AggregatedDiscoveryService_StreamAggregat
 
 	req := &discoverypb.DiscoveryRequest{
 		Node:          node,
-		TypeUrl:       XdsEdsTypeUrl,
+		TypeUrl:       xdsEdsTypeUrl,
 		ResourceNames: []string{edsResourceName},
 	}
 
@@ -139,7 +140,7 @@ func fetchEndpoints(stream discoverypb.AggregatedDiscoveryService_StreamAggregat
 	var discoveredIPs []string
 
 	for _, res := range resp.GetResources() {
-		if res.TypeUrl != XdsEdsTypeUrl {
+		if res.TypeUrl != xdsEdsTypeUrl {
 			continue
 		}
 

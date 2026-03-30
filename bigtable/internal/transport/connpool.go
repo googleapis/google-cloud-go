@@ -1217,17 +1217,12 @@ func (p *BigtableChannelPool) investigateDirectAccessFailure(originalErr error) 
 		return
 	}
 
-	if len(endpoints) == 0 {
-		btopt.Debugf(p.logger, "bigtable_connpool: Direct Access investigation: xDS returned 0 endpoints.")
-		p.reportDirectAccessFailure("xds_empty_endpoints")
-		return
-	}
-
+	// FetchXdsEndpoints ensures that endpoints is not empty
 	endpoint := endpoints[0]
 	host, _, err := net.SplitHostPort(endpoint)
 	if err != nil {
 		btopt.Debugf(p.logger, "bigtable_connpool: Direct Access investigation: Failed to split xDS endpoint host/port %q: %v", endpoint, err)
-		p.reportDirectAccessFailure("xds_empty_endpoints") // Treat as invalid/empty
+		p.reportDirectAccessFailure("xds_malformed_endpoint") // Treat as invalid/empty
 		return
 	}
 
