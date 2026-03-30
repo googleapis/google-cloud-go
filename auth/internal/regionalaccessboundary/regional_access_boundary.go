@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"math/rand"
 	"net"
 	"net/http"
 	"net/url"
@@ -349,9 +350,11 @@ func (p *DataProvider) handleFetchFailure(ctx context.Context) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 
-	p.cooldownExpiry = time.Now().Add(p.cooldownDuration)
+	// Add random bounded jitter (between half of the base and the full base) to prevent thundering herds
+	jitter := p.cooldownDuration/2 + time.Duration(rand.Int63n(int64(p.cooldownDuration/2)))
+	p.cooldownExpiry = time.Now().Add(jitter)
 
-	// Exponential backoff for cooldown, up to cacheTTL max (6 hours)
+	// Exponential backoff for the NEXT attempt, up to cacheTTL max (6 hours)
 	nextCooldown := p.cooldownDuration * 2
 	if nextCooldown > cacheTTL {
 		nextCooldown = cacheTTL
