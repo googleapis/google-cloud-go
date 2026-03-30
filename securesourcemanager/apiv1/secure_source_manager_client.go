@@ -881,7 +881,7 @@ func (c *Client) DeletePullRequestCommentOperation(name string) *DeletePullReque
 // BatchCreatePullRequestComments batch creates pull request comments. This function is used to create
 // multiple PullRequestComments for code review. There needs to be exactly one
 // PullRequestComment of type Review, and at most 100 PullRequestComments of
-// type Code per request. The Postition of the code comments must be unique
+// type Code per request. The Position of the code comments must be unique
 // within the request.
 func (c *Client) BatchCreatePullRequestComments(ctx context.Context, req *securesourcemanagerpb.BatchCreatePullRequestCommentsRequest, opts ...gax.CallOption) (*BatchCreatePullRequestCommentsOperation, error) {
 	return c.internalClient.BatchCreatePullRequestComments(ctx, req, opts...)
@@ -970,6 +970,22 @@ func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationReq
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)] field:
+//
+//	Global locations: If name is empty, the method lists the
+//	public locations available to all projects. * Project-specific
+//	locations: If name follows the format
+//	projects/{project}, the method lists locations visible to that
+//	specific project. This includes public, private, or other
+//	project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *Client) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -2911,6 +2927,9 @@ func (c *restClient) DeleteInstance(ctx context.Context, req *securesourcemanage
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetForce() {
+		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
+	}
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -5466,7 +5485,7 @@ func (c *restClient) DeletePullRequestComment(ctx context.Context, req *secureso
 // BatchCreatePullRequestComments batch creates pull request comments. This function is used to create
 // multiple PullRequestComments for code review. There needs to be exactly one
 // PullRequestComment of type Review, and at most 100 PullRequestComments of
-// type Code per request. The Postition of the code comments must be unique
+// type Code per request. The Position of the code comments must be unique
 // within the request.
 func (c *restClient) BatchCreatePullRequestComments(ctx context.Context, req *securesourcemanagerpb.BatchCreatePullRequestCommentsRequest, opts ...gax.CallOption) (*BatchCreatePullRequestCommentsOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -6009,6 +6028,22 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)] field:
+//
+//	Global locations: If name is empty, the method lists the
+//	public locations available to all projects. * Project-specific
+//	locations: If name follows the format
+//	projects/{project}, the method lists locations visible to that
+//	specific project. This includes public, private, or other
+//	project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)

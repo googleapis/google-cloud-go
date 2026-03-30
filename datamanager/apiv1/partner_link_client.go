@@ -133,10 +133,6 @@ func (c *PartnerLinkClient) Connection() *grpc.ClientConn {
 //	Google Account of the credentials is a user. If not set, defaults to the
 //	account of the request. Format:
 //	accountTypes/{loginAccountType}/accounts/{loginAccountId}
-//
-//	linked-account: (Optional) The resource name of the account with an
-//	established product link to the login-account. Format:
-//	accountTypes/{linkedAccountType}/accounts/{linkedAccountId}
 func (c *PartnerLinkClient) CreatePartnerLink(ctx context.Context, req *datamanagerpb.CreatePartnerLinkRequest, opts ...gax.CallOption) (*datamanagerpb.PartnerLink, error) {
 	return c.internalClient.CreatePartnerLink(ctx, req, opts...)
 }
@@ -152,10 +148,6 @@ func (c *PartnerLinkClient) CreatePartnerLink(ctx context.Context, req *datamana
 //	Google Account of the credentials is a user. If not set, defaults to the
 //	account of the request. Format:
 //	accountTypes/{loginAccountType}/accounts/{loginAccountId}
-//
-//	linked-account: (Optional) The resource name of the account with an
-//	established product link to the login-account. Format:
-//	accountTypes/{linkedAccountType}/accounts/{linkedAccountId}
 func (c *PartnerLinkClient) DeletePartnerLink(ctx context.Context, req *datamanagerpb.DeletePartnerLinkRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeletePartnerLink(ctx, req, opts...)
 }
@@ -171,10 +163,6 @@ func (c *PartnerLinkClient) DeletePartnerLink(ctx context.Context, req *datamana
 //	Google Account of the credentials is a user. If not set, defaults to the
 //	account of the request. Format:
 //	accountTypes/{loginAccountType}/accounts/{loginAccountId}
-//
-//	linked-account: (Optional) The resource name of the account with an
-//	established product link to the login-account. Format:
-//	accountTypes/{linkedAccountType}/accounts/{linkedAccountId}
 func (c *PartnerLinkClient) SearchPartnerLinks(ctx context.Context, req *datamanagerpb.SearchPartnerLinksRequest, opts ...gax.CallOption) *PartnerLinkIterator {
 	return c.internalClient.SearchPartnerLinks(ctx, req, opts...)
 }
@@ -421,10 +409,6 @@ func (c *partnerLinkGRPCClient) SearchPartnerLinks(ctx context.Context, req *dat
 //	Google Account of the credentials is a user. If not set, defaults to the
 //	account of the request. Format:
 //	accountTypes/{loginAccountType}/accounts/{loginAccountId}
-//
-//	linked-account: (Optional) The resource name of the account with an
-//	established product link to the login-account. Format:
-//	accountTypes/{linkedAccountType}/accounts/{linkedAccountId}
 func (c *partnerLinkRESTClient) CreatePartnerLink(ctx context.Context, req *datamanagerpb.CreatePartnerLinkRequest, opts ...gax.CallOption) (*datamanagerpb.PartnerLink, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetPartnerLink()
@@ -492,10 +476,6 @@ func (c *partnerLinkRESTClient) CreatePartnerLink(ctx context.Context, req *data
 //	Google Account of the credentials is a user. If not set, defaults to the
 //	account of the request. Format:
 //	accountTypes/{loginAccountType}/accounts/{loginAccountId}
-//
-//	linked-account: (Optional) The resource name of the account with an
-//	established product link to the login-account. Format:
-//	accountTypes/{linkedAccountType}/accounts/{linkedAccountId}
 func (c *partnerLinkRESTClient) DeletePartnerLink(ctx context.Context, req *datamanagerpb.DeletePartnerLinkRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -541,10 +521,6 @@ func (c *partnerLinkRESTClient) DeletePartnerLink(ctx context.Context, req *data
 //	Google Account of the credentials is a user. If not set, defaults to the
 //	account of the request. Format:
 //	accountTypes/{loginAccountType}/accounts/{loginAccountId}
-//
-//	linked-account: (Optional) The resource name of the account with an
-//	established product link to the login-account. Format:
-//	accountTypes/{linkedAccountType}/accounts/{linkedAccountId}
 func (c *partnerLinkRESTClient) SearchPartnerLinks(ctx context.Context, req *datamanagerpb.SearchPartnerLinksRequest, opts ...gax.CallOption) *PartnerLinkIterator {
 	it := &PartnerLinkIterator{}
 	req = proto.Clone(req).(*datamanagerpb.SearchPartnerLinksRequest)

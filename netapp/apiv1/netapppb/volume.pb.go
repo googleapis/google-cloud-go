@@ -1266,7 +1266,10 @@ type Volume struct {
 	HotTierSizeUsedGib int64 `protobuf:"varint,44,opt,name=hot_tier_size_used_gib,json=hotTierSizeUsedGib,proto3" json:"hot_tier_size_used_gib,omitempty"`
 	// Optional. Block devices for the volume.
 	// Currently, only one block device is permitted per Volume.
-	BlockDevices  []*BlockDevice `protobuf:"bytes,45,rep,name=block_devices,json=blockDevices,proto3" json:"block_devices,omitempty"`
+	BlockDevices []*BlockDevice `protobuf:"bytes,45,rep,name=block_devices,json=blockDevices,proto3" json:"block_devices,omitempty"`
+	// Output only. If this volume is a clone, this field contains details about
+	// the clone.
+	CloneDetails  *Volume_CloneDetails `protobuf:"bytes,47,opt,name=clone_details,json=cloneDetails,proto3" json:"clone_details,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1591,6 +1594,13 @@ func (x *Volume) GetHotTierSizeUsedGib() int64 {
 func (x *Volume) GetBlockDevices() []*BlockDevice {
 	if x != nil {
 		return x.BlockDevices
+	}
+	return nil
+}
+
+func (x *Volume) GetCloneDetails() *Volume_CloneDetails {
+	if x != nil {
+		return x.CloneDetails
 	}
 	return nil
 }
@@ -2332,8 +2342,10 @@ type RestoreParameters_SourceSnapshot struct {
 
 type RestoreParameters_SourceBackup struct {
 	// Full name of the backup resource.
-	// Format:
+	// Format for standard backup:
 	// projects/{project}/locations/{location}/backupVaults/{backup_vault_id}/backups/{backup_id}
+	// Format for BackupDR backup:
+	// projects/{project}/locations/{location}/backupVaults/{backup_vault}/dataSources/{data_source}/backups/{backup}
 	SourceBackup string `protobuf:"bytes,2,opt,name=source_backup,json=sourceBackup,proto3,oneof"`
 }
 
@@ -3118,6 +3130,162 @@ func (*RestoreBackupFilesResponse) Descriptor() ([]byte, []int) {
 	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{25}
 }
 
+// EstablishVolumePeeringRequest establishes cluster and svm peerings between
+// the source and destination clusters.
+type EstablishVolumePeeringRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The volume resource name, in the format
+	// `projects/{project_id}/locations/{location}/volumes/{volume_id}`
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Required. Name of the user's local source cluster to be peered with the
+	// destination cluster.
+	PeerClusterName string `protobuf:"bytes,2,opt,name=peer_cluster_name,json=peerClusterName,proto3" json:"peer_cluster_name,omitempty"`
+	// Required. Name of the user's local source vserver svm to be peered with the
+	// destination vserver svm.
+	PeerSvmName string `protobuf:"bytes,3,opt,name=peer_svm_name,json=peerSvmName,proto3" json:"peer_svm_name,omitempty"`
+	// Optional. List of IPv4 ip addresses to be used for peering.
+	PeerIpAddresses []string `protobuf:"bytes,4,rep,name=peer_ip_addresses,json=peerIpAddresses,proto3" json:"peer_ip_addresses,omitempty"`
+	// Required. Name of the user's local source volume to be peered with the
+	// destination volume.
+	PeerVolumeName string `protobuf:"bytes,5,opt,name=peer_volume_name,json=peerVolumeName,proto3" json:"peer_volume_name,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *EstablishVolumePeeringRequest) Reset() {
+	*x = EstablishVolumePeeringRequest{}
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[26]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EstablishVolumePeeringRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EstablishVolumePeeringRequest) ProtoMessage() {}
+
+func (x *EstablishVolumePeeringRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[26]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EstablishVolumePeeringRequest.ProtoReflect.Descriptor instead.
+func (*EstablishVolumePeeringRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{26}
+}
+
+func (x *EstablishVolumePeeringRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *EstablishVolumePeeringRequest) GetPeerClusterName() string {
+	if x != nil {
+		return x.PeerClusterName
+	}
+	return ""
+}
+
+func (x *EstablishVolumePeeringRequest) GetPeerSvmName() string {
+	if x != nil {
+		return x.PeerSvmName
+	}
+	return ""
+}
+
+func (x *EstablishVolumePeeringRequest) GetPeerIpAddresses() []string {
+	if x != nil {
+		return x.PeerIpAddresses
+	}
+	return nil
+}
+
+func (x *EstablishVolumePeeringRequest) GetPeerVolumeName() string {
+	if x != nil {
+		return x.PeerVolumeName
+	}
+	return ""
+}
+
+// Details about a clone volume.
+type Volume_CloneDetails struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. Specifies the full resource name of the source snapshot from
+	// which this volume was cloned. Format:
+	// projects/{project}/locations/{location}/volumes/{volume}/snapshots/{snapshot}
+	SourceSnapshot string `protobuf:"bytes,1,opt,name=source_snapshot,json=sourceSnapshot,proto3" json:"source_snapshot,omitempty"`
+	// Output only. Full name of the source volume resource.
+	// Format:
+	// projects/{project}/locations/{location}/volumes/{volume}
+	SourceVolume string `protobuf:"bytes,2,opt,name=source_volume,json=sourceVolume,proto3" json:"source_volume,omitempty"`
+	// Output only. Shared space in GiB. Determined at volume creation time
+	// based on size of source snapshot.
+	SharedSpaceGib int64 `protobuf:"varint,3,opt,name=shared_space_gib,json=sharedSpaceGib,proto3" json:"shared_space_gib,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *Volume_CloneDetails) Reset() {
+	*x = Volume_CloneDetails{}
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[27]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Volume_CloneDetails) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Volume_CloneDetails) ProtoMessage() {}
+
+func (x *Volume_CloneDetails) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[27]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Volume_CloneDetails.ProtoReflect.Descriptor instead.
+func (*Volume_CloneDetails) Descriptor() ([]byte, []int) {
+	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{7, 0}
+}
+
+func (x *Volume_CloneDetails) GetSourceSnapshot() string {
+	if x != nil {
+		return x.SourceSnapshot
+	}
+	return ""
+}
+
+func (x *Volume_CloneDetails) GetSourceVolume() string {
+	if x != nil {
+		return x.SourceVolume
+	}
+	return ""
+}
+
+func (x *Volume_CloneDetails) GetSharedSpaceGib() int64 {
+	if x != nil {
+		return x.SharedSpaceGib
+	}
+	return 0
+}
+
 var File_google_cloud_netapp_v1_volume_proto protoreflect.FileDescriptor
 
 const file_google_cloud_netapp_v1_volume_proto_rawDesc = "" +
@@ -3153,7 +3321,7 @@ const file_google_cloud_netapp_v1_volume_proto_rawDesc = "" +
 	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
 	"\x1cnetapp.googleapis.com/VolumeR\x04name\x12$\n" +
 	"\vsnapshot_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"snapshotId\"\xbd\x17\n" +
+	"snapshotId\"\xf0\x19\n" +
 	"\x06Volume\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12?\n" +
 	"\x05state\x18\x02 \x01(\x0e2$.google.cloud.netapp.v1.Volume.StateB\x03\xe0A\x03R\x05state\x12(\n" +
@@ -3204,7 +3372,14 @@ const file_google_cloud_netapp_v1_volume_proto_rawDesc = "" +
 	"\x10throughput_mibps\x18) \x01(\x01B\x03\xe0A\x01R\x0fthroughputMibps\x12W\n" +
 	"\x10cache_parameters\x18* \x01(\v2'.google.cloud.netapp.v1.CacheParametersB\x03\xe0A\x01R\x0fcacheParameters\x127\n" +
 	"\x16hot_tier_size_used_gib\x18, \x01(\x03B\x03\xe0A\x03R\x12hotTierSizeUsedGib\x12M\n" +
-	"\rblock_devices\x18- \x03(\v2#.google.cloud.netapp.v1.BlockDeviceB\x03\xe0A\x01R\fblockDevices\x1a9\n" +
+	"\rblock_devices\x18- \x03(\v2#.google.cloud.netapp.v1.BlockDeviceB\x03\xe0A\x01R\fblockDevices\x12U\n" +
+	"\rclone_details\x18/ \x01(\v2+.google.cloud.netapp.v1.Volume.CloneDetailsB\x03\xe0A\x03R\fcloneDetails\x1a\xd9\x01\n" +
+	"\fCloneDetails\x12O\n" +
+	"\x0fsource_snapshot\x18\x01 \x01(\tB&\xe0A\x03\xfaA \n" +
+	"\x1enetapp.googleapis.com/SnapshotR\x0esourceSnapshot\x12I\n" +
+	"\rsource_volume\x18\x02 \x01(\tB$\xe0A\x03\xfaA\x1e\n" +
+	"\x1cnetapp.googleapis.com/VolumeR\fsourceVolume\x12-\n" +
+	"\x10shared_space_gib\x18\x03 \x01(\x03B\x03\xe0A\x03R\x0esharedSpaceGib\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x99\x01\n" +
@@ -3311,10 +3486,11 @@ const file_google_cloud_netapp_v1_volume_proto_rawDesc = "" +
 	"\bprotocol\x18\x03 \x01(\x0e2!.google.cloud.netapp.v1.ProtocolsR\bprotocol\x12\"\n" +
 	"\finstructions\x18\x04 \x01(\tR\finstructions\x12*\n" +
 	"\n" +
-	"ip_address\x18\x05 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x02R\tipAddress\"o\n" +
+	"ip_address\x18\x05 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x02R\tipAddress\"\x92\x01\n" +
 	"\x11RestoreParameters\x12)\n" +
-	"\x0fsource_snapshot\x18\x01 \x01(\tH\x00R\x0esourceSnapshot\x12%\n" +
-	"\rsource_backup\x18\x02 \x01(\tH\x00R\fsourceBackupB\b\n" +
+	"\x0fsource_snapshot\x18\x01 \x01(\tH\x00R\x0esourceSnapshot\x12H\n" +
+	"\rsource_backup\x18\x02 \x01(\tB!\xfaA\x1e\n" +
+	"\x1cnetapp.googleapis.com/BackupH\x00R\fsourceBackupB\b\n" +
 	"\x06source\"\xe1\x02\n" +
 	"\fBackupConfig\x12S\n" +
 	"\x0fbackup_policies\x18\x01 \x03(\tB*\xe0A\x01\xfaA$\n" +
@@ -3426,7 +3602,14 @@ const file_google_cloud_netapp_v1_volume_proto_rawDesc = "" +
 	"\x1cnetapp.googleapis.com/BackupR\x06backup\x12 \n" +
 	"\tfile_list\x18\x03 \x03(\tB\x03\xe0A\x02R\bfileList\x12=\n" +
 	"\x18restore_destination_path\x18\x04 \x01(\tB\x03\xe0A\x01R\x16restoreDestinationPath\"\x1c\n" +
-	"\x1aRestoreBackupFilesResponse*P\n" +
+	"\x1aRestoreBackupFilesResponse\"\x93\x02\n" +
+	"\x1dEstablishVolumePeeringRequest\x128\n" +
+	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
+	"\x1cnetapp.googleapis.com/VolumeR\x04name\x12/\n" +
+	"\x11peer_cluster_name\x18\x02 \x01(\tB\x03\xe0A\x02R\x0fpeerClusterName\x12'\n" +
+	"\rpeer_svm_name\x18\x03 \x01(\tB\x03\xe0A\x02R\vpeerSvmName\x12/\n" +
+	"\x11peer_ip_addresses\x18\x04 \x03(\tB\x03\xe0A\x01R\x0fpeerIpAddresses\x12-\n" +
+	"\x10peer_volume_name\x18\x05 \x01(\tB\x03\xe0A\x02R\x0epeerVolumeName*P\n" +
 	"\tProtocols\x12\x19\n" +
 	"\x15PROTOCOLS_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05NFSV3\x10\x01\x12\t\n" +
@@ -3474,7 +3657,7 @@ func file_google_cloud_netapp_v1_volume_proto_rawDescGZIP() []byte {
 }
 
 var file_google_cloud_netapp_v1_volume_proto_enumTypes = make([]protoimpl.EnumInfo, 11)
-var file_google_cloud_netapp_v1_volume_proto_msgTypes = make([]protoimpl.MessageInfo, 28)
+var file_google_cloud_netapp_v1_volume_proto_msgTypes = make([]protoimpl.MessageInfo, 30)
 var file_google_cloud_netapp_v1_volume_proto_goTypes = []any{
 	(Protocols)(0),                         // 0: google.cloud.netapp.v1.Protocols
 	(AccessType)(0),                        // 1: google.cloud.netapp.v1.AccessType
@@ -3513,61 +3696,64 @@ var file_google_cloud_netapp_v1_volume_proto_goTypes = []any{
 	(*BlockDevice)(nil),                                          // 34: google.cloud.netapp.v1.BlockDevice
 	(*RestoreBackupFilesRequest)(nil),                            // 35: google.cloud.netapp.v1.RestoreBackupFilesRequest
 	(*RestoreBackupFilesResponse)(nil),                           // 36: google.cloud.netapp.v1.RestoreBackupFilesResponse
-	nil,                                                          // 37: google.cloud.netapp.v1.Volume.LabelsEntry
-	nil,                                                          // 38: google.cloud.netapp.v1.HybridReplicationParameters.LabelsEntry
-	(*fieldmaskpb.FieldMask)(nil),                                // 39: google.protobuf.FieldMask
-	(*timestamppb.Timestamp)(nil),                                // 40: google.protobuf.Timestamp
-	(ServiceLevel)(0),                                            // 41: google.cloud.netapp.v1.ServiceLevel
-	(EncryptionType)(0),                                          // 42: google.cloud.netapp.v1.EncryptionType
-	(HybridReplicationSchedule)(0),                               // 43: google.cloud.netapp.v1.HybridReplicationSchedule
-	(OsType)(0),                                                  // 44: google.cloud.netapp.v1.OsType
+	(*EstablishVolumePeeringRequest)(nil),                        // 37: google.cloud.netapp.v1.EstablishVolumePeeringRequest
+	(*Volume_CloneDetails)(nil),                                  // 38: google.cloud.netapp.v1.Volume.CloneDetails
+	nil,                                                          // 39: google.cloud.netapp.v1.Volume.LabelsEntry
+	nil,                                                          // 40: google.cloud.netapp.v1.HybridReplicationParameters.LabelsEntry
+	(*fieldmaskpb.FieldMask)(nil),                                // 41: google.protobuf.FieldMask
+	(*timestamppb.Timestamp)(nil),                                // 42: google.protobuf.Timestamp
+	(ServiceLevel)(0),                                            // 43: google.cloud.netapp.v1.ServiceLevel
+	(EncryptionType)(0),                                          // 44: google.cloud.netapp.v1.EncryptionType
+	(HybridReplicationSchedule)(0),                               // 45: google.cloud.netapp.v1.HybridReplicationSchedule
+	(OsType)(0),                                                  // 46: google.cloud.netapp.v1.OsType
 }
 var file_google_cloud_netapp_v1_volume_proto_depIdxs = []int32{
 	18, // 0: google.cloud.netapp.v1.ListVolumesResponse.volumes:type_name -> google.cloud.netapp.v1.Volume
 	18, // 1: google.cloud.netapp.v1.CreateVolumeRequest.volume:type_name -> google.cloud.netapp.v1.Volume
-	39, // 2: google.cloud.netapp.v1.UpdateVolumeRequest.update_mask:type_name -> google.protobuf.FieldMask
+	41, // 2: google.cloud.netapp.v1.UpdateVolumeRequest.update_mask:type_name -> google.protobuf.FieldMask
 	18, // 3: google.cloud.netapp.v1.UpdateVolumeRequest.volume:type_name -> google.cloud.netapp.v1.Volume
 	5,  // 4: google.cloud.netapp.v1.Volume.state:type_name -> google.cloud.netapp.v1.Volume.State
-	40, // 5: google.cloud.netapp.v1.Volume.create_time:type_name -> google.protobuf.Timestamp
-	41, // 6: google.cloud.netapp.v1.Volume.service_level:type_name -> google.cloud.netapp.v1.ServiceLevel
+	42, // 5: google.cloud.netapp.v1.Volume.create_time:type_name -> google.protobuf.Timestamp
+	43, // 6: google.cloud.netapp.v1.Volume.service_level:type_name -> google.cloud.netapp.v1.ServiceLevel
 	19, // 7: google.cloud.netapp.v1.Volume.export_policy:type_name -> google.cloud.netapp.v1.ExportPolicy
 	0,  // 8: google.cloud.netapp.v1.Volume.protocols:type_name -> google.cloud.netapp.v1.Protocols
 	2,  // 9: google.cloud.netapp.v1.Volume.smb_settings:type_name -> google.cloud.netapp.v1.SMBSettings
 	26, // 10: google.cloud.netapp.v1.Volume.mount_options:type_name -> google.cloud.netapp.v1.MountOption
-	37, // 11: google.cloud.netapp.v1.Volume.labels:type_name -> google.cloud.netapp.v1.Volume.LabelsEntry
+	39, // 11: google.cloud.netapp.v1.Volume.labels:type_name -> google.cloud.netapp.v1.Volume.LabelsEntry
 	21, // 12: google.cloud.netapp.v1.Volume.snapshot_policy:type_name -> google.cloud.netapp.v1.SnapshotPolicy
 	3,  // 13: google.cloud.netapp.v1.Volume.security_style:type_name -> google.cloud.netapp.v1.SecurityStyle
 	27, // 14: google.cloud.netapp.v1.Volume.restore_parameters:type_name -> google.cloud.netapp.v1.RestoreParameters
-	42, // 15: google.cloud.netapp.v1.Volume.encryption_type:type_name -> google.cloud.netapp.v1.EncryptionType
+	44, // 15: google.cloud.netapp.v1.Volume.encryption_type:type_name -> google.cloud.netapp.v1.EncryptionType
 	28, // 16: google.cloud.netapp.v1.Volume.backup_config:type_name -> google.cloud.netapp.v1.BackupConfig
 	4,  // 17: google.cloud.netapp.v1.Volume.restricted_actions:type_name -> google.cloud.netapp.v1.RestrictedAction
 	29, // 18: google.cloud.netapp.v1.Volume.tiering_policy:type_name -> google.cloud.netapp.v1.TieringPolicy
 	30, // 19: google.cloud.netapp.v1.Volume.hybrid_replication_parameters:type_name -> google.cloud.netapp.v1.HybridReplicationParameters
 	31, // 20: google.cloud.netapp.v1.Volume.cache_parameters:type_name -> google.cloud.netapp.v1.CacheParameters
 	34, // 21: google.cloud.netapp.v1.Volume.block_devices:type_name -> google.cloud.netapp.v1.BlockDevice
-	20, // 22: google.cloud.netapp.v1.ExportPolicy.rules:type_name -> google.cloud.netapp.v1.SimpleExportPolicyRule
-	1,  // 23: google.cloud.netapp.v1.SimpleExportPolicyRule.access_type:type_name -> google.cloud.netapp.v1.AccessType
-	6,  // 24: google.cloud.netapp.v1.SimpleExportPolicyRule.squash_mode:type_name -> google.cloud.netapp.v1.SimpleExportPolicyRule.SquashMode
-	22, // 25: google.cloud.netapp.v1.SnapshotPolicy.hourly_schedule:type_name -> google.cloud.netapp.v1.HourlySchedule
-	23, // 26: google.cloud.netapp.v1.SnapshotPolicy.daily_schedule:type_name -> google.cloud.netapp.v1.DailySchedule
-	24, // 27: google.cloud.netapp.v1.SnapshotPolicy.weekly_schedule:type_name -> google.cloud.netapp.v1.WeeklySchedule
-	25, // 28: google.cloud.netapp.v1.SnapshotPolicy.monthly_schedule:type_name -> google.cloud.netapp.v1.MonthlySchedule
-	0,  // 29: google.cloud.netapp.v1.MountOption.protocol:type_name -> google.cloud.netapp.v1.Protocols
-	7,  // 30: google.cloud.netapp.v1.TieringPolicy.tier_action:type_name -> google.cloud.netapp.v1.TieringPolicy.TierAction
-	38, // 31: google.cloud.netapp.v1.HybridReplicationParameters.labels:type_name -> google.cloud.netapp.v1.HybridReplicationParameters.LabelsEntry
-	43, // 32: google.cloud.netapp.v1.HybridReplicationParameters.replication_schedule:type_name -> google.cloud.netapp.v1.HybridReplicationSchedule
-	8,  // 33: google.cloud.netapp.v1.HybridReplicationParameters.hybrid_replication_type:type_name -> google.cloud.netapp.v1.HybridReplicationParameters.VolumeHybridReplicationType
-	32, // 34: google.cloud.netapp.v1.CacheParameters.cache_config:type_name -> google.cloud.netapp.v1.CacheConfig
-	9,  // 35: google.cloud.netapp.v1.CacheParameters.cache_state:type_name -> google.cloud.netapp.v1.CacheParameters.CacheState
-	40, // 36: google.cloud.netapp.v1.CacheParameters.peering_command_expiry_time:type_name -> google.protobuf.Timestamp
-	33, // 37: google.cloud.netapp.v1.CacheConfig.cache_pre_populate:type_name -> google.cloud.netapp.v1.CachePrePopulate
-	10, // 38: google.cloud.netapp.v1.CacheConfig.cache_pre_populate_state:type_name -> google.cloud.netapp.v1.CacheConfig.CachePrePopulateState
-	44, // 39: google.cloud.netapp.v1.BlockDevice.os_type:type_name -> google.cloud.netapp.v1.OsType
-	40, // [40:40] is the sub-list for method output_type
-	40, // [40:40] is the sub-list for method input_type
-	40, // [40:40] is the sub-list for extension type_name
-	40, // [40:40] is the sub-list for extension extendee
-	0,  // [0:40] is the sub-list for field type_name
+	38, // 22: google.cloud.netapp.v1.Volume.clone_details:type_name -> google.cloud.netapp.v1.Volume.CloneDetails
+	20, // 23: google.cloud.netapp.v1.ExportPolicy.rules:type_name -> google.cloud.netapp.v1.SimpleExportPolicyRule
+	1,  // 24: google.cloud.netapp.v1.SimpleExportPolicyRule.access_type:type_name -> google.cloud.netapp.v1.AccessType
+	6,  // 25: google.cloud.netapp.v1.SimpleExportPolicyRule.squash_mode:type_name -> google.cloud.netapp.v1.SimpleExportPolicyRule.SquashMode
+	22, // 26: google.cloud.netapp.v1.SnapshotPolicy.hourly_schedule:type_name -> google.cloud.netapp.v1.HourlySchedule
+	23, // 27: google.cloud.netapp.v1.SnapshotPolicy.daily_schedule:type_name -> google.cloud.netapp.v1.DailySchedule
+	24, // 28: google.cloud.netapp.v1.SnapshotPolicy.weekly_schedule:type_name -> google.cloud.netapp.v1.WeeklySchedule
+	25, // 29: google.cloud.netapp.v1.SnapshotPolicy.monthly_schedule:type_name -> google.cloud.netapp.v1.MonthlySchedule
+	0,  // 30: google.cloud.netapp.v1.MountOption.protocol:type_name -> google.cloud.netapp.v1.Protocols
+	7,  // 31: google.cloud.netapp.v1.TieringPolicy.tier_action:type_name -> google.cloud.netapp.v1.TieringPolicy.TierAction
+	40, // 32: google.cloud.netapp.v1.HybridReplicationParameters.labels:type_name -> google.cloud.netapp.v1.HybridReplicationParameters.LabelsEntry
+	45, // 33: google.cloud.netapp.v1.HybridReplicationParameters.replication_schedule:type_name -> google.cloud.netapp.v1.HybridReplicationSchedule
+	8,  // 34: google.cloud.netapp.v1.HybridReplicationParameters.hybrid_replication_type:type_name -> google.cloud.netapp.v1.HybridReplicationParameters.VolumeHybridReplicationType
+	32, // 35: google.cloud.netapp.v1.CacheParameters.cache_config:type_name -> google.cloud.netapp.v1.CacheConfig
+	9,  // 36: google.cloud.netapp.v1.CacheParameters.cache_state:type_name -> google.cloud.netapp.v1.CacheParameters.CacheState
+	42, // 37: google.cloud.netapp.v1.CacheParameters.peering_command_expiry_time:type_name -> google.protobuf.Timestamp
+	33, // 38: google.cloud.netapp.v1.CacheConfig.cache_pre_populate:type_name -> google.cloud.netapp.v1.CachePrePopulate
+	10, // 39: google.cloud.netapp.v1.CacheConfig.cache_pre_populate_state:type_name -> google.cloud.netapp.v1.CacheConfig.CachePrePopulateState
+	46, // 40: google.cloud.netapp.v1.BlockDevice.os_type:type_name -> google.cloud.netapp.v1.OsType
+	41, // [41:41] is the sub-list for method output_type
+	41, // [41:41] is the sub-list for method input_type
+	41, // [41:41] is the sub-list for extension type_name
+	41, // [41:41] is the sub-list for extension extendee
+	0,  // [0:41] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_netapp_v1_volume_proto_init() }
@@ -3599,7 +3785,7 @@ func file_google_cloud_netapp_v1_volume_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_netapp_v1_volume_proto_rawDesc), len(file_google_cloud_netapp_v1_volume_proto_rawDesc)),
 			NumEnums:      11,
-			NumMessages:   28,
+			NumMessages:   30,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

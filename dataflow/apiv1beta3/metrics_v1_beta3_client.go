@@ -103,8 +103,7 @@ type internalMetricsV1Beta3Client interface {
 // MetricsV1Beta3Client is a client for interacting with Dataflow API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// The Dataflow Metrics API lets you monitor the progress of Dataflow
-// jobs.
+// The Dataflow Metrics API lets you monitor the progress of Dataflow jobs.
 type MetricsV1Beta3Client struct {
 	// The internal transport-dependent client.
 	internalClient internalMetricsV1Beta3Client
@@ -184,8 +183,7 @@ type metricsV1Beta3GRPCClient struct {
 // NewMetricsV1Beta3Client creates a new metrics v1 beta3 client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// The Dataflow Metrics API lets you monitor the progress of Dataflow
-// jobs.
+// The Dataflow Metrics API lets you monitor the progress of Dataflow jobs.
 func NewMetricsV1Beta3Client(ctx context.Context, opts ...option.ClientOption) (*MetricsV1Beta3Client, error) {
 	clientOpts := defaultMetricsV1Beta3GRPCClientOptions()
 	if newMetricsV1Beta3ClientHook != nil {
@@ -259,8 +257,7 @@ type metricsV1Beta3RESTClient struct {
 
 // NewMetricsV1Beta3RESTClient creates a new metrics v1 beta3 rest client.
 //
-// The Dataflow Metrics API lets you monitor the progress of Dataflow
-// jobs.
+// The Dataflow Metrics API lets you monitor the progress of Dataflow jobs.
 func NewMetricsV1Beta3RESTClient(ctx context.Context, opts ...option.ClientOption) (*MetricsV1Beta3Client, error) {
 	clientOpts := append(defaultMetricsV1Beta3RESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)

@@ -146,7 +146,7 @@ func CommitsSinceHash(gitDir, hash string, inclusive bool) ([]string, error) {
 		commitRange = fmt.Sprintf("%s..", hash)
 	}
 
-	c := execv.Command("git", "rev-list", commitRange)
+	c := execv.Command("git", "rev-list", commitRange, "--", ".", ":(exclude)preview")
 	c.Dir = gitDir
 	b, err := c.Output()
 	if err != nil {
@@ -163,7 +163,7 @@ func UpdateFilesSinceHash(gitDir, hash string) ([]string, error) {
 	// - (C) Copied
 	// - (M) Modified
 	// - (R) Renamed
-	c := execv.Command("git", "diff-tree", "--no-commit-id", "--name-only", "--diff-filter=ACMR", "-r", fmt.Sprintf("%s..HEAD", hash))
+	c := execv.Command("git", "diff-tree", "--no-commit-id", "--name-only", "--diff-filter=ACMR", "-r", fmt.Sprintf("%s..HEAD", hash), "--", ".", ":(exclude)preview")
 	c.Dir = gitDir
 	b, err := c.Output()
 	if err != nil {
@@ -194,7 +194,7 @@ func DeepClone(repo, dir string) error {
 // FilesChanged returns a list of files changed in a commit for the provided
 // hash in the given gitDir.
 func FilesChanged(gitDir, hash string) ([]string, error) {
-	c := execv.Command("git", "show", "--pretty=format:", "--name-only", hash)
+	c := execv.Command("git", "show", "--pretty=format:", "--name-only", hash, "--", ".", ":(exclude)preview")
 	c.Dir = gitDir
 	b, err := c.Output()
 	if err != nil {

@@ -87,8 +87,7 @@ type internalMessagesV1Beta3Client interface {
 // MessagesV1Beta3Client is a client for interacting with Dataflow API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// The Dataflow Messages API is used for monitoring the progress of
-// Dataflow jobs.
+// The Dataflow Messages API is used to monitor the progress of Dataflow jobs.
 type MessagesV1Beta3Client struct {
 	// The internal transport-dependent client.
 	internalClient internalMessagesV1Beta3Client
@@ -153,8 +152,7 @@ type messagesV1Beta3GRPCClient struct {
 // NewMessagesV1Beta3Client creates a new messages v1 beta3 client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// The Dataflow Messages API is used for monitoring the progress of
-// Dataflow jobs.
+// The Dataflow Messages API is used to monitor the progress of Dataflow jobs.
 func NewMessagesV1Beta3Client(ctx context.Context, opts ...option.ClientOption) (*MessagesV1Beta3Client, error) {
 	clientOpts := defaultMessagesV1Beta3GRPCClientOptions()
 	if newMessagesV1Beta3ClientHook != nil {
@@ -228,8 +226,7 @@ type messagesV1Beta3RESTClient struct {
 
 // NewMessagesV1Beta3RESTClient creates a new messages v1 beta3 rest client.
 //
-// The Dataflow Messages API is used for monitoring the progress of
-// Dataflow jobs.
+// The Dataflow Messages API is used to monitor the progress of Dataflow jobs.
 func NewMessagesV1Beta3RESTClient(ctx context.Context, opts ...option.ClientOption) (*MessagesV1Beta3Client, error) {
 	clientOpts := append(defaultMessagesV1Beta3RESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)

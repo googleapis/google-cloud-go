@@ -185,6 +185,7 @@ type Backup struct {
 	// policy.
 	BackupType Backup_Type `protobuf:"varint,5,opt,name=backup_type,json=backupType,proto3,enum=google.cloud.netapp.v1.Backup_Type" json:"backup_type,omitempty"`
 	// Volume full name of this backup belongs to.
+	// Either source_volume or ontap_source should be provided.
 	// Format:
 	// `projects/{projects_id}/locations/{location}/volumes/{volume_id}`
 	SourceVolume string `protobuf:"bytes,6,opt,name=source_volume,json=sourceVolume,proto3" json:"source_volume,omitempty"`

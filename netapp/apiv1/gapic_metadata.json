@@ -140,6 +140,31 @@
                 "EstablishPeering"
               ]
             },
+            "EstablishVolumePeering": {
+              "methods": [
+                "EstablishVolumePeering"
+              ]
+            },
+            "ExecuteOntapDelete": {
+              "methods": [
+                "ExecuteOntapDelete"
+              ]
+            },
+            "ExecuteOntapGet": {
+              "methods": [
+                "ExecuteOntapGet"
+              ]
+            },
+            "ExecuteOntapPatch": {
+              "methods": [
+                "ExecuteOntapPatch"
+              ]
+            },
+            "ExecuteOntapPost": {
+              "methods": [
+                "ExecuteOntapPost"
+              ]
+            },
             "GetActiveDirectory": {
               "methods": [
                 "GetActiveDirectory"
@@ -503,6 +528,31 @@
             "EstablishPeering": {
               "methods": [
                 "EstablishPeering"
+              ]
+            },
+            "EstablishVolumePeering": {
+              "methods": [
+                "EstablishVolumePeering"
+              ]
+            },
+            "ExecuteOntapDelete": {
+              "methods": [
+                "ExecuteOntapDelete"
+              ]
+            },
+            "ExecuteOntapGet": {
+              "methods": [
+                "ExecuteOntapGet"
+              ]
+            },
+            "ExecuteOntapPatch": {
+              "methods": [
+                "ExecuteOntapPatch"
+              ]
+            },
+            "ExecuteOntapPost": {
+              "methods": [
+                "ExecuteOntapPost"
               ]
             },
             "GetActiveDirectory": {

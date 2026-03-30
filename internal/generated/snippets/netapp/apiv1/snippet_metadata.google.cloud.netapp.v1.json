@@ -1211,6 +1211,236 @@
           "fullName": "google.cloud.netapp.v1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.netapp.v1.Client.EstablishVolumePeering",
+        "method": {
+          "fullName": "google.cloud.netapp.v1.NetApp.EstablishVolumePeering",
+          "service": {
+            "fullName": "google.cloud.netapp.v1.NetApp",
+            "shortName": "NetApp"
+          },
+          "shortName": "EstablishVolumePeering"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "netapppb.EstablishVolumePeeringRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "EstablishVolumePeeringOperation",
+        "shortName": "EstablishVolumePeering"
+      },
+      "description": "EstablishVolumePeering establish volume peering. This is used to establish cluster and svm\npeerings between the GCNV and OnPrem clusters.",
+      "file": "Client/EstablishVolumePeering/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "netapp_v1_generated_NetApp_EstablishVolumePeering_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "netapp EstablishVolumePeering Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.netapp.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.netapp.v1.Client.ExecuteOntapDelete",
+        "method": {
+          "fullName": "google.cloud.netapp.v1.NetApp.ExecuteOntapDelete",
+          "service": {
+            "fullName": "google.cloud.netapp.v1.NetApp",
+            "shortName": "NetApp"
+          },
+          "shortName": "ExecuteOntapDelete"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "netapppb.ExecuteOntapDeleteRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*netapppb.ExecuteOntapDeleteResponse",
+        "shortName": "ExecuteOntapDelete"
+      },
+      "description": "ExecuteOntapDelete `ExecuteOntapDelete` dispatches the ONTAP `DELETE` request to the\n`StoragePool` cluster.",
+      "file": "Client/ExecuteOntapDelete/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "netapp_v1_generated_NetApp_ExecuteOntapDelete_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "netapp ExecuteOntapDelete Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.netapp.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.netapp.v1.Client.ExecuteOntapGet",
+        "method": {
+          "fullName": "google.cloud.netapp.v1.NetApp.ExecuteOntapGet",
+          "service": {
+            "fullName": "google.cloud.netapp.v1.NetApp",
+            "shortName": "NetApp"
+          },
+          "shortName": "ExecuteOntapGet"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "netapppb.ExecuteOntapGetRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*netapppb.ExecuteOntapGetResponse",
+        "shortName": "ExecuteOntapGet"
+      },
+      "description": "ExecuteOntapGet `ExecuteOntapGet` dispatches the ONTAP `GET` request to the\n`StoragePool` cluster.",
+      "file": "Client/ExecuteOntapGet/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "netapp_v1_generated_NetApp_ExecuteOntapGet_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "netapp ExecuteOntapGet Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.netapp.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.netapp.v1.Client.ExecuteOntapPatch",
+        "method": {
+          "fullName": "google.cloud.netapp.v1.NetApp.ExecuteOntapPatch",
+          "service": {
+            "fullName": "google.cloud.netapp.v1.NetApp",
+            "shortName": "NetApp"
+          },
+          "shortName": "ExecuteOntapPatch"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "netapppb.ExecuteOntapPatchRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*netapppb.ExecuteOntapPatchResponse",
+        "shortName": "ExecuteOntapPatch"
+      },
+      "description": "ExecuteOntapPatch `ExecuteOntapPatch` dispatches the ONTAP `PATCH` request to the\n`StoragePool` cluster.",
+      "file": "Client/ExecuteOntapPatch/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "netapp_v1_generated_NetApp_ExecuteOntapPatch_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "netapp ExecuteOntapPatch Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.netapp.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.netapp.v1.Client.ExecuteOntapPost",
+        "method": {
+          "fullName": "google.cloud.netapp.v1.NetApp.ExecuteOntapPost",
+          "service": {
+            "fullName": "google.cloud.netapp.v1.NetApp",
+            "shortName": "NetApp"
+          },
+          "shortName": "ExecuteOntapPost"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "netapppb.ExecuteOntapPostRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*netapppb.ExecuteOntapPostResponse",
+        "shortName": "ExecuteOntapPost"
+      },
+      "description": "ExecuteOntapPost `ExecuteOntapPost` dispatches the ONTAP `POST` request to the\n`StoragePool` cluster.",
+      "file": "Client/ExecuteOntapPost/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "netapp_v1_generated_NetApp_ExecuteOntapPost_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "netapp ExecuteOntapPost Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.netapp.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.netapp.v1.Client.GetActiveDirectory",
         "method": {
           "fullName": "google.cloud.netapp.v1.NetApp.GetActiveDirectory",
@@ -2111,7 +2341,7 @@
         "resultType": "LocationIterator",
         "shortName": "ListLocations"
       },
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "Client/ListLocations/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",

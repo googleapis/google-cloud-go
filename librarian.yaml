@@ -16,8 +16,8 @@ version: v0.9.1-0.20260327183345-63a5ecfc3492
 repo: googleapis/google-cloud-go
 sources:
   googleapis:
-    commit: 59d5f2b46924714af627ac29ea6de78641a00835
-    sha256: 82a521f299cee025f1ffc0bf2e593b66d8c98c0e1a9ea994964344436a4abb91
+    commit: d329a6214de657939e398688795e67138f4818df
+    sha256: 438fc8f2e1ab7a3b5c9c00e4ed317a9f2b972c89a9fb08a635a31540047f858d
 release:
   branch: main
 default:
@@ -202,7 +202,7 @@ libraries:
       - path: google/cloud/beyondcorp/clientconnectorservices/v1
       - path: google/cloud/beyondcorp/clientgateways/v1
   - name: bigquery
-    version: 1.74.0
+    version: 1.75.0
     apis:
       - path: google/cloud/bigquery/migration/v2
       - path: google/cloud/bigquery/datapolicies/v2

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -181,6 +181,10 @@ const (
 	// Currently, this is an opt-in feature, please reach out to Cloud support
 	// team if you are interested.
 	JobState_JOB_STATE_RESOURCE_CLEANING_UP JobState = 12
+	// `JOB_STATE_PAUSING` is not implemented yet.
+	JobState_JOB_STATE_PAUSING JobState = 13
+	// `JOB_STATE_PAUSED` is not implemented yet.
+	JobState_JOB_STATE_PAUSED JobState = 14
 )
 
 // Enum value maps for JobState.
@@ -199,6 +203,8 @@ var (
 		10: "JOB_STATE_CANCELLING",
 		11: "JOB_STATE_QUEUED",
 		12: "JOB_STATE_RESOURCE_CLEANING_UP",
+		13: "JOB_STATE_PAUSING",
+		14: "JOB_STATE_PAUSED",
 	}
 	JobState_value = map[string]int32{
 		"JOB_STATE_UNKNOWN":              0,
@@ -214,6 +220,8 @@ var (
 		"JOB_STATE_CANCELLING":           10,
 		"JOB_STATE_QUEUED":               11,
 		"JOB_STATE_RESOURCE_CLEANING_UP": 12,
+		"JOB_STATE_PAUSING":              13,
+		"JOB_STATE_PAUSED":               14,
 	}
 )
 
@@ -701,8 +709,10 @@ type Job struct {
 	SatisfiesPzi *bool `protobuf:"varint,27,opt,name=satisfies_pzi,json=satisfiesPzi,proto3,oneof" json:"satisfies_pzi,omitempty"`
 	// Output only. Resources used by the Dataflow Service to run the job.
 	ServiceResources *ServiceResources `protobuf:"bytes,28,opt,name=service_resources,json=serviceResources,proto3,oneof" json:"service_resources,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	// Output only. Indicates whether the job can be paused.
+	Pausable      bool `protobuf:"varint,29,opt,name=pausable,proto3" json:"pausable,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Job) Reset() {
@@ -931,6 +941,13 @@ func (x *Job) GetServiceResources() *ServiceResources {
 	return nil
 }
 
+func (x *Job) GetPausable() bool {
+	if x != nil {
+		return x.Pausable
+	}
+	return false
+}
+
 // Resources used by the Dataflow Service to run the job.
 type ServiceResources struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -996,8 +1013,17 @@ type RuntimeUpdatableParams struct {
 	// [Update an existing
 	// pipeline](https://cloud.google.com/dataflow/docs/guides/updating-a-pipeline).
 	WorkerUtilizationHint *float64 `protobuf:"fixed64,3,opt,name=worker_utilization_hint,json=workerUtilizationHint,proto3,oneof" json:"worker_utilization_hint,omitempty"`
-	unknownFields         protoimpl.UnknownFields
-	sizeCache             protoimpl.SizeCache
+	// Optional. Deprecated: Use `autoscaling_tier` instead.
+	// The backlog threshold duration in seconds for autoscaling. Value must be
+	// non-negative.
+	//
+	// Deprecated: Marked as deprecated in google/dataflow/v1beta3/jobs.proto.
+	AcceptableBacklogDuration *durationpb.Duration `protobuf:"bytes,4,opt,name=acceptable_backlog_duration,json=acceptableBacklogDuration,proto3,oneof" json:"acceptable_backlog_duration,omitempty"`
+	// Optional. The backlog threshold tier for autoscaling. Value must be one of
+	// "low-latency", "medium-latency", or "high-latency".
+	AutoscalingTier *string `protobuf:"bytes,5,opt,name=autoscaling_tier,json=autoscalingTier,proto3,oneof" json:"autoscaling_tier,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *RuntimeUpdatableParams) Reset() {
@@ -1049,6 +1075,21 @@ func (x *RuntimeUpdatableParams) GetWorkerUtilizationHint() float64 {
 		return *x.WorkerUtilizationHint
 	}
 	return 0
+}
+
+// Deprecated: Marked as deprecated in google/dataflow/v1beta3/jobs.proto.
+func (x *RuntimeUpdatableParams) GetAcceptableBacklogDuration() *durationpb.Duration {
+	if x != nil {
+		return x.AcceptableBacklogDuration
+	}
+	return nil
+}
+
+func (x *RuntimeUpdatableParams) GetAutoscalingTier() string {
+	if x != nil && x.AutoscalingTier != nil {
+		return *x.AutoscalingTier
+	}
+	return ""
 }
 
 // Metadata for a Datastore connector used by the job.
@@ -3284,7 +3325,7 @@ var File_google_dataflow_v1beta3_jobs_proto protoreflect.FileDescriptor
 
 const file_google_dataflow_v1beta3_jobs_proto_rawDesc = "" +
 	"\n" +
-	"\"google/dataflow/v1beta3/jobs.proto\x12\x17google.dataflow.v1beta3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a)google/dataflow/v1beta3/environment.proto\x1a'google/dataflow/v1beta3/snapshots.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf0\x0e\n" +
+	"\"google/dataflow/v1beta3/jobs.proto\x12\x17google.dataflow.v1beta3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a)google/dataflow/v1beta3/environment.proto\x1a'google/dataflow/v1beta3/snapshots.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x91\x0f\n" +
 	"\x03Job\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1d\n" +
 	"\n" +
@@ -3318,7 +3359,8 @@ const file_google_dataflow_v1beta3_jobs_proto_rawDesc = "" +
 	"\rsatisfies_pzs\x18\x19 \x01(\bR\fsatisfiesPzs\x12n\n" +
 	"\x18runtime_updatable_params\x18\x1a \x01(\v2/.google.dataflow.v1beta3.RuntimeUpdatableParamsH\x00R\x16runtimeUpdatableParams\x88\x01\x01\x12-\n" +
 	"\rsatisfies_pzi\x18\x1b \x01(\bB\x03\xe0A\x03H\x01R\fsatisfiesPzi\x88\x01\x01\x12`\n" +
-	"\x11service_resources\x18\x1c \x01(\v2).google.dataflow.v1beta3.ServiceResourcesB\x03\xe0A\x03H\x02R\x10serviceResources\x88\x01\x01\x1aG\n" +
+	"\x11service_resources\x18\x1c \x01(\v2).google.dataflow.v1beta3.ServiceResourcesB\x03\xe0A\x03H\x02R\x10serviceResources\x88\x01\x01\x12\x1f\n" +
+	"\bpausable\x18\x1d \x01(\bB\x03\xe0A\x03R\bpausable\x1aG\n" +
 	"\x19TransformNameMappingEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a9\n" +
@@ -3329,14 +3371,18 @@ const file_google_dataflow_v1beta3_jobs_proto_rawDesc = "" +
 	"\x0e_satisfies_pziB\x14\n" +
 	"\x12_service_resources\"-\n" +
 	"\x10ServiceResources\x12\x19\n" +
-	"\x05zones\x18\x01 \x03(\tB\x03\xe0A\x03R\x05zones\"\xf3\x01\n" +
+	"\x05zones\x18\x01 \x03(\tB\x03\xe0A\x03R\x05zones\"\xc4\x03\n" +
 	"\x16RuntimeUpdatableParams\x12+\n" +
 	"\x0fmax_num_workers\x18\x01 \x01(\x05H\x00R\rmaxNumWorkers\x88\x01\x01\x12+\n" +
 	"\x0fmin_num_workers\x18\x02 \x01(\x05H\x01R\rminNumWorkers\x88\x01\x01\x12;\n" +
-	"\x17worker_utilization_hint\x18\x03 \x01(\x01H\x02R\x15workerUtilizationHint\x88\x01\x01B\x12\n" +
+	"\x17worker_utilization_hint\x18\x03 \x01(\x01H\x02R\x15workerUtilizationHint\x88\x01\x01\x12e\n" +
+	"\x1bacceptable_backlog_duration\x18\x04 \x01(\v2\x19.google.protobuf.DurationB\x05\xe0A\x01\x18\x01H\x03R\x19acceptableBacklogDuration\x88\x01\x01\x123\n" +
+	"\x10autoscaling_tier\x18\x05 \x01(\tB\x03\xe0A\x01H\x04R\x0fautoscalingTier\x88\x01\x01B\x12\n" +
 	"\x10_max_num_workersB\x12\n" +
 	"\x10_min_num_workersB\x1a\n" +
-	"\x18_worker_utilization_hint\"Q\n" +
+	"\x18_worker_utilization_hintB\x1e\n" +
+	"\x1c_acceptable_backlog_durationB\x13\n" +
+	"\x11_autoscaling_tier\"Q\n" +
 	"\x12DatastoreIODetails\x12\x1c\n" +
 	"\tnamespace\x18\x01 \x01(\tR\tnamespace\x12\x1d\n" +
 	"\n" +
@@ -3546,7 +3592,7 @@ const file_google_dataflow_v1beta3_jobs_proto_rawDesc = "" +
 	"WRITE_KIND\x10\x05\x12\x11\n" +
 	"\rCONSTANT_KIND\x10\x06\x12\x12\n" +
 	"\x0eSINGLETON_KIND\x10\a\x12\x10\n" +
-	"\fSHUFFLE_KIND\x10\b*\xc3\x02\n" +
+	"\fSHUFFLE_KIND\x10\b*\xf0\x02\n" +
 	"\bJobState\x12\x15\n" +
 	"\x11JOB_STATE_UNKNOWN\x10\x00\x12\x15\n" +
 	"\x11JOB_STATE_STOPPED\x10\x01\x12\x15\n" +
@@ -3561,7 +3607,9 @@ const file_google_dataflow_v1beta3_jobs_proto_rawDesc = "" +
 	"\x14JOB_STATE_CANCELLING\x10\n" +
 	"\x12\x14\n" +
 	"\x10JOB_STATE_QUEUED\x10\v\x12\"\n" +
-	"\x1eJOB_STATE_RESOURCE_CLEANING_UP\x10\f*a\n" +
+	"\x1eJOB_STATE_RESOURCE_CLEANING_UP\x10\f\x12\x15\n" +
+	"\x11JOB_STATE_PAUSING\x10\r\x12\x14\n" +
+	"\x10JOB_STATE_PAUSED\x10\x0e*a\n" +
 	"\aJobView\x12\x14\n" +
 	"\x10JOB_VIEW_UNKNOWN\x10\x00\x12\x14\n" +
 	"\x10JOB_VIEW_SUMMARY\x10\x01\x12\x10\n" +
@@ -3660,64 +3708,65 @@ var file_google_dataflow_v1beta3_jobs_proto_depIdxs = []int32{
 	45, // 13: google.dataflow.v1beta3.Job.start_time:type_name -> google.protobuf.Timestamp
 	9,  // 14: google.dataflow.v1beta3.Job.runtime_updatable_params:type_name -> google.dataflow.v1beta3.RuntimeUpdatableParams
 	8,  // 15: google.dataflow.v1beta3.Job.service_resources:type_name -> google.dataflow.v1beta3.ServiceResources
-	3,  // 16: google.dataflow.v1beta3.SdkVersion.sdk_support_status:type_name -> google.dataflow.v1beta3.SdkVersion.SdkSupportStatus
-	17, // 17: google.dataflow.v1beta3.SdkVersion.bugs:type_name -> google.dataflow.v1beta3.SdkBug
-	4,  // 18: google.dataflow.v1beta3.SdkBug.type:type_name -> google.dataflow.v1beta3.SdkBug.Type
-	5,  // 19: google.dataflow.v1beta3.SdkBug.severity:type_name -> google.dataflow.v1beta3.SdkBug.Severity
-	16, // 20: google.dataflow.v1beta3.JobMetadata.sdk_version:type_name -> google.dataflow.v1beta3.SdkVersion
-	15, // 21: google.dataflow.v1beta3.JobMetadata.spanner_details:type_name -> google.dataflow.v1beta3.SpannerIODetails
-	14, // 22: google.dataflow.v1beta3.JobMetadata.bigquery_details:type_name -> google.dataflow.v1beta3.BigQueryIODetails
-	13, // 23: google.dataflow.v1beta3.JobMetadata.big_table_details:type_name -> google.dataflow.v1beta3.BigTableIODetails
-	11, // 24: google.dataflow.v1beta3.JobMetadata.pubsub_details:type_name -> google.dataflow.v1beta3.PubSubIODetails
-	12, // 25: google.dataflow.v1beta3.JobMetadata.file_details:type_name -> google.dataflow.v1beta3.FileIODetails
-	10, // 26: google.dataflow.v1beta3.JobMetadata.datastore_details:type_name -> google.dataflow.v1beta3.DatastoreIODetails
-	38, // 27: google.dataflow.v1beta3.JobMetadata.user_display_properties:type_name -> google.dataflow.v1beta3.JobMetadata.UserDisplayPropertiesEntry
-	1,  // 28: google.dataflow.v1beta3.ExecutionStageState.execution_stage_state:type_name -> google.dataflow.v1beta3.JobState
-	45, // 29: google.dataflow.v1beta3.ExecutionStageState.current_state_time:type_name -> google.protobuf.Timestamp
-	21, // 30: google.dataflow.v1beta3.PipelineDescription.original_pipeline_transform:type_name -> google.dataflow.v1beta3.TransformSummary
-	22, // 31: google.dataflow.v1beta3.PipelineDescription.execution_pipeline_stage:type_name -> google.dataflow.v1beta3.ExecutionStageSummary
-	23, // 32: google.dataflow.v1beta3.PipelineDescription.display_data:type_name -> google.dataflow.v1beta3.DisplayData
-	0,  // 33: google.dataflow.v1beta3.TransformSummary.kind:type_name -> google.dataflow.v1beta3.KindType
-	23, // 34: google.dataflow.v1beta3.TransformSummary.display_data:type_name -> google.dataflow.v1beta3.DisplayData
-	0,  // 35: google.dataflow.v1beta3.ExecutionStageSummary.kind:type_name -> google.dataflow.v1beta3.KindType
-	39, // 36: google.dataflow.v1beta3.ExecutionStageSummary.input_source:type_name -> google.dataflow.v1beta3.ExecutionStageSummary.StageSource
-	39, // 37: google.dataflow.v1beta3.ExecutionStageSummary.output_source:type_name -> google.dataflow.v1beta3.ExecutionStageSummary.StageSource
-	40, // 38: google.dataflow.v1beta3.ExecutionStageSummary.component_transform:type_name -> google.dataflow.v1beta3.ExecutionStageSummary.ComponentTransform
-	41, // 39: google.dataflow.v1beta3.ExecutionStageSummary.component_source:type_name -> google.dataflow.v1beta3.ExecutionStageSummary.ComponentSource
-	45, // 40: google.dataflow.v1beta3.DisplayData.timestamp_value:type_name -> google.protobuf.Timestamp
-	46, // 41: google.dataflow.v1beta3.DisplayData.duration_value:type_name -> google.protobuf.Duration
-	47, // 42: google.dataflow.v1beta3.Step.properties:type_name -> google.protobuf.Struct
-	42, // 43: google.dataflow.v1beta3.JobExecutionInfo.stages:type_name -> google.dataflow.v1beta3.JobExecutionInfo.StagesEntry
-	7,  // 44: google.dataflow.v1beta3.CreateJobRequest.job:type_name -> google.dataflow.v1beta3.Job
-	2,  // 45: google.dataflow.v1beta3.CreateJobRequest.view:type_name -> google.dataflow.v1beta3.JobView
-	2,  // 46: google.dataflow.v1beta3.GetJobRequest.view:type_name -> google.dataflow.v1beta3.JobView
-	7,  // 47: google.dataflow.v1beta3.UpdateJobRequest.job:type_name -> google.dataflow.v1beta3.Job
-	48, // 48: google.dataflow.v1beta3.UpdateJobRequest.update_mask:type_name -> google.protobuf.FieldMask
-	6,  // 49: google.dataflow.v1beta3.ListJobsRequest.filter:type_name -> google.dataflow.v1beta3.ListJobsRequest.Filter
-	2,  // 50: google.dataflow.v1beta3.ListJobsRequest.view:type_name -> google.dataflow.v1beta3.JobView
-	7,  // 51: google.dataflow.v1beta3.ListJobsResponse.jobs:type_name -> google.dataflow.v1beta3.Job
-	31, // 52: google.dataflow.v1beta3.ListJobsResponse.failed_location:type_name -> google.dataflow.v1beta3.FailedLocation
-	46, // 53: google.dataflow.v1beta3.SnapshotJobRequest.ttl:type_name -> google.protobuf.Duration
-	26, // 54: google.dataflow.v1beta3.JobExecutionInfo.StagesEntry.value:type_name -> google.dataflow.v1beta3.JobExecutionStageInfo
-	27, // 55: google.dataflow.v1beta3.JobsV1Beta3.CreateJob:input_type -> google.dataflow.v1beta3.CreateJobRequest
-	28, // 56: google.dataflow.v1beta3.JobsV1Beta3.GetJob:input_type -> google.dataflow.v1beta3.GetJobRequest
-	29, // 57: google.dataflow.v1beta3.JobsV1Beta3.UpdateJob:input_type -> google.dataflow.v1beta3.UpdateJobRequest
-	30, // 58: google.dataflow.v1beta3.JobsV1Beta3.ListJobs:input_type -> google.dataflow.v1beta3.ListJobsRequest
-	30, // 59: google.dataflow.v1beta3.JobsV1Beta3.AggregatedListJobs:input_type -> google.dataflow.v1beta3.ListJobsRequest
-	34, // 60: google.dataflow.v1beta3.JobsV1Beta3.CheckActiveJobs:input_type -> google.dataflow.v1beta3.CheckActiveJobsRequest
-	33, // 61: google.dataflow.v1beta3.JobsV1Beta3.SnapshotJob:input_type -> google.dataflow.v1beta3.SnapshotJobRequest
-	7,  // 62: google.dataflow.v1beta3.JobsV1Beta3.CreateJob:output_type -> google.dataflow.v1beta3.Job
-	7,  // 63: google.dataflow.v1beta3.JobsV1Beta3.GetJob:output_type -> google.dataflow.v1beta3.Job
-	7,  // 64: google.dataflow.v1beta3.JobsV1Beta3.UpdateJob:output_type -> google.dataflow.v1beta3.Job
-	32, // 65: google.dataflow.v1beta3.JobsV1Beta3.ListJobs:output_type -> google.dataflow.v1beta3.ListJobsResponse
-	32, // 66: google.dataflow.v1beta3.JobsV1Beta3.AggregatedListJobs:output_type -> google.dataflow.v1beta3.ListJobsResponse
-	35, // 67: google.dataflow.v1beta3.JobsV1Beta3.CheckActiveJobs:output_type -> google.dataflow.v1beta3.CheckActiveJobsResponse
-	49, // 68: google.dataflow.v1beta3.JobsV1Beta3.SnapshotJob:output_type -> google.dataflow.v1beta3.Snapshot
-	62, // [62:69] is the sub-list for method output_type
-	55, // [55:62] is the sub-list for method input_type
-	55, // [55:55] is the sub-list for extension type_name
-	55, // [55:55] is the sub-list for extension extendee
-	0,  // [0:55] is the sub-list for field type_name
+	46, // 16: google.dataflow.v1beta3.RuntimeUpdatableParams.acceptable_backlog_duration:type_name -> google.protobuf.Duration
+	3,  // 17: google.dataflow.v1beta3.SdkVersion.sdk_support_status:type_name -> google.dataflow.v1beta3.SdkVersion.SdkSupportStatus
+	17, // 18: google.dataflow.v1beta3.SdkVersion.bugs:type_name -> google.dataflow.v1beta3.SdkBug
+	4,  // 19: google.dataflow.v1beta3.SdkBug.type:type_name -> google.dataflow.v1beta3.SdkBug.Type
+	5,  // 20: google.dataflow.v1beta3.SdkBug.severity:type_name -> google.dataflow.v1beta3.SdkBug.Severity
+	16, // 21: google.dataflow.v1beta3.JobMetadata.sdk_version:type_name -> google.dataflow.v1beta3.SdkVersion
+	15, // 22: google.dataflow.v1beta3.JobMetadata.spanner_details:type_name -> google.dataflow.v1beta3.SpannerIODetails
+	14, // 23: google.dataflow.v1beta3.JobMetadata.bigquery_details:type_name -> google.dataflow.v1beta3.BigQueryIODetails
+	13, // 24: google.dataflow.v1beta3.JobMetadata.big_table_details:type_name -> google.dataflow.v1beta3.BigTableIODetails
+	11, // 25: google.dataflow.v1beta3.JobMetadata.pubsub_details:type_name -> google.dataflow.v1beta3.PubSubIODetails
+	12, // 26: google.dataflow.v1beta3.JobMetadata.file_details:type_name -> google.dataflow.v1beta3.FileIODetails
+	10, // 27: google.dataflow.v1beta3.JobMetadata.datastore_details:type_name -> google.dataflow.v1beta3.DatastoreIODetails
+	38, // 28: google.dataflow.v1beta3.JobMetadata.user_display_properties:type_name -> google.dataflow.v1beta3.JobMetadata.UserDisplayPropertiesEntry
+	1,  // 29: google.dataflow.v1beta3.ExecutionStageState.execution_stage_state:type_name -> google.dataflow.v1beta3.JobState
+	45, // 30: google.dataflow.v1beta3.ExecutionStageState.current_state_time:type_name -> google.protobuf.Timestamp
+	21, // 31: google.dataflow.v1beta3.PipelineDescription.original_pipeline_transform:type_name -> google.dataflow.v1beta3.TransformSummary
+	22, // 32: google.dataflow.v1beta3.PipelineDescription.execution_pipeline_stage:type_name -> google.dataflow.v1beta3.ExecutionStageSummary
+	23, // 33: google.dataflow.v1beta3.PipelineDescription.display_data:type_name -> google.dataflow.v1beta3.DisplayData
+	0,  // 34: google.dataflow.v1beta3.TransformSummary.kind:type_name -> google.dataflow.v1beta3.KindType
+	23, // 35: google.dataflow.v1beta3.TransformSummary.display_data:type_name -> google.dataflow.v1beta3.DisplayData
+	0,  // 36: google.dataflow.v1beta3.ExecutionStageSummary.kind:type_name -> google.dataflow.v1beta3.KindType
+	39, // 37: google.dataflow.v1beta3.ExecutionStageSummary.input_source:type_name -> google.dataflow.v1beta3.ExecutionStageSummary.StageSource
+	39, // 38: google.dataflow.v1beta3.ExecutionStageSummary.output_source:type_name -> google.dataflow.v1beta3.ExecutionStageSummary.StageSource
+	40, // 39: google.dataflow.v1beta3.ExecutionStageSummary.component_transform:type_name -> google.dataflow.v1beta3.ExecutionStageSummary.ComponentTransform
+	41, // 40: google.dataflow.v1beta3.ExecutionStageSummary.component_source:type_name -> google.dataflow.v1beta3.ExecutionStageSummary.ComponentSource
+	45, // 41: google.dataflow.v1beta3.DisplayData.timestamp_value:type_name -> google.protobuf.Timestamp
+	46, // 42: google.dataflow.v1beta3.DisplayData.duration_value:type_name -> google.protobuf.Duration
+	47, // 43: google.dataflow.v1beta3.Step.properties:type_name -> google.protobuf.Struct
+	42, // 44: google.dataflow.v1beta3.JobExecutionInfo.stages:type_name -> google.dataflow.v1beta3.JobExecutionInfo.StagesEntry
+	7,  // 45: google.dataflow.v1beta3.CreateJobRequest.job:type_name -> google.dataflow.v1beta3.Job
+	2,  // 46: google.dataflow.v1beta3.CreateJobRequest.view:type_name -> google.dataflow.v1beta3.JobView
+	2,  // 47: google.dataflow.v1beta3.GetJobRequest.view:type_name -> google.dataflow.v1beta3.JobView
+	7,  // 48: google.dataflow.v1beta3.UpdateJobRequest.job:type_name -> google.dataflow.v1beta3.Job
+	48, // 49: google.dataflow.v1beta3.UpdateJobRequest.update_mask:type_name -> google.protobuf.FieldMask
+	6,  // 50: google.dataflow.v1beta3.ListJobsRequest.filter:type_name -> google.dataflow.v1beta3.ListJobsRequest.Filter
+	2,  // 51: google.dataflow.v1beta3.ListJobsRequest.view:type_name -> google.dataflow.v1beta3.JobView
+	7,  // 52: google.dataflow.v1beta3.ListJobsResponse.jobs:type_name -> google.dataflow.v1beta3.Job
+	31, // 53: google.dataflow.v1beta3.ListJobsResponse.failed_location:type_name -> google.dataflow.v1beta3.FailedLocation
+	46, // 54: google.dataflow.v1beta3.SnapshotJobRequest.ttl:type_name -> google.protobuf.Duration
+	26, // 55: google.dataflow.v1beta3.JobExecutionInfo.StagesEntry.value:type_name -> google.dataflow.v1beta3.JobExecutionStageInfo
+	27, // 56: google.dataflow.v1beta3.JobsV1Beta3.CreateJob:input_type -> google.dataflow.v1beta3.CreateJobRequest
+	28, // 57: google.dataflow.v1beta3.JobsV1Beta3.GetJob:input_type -> google.dataflow.v1beta3.GetJobRequest
+	29, // 58: google.dataflow.v1beta3.JobsV1Beta3.UpdateJob:input_type -> google.dataflow.v1beta3.UpdateJobRequest
+	30, // 59: google.dataflow.v1beta3.JobsV1Beta3.ListJobs:input_type -> google.dataflow.v1beta3.ListJobsRequest
+	30, // 60: google.dataflow.v1beta3.JobsV1Beta3.AggregatedListJobs:input_type -> google.dataflow.v1beta3.ListJobsRequest
+	34, // 61: google.dataflow.v1beta3.JobsV1Beta3.CheckActiveJobs:input_type -> google.dataflow.v1beta3.CheckActiveJobsRequest
+	33, // 62: google.dataflow.v1beta3.JobsV1Beta3.SnapshotJob:input_type -> google.dataflow.v1beta3.SnapshotJobRequest
+	7,  // 63: google.dataflow.v1beta3.JobsV1Beta3.CreateJob:output_type -> google.dataflow.v1beta3.Job
+	7,  // 64: google.dataflow.v1beta3.JobsV1Beta3.GetJob:output_type -> google.dataflow.v1beta3.Job
+	7,  // 65: google.dataflow.v1beta3.JobsV1Beta3.UpdateJob:output_type -> google.dataflow.v1beta3.Job
+	32, // 66: google.dataflow.v1beta3.JobsV1Beta3.ListJobs:output_type -> google.dataflow.v1beta3.ListJobsResponse
+	32, // 67: google.dataflow.v1beta3.JobsV1Beta3.AggregatedListJobs:output_type -> google.dataflow.v1beta3.ListJobsResponse
+	35, // 68: google.dataflow.v1beta3.JobsV1Beta3.CheckActiveJobs:output_type -> google.dataflow.v1beta3.CheckActiveJobsResponse
+	49, // 69: google.dataflow.v1beta3.JobsV1Beta3.SnapshotJob:output_type -> google.dataflow.v1beta3.Snapshot
+	63, // [63:70] is the sub-list for method output_type
+	56, // [56:63] is the sub-list for method input_type
+	56, // [56:56] is the sub-list for extension type_name
+	56, // [56:56] is the sub-list for extension extendee
+	0,  // [0:56] is the sub-list for field type_name
 }
 
 func init() { file_google_dataflow_v1beta3_jobs_proto_init() }

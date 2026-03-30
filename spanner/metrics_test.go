@@ -31,7 +31,9 @@ import (
 	"google.golang.org/genproto/googleapis/api/metric"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/alts"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
 )
 
@@ -313,4 +315,61 @@ func parseHex(hexStr string) (int64, error) {
 	var value int64
 	_, err := fmt.Sscanf(hexStr, "%x", &value)
 	return value, err
+}
+
+type mockALTSAuthInfo struct {
+	alts.AuthInfo
+}
+
+func (m mockALTSAuthInfo) AuthType() string { return "alts" }
+
+type mockOtherAuthInfo struct{}
+
+func (m mockOtherAuthInfo) AuthType() string { return "other" }
+
+func TestSetDirectPathUsed(t *testing.T) {
+	tests := []struct {
+		name string
+		peer *peer.Peer
+		want bool
+	}{
+		{
+			name: "ALTS AuthInfo",
+			peer: &peer.Peer{
+				AuthInfo: mockALTSAuthInfo{},
+			},
+			want: true,
+		},
+		{
+			name: "Other AuthInfo",
+			peer: &peer.Peer{
+				AuthInfo: mockOtherAuthInfo{},
+			},
+			want: false,
+		},
+		{
+			name: "No AuthInfo",
+			peer: &peer.Peer{},
+			want: false,
+		},
+		{
+			name: "No Peer",
+			peer: nil,
+			want: false,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			tracer := &attemptTracer{}
+			ctx := context.Background()
+			if tc.peer != nil {
+				ctx = peer.NewContext(ctx, tc.peer)
+			}
+			tracer.setDirectPathUsed(ctx)
+			if tracer.directPathUsed != tc.want {
+				t.Errorf("setDirectPathUsed() = %v, want %v", tracer.directPathUsed, tc.want)
+			}
+		})
+	}
 }
