@@ -359,7 +359,7 @@ libraries:
       - internal/generated/snippets/bigquery/v2
     tag_format: bigquery/v{version}
   - id: bigtable
-    version: 1.43.0
+    version: 1.44.0
     last_generated_commit: ""
     apis: []
     source_roots:
