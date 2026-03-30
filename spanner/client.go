@@ -501,7 +501,10 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	isAFEBuiltInMetricEnabled := strings.EqualFold("false", os.Getenv("SPANNER_DISABLE_AFE_SERVER_TIMING"))
 	isGRPCBuiltInMetricsEnabled := strings.EqualFold("false", os.Getenv("SPANNER_DISABLE_DIRECT_ACCESS_GRPC_BUILTIN_METRICS"))
 	// enable the AFE/GRPC built-in metrics if direct-path is enabled
-	isDirectPathEnabled, _ := strconv.ParseBool(os.Getenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS"))
+	isDirectPathEnabled := config.EnableDirectAccess
+	if enableDirectPathXdsString := os.Getenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS"); enableDirectPathXdsString != "" {
+		isDirectPathEnabled, _ = strconv.ParseBool(enableDirectPathXdsString)
+	}
 	if isDirectPathEnabled {
 		isAFEBuiltInMetricEnabled = true
 		isGRPCBuiltInMetricsEnabled = true
