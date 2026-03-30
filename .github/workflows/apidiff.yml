@@ -73,14 +73,14 @@ jobs:
         MATRIX_CHANGED: ${{ matrix.changed }}
         STEPS_BASELINE_OUTPUTS_PKG: ${{ steps.baseline.outputs.pkg }}
     - name: Upload baseline package data
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: ${{ steps.baseline.outputs.pkg }}
         path: ${{ matrix.changed }}/${{ steps.baseline.outputs.pkg }}
         retention-days: 1
     - uses: actions/checkout@v6
     - name: Download baseline package data
-      uses: actions/download-artifact@v7
+      uses: actions/download-artifact@v8
       with:
         name: ${{ steps.baseline.outputs.pkg }}
         path: ${{ matrix.changed }}

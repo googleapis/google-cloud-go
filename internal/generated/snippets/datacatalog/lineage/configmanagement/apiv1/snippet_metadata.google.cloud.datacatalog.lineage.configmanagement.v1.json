@@ -1,0 +1,289 @@
+{
+  "clientLibrary": {
+    "apis": [
+      {
+        "id": "google.cloud.datacatalog.lineage.configmanagement.v1",
+        "version": "v1"
+      }
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/datacatalog/lineage/configmanagement/apiv1",
+    "version": "1.26.1"
+  },
+  "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datacatalog.lineage.configmanagement.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datacatalog.lineage.configmanagement.v1.Client.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/CancelOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "datalineage_v1_generated_ConfigManagementService_CancelOperation_sync",
+      "segments": [
+        {
+          "end": 51,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "datalineage CancelOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datacatalog.lineage.configmanagement.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datacatalog.lineage.configmanagement.v1.Client.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/DeleteOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "datalineage_v1_generated_ConfigManagementService_DeleteOperation_sync",
+      "segments": [
+        {
+          "end": 51,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "datalineage DeleteOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datacatalog.lineage.configmanagement.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datacatalog.lineage.configmanagement.v1.Client.GetConfig",
+        "method": {
+          "fullName": "google.cloud.datacatalog.lineage.configmanagement.v1.ConfigManagementService.GetConfig",
+          "service": {
+            "fullName": "google.cloud.datacatalog.lineage.configmanagement.v1.ConfigManagementService",
+            "shortName": "ConfigManagementService"
+          },
+          "shortName": "GetConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "configmanagementpb.GetConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*configmanagementpb.Config",
+        "shortName": "GetConfig"
+      },
+      "description": "GetConfig get the Config for a given resource.",
+      "file": "Client/GetConfig/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "datalineage_v1_generated_ConfigManagementService_GetConfig_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "datalineage GetConfig Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datacatalog.lineage.configmanagement.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datacatalog.lineage.configmanagement.v1.Client.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "datalineage_v1_generated_ConfigManagementService_GetOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "datalineage GetOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datacatalog.lineage.configmanagement.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datacatalog.lineage.configmanagement.v1.Client.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "datalineage_v1_generated_ConfigManagementService_ListOperations_sync",
+      "segments": [
+        {
+          "end": 66,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "datalineage ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datacatalog.lineage.configmanagement.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datacatalog.lineage.configmanagement.v1.Client.UpdateConfig",
+        "method": {
+          "fullName": "google.cloud.datacatalog.lineage.configmanagement.v1.ConfigManagementService.UpdateConfig",
+          "service": {
+            "fullName": "google.cloud.datacatalog.lineage.configmanagement.v1.ConfigManagementService",
+            "shortName": "ConfigManagementService"
+          },
+          "shortName": "UpdateConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "configmanagementpb.UpdateConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*configmanagementpb.Config",
+        "shortName": "UpdateConfig"
+      },
+      "description": "UpdateConfig update the Config for a given resource.",
+      "file": "Client/UpdateConfig/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "datalineage_v1_generated_ConfigManagementService_UpdateConfig_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "datalineage UpdateConfig Sample"
+    }
+  ]
+}

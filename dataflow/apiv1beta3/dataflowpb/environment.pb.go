@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -601,7 +601,7 @@ type Environment struct {
 	// The worker pools. At least one "harness" worker pool must be
 	// specified in order for the job to have workers.
 	WorkerPools []*WorkerPool `protobuf:"bytes,4,rep,name=worker_pools,json=workerPools,proto3" json:"worker_pools,omitempty"`
-	// A description of the process that generated the request.
+	// Optional. A description of the process that generated the request.
 	UserAgent *structpb.Struct `protobuf:"bytes,5,opt,name=user_agent,json=userAgent,proto3" json:"user_agent,omitempty"`
 	// A structure describing which components and their versions of the service
 	// are required in order to run the job.
@@ -654,6 +654,8 @@ type Environment struct {
 	// [Set the pipeline streaming
 	// mode](https://cloud.google.com/dataflow/docs/guides/streaming-modes).
 	StreamingMode StreamingMode `protobuf:"varint,19,opt,name=streaming_mode,json=streamingMode,proto3,enum=google.dataflow.v1beta3.StreamingMode" json:"streaming_mode,omitempty"`
+	// Optional. True when any worker pool that uses public IPs is present.
+	UsePublicIps  bool `protobuf:"varint,20,opt,name=use_public_ips,json=usePublicIps,proto3" json:"use_public_ips,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -819,6 +821,13 @@ func (x *Environment) GetStreamingMode() StreamingMode {
 		return x.StreamingMode
 	}
 	return StreamingMode_STREAMING_MODE_UNSPECIFIED
+}
+
+func (x *Environment) GetUsePublicIps() bool {
+	if x != nil {
+		return x.UsePublicIps
+	}
+	return false
 }
 
 // The packages that must be installed in order for a worker to run the
@@ -1496,6 +1505,10 @@ type WorkerPool struct {
 	// Type of root disk for VMs.  If empty or unspecified, the service will
 	// attempt to choose a reasonable default.
 	DiskType string `protobuf:"bytes,16,opt,name=disk_type,json=diskType,proto3" json:"disk_type,omitempty"`
+	// Optional. IOPS provisioned for the root disk for VMs.
+	DiskProvisionedIops int64 `protobuf:"varint,23,opt,name=disk_provisioned_iops,json=diskProvisionedIops,proto3" json:"disk_provisioned_iops,omitempty"`
+	// Optional. Throughput provisioned for the root disk for VMs.
+	DiskProvisionedThroughputMibps int64 `protobuf:"varint,24,opt,name=disk_provisioned_throughput_mibps,json=diskProvisionedThroughputMibps,proto3" json:"disk_provisioned_throughput_mibps,omitempty"`
 	// Fully qualified source image for disks.
 	DiskSourceImage string `protobuf:"bytes,8,opt,name=disk_source_image,json=diskSourceImage,proto3" json:"disk_source_image,omitempty"`
 	// Zone to run the worker pools in.  If empty or unspecified, the service
@@ -1626,6 +1639,20 @@ func (x *WorkerPool) GetDiskType() string {
 		return x.DiskType
 	}
 	return ""
+}
+
+func (x *WorkerPool) GetDiskProvisionedIops() int64 {
+	if x != nil {
+		return x.DiskProvisionedIops
+	}
+	return 0
+}
+
+func (x *WorkerPool) GetDiskProvisionedThroughputMibps() int64 {
+	if x != nil {
+		return x.DiskProvisionedThroughputMibps
+	}
+	return 0
 }
 
 func (x *WorkerPool) GetDiskSourceImage() string {
@@ -1841,16 +1868,16 @@ var File_google_dataflow_v1beta3_environment_proto protoreflect.FileDescriptor
 
 const file_google_dataflow_v1beta3_environment_proto_rawDesc = "" +
 	"\n" +
-	")google/dataflow/v1beta3/environment.proto\x12\x17google.dataflow.v1beta3\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/protobuf/any.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xc3\t\n" +
+	")google/dataflow/v1beta3/environment.proto\x12\x17google.dataflow.v1beta3\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/protobuf/any.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xf3\t\n" +
 	"\vEnvironment\x12.\n" +
 	"\x13temp_storage_prefix\x18\x01 \x01(\tR\x11tempStoragePrefix\x12=\n" +
 	"\x1bcluster_manager_api_service\x18\x02 \x01(\tR\x18clusterManagerApiService\x12 \n" +
 	"\vexperiments\x18\x03 \x03(\tR\vexperiments\x12,\n" +
 	"\x0fservice_options\x18\x10 \x03(\tB\x03\xe0A\x01R\x0eserviceOptions\x124\n" +
 	"\x14service_kms_key_name\x18\f \x01(\tB\x03\xe0A\x01R\x11serviceKmsKeyName\x12F\n" +
-	"\fworker_pools\x18\x04 \x03(\v2#.google.dataflow.v1beta3.WorkerPoolR\vworkerPools\x126\n" +
+	"\fworker_pools\x18\x04 \x03(\v2#.google.dataflow.v1beta3.WorkerPoolR\vworkerPools\x12;\n" +
 	"\n" +
-	"user_agent\x18\x05 \x01(\v2\x17.google.protobuf.StructR\tuserAgent\x121\n" +
+	"user_agent\x18\x05 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\tuserAgent\x121\n" +
 	"\aversion\x18\x06 \x01(\v2\x17.google.protobuf.StructR\aversion\x12\x1d\n" +
 	"\adataset\x18\a \x01(\tB\x03\xe0A\x01R\adataset\x12I\n" +
 	"\x14sdk_pipeline_options\x18\b \x01(\v2\x17.google.protobuf.StructR\x12sdkPipelineOptions\x12G\n" +
@@ -1864,7 +1891,8 @@ const file_google_dataflow_v1beta3_environment_proto_rawDesc = "" +
 	"\fshuffle_mode\x18\x0f \x01(\x0e2$.google.dataflow.v1beta3.ShuffleModeB\x03\xe0A\x03R\vshuffleMode\x12O\n" +
 	"\rdebug_options\x18\x11 \x01(\v2%.google.dataflow.v1beta3.DebugOptionsB\x03\xe0A\x01R\fdebugOptions\x12`\n" +
 	"+use_streaming_engine_resource_based_billing\x18\x12 \x01(\bB\x03\xe0A\x03R&useStreamingEngineResourceBasedBilling\x12R\n" +
-	"\x0estreaming_mode\x18\x13 \x01(\x0e2&.google.dataflow.v1beta3.StreamingModeB\x03\xe0A\x01R\rstreamingMode\"9\n" +
+	"\x0estreaming_mode\x18\x13 \x01(\x0e2&.google.dataflow.v1beta3.StreamingModeB\x03\xe0A\x01R\rstreamingMode\x12)\n" +
+	"\x0euse_public_ips\x18\x14 \x01(\bB\x03\xe0A\x01R\fusePublicIps\"9\n" +
 	"\aPackage\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1a\n" +
 	"\blocation\x18\x02 \x01(\tR\blocation\"]\n" +
@@ -1909,8 +1937,7 @@ const file_google_dataflow_v1beta3_environment_proto_rawDesc = "" +
 	"\x0fcontainer_image\x18\x01 \x01(\tR\x0econtainerImage\x12@\n" +
 	"\x1duse_single_core_per_container\x18\x02 \x01(\bR\x19useSingleCorePerContainer\x12%\n" +
 	"\x0eenvironment_id\x18\x03 \x01(\tR\renvironmentId\x12\"\n" +
-	"\fcapabilities\x18\x04 \x03(\tR\fcapabilities\"\xc5\n" +
-	"\n" +
+	"\fcapabilities\x18\x04 \x03(\tR\fcapabilities\"\xce\v\n" +
 	"\n" +
 	"WorkerPool\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12\x1f\n" +
@@ -1922,7 +1949,9 @@ const file_google_dataflow_v1beta3_environment_proto_rawDesc = "" +
 	"\x0fteardown_policy\x18\x06 \x01(\x0e2'.google.dataflow.v1beta3.TeardownPolicyR\x0eteardownPolicy\x12 \n" +
 	"\fdisk_size_gb\x18\a \x01(\x05R\n" +
 	"diskSizeGb\x12\x1b\n" +
-	"\tdisk_type\x18\x10 \x01(\tR\bdiskType\x12*\n" +
+	"\tdisk_type\x18\x10 \x01(\tR\bdiskType\x127\n" +
+	"\x15disk_provisioned_iops\x18\x17 \x01(\x03B\x03\xe0A\x01R\x13diskProvisionedIops\x12N\n" +
+	"!disk_provisioned_throughput_mibps\x18\x18 \x01(\x03B\x03\xe0A\x01R\x1ediskProvisionedThroughputMibps\x12*\n" +
 	"\x11disk_source_image\x18\b \x01(\tR\x0fdiskSourceImage\x12\x12\n" +
 	"\x04zone\x18\t \x01(\tR\x04zone\x12\\\n" +
 	"\x13taskrunner_settings\x18\n" +

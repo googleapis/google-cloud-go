@@ -55,9 +55,6 @@ type PartnerLinkServiceClient interface {
 	//     Google Account of the credentials is a user. If not set, defaults to the
 	//     account of the request. Format:
 	//     `accountTypes/{loginAccountType}/accounts/{loginAccountId}`
-	//   - `linked-account`: (Optional) The resource name of the account with an
-	//     established product link to the `login-account`. Format:
-	//     `accountTypes/{linkedAccountType}/accounts/{linkedAccountId}`
 	CreatePartnerLink(ctx context.Context, in *CreatePartnerLinkRequest, opts ...grpc.CallOption) (*PartnerLink, error)
 	// Deletes a partner link for the given account.
 	//
@@ -70,9 +67,6 @@ type PartnerLinkServiceClient interface {
 	//     Google Account of the credentials is a user. If not set, defaults to the
 	//     account of the request. Format:
 	//     `accountTypes/{loginAccountType}/accounts/{loginAccountId}`
-	//   - `linked-account`: (Optional) The resource name of the account with an
-	//     established product link to the `login-account`. Format:
-	//     `accountTypes/{linkedAccountType}/accounts/{linkedAccountId}`
 	DeletePartnerLink(ctx context.Context, in *DeletePartnerLinkRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Searches for all partner links to and from a given account.
 	//
@@ -85,9 +79,6 @@ type PartnerLinkServiceClient interface {
 	//     Google Account of the credentials is a user. If not set, defaults to the
 	//     account of the request. Format:
 	//     `accountTypes/{loginAccountType}/accounts/{loginAccountId}`
-	//   - `linked-account`: (Optional) The resource name of the account with an
-	//     established product link to the `login-account`. Format:
-	//     `accountTypes/{linkedAccountType}/accounts/{linkedAccountId}`
 	SearchPartnerLinks(ctx context.Context, in *SearchPartnerLinksRequest, opts ...grpc.CallOption) (*SearchPartnerLinksResponse, error)
 }
 
@@ -141,9 +132,6 @@ type PartnerLinkServiceServer interface {
 	//     Google Account of the credentials is a user. If not set, defaults to the
 	//     account of the request. Format:
 	//     `accountTypes/{loginAccountType}/accounts/{loginAccountId}`
-	//   - `linked-account`: (Optional) The resource name of the account with an
-	//     established product link to the `login-account`. Format:
-	//     `accountTypes/{linkedAccountType}/accounts/{linkedAccountId}`
 	CreatePartnerLink(context.Context, *CreatePartnerLinkRequest) (*PartnerLink, error)
 	// Deletes a partner link for the given account.
 	//
@@ -156,9 +144,6 @@ type PartnerLinkServiceServer interface {
 	//     Google Account of the credentials is a user. If not set, defaults to the
 	//     account of the request. Format:
 	//     `accountTypes/{loginAccountType}/accounts/{loginAccountId}`
-	//   - `linked-account`: (Optional) The resource name of the account with an
-	//     established product link to the `login-account`. Format:
-	//     `accountTypes/{linkedAccountType}/accounts/{linkedAccountId}`
 	DeletePartnerLink(context.Context, *DeletePartnerLinkRequest) (*emptypb.Empty, error)
 	// Searches for all partner links to and from a given account.
 	//
@@ -171,9 +156,6 @@ type PartnerLinkServiceServer interface {
 	//     Google Account of the credentials is a user. If not set, defaults to the
 	//     account of the request. Format:
 	//     `accountTypes/{loginAccountType}/accounts/{loginAccountId}`
-	//   - `linked-account`: (Optional) The resource name of the account with an
-	//     established product link to the `login-account`. Format:
-	//     `accountTypes/{linkedAccountType}/accounts/{linkedAccountId}`
 	SearchPartnerLinks(context.Context, *SearchPartnerLinksRequest) (*SearchPartnerLinksResponse, error)
 }
 

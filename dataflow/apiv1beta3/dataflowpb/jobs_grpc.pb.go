@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type JobsV1Beta3Client interface {
-	// Creates a Cloud Dataflow job.
+	// Creates a Dataflow job.
 	//
 	// To create a job, we recommend using `projects.locations.jobs.create` with a
 	// [regional endpoint]
@@ -173,7 +173,7 @@ func (c *jobsV1Beta3Client) SnapshotJob(ctx context.Context, in *SnapshotJobRequ
 // All implementations should embed UnimplementedJobsV1Beta3Server
 // for forward compatibility
 type JobsV1Beta3Server interface {
-	// Creates a Cloud Dataflow job.
+	// Creates a Dataflow job.
 	//
 	// To create a job, we recommend using `projects.locations.jobs.create` with a
 	// [regional endpoint]

@@ -28,6 +28,7 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	durationpb "google.golang.org/protobuf/types/known/durationpb"
 )
 
 const (
@@ -281,20 +282,31 @@ func (x *Field_IndexConfig) GetReverting() bool {
 // The TTL (time-to-live) configuration for documents that have this `Field`
 // set.
 //
-// Storing a timestamp value into a TTL-enabled field will be treated as
-// the document's absolute expiration time. For Enterprise edition databases,
-// the timestamp value may also be stored in an array value in the
-// TTL-enabled field.
+// A timestamp stored in a TTL-enabled field will be used to determine the
+// expiration time of the document. The expiration time is the sum
+// of the timestamp value and the `expiration_offset`.
 //
-// Timestamp values in the past indicate that the document is eligible for
+// For Enterprise edition databases, the timestamp value may alternatively be
+// stored in an array value in the TTL-enabled field.
+//
+// An expiration time in the past indicates that the document is eligible for
 // immediate expiration. Using any other data type or leaving the field absent
 // will disable expiration for the individual document.
 type Field_TtlConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Output only. The state of the TTL configuration.
-	State         Field_TtlConfig_State `protobuf:"varint,1,opt,name=state,proto3,enum=google.firestore.admin.v1.Field_TtlConfig_State" json:"state,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	State Field_TtlConfig_State `protobuf:"varint,1,opt,name=state,proto3,enum=google.firestore.admin.v1.Field_TtlConfig_State" json:"state,omitempty"`
+	// Optional. The offset, relative to the timestamp value from the
+	// TTL-enabled field, used to determine the document's expiration time.
+	//
+	// `expiration_offset.seconds` must be between 0 and 2,147,483,647
+	// inclusive. Values more precise than seconds are rejected.
+	//
+	// If unset, defaults to 0, in which case the expiration time is the same
+	// as the timestamp value from the TTL-enabled field.
+	ExpirationOffset *durationpb.Duration `protobuf:"bytes,3,opt,name=expiration_offset,json=expirationOffset,proto3" json:"expiration_offset,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *Field_TtlConfig) Reset() {
@@ -334,11 +346,18 @@ func (x *Field_TtlConfig) GetState() Field_TtlConfig_State {
 	return Field_TtlConfig_STATE_UNSPECIFIED
 }
 
+func (x *Field_TtlConfig) GetExpirationOffset() *durationpb.Duration {
+	if x != nil {
+		return x.ExpirationOffset
+	}
+	return nil
+}
+
 var File_google_firestore_admin_v1_field_proto protoreflect.FileDescriptor
 
 const file_google_firestore_admin_v1_field_proto_rawDesc = "" +
 	"\n" +
-	"%google/firestore/admin/v1/field.proto\x12\x19google.firestore.admin.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a%google/firestore/admin/v1/index.proto\"\xa1\x05\n" +
+	"%google/firestore/admin/v1/field.proto\x12\x19google.firestore.admin.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a%google/firestore/admin/v1/index.proto\x1a\x1egoogle/protobuf/duration.proto\"\xee\x05\n" +
 	"\x05Field\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12O\n" +
 	"\findex_config\x18\x02 \x01(\v2,.google.firestore.admin.v1.Field.IndexConfigR\vindexConfig\x12I\n" +
@@ -348,9 +367,10 @@ const file_google_firestore_admin_v1_field_proto_rawDesc = "" +
 	"\aindexes\x18\x01 \x03(\v2 .google.firestore.admin.v1.IndexR\aindexes\x120\n" +
 	"\x14uses_ancestor_config\x18\x02 \x01(\bR\x12usesAncestorConfig\x12%\n" +
 	"\x0eancestor_field\x18\x03 \x01(\tR\rancestorField\x12\x1c\n" +
-	"\treverting\x18\x04 \x01(\bR\treverting\x1a\xa4\x01\n" +
+	"\treverting\x18\x04 \x01(\bR\treverting\x1a\xf1\x01\n" +
 	"\tTtlConfig\x12K\n" +
-	"\x05state\x18\x01 \x01(\x0e20.google.firestore.admin.v1.Field.TtlConfig.StateB\x03\xe0A\x03R\x05state\"J\n" +
+	"\x05state\x18\x01 \x01(\x0e20.google.firestore.admin.v1.Field.TtlConfig.StateB\x03\xe0A\x03R\x05state\x12K\n" +
+	"\x11expiration_offset\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x10expirationOffset\"J\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCREATING\x10\x01\x12\n" +
@@ -376,22 +396,24 @@ func file_google_firestore_admin_v1_field_proto_rawDescGZIP() []byte {
 var file_google_firestore_admin_v1_field_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_google_firestore_admin_v1_field_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_google_firestore_admin_v1_field_proto_goTypes = []any{
-	(Field_TtlConfig_State)(0), // 0: google.firestore.admin.v1.Field.TtlConfig.State
-	(*Field)(nil),              // 1: google.firestore.admin.v1.Field
-	(*Field_IndexConfig)(nil),  // 2: google.firestore.admin.v1.Field.IndexConfig
-	(*Field_TtlConfig)(nil),    // 3: google.firestore.admin.v1.Field.TtlConfig
-	(*Index)(nil),              // 4: google.firestore.admin.v1.Index
+	(Field_TtlConfig_State)(0),  // 0: google.firestore.admin.v1.Field.TtlConfig.State
+	(*Field)(nil),               // 1: google.firestore.admin.v1.Field
+	(*Field_IndexConfig)(nil),   // 2: google.firestore.admin.v1.Field.IndexConfig
+	(*Field_TtlConfig)(nil),     // 3: google.firestore.admin.v1.Field.TtlConfig
+	(*Index)(nil),               // 4: google.firestore.admin.v1.Index
+	(*durationpb.Duration)(nil), // 5: google.protobuf.Duration
 }
 var file_google_firestore_admin_v1_field_proto_depIdxs = []int32{
 	2, // 0: google.firestore.admin.v1.Field.index_config:type_name -> google.firestore.admin.v1.Field.IndexConfig
 	3, // 1: google.firestore.admin.v1.Field.ttl_config:type_name -> google.firestore.admin.v1.Field.TtlConfig
 	4, // 2: google.firestore.admin.v1.Field.IndexConfig.indexes:type_name -> google.firestore.admin.v1.Index
 	0, // 3: google.firestore.admin.v1.Field.TtlConfig.state:type_name -> google.firestore.admin.v1.Field.TtlConfig.State
-	4, // [4:4] is the sub-list for method output_type
-	4, // [4:4] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	5, // 4: google.firestore.admin.v1.Field.TtlConfig.expiration_offset:type_name -> google.protobuf.Duration
+	5, // [5:5] is the sub-list for method output_type
+	5, // [5:5] is the sub-list for method input_type
+	5, // [5:5] is the sub-list for extension type_name
+	5, // [5:5] is the sub-list for extension extendee
+	0, // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_google_firestore_admin_v1_field_proto_init() }

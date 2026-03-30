@@ -43,7 +43,7 @@
         "resultType": "BatchCreatePullRequestCommentsOperation",
         "shortName": "BatchCreatePullRequestComments"
       },
-      "description": "BatchCreatePullRequestComments batch creates pull request comments. This function is used to create\nmultiple PullRequestComments for code review. There needs to be exactly one\nPullRequestComment of type Review, and at most 100 PullRequestComments of\ntype Code per request. The Postition of the code comments must be unique\nwithin the request.",
+      "description": "BatchCreatePullRequestComments batch creates pull request comments. This function is used to create\nmultiple PullRequestComments for code review. There needs to be exactly one\nPullRequestComment of type Review, and at most 100 PullRequestComments of\ntype Code per request. The Position of the code comments must be unique\nwithin the request.",
       "file": "Client/BatchCreatePullRequestComments/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -1835,7 +1835,7 @@
         "resultType": "LocationIterator",
         "shortName": "ListLocations"
       },
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "Client/ListLocations/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
