@@ -84,6 +84,18 @@ func TestNewExternalAccountConfigProvider(t *testing.T) {
 			universeDomain: "",
 			wantErr:        "unknown audience format",
 		},
+		{
+			name:           "prefix partial match failure for workload identity pool",
+			audience:       "prefix-//iam.googleapis.com/projects/12345/locations/global/workloadIdentityPools/my-pool",
+			universeDomain: "",
+			wantErr:        "unknown audience format",
+		},
+		{
+			name:           "suffix partial match failure for workload identity pool",
+			audience:       "//iam.googleapis.com/projects/12345/locations/global/workloadIdentityPools/my-pool/suffix",
+			universeDomain: "",
+			wantErr:        "unknown audience format",
+		},
 	}
 
 	for _, tt := range tests {

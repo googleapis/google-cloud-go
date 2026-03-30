@@ -26,8 +26,8 @@ const (
 )
 
 var (
-	workforceAudiencePattern = regexp.MustCompile(`//iam\.([^/]+)/locations/global/workforcePools/([^/]+)`)
-	workloadAudiencePattern  = regexp.MustCompile(`//iam\.([^/]+)/projects/([^/]+)/locations/global/workloadIdentityPools/([^/]+)`)
+	workforceAudiencePattern = regexp.MustCompile(`^//iam\.([^/]+)/locations/global/workforcePools/([^/]+)$`)
+	workloadAudiencePattern  = regexp.MustCompile(`^//iam\.([^/]+)/projects/([^/]+)/locations/global/workloadIdentityPools/([^/]+)$`)
 )
 
 // NewExternalAccountConfigProvider creates a new ConfigProvider for external accounts.
