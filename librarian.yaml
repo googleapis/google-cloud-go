@@ -422,6 +422,7 @@ libraries:
     version: 1.26.1
     apis:
       - path: google/cloud/datacatalog/v1
+      - path: google/cloud/datacatalog/lineage/configmanagement/v1
       - path: google/cloud/datacatalog/lineage/v1
       - path: google/cloud/datacatalog/v1beta1
     keep:
