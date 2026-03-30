@@ -8,6 +8,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+  issues: write
 jobs:
   regeneration:
     runs-on: ubuntu-latest
@@ -24,3 +25,27 @@ jobs:
           go install golang.org/x/tools/cmd/goimports@latest
       - name: Regeneration
         run: ./.github/workflows/regenerate.sh
+      - name: Create issue on diff
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            TITLE="Daily regeneration check found diff"
+            RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            DIFF_STAT=$(git diff --stat)
+            BODY="The daily [regeneration check]($RUN_URL) found a diff.
+
+            Diff summary:
+            \`\`\`
+            $DIFF_STAT
+            \`\`\`"
+
+            EXISTING_ISSUE=$(gh issue list --state open --search "in:title \"$TITLE\"" --json number --jq '.[0].number')
+            if [ -z "$EXISTING_ISSUE" ]; then
+              gh issue create --title "$TITLE" --body "$BODY"
+            else
+              echo "Issue #$EXISTING_ISSUE already exists, adding a comment."
+              gh issue comment "$EXISTING_ISSUE" --body "Another failure with diff occurred: $RUN_URL"
+            fi
+          fi
