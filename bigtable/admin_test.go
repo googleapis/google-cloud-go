@@ -200,7 +200,11 @@ func TestTableAdmin_CreateTableFromConf_AutomatedBackupPolicy_Valid(t *testing.T
 	if err != nil {
 		t.Fatalf("Frequency not valid: %v", err)
 	}
-	automatedBackupPolicy := TableAutomatedBackupPolicy{RetentionPeriod: retentionPeriod, Frequency: frequency}
+	automatedBackupPolicy := TableAutomatedBackupPolicy{
+		RetentionPeriod: retentionPeriod,
+		Frequency:       frequency,
+		Locations:       []string{"projects/my-cool-project/locations/us-east1-b"},
+	}
 
 	err = c.CreateTableFromConf(context.Background(), &TableConf{TableID: "My-table", AutomatedBackupConfig: &automatedBackupPolicy})
 	if err != nil {
@@ -215,6 +219,9 @@ func TestTableAdmin_CreateTableFromConf_AutomatedBackupPolicy_Valid(t *testing.T
 	}
 	if !cmp.Equal(createTableReq.Table.GetAutomatedBackupPolicy().RetentionPeriod.Seconds, int64(automatedBackupPolicy.RetentionPeriod.(time.Duration).Seconds())) {
 		t.Errorf("Unexpected table automated backup policy retention period: %v, expected %v", createTableReq.Table.GetAutomatedBackupPolicy().Frequency.Seconds, automatedBackupPolicy.Frequency.(time.Duration))
+	}
+	if !cmp.Equal(createTableReq.Table.GetAutomatedBackupPolicy().Locations, automatedBackupPolicy.Locations) {
+		t.Errorf("Unexpected table automated backup policy locations: %v, expected %v", createTableReq.Table.GetAutomatedBackupPolicy().Locations, automatedBackupPolicy.Locations)
 	}
 }
 
@@ -669,7 +676,11 @@ func TestTableAdmin_UpdateTableWithAutomatedBackupPolicy_Valid(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Frequency not valid: %v", err)
 	}
-	automatedBackupPolicy := TableAutomatedBackupPolicy{RetentionPeriod: retentionPeriod, Frequency: frequency}
+	automatedBackupPolicy := TableAutomatedBackupPolicy{
+		RetentionPeriod: retentionPeriod,
+		Frequency:       frequency,
+		Locations:       []string{"projects/my-cool-project/locations/us-east1-b"},
+	}
 
 	err = c.UpdateTableWithAutomatedBackupPolicy(context.Background(), "My-table", automatedBackupPolicy)
 	if err != nil {
@@ -685,14 +696,20 @@ func TestTableAdmin_UpdateTableWithAutomatedBackupPolicy_Valid(t *testing.T) {
 	if !cmp.Equal(updateTableReq.Table.GetAutomatedBackupPolicy().Frequency.Seconds, int64(automatedBackupPolicy.Frequency.(time.Duration).Seconds())) {
 		t.Errorf("UpdateTableRequest does not match, AutomatedBackupPolicy.Frequency: %v", updateTableReq.Table.GetAutomatedBackupPolicy().Frequency)
 	}
-	if !cmp.Equal(len(updateTableReq.UpdateMask.Paths), 2) {
-		t.Errorf("UpdateTableRequest does not match, UpdateMask has length of %d, expected 1", len(updateTableReq.UpdateMask.Paths))
+	if !cmp.Equal(updateTableReq.Table.GetAutomatedBackupPolicy().Locations, automatedBackupPolicy.Locations) {
+		t.Errorf("UpdateTableRequest does not match, AutomatedBackupPolicy.Locations: %v", updateTableReq.Table.GetAutomatedBackupPolicy().Locations)
+	}
+	if !cmp.Equal(len(updateTableReq.UpdateMask.Paths), 3) {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask has length of %d, expected 3", len(updateTableReq.UpdateMask.Paths))
 	}
 	if !cmp.Equal(updateTableReq.UpdateMask.Paths[0], "automated_backup_policy.retention_period") {
 		t.Errorf("UpdateTableRequest does not match, UpdateMask: %v", updateTableReq.UpdateMask.Paths[0])
 	}
 	if !cmp.Equal(updateTableReq.UpdateMask.Paths[1], "automated_backup_policy.frequency") {
 		t.Errorf("UpdateTableRequest does not match, UpdateMask: %v", updateTableReq.UpdateMask.Paths[1])
+	}
+	if !cmp.Equal(updateTableReq.UpdateMask.Paths[2], "automated_backup_policy.locations") {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask: %v", updateTableReq.UpdateMask.Paths[2])
 	}
 }
 
@@ -784,7 +801,7 @@ func TestTableAdmin_UpdateTableWithAutomatedBackupPolicy_NilFields_Invalid(t *te
 	mock := &mockTableAdminClock{}
 	c := setupTableClient(t, mock)
 
-	err := c.UpdateTableWithAutomatedBackupPolicy(context.Background(), "My-table", TableAutomatedBackupPolicy{nil, nil})
+	err := c.UpdateTableWithAutomatedBackupPolicy(context.Background(), "My-table", TableAutomatedBackupPolicy{RetentionPeriod: nil, Frequency: nil})
 	if err == nil {
 		t.Fatalf("Expected UpdateTableDisableAutomatedBackupPolicy to fail due to misspecified AutomatedBackupPolicy")
 	}
@@ -794,7 +811,7 @@ func TestTableAdmin_UpdateTableWithAutomatedBackupPolicy_ZeroFields_Invalid(t *t
 	mock := &mockTableAdminClock{}
 	c := setupTableClient(t, mock)
 
-	err := c.UpdateTableWithAutomatedBackupPolicy(context.Background(), "My-table", TableAutomatedBackupPolicy{time.Duration(0), time.Duration(0)})
+	err := c.UpdateTableWithAutomatedBackupPolicy(context.Background(), "My-table", TableAutomatedBackupPolicy{RetentionPeriod: time.Duration(0), Frequency: time.Duration(0)})
 	if err == nil {
 		t.Fatalf("Expected UpdateTableDisableAutomatedBackupPolicy to fail due to misspecified AutomatedBackupPolicy")
 	}

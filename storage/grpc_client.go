@@ -1006,6 +1006,9 @@ func (c *grpcStorageClient) ComposeObject(ctx context.Context, req *composeObjec
 	dstObjPb.Name = req.dstObject.name
 
 	if req.sendCRC32C {
+		if dstObjPb.Checksums == nil {
+			dstObjPb.Checksums = &storagepb.ObjectChecksums{}
+		}
 		dstObjPb.Checksums.Crc32C = &req.dstObject.attrs.CRC32C
 	}
 

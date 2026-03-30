@@ -57,6 +57,7 @@ import (
 	"google.golang.org/api/option/internaloption"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/alts"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
@@ -6608,22 +6609,20 @@ func verifyDirectPathRemoteAddress(t *testing.T) {
 		return
 	}
 	if remoteIP, res := isDirectPathRemoteAddress(); !res {
-		if dpConfig.directPathIPv4Only {
-			t.Fatalf("Expect to access DirectPath via ipv4 only, but RPC was destined to %s", remoteIP)
-		} else {
-			t.Fatalf("Expect to access DirectPath via ipv4 or ipv6, but RPC was destined to %s", remoteIP)
-		}
+		t.Fatalf("Expect to access DirectPath via ALTS, but RPC was destined to %s", remoteIP)
 	}
 }
 
 func isDirectPathRemoteAddress() (_ string, _ bool) {
-	remoteIP := peerInfo.Addr.String()
-	// DirectPath ipv4-only can only use ipv4 traffic.
-	if dpConfig.directPathIPv4Only {
-		return remoteIP, strings.HasPrefix(remoteIP, directPathIPV4Prefix)
+	var remoteIP string
+	if peerInfo != nil && peerInfo.Addr != nil {
+		remoteIP = peerInfo.Addr.String()
 	}
-	// DirectPath ipv6 can use either ipv4 or ipv6 traffic.
-	return remoteIP, strings.HasPrefix(remoteIP, directPathIPV4Prefix) || strings.HasPrefix(remoteIP, directPathIPV6Prefix)
+	isDP := false
+	if peerInfo != nil && peerInfo.AuthInfo != nil {
+		_, isDP = peerInfo.AuthInfo.(alts.AuthInfo)
+	}
+	return remoteIP, isDP
 }
 
 // examineTraffic counts RPCs use DirectPath or CFE traffic.

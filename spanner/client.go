@@ -234,7 +234,7 @@ func createGCPMultiEndpoint(cfg *grpcgcp.GCPMultiEndpointOptions, config ClientC
 			copts = append(copts, option.WithGRPCDialOption(do))
 		}
 
-		allOpts := allClientOpts(1, config.Compression, copts...)
+		allOpts := allClientOpts(1, config.Compression, config.EnableDirectAccess, copts...)
 
 		// Overwrite endpoint and pool config.
 		allOpts = append(allOpts,
@@ -373,6 +373,13 @@ type ClientConfig struct {
 
 	// ClientContext is the default context for all requests made by the client.
 	ClientContext *sppb.RequestOptions_ClientContext
+
+	// EnableDirectAccess option is used to enable the directpath.
+	// This setting is overridden by the GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS
+	// environment variable if it is set.
+	//
+	// Default: false
+	EnableDirectAccess bool
 }
 
 type openTelemetryConfig struct {
@@ -494,7 +501,10 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	isAFEBuiltInMetricEnabled := strings.EqualFold("false", os.Getenv("SPANNER_DISABLE_AFE_SERVER_TIMING"))
 	isGRPCBuiltInMetricsEnabled := strings.EqualFold("false", os.Getenv("SPANNER_DISABLE_DIRECT_ACCESS_GRPC_BUILTIN_METRICS"))
 	// enable the AFE/GRPC built-in metrics if direct-path is enabled
-	isDirectPathEnabled, _ := strconv.ParseBool(os.Getenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS"))
+	isDirectPathEnabled := config.EnableDirectAccess
+	if enableDirectPathXdsString := os.Getenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS"); enableDirectPathXdsString != "" {
+		isDirectPathEnabled, _ = strconv.ParseBool(enableDirectPathXdsString)
+	}
 	if isDirectPathEnabled {
 		isAFEBuiltInMetricEnabled = true
 		isGRPCBuiltInMetricsEnabled = true
@@ -530,7 +540,7 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 			option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(reqIDInjector.interceptStream)),
 			option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(reqIDInjector.interceptUnary)),
 		)
-		allOpts := allClientOpts(config.NumChannels, config.Compression, opts...)
+		allOpts := allClientOpts(config.NumChannels, config.Compression, config.EnableDirectAccess, opts...)
 		endpointClientOpts = append(endpointClientOpts, allOpts...)
 		primaryConn, err = gtransport.DialPool(ctx, allOpts...)
 		if err != nil {
@@ -575,7 +585,7 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 			option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(reqIDInjector.interceptUnary)),
 		)
 
-		allOpts := allClientOpts(config.NumChannels, config.Compression, opts...)
+		allOpts := allClientOpts(config.NumChannels, config.Compression, config.EnableDirectAccess, opts...)
 		endpointClientOpts = append(endpointClientOpts, allOpts...)
 		pool, err = gtransport.DialPool(ctx, allOpts...)
 		if err != nil {
@@ -752,7 +762,7 @@ func NewMultiEndpointClientWithConfig(ctx context.Context, database string, conf
 // Combines the default options from the generated client, the default options
 // of the hand-written client and the user options to one list of options.
 // Precedence: userOpts > clientDefaultOpts > generatedDefaultOpts
-func allClientOpts(numChannels int, compression string, userOpts ...option.ClientOption) []option.ClientOption {
+func allClientOpts(numChannels int, compression string, enableDirectAccess bool, userOpts ...option.ClientOption) []option.ClientOption {
 	generatedDefaultOpts := vkit.DefaultClientOptions()
 	clientDefaultOpts := []option.ClientOption{
 		option.WithGRPCConnectionPool(numChannels),
@@ -761,7 +771,12 @@ func allClientOpts(numChannels int, compression string, userOpts ...option.Clien
 		option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(addStreamNativeMetricsInterceptor()...)),
 		option.WithGRPCDialOption(grpc.WithKeepaliveParams(keepalive.ClientParameters{Time: 120 * time.Second})),
 	}
-	if enableDirectPathXds, _ := strconv.ParseBool(os.Getenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS")); enableDirectPathXds {
+	enableDirectPathXds := enableDirectAccess
+	if enableDirectPathXdsString := os.Getenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS"); enableDirectPathXdsString != "" {
+		enableDirectPathXds, _ = strconv.ParseBool(enableDirectPathXdsString)
+	}
+
+	if enableDirectPathXds {
 		clientDefaultOpts = append(clientDefaultOpts, internaloption.AllowNonDefaultServiceAccount(true))
 		clientDefaultOpts = append(clientDefaultOpts, internaloption.EnableDirectPath(true), internaloption.EnableDirectPathXds())
 		if disableBoundToken, _ := strconv.ParseBool(os.Getenv("GOOGLE_SPANNER_DISABLE_DIRECT_ACCESS_BOUND_TOKEN")); !disableBoundToken {

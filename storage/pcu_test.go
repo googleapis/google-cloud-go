@@ -64,36 +64,36 @@ func TestParallelUploadConfig_defaults(t *testing.T) {
 
 	tests := []struct {
 		name string
-		in   *parallelUploadConfig
-		want *parallelUploadConfig
+		in   *ParallelUploadConfig
+		want *ParallelUploadConfig
 	}{
 		{
 			name: "all defaults",
-			in:   &parallelUploadConfig{},
-			want: &parallelUploadConfig{
-				partSize:       defaultPartSize,
-				maxConcurrency: expectedWorkers,
+			in:   &ParallelUploadConfig{},
+			want: &ParallelUploadConfig{
+				PartSize:       defaultPartSize,
+				MaxConcurrency: expectedWorkers,
 			},
 		},
 		{
 			name: "user-provided values are respected",
-			in: &parallelUploadConfig{
-				partSize:       10 * 1024 * 1024, // 10 MiB
-				maxConcurrency: 10,
+			in: &ParallelUploadConfig{
+				PartSize:       10 * 1024 * 1024, // 10 MiB
+				MaxConcurrency: 10,
 			},
-			want: &parallelUploadConfig{
-				partSize:       10 * 1024 * 1024,
-				maxConcurrency: 10,
+			want: &ParallelUploadConfig{
+				PartSize:       10 * 1024 * 1024,
+				MaxConcurrency: 10,
 			},
 		},
 		{
-			name: "partSize below minimum is adjusted",
-			in: &parallelUploadConfig{
-				partSize: 1024 * 1024, // 1 MiB, below the 5 MiB minimum.
+			name: "PartSize below minimum is adjusted",
+			in: &ParallelUploadConfig{
+				PartSize: 1024 * 1024, // 1 MiB, below the 5 MiB minimum.
 			},
-			want: &parallelUploadConfig{
-				partSize:       minPartSize,
-				maxConcurrency: expectedWorkers,
+			want: &ParallelUploadConfig{
+				PartSize:       minPartSize,
+				MaxConcurrency: expectedWorkers,
 			},
 		},
 	}
@@ -102,7 +102,7 @@ func TestParallelUploadConfig_defaults(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			cfg := tt.in
 			cfg.defaults()
-			if diff := cmp.Diff(tt.want, cfg, cmp.AllowUnexported(parallelUploadConfig{})); diff != "" {
+			if diff := cmp.Diff(tt.want, cfg); diff != "" {
 				t.Errorf("defaults() mismatch (-want +got):\n%s", diff)
 			}
 		})
@@ -110,11 +110,11 @@ func TestParallelUploadConfig_defaults(t *testing.T) {
 }
 
 func TestNewPCUSettings(t *testing.T) {
-	maxConcurrency := 8
-	settings := newPCUSettings(maxConcurrency)
+	MaxConcurrency := 8
+	settings := newPCUSettings(MaxConcurrency)
 
-	// Verify derived values
-	wantBufferPoolSize := maxConcurrency + 1
+	// Verify derived values.
+	wantBufferPoolSize := MaxConcurrency + 1
 	if settings.bufferPoolSize != wantBufferPoolSize {
 		t.Errorf("bufferPoolSize = %d; want %d", settings.bufferPoolSize, wantBufferPoolSize)
 	}
@@ -168,8 +168,15 @@ func TestPCUState_SetError(t *testing.T) {
 
 func TestPCUState_ResultCollector(t *testing.T) {
 	pCtx, cancel := context.WithCancel(context.Background())
+	var progressSize int64
+	w := &Writer{
+		ProgressFunc: func(size int64) {
+			progressSize = size
+		},
+	}
 	state := &pcuState{
 		ctx:      pCtx,
+		w:        w,
 		cancel:   cancel,
 		resultCh: make(chan uploadResult, 2),
 		partMap:  make(map[int]*ObjectHandle),
@@ -180,7 +187,7 @@ func TestPCUState_ResultCollector(t *testing.T) {
 
 	// Successful result.
 	objHandle1 := &ObjectHandle{object: "part1"}
-	state.resultCh <- uploadResult{partNumber: 1, handle: objHandle1, err: nil}
+	state.resultCh <- uploadResult{partNumber: 1, handle: objHandle1, err: nil, size: 50}
 
 	// Error result.
 	errResult := fmt.Errorf("upload failed")
@@ -188,6 +195,10 @@ func TestPCUState_ResultCollector(t *testing.T) {
 
 	close(state.resultCh)
 	state.collectorWG.Wait()
+
+	if progressSize != 50 {
+		t.Errorf("resultCollector: progressSize got %d, want 50", progressSize)
+	}
 
 	if handle, ok := state.partMap[1]; !ok || handle.object != objHandle1.object {
 		t.Errorf("resultCollector: partMap[1] got (%v, %v), want (%v, true)", handle, ok, objHandle1)
@@ -391,6 +402,101 @@ func TestPCUWorker_UploadChannelClose(t *testing.T) {
 	}
 }
 
+func TestPCUWorker_WriteContextCancellation(t *testing.T) {
+	t.Parallel()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	uploadStarted := make(chan struct{}) // To signal when upload starts.
+
+	state := &pcuState{
+		ctx:      ctx,
+		cancel:   cancel,
+		started:  true,
+		bufferCh: make(chan []byte, 2),
+		uploadCh: make(chan uploadTask, 2),
+		resultCh: make(chan uploadResult, 2),
+		w: &Writer{
+			ctx: ctx,
+			o: &ObjectHandle{
+				bucket: "b",
+				object: "test-object",
+				c:      &Client{},
+			},
+		},
+		config:   &ParallelUploadConfig{PartSize: 10, MaxConcurrency: 1},
+		settings: &pcuSettings{bufferPoolSize: 2},
+		partMap:  make(map[int]*ObjectHandle),
+		doCleanupFn: func(s *pcuState) {
+			// Mock cleanup to prevent nil pointer dereference.
+		},
+		uploadPartFn: func(s *pcuState, task uploadTask) (*ObjectHandle, *ObjectAttrs, error) {
+			close(uploadStarted)
+			<-s.ctx.Done() // Block until context is canceled.
+			return nil, nil, s.ctx.Err()
+		},
+	}
+
+	state.workerWG.Add(1)
+	go state.worker()
+
+	state.collectorWG.Add(1)
+	go state.resultCollector()
+
+	// Pre-fill buffer pool.
+	for i := 0; i < 2; i++ {
+		state.bufferCh <- make([]byte, 10)
+	}
+
+	// Trigger a flush by writing exact PartSize.
+	n, err := state.write([]byte("0123456789"))
+	if err != nil {
+		t.Fatalf("state.write failed: %v", err)
+	}
+	if n != 10 {
+		t.Errorf("n = %d; want 10", n)
+	}
+
+	<-uploadStarted // Wait until upload starts.
+
+	cancel() // Cancel context mid-upload.
+
+	// This Write should return an error because the context is canceled.
+	// We might need to wait slightly for the cancellation to propagate to the worker and set firstErr.
+	var writeErr error
+	for i := 0; i < 50; i++ {
+		_, writeErr = state.write([]byte("abcd"))
+		if writeErr != nil {
+			break
+		}
+		time.Sleep(10 * time.Millisecond)
+	}
+
+	if writeErr == nil {
+		t.Errorf("expected error on subsequent write after cancellation, got nil")
+	}
+
+	err = state.close()
+	if err == nil {
+		t.Errorf("expected error on close after cancellation, got nil")
+	}
+
+	// Ensure no goroutines leak.
+	done := make(chan struct{})
+	go func() {
+		state.workerWG.Wait()
+		state.collectorWG.Wait()
+		close(done)
+	}()
+
+	select {
+	case <-done:
+		// Success: worker and collector exited.
+	case <-time.After(2 * time.Second):
+		t.Errorf("worker or collector did not exit after context cancellation")
+	}
+}
+
 func TestNewPartName_Uniqueness(t *testing.T) {
 	bucket := "my-bucket"
 	prefix := "gcs-go-sdk-pu-tmp/"
@@ -406,7 +512,7 @@ func TestNewPartName_Uniqueness(t *testing.T) {
 }
 
 func TestPCUState_Write(t *testing.T) {
-	partSize := 10 // bytes
+	PartSize := 10 // bytes
 
 	tests := []struct {
 		name           string
@@ -448,12 +554,12 @@ func TestPCUState_Write(t *testing.T) {
 				started:  true,
 				bufferCh: make(chan []byte, 5),
 				uploadCh: make(chan uploadTask, 5),
-				config:   &parallelUploadConfig{partSize: partSize},
+				config:   &ParallelUploadConfig{PartSize: PartSize},
 			}
 
 			// Pre-fill buffer pool.
 			for i := 0; i < 5; i++ {
-				state.bufferCh <- make([]byte, partSize)
+				state.bufferCh <- make([]byte, PartSize)
 			}
 
 			// Execute.
@@ -692,7 +798,7 @@ func TestPCUState_ComposeParts(t *testing.T) {
 				w: &Writer{
 					o: &ObjectHandle{c: dummyClient, object: "final-dest", bucket: "b"},
 				},
-				config: &parallelUploadConfig{},
+				config: &ParallelUploadConfig{},
 			}
 
 			state.composeFn = func(ctx context.Context, c *Composer) (*ObjectAttrs, error) {
@@ -785,7 +891,7 @@ func TestPCUState_ComposePartsIntegrity(t *testing.T) {
 						c:      &Client{},
 					},
 				},
-				config: &parallelUploadConfig{},
+				config: &ParallelUploadConfig{},
 			}
 
 			// Capture data from the final compose call.
@@ -855,7 +961,7 @@ func TestPCUState_DoCleanup(t *testing.T) {
 			state := &pcuState{
 				ctx:             pCtx,
 				cancel:          cancel,
-				config:          &parallelUploadConfig{maxConcurrency: 4},
+				config:          &ParallelUploadConfig{MaxConcurrency: 4},
 				firstErr:        tc.firstErr,
 				partMap:         make(map[int]*ObjectHandle),
 				intermediateMap: make(map[string]*ObjectHandle),
@@ -920,6 +1026,7 @@ func TestPCUState_Close(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
+			var mu sync.Mutex
 			composeCalled := false
 			cleanupCalled := false
 			ctx := context.Background()
@@ -947,7 +1054,9 @@ func TestPCUState_Close(t *testing.T) {
 					return nil
 				},
 				doCleanupFn: func(s *pcuState) {
+					mu.Lock()
 					cleanupCalled = true
+					mu.Unlock()
 				},
 			}
 
@@ -972,9 +1081,14 @@ func TestPCUState_Close(t *testing.T) {
 			if composeCalled != tc.expectCompose {
 				t.Errorf("expectCompose %v, but composeCalled was %v", tc.expectCompose, composeCalled)
 			}
+
+			// Wait for background cleanup to execute
+			time.Sleep(10 * time.Millisecond)
+			mu.Lock()
 			if !cleanupCalled {
 				t.Errorf("cleanup logic was not executed")
 			}
+			mu.Unlock()
 		})
 	}
 }
