@@ -28,6 +28,7 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -1128,9 +1129,12 @@ func (x *FieldOperationMetadata_IndexConfigDelta) GetIndex() *Index {
 type FieldOperationMetadata_TtlConfigDelta struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Specifies how the TTL configuration is changing.
-	ChangeType    FieldOperationMetadata_TtlConfigDelta_ChangeType `protobuf:"varint,1,opt,name=change_type,json=changeType,proto3,enum=google.firestore.admin.v1.FieldOperationMetadata_TtlConfigDelta_ChangeType" json:"change_type,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	ChangeType FieldOperationMetadata_TtlConfigDelta_ChangeType `protobuf:"varint,1,opt,name=change_type,json=changeType,proto3,enum=google.firestore.admin.v1.FieldOperationMetadata_TtlConfigDelta_ChangeType" json:"change_type,omitempty"`
+	// The offset, relative to the timestamp value in the TTL-enabled field,
+	// used determine the document's expiration time.
+	ExpirationOffset *durationpb.Duration `protobuf:"bytes,3,opt,name=expiration_offset,json=expirationOffset,proto3" json:"expiration_offset,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *FieldOperationMetadata_TtlConfigDelta) Reset() {
@@ -1170,11 +1174,18 @@ func (x *FieldOperationMetadata_TtlConfigDelta) GetChangeType() FieldOperationMe
 	return FieldOperationMetadata_TtlConfigDelta_CHANGE_TYPE_UNSPECIFIED
 }
 
+func (x *FieldOperationMetadata_TtlConfigDelta) GetExpirationOffset() *durationpb.Duration {
+	if x != nil {
+		return x.ExpirationOffset
+	}
+	return nil
+}
+
 var File_google_firestore_admin_v1_operation_proto protoreflect.FileDescriptor
 
 const file_google_firestore_admin_v1_operation_proto_rawDesc = "" +
 	"\n" +
-	")google/firestore/admin/v1/operation.proto\x12\x19google.firestore.admin.v1\x1a\x19google/api/resource.proto\x1a%google/firestore/admin/v1/index.proto\x1a(google/firestore/admin/v1/snapshot.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x81\x03\n" +
+	")google/firestore/admin/v1/operation.proto\x12\x19google.firestore.admin.v1\x1a\x19google/api/resource.proto\x1a%google/firestore/admin/v1/index.proto\x1a(google/firestore/admin/v1/snapshot.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x81\x03\n" +
 	"\x16IndexOperationMetadata\x129\n" +
 	"\n" +
 	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x125\n" +
@@ -1182,7 +1193,7 @@ const file_google_firestore_admin_v1_operation_proto_rawDesc = "" +
 	"\x05index\x18\x03 \x01(\tR\x05index\x12?\n" +
 	"\x05state\x18\x04 \x01(\x0e2).google.firestore.admin.v1.OperationStateR\x05state\x12R\n" +
 	"\x12progress_documents\x18\x05 \x01(\v2#.google.firestore.admin.v1.ProgressR\x11progressDocuments\x12J\n" +
-	"\x0eprogress_bytes\x18\x06 \x01(\v2#.google.firestore.admin.v1.ProgressR\rprogressBytes\"\x9f\b\n" +
+	"\x0eprogress_bytes\x18\x06 \x01(\v2#.google.firestore.admin.v1.ProgressR\rprogressBytes\"\xe7\b\n" +
 	"\x16FieldOperationMetadata\x129\n" +
 	"\n" +
 	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x125\n" +
@@ -1202,10 +1213,11 @@ const file_google_firestore_admin_v1_operation_proto_rawDesc = "" +
 	"\x17CHANGE_TYPE_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03ADD\x10\x01\x12\n" +
 	"\n" +
-	"\x06REMOVE\x10\x02\x1a\xbe\x01\n" +
+	"\x06REMOVE\x10\x02\x1a\x86\x02\n" +
 	"\x0eTtlConfigDelta\x12l\n" +
 	"\vchange_type\x18\x01 \x01(\x0e2K.google.firestore.admin.v1.FieldOperationMetadata.TtlConfigDelta.ChangeTypeR\n" +
-	"changeType\">\n" +
+	"changeType\x12F\n" +
+	"\x11expiration_offset\x18\x03 \x01(\v2\x19.google.protobuf.DurationR\x10expirationOffset\">\n" +
 	"\n" +
 	"ChangeType\x12\x1b\n" +
 	"\x17CHANGE_TYPE_UNSPECIFIED\x10\x00\x12\a\n" +
@@ -1315,6 +1327,7 @@ var file_google_firestore_admin_v1_operation_proto_goTypes = []any{
 	(*timestamppb.Timestamp)(nil),                           // 14: google.protobuf.Timestamp
 	(*PitrSnapshot)(nil),                                    // 15: google.firestore.admin.v1.PitrSnapshot
 	(*Index)(nil),                                           // 16: google.firestore.admin.v1.Index
+	(*durationpb.Duration)(nil),                             // 17: google.protobuf.Duration
 }
 var file_google_firestore_admin_v1_operation_proto_depIdxs = []int32{
 	14, // 0: google.firestore.admin.v1.IndexOperationMetadata.start_time:type_name -> google.protobuf.Timestamp
@@ -1358,11 +1371,12 @@ var file_google_firestore_admin_v1_operation_proto_depIdxs = []int32{
 	1,  // 38: google.firestore.admin.v1.FieldOperationMetadata.IndexConfigDelta.change_type:type_name -> google.firestore.admin.v1.FieldOperationMetadata.IndexConfigDelta.ChangeType
 	16, // 39: google.firestore.admin.v1.FieldOperationMetadata.IndexConfigDelta.index:type_name -> google.firestore.admin.v1.Index
 	2,  // 40: google.firestore.admin.v1.FieldOperationMetadata.TtlConfigDelta.change_type:type_name -> google.firestore.admin.v1.FieldOperationMetadata.TtlConfigDelta.ChangeType
-	41, // [41:41] is the sub-list for method output_type
-	41, // [41:41] is the sub-list for method input_type
-	41, // [41:41] is the sub-list for extension type_name
-	41, // [41:41] is the sub-list for extension extendee
-	0,  // [0:41] is the sub-list for field type_name
+	17, // 41: google.firestore.admin.v1.FieldOperationMetadata.TtlConfigDelta.expiration_offset:type_name -> google.protobuf.Duration
+	42, // [42:42] is the sub-list for method output_type
+	42, // [42:42] is the sub-list for method input_type
+	42, // [42:42] is the sub-list for extension type_name
+	42, // [42:42] is the sub-list for extension extendee
+	0,  // [0:42] is the sub-list for field type_name
 }
 
 func init() { file_google_firestore_admin_v1_operation_proto_init() }

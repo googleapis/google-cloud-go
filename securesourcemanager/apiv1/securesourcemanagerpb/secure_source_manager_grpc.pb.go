@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -196,7 +196,7 @@ type SecureSourceManagerClient interface {
 	// Batch creates pull request comments. This function is used to create
 	// multiple PullRequestComments for code review. There needs to be exactly one
 	// PullRequestComment of type Review, and at most 100 PullRequestComments of
-	// type Code per request. The Postition of the code comments must be unique
+	// type Code per request. The Position of the code comments must be unique
 	// within the request.
 	BatchCreatePullRequestComments(ctx context.Context, in *BatchCreatePullRequestCommentsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Resolves pull request comments. A list of PullRequestComment names must be
@@ -803,7 +803,7 @@ type SecureSourceManagerServer interface {
 	// Batch creates pull request comments. This function is used to create
 	// multiple PullRequestComments for code review. There needs to be exactly one
 	// PullRequestComment of type Review, and at most 100 PullRequestComments of
-	// type Code per request. The Postition of the code comments must be unique
+	// type Code per request. The Position of the code comments must be unique
 	// within the request.
 	BatchCreatePullRequestComments(context.Context, *BatchCreatePullRequestCommentsRequest) (*longrunningpb.Operation, error)
 	// Resolves pull request comments. A list of PullRequestComment names must be

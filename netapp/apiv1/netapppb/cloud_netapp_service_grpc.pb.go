@@ -48,6 +48,7 @@ const (
 	NetApp_UpdateVolume_FullMethodName                = "/google.cloud.netapp.v1.NetApp/UpdateVolume"
 	NetApp_DeleteVolume_FullMethodName                = "/google.cloud.netapp.v1.NetApp/DeleteVolume"
 	NetApp_RevertVolume_FullMethodName                = "/google.cloud.netapp.v1.NetApp/RevertVolume"
+	NetApp_EstablishVolumePeering_FullMethodName      = "/google.cloud.netapp.v1.NetApp/EstablishVolumePeering"
 	NetApp_ListSnapshots_FullMethodName               = "/google.cloud.netapp.v1.NetApp/ListSnapshots"
 	NetApp_GetSnapshot_FullMethodName                 = "/google.cloud.netapp.v1.NetApp/GetSnapshot"
 	NetApp_CreateSnapshot_FullMethodName              = "/google.cloud.netapp.v1.NetApp/CreateSnapshot"
@@ -101,6 +102,10 @@ const (
 	NetApp_CreateHostGroup_FullMethodName             = "/google.cloud.netapp.v1.NetApp/CreateHostGroup"
 	NetApp_UpdateHostGroup_FullMethodName             = "/google.cloud.netapp.v1.NetApp/UpdateHostGroup"
 	NetApp_DeleteHostGroup_FullMethodName             = "/google.cloud.netapp.v1.NetApp/DeleteHostGroup"
+	NetApp_ExecuteOntapPost_FullMethodName            = "/google.cloud.netapp.v1.NetApp/ExecuteOntapPost"
+	NetApp_ExecuteOntapGet_FullMethodName             = "/google.cloud.netapp.v1.NetApp/ExecuteOntapGet"
+	NetApp_ExecuteOntapDelete_FullMethodName          = "/google.cloud.netapp.v1.NetApp/ExecuteOntapDelete"
+	NetApp_ExecuteOntapPatch_FullMethodName           = "/google.cloud.netapp.v1.NetApp/ExecuteOntapPatch"
 )
 
 // NetAppClient is the client API for NetApp service.
@@ -137,6 +142,9 @@ type NetAppClient interface {
 	// Warning! This operation will permanently revert all changes made after the
 	// snapshot was created.
 	RevertVolume(ctx context.Context, in *RevertVolumeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Establish volume peering. This is used to establish cluster and svm
+	// peerings between the GCNV and OnPrem clusters.
+	EstablishVolumePeering(ctx context.Context, in *EstablishVolumePeeringRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Returns descriptions of all snapshots for a volume.
 	ListSnapshots(ctx context.Context, in *ListSnapshotsRequest, opts ...grpc.CallOption) (*ListSnapshotsResponse, error)
 	// Describe a snapshot for a volume.
@@ -251,6 +259,18 @@ type NetAppClient interface {
 	UpdateHostGroup(ctx context.Context, in *UpdateHostGroupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a host group.
 	DeleteHostGroup(ctx context.Context, in *DeleteHostGroupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// `ExecuteOntapPost` dispatches the ONTAP `POST` request to the
+	// `StoragePool` cluster.
+	ExecuteOntapPost(ctx context.Context, in *ExecuteOntapPostRequest, opts ...grpc.CallOption) (*ExecuteOntapPostResponse, error)
+	// `ExecuteOntapGet` dispatches the ONTAP `GET` request to the
+	// `StoragePool` cluster.
+	ExecuteOntapGet(ctx context.Context, in *ExecuteOntapGetRequest, opts ...grpc.CallOption) (*ExecuteOntapGetResponse, error)
+	// `ExecuteOntapDelete` dispatches the ONTAP `DELETE` request to the
+	// `StoragePool` cluster.
+	ExecuteOntapDelete(ctx context.Context, in *ExecuteOntapDeleteRequest, opts ...grpc.CallOption) (*ExecuteOntapDeleteResponse, error)
+	// `ExecuteOntapPatch` dispatches the ONTAP `PATCH` request to the
+	// `StoragePool` cluster.
+	ExecuteOntapPatch(ctx context.Context, in *ExecuteOntapPatchRequest, opts ...grpc.CallOption) (*ExecuteOntapPatchResponse, error)
 }
 
 type netAppClient struct {
@@ -372,6 +392,15 @@ func (c *netAppClient) DeleteVolume(ctx context.Context, in *DeleteVolumeRequest
 func (c *netAppClient) RevertVolume(ctx context.Context, in *RevertVolumeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, NetApp_RevertVolume_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *netAppClient) EstablishVolumePeering(ctx context.Context, in *EstablishVolumePeeringRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, NetApp_EstablishVolumePeering_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -855,6 +884,42 @@ func (c *netAppClient) DeleteHostGroup(ctx context.Context, in *DeleteHostGroupR
 	return out, nil
 }
 
+func (c *netAppClient) ExecuteOntapPost(ctx context.Context, in *ExecuteOntapPostRequest, opts ...grpc.CallOption) (*ExecuteOntapPostResponse, error) {
+	out := new(ExecuteOntapPostResponse)
+	err := c.cc.Invoke(ctx, NetApp_ExecuteOntapPost_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *netAppClient) ExecuteOntapGet(ctx context.Context, in *ExecuteOntapGetRequest, opts ...grpc.CallOption) (*ExecuteOntapGetResponse, error) {
+	out := new(ExecuteOntapGetResponse)
+	err := c.cc.Invoke(ctx, NetApp_ExecuteOntapGet_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *netAppClient) ExecuteOntapDelete(ctx context.Context, in *ExecuteOntapDeleteRequest, opts ...grpc.CallOption) (*ExecuteOntapDeleteResponse, error) {
+	out := new(ExecuteOntapDeleteResponse)
+	err := c.cc.Invoke(ctx, NetApp_ExecuteOntapDelete_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *netAppClient) ExecuteOntapPatch(ctx context.Context, in *ExecuteOntapPatchRequest, opts ...grpc.CallOption) (*ExecuteOntapPatchResponse, error) {
+	out := new(ExecuteOntapPatchResponse)
+	err := c.cc.Invoke(ctx, NetApp_ExecuteOntapPatch_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // NetAppServer is the server API for NetApp service.
 // All implementations should embed UnimplementedNetAppServer
 // for forward compatibility
@@ -889,6 +954,9 @@ type NetAppServer interface {
 	// Warning! This operation will permanently revert all changes made after the
 	// snapshot was created.
 	RevertVolume(context.Context, *RevertVolumeRequest) (*longrunningpb.Operation, error)
+	// Establish volume peering. This is used to establish cluster and svm
+	// peerings between the GCNV and OnPrem clusters.
+	EstablishVolumePeering(context.Context, *EstablishVolumePeeringRequest) (*longrunningpb.Operation, error)
 	// Returns descriptions of all snapshots for a volume.
 	ListSnapshots(context.Context, *ListSnapshotsRequest) (*ListSnapshotsResponse, error)
 	// Describe a snapshot for a volume.
@@ -1003,6 +1071,18 @@ type NetAppServer interface {
 	UpdateHostGroup(context.Context, *UpdateHostGroupRequest) (*longrunningpb.Operation, error)
 	// Deletes a host group.
 	DeleteHostGroup(context.Context, *DeleteHostGroupRequest) (*longrunningpb.Operation, error)
+	// `ExecuteOntapPost` dispatches the ONTAP `POST` request to the
+	// `StoragePool` cluster.
+	ExecuteOntapPost(context.Context, *ExecuteOntapPostRequest) (*ExecuteOntapPostResponse, error)
+	// `ExecuteOntapGet` dispatches the ONTAP `GET` request to the
+	// `StoragePool` cluster.
+	ExecuteOntapGet(context.Context, *ExecuteOntapGetRequest) (*ExecuteOntapGetResponse, error)
+	// `ExecuteOntapDelete` dispatches the ONTAP `DELETE` request to the
+	// `StoragePool` cluster.
+	ExecuteOntapDelete(context.Context, *ExecuteOntapDeleteRequest) (*ExecuteOntapDeleteResponse, error)
+	// `ExecuteOntapPatch` dispatches the ONTAP `PATCH` request to the
+	// `StoragePool` cluster.
+	ExecuteOntapPatch(context.Context, *ExecuteOntapPatchRequest) (*ExecuteOntapPatchResponse, error)
 }
 
 // UnimplementedNetAppServer should be embedded to have forward compatible implementations.
@@ -1047,6 +1127,9 @@ func (UnimplementedNetAppServer) DeleteVolume(context.Context, *DeleteVolumeRequ
 }
 func (UnimplementedNetAppServer) RevertVolume(context.Context, *RevertVolumeRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RevertVolume not implemented")
+}
+func (UnimplementedNetAppServer) EstablishVolumePeering(context.Context, *EstablishVolumePeeringRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EstablishVolumePeering not implemented")
 }
 func (UnimplementedNetAppServer) ListSnapshots(context.Context, *ListSnapshotsRequest) (*ListSnapshotsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListSnapshots not implemented")
@@ -1206,6 +1289,18 @@ func (UnimplementedNetAppServer) UpdateHostGroup(context.Context, *UpdateHostGro
 }
 func (UnimplementedNetAppServer) DeleteHostGroup(context.Context, *DeleteHostGroupRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteHostGroup not implemented")
+}
+func (UnimplementedNetAppServer) ExecuteOntapPost(context.Context, *ExecuteOntapPostRequest) (*ExecuteOntapPostResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ExecuteOntapPost not implemented")
+}
+func (UnimplementedNetAppServer) ExecuteOntapGet(context.Context, *ExecuteOntapGetRequest) (*ExecuteOntapGetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ExecuteOntapGet not implemented")
+}
+func (UnimplementedNetAppServer) ExecuteOntapDelete(context.Context, *ExecuteOntapDeleteRequest) (*ExecuteOntapDeleteResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ExecuteOntapDelete not implemented")
+}
+func (UnimplementedNetAppServer) ExecuteOntapPatch(context.Context, *ExecuteOntapPatchRequest) (*ExecuteOntapPatchResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ExecuteOntapPatch not implemented")
 }
 
 // UnsafeNetAppServer may be embedded to opt out of forward compatibility for this service.
@@ -1449,6 +1544,24 @@ func _NetApp_RevertVolume_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(NetAppServer).RevertVolume(ctx, req.(*RevertVolumeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _NetApp_EstablishVolumePeering_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EstablishVolumePeeringRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(NetAppServer).EstablishVolumePeering(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: NetApp_EstablishVolumePeering_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(NetAppServer).EstablishVolumePeering(ctx, req.(*EstablishVolumePeeringRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2407,6 +2520,78 @@ func _NetApp_DeleteHostGroup_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _NetApp_ExecuteOntapPost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExecuteOntapPostRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(NetAppServer).ExecuteOntapPost(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: NetApp_ExecuteOntapPost_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(NetAppServer).ExecuteOntapPost(ctx, req.(*ExecuteOntapPostRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _NetApp_ExecuteOntapGet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExecuteOntapGetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(NetAppServer).ExecuteOntapGet(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: NetApp_ExecuteOntapGet_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(NetAppServer).ExecuteOntapGet(ctx, req.(*ExecuteOntapGetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _NetApp_ExecuteOntapDelete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExecuteOntapDeleteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(NetAppServer).ExecuteOntapDelete(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: NetApp_ExecuteOntapDelete_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(NetAppServer).ExecuteOntapDelete(ctx, req.(*ExecuteOntapDeleteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _NetApp_ExecuteOntapPatch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExecuteOntapPatchRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(NetAppServer).ExecuteOntapPatch(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: NetApp_ExecuteOntapPatch_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(NetAppServer).ExecuteOntapPatch(ctx, req.(*ExecuteOntapPatchRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // NetApp_ServiceDesc is the grpc.ServiceDesc for NetApp service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -2465,6 +2650,10 @@ var NetApp_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RevertVolume",
 			Handler:    _NetApp_RevertVolume_Handler,
+		},
+		{
+			MethodName: "EstablishVolumePeering",
+			Handler:    _NetApp_EstablishVolumePeering_Handler,
 		},
 		{
 			MethodName: "ListSnapshots",
@@ -2677,6 +2866,22 @@ var NetApp_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteHostGroup",
 			Handler:    _NetApp_DeleteHostGroup_Handler,
+		},
+		{
+			MethodName: "ExecuteOntapPost",
+			Handler:    _NetApp_ExecuteOntapPost_Handler,
+		},
+		{
+			MethodName: "ExecuteOntapGet",
+			Handler:    _NetApp_ExecuteOntapGet_Handler,
+		},
+		{
+			MethodName: "ExecuteOntapDelete",
+			Handler:    _NetApp_ExecuteOntapDelete_Handler,
+		},
+		{
+			MethodName: "ExecuteOntapPatch",
+			Handler:    _NetApp_ExecuteOntapPatch_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

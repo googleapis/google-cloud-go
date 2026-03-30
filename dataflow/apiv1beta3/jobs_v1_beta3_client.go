@@ -136,8 +136,8 @@ type internalJobsV1Beta3Client interface {
 // JobsV1Beta3Client is a client for interacting with Dataflow API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Provides a method to create and modify Google Cloud Dataflow jobs.
-// A Job is a multi-stage computation graph run by the Cloud Dataflow service.
+// Provides a method to create and modify Dataflow jobs.
+// A Job is a multi-stage computation graph run by the Dataflow service.
 type JobsV1Beta3Client struct {
 	// The internal transport-dependent client.
 	internalClient internalJobsV1Beta3Client
@@ -169,7 +169,7 @@ func (c *JobsV1Beta3Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// CreateJob creates a Cloud Dataflow job.
+// CreateJob creates a Dataflow job.
 //
 // To create a job, we recommend using projects.locations.jobs.create with a
 // [regional endpoint]
@@ -261,8 +261,8 @@ type jobsV1Beta3GRPCClient struct {
 // NewJobsV1Beta3Client creates a new jobs v1 beta3 client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Provides a method to create and modify Google Cloud Dataflow jobs.
-// A Job is a multi-stage computation graph run by the Cloud Dataflow service.
+// Provides a method to create and modify Dataflow jobs.
+// A Job is a multi-stage computation graph run by the Dataflow service.
 func NewJobsV1Beta3Client(ctx context.Context, opts ...option.ClientOption) (*JobsV1Beta3Client, error) {
 	clientOpts := defaultJobsV1Beta3GRPCClientOptions()
 	if newJobsV1Beta3ClientHook != nil {
@@ -336,8 +336,8 @@ type jobsV1Beta3RESTClient struct {
 
 // NewJobsV1Beta3RESTClient creates a new jobs v1 beta3 rest client.
 //
-// Provides a method to create and modify Google Cloud Dataflow jobs.
-// A Job is a multi-stage computation graph run by the Cloud Dataflow service.
+// Provides a method to create and modify Dataflow jobs.
+// A Job is a multi-stage computation graph run by the Dataflow service.
 func NewJobsV1Beta3RESTClient(ctx context.Context, opts ...option.ClientOption) (*JobsV1Beta3Client, error) {
 	clientOpts := append(defaultJobsV1Beta3RESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -573,7 +573,7 @@ func (c *jobsV1Beta3GRPCClient) SnapshotJob(ctx context.Context, req *dataflowpb
 	return resp, nil
 }
 
-// CreateJob creates a Cloud Dataflow job.
+// CreateJob creates a Dataflow job.
 //
 // To create a job, we recommend using projects.locations.jobs.create with a
 // [regional endpoint]

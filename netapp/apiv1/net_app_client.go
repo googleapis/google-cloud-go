@@ -60,6 +60,7 @@ type CallOptions struct {
 	UpdateVolume                []gax.CallOption
 	DeleteVolume                []gax.CallOption
 	RevertVolume                []gax.CallOption
+	EstablishVolumePeering      []gax.CallOption
 	ListSnapshots               []gax.CallOption
 	GetSnapshot                 []gax.CallOption
 	CreateSnapshot              []gax.CallOption
@@ -113,6 +114,10 @@ type CallOptions struct {
 	CreateHostGroup             []gax.CallOption
 	UpdateHostGroup             []gax.CallOption
 	DeleteHostGroup             []gax.CallOption
+	ExecuteOntapPost            []gax.CallOption
+	ExecuteOntapGet             []gax.CallOption
+	ExecuteOntapDelete          []gax.CallOption
+	ExecuteOntapPatch           []gax.CallOption
 	GetLocation                 []gax.CallOption
 	ListLocations               []gax.CallOption
 	CancelOperation             []gax.CallOption
@@ -209,6 +214,7 @@ func defaultCallOptions() *CallOptions {
 		RevertVolume: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		EstablishVolumePeering: []gax.CallOption{},
 		ListSnapshots: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -468,6 +474,10 @@ func defaultCallOptions() *CallOptions {
 		CreateHostGroup:    []gax.CallOption{},
 		UpdateHostGroup:    []gax.CallOption{},
 		DeleteHostGroup:    []gax.CallOption{},
+		ExecuteOntapPost:   []gax.CallOption{},
+		ExecuteOntapGet:    []gax.CallOption{},
+		ExecuteOntapDelete: []gax.CallOption{},
+		ExecuteOntapPatch:  []gax.CallOption{},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		CancelOperation:    []gax.CallOption{},
@@ -546,6 +556,7 @@ func defaultRESTCallOptions() *CallOptions {
 		RevertVolume: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		EstablishVolumePeering: []gax.CallOption{},
 		ListSnapshots: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -791,6 +802,10 @@ func defaultRESTCallOptions() *CallOptions {
 		CreateHostGroup:    []gax.CallOption{},
 		UpdateHostGroup:    []gax.CallOption{},
 		DeleteHostGroup:    []gax.CallOption{},
+		ExecuteOntapPost:   []gax.CallOption{},
+		ExecuteOntapGet:    []gax.CallOption{},
+		ExecuteOntapDelete: []gax.CallOption{},
+		ExecuteOntapPatch:  []gax.CallOption{},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		CancelOperation:    []gax.CallOption{},
@@ -827,6 +842,8 @@ type internalClient interface {
 	DeleteVolumeOperation(name string) *DeleteVolumeOperation
 	RevertVolume(context.Context, *netapppb.RevertVolumeRequest, ...gax.CallOption) (*RevertVolumeOperation, error)
 	RevertVolumeOperation(name string) *RevertVolumeOperation
+	EstablishVolumePeering(context.Context, *netapppb.EstablishVolumePeeringRequest, ...gax.CallOption) (*EstablishVolumePeeringOperation, error)
+	EstablishVolumePeeringOperation(name string) *EstablishVolumePeeringOperation
 	ListSnapshots(context.Context, *netapppb.ListSnapshotsRequest, ...gax.CallOption) *SnapshotIterator
 	GetSnapshot(context.Context, *netapppb.GetSnapshotRequest, ...gax.CallOption) (*netapppb.Snapshot, error)
 	CreateSnapshot(context.Context, *netapppb.CreateSnapshotRequest, ...gax.CallOption) (*CreateSnapshotOperation, error)
@@ -914,6 +931,10 @@ type internalClient interface {
 	UpdateHostGroupOperation(name string) *UpdateHostGroupOperation
 	DeleteHostGroup(context.Context, *netapppb.DeleteHostGroupRequest, ...gax.CallOption) (*DeleteHostGroupOperation, error)
 	DeleteHostGroupOperation(name string) *DeleteHostGroupOperation
+	ExecuteOntapPost(context.Context, *netapppb.ExecuteOntapPostRequest, ...gax.CallOption) (*netapppb.ExecuteOntapPostResponse, error)
+	ExecuteOntapGet(context.Context, *netapppb.ExecuteOntapGetRequest, ...gax.CallOption) (*netapppb.ExecuteOntapGetResponse, error)
+	ExecuteOntapDelete(context.Context, *netapppb.ExecuteOntapDeleteRequest, ...gax.CallOption) (*netapppb.ExecuteOntapDeleteResponse, error)
+	ExecuteOntapPatch(context.Context, *netapppb.ExecuteOntapPatchRequest, ...gax.CallOption) (*netapppb.ExecuteOntapPatchResponse, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -1083,6 +1104,18 @@ func (c *Client) RevertVolume(ctx context.Context, req *netapppb.RevertVolumeReq
 // The name must be that of a previously created RevertVolumeOperation, possibly from a different process.
 func (c *Client) RevertVolumeOperation(name string) *RevertVolumeOperation {
 	return c.internalClient.RevertVolumeOperation(name)
+}
+
+// EstablishVolumePeering establish volume peering. This is used to establish cluster and svm
+// peerings between the GCNV and OnPrem clusters.
+func (c *Client) EstablishVolumePeering(ctx context.Context, req *netapppb.EstablishVolumePeeringRequest, opts ...gax.CallOption) (*EstablishVolumePeeringOperation, error) {
+	return c.internalClient.EstablishVolumePeering(ctx, req, opts...)
+}
+
+// EstablishVolumePeeringOperation returns a new EstablishVolumePeeringOperation from a given name.
+// The name must be that of a previously created EstablishVolumePeeringOperation, possibly from a different process.
+func (c *Client) EstablishVolumePeeringOperation(name string) *EstablishVolumePeeringOperation {
+	return c.internalClient.EstablishVolumePeeringOperation(name)
 }
 
 // ListSnapshots returns descriptions of all snapshots for a volume.
@@ -1562,12 +1595,52 @@ func (c *Client) DeleteHostGroupOperation(name string) *DeleteHostGroupOperation
 	return c.internalClient.DeleteHostGroupOperation(name)
 }
 
+// ExecuteOntapPost ExecuteOntapPost dispatches the ONTAP POST request to the
+// StoragePool cluster.
+func (c *Client) ExecuteOntapPost(ctx context.Context, req *netapppb.ExecuteOntapPostRequest, opts ...gax.CallOption) (*netapppb.ExecuteOntapPostResponse, error) {
+	return c.internalClient.ExecuteOntapPost(ctx, req, opts...)
+}
+
+// ExecuteOntapGet ExecuteOntapGet dispatches the ONTAP GET request to the
+// StoragePool cluster.
+func (c *Client) ExecuteOntapGet(ctx context.Context, req *netapppb.ExecuteOntapGetRequest, opts ...gax.CallOption) (*netapppb.ExecuteOntapGetResponse, error) {
+	return c.internalClient.ExecuteOntapGet(ctx, req, opts...)
+}
+
+// ExecuteOntapDelete ExecuteOntapDelete dispatches the ONTAP DELETE request to the
+// StoragePool cluster.
+func (c *Client) ExecuteOntapDelete(ctx context.Context, req *netapppb.ExecuteOntapDeleteRequest, opts ...gax.CallOption) (*netapppb.ExecuteOntapDeleteResponse, error) {
+	return c.internalClient.ExecuteOntapDelete(ctx, req, opts...)
+}
+
+// ExecuteOntapPatch ExecuteOntapPatch dispatches the ONTAP PATCH request to the
+// StoragePool cluster.
+func (c *Client) ExecuteOntapPatch(ctx context.Context, req *netapppb.ExecuteOntapPatchRequest, opts ...gax.CallOption) (*netapppb.ExecuteOntapPatchResponse, error) {
+	return c.internalClient.ExecuteOntapPatch(ctx, req, opts...)
+}
+
 // GetLocation gets information about a location.
 func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)] field:
+//
+//	Global locations: If name is empty, the method lists the
+//	public locations available to all projects. * Project-specific
+//	locations: If name follows the format
+//	projects/{project}, the method lists locations visible to that
+//	specific project. This includes public, private, or other
+//	project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *Client) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -2086,6 +2159,26 @@ func (c *gRPCClient) RevertVolume(ctx context.Context, req *netapppb.RevertVolum
 		return nil, err
 	}
 	return &RevertVolumeOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) EstablishVolumePeering(ctx context.Context, req *netapppb.EstablishVolumePeeringRequest, opts ...gax.CallOption) (*EstablishVolumePeeringOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).EstablishVolumePeering[0:len((*c.CallOptions).EstablishVolumePeering):len((*c.CallOptions).EstablishVolumePeering)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.EstablishVolumePeering, req, settings.GRPC, c.logger, "EstablishVolumePeering")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &EstablishVolumePeeringOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -3364,6 +3457,78 @@ func (c *gRPCClient) DeleteHostGroup(ctx context.Context, req *netapppb.DeleteHo
 	}, nil
 }
 
+func (c *gRPCClient) ExecuteOntapPost(ctx context.Context, req *netapppb.ExecuteOntapPostRequest, opts ...gax.CallOption) (*netapppb.ExecuteOntapPostResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "ontap_path", url.QueryEscape(req.GetOntapPath()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ExecuteOntapPost[0:len((*c.CallOptions).ExecuteOntapPost):len((*c.CallOptions).ExecuteOntapPost)], opts...)
+	var resp *netapppb.ExecuteOntapPostResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.ExecuteOntapPost, req, settings.GRPC, c.logger, "ExecuteOntapPost")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ExecuteOntapGet(ctx context.Context, req *netapppb.ExecuteOntapGetRequest, opts ...gax.CallOption) (*netapppb.ExecuteOntapGetResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "ontap_path", url.QueryEscape(req.GetOntapPath()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ExecuteOntapGet[0:len((*c.CallOptions).ExecuteOntapGet):len((*c.CallOptions).ExecuteOntapGet)], opts...)
+	var resp *netapppb.ExecuteOntapGetResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.ExecuteOntapGet, req, settings.GRPC, c.logger, "ExecuteOntapGet")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ExecuteOntapDelete(ctx context.Context, req *netapppb.ExecuteOntapDeleteRequest, opts ...gax.CallOption) (*netapppb.ExecuteOntapDeleteResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "ontap_path", url.QueryEscape(req.GetOntapPath()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ExecuteOntapDelete[0:len((*c.CallOptions).ExecuteOntapDelete):len((*c.CallOptions).ExecuteOntapDelete)], opts...)
+	var resp *netapppb.ExecuteOntapDeleteResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.ExecuteOntapDelete, req, settings.GRPC, c.logger, "ExecuteOntapDelete")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ExecuteOntapPatch(ctx context.Context, req *netapppb.ExecuteOntapPatchRequest, opts ...gax.CallOption) (*netapppb.ExecuteOntapPatchResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "ontap_path", url.QueryEscape(req.GetOntapPath()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ExecuteOntapPatch[0:len((*c.CallOptions).ExecuteOntapPatch):len((*c.CallOptions).ExecuteOntapPatch)], opts...)
+	var resp *netapppb.ExecuteOntapPatchResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.ExecuteOntapPatch, req, settings.GRPC, c.logger, "ExecuteOntapPatch")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -4329,6 +4494,66 @@ func (c *restClient) RevertVolume(ctx context.Context, req *netapppb.RevertVolum
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
 	return &RevertVolumeOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// EstablishVolumePeering establish volume peering. This is used to establish cluster and svm
+// peerings between the GCNV and OnPrem clusters.
+func (c *restClient) EstablishVolumePeering(ctx context.Context, req *netapppb.EstablishVolumePeeringRequest, opts ...gax.CallOption) (*EstablishVolumePeeringOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:establishPeering", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "EstablishVolumePeering")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &EstablishVolumePeeringOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
@@ -7646,6 +7871,222 @@ func (c *restClient) DeleteHostGroup(ctx context.Context, req *netapppb.DeleteHo
 	}, nil
 }
 
+// ExecuteOntapPost ExecuteOntapPost dispatches the ONTAP POST request to the
+// StoragePool cluster.
+func (c *restClient) ExecuteOntapPost(ctx context.Context, req *netapppb.ExecuteOntapPostRequest, opts ...gax.CallOption) (*netapppb.ExecuteOntapPostResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetOntapPath())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "ontap_path", url.QueryEscape(req.GetOntapPath()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).ExecuteOntapPost[0:len((*c.CallOptions).ExecuteOntapPost):len((*c.CallOptions).ExecuteOntapPost)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &netapppb.ExecuteOntapPostResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExecuteOntapPost")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ExecuteOntapGet ExecuteOntapGet dispatches the ONTAP GET request to the
+// StoragePool cluster.
+func (c *restClient) ExecuteOntapGet(ctx context.Context, req *netapppb.ExecuteOntapGetRequest, opts ...gax.CallOption) (*netapppb.ExecuteOntapGetResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetOntapPath())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "ontap_path", url.QueryEscape(req.GetOntapPath()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).ExecuteOntapGet[0:len((*c.CallOptions).ExecuteOntapGet):len((*c.CallOptions).ExecuteOntapGet)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &netapppb.ExecuteOntapGetResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ExecuteOntapGet")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ExecuteOntapDelete ExecuteOntapDelete dispatches the ONTAP DELETE request to the
+// StoragePool cluster.
+func (c *restClient) ExecuteOntapDelete(ctx context.Context, req *netapppb.ExecuteOntapDeleteRequest, opts ...gax.CallOption) (*netapppb.ExecuteOntapDeleteResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetOntapPath())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "ontap_path", url.QueryEscape(req.GetOntapPath()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).ExecuteOntapDelete[0:len((*c.CallOptions).ExecuteOntapDelete):len((*c.CallOptions).ExecuteOntapDelete)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &netapppb.ExecuteOntapDeleteResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ExecuteOntapDelete")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ExecuteOntapPatch ExecuteOntapPatch dispatches the ONTAP PATCH request to the
+// StoragePool cluster.
+func (c *restClient) ExecuteOntapPatch(ctx context.Context, req *netapppb.ExecuteOntapPatchRequest, opts ...gax.CallOption) (*netapppb.ExecuteOntapPatchResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetOntapPath())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "ontap_path", url.QueryEscape(req.GetOntapPath()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).ExecuteOntapPatch[0:len((*c.CallOptions).ExecuteOntapPatch):len((*c.CallOptions).ExecuteOntapPatch)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &netapppb.ExecuteOntapPatchResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExecuteOntapPatch")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // GetLocation gets information about a location.
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -7697,6 +8138,22 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)] field:
+//
+//	Global locations: If name is empty, the method lists the
+//	public locations available to all projects. * Project-specific
+//	locations: If name follows the format
+//	projects/{project}, the method lists locations visible to that
+//	specific project. This includes public, private, or other
+//	project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
@@ -8414,6 +8871,24 @@ func (c *gRPCClient) EstablishPeeringOperation(name string) *EstablishPeeringOpe
 func (c *restClient) EstablishPeeringOperation(name string) *EstablishPeeringOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &EstablishPeeringOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// EstablishVolumePeeringOperation returns a new EstablishVolumePeeringOperation from a given name.
+// The name must be that of a previously created EstablishVolumePeeringOperation, possibly from a different process.
+func (c *gRPCClient) EstablishVolumePeeringOperation(name string) *EstablishVolumePeeringOperation {
+	return &EstablishVolumePeeringOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// EstablishVolumePeeringOperation returns a new EstablishVolumePeeringOperation from a given name.
+// The name must be that of a previously created EstablishVolumePeeringOperation, possibly from a different process.
+func (c *restClient) EstablishVolumePeeringOperation(name string) *EstablishVolumePeeringOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &EstablishVolumePeeringOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

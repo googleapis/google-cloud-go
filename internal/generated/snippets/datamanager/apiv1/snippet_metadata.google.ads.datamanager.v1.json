@@ -273,7 +273,7 @@
         "resultType": "*datamanagerpb.PartnerLink",
         "shortName": "CreatePartnerLink"
       },
-      "description": "CreatePartnerLink creates a partner link for the given account.\n\nAuthorization Headers: \n\nThis method supports the following optional headers to define how the API\nauthorizes access for the request: \n\n* `login-account`: (Optional) The resource name of the account where the\nGoogle Account of the credentials is a user. If not set, defaults to the\naccount of the request. Format: \n`accountTypes/{loginAccountType}/accounts/{loginAccountId}`\n* `linked-account`: (Optional) The resource name of the account with an\nestablished product link to the `login-account`. Format: \n`accountTypes/{linkedAccountType}/accounts/{linkedAccountId}`",
+      "description": "CreatePartnerLink creates a partner link for the given account.\n\nAuthorization Headers: \n\nThis method supports the following optional headers to define how the API\nauthorizes access for the request: \n\n* `login-account`: (Optional) The resource name of the account where the\nGoogle Account of the credentials is a user. If not set, defaults to the\naccount of the request. Format: \n`accountTypes/{loginAccountType}/accounts/{loginAccountId}`",
       "file": "PartnerLinkClient/CreatePartnerLink/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -318,7 +318,7 @@
         ],
         "shortName": "DeletePartnerLink"
       },
-      "description": "DeletePartnerLink deletes a partner link for the given account.\n\nAuthorization Headers: \n\nThis method supports the following optional headers to define how the API\nauthorizes access for the request: \n\n* `login-account`: (Optional) The resource name of the account where the\nGoogle Account of the credentials is a user. If not set, defaults to the\naccount of the request. Format: \n`accountTypes/{loginAccountType}/accounts/{loginAccountId}`\n* `linked-account`: (Optional) The resource name of the account with an\nestablished product link to the `login-account`. Format: \n`accountTypes/{linkedAccountType}/accounts/{linkedAccountId}`",
+      "description": "DeletePartnerLink deletes a partner link for the given account.\n\nAuthorization Headers: \n\nThis method supports the following optional headers to define how the API\nauthorizes access for the request: \n\n* `login-account`: (Optional) The resource name of the account where the\nGoogle Account of the credentials is a user. If not set, defaults to the\naccount of the request. Format: \n`accountTypes/{loginAccountType}/accounts/{loginAccountId}`",
       "file": "PartnerLinkClient/DeletePartnerLink/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -364,7 +364,7 @@
         "resultType": "PartnerLinkIterator",
         "shortName": "SearchPartnerLinks"
       },
-      "description": "SearchPartnerLinks searches for all partner links to and from a given account.\n\nAuthorization Headers: \n\nThis method supports the following optional headers to define how the API\nauthorizes access for the request: \n\n* `login-account`: (Optional) The resource name of the account where the\nGoogle Account of the credentials is a user. If not set, defaults to the\naccount of the request. Format: \n`accountTypes/{loginAccountType}/accounts/{loginAccountId}`\n* `linked-account`: (Optional) The resource name of the account with an\nestablished product link to the `login-account`. Format: \n`accountTypes/{linkedAccountType}/accounts/{linkedAccountId}`",
+      "description": "SearchPartnerLinks searches for all partner links to and from a given account.\n\nAuthorization Headers: \n\nThis method supports the following optional headers to define how the API\nauthorizes access for the request: \n\n* `login-account`: (Optional) The resource name of the account where the\nGoogle Account of the credentials is a user. If not set, defaults to the\naccount of the request. Format: \n`accountTypes/{loginAccountType}/accounts/{loginAccountId}`",
       "file": "PartnerLinkClient/SearchPartnerLinks/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",

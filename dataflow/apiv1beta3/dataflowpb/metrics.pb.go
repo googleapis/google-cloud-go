@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -177,7 +177,6 @@ func (x *MetricStructuredName) GetContext() map[string]string {
 }
 
 // Describes the state of a metric.
-// Next ID: 14
 type MetricUpdate struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Name of the metric.
@@ -215,6 +214,11 @@ type MetricUpdate struct {
 	// Worker-computed aggregate value for the "Trie" aggregation kind.  The only
 	// possible value type is a BoundedTrieNode.
 	Trie *structpb.Value `protobuf:"bytes,13,opt,name=trie,proto3" json:"trie,omitempty"`
+	// Worker-computed aggregate value for the "Trie" aggregation kind.  The only
+	// possible value type is a BoundedTrieNode.
+	// Introduced this field to avoid breaking older SDKs when Dataflow service
+	// starts to populate the `bounded_trie` field.
+	BoundedTrie *structpb.Value `protobuf:"bytes,14,opt,name=bounded_trie,json=boundedTrie,proto3" json:"bounded_trie,omitempty"`
 	// A struct value describing properties of a distribution of numeric values.
 	Distribution *structpb.Value `protobuf:"bytes,11,opt,name=distribution,proto3" json:"distribution,omitempty"`
 	// A struct value describing properties of a Gauge.
@@ -314,6 +318,13 @@ func (x *MetricUpdate) GetSet() *structpb.Value {
 func (x *MetricUpdate) GetTrie() *structpb.Value {
 	if x != nil {
 		return x.Trie
+	}
+	return nil
+}
+
+func (x *MetricUpdate) GetBoundedTrie() *structpb.Value {
+	if x != nil {
+		return x.BoundedTrie
 	}
 	return nil
 }
@@ -1672,7 +1683,7 @@ const file_google_dataflow_v1beta3_metrics_proto_rawDesc = "" +
 	"\acontext\x18\x03 \x03(\v2:.google.dataflow.v1beta3.MetricStructuredName.ContextEntryR\acontext\x1a:\n" +
 	"\fContextEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xd0\x04\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x8b\x05\n" +
 	"\fMetricUpdate\x12A\n" +
 	"\x04name\x18\x01 \x01(\v2-.google.dataflow.v1beta3.MetricStructuredNameR\x04name\x12\x12\n" +
 	"\x04kind\x18\x02 \x01(\tR\x04kind\x12\x1e\n" +
@@ -1684,7 +1695,8 @@ const file_google_dataflow_v1beta3_metrics_proto_rawDesc = "" +
 	"\n" +
 	"mean_count\x18\x06 \x01(\v2\x16.google.protobuf.ValueR\tmeanCount\x12(\n" +
 	"\x03set\x18\a \x01(\v2\x16.google.protobuf.ValueR\x03set\x12*\n" +
-	"\x04trie\x18\r \x01(\v2\x16.google.protobuf.ValueR\x04trie\x12:\n" +
+	"\x04trie\x18\r \x01(\v2\x16.google.protobuf.ValueR\x04trie\x129\n" +
+	"\fbounded_trie\x18\x0e \x01(\v2\x16.google.protobuf.ValueR\vboundedTrie\x12:\n" +
 	"\fdistribution\x18\v \x01(\v2\x16.google.protobuf.ValueR\fdistribution\x12,\n" +
 	"\x05gauge\x18\f \x01(\v2\x16.google.protobuf.ValueR\x05gauge\x122\n" +
 	"\binternal\x18\b \x01(\v2\x16.google.protobuf.ValueR\binternal\x12;\n" +
@@ -1864,58 +1876,59 @@ var file_google_dataflow_v1beta3_metrics_proto_depIdxs = []int32{
 	25, // 4: google.dataflow.v1beta3.MetricUpdate.mean_count:type_name -> google.protobuf.Value
 	25, // 5: google.dataflow.v1beta3.MetricUpdate.set:type_name -> google.protobuf.Value
 	25, // 6: google.dataflow.v1beta3.MetricUpdate.trie:type_name -> google.protobuf.Value
-	25, // 7: google.dataflow.v1beta3.MetricUpdate.distribution:type_name -> google.protobuf.Value
-	25, // 8: google.dataflow.v1beta3.MetricUpdate.gauge:type_name -> google.protobuf.Value
-	25, // 9: google.dataflow.v1beta3.MetricUpdate.internal:type_name -> google.protobuf.Value
-	26, // 10: google.dataflow.v1beta3.MetricUpdate.update_time:type_name -> google.protobuf.Timestamp
-	26, // 11: google.dataflow.v1beta3.GetJobMetricsRequest.start_time:type_name -> google.protobuf.Timestamp
-	26, // 12: google.dataflow.v1beta3.JobMetrics.metric_time:type_name -> google.protobuf.Timestamp
-	2,  // 13: google.dataflow.v1beta3.JobMetrics.metrics:type_name -> google.dataflow.v1beta3.MetricUpdate
-	19, // 14: google.dataflow.v1beta3.ProgressTimeseries.data_points:type_name -> google.dataflow.v1beta3.ProgressTimeseries.Point
-	26, // 15: google.dataflow.v1beta3.StragglerInfo.start_time:type_name -> google.protobuf.Timestamp
-	21, // 16: google.dataflow.v1beta3.StragglerInfo.causes:type_name -> google.dataflow.v1beta3.StragglerInfo.CausesEntry
-	26, // 17: google.dataflow.v1beta3.StreamingStragglerInfo.start_time:type_name -> google.protobuf.Timestamp
-	26, // 18: google.dataflow.v1beta3.StreamingStragglerInfo.end_time:type_name -> google.protobuf.Timestamp
-	27, // 19: google.dataflow.v1beta3.StreamingStragglerInfo.data_watermark_lag:type_name -> google.protobuf.Duration
-	27, // 20: google.dataflow.v1beta3.StreamingStragglerInfo.system_watermark_lag:type_name -> google.protobuf.Duration
-	7,  // 21: google.dataflow.v1beta3.Straggler.batch_straggler:type_name -> google.dataflow.v1beta3.StragglerInfo
-	8,  // 22: google.dataflow.v1beta3.Straggler.streaming_straggler:type_name -> google.dataflow.v1beta3.StreamingStragglerInfo
-	23, // 23: google.dataflow.v1beta3.HotKeyDebuggingInfo.detected_hot_keys:type_name -> google.dataflow.v1beta3.HotKeyDebuggingInfo.DetectedHotKeysEntry
-	24, // 24: google.dataflow.v1beta3.StragglerSummary.straggler_cause_count:type_name -> google.dataflow.v1beta3.StragglerSummary.StragglerCauseCountEntry
-	9,  // 25: google.dataflow.v1beta3.StragglerSummary.recent_stragglers:type_name -> google.dataflow.v1beta3.Straggler
-	0,  // 26: google.dataflow.v1beta3.StageSummary.state:type_name -> google.dataflow.v1beta3.ExecutionState
-	26, // 27: google.dataflow.v1beta3.StageSummary.start_time:type_name -> google.protobuf.Timestamp
-	26, // 28: google.dataflow.v1beta3.StageSummary.end_time:type_name -> google.protobuf.Timestamp
-	6,  // 29: google.dataflow.v1beta3.StageSummary.progress:type_name -> google.dataflow.v1beta3.ProgressTimeseries
-	2,  // 30: google.dataflow.v1beta3.StageSummary.metrics:type_name -> google.dataflow.v1beta3.MetricUpdate
-	11, // 31: google.dataflow.v1beta3.StageSummary.straggler_summary:type_name -> google.dataflow.v1beta3.StragglerSummary
-	12, // 32: google.dataflow.v1beta3.JobExecutionDetails.stages:type_name -> google.dataflow.v1beta3.StageSummary
-	26, // 33: google.dataflow.v1beta3.GetStageExecutionDetailsRequest.start_time:type_name -> google.protobuf.Timestamp
-	26, // 34: google.dataflow.v1beta3.GetStageExecutionDetailsRequest.end_time:type_name -> google.protobuf.Timestamp
-	26, // 35: google.dataflow.v1beta3.WorkItemDetails.start_time:type_name -> google.protobuf.Timestamp
-	26, // 36: google.dataflow.v1beta3.WorkItemDetails.end_time:type_name -> google.protobuf.Timestamp
-	0,  // 37: google.dataflow.v1beta3.WorkItemDetails.state:type_name -> google.dataflow.v1beta3.ExecutionState
-	6,  // 38: google.dataflow.v1beta3.WorkItemDetails.progress:type_name -> google.dataflow.v1beta3.ProgressTimeseries
-	2,  // 39: google.dataflow.v1beta3.WorkItemDetails.metrics:type_name -> google.dataflow.v1beta3.MetricUpdate
-	7,  // 40: google.dataflow.v1beta3.WorkItemDetails.straggler_info:type_name -> google.dataflow.v1beta3.StragglerInfo
-	15, // 41: google.dataflow.v1beta3.WorkerDetails.work_items:type_name -> google.dataflow.v1beta3.WorkItemDetails
-	16, // 42: google.dataflow.v1beta3.StageExecutionDetails.workers:type_name -> google.dataflow.v1beta3.WorkerDetails
-	26, // 43: google.dataflow.v1beta3.ProgressTimeseries.Point.time:type_name -> google.protobuf.Timestamp
-	10, // 44: google.dataflow.v1beta3.StragglerInfo.StragglerDebuggingInfo.hot_key:type_name -> google.dataflow.v1beta3.HotKeyDebuggingInfo
-	20, // 45: google.dataflow.v1beta3.StragglerInfo.CausesEntry.value:type_name -> google.dataflow.v1beta3.StragglerInfo.StragglerDebuggingInfo
-	27, // 46: google.dataflow.v1beta3.HotKeyDebuggingInfo.HotKeyInfo.hot_key_age:type_name -> google.protobuf.Duration
-	22, // 47: google.dataflow.v1beta3.HotKeyDebuggingInfo.DetectedHotKeysEntry.value:type_name -> google.dataflow.v1beta3.HotKeyDebuggingInfo.HotKeyInfo
-	3,  // 48: google.dataflow.v1beta3.MetricsV1Beta3.GetJobMetrics:input_type -> google.dataflow.v1beta3.GetJobMetricsRequest
-	5,  // 49: google.dataflow.v1beta3.MetricsV1Beta3.GetJobExecutionDetails:input_type -> google.dataflow.v1beta3.GetJobExecutionDetailsRequest
-	14, // 50: google.dataflow.v1beta3.MetricsV1Beta3.GetStageExecutionDetails:input_type -> google.dataflow.v1beta3.GetStageExecutionDetailsRequest
-	4,  // 51: google.dataflow.v1beta3.MetricsV1Beta3.GetJobMetrics:output_type -> google.dataflow.v1beta3.JobMetrics
-	13, // 52: google.dataflow.v1beta3.MetricsV1Beta3.GetJobExecutionDetails:output_type -> google.dataflow.v1beta3.JobExecutionDetails
-	17, // 53: google.dataflow.v1beta3.MetricsV1Beta3.GetStageExecutionDetails:output_type -> google.dataflow.v1beta3.StageExecutionDetails
-	51, // [51:54] is the sub-list for method output_type
-	48, // [48:51] is the sub-list for method input_type
-	48, // [48:48] is the sub-list for extension type_name
-	48, // [48:48] is the sub-list for extension extendee
-	0,  // [0:48] is the sub-list for field type_name
+	25, // 7: google.dataflow.v1beta3.MetricUpdate.bounded_trie:type_name -> google.protobuf.Value
+	25, // 8: google.dataflow.v1beta3.MetricUpdate.distribution:type_name -> google.protobuf.Value
+	25, // 9: google.dataflow.v1beta3.MetricUpdate.gauge:type_name -> google.protobuf.Value
+	25, // 10: google.dataflow.v1beta3.MetricUpdate.internal:type_name -> google.protobuf.Value
+	26, // 11: google.dataflow.v1beta3.MetricUpdate.update_time:type_name -> google.protobuf.Timestamp
+	26, // 12: google.dataflow.v1beta3.GetJobMetricsRequest.start_time:type_name -> google.protobuf.Timestamp
+	26, // 13: google.dataflow.v1beta3.JobMetrics.metric_time:type_name -> google.protobuf.Timestamp
+	2,  // 14: google.dataflow.v1beta3.JobMetrics.metrics:type_name -> google.dataflow.v1beta3.MetricUpdate
+	19, // 15: google.dataflow.v1beta3.ProgressTimeseries.data_points:type_name -> google.dataflow.v1beta3.ProgressTimeseries.Point
+	26, // 16: google.dataflow.v1beta3.StragglerInfo.start_time:type_name -> google.protobuf.Timestamp
+	21, // 17: google.dataflow.v1beta3.StragglerInfo.causes:type_name -> google.dataflow.v1beta3.StragglerInfo.CausesEntry
+	26, // 18: google.dataflow.v1beta3.StreamingStragglerInfo.start_time:type_name -> google.protobuf.Timestamp
+	26, // 19: google.dataflow.v1beta3.StreamingStragglerInfo.end_time:type_name -> google.protobuf.Timestamp
+	27, // 20: google.dataflow.v1beta3.StreamingStragglerInfo.data_watermark_lag:type_name -> google.protobuf.Duration
+	27, // 21: google.dataflow.v1beta3.StreamingStragglerInfo.system_watermark_lag:type_name -> google.protobuf.Duration
+	7,  // 22: google.dataflow.v1beta3.Straggler.batch_straggler:type_name -> google.dataflow.v1beta3.StragglerInfo
+	8,  // 23: google.dataflow.v1beta3.Straggler.streaming_straggler:type_name -> google.dataflow.v1beta3.StreamingStragglerInfo
+	23, // 24: google.dataflow.v1beta3.HotKeyDebuggingInfo.detected_hot_keys:type_name -> google.dataflow.v1beta3.HotKeyDebuggingInfo.DetectedHotKeysEntry
+	24, // 25: google.dataflow.v1beta3.StragglerSummary.straggler_cause_count:type_name -> google.dataflow.v1beta3.StragglerSummary.StragglerCauseCountEntry
+	9,  // 26: google.dataflow.v1beta3.StragglerSummary.recent_stragglers:type_name -> google.dataflow.v1beta3.Straggler
+	0,  // 27: google.dataflow.v1beta3.StageSummary.state:type_name -> google.dataflow.v1beta3.ExecutionState
+	26, // 28: google.dataflow.v1beta3.StageSummary.start_time:type_name -> google.protobuf.Timestamp
+	26, // 29: google.dataflow.v1beta3.StageSummary.end_time:type_name -> google.protobuf.Timestamp
+	6,  // 30: google.dataflow.v1beta3.StageSummary.progress:type_name -> google.dataflow.v1beta3.ProgressTimeseries
+	2,  // 31: google.dataflow.v1beta3.StageSummary.metrics:type_name -> google.dataflow.v1beta3.MetricUpdate
+	11, // 32: google.dataflow.v1beta3.StageSummary.straggler_summary:type_name -> google.dataflow.v1beta3.StragglerSummary
+	12, // 33: google.dataflow.v1beta3.JobExecutionDetails.stages:type_name -> google.dataflow.v1beta3.StageSummary
+	26, // 34: google.dataflow.v1beta3.GetStageExecutionDetailsRequest.start_time:type_name -> google.protobuf.Timestamp
+	26, // 35: google.dataflow.v1beta3.GetStageExecutionDetailsRequest.end_time:type_name -> google.protobuf.Timestamp
+	26, // 36: google.dataflow.v1beta3.WorkItemDetails.start_time:type_name -> google.protobuf.Timestamp
+	26, // 37: google.dataflow.v1beta3.WorkItemDetails.end_time:type_name -> google.protobuf.Timestamp
+	0,  // 38: google.dataflow.v1beta3.WorkItemDetails.state:type_name -> google.dataflow.v1beta3.ExecutionState
+	6,  // 39: google.dataflow.v1beta3.WorkItemDetails.progress:type_name -> google.dataflow.v1beta3.ProgressTimeseries
+	2,  // 40: google.dataflow.v1beta3.WorkItemDetails.metrics:type_name -> google.dataflow.v1beta3.MetricUpdate
+	7,  // 41: google.dataflow.v1beta3.WorkItemDetails.straggler_info:type_name -> google.dataflow.v1beta3.StragglerInfo
+	15, // 42: google.dataflow.v1beta3.WorkerDetails.work_items:type_name -> google.dataflow.v1beta3.WorkItemDetails
+	16, // 43: google.dataflow.v1beta3.StageExecutionDetails.workers:type_name -> google.dataflow.v1beta3.WorkerDetails
+	26, // 44: google.dataflow.v1beta3.ProgressTimeseries.Point.time:type_name -> google.protobuf.Timestamp
+	10, // 45: google.dataflow.v1beta3.StragglerInfo.StragglerDebuggingInfo.hot_key:type_name -> google.dataflow.v1beta3.HotKeyDebuggingInfo
+	20, // 46: google.dataflow.v1beta3.StragglerInfo.CausesEntry.value:type_name -> google.dataflow.v1beta3.StragglerInfo.StragglerDebuggingInfo
+	27, // 47: google.dataflow.v1beta3.HotKeyDebuggingInfo.HotKeyInfo.hot_key_age:type_name -> google.protobuf.Duration
+	22, // 48: google.dataflow.v1beta3.HotKeyDebuggingInfo.DetectedHotKeysEntry.value:type_name -> google.dataflow.v1beta3.HotKeyDebuggingInfo.HotKeyInfo
+	3,  // 49: google.dataflow.v1beta3.MetricsV1Beta3.GetJobMetrics:input_type -> google.dataflow.v1beta3.GetJobMetricsRequest
+	5,  // 50: google.dataflow.v1beta3.MetricsV1Beta3.GetJobExecutionDetails:input_type -> google.dataflow.v1beta3.GetJobExecutionDetailsRequest
+	14, // 51: google.dataflow.v1beta3.MetricsV1Beta3.GetStageExecutionDetails:input_type -> google.dataflow.v1beta3.GetStageExecutionDetailsRequest
+	4,  // 52: google.dataflow.v1beta3.MetricsV1Beta3.GetJobMetrics:output_type -> google.dataflow.v1beta3.JobMetrics
+	13, // 53: google.dataflow.v1beta3.MetricsV1Beta3.GetJobExecutionDetails:output_type -> google.dataflow.v1beta3.JobExecutionDetails
+	17, // 54: google.dataflow.v1beta3.MetricsV1Beta3.GetStageExecutionDetails:output_type -> google.dataflow.v1beta3.StageExecutionDetails
+	52, // [52:55] is the sub-list for method output_type
+	49, // [49:52] is the sub-list for method input_type
+	49, // [49:49] is the sub-list for extension type_name
+	49, // [49:49] is the sub-list for extension extendee
+	0,  // [0:49] is the sub-list for field type_name
 }
 
 func init() { file_google_dataflow_v1beta3_metrics_proto_init() }

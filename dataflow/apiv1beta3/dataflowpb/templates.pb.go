@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -189,6 +189,8 @@ const (
 	SDKInfo_PYTHON SDKInfo_Language = 2
 	// Go.
 	SDKInfo_GO SDKInfo_Language = 3
+	// YAML.
+	SDKInfo_YAML SDKInfo_Language = 4
 )
 
 // Enum value maps for SDKInfo_Language.
@@ -198,12 +200,14 @@ var (
 		1: "JAVA",
 		2: "PYTHON",
 		3: "GO",
+		4: "YAML",
 	}
 	SDKInfo_Language_value = map[string]int32{
 		"UNKNOWN": 0,
 		"JAVA":    1,
 		"PYTHON":  2,
 		"GO":      3,
+		"YAML":    4,
 	}
 )
 
@@ -728,8 +732,10 @@ type FlexTemplateRuntimeEnvironment struct {
 	// [Set the pipeline streaming
 	// mode](https://cloud.google.com/dataflow/docs/guides/streaming-modes).
 	StreamingMode *StreamingMode `protobuf:"varint,26,opt,name=streaming_mode,json=streamingMode,proto3,enum=google.dataflow.v1beta3.StreamingMode,oneof" json:"streaming_mode,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	// Optional. Additional pipeline option flags for the job.
+	AdditionalPipelineOptions []string `protobuf:"bytes,27,rep,name=additional_pipeline_options,json=additionalPipelineOptions,proto3" json:"additional_pipeline_options,omitempty"`
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
 }
 
 func (x *FlexTemplateRuntimeEnvironment) Reset() {
@@ -937,6 +943,13 @@ func (x *FlexTemplateRuntimeEnvironment) GetStreamingMode() StreamingMode {
 	return StreamingMode_STREAMING_MODE_UNSPECIFIED
 }
 
+func (x *FlexTemplateRuntimeEnvironment) GetAdditionalPipelineOptions() []string {
+	if x != nil {
+		return x.AdditionalPipelineOptions
+	}
+	return nil
+}
+
 // A request to launch a Cloud Dataflow job from a FlexTemplate.
 type LaunchFlexTemplateRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -1093,8 +1106,10 @@ type RuntimeEnvironment struct {
 	// [Set the pipeline streaming
 	// mode](https://cloud.google.com/dataflow/docs/guides/streaming-modes).
 	StreamingMode *StreamingMode `protobuf:"varint,19,opt,name=streaming_mode,json=streamingMode,proto3,enum=google.dataflow.v1beta3.StreamingMode,oneof" json:"streaming_mode,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	// Optional. Additional pipeline option flags for the job.
+	AdditionalPipelineOptions []string `protobuf:"bytes,20,rep,name=additional_pipeline_options,json=additionalPipelineOptions,proto3" json:"additional_pipeline_options,omitempty"`
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
 }
 
 func (x *RuntimeEnvironment) Reset() {
@@ -1251,6 +1266,13 @@ func (x *RuntimeEnvironment) GetStreamingMode() StreamingMode {
 		return *x.StreamingMode
 	}
 	return StreamingMode_STREAMING_MODE_UNSPECIFIED
+}
+
+func (x *RuntimeEnvironment) GetAdditionalPipelineOptions() []string {
+	if x != nil {
+		return x.AdditionalPipelineOptions
+	}
+	return nil
 }
 
 // ParameterMetadataEnumOption specifies the option shown in the enum form.
@@ -2451,7 +2473,7 @@ const file_google_dataflow_v1beta3_templates_proto_rawDesc = "" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\n" +
 	"\n" +
-	"\btemplate\"\xc8\v\n" +
+	"\btemplate\"\x8d\f\n" +
 	"\x1eFlexTemplateRuntimeEnvironment\x12\x1f\n" +
 	"\vnum_workers\x18\x01 \x01(\x05R\n" +
 	"numWorkers\x12\x1f\n" +
@@ -2486,7 +2508,8 @@ const file_google_dataflow_v1beta3_templates_proto_rawDesc = "" +
 	"\x1bsave_heap_dumps_to_gcs_path\x18\x17 \x01(\tR\x16saveHeapDumpsToGcsPath\x122\n" +
 	"\x15launcher_machine_type\x18\x18 \x01(\tR\x13launcherMachineType\x12Q\n" +
 	"&enable_launcher_vm_serial_port_logging\x18\x19 \x01(\bR!enableLauncherVmSerialPortLogging\x12W\n" +
-	"\x0estreaming_mode\x18\x1a \x01(\x0e2&.google.dataflow.v1beta3.StreamingModeB\x03\xe0A\x01H\x00R\rstreamingMode\x88\x01\x01\x1aG\n" +
+	"\x0estreaming_mode\x18\x1a \x01(\x0e2&.google.dataflow.v1beta3.StreamingModeB\x03\xe0A\x01H\x00R\rstreamingMode\x88\x01\x01\x12C\n" +
+	"\x1badditional_pipeline_options\x18\x1b \x03(\tB\x03\xe0A\x01R\x19additionalPipelineOptions\x1aG\n" +
 	"\x19AdditionalUserLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\x11\n" +
@@ -2496,7 +2519,7 @@ const file_google_dataflow_v1beta3_templates_proto_rawDesc = "" +
 	"project_id\x18\x01 \x01(\tR\tprojectId\x12_\n" +
 	"\x10launch_parameter\x18\x02 \x01(\v24.google.dataflow.v1beta3.LaunchFlexTemplateParameterR\x0flaunchParameter\x12\x1a\n" +
 	"\blocation\x18\x03 \x01(\tR\blocation\x12#\n" +
-	"\rvalidate_only\x18\x04 \x01(\bR\fvalidateOnly\"\xea\a\n" +
+	"\rvalidate_only\x18\x04 \x01(\bR\fvalidateOnly\"\xaf\b\n" +
 	"\x12RuntimeEnvironment\x12\x1f\n" +
 	"\vnum_workers\x18\v \x01(\x05R\n" +
 	"numWorkers\x12\x1f\n" +
@@ -2523,7 +2546,8 @@ const file_google_dataflow_v1beta3_templates_proto_rawDesc = "" +
 	"\x17enable_streaming_engine\x18\x11 \x01(\bR\x15enableStreamingEngine\x12 \n" +
 	"\fdisk_size_gb\x18\x12 \x01(\x05R\n" +
 	"diskSizeGb\x12W\n" +
-	"\x0estreaming_mode\x18\x13 \x01(\x0e2&.google.dataflow.v1beta3.StreamingModeB\x03\xe0A\x01H\x00R\rstreamingMode\x88\x01\x01\x1aG\n" +
+	"\x0estreaming_mode\x18\x13 \x01(\x0e2&.google.dataflow.v1beta3.StreamingModeB\x03\xe0A\x01H\x00R\rstreamingMode\x88\x01\x01\x12C\n" +
+	"\x1badditional_pipeline_options\x18\x14 \x03(\tB\x03\xe0A\x01R\x19additionalPipelineOptions\x1aG\n" +
 	"\x19AdditionalUserLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\x11\n" +
@@ -2563,16 +2587,17 @@ const file_google_dataflow_v1beta3_templates_proto_rawDesc = "" +
 	"\tstreaming\x18\x05 \x01(\bR\tstreaming\x123\n" +
 	"\x16supports_at_least_once\x18\x06 \x01(\bR\x13supportsAtLeastOnce\x122\n" +
 	"\x15supports_exactly_once\x18\a \x01(\bR\x13supportsExactlyOnce\x124\n" +
-	"\x16default_streaming_mode\x18\b \x01(\tR\x14defaultStreamingMode\"\xa1\x01\n" +
+	"\x16default_streaming_mode\x18\b \x01(\tR\x14defaultStreamingMode\"\xab\x01\n" +
 	"\aSDKInfo\x12E\n" +
 	"\blanguage\x18\x01 \x01(\x0e2).google.dataflow.v1beta3.SDKInfo.LanguageR\blanguage\x12\x18\n" +
-	"\aversion\x18\x02 \x01(\tR\aversion\"5\n" +
+	"\aversion\x18\x02 \x01(\tR\aversion\"?\n" +
 	"\bLanguage\x12\v\n" +
 	"\aUNKNOWN\x10\x00\x12\b\n" +
 	"\x04JAVA\x10\x01\x12\n" +
 	"\n" +
 	"\x06PYTHON\x10\x02\x12\x06\n" +
-	"\x02GO\x10\x03\"\x9a\x01\n" +
+	"\x02GO\x10\x03\x12\b\n" +
+	"\x04YAML\x10\x04\"\x9a\x01\n" +
 	"\x0fRuntimeMetadata\x12;\n" +
 	"\bsdk_info\x18\x01 \x01(\v2 .google.dataflow.v1beta3.SDKInfoR\asdkInfo\x12J\n" +
 	"\n" +

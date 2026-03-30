@@ -263,8 +263,6 @@ const (
 	StoragePoolType_FILE StoragePoolType = 1
 	// Storage pool type is unified.
 	StoragePoolType_UNIFIED StoragePoolType = 2
-	// Storage pool type is unified large capacity.
-	StoragePoolType_UNIFIED_LARGE_CAPACITY StoragePoolType = 3
 )
 
 // Enum value maps for StoragePoolType.
@@ -273,13 +271,11 @@ var (
 		0: "STORAGE_POOL_TYPE_UNSPECIFIED",
 		1: "FILE",
 		2: "UNIFIED",
-		3: "UNIFIED_LARGE_CAPACITY",
 	}
 	StoragePoolType_value = map[string]int32{
 		"STORAGE_POOL_TYPE_UNSPECIFIED": 0,
 		"FILE":                          1,
 		"UNIFIED":                       2,
-		"UNIFIED_LARGE_CAPACITY":        3,
 	}
 )
 
@@ -627,12 +623,11 @@ const file_google_cloud_netapp_v1_common_proto_rawDesc = "" +
 	"\tCLOUD_KMS\x10\x02*T\n" +
 	"\x14DirectoryServiceType\x12&\n" +
 	"\"DIRECTORY_SERVICE_TYPE_UNSPECIFIED\x10\x00\x12\x14\n" +
-	"\x10ACTIVE_DIRECTORY\x10\x01*g\n" +
+	"\x10ACTIVE_DIRECTORY\x10\x01*K\n" +
 	"\x0fStoragePoolType\x12!\n" +
 	"\x1dSTORAGE_POOL_TYPE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04FILE\x10\x01\x12\v\n" +
-	"\aUNIFIED\x10\x02\x12\x1a\n" +
-	"\x16UNIFIED_LARGE_CAPACITY\x10\x03*u\n" +
+	"\aUNIFIED\x10\x02*u\n" +
 	"\x19HybridReplicationSchedule\x12+\n" +
 	"'HYBRID_REPLICATION_SCHEDULE_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10EVERY_10_MINUTES\x10\x01\x12\n" +

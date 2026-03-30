@@ -39,6 +39,60 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// `Mode` of the storage pool or volume. This field is used to control whether
+// the resource is managed by the GCNV APIs or the GCNV ONTAP Mode APIs.
+type Mode int32
+
+const (
+	// The `Mode` is not specified.
+	Mode_MODE_UNSPECIFIED Mode = 0
+	// The resource is managed by the GCNV APIs.
+	Mode_DEFAULT Mode = 1
+	// The resource is managed by the GCNV ONTAP Mode APIs.
+	Mode_ONTAP Mode = 2
+)
+
+// Enum value maps for Mode.
+var (
+	Mode_name = map[int32]string{
+		0: "MODE_UNSPECIFIED",
+		1: "DEFAULT",
+		2: "ONTAP",
+	}
+	Mode_value = map[string]int32{
+		"MODE_UNSPECIFIED": 0,
+		"DEFAULT":          1,
+		"ONTAP":            2,
+	}
+)
+
+func (x Mode) Enum() *Mode {
+	p := new(Mode)
+	*p = x
+	return p
+}
+
+func (x Mode) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Mode) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_netapp_v1_storage_pool_proto_enumTypes[0].Descriptor()
+}
+
+func (Mode) Type() protoreflect.EnumType {
+	return &file_google_cloud_netapp_v1_storage_pool_proto_enumTypes[0]
+}
+
+func (x Mode) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Mode.Descriptor instead.
+func (Mode) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_netapp_v1_storage_pool_proto_rawDescGZIP(), []int{0}
+}
+
 // The Storage Pool States
 type StoragePool_State int32
 
@@ -96,11 +150,11 @@ func (x StoragePool_State) String() string {
 }
 
 func (StoragePool_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_netapp_v1_storage_pool_proto_enumTypes[0].Descriptor()
+	return file_google_cloud_netapp_v1_storage_pool_proto_enumTypes[1].Descriptor()
 }
 
 func (StoragePool_State) Type() protoreflect.EnumType {
-	return &file_google_cloud_netapp_v1_storage_pool_proto_enumTypes[0]
+	return &file_google_cloud_netapp_v1_storage_pool_proto_enumTypes[1]
 }
 
 func (x StoragePool_State) Number() protoreflect.EnumNumber {
@@ -612,10 +666,13 @@ type StoragePool struct {
 	HotTierSizeUsedGib int64 `protobuf:"varint,34,opt,name=hot_tier_size_used_gib,json=hotTierSizeUsedGib,proto3" json:"hot_tier_size_used_gib,omitempty"`
 	// Optional. Type of the storage pool. This field is used to control whether
 	// the pool supports `FILE` based volumes only or `UNIFIED` (both `FILE` and
-	// `BLOCK`) volumes or `UNIFIED_LARGE_CAPACITY` (both `FILE` and `BLOCK`)
-	// volumes with large capacity. If not specified during creation, it defaults
-	// to `FILE`.
-	Type          *StoragePoolType `protobuf:"varint,35,opt,name=type,proto3,enum=google.cloud.netapp.v1.StoragePoolType,oneof" json:"type,omitempty"`
+	// `BLOCK`) volumes. If not specified during creation, it defaults to `FILE`.
+	Type *StoragePoolType `protobuf:"varint,35,opt,name=type,proto3,enum=google.cloud.netapp.v1.StoragePoolType,oneof" json:"type,omitempty"`
+	// Optional. Mode of the storage pool. This field is used to control whether
+	// the user can perform the ONTAP operations on the storage pool using the
+	// GCNV ONTAP Mode APIs. If not specified during creation, it defaults to
+	// `DEFAULT`.
+	Mode          *Mode `protobuf:"varint,36,opt,name=mode,proto3,enum=google.cloud.netapp.v1.Mode,oneof" json:"mode,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -875,6 +932,13 @@ func (x *StoragePool) GetType() StoragePoolType {
 	return StoragePoolType_STORAGE_POOL_TYPE_UNSPECIFIED
 }
 
+func (x *StoragePool) GetMode() Mode {
+	if x != nil && x.Mode != nil {
+		return *x.Mode
+	}
+	return Mode_MODE_UNSPECIFIED
+}
+
 // ValidateDirectoryServiceRequest validates the directory service policy
 // attached to the storage pool.
 type ValidateDirectoryServiceRequest struct {
@@ -963,7 +1027,7 @@ const file_google_cloud_netapp_v1_storage_pool_proto_rawDesc = "" +
 	"!netapp.googleapis.com/StoragePoolR\x04name\"_\n" +
 	"\x1eSwitchActiveReplicaZoneRequest\x12=\n" +
 	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!netapp.googleapis.com/StoragePoolR\x04name\"\x89\x11\n" +
+	"!netapp.googleapis.com/StoragePoolR\x04name\"\xce\x11\n" +
 	"\vStoragePool\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12N\n" +
 	"\rservice_level\x18\x02 \x01(\x0e2$.google.cloud.netapp.v1.ServiceLevelB\x03\xe0A\x02R\fserviceLevel\x12&\n" +
@@ -1003,7 +1067,8 @@ const file_google_cloud_netapp_v1_storage_pool_proto_rawDesc = "" +
 	"\x1aavailable_throughput_mibps\x18\x1f \x01(\x01B\x03\xe0A\x03R\x18availableThroughputMibps\x129\n" +
 	"\x17cold_tier_size_used_gib\x18! \x01(\x03B\x03\xe0A\x03R\x13coldTierSizeUsedGib\x127\n" +
 	"\x16hot_tier_size_used_gib\x18\" \x01(\x03B\x03\xe0A\x03R\x12hotTierSizeUsedGib\x12E\n" +
-	"\x04type\x18# \x01(\x0e2'.google.cloud.netapp.v1.StoragePoolTypeB\x03\xe0A\x01H\x02R\x04type\x88\x01\x01\x1a9\n" +
+	"\x04type\x18# \x01(\x0e2'.google.cloud.netapp.v1.StoragePoolTypeB\x03\xe0A\x01H\x02R\x04type\x88\x01\x01\x12:\n" +
+	"\x04mode\x18$ \x01(\x0e2\x1c.google.cloud.netapp.v1.ModeB\x03\xe0A\x01H\x03R\x04mode\x88\x01\x01\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"{\n" +
@@ -1019,11 +1084,16 @@ const file_google_cloud_netapp_v1_storage_pool_proto_rawDesc = "" +
 	"!netapp.googleapis.com/StoragePool\x12Cprojects/{project}/locations/{location}/storagePools/{storage_pool}*\fstoragePools2\vstoragePoolB\x18\n" +
 	"\x16_global_access_allowedB\x1e\n" +
 	"\x1c_enable_hot_tier_auto_resizeB\a\n" +
-	"\x05_type\"\xc4\x01\n" +
+	"\x05_typeB\a\n" +
+	"\x05_mode\"\xc4\x01\n" +
 	"\x1fValidateDirectoryServiceRequest\x12=\n" +
 	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
 	"!netapp.googleapis.com/StoragePoolR\x04name\x12b\n" +
-	"\x16directory_service_type\x18\x02 \x01(\x0e2,.google.cloud.netapp.v1.DirectoryServiceTypeR\x14directoryServiceTypeB\xb2\x01\n" +
+	"\x16directory_service_type\x18\x02 \x01(\x0e2,.google.cloud.netapp.v1.DirectoryServiceTypeR\x14directoryServiceType*4\n" +
+	"\x04Mode\x12\x14\n" +
+	"\x10MODE_UNSPECIFIED\x10\x00\x12\v\n" +
+	"\aDEFAULT\x10\x01\x12\t\n" +
+	"\x05ONTAP\x10\x02B\xb2\x01\n" +
 	"\x1acom.google.cloud.netapp.v1B\x10StoragePoolProtoP\x01Z2cloud.google.com/go/netapp/apiv1/netapppb;netapppb\xaa\x02\x16Google.Cloud.NetApp.V1\xca\x02\x16Google\\Cloud\\NetApp\\V1\xea\x02\x19Google::Cloud::NetApp::V1b\x06proto3"
 
 var (
@@ -1038,46 +1108,48 @@ func file_google_cloud_netapp_v1_storage_pool_proto_rawDescGZIP() []byte {
 	return file_google_cloud_netapp_v1_storage_pool_proto_rawDescData
 }
 
-var file_google_cloud_netapp_v1_storage_pool_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_google_cloud_netapp_v1_storage_pool_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
 var file_google_cloud_netapp_v1_storage_pool_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_google_cloud_netapp_v1_storage_pool_proto_goTypes = []any{
-	(StoragePool_State)(0),                  // 0: google.cloud.netapp.v1.StoragePool.State
-	(*GetStoragePoolRequest)(nil),           // 1: google.cloud.netapp.v1.GetStoragePoolRequest
-	(*ListStoragePoolsRequest)(nil),         // 2: google.cloud.netapp.v1.ListStoragePoolsRequest
-	(*ListStoragePoolsResponse)(nil),        // 3: google.cloud.netapp.v1.ListStoragePoolsResponse
-	(*CreateStoragePoolRequest)(nil),        // 4: google.cloud.netapp.v1.CreateStoragePoolRequest
-	(*UpdateStoragePoolRequest)(nil),        // 5: google.cloud.netapp.v1.UpdateStoragePoolRequest
-	(*DeleteStoragePoolRequest)(nil),        // 6: google.cloud.netapp.v1.DeleteStoragePoolRequest
-	(*SwitchActiveReplicaZoneRequest)(nil),  // 7: google.cloud.netapp.v1.SwitchActiveReplicaZoneRequest
-	(*StoragePool)(nil),                     // 8: google.cloud.netapp.v1.StoragePool
-	(*ValidateDirectoryServiceRequest)(nil), // 9: google.cloud.netapp.v1.ValidateDirectoryServiceRequest
-	nil,                                     // 10: google.cloud.netapp.v1.StoragePool.LabelsEntry
-	(*fieldmaskpb.FieldMask)(nil),           // 11: google.protobuf.FieldMask
-	(ServiceLevel)(0),                       // 12: google.cloud.netapp.v1.ServiceLevel
-	(*timestamppb.Timestamp)(nil),           // 13: google.protobuf.Timestamp
-	(EncryptionType)(0),                     // 14: google.cloud.netapp.v1.EncryptionType
-	(QosType)(0),                            // 15: google.cloud.netapp.v1.QosType
-	(StoragePoolType)(0),                    // 16: google.cloud.netapp.v1.StoragePoolType
-	(DirectoryServiceType)(0),               // 17: google.cloud.netapp.v1.DirectoryServiceType
+	(Mode)(0),                               // 0: google.cloud.netapp.v1.Mode
+	(StoragePool_State)(0),                  // 1: google.cloud.netapp.v1.StoragePool.State
+	(*GetStoragePoolRequest)(nil),           // 2: google.cloud.netapp.v1.GetStoragePoolRequest
+	(*ListStoragePoolsRequest)(nil),         // 3: google.cloud.netapp.v1.ListStoragePoolsRequest
+	(*ListStoragePoolsResponse)(nil),        // 4: google.cloud.netapp.v1.ListStoragePoolsResponse
+	(*CreateStoragePoolRequest)(nil),        // 5: google.cloud.netapp.v1.CreateStoragePoolRequest
+	(*UpdateStoragePoolRequest)(nil),        // 6: google.cloud.netapp.v1.UpdateStoragePoolRequest
+	(*DeleteStoragePoolRequest)(nil),        // 7: google.cloud.netapp.v1.DeleteStoragePoolRequest
+	(*SwitchActiveReplicaZoneRequest)(nil),  // 8: google.cloud.netapp.v1.SwitchActiveReplicaZoneRequest
+	(*StoragePool)(nil),                     // 9: google.cloud.netapp.v1.StoragePool
+	(*ValidateDirectoryServiceRequest)(nil), // 10: google.cloud.netapp.v1.ValidateDirectoryServiceRequest
+	nil,                                     // 11: google.cloud.netapp.v1.StoragePool.LabelsEntry
+	(*fieldmaskpb.FieldMask)(nil),           // 12: google.protobuf.FieldMask
+	(ServiceLevel)(0),                       // 13: google.cloud.netapp.v1.ServiceLevel
+	(*timestamppb.Timestamp)(nil),           // 14: google.protobuf.Timestamp
+	(EncryptionType)(0),                     // 15: google.cloud.netapp.v1.EncryptionType
+	(QosType)(0),                            // 16: google.cloud.netapp.v1.QosType
+	(StoragePoolType)(0),                    // 17: google.cloud.netapp.v1.StoragePoolType
+	(DirectoryServiceType)(0),               // 18: google.cloud.netapp.v1.DirectoryServiceType
 }
 var file_google_cloud_netapp_v1_storage_pool_proto_depIdxs = []int32{
-	8,  // 0: google.cloud.netapp.v1.ListStoragePoolsResponse.storage_pools:type_name -> google.cloud.netapp.v1.StoragePool
-	8,  // 1: google.cloud.netapp.v1.CreateStoragePoolRequest.storage_pool:type_name -> google.cloud.netapp.v1.StoragePool
-	11, // 2: google.cloud.netapp.v1.UpdateStoragePoolRequest.update_mask:type_name -> google.protobuf.FieldMask
-	8,  // 3: google.cloud.netapp.v1.UpdateStoragePoolRequest.storage_pool:type_name -> google.cloud.netapp.v1.StoragePool
-	12, // 4: google.cloud.netapp.v1.StoragePool.service_level:type_name -> google.cloud.netapp.v1.ServiceLevel
-	0,  // 5: google.cloud.netapp.v1.StoragePool.state:type_name -> google.cloud.netapp.v1.StoragePool.State
-	13, // 6: google.cloud.netapp.v1.StoragePool.create_time:type_name -> google.protobuf.Timestamp
-	10, // 7: google.cloud.netapp.v1.StoragePool.labels:type_name -> google.cloud.netapp.v1.StoragePool.LabelsEntry
-	14, // 8: google.cloud.netapp.v1.StoragePool.encryption_type:type_name -> google.cloud.netapp.v1.EncryptionType
-	15, // 9: google.cloud.netapp.v1.StoragePool.qos_type:type_name -> google.cloud.netapp.v1.QosType
-	16, // 10: google.cloud.netapp.v1.StoragePool.type:type_name -> google.cloud.netapp.v1.StoragePoolType
-	17, // 11: google.cloud.netapp.v1.ValidateDirectoryServiceRequest.directory_service_type:type_name -> google.cloud.netapp.v1.DirectoryServiceType
-	12, // [12:12] is the sub-list for method output_type
-	12, // [12:12] is the sub-list for method input_type
-	12, // [12:12] is the sub-list for extension type_name
-	12, // [12:12] is the sub-list for extension extendee
-	0,  // [0:12] is the sub-list for field type_name
+	9,  // 0: google.cloud.netapp.v1.ListStoragePoolsResponse.storage_pools:type_name -> google.cloud.netapp.v1.StoragePool
+	9,  // 1: google.cloud.netapp.v1.CreateStoragePoolRequest.storage_pool:type_name -> google.cloud.netapp.v1.StoragePool
+	12, // 2: google.cloud.netapp.v1.UpdateStoragePoolRequest.update_mask:type_name -> google.protobuf.FieldMask
+	9,  // 3: google.cloud.netapp.v1.UpdateStoragePoolRequest.storage_pool:type_name -> google.cloud.netapp.v1.StoragePool
+	13, // 4: google.cloud.netapp.v1.StoragePool.service_level:type_name -> google.cloud.netapp.v1.ServiceLevel
+	1,  // 5: google.cloud.netapp.v1.StoragePool.state:type_name -> google.cloud.netapp.v1.StoragePool.State
+	14, // 6: google.cloud.netapp.v1.StoragePool.create_time:type_name -> google.protobuf.Timestamp
+	11, // 7: google.cloud.netapp.v1.StoragePool.labels:type_name -> google.cloud.netapp.v1.StoragePool.LabelsEntry
+	15, // 8: google.cloud.netapp.v1.StoragePool.encryption_type:type_name -> google.cloud.netapp.v1.EncryptionType
+	16, // 9: google.cloud.netapp.v1.StoragePool.qos_type:type_name -> google.cloud.netapp.v1.QosType
+	17, // 10: google.cloud.netapp.v1.StoragePool.type:type_name -> google.cloud.netapp.v1.StoragePoolType
+	0,  // 11: google.cloud.netapp.v1.StoragePool.mode:type_name -> google.cloud.netapp.v1.Mode
+	18, // 12: google.cloud.netapp.v1.ValidateDirectoryServiceRequest.directory_service_type:type_name -> google.cloud.netapp.v1.DirectoryServiceType
+	13, // [13:13] is the sub-list for method output_type
+	13, // [13:13] is the sub-list for method input_type
+	13, // [13:13] is the sub-list for extension type_name
+	13, // [13:13] is the sub-list for extension extendee
+	0,  // [0:13] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_netapp_v1_storage_pool_proto_init() }
@@ -1092,7 +1164,7 @@ func file_google_cloud_netapp_v1_storage_pool_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_netapp_v1_storage_pool_proto_rawDesc), len(file_google_cloud_netapp_v1_storage_pool_proto_rawDesc)),
-			NumEnums:      1,
+			NumEnums:      2,
 			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   0,
