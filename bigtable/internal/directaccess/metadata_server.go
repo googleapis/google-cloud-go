@@ -21,6 +21,8 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	btopt "cloud.google.com/go/bigtable/internal/option"
 )
 
 const metadataBaseURL = "http://metadata.google.internal/computeMetadata/v1/"
@@ -29,6 +31,7 @@ const metadataIPv6URL = "http://metadata.google.internal/computeMetadata/v1/inst
 
 // CheckMetadataServerReachability performs a basic connectivity check to the GCE metadata server.
 func CheckMetadataServerReachability() error {
+	btopt.Debugf(nil, "directaccess: Dialing metadata server at %s", metadataBaseURL)
 	req, err := http.NewRequest("GET", metadataBaseURL, nil)
 	if err != nil {
 		return fmt.Errorf("failed to create metadata request: %w", err)
@@ -45,6 +48,7 @@ func CheckMetadataServerReachability() error {
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("reachable but returned status code: %d", resp.StatusCode)
 	}
+	btopt.Debugf(nil, "directaccess: Metadata server is reachable (200 OK)")
 	return nil
 }
 
@@ -60,8 +64,10 @@ func FetchIPFromMetadataServer(addrFamilyStr string) (*net.IP, error) {
 		return nil, fmt.Errorf("invalid address family %v", addrFamilyStr)
 	}
 
+	btopt.Debugf(nil, "directaccess: Fetching %s address from %s", addrFamilyStr, metadataServerURL)
 	req, err := http.NewRequest("GET", metadataServerURL, nil)
 	if err != nil {
+		btopt.Debugf(nil, "directaccess: Failed to execute metadata HTTP request for %s: %v", addrFamilyStr, err)
 		return nil, err
 	}
 	req.Header.Add("Metadata-Flavor", "Google")
@@ -81,9 +87,12 @@ func FetchIPFromMetadataServer(addrFamilyStr string) (*net.IP, error) {
 	if resp.StatusCode == 200 {
 		address := net.ParseIP(strings.TrimSpace(string(body)))
 		if address == nil {
+			btopt.Debugf(nil, "directaccess: Failed to parse metadata response as valid IP: %s", string(body))
 			return nil, fmt.Errorf("failed to parse IP: %s", string(body))
 		}
+		btopt.Debugf(nil, "directaccess: Successfully fetched %s address: %s", addrFamilyStr, address.String())
 		return &address, nil
 	}
+	btopt.Debugf(nil, "directaccess: Metadata server returned %d for %s fetch", resp.StatusCode, addrFamilyStr)
 	return nil, fmt.Errorf("received status code %d", resp.StatusCode)
 }

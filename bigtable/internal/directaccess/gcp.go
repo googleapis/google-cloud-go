@@ -17,6 +17,7 @@ package directaccess
 import (
 	"fmt"
 
+	btopt "cloud.google.com/go/bigtable/internal/option"
 	"cloud.google.com/go/compute/metadata"
 )
 
@@ -24,6 +25,7 @@ import (
 // Basically, reads /sys/class/dmi/id/product_name
 func IsRunningOnGCP() error {
 	if metadata.OnGCE() {
+		btopt.Debugf(nil, "directaccess: Environment is confirmed as GCE")
 		return nil
 	}
 	return fmt.Errorf("not running on GCE according to metadata.OnGCE()")
