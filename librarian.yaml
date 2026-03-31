@@ -422,8 +422,8 @@ libraries:
     version: 1.26.1
     apis:
       - path: google/cloud/datacatalog/v1
-      - path: google/cloud/datacatalog/lineage/configmanagement/v1
       - path: google/cloud/datacatalog/lineage/v1
+      - path: google/cloud/datacatalog/lineage/configmanagement/v1
       - path: google/cloud/datacatalog/v1beta1
     keep:
       - apiv1/iam_policy_client.go
@@ -759,6 +759,7 @@ libraries:
   - name: maps
     version: 1.30.0
     apis:
+      - path: google/maps/geocode/v4
       - path: google/maps/routing/v2
       - path: google/maps/addressvalidation/v1
       - path: google/maps/areainsights/v1

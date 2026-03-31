@@ -1,0 +1,199 @@
+{
+  "clientLibrary": {
+    "apis": [
+      {
+        "id": "google.maps.geocode.v4",
+        "version": "v4"
+      }
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/maps/geocode/apiv4",
+    "version": "1.30.0"
+  },
+  "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.maps.geocode.v4.DestinationClient",
+          "shortName": "DestinationClient"
+        },
+        "fullName": "google.maps.geocode.v4.DestinationClient.SearchDestinations",
+        "method": {
+          "fullName": "google.maps.geocode.v4.DestinationService.SearchDestinations",
+          "service": {
+            "fullName": "google.maps.geocode.v4.DestinationService",
+            "shortName": "DestinationService"
+          },
+          "shortName": "SearchDestinations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "geocodepb.SearchDestinationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*geocodepb.SearchDestinationsResponse",
+        "shortName": "SearchDestinations"
+      },
+      "description": "SearchDestinations this method performs a destination lookup and returns a list of\ndestinations.",
+      "file": "DestinationClient/SearchDestinations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "geocoding-backend_v4_generated_DestinationService_SearchDestinations_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "geocoding-backend SearchDestinations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.maps.geocode.v4.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.maps.geocode.v4.Client.GeocodeAddress",
+        "method": {
+          "fullName": "google.maps.geocode.v4.GeocodeService.GeocodeAddress",
+          "service": {
+            "fullName": "google.maps.geocode.v4.GeocodeService",
+            "shortName": "GeocodeService"
+          },
+          "shortName": "GeocodeAddress"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "geocodepb.GeocodeAddressRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*geocodepb.GeocodeAddressResponse",
+        "shortName": "GeocodeAddress"
+      },
+      "description": "GeocodeAddress this method performs an address geocode, which maps an address to a\nLatLng. It also provides structured information about the address.",
+      "file": "Client/GeocodeAddress/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "geocoding-backend_v4_generated_GeocodeService_GeocodeAddress_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "geocoding-backend GeocodeAddress Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.maps.geocode.v4.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.maps.geocode.v4.Client.GeocodeLocation",
+        "method": {
+          "fullName": "google.maps.geocode.v4.GeocodeService.GeocodeLocation",
+          "service": {
+            "fullName": "google.maps.geocode.v4.GeocodeService",
+            "shortName": "GeocodeService"
+          },
+          "shortName": "GeocodeLocation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "geocodepb.GeocodeLocationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*geocodepb.GeocodeLocationResponse",
+        "shortName": "GeocodeLocation"
+      },
+      "description": "GeocodeLocation this method performs a location geocode, which maps a LatLng to an\naddress. It also provides structured information about the address.",
+      "file": "Client/GeocodeLocation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "geocoding-backend_v4_generated_GeocodeService_GeocodeLocation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "geocoding-backend GeocodeLocation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.maps.geocode.v4.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.maps.geocode.v4.Client.GeocodePlace",
+        "method": {
+          "fullName": "google.maps.geocode.v4.GeocodeService.GeocodePlace",
+          "service": {
+            "fullName": "google.maps.geocode.v4.GeocodeService",
+            "shortName": "GeocodeService"
+          },
+          "shortName": "GeocodePlace"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "geocodepb.GeocodePlaceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*geocodepb.GeocodeResult",
+        "shortName": "GeocodePlace"
+      },
+      "description": "GeocodePlace this method performs a geocode lookup using a place ID.",
+      "file": "Client/GeocodePlace/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "geocoding-backend_v4_generated_GeocodeService_GeocodePlace_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "geocoding-backend GeocodePlace Sample"
+    }
+  ]
+}
