@@ -1809,6 +1809,45 @@ func TestDirectAccessLogic(t *testing.T) {
 			t.Error("Direct Access dialer should NOT be called when CBT_ENABLE_DIRECTPATH=false")
 		}
 	})
+	t.Run("DirectAccess_PermissionDenied_ChecksALTS", func(t *testing.T) {
+		fake.reset()
+		// Make Prime fail specifically with PermissionDenied
+		fake.setPingErr(status.Error(codes.PermissionDenied, "simulated permission denied"))
+
+		var daConn *BigtableConn
+		daDial := func() (*BigtableConn, error) {
+			c, err := baseDialFunc()
+			if err != nil {
+				return nil, err
+			}
+			daConn = c
+			c.isALTSConn.Store(true)
+			return c, nil
+		}
+
+		poolSize := 1
+		opts := append(poolOpts(), WithDirectAccessDialer(daDial))
+		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, baseDialFunc, time.Now(), opts...)
+		if err != nil {
+			t.Fatalf("Failed to create pool: %v", err)
+		}
+		defer pool.Close()
+
+		conns := pool.getConns()
+		if len(conns) == 0 {
+			t.Fatalf("Pool has no connections")
+		}
+
+		// Because it was PermissionDenied AND it's ALTS, it should have been retained
+		if conns[0].conn != daConn {
+			t.Error("Pool discarded the Direct Access connection despite PermissionDenied + ALTS")
+		}
+
+		// The error should not have closed the connection
+		if isConnClosed(daConn.ClientConn) {
+			t.Error("Direct Access connection was unexpectedly closed")
+		}
+	})
 }
 
 func TestConnPoolStatisticsVisitor(t *testing.T) {

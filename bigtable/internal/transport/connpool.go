@@ -578,10 +578,14 @@ func (p *BigtableChannelPool) checkIfDirectAccessCompatible() (*BigtableConn, bo
 
 	err = conn.Prime(p.poolCtx, p.instanceName, p.appProfile, p.directAccessFeatureFlagsMD)
 	if err != nil {
-		btopt.Debugf(p.logger, "bigtable_connpool: Prime() failed during Direct Access check: %v", err)
-		conn.Close()
-		go p.investigateDirectAccessFailure(err) // Kick off investigation
-		return nil, false
+		// If the error is PermissionDenied, we check ALTS
+		if status.Code(err) != codes.PermissionDenied {
+			btopt.Debugf(p.logger, "bigtable_connpool: Prime() failed during Direct Access check: %v", err)
+			conn.Close()
+			go p.investigateDirectAccessFailure(err)
+			return nil, false
+		}
+		btopt.Debugf(p.logger, "bigtable_connpool: Prime() failed with PermissionDenied, continuing to ALTS check: %v", err)
 	}
 
 	if conn.isALTSConn.Load() {
@@ -1209,8 +1213,10 @@ func (p *BigtableChannelPool) investigateDirectAccessFailure(originalErr error) 
 	cdsURI := fmt.Sprintf(xdsCdsURITemplate, region)
 	btopt.Debugf(p.logger, "bigtable_connpool: Direct Access investigation: Checking xDS reachability for Node %s in region %s using URI: %s", instanceID, region, cdsURI)
 
+	actualCdsURI := fmt.Sprintf(xdsCdsURITemplate, "us-central1")
+
 	// Run EDS
-	endpoints, failReason, err := directaccess.FetchXdsEndpoints(ctx, instanceID, zone, cdsURI)
+	endpoints, failReason, err := directaccess.FetchXdsEndpoints(ctx, instanceID, zone, actualCdsURI)
 	if err != nil {
 		btopt.Debugf(p.logger, "bigtable_connpool: Direct Access investigation: xDS check failed: %v", err)
 		p.reportDirectAccessFailure(failReason)
