@@ -1213,10 +1213,8 @@ func (p *BigtableChannelPool) investigateDirectAccessFailure(originalErr error) 
 	cdsURI := fmt.Sprintf(xdsCdsURITemplate, region)
 	btopt.Debugf(p.logger, "bigtable_connpool: Direct Access investigation: Checking xDS reachability for Node %s in region %s using URI: %s", instanceID, region, cdsURI)
 
-	actualCdsURI := fmt.Sprintf(xdsCdsURITemplate, "us-central1")
-
 	// Run EDS
-	endpoints, failReason, err := directaccess.FetchXdsEndpoints(ctx, instanceID, zone, actualCdsURI)
+	endpoints, failReason, err := directaccess.FetchXdsEndpoints(ctx, instanceID, zone, cdsURI)
 	if err != nil {
 		btopt.Debugf(p.logger, "bigtable_connpool: Direct Access investigation: xDS check failed: %v", err)
 		p.reportDirectAccessFailure(failReason)
