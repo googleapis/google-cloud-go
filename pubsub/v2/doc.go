@@ -18,7 +18,7 @@ messages, hiding the details of the underlying server RPCs.
 Pub/Sub is a many-to-many, asynchronous messaging system that decouples senders
 and receivers.
 
-If you are migrating from the v1 library, please read over the [migration guide]:
+If you are migrating from the v1 library, please read over the [migration guide].
 
 More information about Pub/Sub is available at the [product documentation page].
 
@@ -91,6 +91,7 @@ throughput. To terminate a call to [Subscriber.Receive], cancel its context.
 
 Once client code has processed the [Message], it must call Message.Ack or
 Message.Nack. If Ack is not called, the Message will eventually be redelivered. Ack/Nack
+MUST be called within the [Subscriber.Receive] handler function, and not from a goroutine.
 Otherwise, flow control (e.g. ReceiveSettings.MaxOutstandingMessages) will
 not be respected. Additionally, messages can get orphaned when Receive is canceled,
 resulting in slow redelivery.
@@ -104,7 +105,8 @@ been called unless exactly once delivery is enabled. Applications should be awar
 of these deliveries.
 
 Note: This uses pubsub's streaming pull feature. This feature has properties that
-may be surprising. Please refer to [Streaming Pull API] for more details on how streaming pull behaves.
+may be surprising. Please refer to the [Streaming Pull API] for more details on
+how streaming pull behaves.
 
 # Emulator
 
@@ -248,7 +250,7 @@ in the gRPC connection pool as shown below:
 	 }
 	 client, err := pubsub.NewClient(ctx, projID, opts...)
 
-This [medium post] describes tuning Pub/Sub performance in more detail
+This [medium post] describes tuning Pub/Sub performance in more detail.
 
 # General tips
 
@@ -261,7 +263,7 @@ once and reused to take advantage of flow control and batching capabilities.
 [main Google Cloud Go package]: https://pkg.go.dev/cloud.google.com/go
 [migration guide]: https://github.com/googleapis/google-cloud-go/blob/main/pubsub/MIGRATING.md
 [medium post]: https://medium.com/google-cloud/pub-sub-flow-control-batching-9ba9a75bce3b
-[this issue]: http://issuetracker.google.com/352592079
+[this issue]: https://issuetracker.google.com/352592079
 [Resource Limits]: https://docs.cloud.google.com/pubsub/quotas#resource_limits
 */
 package pubsub // import "cloud.google.com/go/pubsub/v2"
