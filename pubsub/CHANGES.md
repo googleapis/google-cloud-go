@@ -1,5 +1,11 @@
 # Changes
 
+## [2.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/pubsub%2Fv2.0.0) (2026-03-31)
+
+### Bug Fixes
+
+* check for nil concurrency control span (#14303) ([4c0232a](https://github.com/googleapis/google-cloud-go/commit/4c0232a7c1197769af2d6c6a4378c02089ae2955))
+
 ## [1.50.1](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.50.0...pubsub/v1.50.1) (2025-09-04)
 
 
