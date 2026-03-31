@@ -342,6 +342,15 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/beyondcorp/
     tag_format: '{id}/v{version}'
+  - id: biglake
+    version: ""
+    last_generated_commit: ""
+    apis: []
+    source_roots:
+      - biglake
+    preserve_regex: []
+    remove_regex: []
+    tag_format: '{id}/v{version}'
   - id: bigquery
     version: 1.75.0
     last_generated_commit: ""
