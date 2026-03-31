@@ -1,6 +1,6 @@
 module cloud.google.com/go/biglake
 
-go 1.26.1
+go 1.25.0
 
 require (
 	github.com/googleapis/gax-go/v2 v2.20.0
