@@ -1,0 +1,213 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.biglake.hive.v1beta",
+  "libraryPackage": "cloud.google.com/go/biglake/hive/apiv1beta",
+  "services": {
+    "HiveMetastoreService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "HiveMetastoreClient",
+          "rpcs": {
+            "BatchCreatePartitions": {
+              "methods": [
+                "BatchCreatePartitions"
+              ]
+            },
+            "BatchDeletePartitions": {
+              "methods": [
+                "BatchDeletePartitions"
+              ]
+            },
+            "BatchUpdatePartitions": {
+              "methods": [
+                "BatchUpdatePartitions"
+              ]
+            },
+            "CreateHiveCatalog": {
+              "methods": [
+                "CreateHiveCatalog"
+              ]
+            },
+            "CreateHiveDatabase": {
+              "methods": [
+                "CreateHiveDatabase"
+              ]
+            },
+            "CreateHiveTable": {
+              "methods": [
+                "CreateHiveTable"
+              ]
+            },
+            "DeleteHiveCatalog": {
+              "methods": [
+                "DeleteHiveCatalog"
+              ]
+            },
+            "DeleteHiveDatabase": {
+              "methods": [
+                "DeleteHiveDatabase"
+              ]
+            },
+            "DeleteHiveTable": {
+              "methods": [
+                "DeleteHiveTable"
+              ]
+            },
+            "GetHiveCatalog": {
+              "methods": [
+                "GetHiveCatalog"
+              ]
+            },
+            "GetHiveDatabase": {
+              "methods": [
+                "GetHiveDatabase"
+              ]
+            },
+            "GetHiveTable": {
+              "methods": [
+                "GetHiveTable"
+              ]
+            },
+            "ListHiveCatalogs": {
+              "methods": [
+                "ListHiveCatalogs"
+              ]
+            },
+            "ListHiveDatabases": {
+              "methods": [
+                "ListHiveDatabases"
+              ]
+            },
+            "ListHiveTables": {
+              "methods": [
+                "ListHiveTables"
+              ]
+            },
+            "ListPartitions": {
+              "methods": [
+                "ListPartitions"
+              ]
+            },
+            "UpdateHiveCatalog": {
+              "methods": [
+                "UpdateHiveCatalog"
+              ]
+            },
+            "UpdateHiveDatabase": {
+              "methods": [
+                "UpdateHiveDatabase"
+              ]
+            },
+            "UpdateHiveTable": {
+              "methods": [
+                "UpdateHiveTable"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "HiveMetastoreClient",
+          "rpcs": {
+            "BatchCreatePartitions": {
+              "methods": [
+                "BatchCreatePartitions"
+              ]
+            },
+            "BatchDeletePartitions": {
+              "methods": [
+                "BatchDeletePartitions"
+              ]
+            },
+            "BatchUpdatePartitions": {
+              "methods": [
+                "BatchUpdatePartitions"
+              ]
+            },
+            "CreateHiveCatalog": {
+              "methods": [
+                "CreateHiveCatalog"
+              ]
+            },
+            "CreateHiveDatabase": {
+              "methods": [
+                "CreateHiveDatabase"
+              ]
+            },
+            "CreateHiveTable": {
+              "methods": [
+                "CreateHiveTable"
+              ]
+            },
+            "DeleteHiveCatalog": {
+              "methods": [
+                "DeleteHiveCatalog"
+              ]
+            },
+            "DeleteHiveDatabase": {
+              "methods": [
+                "DeleteHiveDatabase"
+              ]
+            },
+            "DeleteHiveTable": {
+              "methods": [
+                "DeleteHiveTable"
+              ]
+            },
+            "GetHiveCatalog": {
+              "methods": [
+                "GetHiveCatalog"
+              ]
+            },
+            "GetHiveDatabase": {
+              "methods": [
+                "GetHiveDatabase"
+              ]
+            },
+            "GetHiveTable": {
+              "methods": [
+                "GetHiveTable"
+              ]
+            },
+            "ListHiveCatalogs": {
+              "methods": [
+                "ListHiveCatalogs"
+              ]
+            },
+            "ListHiveDatabases": {
+              "methods": [
+                "ListHiveDatabases"
+              ]
+            },
+            "ListHiveTables": {
+              "methods": [
+                "ListHiveTables"
+              ]
+            },
+            "ListPartitions": {
+              "methods": [
+                "ListPartitions"
+              ]
+            },
+            "UpdateHiveCatalog": {
+              "methods": [
+                "UpdateHiveCatalog"
+              ]
+            },
+            "UpdateHiveDatabase": {
+              "methods": [
+                "UpdateHiveDatabase"
+              ]
+            },
+            "UpdateHiveTable": {
+              "methods": [
+                "UpdateHiveTable"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,233 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.biglake.v1",
+  "libraryPackage": "cloud.google.com/go/biglake/apiv1",
+  "services": {
+    "IcebergCatalogService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "IcebergCatalogClient",
+          "rpcs": {
+            "CheckIcebergNamespaceExists": {
+              "methods": [
+                "CheckIcebergNamespaceExists"
+              ]
+            },
+            "CheckIcebergTableExists": {
+              "methods": [
+                "CheckIcebergTableExists"
+              ]
+            },
+            "CreateIcebergCatalog": {
+              "methods": [
+                "CreateIcebergCatalog"
+              ]
+            },
+            "CreateIcebergNamespace": {
+              "methods": [
+                "CreateIcebergNamespace"
+              ]
+            },
+            "CreateIcebergTable": {
+              "methods": [
+                "CreateIcebergTable"
+              ]
+            },
+            "DeleteIcebergCatalog": {
+              "methods": [
+                "DeleteIcebergCatalog"
+              ]
+            },
+            "DeleteIcebergNamespace": {
+              "methods": [
+                "DeleteIcebergNamespace"
+              ]
+            },
+            "DeleteIcebergTable": {
+              "methods": [
+                "DeleteIcebergTable"
+              ]
+            },
+            "FailoverIcebergCatalog": {
+              "methods": [
+                "FailoverIcebergCatalog"
+              ]
+            },
+            "GetIcebergCatalog": {
+              "methods": [
+                "GetIcebergCatalog"
+              ]
+            },
+            "GetIcebergCatalogConfig": {
+              "methods": [
+                "GetIcebergCatalogConfig"
+              ]
+            },
+            "GetIcebergNamespace": {
+              "methods": [
+                "GetIcebergNamespace"
+              ]
+            },
+            "GetIcebergTable": {
+              "methods": [
+                "GetIcebergTable"
+              ]
+            },
+            "ListIcebergCatalogs": {
+              "methods": [
+                "ListIcebergCatalogs"
+              ]
+            },
+            "ListIcebergNamespaces": {
+              "methods": [
+                "ListIcebergNamespaces"
+              ]
+            },
+            "ListIcebergTableIdentifiers": {
+              "methods": [
+                "ListIcebergTableIdentifiers"
+              ]
+            },
+            "LoadIcebergTableCredentials": {
+              "methods": [
+                "LoadIcebergTableCredentials"
+              ]
+            },
+            "RegisterIcebergTable": {
+              "methods": [
+                "RegisterIcebergTable"
+              ]
+            },
+            "UpdateIcebergCatalog": {
+              "methods": [
+                "UpdateIcebergCatalog"
+              ]
+            },
+            "UpdateIcebergNamespace": {
+              "methods": [
+                "UpdateIcebergNamespace"
+              ]
+            },
+            "UpdateIcebergTable": {
+              "methods": [
+                "UpdateIcebergTable"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "IcebergCatalogClient",
+          "rpcs": {
+            "CheckIcebergNamespaceExists": {
+              "methods": [
+                "CheckIcebergNamespaceExists"
+              ]
+            },
+            "CheckIcebergTableExists": {
+              "methods": [
+                "CheckIcebergTableExists"
+              ]
+            },
+            "CreateIcebergCatalog": {
+              "methods": [
+                "CreateIcebergCatalog"
+              ]
+            },
+            "CreateIcebergNamespace": {
+              "methods": [
+                "CreateIcebergNamespace"
+              ]
+            },
+            "CreateIcebergTable": {
+              "methods": [
+                "CreateIcebergTable"
+              ]
+            },
+            "DeleteIcebergCatalog": {
+              "methods": [
+                "DeleteIcebergCatalog"
+              ]
+            },
+            "DeleteIcebergNamespace": {
+              "methods": [
+                "DeleteIcebergNamespace"
+              ]
+            },
+            "DeleteIcebergTable": {
+              "methods": [
+                "DeleteIcebergTable"
+              ]
+            },
+            "FailoverIcebergCatalog": {
+              "methods": [
+                "FailoverIcebergCatalog"
+              ]
+            },
+            "GetIcebergCatalog": {
+              "methods": [
+                "GetIcebergCatalog"
+              ]
+            },
+            "GetIcebergCatalogConfig": {
+              "methods": [
+                "GetIcebergCatalogConfig"
+              ]
+            },
+            "GetIcebergNamespace": {
+              "methods": [
+                "GetIcebergNamespace"
+              ]
+            },
+            "GetIcebergTable": {
+              "methods": [
+                "GetIcebergTable"
+              ]
+            },
+            "ListIcebergCatalogs": {
+              "methods": [
+                "ListIcebergCatalogs"
+              ]
+            },
+            "ListIcebergNamespaces": {
+              "methods": [
+                "ListIcebergNamespaces"
+              ]
+            },
+            "ListIcebergTableIdentifiers": {
+              "methods": [
+                "ListIcebergTableIdentifiers"
+              ]
+            },
+            "LoadIcebergTableCredentials": {
+              "methods": [
+                "LoadIcebergTableCredentials"
+              ]
+            },
+            "RegisterIcebergTable": {
+              "methods": [
+                "RegisterIcebergTable"
+              ]
+            },
+            "UpdateIcebergCatalog": {
+              "methods": [
+                "UpdateIcebergCatalog"
+              ]
+            },
+            "UpdateIcebergNamespace": {
+              "methods": [
+                "UpdateIcebergNamespace"
+              ]
+            },
+            "UpdateIcebergTable": {
+              "methods": [
+                "UpdateIcebergTable"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

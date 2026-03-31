@@ -1,0 +1,976 @@
+{
+  "clientLibrary": {
+    "apis": [
+      {
+        "id": "google.cloud.biglake.v1",
+        "version": "v1"
+      }
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/biglake/apiv1",
+    "version": ""
+  },
+  "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogClient",
+          "shortName": "IcebergCatalogClient"
+        },
+        "fullName": "google.cloud.biglake.v1.IcebergCatalogClient.CheckIcebergNamespaceExists",
+        "method": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogService.CheckIcebergNamespaceExists",
+          "service": {
+            "fullName": "google.cloud.biglake.v1.IcebergCatalogService",
+            "shortName": "IcebergCatalogService"
+          },
+          "shortName": "CheckIcebergNamespaceExists"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "biglakepb.GetIcebergNamespaceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CheckIcebergNamespaceExists"
+      },
+      "description": "CheckIcebergNamespaceExists returns 204 if the namespace exists, 404 otherwise.",
+      "file": "IcebergCatalogClient/CheckIcebergNamespaceExists/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1_generated_IcebergCatalogService_CheckIcebergNamespaceExists_sync",
+      "segments": [
+        {
+          "end": 51,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake CheckIcebergNamespaceExists Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogClient",
+          "shortName": "IcebergCatalogClient"
+        },
+        "fullName": "google.cloud.biglake.v1.IcebergCatalogClient.CheckIcebergTableExists",
+        "method": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogService.CheckIcebergTableExists",
+          "service": {
+            "fullName": "google.cloud.biglake.v1.IcebergCatalogService",
+            "shortName": "IcebergCatalogService"
+          },
+          "shortName": "CheckIcebergTableExists"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "biglakepb.GetIcebergTableRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CheckIcebergTableExists"
+      },
+      "description": "CheckIcebergTableExists returns 204 if the table exists, 404 otherwise. This is a `HEAD` HTTP\nmethod.",
+      "file": "IcebergCatalogClient/CheckIcebergTableExists/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1_generated_IcebergCatalogService_CheckIcebergTableExists_sync",
+      "segments": [
+        {
+          "end": 51,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake CheckIcebergTableExists Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogClient",
+          "shortName": "IcebergCatalogClient"
+        },
+        "fullName": "google.cloud.biglake.v1.IcebergCatalogClient.CreateIcebergCatalog",
+        "method": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogService.CreateIcebergCatalog",
+          "service": {
+            "fullName": "google.cloud.biglake.v1.IcebergCatalogService",
+            "shortName": "IcebergCatalogService"
+          },
+          "shortName": "CreateIcebergCatalog"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "biglakepb.CreateIcebergCatalogRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*biglakepb.IcebergCatalog",
+        "shortName": "CreateIcebergCatalog"
+      },
+      "description": "CreateIcebergCatalog creates the Iceberg REST Catalog.\nCurrently only supports Google Cloud Storage Bucket catalogs.\nGoogle Cloud Storage Bucket catalog id is the bucket for which the\ncatalog is created (e.g. `my-catalog` for `gs: //my-catalog`).\n\nIf the bucket does not exist, of the caller does not have bucket metadata\npermissions, the catalog will not be created.",
+      "file": "IcebergCatalogClient/CreateIcebergCatalog/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1_generated_IcebergCatalogService_CreateIcebergCatalog_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake CreateIcebergCatalog Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogClient",
+          "shortName": "IcebergCatalogClient"
+        },
+        "fullName": "google.cloud.biglake.v1.IcebergCatalogClient.CreateIcebergNamespace",
+        "method": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogService.CreateIcebergNamespace",
+          "service": {
+            "fullName": "google.cloud.biglake.v1.IcebergCatalogService",
+            "shortName": "IcebergCatalogService"
+          },
+          "shortName": "CreateIcebergNamespace"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "biglakepb.CreateIcebergNamespaceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*biglakepb.IcebergNamespace",
+        "shortName": "CreateIcebergNamespace"
+      },
+      "description": "CreateIcebergNamespace creates a namespace in the catalog.",
+      "file": "IcebergCatalogClient/CreateIcebergNamespace/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1_generated_IcebergCatalogService_CreateIcebergNamespace_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake CreateIcebergNamespace Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogClient",
+          "shortName": "IcebergCatalogClient"
+        },
+        "fullName": "google.cloud.biglake.v1.IcebergCatalogClient.CreateIcebergTable",
+        "method": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogService.CreateIcebergTable",
+          "service": {
+            "fullName": "google.cloud.biglake.v1.IcebergCatalogService",
+            "shortName": "IcebergCatalogService"
+          },
+          "shortName": "CreateIcebergTable"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "biglakepb.CreateIcebergTableRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*httpbodypb.HttpBody",
+        "shortName": "CreateIcebergTable"
+      },
+      "description": "CreateIcebergTable creates a table in the namespace.",
+      "file": "IcebergCatalogClient/CreateIcebergTable/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1_generated_IcebergCatalogService_CreateIcebergTable_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake CreateIcebergTable Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogClient",
+          "shortName": "IcebergCatalogClient"
+        },
+        "fullName": "google.cloud.biglake.v1.IcebergCatalogClient.DeleteIcebergCatalog",
+        "method": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogService.DeleteIcebergCatalog",
+          "service": {
+            "fullName": "google.cloud.biglake.v1.IcebergCatalogService",
+            "shortName": "IcebergCatalogService"
+          },
+          "shortName": "DeleteIcebergCatalog"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "biglakepb.DeleteIcebergCatalogRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteIcebergCatalog"
+      },
+      "description": "DeleteIcebergCatalog deletes the Iceberg REST Catalog.\nDelete does not delete a catalog that has contents -- at least one\nnamespace.\n\nDelete is not supported for all catalog types.",
+      "file": "IcebergCatalogClient/DeleteIcebergCatalog/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1_generated_IcebergCatalogService_DeleteIcebergCatalog_sync",
+      "segments": [
+        {
+          "end": 51,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake DeleteIcebergCatalog Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogClient",
+          "shortName": "IcebergCatalogClient"
+        },
+        "fullName": "google.cloud.biglake.v1.IcebergCatalogClient.DeleteIcebergNamespace",
+        "method": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogService.DeleteIcebergNamespace",
+          "service": {
+            "fullName": "google.cloud.biglake.v1.IcebergCatalogService",
+            "shortName": "IcebergCatalogService"
+          },
+          "shortName": "DeleteIcebergNamespace"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "biglakepb.DeleteIcebergNamespaceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteIcebergNamespace"
+      },
+      "description": "DeleteIcebergNamespace returns 204, not 200 on success.",
+      "file": "IcebergCatalogClient/DeleteIcebergNamespace/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1_generated_IcebergCatalogService_DeleteIcebergNamespace_sync",
+      "segments": [
+        {
+          "end": 51,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake DeleteIcebergNamespace Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogClient",
+          "shortName": "IcebergCatalogClient"
+        },
+        "fullName": "google.cloud.biglake.v1.IcebergCatalogClient.DeleteIcebergTable",
+        "method": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogService.DeleteIcebergTable",
+          "service": {
+            "fullName": "google.cloud.biglake.v1.IcebergCatalogService",
+            "shortName": "IcebergCatalogService"
+          },
+          "shortName": "DeleteIcebergTable"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "biglakepb.DeleteIcebergTableRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteIcebergTable"
+      },
+      "description": "DeleteIcebergTable deletes a table in the namespace.",
+      "file": "IcebergCatalogClient/DeleteIcebergTable/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1_generated_IcebergCatalogService_DeleteIcebergTable_sync",
+      "segments": [
+        {
+          "end": 51,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake DeleteIcebergTable Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogClient",
+          "shortName": "IcebergCatalogClient"
+        },
+        "fullName": "google.cloud.biglake.v1.IcebergCatalogClient.FailoverIcebergCatalog",
+        "method": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogService.FailoverIcebergCatalog",
+          "service": {
+            "fullName": "google.cloud.biglake.v1.IcebergCatalogService",
+            "shortName": "IcebergCatalogService"
+          },
+          "shortName": "FailoverIcebergCatalog"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "biglakepb.FailoverIcebergCatalogRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*biglakepb.FailoverIcebergCatalogResponse",
+        "shortName": "FailoverIcebergCatalog"
+      },
+      "description": "FailoverIcebergCatalog failover the catalog to a new primary replica region.",
+      "file": "IcebergCatalogClient/FailoverIcebergCatalog/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1_generated_IcebergCatalogService_FailoverIcebergCatalog_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake FailoverIcebergCatalog Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogClient",
+          "shortName": "IcebergCatalogClient"
+        },
+        "fullName": "google.cloud.biglake.v1.IcebergCatalogClient.GetIcebergCatalog",
+        "method": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogService.GetIcebergCatalog",
+          "service": {
+            "fullName": "google.cloud.biglake.v1.IcebergCatalogService",
+            "shortName": "IcebergCatalogService"
+          },
+          "shortName": "GetIcebergCatalog"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "biglakepb.GetIcebergCatalogRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*biglakepb.IcebergCatalog",
+        "shortName": "GetIcebergCatalog"
+      },
+      "description": "GetIcebergCatalog returns the Iceberg REST Catalog configuration options.",
+      "file": "IcebergCatalogClient/GetIcebergCatalog/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1_generated_IcebergCatalogService_GetIcebergCatalog_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake GetIcebergCatalog Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogClient",
+          "shortName": "IcebergCatalogClient"
+        },
+        "fullName": "google.cloud.biglake.v1.IcebergCatalogClient.GetIcebergCatalogConfig",
+        "method": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogService.GetIcebergCatalogConfig",
+          "service": {
+            "fullName": "google.cloud.biglake.v1.IcebergCatalogService",
+            "shortName": "IcebergCatalogService"
+          },
+          "shortName": "GetIcebergCatalogConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "biglakepb.GetIcebergCatalogConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*biglakepb.IcebergCatalogConfig",
+        "shortName": "GetIcebergCatalogConfig"
+      },
+      "description": "GetIcebergCatalogConfig getIcebergCatalogConfig lists all catalog configuration settings. Most\nimportantly it contains the optional `endpoints` field which lists what\nmethods this catalog supports, since we are not supporting all the methods\nright now.\nIt returns all the methods defined in this service (subject to project\nconfig allowlisting).\n\nThis is not a GCP resource.",
+      "file": "IcebergCatalogClient/GetIcebergCatalogConfig/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1_generated_IcebergCatalogService_GetIcebergCatalogConfig_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake GetIcebergCatalogConfig Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogClient",
+          "shortName": "IcebergCatalogClient"
+        },
+        "fullName": "google.cloud.biglake.v1.IcebergCatalogClient.GetIcebergNamespace",
+        "method": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogService.GetIcebergNamespace",
+          "service": {
+            "fullName": "google.cloud.biglake.v1.IcebergCatalogService",
+            "shortName": "IcebergCatalogService"
+          },
+          "shortName": "GetIcebergNamespace"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "biglakepb.GetIcebergNamespaceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*biglakepb.IcebergNamespace",
+        "shortName": "GetIcebergNamespace"
+      },
+      "description": "GetIcebergNamespace gets an Iceberg namespace in the catalog (or checks if it exists, if the\nmethod is HEAD).",
+      "file": "IcebergCatalogClient/GetIcebergNamespace/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1_generated_IcebergCatalogService_GetIcebergNamespace_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake GetIcebergNamespace Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogClient",
+          "shortName": "IcebergCatalogClient"
+        },
+        "fullName": "google.cloud.biglake.v1.IcebergCatalogClient.GetIcebergTable",
+        "method": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogService.GetIcebergTable",
+          "service": {
+            "fullName": "google.cloud.biglake.v1.IcebergCatalogService",
+            "shortName": "IcebergCatalogService"
+          },
+          "shortName": "GetIcebergTable"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "biglakepb.GetIcebergTableRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*httpbodypb.HttpBody",
+        "shortName": "GetIcebergTable"
+      },
+      "description": "GetIcebergTable gets a table in the namespace.",
+      "file": "IcebergCatalogClient/GetIcebergTable/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1_generated_IcebergCatalogService_GetIcebergTable_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake GetIcebergTable Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogClient",
+          "shortName": "IcebergCatalogClient"
+        },
+        "fullName": "google.cloud.biglake.v1.IcebergCatalogClient.ListIcebergCatalogs",
+        "method": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogService.ListIcebergCatalogs",
+          "service": {
+            "fullName": "google.cloud.biglake.v1.IcebergCatalogService",
+            "shortName": "IcebergCatalogService"
+          },
+          "shortName": "ListIcebergCatalogs"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "biglakepb.ListIcebergCatalogsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "IcebergCatalogIterator",
+        "shortName": "ListIcebergCatalogs"
+      },
+      "description": "ListIcebergCatalogs lists the Iceberg REST Catalogs.",
+      "file": "IcebergCatalogClient/ListIcebergCatalogs/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1_generated_IcebergCatalogService_ListIcebergCatalogs_sync",
+      "segments": [
+        {
+          "end": 66,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake ListIcebergCatalogs Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogClient",
+          "shortName": "IcebergCatalogClient"
+        },
+        "fullName": "google.cloud.biglake.v1.IcebergCatalogClient.ListIcebergNamespaces",
+        "method": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogService.ListIcebergNamespaces",
+          "service": {
+            "fullName": "google.cloud.biglake.v1.IcebergCatalogService",
+            "shortName": "IcebergCatalogService"
+          },
+          "shortName": "ListIcebergNamespaces"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "biglakepb.ListIcebergNamespacesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ListValueIterator",
+        "shortName": "ListIcebergNamespaces"
+      },
+      "description": "ListIcebergNamespaces lists Iceberg namespaces in the catalog. We only support one level of\nnesting for namespaces.",
+      "file": "IcebergCatalogClient/ListIcebergNamespaces/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1_generated_IcebergCatalogService_ListIcebergNamespaces_sync",
+      "segments": [
+        {
+          "end": 66,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake ListIcebergNamespaces Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogClient",
+          "shortName": "IcebergCatalogClient"
+        },
+        "fullName": "google.cloud.biglake.v1.IcebergCatalogClient.ListIcebergTableIdentifiers",
+        "method": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogService.ListIcebergTableIdentifiers",
+          "service": {
+            "fullName": "google.cloud.biglake.v1.IcebergCatalogService",
+            "shortName": "IcebergCatalogService"
+          },
+          "shortName": "ListIcebergTableIdentifiers"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "biglakepb.ListIcebergTableIdentifiersRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "TableIdentifierIterator",
+        "shortName": "ListIcebergTableIdentifiers"
+      },
+      "description": "ListIcebergTableIdentifiers lists table identifiers (not *tables*) in the namespace.",
+      "file": "IcebergCatalogClient/ListIcebergTableIdentifiers/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1_generated_IcebergCatalogService_ListIcebergTableIdentifiers_sync",
+      "segments": [
+        {
+          "end": 66,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake ListIcebergTableIdentifiers Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogClient",
+          "shortName": "IcebergCatalogClient"
+        },
+        "fullName": "google.cloud.biglake.v1.IcebergCatalogClient.LoadIcebergTableCredentials",
+        "method": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogService.LoadIcebergTableCredentials",
+          "service": {
+            "fullName": "google.cloud.biglake.v1.IcebergCatalogService",
+            "shortName": "IcebergCatalogService"
+          },
+          "shortName": "LoadIcebergTableCredentials"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "biglakepb.GetIcebergTableRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*biglakepb.LoadIcebergTableCredentialsResponse",
+        "shortName": "LoadIcebergTableCredentials"
+      },
+      "description": "LoadIcebergTableCredentials loads credentials for a table in the namespace.",
+      "file": "IcebergCatalogClient/LoadIcebergTableCredentials/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1_generated_IcebergCatalogService_LoadIcebergTableCredentials_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake LoadIcebergTableCredentials Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogClient",
+          "shortName": "IcebergCatalogClient"
+        },
+        "fullName": "google.cloud.biglake.v1.IcebergCatalogClient.RegisterIcebergTable",
+        "method": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogService.RegisterIcebergTable",
+          "service": {
+            "fullName": "google.cloud.biglake.v1.IcebergCatalogService",
+            "shortName": "IcebergCatalogService"
+          },
+          "shortName": "RegisterIcebergTable"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "biglakepb.RegisterIcebergTableRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*httpbodypb.HttpBody",
+        "shortName": "RegisterIcebergTable"
+      },
+      "description": "RegisterIcebergTable register a table using given metadata file location.",
+      "file": "IcebergCatalogClient/RegisterIcebergTable/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1_generated_IcebergCatalogService_RegisterIcebergTable_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake RegisterIcebergTable Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogClient",
+          "shortName": "IcebergCatalogClient"
+        },
+        "fullName": "google.cloud.biglake.v1.IcebergCatalogClient.UpdateIcebergCatalog",
+        "method": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogService.UpdateIcebergCatalog",
+          "service": {
+            "fullName": "google.cloud.biglake.v1.IcebergCatalogService",
+            "shortName": "IcebergCatalogService"
+          },
+          "shortName": "UpdateIcebergCatalog"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "biglakepb.UpdateIcebergCatalogRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*biglakepb.IcebergCatalog",
+        "shortName": "UpdateIcebergCatalog"
+      },
+      "description": "UpdateIcebergCatalog update the Iceberg REST Catalog configuration options.",
+      "file": "IcebergCatalogClient/UpdateIcebergCatalog/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1_generated_IcebergCatalogService_UpdateIcebergCatalog_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake UpdateIcebergCatalog Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogClient",
+          "shortName": "IcebergCatalogClient"
+        },
+        "fullName": "google.cloud.biglake.v1.IcebergCatalogClient.UpdateIcebergNamespace",
+        "method": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogService.UpdateIcebergNamespace",
+          "service": {
+            "fullName": "google.cloud.biglake.v1.IcebergCatalogService",
+            "shortName": "IcebergCatalogService"
+          },
+          "shortName": "UpdateIcebergNamespace"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "biglakepb.UpdateIcebergNamespaceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*biglakepb.UpdateIcebergNamespaceResponse",
+        "shortName": "UpdateIcebergNamespace"
+      },
+      "description": "UpdateIcebergNamespace updates namespace properties.",
+      "file": "IcebergCatalogClient/UpdateIcebergNamespace/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1_generated_IcebergCatalogService_UpdateIcebergNamespace_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake UpdateIcebergNamespace Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogClient",
+          "shortName": "IcebergCatalogClient"
+        },
+        "fullName": "google.cloud.biglake.v1.IcebergCatalogClient.UpdateIcebergTable",
+        "method": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogService.UpdateIcebergTable",
+          "service": {
+            "fullName": "google.cloud.biglake.v1.IcebergCatalogService",
+            "shortName": "IcebergCatalogService"
+          },
+          "shortName": "UpdateIcebergTable"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "biglakepb.UpdateIcebergTableRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*httpbodypb.HttpBody",
+        "shortName": "UpdateIcebergTable"
+      },
+      "description": "UpdateIcebergTable this is CommitTable Iceberg API, which maps to `UpdateIcebergTable` in the\nGoogle API nomenclature.",
+      "file": "IcebergCatalogClient/UpdateIcebergTable/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1_generated_IcebergCatalogService_UpdateIcebergTable_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake UpdateIcebergTable Sample"
+    }
+  ]
+}

@@ -1,0 +1,839 @@
+{
+  "clientLibrary": {
+    "apis": [
+      {
+        "id": "google.cloud.biglake.hive.v1beta",
+        "version": "v1beta"
+      }
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/biglake/hive/apiv1beta",
+    "version": ""
+  },
+  "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreClient",
+          "shortName": "HiveMetastoreClient"
+        },
+        "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreClient.BatchCreatePartitions",
+        "method": {
+          "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreService.BatchCreatePartitions",
+          "service": {
+            "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreService",
+            "shortName": "HiveMetastoreService"
+          },
+          "shortName": "BatchCreatePartitions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "hivepb.BatchCreatePartitionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*hivepb.BatchCreatePartitionsResponse",
+        "shortName": "BatchCreatePartitions"
+      },
+      "description": "BatchCreatePartitions adds partitions to a table.",
+      "file": "HiveMetastoreClient/BatchCreatePartitions/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1beta_generated_HiveMetastoreService_BatchCreatePartitions_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake BatchCreatePartitions Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreClient",
+          "shortName": "HiveMetastoreClient"
+        },
+        "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreClient.BatchDeletePartitions",
+        "method": {
+          "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreService.BatchDeletePartitions",
+          "service": {
+            "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreService",
+            "shortName": "HiveMetastoreService"
+          },
+          "shortName": "BatchDeletePartitions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "hivepb.BatchDeletePartitionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "BatchDeletePartitions"
+      },
+      "description": "BatchDeletePartitions deletes partitions from a table.",
+      "file": "HiveMetastoreClient/BatchDeletePartitions/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1beta_generated_HiveMetastoreService_BatchDeletePartitions_sync",
+      "segments": [
+        {
+          "end": 51,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake BatchDeletePartitions Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreClient",
+          "shortName": "HiveMetastoreClient"
+        },
+        "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreClient.BatchUpdatePartitions",
+        "method": {
+          "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreService.BatchUpdatePartitions",
+          "service": {
+            "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreService",
+            "shortName": "HiveMetastoreService"
+          },
+          "shortName": "BatchUpdatePartitions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "hivepb.BatchUpdatePartitionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*hivepb.BatchUpdatePartitionsResponse",
+        "shortName": "BatchUpdatePartitions"
+      },
+      "description": "BatchUpdatePartitions updates partitions in a table.",
+      "file": "HiveMetastoreClient/BatchUpdatePartitions/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1beta_generated_HiveMetastoreService_BatchUpdatePartitions_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake BatchUpdatePartitions Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreClient",
+          "shortName": "HiveMetastoreClient"
+        },
+        "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreClient.CreateHiveCatalog",
+        "method": {
+          "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreService.CreateHiveCatalog",
+          "service": {
+            "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreService",
+            "shortName": "HiveMetastoreService"
+          },
+          "shortName": "CreateHiveCatalog"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "hivepb.CreateHiveCatalogRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*hivepb.HiveCatalog",
+        "shortName": "CreateHiveCatalog"
+      },
+      "description": "CreateHiveCatalog creates a new hive catalog.",
+      "file": "HiveMetastoreClient/CreateHiveCatalog/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1beta_generated_HiveMetastoreService_CreateHiveCatalog_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake CreateHiveCatalog Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreClient",
+          "shortName": "HiveMetastoreClient"
+        },
+        "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreClient.CreateHiveDatabase",
+        "method": {
+          "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreService.CreateHiveDatabase",
+          "service": {
+            "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreService",
+            "shortName": "HiveMetastoreService"
+          },
+          "shortName": "CreateHiveDatabase"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "hivepb.CreateHiveDatabaseRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*hivepb.HiveDatabase",
+        "shortName": "CreateHiveDatabase"
+      },
+      "description": "CreateHiveDatabase creates a new database.",
+      "file": "HiveMetastoreClient/CreateHiveDatabase/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1beta_generated_HiveMetastoreService_CreateHiveDatabase_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake CreateHiveDatabase Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreClient",
+          "shortName": "HiveMetastoreClient"
+        },
+        "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreClient.CreateHiveTable",
+        "method": {
+          "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreService.CreateHiveTable",
+          "service": {
+            "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreService",
+            "shortName": "HiveMetastoreService"
+          },
+          "shortName": "CreateHiveTable"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "hivepb.CreateHiveTableRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*hivepb.HiveTable",
+        "shortName": "CreateHiveTable"
+      },
+      "description": "CreateHiveTable creates a new hive table.",
+      "file": "HiveMetastoreClient/CreateHiveTable/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1beta_generated_HiveMetastoreService_CreateHiveTable_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake CreateHiveTable Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreClient",
+          "shortName": "HiveMetastoreClient"
+        },
+        "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreClient.DeleteHiveCatalog",
+        "method": {
+          "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreService.DeleteHiveCatalog",
+          "service": {
+            "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreService",
+            "shortName": "HiveMetastoreService"
+          },
+          "shortName": "DeleteHiveCatalog"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "hivepb.DeleteHiveCatalogRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteHiveCatalog"
+      },
+      "description": "DeleteHiveCatalog deletes an existing catalog specified by the catalog ID. Delete will fail\nif the catalog is not empty.",
+      "file": "HiveMetastoreClient/DeleteHiveCatalog/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1beta_generated_HiveMetastoreService_DeleteHiveCatalog_sync",
+      "segments": [
+        {
+          "end": 51,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake DeleteHiveCatalog Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreClient",
+          "shortName": "HiveMetastoreClient"
+        },
+        "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreClient.DeleteHiveDatabase",
+        "method": {
+          "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreService.DeleteHiveDatabase",
+          "service": {
+            "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreService",
+            "shortName": "HiveMetastoreService"
+          },
+          "shortName": "DeleteHiveDatabase"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "hivepb.DeleteHiveDatabaseRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteHiveDatabase"
+      },
+      "description": "DeleteHiveDatabase deletes an existing database specified by the database name.",
+      "file": "HiveMetastoreClient/DeleteHiveDatabase/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1beta_generated_HiveMetastoreService_DeleteHiveDatabase_sync",
+      "segments": [
+        {
+          "end": 51,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake DeleteHiveDatabase Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreClient",
+          "shortName": "HiveMetastoreClient"
+        },
+        "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreClient.DeleteHiveTable",
+        "method": {
+          "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreService.DeleteHiveTable",
+          "service": {
+            "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreService",
+            "shortName": "HiveMetastoreService"
+          },
+          "shortName": "DeleteHiveTable"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "hivepb.DeleteHiveTableRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteHiveTable"
+      },
+      "description": "DeleteHiveTable deletes an existing table specified by the table name.",
+      "file": "HiveMetastoreClient/DeleteHiveTable/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1beta_generated_HiveMetastoreService_DeleteHiveTable_sync",
+      "segments": [
+        {
+          "end": 51,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake DeleteHiveTable Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreClient",
+          "shortName": "HiveMetastoreClient"
+        },
+        "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreClient.GetHiveCatalog",
+        "method": {
+          "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreService.GetHiveCatalog",
+          "service": {
+            "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreService",
+            "shortName": "HiveMetastoreService"
+          },
+          "shortName": "GetHiveCatalog"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "hivepb.GetHiveCatalogRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*hivepb.HiveCatalog",
+        "shortName": "GetHiveCatalog"
+      },
+      "description": "GetHiveCatalog gets the catalog specified by the resource name.",
+      "file": "HiveMetastoreClient/GetHiveCatalog/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1beta_generated_HiveMetastoreService_GetHiveCatalog_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake GetHiveCatalog Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreClient",
+          "shortName": "HiveMetastoreClient"
+        },
+        "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreClient.GetHiveDatabase",
+        "method": {
+          "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreService.GetHiveDatabase",
+          "service": {
+            "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreService",
+            "shortName": "HiveMetastoreService"
+          },
+          "shortName": "GetHiveDatabase"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "hivepb.GetHiveDatabaseRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*hivepb.HiveDatabase",
+        "shortName": "GetHiveDatabase"
+      },
+      "description": "GetHiveDatabase gets the database specified by the resource name.",
+      "file": "HiveMetastoreClient/GetHiveDatabase/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1beta_generated_HiveMetastoreService_GetHiveDatabase_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake GetHiveDatabase Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreClient",
+          "shortName": "HiveMetastoreClient"
+        },
+        "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreClient.GetHiveTable",
+        "method": {
+          "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreService.GetHiveTable",
+          "service": {
+            "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreService",
+            "shortName": "HiveMetastoreService"
+          },
+          "shortName": "GetHiveTable"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "hivepb.GetHiveTableRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*hivepb.HiveTable",
+        "shortName": "GetHiveTable"
+      },
+      "description": "GetHiveTable gets the table specified by the resource name.",
+      "file": "HiveMetastoreClient/GetHiveTable/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1beta_generated_HiveMetastoreService_GetHiveTable_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake GetHiveTable Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreClient",
+          "shortName": "HiveMetastoreClient"
+        },
+        "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreClient.ListHiveCatalogs",
+        "method": {
+          "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreService.ListHiveCatalogs",
+          "service": {
+            "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreService",
+            "shortName": "HiveMetastoreService"
+          },
+          "shortName": "ListHiveCatalogs"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "hivepb.ListHiveCatalogsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "HiveCatalogIterator",
+        "shortName": "ListHiveCatalogs"
+      },
+      "description": "ListHiveCatalogs list all catalogs in a specified project.",
+      "file": "HiveMetastoreClient/ListHiveCatalogs/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1beta_generated_HiveMetastoreService_ListHiveCatalogs_sync",
+      "segments": [
+        {
+          "end": 66,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake ListHiveCatalogs Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreClient",
+          "shortName": "HiveMetastoreClient"
+        },
+        "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreClient.ListHiveDatabases",
+        "method": {
+          "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreService.ListHiveDatabases",
+          "service": {
+            "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreService",
+            "shortName": "HiveMetastoreService"
+          },
+          "shortName": "ListHiveDatabases"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "hivepb.ListHiveDatabasesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "HiveDatabaseIterator",
+        "shortName": "ListHiveDatabases"
+      },
+      "description": "ListHiveDatabases list all databases in a specified catalog.",
+      "file": "HiveMetastoreClient/ListHiveDatabases/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1beta_generated_HiveMetastoreService_ListHiveDatabases_sync",
+      "segments": [
+        {
+          "end": 66,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake ListHiveDatabases Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreClient",
+          "shortName": "HiveMetastoreClient"
+        },
+        "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreClient.ListHiveTables",
+        "method": {
+          "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreService.ListHiveTables",
+          "service": {
+            "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreService",
+            "shortName": "HiveMetastoreService"
+          },
+          "shortName": "ListHiveTables"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "hivepb.ListHiveTablesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "HiveTableIterator",
+        "shortName": "ListHiveTables"
+      },
+      "description": "ListHiveTables list all hive tables in a specified project under the hive catalog and\ndatabase.",
+      "file": "HiveMetastoreClient/ListHiveTables/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1beta_generated_HiveMetastoreService_ListHiveTables_sync",
+      "segments": [
+        {
+          "end": 66,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake ListHiveTables Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreClient",
+          "shortName": "HiveMetastoreClient"
+        },
+        "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreClient.UpdateHiveCatalog",
+        "method": {
+          "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreService.UpdateHiveCatalog",
+          "service": {
+            "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreService",
+            "shortName": "HiveMetastoreService"
+          },
+          "shortName": "UpdateHiveCatalog"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "hivepb.UpdateHiveCatalogRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*hivepb.HiveCatalog",
+        "shortName": "UpdateHiveCatalog"
+      },
+      "description": "UpdateHiveCatalog updates an existing catalog.",
+      "file": "HiveMetastoreClient/UpdateHiveCatalog/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1beta_generated_HiveMetastoreService_UpdateHiveCatalog_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake UpdateHiveCatalog Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreClient",
+          "shortName": "HiveMetastoreClient"
+        },
+        "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreClient.UpdateHiveDatabase",
+        "method": {
+          "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreService.UpdateHiveDatabase",
+          "service": {
+            "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreService",
+            "shortName": "HiveMetastoreService"
+          },
+          "shortName": "UpdateHiveDatabase"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "hivepb.UpdateHiveDatabaseRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*hivepb.HiveDatabase",
+        "shortName": "UpdateHiveDatabase"
+      },
+      "description": "UpdateHiveDatabase updates an existing database specified by the database name.",
+      "file": "HiveMetastoreClient/UpdateHiveDatabase/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1beta_generated_HiveMetastoreService_UpdateHiveDatabase_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake UpdateHiveDatabase Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreClient",
+          "shortName": "HiveMetastoreClient"
+        },
+        "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreClient.UpdateHiveTable",
+        "method": {
+          "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreService.UpdateHiveTable",
+          "service": {
+            "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreService",
+            "shortName": "HiveMetastoreService"
+          },
+          "shortName": "UpdateHiveTable"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "hivepb.UpdateHiveTableRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*hivepb.HiveTable",
+        "shortName": "UpdateHiveTable"
+      },
+      "description": "UpdateHiveTable updates an existing table specified by the table name.",
+      "file": "HiveMetastoreClient/UpdateHiveTable/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1beta_generated_HiveMetastoreService_UpdateHiveTable_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake UpdateHiveTable Sample"
+    }
+  ]
+}
