@@ -1,5 +1,11 @@
 # Changes
 
+## [2.5.1](https://github.com/googleapis/google-cloud-go/releases/tag/pubsub%2Fv2.5.1) (2026-03-31)
+
+### Bug Fixes
+
+* prevent nil span panic in Subscriber.Receive (#14278) ([c590c35](https://github.com/googleapis/google-cloud-go/commit/c590c350583b42d9739842e838811caef254c72e))
+
 ## [2.5.0](https://github.com/googleapis/google-cloud-go/releases/tag/pubsub%2Fv2.5.0) (2026-03-19)
 
 ### Features
