@@ -142,6 +142,7 @@ require (
 	cloud.google.com/go/apps v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/auditmanager v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/backupdr v0.0.0-00010101000000-000000000000
+	cloud.google.com/go/biglake v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/capacityplanner v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/ces v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/chat v0.0.0-00010101000000-000000000000
@@ -421,6 +422,8 @@ replace cloud.google.com/go/compute => ../../../compute
 replace cloud.google.com/go/bigquery => ../../../bigquery
 
 replace cloud.google.com/go/bigquery/v2 => ../../../bigquery/v2
+
+replace cloud.google.com/go/biglake => ../../../biglake
 
 replace cloud.google.com/go/bigtable => ../../../bigtable
 
