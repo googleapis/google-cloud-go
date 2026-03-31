@@ -1451,7 +1451,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						// Return nil if the context is done, not err.
 						return nil
 					}
-					if iter.enableTracing {
+					if iter.enableTracing && ccSpan != nil {
 						ccSpan.End()
 					}
 
