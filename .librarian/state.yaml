@@ -343,7 +343,7 @@ libraries:
       - internal/generated/snippets/beyondcorp/
     tag_format: '{id}/v{version}'
   - id: biglake
-    version: ""
+    version: 0.0.0
     last_generated_commit: ""
     apis: []
     source_roots:
