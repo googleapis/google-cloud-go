@@ -423,7 +423,7 @@ func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Messa
 						// Return nil if the context is done, not err.
 						return nil
 					}
-					if iter.enableTracing {
+					if iter.enableTracing && ccSpan != nil {
 						ccSpan.End()
 					}
 
