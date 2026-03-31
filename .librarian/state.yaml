@@ -1619,7 +1619,7 @@ libraries:
     remove_regex: []
     tag_format: '{id}/v{version}'
   - id: pubsub
-    version: 1.50.1
+    version: 1.50.2
     last_generated_commit: ""
     apis: []
     source_roots:
