@@ -1,8 +1,8 @@
-# Routes API
+# Geocoding API
 
 [![Go Reference](https://pkg.go.dev/badge/cloud.google.com/go/maps.svg)](https://pkg.go.dev/cloud.google.com/go/maps)
 
-Go Client Library for Routes API.
+Go Client Library for Geocoding API.
 
 ## Install
 
