@@ -201,6 +201,11 @@ libraries:
       - path: google/cloud/beyondcorp/appgateways/v1
       - path: google/cloud/beyondcorp/clientconnectorservices/v1
       - path: google/cloud/beyondcorp/clientgateways/v1
+  - name: biglake
+    apis:
+      - path: google/cloud/biglake/v1
+      - path: google/cloud/biglake/hive/v1beta
+    copyright_year: "2026"
   - name: bigquery
     version: 1.75.0
     apis:
