@@ -202,6 +202,7 @@ libraries:
       - path: google/cloud/beyondcorp/clientconnectorservices/v1
       - path: google/cloud/beyondcorp/clientgateways/v1
   - name: biglake
+    version: 0.0.0
     apis:
       - path: google/cloud/biglake/v1
       - path: google/cloud/biglake/hive/v1beta
@@ -247,7 +248,7 @@ libraries:
           import_path: bigquery/v2/apiv2
           path: google/cloud/bigquery/v2
   - name: bigtable
-    version: 1.44.0
+    version: 1.45.0
     apis:
       - path: google/bigtable/v2
       - path: google/bigtable/admin/v2
