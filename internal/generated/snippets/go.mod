@@ -66,7 +66,7 @@ require (
 	cloud.google.com/go/gkehub v0.16.0
 	cloud.google.com/go/gkemulticloud v1.6.0
 	cloud.google.com/go/gsuiteaddons v1.7.8
-	cloud.google.com/go/iam v1.5.3
+	cloud.google.com/go/iam v1.6.0
 	cloud.google.com/go/iap v1.11.3
 	cloud.google.com/go/ids v1.5.7
 	cloud.google.com/go/iot v1.8.7
@@ -130,7 +130,7 @@ require (
 	cloud.google.com/go/websecurityscanner v1.7.7
 	cloud.google.com/go/workflows v1.14.3
 	cloud.google.com/go/workstations v0.0.0-00010101000000-000000000000
-	google.golang.org/api v0.273.0
+	google.golang.org/api v0.273.1
 	google.golang.org/genproto v0.0.0-20260319201613-d00831a3d3e7
 )
 
@@ -177,7 +177,7 @@ require (
 	cloud.google.com/go/parametermanager v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/policysimulator v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/privilegedaccessmanager v0.0.0-00010101000000-000000000000
-	cloud.google.com/go/pubsub/v2 v2.0.0
+	cloud.google.com/go/pubsub/v2 v2.4.0
 	cloud.google.com/go/rapidmigrationassessment v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/saasplatform v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/securesourcemanager v0.0.0-00010101000000-000000000000
@@ -196,7 +196,7 @@ require (
 )
 
 require (
-	cloud.google.com/go/auth v0.18.2 // indirect
+	cloud.google.com/go/auth v0.19.0 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.8 // indirect
 	cloud.google.com/go/compute/metadata v0.9.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
@@ -220,8 +220,8 @@ require (
 	golang.org/x/sys v0.42.0 // indirect
 	golang.org/x/text v0.35.0 // indirect
 	golang.org/x/time v0.15.0 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20260330182312-d5a96adf58d8 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20260319201613-d00831a3d3e7 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20260401001100-f93e5f3e9f0f // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260401001100-f93e5f3e9f0f // indirect
 	google.golang.org/grpc v1.79.3 // indirect
 )
 
