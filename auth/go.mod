@@ -15,7 +15,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.42.0
 	golang.org/x/net v0.52.0
 	golang.org/x/time v0.15.0
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20260319201613-d00831a3d3e7
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260401001100-f93e5f3e9f0f
 	google.golang.org/grpc v1.79.3
 	google.golang.org/protobuf v1.36.11
 )

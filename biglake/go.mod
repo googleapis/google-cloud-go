@@ -4,8 +4,8 @@ go 1.25.0
 
 require (
 	github.com/googleapis/gax-go/v2 v2.20.0
-	google.golang.org/api v0.273.0
-	google.golang.org/genproto/googleapis/api v0.0.0-20260330182312-d5a96adf58d8
+	google.golang.org/api v0.273.1
+	google.golang.org/genproto/googleapis/api v0.0.0-20260401001100-f93e5f3e9f0f
 	google.golang.org/grpc v1.79.3
 	google.golang.org/protobuf v1.36.11
 )
