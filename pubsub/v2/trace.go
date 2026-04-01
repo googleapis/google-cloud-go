@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"log"
 	"maps"
+	"strings"
 	"sync"
 
 	pb "cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
@@ -395,7 +396,7 @@ func getPublishSpanAttributes(project, dst string, msg *Message, attrs ...attrib
 	return opts
 }
 
-func getSubscriberOpts(project, dst string, msg *Message, attrs ...attribute.KeyValue) []trace.SpanStartOption {
+func getProcessSpanAttributes(project, dst string, msg *Message, attrs ...attribute.KeyValue) []trace.SpanStartOption {
 	opts := []trace.SpanStartOption{
 		trace.WithAttributes(
 			semconv.MessagingMessageID(msg.ID),
@@ -412,16 +413,38 @@ func getSubscriberOpts(project, dst string, msg *Message, attrs ...attribute.Key
 	return opts
 }
 
-func getCommonOptions(projectID, destination string) []trace.SpanStartOption {
+func getCommonOptions(projectID, resourceName string) []trace.SpanStartOption {
+	slash := strings.LastIndex(resourceName, "/")
+	id := resourceName
+	if slash != -1 {
+		id = resourceName[slash+1:]
+	}
 	opts := []trace.SpanStartOption{
 		trace.WithAttributes(
 			attribute.String(gcpProjectIDAttribute, projectID),
+			attribute.String("gcp.resource.name", resourceName),
 			semconv.MessagingSystemGCPPubsub,
-			semconv.MessagingDestinationName(destination),
+			semconv.MessagingDestinationName(id),
 		),
 	}
 	return opts
+}
 
+func getSubscribeSpanAttributes(project, resourceName string, msg *Message, attrs ...attribute.KeyValue) []trace.SpanStartOption {
+	opts := []trace.SpanStartOption{
+		trace.WithAttributes(
+			semconv.MessagingMessageID(msg.ID),
+			semconv.MessagingMessageBodySize(len(msg.Data)),
+			semconv.MessagingGCPPubsubMessageOrderingKey(msg.OrderingKey),
+		),
+		trace.WithAttributes(attrs...),
+		trace.WithSpanKind(trace.SpanKindInternal),
+	}
+	if msg.DeliveryAttempt != nil {
+		opts = append(opts, trace.WithAttributes(semconv.MessagingGCPPubsubMessageDeliveryAttempt(*msg.DeliveryAttempt)))
+	}
+	opts = append(opts, getCommonOptions(project, resourceName)...)
+	return opts
 }
 
 // spanRecordError records the error, sets the status to error, and ends the span.

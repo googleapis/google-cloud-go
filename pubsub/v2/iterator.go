@@ -365,7 +365,7 @@ func (it *messageIterator) receive() ([]*Message, error) {
 			if m.Attributes != nil {
 				ctx = propagation.TraceContext{}.Extract(ctx, newMessageCarrier(m))
 			}
-			opts := getSubscriberOpts(it.projectID, it.subID, m)
+			opts := getSubscribeSpanAttributes(it.projectID, it.subName, m)
 			opts = append(
 				opts,
 				trace.WithAttributes(
@@ -673,7 +673,7 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 
 			// Create the single ack span for this request, and for each
 			// message, add Subscribe<->Ack links.
-			opts := getCommonOptions(it.projectID, it.subID)
+			opts := getCommonOptions(it.projectID, it.subName)
 			opts = append(
 				opts,
 				trace.WithLinks(links...),
@@ -759,7 +759,7 @@ func (it *messageIterator) sendModAck(ctx context.Context, m map[string]*AckResu
 
 			// Create the single modack/nack span for this request, and for each
 			// message, add Subscribe<->Modack links.
-			opts := getCommonOptions(it.projectID, it.subID)
+			opts := getCommonOptions(it.projectID, it.subName)
 			opts = append(
 				opts,
 				trace.WithLinks(links...),
