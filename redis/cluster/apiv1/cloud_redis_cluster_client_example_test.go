@@ -306,6 +306,31 @@ func ExampleCloudRedisClusterClient_GetClusterCertificateAuthority() {
 	_ = resp
 }
 
+func ExampleCloudRedisClusterClient_GetSharedRegionalCertificateAuthority() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cluster.NewCloudRedisClusterClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &clusterpb.GetSharedRegionalCertificateAuthorityRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/redis/cluster/apiv1/clusterpb#GetSharedRegionalCertificateAuthorityRequest.
+	}
+	resp, err := c.GetSharedRegionalCertificateAuthority(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleCloudRedisClusterClient_ListBackupCollections() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.

@@ -44,9 +44,15 @@ type AgentTool struct {
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. Description of the tool's purpose.
 	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
-	// Optional. The resource name of the root agent that is the entry point of
-	// the tool. Format: `projects/{project}/locations/{location}/agents/{agent}`
-	RootAgent     string `protobuf:"bytes,3,opt,name=root_agent,json=rootAgent,proto3" json:"root_agent,omitempty"`
+	// Optional. Deprecated: Use `agent` instead.
+	// The resource name of the root agent that is the entry point of the tool.
+	// Format: `projects/{project}/locations/{location}/agents/{agent}`
+	//
+	// Deprecated: Marked as deprecated in google/cloud/ces/v1beta/agent_tool.proto.
+	RootAgent string `protobuf:"bytes,3,opt,name=root_agent,json=rootAgent,proto3" json:"root_agent,omitempty"`
+	// Optional. The resource name of the agent that is the entry point of the
+	// tool. Format: `projects/{project}/locations/{location}/agents/{agent}`
+	Agent         string `protobuf:"bytes,4,opt,name=agent,proto3" json:"agent,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -95,9 +101,17 @@ func (x *AgentTool) GetDescription() string {
 	return ""
 }
 
+// Deprecated: Marked as deprecated in google/cloud/ces/v1beta/agent_tool.proto.
 func (x *AgentTool) GetRootAgent() string {
 	if x != nil {
 		return x.RootAgent
+	}
+	return ""
+}
+
+func (x *AgentTool) GetAgent() string {
+	if x != nil {
+		return x.Agent
 	}
 	return ""
 }
@@ -106,13 +120,15 @@ var File_google_cloud_ces_v1beta_agent_tool_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1beta_agent_tool_proto_rawDesc = "" +
 	"\n" +
-	"(google/cloud/ces/v1beta/agent_tool.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x8c\x01\n" +
+	"(google/cloud/ces/v1beta/agent_tool.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xc6\x01\n" +
 	"\tAgentTool\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12?\n" +
+	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12A\n" +
 	"\n" +
-	"root_agent\x18\x03 \x01(\tB \xe0A\x01\xfaA\x1a\n" +
-	"\x18ces.googleapis.com/AgentR\trootAgentB^\n" +
+	"root_agent\x18\x03 \x01(\tB\"\xe0A\x01\xfaA\x1a\n" +
+	"\x18ces.googleapis.com/Agent\x18\x01R\trootAgent\x126\n" +
+	"\x05agent\x18\x04 \x01(\tB \xe0A\x01\xfaA\x1a\n" +
+	"\x18ces.googleapis.com/AgentR\x05agentB^\n" +
 	"\x1bcom.google.cloud.ces.v1betaB\x0eAgentToolProtoP\x01Z-cloud.google.com/go/ces/apiv1beta/cespb;cespbb\x06proto3"
 
 var (

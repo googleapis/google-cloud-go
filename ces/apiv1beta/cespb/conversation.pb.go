@@ -110,6 +110,9 @@ const (
 	Conversation_SIMULATOR Conversation_Source = 2
 	// The conversation is from the evaluation.
 	Conversation_EVAL Conversation_Source = 3
+	// The conversation is from an agent tool. Agent tool runs the agent in a
+	// separate session, which is persisted for testing and debugging purposes.
+	Conversation_AGENT_TOOL Conversation_Source = 4
 )
 
 // Enum value maps for Conversation_Source.
@@ -119,12 +122,14 @@ var (
 		1: "LIVE",
 		2: "SIMULATOR",
 		3: "EVAL",
+		4: "AGENT_TOOL",
 	}
 	Conversation_Source_value = map[string]int32{
 		"SOURCE_UNSPECIFIED": 0,
 		"LIVE":               1,
 		"SIMULATOR":          2,
 		"EVAL":               3,
+		"AGENT_TOOL":         4,
 	}
 )
 
@@ -453,7 +458,7 @@ var File_google_cloud_ces_v1beta_conversation_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1beta_conversation_proto_rawDesc = "" +
 	"\n" +
-	"*google/cloud/ces/v1beta/conversation.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a%google/cloud/ces/v1beta/example.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xba\v\n" +
+	"*google/cloud/ces/v1beta/conversation.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a%google/cloud/ces/v1beta/example.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xca\v\n" +
 	"\fConversation\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12>\n" +
 	"\n" +
@@ -487,12 +492,14 @@ const file_google_cloud_ces_v1beta_conversation_proto_rawDesc = "" +
 	"\x04TEXT\x10\x01\x12\t\n" +
 	"\x05AUDIO\x10\x02\x12\x0e\n" +
 	"\n" +
-	"MULTIMODAL\x10\x03\"C\n" +
+	"MULTIMODAL\x10\x03\"S\n" +
 	"\x06Source\x12\x16\n" +
 	"\x12SOURCE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04LIVE\x10\x01\x12\r\n" +
 	"\tSIMULATOR\x10\x02\x12\b\n" +
-	"\x04EVAL\x10\x03\"\xb5\x01\n" +
+	"\x04EVAL\x10\x03\x12\x0e\n" +
+	"\n" +
+	"AGENT_TOOL\x10\x04\"\xb5\x01\n" +
 	"\tInputType\x12\x1a\n" +
 	"\x16INPUT_TYPE_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fINPUT_TYPE_TEXT\x10\x01\x12\x14\n" +

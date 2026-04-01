@@ -49,6 +49,7 @@ type ReasoningEngineSpec struct {
 	// Types that are valid to be assigned to DeploymentSource:
 	//
 	//	*ReasoningEngineSpec_SourceCodeSpec_
+	//	*ReasoningEngineSpec_ContainerSpec_
 	DeploymentSource isReasoningEngineSpec_DeploymentSource `protobuf_oneof:"deployment_source"`
 	// Optional. The service account that the Reasoning Engine artifact runs as.
 	// It should have "roles/storage.objectViewer" for reading the user project's
@@ -122,6 +123,15 @@ func (x *ReasoningEngineSpec) GetSourceCodeSpec() *ReasoningEngineSpec_SourceCod
 	return nil
 }
 
+func (x *ReasoningEngineSpec) GetContainerSpec() *ReasoningEngineSpec_ContainerSpec {
+	if x != nil {
+		if x, ok := x.DeploymentSource.(*ReasoningEngineSpec_ContainerSpec_); ok {
+			return x.ContainerSpec
+		}
+	}
+	return nil
+}
+
 func (x *ReasoningEngineSpec) GetServiceAccount() string {
 	if x != nil && x.ServiceAccount != nil {
 		return *x.ServiceAccount
@@ -166,7 +176,14 @@ type ReasoningEngineSpec_SourceCodeSpec_ struct {
 	SourceCodeSpec *ReasoningEngineSpec_SourceCodeSpec `protobuf:"bytes,11,opt,name=source_code_spec,json=sourceCodeSpec,proto3,oneof"`
 }
 
+type ReasoningEngineSpec_ContainerSpec_ struct {
+	// Deploy from a container image with a defined entrypoint and commands.
+	ContainerSpec *ReasoningEngineSpec_ContainerSpec `protobuf:"bytes,15,opt,name=container_spec,json=containerSpec,proto3,oneof"`
+}
+
 func (*ReasoningEngineSpec_SourceCodeSpec_) isReasoningEngineSpec_DeploymentSource() {}
+
+func (*ReasoningEngineSpec_ContainerSpec_) isReasoningEngineSpec_DeploymentSource() {}
 
 // ReasoningEngine provides a customizable runtime for models to determine
 // which actions to take and in which order.
@@ -629,6 +646,54 @@ func (*ReasoningEngineSpec_SourceCodeSpec_PythonSpec_) isReasoningEngineSpec_Sou
 func (*ReasoningEngineSpec_SourceCodeSpec_ImageSpec_) isReasoningEngineSpec_SourceCodeSpec_LanguageSpec() {
 }
 
+// Specification for deploying from a container image.
+type ReasoningEngineSpec_ContainerSpec struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The Artifact Registry Docker image URI (e.g.,
+	// us-central1-docker.pkg.dev/my-project/my-repo/my-image:tag) of the
+	// container image that is to be run on each worker replica.
+	ImageUri      string `protobuf:"bytes,1,opt,name=image_uri,json=imageUri,proto3" json:"image_uri,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ReasoningEngineSpec_ContainerSpec) Reset() {
+	*x = ReasoningEngineSpec_ContainerSpec{}
+	mi := &file_google_cloud_aiplatform_v1_reasoning_engine_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReasoningEngineSpec_ContainerSpec) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReasoningEngineSpec_ContainerSpec) ProtoMessage() {}
+
+func (x *ReasoningEngineSpec_ContainerSpec) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1_reasoning_engine_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReasoningEngineSpec_ContainerSpec.ProtoReflect.Descriptor instead.
+func (*ReasoningEngineSpec_ContainerSpec) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1_reasoning_engine_proto_rawDescGZIP(), []int{0, 3}
+}
+
+func (x *ReasoningEngineSpec_ContainerSpec) GetImageUri() string {
+	if x != nil {
+		return x.ImageUri
+	}
+	return ""
+}
+
 // Specifies source code provided as a byte stream.
 type ReasoningEngineSpec_SourceCodeSpec_InlineSource struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -641,7 +706,7 @@ type ReasoningEngineSpec_SourceCodeSpec_InlineSource struct {
 
 func (x *ReasoningEngineSpec_SourceCodeSpec_InlineSource) Reset() {
 	*x = ReasoningEngineSpec_SourceCodeSpec_InlineSource{}
-	mi := &file_google_cloud_aiplatform_v1_reasoning_engine_proto_msgTypes[6]
+	mi := &file_google_cloud_aiplatform_v1_reasoning_engine_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -653,7 +718,7 @@ func (x *ReasoningEngineSpec_SourceCodeSpec_InlineSource) String() string {
 func (*ReasoningEngineSpec_SourceCodeSpec_InlineSource) ProtoMessage() {}
 
 func (x *ReasoningEngineSpec_SourceCodeSpec_InlineSource) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_reasoning_engine_proto_msgTypes[6]
+	mi := &file_google_cloud_aiplatform_v1_reasoning_engine_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -689,7 +754,7 @@ type ReasoningEngineSpec_SourceCodeSpec_ImageSpec struct {
 
 func (x *ReasoningEngineSpec_SourceCodeSpec_ImageSpec) Reset() {
 	*x = ReasoningEngineSpec_SourceCodeSpec_ImageSpec{}
-	mi := &file_google_cloud_aiplatform_v1_reasoning_engine_proto_msgTypes[7]
+	mi := &file_google_cloud_aiplatform_v1_reasoning_engine_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -701,7 +766,7 @@ func (x *ReasoningEngineSpec_SourceCodeSpec_ImageSpec) String() string {
 func (*ReasoningEngineSpec_SourceCodeSpec_ImageSpec) ProtoMessage() {}
 
 func (x *ReasoningEngineSpec_SourceCodeSpec_ImageSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_reasoning_engine_proto_msgTypes[7]
+	mi := &file_google_cloud_aiplatform_v1_reasoning_engine_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -744,7 +809,7 @@ type ReasoningEngineSpec_SourceCodeSpec_DeveloperConnectConfig struct {
 
 func (x *ReasoningEngineSpec_SourceCodeSpec_DeveloperConnectConfig) Reset() {
 	*x = ReasoningEngineSpec_SourceCodeSpec_DeveloperConnectConfig{}
-	mi := &file_google_cloud_aiplatform_v1_reasoning_engine_proto_msgTypes[8]
+	mi := &file_google_cloud_aiplatform_v1_reasoning_engine_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -756,7 +821,7 @@ func (x *ReasoningEngineSpec_SourceCodeSpec_DeveloperConnectConfig) String() str
 func (*ReasoningEngineSpec_SourceCodeSpec_DeveloperConnectConfig) ProtoMessage() {}
 
 func (x *ReasoningEngineSpec_SourceCodeSpec_DeveloperConnectConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_reasoning_engine_proto_msgTypes[8]
+	mi := &file_google_cloud_aiplatform_v1_reasoning_engine_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -807,7 +872,7 @@ type ReasoningEngineSpec_SourceCodeSpec_DeveloperConnectSource struct {
 
 func (x *ReasoningEngineSpec_SourceCodeSpec_DeveloperConnectSource) Reset() {
 	*x = ReasoningEngineSpec_SourceCodeSpec_DeveloperConnectSource{}
-	mi := &file_google_cloud_aiplatform_v1_reasoning_engine_proto_msgTypes[9]
+	mi := &file_google_cloud_aiplatform_v1_reasoning_engine_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -819,7 +884,7 @@ func (x *ReasoningEngineSpec_SourceCodeSpec_DeveloperConnectSource) String() str
 func (*ReasoningEngineSpec_SourceCodeSpec_DeveloperConnectSource) ProtoMessage() {}
 
 func (x *ReasoningEngineSpec_SourceCodeSpec_DeveloperConnectSource) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_reasoning_engine_proto_msgTypes[9]
+	mi := &file_google_cloud_aiplatform_v1_reasoning_engine_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -869,7 +934,7 @@ type ReasoningEngineSpec_SourceCodeSpec_PythonSpec struct {
 
 func (x *ReasoningEngineSpec_SourceCodeSpec_PythonSpec) Reset() {
 	*x = ReasoningEngineSpec_SourceCodeSpec_PythonSpec{}
-	mi := &file_google_cloud_aiplatform_v1_reasoning_engine_proto_msgTypes[10]
+	mi := &file_google_cloud_aiplatform_v1_reasoning_engine_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -881,7 +946,7 @@ func (x *ReasoningEngineSpec_SourceCodeSpec_PythonSpec) String() string {
 func (*ReasoningEngineSpec_SourceCodeSpec_PythonSpec) ProtoMessage() {}
 
 func (x *ReasoningEngineSpec_SourceCodeSpec_PythonSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_reasoning_engine_proto_msgTypes[10]
+	mi := &file_google_cloud_aiplatform_v1_reasoning_engine_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -929,9 +994,10 @@ var File_google_cloud_aiplatform_v1_reasoning_engine_proto protoreflect.FileDesc
 
 const file_google_cloud_aiplatform_v1_reasoning_engine_proto_rawDesc = "" +
 	"\n" +
-	"1google/cloud/aiplatform/v1/reasoning_engine.proto\x12\x1agoogle.cloud.aiplatform.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/aiplatform/v1/encryption_spec.proto\x1a(google/cloud/aiplatform/v1/env_var.proto\x1a3google/cloud/aiplatform/v1/service_networking.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdb\x15\n" +
+	"1google/cloud/aiplatform/v1/reasoning_engine.proto\x12\x1agoogle.cloud.aiplatform.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/aiplatform/v1/encryption_spec.proto\x1a(google/cloud/aiplatform/v1/env_var.proto\x1a3google/cloud/aiplatform/v1/service_networking.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf6\x16\n" +
 	"\x13ReasoningEngineSpec\x12j\n" +
-	"\x10source_code_spec\x18\v \x01(\v2>.google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpecH\x00R\x0esourceCodeSpec\x121\n" +
+	"\x10source_code_spec\x18\v \x01(\v2>.google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpecH\x00R\x0esourceCodeSpec\x12f\n" +
+	"\x0econtainer_spec\x18\x0f \x01(\v2=.google.cloud.aiplatform.v1.ReasoningEngineSpec.ContainerSpecH\x00R\rcontainerSpec\x121\n" +
 	"\x0fservice_account\x18\x01 \x01(\tB\x03\xe0A\x01H\x01R\x0eserviceAccount\x88\x01\x01\x12c\n" +
 	"\fpackage_spec\x18\x02 \x01(\v2;.google.cloud.aiplatform.v1.ReasoningEngineSpec.PackageSpecB\x03\xe0A\x01R\vpackageSpec\x12l\n" +
 	"\x0fdeployment_spec\x18\x04 \x01(\v2>.google.cloud.aiplatform.v1.ReasoningEngineSpec.DeploymentSpecB\x03\xe0A\x01R\x0edeploymentSpec\x12A\n" +
@@ -987,7 +1053,9 @@ const file_google_cloud_aiplatform_v1_reasoning_engine_proto_rawDesc = "" +
 	"\x11entrypoint_object\x18\x03 \x01(\tB\x03\xe0A\x01R\x10entrypointObject\x120\n" +
 	"\x11requirements_file\x18\x04 \x01(\tB\x03\xe0A\x01R\x10requirementsFileB\b\n" +
 	"\x06sourceB\x0f\n" +
-	"\rlanguage_specB\x13\n" +
+	"\rlanguage_spec\x1a1\n" +
+	"\rContainerSpec\x12 \n" +
+	"\timage_uri\x18\x01 \x01(\tB\x03\xe0A\x02R\bimageUriB\x13\n" +
 	"\x11deployment_sourceB\x12\n" +
 	"\x10_service_account\"\xe3\x05\n" +
 	"\x0fReasoningEngine\x12\x17\n" +
@@ -1021,53 +1089,55 @@ func file_google_cloud_aiplatform_v1_reasoning_engine_proto_rawDescGZIP() []byte
 	return file_google_cloud_aiplatform_v1_reasoning_engine_proto_rawDescData
 }
 
-var file_google_cloud_aiplatform_v1_reasoning_engine_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
+var file_google_cloud_aiplatform_v1_reasoning_engine_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
 var file_google_cloud_aiplatform_v1_reasoning_engine_proto_goTypes = []any{
 	(*ReasoningEngineSpec)(nil),                // 0: google.cloud.aiplatform.v1.ReasoningEngineSpec
 	(*ReasoningEngine)(nil),                    // 1: google.cloud.aiplatform.v1.ReasoningEngine
 	(*ReasoningEngineSpec_PackageSpec)(nil),    // 2: google.cloud.aiplatform.v1.ReasoningEngineSpec.PackageSpec
 	(*ReasoningEngineSpec_DeploymentSpec)(nil), // 3: google.cloud.aiplatform.v1.ReasoningEngineSpec.DeploymentSpec
 	(*ReasoningEngineSpec_SourceCodeSpec)(nil), // 4: google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpec
-	nil, // 5: google.cloud.aiplatform.v1.ReasoningEngineSpec.DeploymentSpec.ResourceLimitsEntry
-	(*ReasoningEngineSpec_SourceCodeSpec_InlineSource)(nil),           // 6: google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpec.InlineSource
-	(*ReasoningEngineSpec_SourceCodeSpec_ImageSpec)(nil),              // 7: google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpec.ImageSpec
-	(*ReasoningEngineSpec_SourceCodeSpec_DeveloperConnectConfig)(nil), // 8: google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpec.DeveloperConnectConfig
-	(*ReasoningEngineSpec_SourceCodeSpec_DeveloperConnectSource)(nil), // 9: google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpec.DeveloperConnectSource
-	(*ReasoningEngineSpec_SourceCodeSpec_PythonSpec)(nil),             // 10: google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpec.PythonSpec
-	nil,                           // 11: google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpec.ImageSpec.BuildArgsEntry
-	nil,                           // 12: google.cloud.aiplatform.v1.ReasoningEngine.LabelsEntry
-	(*structpb.Struct)(nil),       // 13: google.protobuf.Struct
-	(*timestamppb.Timestamp)(nil), // 14: google.protobuf.Timestamp
-	(*EncryptionSpec)(nil),        // 15: google.cloud.aiplatform.v1.EncryptionSpec
-	(*EnvVar)(nil),                // 16: google.cloud.aiplatform.v1.EnvVar
-	(*SecretEnvVar)(nil),          // 17: google.cloud.aiplatform.v1.SecretEnvVar
-	(*PscInterfaceConfig)(nil),    // 18: google.cloud.aiplatform.v1.PscInterfaceConfig
+	(*ReasoningEngineSpec_ContainerSpec)(nil),  // 5: google.cloud.aiplatform.v1.ReasoningEngineSpec.ContainerSpec
+	nil, // 6: google.cloud.aiplatform.v1.ReasoningEngineSpec.DeploymentSpec.ResourceLimitsEntry
+	(*ReasoningEngineSpec_SourceCodeSpec_InlineSource)(nil),           // 7: google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpec.InlineSource
+	(*ReasoningEngineSpec_SourceCodeSpec_ImageSpec)(nil),              // 8: google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpec.ImageSpec
+	(*ReasoningEngineSpec_SourceCodeSpec_DeveloperConnectConfig)(nil), // 9: google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpec.DeveloperConnectConfig
+	(*ReasoningEngineSpec_SourceCodeSpec_DeveloperConnectSource)(nil), // 10: google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpec.DeveloperConnectSource
+	(*ReasoningEngineSpec_SourceCodeSpec_PythonSpec)(nil),             // 11: google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpec.PythonSpec
+	nil,                           // 12: google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpec.ImageSpec.BuildArgsEntry
+	nil,                           // 13: google.cloud.aiplatform.v1.ReasoningEngine.LabelsEntry
+	(*structpb.Struct)(nil),       // 14: google.protobuf.Struct
+	(*timestamppb.Timestamp)(nil), // 15: google.protobuf.Timestamp
+	(*EncryptionSpec)(nil),        // 16: google.cloud.aiplatform.v1.EncryptionSpec
+	(*EnvVar)(nil),                // 17: google.cloud.aiplatform.v1.EnvVar
+	(*SecretEnvVar)(nil),          // 18: google.cloud.aiplatform.v1.SecretEnvVar
+	(*PscInterfaceConfig)(nil),    // 19: google.cloud.aiplatform.v1.PscInterfaceConfig
 }
 var file_google_cloud_aiplatform_v1_reasoning_engine_proto_depIdxs = []int32{
 	4,  // 0: google.cloud.aiplatform.v1.ReasoningEngineSpec.source_code_spec:type_name -> google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpec
-	2,  // 1: google.cloud.aiplatform.v1.ReasoningEngineSpec.package_spec:type_name -> google.cloud.aiplatform.v1.ReasoningEngineSpec.PackageSpec
-	3,  // 2: google.cloud.aiplatform.v1.ReasoningEngineSpec.deployment_spec:type_name -> google.cloud.aiplatform.v1.ReasoningEngineSpec.DeploymentSpec
-	13, // 3: google.cloud.aiplatform.v1.ReasoningEngineSpec.class_methods:type_name -> google.protobuf.Struct
-	0,  // 4: google.cloud.aiplatform.v1.ReasoningEngine.spec:type_name -> google.cloud.aiplatform.v1.ReasoningEngineSpec
-	14, // 5: google.cloud.aiplatform.v1.ReasoningEngine.create_time:type_name -> google.protobuf.Timestamp
-	14, // 6: google.cloud.aiplatform.v1.ReasoningEngine.update_time:type_name -> google.protobuf.Timestamp
-	15, // 7: google.cloud.aiplatform.v1.ReasoningEngine.encryption_spec:type_name -> google.cloud.aiplatform.v1.EncryptionSpec
-	12, // 8: google.cloud.aiplatform.v1.ReasoningEngine.labels:type_name -> google.cloud.aiplatform.v1.ReasoningEngine.LabelsEntry
-	16, // 9: google.cloud.aiplatform.v1.ReasoningEngineSpec.DeploymentSpec.env:type_name -> google.cloud.aiplatform.v1.EnvVar
-	17, // 10: google.cloud.aiplatform.v1.ReasoningEngineSpec.DeploymentSpec.secret_env:type_name -> google.cloud.aiplatform.v1.SecretEnvVar
-	18, // 11: google.cloud.aiplatform.v1.ReasoningEngineSpec.DeploymentSpec.psc_interface_config:type_name -> google.cloud.aiplatform.v1.PscInterfaceConfig
-	5,  // 12: google.cloud.aiplatform.v1.ReasoningEngineSpec.DeploymentSpec.resource_limits:type_name -> google.cloud.aiplatform.v1.ReasoningEngineSpec.DeploymentSpec.ResourceLimitsEntry
-	6,  // 13: google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpec.inline_source:type_name -> google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpec.InlineSource
-	9,  // 14: google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpec.developer_connect_source:type_name -> google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpec.DeveloperConnectSource
-	10, // 15: google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpec.python_spec:type_name -> google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpec.PythonSpec
-	7,  // 16: google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpec.image_spec:type_name -> google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpec.ImageSpec
-	11, // 17: google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpec.ImageSpec.build_args:type_name -> google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpec.ImageSpec.BuildArgsEntry
-	8,  // 18: google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpec.DeveloperConnectSource.config:type_name -> google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpec.DeveloperConnectConfig
-	19, // [19:19] is the sub-list for method output_type
-	19, // [19:19] is the sub-list for method input_type
-	19, // [19:19] is the sub-list for extension type_name
-	19, // [19:19] is the sub-list for extension extendee
-	0,  // [0:19] is the sub-list for field type_name
+	5,  // 1: google.cloud.aiplatform.v1.ReasoningEngineSpec.container_spec:type_name -> google.cloud.aiplatform.v1.ReasoningEngineSpec.ContainerSpec
+	2,  // 2: google.cloud.aiplatform.v1.ReasoningEngineSpec.package_spec:type_name -> google.cloud.aiplatform.v1.ReasoningEngineSpec.PackageSpec
+	3,  // 3: google.cloud.aiplatform.v1.ReasoningEngineSpec.deployment_spec:type_name -> google.cloud.aiplatform.v1.ReasoningEngineSpec.DeploymentSpec
+	14, // 4: google.cloud.aiplatform.v1.ReasoningEngineSpec.class_methods:type_name -> google.protobuf.Struct
+	0,  // 5: google.cloud.aiplatform.v1.ReasoningEngine.spec:type_name -> google.cloud.aiplatform.v1.ReasoningEngineSpec
+	15, // 6: google.cloud.aiplatform.v1.ReasoningEngine.create_time:type_name -> google.protobuf.Timestamp
+	15, // 7: google.cloud.aiplatform.v1.ReasoningEngine.update_time:type_name -> google.protobuf.Timestamp
+	16, // 8: google.cloud.aiplatform.v1.ReasoningEngine.encryption_spec:type_name -> google.cloud.aiplatform.v1.EncryptionSpec
+	13, // 9: google.cloud.aiplatform.v1.ReasoningEngine.labels:type_name -> google.cloud.aiplatform.v1.ReasoningEngine.LabelsEntry
+	17, // 10: google.cloud.aiplatform.v1.ReasoningEngineSpec.DeploymentSpec.env:type_name -> google.cloud.aiplatform.v1.EnvVar
+	18, // 11: google.cloud.aiplatform.v1.ReasoningEngineSpec.DeploymentSpec.secret_env:type_name -> google.cloud.aiplatform.v1.SecretEnvVar
+	19, // 12: google.cloud.aiplatform.v1.ReasoningEngineSpec.DeploymentSpec.psc_interface_config:type_name -> google.cloud.aiplatform.v1.PscInterfaceConfig
+	6,  // 13: google.cloud.aiplatform.v1.ReasoningEngineSpec.DeploymentSpec.resource_limits:type_name -> google.cloud.aiplatform.v1.ReasoningEngineSpec.DeploymentSpec.ResourceLimitsEntry
+	7,  // 14: google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpec.inline_source:type_name -> google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpec.InlineSource
+	10, // 15: google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpec.developer_connect_source:type_name -> google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpec.DeveloperConnectSource
+	11, // 16: google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpec.python_spec:type_name -> google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpec.PythonSpec
+	8,  // 17: google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpec.image_spec:type_name -> google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpec.ImageSpec
+	12, // 18: google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpec.ImageSpec.build_args:type_name -> google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpec.ImageSpec.BuildArgsEntry
+	9,  // 19: google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpec.DeveloperConnectSource.config:type_name -> google.cloud.aiplatform.v1.ReasoningEngineSpec.SourceCodeSpec.DeveloperConnectConfig
+	20, // [20:20] is the sub-list for method output_type
+	20, // [20:20] is the sub-list for method input_type
+	20, // [20:20] is the sub-list for extension type_name
+	20, // [20:20] is the sub-list for extension extendee
+	0,  // [0:20] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_aiplatform_v1_reasoning_engine_proto_init() }
@@ -1080,6 +1150,7 @@ func file_google_cloud_aiplatform_v1_reasoning_engine_proto_init() {
 	file_google_cloud_aiplatform_v1_service_networking_proto_init()
 	file_google_cloud_aiplatform_v1_reasoning_engine_proto_msgTypes[0].OneofWrappers = []any{
 		(*ReasoningEngineSpec_SourceCodeSpec_)(nil),
+		(*ReasoningEngineSpec_ContainerSpec_)(nil),
 	}
 	file_google_cloud_aiplatform_v1_reasoning_engine_proto_msgTypes[3].OneofWrappers = []any{}
 	file_google_cloud_aiplatform_v1_reasoning_engine_proto_msgTypes[4].OneofWrappers = []any{
@@ -1094,7 +1165,7 @@ func file_google_cloud_aiplatform_v1_reasoning_engine_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_aiplatform_v1_reasoning_engine_proto_rawDesc), len(file_google_cloud_aiplatform_v1_reasoning_engine_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   13,
+			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

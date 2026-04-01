@@ -46,26 +46,27 @@ var newCloudRedisClusterClientHook clientHook
 
 // CloudRedisClusterCallOptions contains the retry settings for each method of CloudRedisClusterClient.
 type CloudRedisClusterCallOptions struct {
-	ListClusters                   []gax.CallOption
-	GetCluster                     []gax.CallOption
-	UpdateCluster                  []gax.CallOption
-	DeleteCluster                  []gax.CallOption
-	CreateCluster                  []gax.CallOption
-	GetClusterCertificateAuthority []gax.CallOption
-	RescheduleClusterMaintenance   []gax.CallOption
-	ListBackupCollections          []gax.CallOption
-	GetBackupCollection            []gax.CallOption
-	ListBackups                    []gax.CallOption
-	GetBackup                      []gax.CallOption
-	DeleteBackup                   []gax.CallOption
-	ExportBackup                   []gax.CallOption
-	BackupCluster                  []gax.CallOption
-	GetLocation                    []gax.CallOption
-	ListLocations                  []gax.CallOption
-	CancelOperation                []gax.CallOption
-	DeleteOperation                []gax.CallOption
-	GetOperation                   []gax.CallOption
-	ListOperations                 []gax.CallOption
+	ListClusters                          []gax.CallOption
+	GetCluster                            []gax.CallOption
+	UpdateCluster                         []gax.CallOption
+	DeleteCluster                         []gax.CallOption
+	CreateCluster                         []gax.CallOption
+	GetClusterCertificateAuthority        []gax.CallOption
+	GetSharedRegionalCertificateAuthority []gax.CallOption
+	RescheduleClusterMaintenance          []gax.CallOption
+	ListBackupCollections                 []gax.CallOption
+	GetBackupCollection                   []gax.CallOption
+	ListBackups                           []gax.CallOption
+	GetBackup                             []gax.CallOption
+	DeleteBackup                          []gax.CallOption
+	ExportBackup                          []gax.CallOption
+	BackupCluster                         []gax.CallOption
+	GetLocation                           []gax.CallOption
+	ListLocations                         []gax.CallOption
+	CancelOperation                       []gax.CallOption
+	DeleteOperation                       []gax.CallOption
+	GetOperation                          []gax.CallOption
+	ListOperations                        []gax.CallOption
 }
 
 func defaultCloudRedisClusterGRPCClientOptions() []option.ClientOption {
@@ -103,6 +104,7 @@ func defaultCloudRedisClusterCallOptions() *CloudRedisClusterCallOptions {
 		GetClusterCertificateAuthority: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		GetSharedRegionalCertificateAuthority: []gax.CallOption{},
 		RescheduleClusterMaintenance: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
@@ -156,6 +158,7 @@ func defaultCloudRedisClusterRESTCallOptions() *CloudRedisClusterCallOptions {
 		GetClusterCertificateAuthority: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		GetSharedRegionalCertificateAuthority: []gax.CallOption{},
 		RescheduleClusterMaintenance: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
@@ -203,6 +206,7 @@ type internalCloudRedisClusterClient interface {
 	CreateCluster(context.Context, *clusterpb.CreateClusterRequest, ...gax.CallOption) (*CreateClusterOperation, error)
 	CreateClusterOperation(name string) *CreateClusterOperation
 	GetClusterCertificateAuthority(context.Context, *clusterpb.GetClusterCertificateAuthorityRequest, ...gax.CallOption) (*clusterpb.CertificateAuthority, error)
+	GetSharedRegionalCertificateAuthority(context.Context, *clusterpb.GetSharedRegionalCertificateAuthorityRequest, ...gax.CallOption) (*clusterpb.SharedRegionalCertificateAuthority, error)
 	RescheduleClusterMaintenance(context.Context, *clusterpb.RescheduleClusterMaintenanceRequest, ...gax.CallOption) (*RescheduleClusterMaintenanceOperation, error)
 	RescheduleClusterMaintenanceOperation(name string) *RescheduleClusterMaintenanceOperation
 	ListBackupCollections(context.Context, *clusterpb.ListBackupCollectionsRequest, ...gax.CallOption) *BackupCollectionIterator
@@ -348,6 +352,12 @@ func (c *CloudRedisClusterClient) CreateClusterOperation(name string) *CreateClu
 // GetClusterCertificateAuthority gets the details of certificate authority information for Redis cluster.
 func (c *CloudRedisClusterClient) GetClusterCertificateAuthority(ctx context.Context, req *clusterpb.GetClusterCertificateAuthorityRequest, opts ...gax.CallOption) (*clusterpb.CertificateAuthority, error) {
 	return c.internalClient.GetClusterCertificateAuthority(ctx, req, opts...)
+}
+
+// GetSharedRegionalCertificateAuthority gets the details of regional certificate authority information for Redis
+// cluster.
+func (c *CloudRedisClusterClient) GetSharedRegionalCertificateAuthority(ctx context.Context, req *clusterpb.GetSharedRegionalCertificateAuthorityRequest, opts ...gax.CallOption) (*clusterpb.SharedRegionalCertificateAuthority, error) {
+	return c.internalClient.GetSharedRegionalCertificateAuthority(ctx, req, opts...)
 }
 
 // RescheduleClusterMaintenance reschedules upcoming maintenance event.
@@ -821,6 +831,24 @@ func (c *cloudRedisClusterGRPCClient) GetClusterCertificateAuthority(ctx context
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = executeRPC(ctx, c.cloudRedisClusterClient.GetClusterCertificateAuthority, req, settings.GRPC, c.logger, "GetClusterCertificateAuthority")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *cloudRedisClusterGRPCClient) GetSharedRegionalCertificateAuthority(ctx context.Context, req *clusterpb.GetSharedRegionalCertificateAuthorityRequest, opts ...gax.CallOption) (*clusterpb.SharedRegionalCertificateAuthority, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetSharedRegionalCertificateAuthority[0:len((*c.CallOptions).GetSharedRegionalCertificateAuthority):len((*c.CallOptions).GetSharedRegionalCertificateAuthority)], opts...)
+	var resp *clusterpb.SharedRegionalCertificateAuthority
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.cloudRedisClusterClient.GetSharedRegionalCertificateAuthority, req, settings.GRPC, c.logger, "GetSharedRegionalCertificateAuthority")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1565,6 +1593,57 @@ func (c *cloudRedisClusterRESTClient) GetClusterCertificateAuthority(ctx context
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetClusterCertificateAuthority")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetSharedRegionalCertificateAuthority gets the details of regional certificate authority information for Redis
+// cluster.
+func (c *cloudRedisClusterRESTClient) GetSharedRegionalCertificateAuthority(ctx context.Context, req *clusterpb.GetSharedRegionalCertificateAuthorityRequest, opts ...gax.CallOption) (*clusterpb.SharedRegionalCertificateAuthority, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetSharedRegionalCertificateAuthority[0:len((*c.CallOptions).GetSharedRegionalCertificateAuthority):len((*c.CallOptions).GetSharedRegionalCertificateAuthority)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &clusterpb.SharedRegionalCertificateAuthority{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSharedRegionalCertificateAuthority")
 		if err != nil {
 			return err
 		}

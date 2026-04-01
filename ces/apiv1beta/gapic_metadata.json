@@ -115,6 +115,11 @@
                 "ExportApp"
               ]
             },
+            "GenerateAppResource": {
+              "methods": [
+                "GenerateAppResource"
+              ]
+            },
             "GetAgent": {
               "methods": [
                 "GetAgent"
@@ -398,6 +403,11 @@
             "ExportApp": {
               "methods": [
                 "ExportApp"
+              ]
+            },
+            "GenerateAppResource": {
+              "methods": [
+                "GenerateAppResource"
               ]
             },
             "GetAgent": {

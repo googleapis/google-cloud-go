@@ -973,6 +973,52 @@
           "fullName": "google.cloud.ces.v1beta.AgentClient",
           "shortName": "AgentClient"
         },
+        "fullName": "google.cloud.ces.v1beta.AgentClient.GenerateAppResource",
+        "method": {
+          "fullName": "google.cloud.ces.v1beta.AgentService.GenerateAppResource",
+          "service": {
+            "fullName": "google.cloud.ces.v1beta.AgentService",
+            "shortName": "AgentService"
+          },
+          "shortName": "GenerateAppResource"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "cespb.GenerateAppResourceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "GenerateAppResourceOperation",
+        "shortName": "GenerateAppResource"
+      },
+      "description": "GenerateAppResource generates specific resources (e.g. agent) in the app using LLM assistant.",
+      "file": "AgentClient/GenerateAppResource/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "ces_v1beta_generated_AgentService_GenerateAppResource_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "ces GenerateAppResource Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.ces.v1beta.AgentClient",
+          "shortName": "AgentClient"
+        },
         "fullName": "google.cloud.ces.v1beta.AgentClient.GetAgent",
         "method": {
           "fullName": "google.cloud.ces.v1beta.AgentService.GetAgent",

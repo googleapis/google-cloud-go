@@ -849,7 +849,12 @@ type Package struct {
 	//
 	//	storage.googleapis.com/{bucket}
 	//	bucket.storage.googleapis.com/
-	Location      string `protobuf:"bytes,2,opt,name=location,proto3" json:"location,omitempty"`
+	Location string `protobuf:"bytes,2,opt,name=location,proto3" json:"location,omitempty"`
+	// Optional. The hex-encoded SHA256 checksum of the package.
+	// If the checksum is provided, the worker will verify the checksum of the
+	// package before using it. If the checksum does not match, the worker will
+	// fail to start.
+	Sha256        string `protobuf:"bytes,3,opt,name=sha256,proto3" json:"sha256,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -894,6 +899,13 @@ func (x *Package) GetName() string {
 func (x *Package) GetLocation() string {
 	if x != nil {
 		return x.Location
+	}
+	return ""
+}
+
+func (x *Package) GetSha256() string {
+	if x != nil {
+		return x.Sha256
 	}
 	return ""
 }
@@ -1892,10 +1904,11 @@ const file_google_dataflow_v1beta3_environment_proto_rawDesc = "" +
 	"\rdebug_options\x18\x11 \x01(\v2%.google.dataflow.v1beta3.DebugOptionsB\x03\xe0A\x01R\fdebugOptions\x12`\n" +
 	"+use_streaming_engine_resource_based_billing\x18\x12 \x01(\bB\x03\xe0A\x03R&useStreamingEngineResourceBasedBilling\x12R\n" +
 	"\x0estreaming_mode\x18\x13 \x01(\x0e2&.google.dataflow.v1beta3.StreamingModeB\x03\xe0A\x01R\rstreamingMode\x12)\n" +
-	"\x0euse_public_ips\x18\x14 \x01(\bB\x03\xe0A\x01R\fusePublicIps\"9\n" +
+	"\x0euse_public_ips\x18\x14 \x01(\bB\x03\xe0A\x01R\fusePublicIps\"V\n" +
 	"\aPackage\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1a\n" +
-	"\blocation\x18\x02 \x01(\tR\blocation\"]\n" +
+	"\blocation\x18\x02 \x01(\tR\blocation\x12\x1b\n" +
+	"\x06sha256\x18\x03 \x01(\tB\x03\xe0A\x01R\x06sha256\"]\n" +
 	"\x04Disk\x12\x17\n" +
 	"\asize_gb\x18\x01 \x01(\x05R\x06sizeGb\x12\x1b\n" +
 	"\tdisk_type\x18\x02 \x01(\tR\bdiskType\x12\x1f\n" +

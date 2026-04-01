@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,20 +35,21 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	CloudRedisCluster_ListClusters_FullMethodName                   = "/google.cloud.redis.cluster.v1.CloudRedisCluster/ListClusters"
-	CloudRedisCluster_GetCluster_FullMethodName                     = "/google.cloud.redis.cluster.v1.CloudRedisCluster/GetCluster"
-	CloudRedisCluster_UpdateCluster_FullMethodName                  = "/google.cloud.redis.cluster.v1.CloudRedisCluster/UpdateCluster"
-	CloudRedisCluster_DeleteCluster_FullMethodName                  = "/google.cloud.redis.cluster.v1.CloudRedisCluster/DeleteCluster"
-	CloudRedisCluster_CreateCluster_FullMethodName                  = "/google.cloud.redis.cluster.v1.CloudRedisCluster/CreateCluster"
-	CloudRedisCluster_GetClusterCertificateAuthority_FullMethodName = "/google.cloud.redis.cluster.v1.CloudRedisCluster/GetClusterCertificateAuthority"
-	CloudRedisCluster_RescheduleClusterMaintenance_FullMethodName   = "/google.cloud.redis.cluster.v1.CloudRedisCluster/RescheduleClusterMaintenance"
-	CloudRedisCluster_ListBackupCollections_FullMethodName          = "/google.cloud.redis.cluster.v1.CloudRedisCluster/ListBackupCollections"
-	CloudRedisCluster_GetBackupCollection_FullMethodName            = "/google.cloud.redis.cluster.v1.CloudRedisCluster/GetBackupCollection"
-	CloudRedisCluster_ListBackups_FullMethodName                    = "/google.cloud.redis.cluster.v1.CloudRedisCluster/ListBackups"
-	CloudRedisCluster_GetBackup_FullMethodName                      = "/google.cloud.redis.cluster.v1.CloudRedisCluster/GetBackup"
-	CloudRedisCluster_DeleteBackup_FullMethodName                   = "/google.cloud.redis.cluster.v1.CloudRedisCluster/DeleteBackup"
-	CloudRedisCluster_ExportBackup_FullMethodName                   = "/google.cloud.redis.cluster.v1.CloudRedisCluster/ExportBackup"
-	CloudRedisCluster_BackupCluster_FullMethodName                  = "/google.cloud.redis.cluster.v1.CloudRedisCluster/BackupCluster"
+	CloudRedisCluster_ListClusters_FullMethodName                          = "/google.cloud.redis.cluster.v1.CloudRedisCluster/ListClusters"
+	CloudRedisCluster_GetCluster_FullMethodName                            = "/google.cloud.redis.cluster.v1.CloudRedisCluster/GetCluster"
+	CloudRedisCluster_UpdateCluster_FullMethodName                         = "/google.cloud.redis.cluster.v1.CloudRedisCluster/UpdateCluster"
+	CloudRedisCluster_DeleteCluster_FullMethodName                         = "/google.cloud.redis.cluster.v1.CloudRedisCluster/DeleteCluster"
+	CloudRedisCluster_CreateCluster_FullMethodName                         = "/google.cloud.redis.cluster.v1.CloudRedisCluster/CreateCluster"
+	CloudRedisCluster_GetClusterCertificateAuthority_FullMethodName        = "/google.cloud.redis.cluster.v1.CloudRedisCluster/GetClusterCertificateAuthority"
+	CloudRedisCluster_GetSharedRegionalCertificateAuthority_FullMethodName = "/google.cloud.redis.cluster.v1.CloudRedisCluster/GetSharedRegionalCertificateAuthority"
+	CloudRedisCluster_RescheduleClusterMaintenance_FullMethodName          = "/google.cloud.redis.cluster.v1.CloudRedisCluster/RescheduleClusterMaintenance"
+	CloudRedisCluster_ListBackupCollections_FullMethodName                 = "/google.cloud.redis.cluster.v1.CloudRedisCluster/ListBackupCollections"
+	CloudRedisCluster_GetBackupCollection_FullMethodName                   = "/google.cloud.redis.cluster.v1.CloudRedisCluster/GetBackupCollection"
+	CloudRedisCluster_ListBackups_FullMethodName                           = "/google.cloud.redis.cluster.v1.CloudRedisCluster/ListBackups"
+	CloudRedisCluster_GetBackup_FullMethodName                             = "/google.cloud.redis.cluster.v1.CloudRedisCluster/GetBackup"
+	CloudRedisCluster_DeleteBackup_FullMethodName                          = "/google.cloud.redis.cluster.v1.CloudRedisCluster/DeleteBackup"
+	CloudRedisCluster_ExportBackup_FullMethodName                          = "/google.cloud.redis.cluster.v1.CloudRedisCluster/ExportBackup"
+	CloudRedisCluster_BackupCluster_FullMethodName                         = "/google.cloud.redis.cluster.v1.CloudRedisCluster/BackupCluster"
 )
 
 // CloudRedisClusterClient is the client API for CloudRedisCluster service.
@@ -87,6 +88,9 @@ type CloudRedisClusterClient interface {
 	CreateCluster(ctx context.Context, in *CreateClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets the details of certificate authority information for Redis cluster.
 	GetClusterCertificateAuthority(ctx context.Context, in *GetClusterCertificateAuthorityRequest, opts ...grpc.CallOption) (*CertificateAuthority, error)
+	// Gets the details of regional certificate authority information for Redis
+	// cluster.
+	GetSharedRegionalCertificateAuthority(ctx context.Context, in *GetSharedRegionalCertificateAuthorityRequest, opts ...grpc.CallOption) (*SharedRegionalCertificateAuthority, error)
 	// Reschedules upcoming maintenance event.
 	RescheduleClusterMaintenance(ctx context.Context, in *RescheduleClusterMaintenanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists all backup collections owned by a consumer project in either the
@@ -176,6 +180,15 @@ func (c *cloudRedisClusterClient) CreateCluster(ctx context.Context, in *CreateC
 func (c *cloudRedisClusterClient) GetClusterCertificateAuthority(ctx context.Context, in *GetClusterCertificateAuthorityRequest, opts ...grpc.CallOption) (*CertificateAuthority, error) {
 	out := new(CertificateAuthority)
 	err := c.cc.Invoke(ctx, CloudRedisCluster_GetClusterCertificateAuthority_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *cloudRedisClusterClient) GetSharedRegionalCertificateAuthority(ctx context.Context, in *GetSharedRegionalCertificateAuthorityRequest, opts ...grpc.CallOption) (*SharedRegionalCertificateAuthority, error) {
+	out := new(SharedRegionalCertificateAuthority)
+	err := c.cc.Invoke(ctx, CloudRedisCluster_GetSharedRegionalCertificateAuthority_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -290,6 +303,9 @@ type CloudRedisClusterServer interface {
 	CreateCluster(context.Context, *CreateClusterRequest) (*longrunningpb.Operation, error)
 	// Gets the details of certificate authority information for Redis cluster.
 	GetClusterCertificateAuthority(context.Context, *GetClusterCertificateAuthorityRequest) (*CertificateAuthority, error)
+	// Gets the details of regional certificate authority information for Redis
+	// cluster.
+	GetSharedRegionalCertificateAuthority(context.Context, *GetSharedRegionalCertificateAuthorityRequest) (*SharedRegionalCertificateAuthority, error)
 	// Reschedules upcoming maintenance event.
 	RescheduleClusterMaintenance(context.Context, *RescheduleClusterMaintenanceRequest) (*longrunningpb.Operation, error)
 	// Lists all backup collections owned by a consumer project in either the
@@ -344,6 +360,9 @@ func (UnimplementedCloudRedisClusterServer) CreateCluster(context.Context, *Crea
 }
 func (UnimplementedCloudRedisClusterServer) GetClusterCertificateAuthority(context.Context, *GetClusterCertificateAuthorityRequest) (*CertificateAuthority, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetClusterCertificateAuthority not implemented")
+}
+func (UnimplementedCloudRedisClusterServer) GetSharedRegionalCertificateAuthority(context.Context, *GetSharedRegionalCertificateAuthorityRequest) (*SharedRegionalCertificateAuthority, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSharedRegionalCertificateAuthority not implemented")
 }
 func (UnimplementedCloudRedisClusterServer) RescheduleClusterMaintenance(context.Context, *RescheduleClusterMaintenanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RescheduleClusterMaintenance not implemented")
@@ -485,6 +504,24 @@ func _CloudRedisCluster_GetClusterCertificateAuthority_Handler(srv interface{}, 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CloudRedisClusterServer).GetClusterCertificateAuthority(ctx, req.(*GetClusterCertificateAuthorityRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CloudRedisCluster_GetSharedRegionalCertificateAuthority_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSharedRegionalCertificateAuthorityRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CloudRedisClusterServer).GetSharedRegionalCertificateAuthority(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CloudRedisCluster_GetSharedRegionalCertificateAuthority_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CloudRedisClusterServer).GetSharedRegionalCertificateAuthority(ctx, req.(*GetSharedRegionalCertificateAuthorityRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -663,6 +700,10 @@ var CloudRedisCluster_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetClusterCertificateAuthority",
 			Handler:    _CloudRedisCluster_GetClusterCertificateAuthority_Handler,
+		},
+		{
+			MethodName: "GetSharedRegionalCertificateAuthority",
+			Handler:    _CloudRedisCluster_GetSharedRegionalCertificateAuthority_Handler,
 		},
 		{
 			MethodName: "RescheduleClusterMaintenance",

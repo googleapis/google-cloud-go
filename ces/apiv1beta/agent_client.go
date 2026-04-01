@@ -95,6 +95,7 @@ type AgentCallOptions struct {
 	CreateAppVersion         []gax.CallOption
 	DeleteAppVersion         []gax.CallOption
 	RestoreAppVersion        []gax.CallOption
+	GenerateAppResource      []gax.CallOption
 	ListChangelogs           []gax.CallOption
 	GetChangelog             []gax.CallOption
 	GetLocation              []gax.CallOption
@@ -746,6 +747,19 @@ func defaultAgentCallOptions() *AgentCallOptions {
 				})
 			}),
 		},
+		GenerateAppResource: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		ListChangelogs: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -1359,6 +1373,18 @@ func defaultAgentRESTCallOptions() *AgentCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		GenerateAppResource: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 		ListChangelogs: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -1451,6 +1477,8 @@ type internalAgentClient interface {
 	DeleteAppVersion(context.Context, *cespb.DeleteAppVersionRequest, ...gax.CallOption) error
 	RestoreAppVersion(context.Context, *cespb.RestoreAppVersionRequest, ...gax.CallOption) (*RestoreAppVersionOperation, error)
 	RestoreAppVersionOperation(name string) *RestoreAppVersionOperation
+	GenerateAppResource(context.Context, *cespb.GenerateAppResourceRequest, ...gax.CallOption) (*GenerateAppResourceOperation, error)
+	GenerateAppResourceOperation(name string) *GenerateAppResourceOperation
 	ListChangelogs(context.Context, *cespb.ListChangelogsRequest, ...gax.CallOption) *ChangelogIterator
 	GetChangelog(context.Context, *cespb.GetChangelogRequest, ...gax.CallOption) (*cespb.Changelog, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
@@ -1778,6 +1806,17 @@ func (c *AgentClient) RestoreAppVersion(ctx context.Context, req *cespb.RestoreA
 // The name must be that of a previously created RestoreAppVersionOperation, possibly from a different process.
 func (c *AgentClient) RestoreAppVersionOperation(name string) *RestoreAppVersionOperation {
 	return c.internalClient.RestoreAppVersionOperation(name)
+}
+
+// GenerateAppResource generates specific resources (e.g. agent) in the app using LLM assistant.
+func (c *AgentClient) GenerateAppResource(ctx context.Context, req *cespb.GenerateAppResourceRequest, opts ...gax.CallOption) (*GenerateAppResourceOperation, error) {
+	return c.internalClient.GenerateAppResource(ctx, req, opts...)
+}
+
+// GenerateAppResourceOperation returns a new GenerateAppResourceOperation from a given name.
+// The name must be that of a previously created GenerateAppResourceOperation, possibly from a different process.
+func (c *AgentClient) GenerateAppResourceOperation(name string) *GenerateAppResourceOperation {
+	return c.internalClient.GenerateAppResourceOperation(name)
 }
 
 // ListChangelogs lists the changelogs of the specified app.
@@ -3120,6 +3159,26 @@ func (c *agentGRPCClient) RestoreAppVersion(ctx context.Context, req *cespb.Rest
 		return nil, err
 	}
 	return &RestoreAppVersionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *agentGRPCClient) GenerateAppResource(ctx context.Context, req *cespb.GenerateAppResourceRequest, opts ...gax.CallOption) (*GenerateAppResourceOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GenerateAppResource[0:len((*c.CallOptions).GenerateAppResource):len((*c.CallOptions).GenerateAppResource)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.agentClient.GenerateAppResource, req, settings.GRPC, c.logger, "GenerateAppResource")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &GenerateAppResourceOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -6210,6 +6269,65 @@ func (c *agentRESTClient) RestoreAppVersion(ctx context.Context, req *cespb.Rest
 	}, nil
 }
 
+// GenerateAppResource generates specific resources (e.g. agent) in the app using LLM assistant.
+func (c *agentRESTClient) GenerateAppResource(ctx context.Context, req *cespb.GenerateAppResourceRequest, opts ...gax.CallOption) (*GenerateAppResourceOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v:generateAppResource", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GenerateAppResource")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	return &GenerateAppResourceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // ListChangelogs lists the changelogs of the specified app.
 func (c *agentRESTClient) ListChangelogs(ctx context.Context, req *cespb.ListChangelogsRequest, opts ...gax.CallOption) *ChangelogIterator {
 	it := &ChangelogIterator{}
@@ -6768,6 +6886,24 @@ func (c *agentGRPCClient) ExportAppOperation(name string) *ExportAppOperation {
 func (c *agentRESTClient) ExportAppOperation(name string) *ExportAppOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &ExportAppOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// GenerateAppResourceOperation returns a new GenerateAppResourceOperation from a given name.
+// The name must be that of a previously created GenerateAppResourceOperation, possibly from a different process.
+func (c *agentGRPCClient) GenerateAppResourceOperation(name string) *GenerateAppResourceOperation {
+	return &GenerateAppResourceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// GenerateAppResourceOperation returns a new GenerateAppResourceOperation from a given name.
+// The name must be that of a previously created GenerateAppResourceOperation, possibly from a different process.
+func (c *agentRESTClient) GenerateAppResourceOperation(name string) *GenerateAppResourceOperation {
+	override := fmt.Sprintf("/v1beta/%s", name)
+	return &GenerateAppResourceOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

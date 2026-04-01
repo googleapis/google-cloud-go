@@ -613,6 +613,52 @@
           "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient",
           "shortName": "CloudRedisClusterClient"
         },
+        "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient.GetSharedRegionalCertificateAuthority",
+        "method": {
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster.GetSharedRegionalCertificateAuthority",
+          "service": {
+            "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster",
+            "shortName": "CloudRedisCluster"
+          },
+          "shortName": "GetSharedRegionalCertificateAuthority"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "clusterpb.GetSharedRegionalCertificateAuthorityRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*clusterpb.SharedRegionalCertificateAuthority",
+        "shortName": "GetSharedRegionalCertificateAuthority"
+      },
+      "description": "GetSharedRegionalCertificateAuthority gets the details of regional certificate authority information for Redis\ncluster.",
+      "file": "CloudRedisClusterClient/GetSharedRegionalCertificateAuthority/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "redis_v1_generated_CloudRedisCluster_GetSharedRegionalCertificateAuthority_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "redis GetSharedRegionalCertificateAuthority Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient",
+          "shortName": "CloudRedisClusterClient"
+        },
         "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient.ListBackupCollections",
         "method": {
           "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster.ListBackupCollections",

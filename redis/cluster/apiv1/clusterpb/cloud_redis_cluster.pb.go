@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -265,6 +265,63 @@ func (TransitEncryptionMode) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{3}
 }
 
+// Server CA mode for the cluster.
+type ServerCaMode int32
+
+const (
+	// Server CA mode not specified.
+	ServerCaMode_SERVER_CA_MODE_UNSPECIFIED ServerCaMode = 0
+	// Each cluster has its own Google managed CA.
+	ServerCaMode_SERVER_CA_MODE_GOOGLE_MANAGED_PER_INSTANCE_CA ServerCaMode = 1
+	// The cluster uses Google managed shared CA in the region.
+	ServerCaMode_SERVER_CA_MODE_GOOGLE_MANAGED_SHARED_CA ServerCaMode = 2
+	// The cluster uses customer managed CA from CAS.
+	ServerCaMode_SERVER_CA_MODE_CUSTOMER_MANAGED_CAS_CA ServerCaMode = 3
+)
+
+// Enum value maps for ServerCaMode.
+var (
+	ServerCaMode_name = map[int32]string{
+		0: "SERVER_CA_MODE_UNSPECIFIED",
+		1: "SERVER_CA_MODE_GOOGLE_MANAGED_PER_INSTANCE_CA",
+		2: "SERVER_CA_MODE_GOOGLE_MANAGED_SHARED_CA",
+		3: "SERVER_CA_MODE_CUSTOMER_MANAGED_CAS_CA",
+	}
+	ServerCaMode_value = map[string]int32{
+		"SERVER_CA_MODE_UNSPECIFIED":                    0,
+		"SERVER_CA_MODE_GOOGLE_MANAGED_PER_INSTANCE_CA": 1,
+		"SERVER_CA_MODE_GOOGLE_MANAGED_SHARED_CA":       2,
+		"SERVER_CA_MODE_CUSTOMER_MANAGED_CAS_CA":        3,
+	}
+)
+
+func (x ServerCaMode) Enum() *ServerCaMode {
+	p := new(ServerCaMode)
+	*p = x
+	return p
+}
+
+func (x ServerCaMode) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ServerCaMode) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[4].Descriptor()
+}
+
+func (ServerCaMode) Type() protoreflect.EnumType {
+	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[4]
+}
+
+func (x ServerCaMode) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ServerCaMode.Descriptor instead.
+func (ServerCaMode) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{4}
+}
+
 // Type of a PSC connection, for cluster access purpose.
 type ConnectionType int32
 
@@ -306,11 +363,11 @@ func (x ConnectionType) String() string {
 }
 
 func (ConnectionType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[4].Descriptor()
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[5].Descriptor()
 }
 
 func (ConnectionType) Type() protoreflect.EnumType {
-	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[4]
+	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[5]
 }
 
 func (x ConnectionType) Number() protoreflect.EnumNumber {
@@ -319,7 +376,7 @@ func (x ConnectionType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ConnectionType.Descriptor instead.
 func (ConnectionType) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{4}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{5}
 }
 
 // Represents the different states of a Redis cluster.
@@ -367,11 +424,11 @@ func (x Cluster_State) String() string {
 }
 
 func (Cluster_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[5].Descriptor()
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[6].Descriptor()
 }
 
 func (Cluster_State) Type() protoreflect.EnumType {
-	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[5]
+	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[6]
 }
 
 func (x Cluster_State) Number() protoreflect.EnumNumber {
@@ -420,11 +477,11 @@ func (x AutomatedBackupConfig_AutomatedBackupMode) String() string {
 }
 
 func (AutomatedBackupConfig_AutomatedBackupMode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[6].Descriptor()
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[7].Descriptor()
 }
 
 func (AutomatedBackupConfig_AutomatedBackupMode) Type() protoreflect.EnumType {
-	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[6]
+	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[7]
 }
 
 func (x AutomatedBackupConfig_AutomatedBackupMode) Number() protoreflect.EnumNumber {
@@ -473,11 +530,11 @@ func (x Backup_BackupType) String() string {
 }
 
 func (Backup_BackupType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[7].Descriptor()
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[8].Descriptor()
 }
 
 func (Backup_BackupType) Type() protoreflect.EnumType {
-	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[7]
+	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[8]
 }
 
 func (x Backup_BackupType) Number() protoreflect.EnumNumber {
@@ -535,11 +592,11 @@ func (x Backup_State) String() string {
 }
 
 func (Backup_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[8].Descriptor()
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[9].Descriptor()
 }
 
 func (Backup_State) Type() protoreflect.EnumType {
-	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[8]
+	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[9]
 }
 
 func (x Backup_State) Number() protoreflect.EnumNumber {
@@ -596,11 +653,11 @@ func (x CrossClusterReplicationConfig_ClusterRole) String() string {
 }
 
 func (CrossClusterReplicationConfig_ClusterRole) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[9].Descriptor()
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[10].Descriptor()
 }
 
 func (CrossClusterReplicationConfig_ClusterRole) Type() protoreflect.EnumType {
-	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[9]
+	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[10]
 }
 
 func (x CrossClusterReplicationConfig_ClusterRole) Number() protoreflect.EnumNumber {
@@ -653,11 +710,11 @@ func (x ClusterPersistenceConfig_PersistenceMode) String() string {
 }
 
 func (ClusterPersistenceConfig_PersistenceMode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[10].Descriptor()
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[11].Descriptor()
 }
 
 func (ClusterPersistenceConfig_PersistenceMode) Type() protoreflect.EnumType {
-	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[10]
+	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[11]
 }
 
 func (x ClusterPersistenceConfig_PersistenceMode) Number() protoreflect.EnumNumber {
@@ -666,7 +723,7 @@ func (x ClusterPersistenceConfig_PersistenceMode) Number() protoreflect.EnumNumb
 
 // Deprecated: Use ClusterPersistenceConfig_PersistenceMode.Descriptor instead.
 func (ClusterPersistenceConfig_PersistenceMode) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{34, 0}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{36, 0}
 }
 
 // Available snapshot periods.
@@ -714,11 +771,11 @@ func (x ClusterPersistenceConfig_RDBConfig_SnapshotPeriod) String() string {
 }
 
 func (ClusterPersistenceConfig_RDBConfig_SnapshotPeriod) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[11].Descriptor()
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[12].Descriptor()
 }
 
 func (ClusterPersistenceConfig_RDBConfig_SnapshotPeriod) Type() protoreflect.EnumType {
-	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[11]
+	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[12]
 }
 
 func (x ClusterPersistenceConfig_RDBConfig_SnapshotPeriod) Number() protoreflect.EnumNumber {
@@ -727,7 +784,7 @@ func (x ClusterPersistenceConfig_RDBConfig_SnapshotPeriod) Number() protoreflect
 
 // Deprecated: Use ClusterPersistenceConfig_RDBConfig_SnapshotPeriod.Descriptor instead.
 func (ClusterPersistenceConfig_RDBConfig_SnapshotPeriod) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{34, 0, 0}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{36, 0, 0}
 }
 
 // Available fsync modes.
@@ -774,11 +831,11 @@ func (x ClusterPersistenceConfig_AOFConfig_AppendFsync) String() string {
 }
 
 func (ClusterPersistenceConfig_AOFConfig_AppendFsync) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[12].Descriptor()
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[13].Descriptor()
 }
 
 func (ClusterPersistenceConfig_AOFConfig_AppendFsync) Type() protoreflect.EnumType {
-	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[12]
+	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[13]
 }
 
 func (x ClusterPersistenceConfig_AOFConfig_AppendFsync) Number() protoreflect.EnumNumber {
@@ -787,7 +844,7 @@ func (x ClusterPersistenceConfig_AOFConfig_AppendFsync) Number() protoreflect.En
 
 // Deprecated: Use ClusterPersistenceConfig_AOFConfig_AppendFsync.Descriptor instead.
 func (ClusterPersistenceConfig_AOFConfig_AppendFsync) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{34, 1, 0}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{36, 1, 0}
 }
 
 // Defines various modes of zone distribution.
@@ -829,11 +886,11 @@ func (x ZoneDistributionConfig_ZoneDistributionMode) String() string {
 }
 
 func (ZoneDistributionConfig_ZoneDistributionMode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[13].Descriptor()
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[14].Descriptor()
 }
 
 func (ZoneDistributionConfig_ZoneDistributionMode) Type() protoreflect.EnumType {
-	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[13]
+	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[14]
 }
 
 func (x ZoneDistributionConfig_ZoneDistributionMode) Number() protoreflect.EnumNumber {
@@ -842,7 +899,7 @@ func (x ZoneDistributionConfig_ZoneDistributionMode) Number() protoreflect.EnumN
 
 // Deprecated: Use ZoneDistributionConfig_ZoneDistributionMode.Descriptor instead.
 func (ZoneDistributionConfig_ZoneDistributionMode) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{35, 0}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{37, 0}
 }
 
 // Reschedule options.
@@ -882,11 +939,11 @@ func (x RescheduleClusterMaintenanceRequest_RescheduleType) String() string {
 }
 
 func (RescheduleClusterMaintenanceRequest_RescheduleType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[14].Descriptor()
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[15].Descriptor()
 }
 
 func (RescheduleClusterMaintenanceRequest_RescheduleType) Type() protoreflect.EnumType {
-	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[14]
+	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[15]
 }
 
 func (x RescheduleClusterMaintenanceRequest_RescheduleType) Number() protoreflect.EnumNumber {
@@ -895,7 +952,7 @@ func (x RescheduleClusterMaintenanceRequest_RescheduleType) Number() protoreflec
 
 // Deprecated: Use RescheduleClusterMaintenanceRequest_RescheduleType.Descriptor instead.
 func (RescheduleClusterMaintenanceRequest_RescheduleType) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{36, 0}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{38, 0}
 }
 
 // Possible encryption types.
@@ -937,11 +994,11 @@ func (x EncryptionInfo_Type) String() string {
 }
 
 func (EncryptionInfo_Type) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[15].Descriptor()
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[16].Descriptor()
 }
 
 func (EncryptionInfo_Type) Type() protoreflect.EnumType {
-	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[15]
+	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[16]
 }
 
 func (x EncryptionInfo_Type) Number() protoreflect.EnumNumber {
@@ -950,7 +1007,7 @@ func (x EncryptionInfo_Type) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use EncryptionInfo_Type.Descriptor instead.
 func (EncryptionInfo_Type) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{37, 0}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{39, 0}
 }
 
 // The state of the KMS key perceived by the system. Refer to the public
@@ -1015,11 +1072,11 @@ func (x EncryptionInfo_KmsKeyState) String() string {
 }
 
 func (EncryptionInfo_KmsKeyState) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[16].Descriptor()
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[17].Descriptor()
 }
 
 func (EncryptionInfo_KmsKeyState) Type() protoreflect.EnumType {
-	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[16]
+	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[17]
 }
 
 func (x EncryptionInfo_KmsKeyState) Number() protoreflect.EnumNumber {
@@ -1028,7 +1085,7 @@ func (x EncryptionInfo_KmsKeyState) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use EncryptionInfo_KmsKeyState.Descriptor instead.
 func (EncryptionInfo_KmsKeyState) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{37, 1}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{39, 1}
 }
 
 // Request for [CreateCluster][CloudRedis.CreateCluster].
@@ -2168,8 +2225,16 @@ type Cluster struct {
 	AutomatedBackupConfig *AutomatedBackupConfig `protobuf:"bytes,42,opt,name=automated_backup_config,json=automatedBackupConfig,proto3" json:"automated_backup_config,omitempty"`
 	// Output only. Encryption information of the data at rest of the cluster.
 	EncryptionInfo *EncryptionInfo `protobuf:"bytes,43,opt,name=encryption_info,json=encryptionInfo,proto3" json:"encryption_info,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// Optional. Server CA mode for the cluster.
+	ServerCaMode *ServerCaMode `protobuf:"varint,53,opt,name=server_ca_mode,json=serverCaMode,proto3,enum=google.cloud.redis.cluster.v1.ServerCaMode,oneof" json:"server_ca_mode,omitempty"`
+	// Optional. Customer-managed CA pool for the cluster. Only applicable for
+	// BYOCA i.e. if server_ca_mode is SERVER_CA_MODE_CUSTOMER_MANAGED_CAS_CA.
+	// Format: "projects/{project}/locations/{region}/caPools/{ca_pool}".
+	ServerCaPool *string `protobuf:"bytes,54,opt,name=server_ca_pool,json=serverCaPool,proto3,oneof" json:"server_ca_pool,omitempty"`
+	// Optional. Input only. Rotate the server certificates.
+	RotateServerCertificate *bool `protobuf:"varint,55,opt,name=rotate_server_certificate,json=rotateServerCertificate,proto3,oneof" json:"rotate_server_certificate,omitempty"`
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
 }
 
 func (x *Cluster) Reset() {
@@ -2421,6 +2486,27 @@ func (x *Cluster) GetEncryptionInfo() *EncryptionInfo {
 		return x.EncryptionInfo
 	}
 	return nil
+}
+
+func (x *Cluster) GetServerCaMode() ServerCaMode {
+	if x != nil && x.ServerCaMode != nil {
+		return *x.ServerCaMode
+	}
+	return ServerCaMode_SERVER_CA_MODE_UNSPECIFIED
+}
+
+func (x *Cluster) GetServerCaPool() string {
+	if x != nil && x.ServerCaPool != nil {
+		return *x.ServerCaPool
+	}
+	return ""
+}
+
+func (x *Cluster) GetRotateServerCertificate() bool {
+	if x != nil && x.RotateServerCertificate != nil {
+		return *x.RotateServerCertificate
+	}
+	return false
 }
 
 type isCluster_ImportSources interface {
@@ -3686,6 +3772,140 @@ func (x *PscAutoConnection) GetConnectionType() ConnectionType {
 	return ConnectionType_CONNECTION_TYPE_UNSPECIFIED
 }
 
+// Shared regional certificate authority
+type SharedRegionalCertificateAuthority struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Server ca information.
+	//
+	// Types that are valid to be assigned to ServerCa:
+	//
+	//	*SharedRegionalCertificateAuthority_ManagedServerCa
+	ServerCa isSharedRegionalCertificateAuthority_ServerCa `protobuf_oneof:"server_ca"`
+	// Identifier. Unique name of the resource in this scope including project and
+	// location using the form:
+	//
+	//	`projects/{project}/locations/{location}/sharedRegionalCertificateAuthority`
+	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SharedRegionalCertificateAuthority) Reset() {
+	*x = SharedRegionalCertificateAuthority{}
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[32]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SharedRegionalCertificateAuthority) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SharedRegionalCertificateAuthority) ProtoMessage() {}
+
+func (x *SharedRegionalCertificateAuthority) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[32]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SharedRegionalCertificateAuthority.ProtoReflect.Descriptor instead.
+func (*SharedRegionalCertificateAuthority) Descriptor() ([]byte, []int) {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{32}
+}
+
+func (x *SharedRegionalCertificateAuthority) GetServerCa() isSharedRegionalCertificateAuthority_ServerCa {
+	if x != nil {
+		return x.ServerCa
+	}
+	return nil
+}
+
+func (x *SharedRegionalCertificateAuthority) GetManagedServerCa() *SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority {
+	if x != nil {
+		if x, ok := x.ServerCa.(*SharedRegionalCertificateAuthority_ManagedServerCa); ok {
+			return x.ManagedServerCa
+		}
+	}
+	return nil
+}
+
+func (x *SharedRegionalCertificateAuthority) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+type isSharedRegionalCertificateAuthority_ServerCa interface {
+	isSharedRegionalCertificateAuthority_ServerCa()
+}
+
+type SharedRegionalCertificateAuthority_ManagedServerCa struct {
+	// CA certificate chains for redis managed server authentication.
+	ManagedServerCa *SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority `protobuf:"bytes,2,opt,name=managed_server_ca,json=managedServerCa,proto3,oneof"`
+}
+
+func (*SharedRegionalCertificateAuthority_ManagedServerCa) isSharedRegionalCertificateAuthority_ServerCa() {
+}
+
+// Request for
+// [GetSharedRegionalCertificateAuthority][CloudRedis.GetSharedRegionalCertificateAuthority].
+type GetSharedRegionalCertificateAuthorityRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Regional certificate authority resource name using the form:
+	//
+	//	`projects/{project_id}/locations/{location_id}/sharedRegionalCertificateAuthority`
+	//
+	// where `location_id` refers to a Google Cloud region.
+	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetSharedRegionalCertificateAuthorityRequest) Reset() {
+	*x = GetSharedRegionalCertificateAuthorityRequest{}
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[33]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetSharedRegionalCertificateAuthorityRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetSharedRegionalCertificateAuthorityRequest) ProtoMessage() {}
+
+func (x *GetSharedRegionalCertificateAuthorityRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[33]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetSharedRegionalCertificateAuthorityRequest.ProtoReflect.Descriptor instead.
+func (*GetSharedRegionalCertificateAuthorityRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{33}
+}
+
+func (x *GetSharedRegionalCertificateAuthorityRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
 // Pre-defined metadata fields.
 type OperationMetadata struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -3713,7 +3933,7 @@ type OperationMetadata struct {
 
 func (x *OperationMetadata) Reset() {
 	*x = OperationMetadata{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[32]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3725,7 +3945,7 @@ func (x *OperationMetadata) String() string {
 func (*OperationMetadata) ProtoMessage() {}
 
 func (x *OperationMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[32]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3738,7 +3958,7 @@ func (x *OperationMetadata) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OperationMetadata.ProtoReflect.Descriptor instead.
 func (*OperationMetadata) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{32}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *OperationMetadata) GetCreateTime() *timestamppb.Timestamp {
@@ -3810,7 +4030,7 @@ type CertificateAuthority struct {
 
 func (x *CertificateAuthority) Reset() {
 	*x = CertificateAuthority{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[33]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3822,7 +4042,7 @@ func (x *CertificateAuthority) String() string {
 func (*CertificateAuthority) ProtoMessage() {}
 
 func (x *CertificateAuthority) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[33]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3835,7 +4055,7 @@ func (x *CertificateAuthority) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CertificateAuthority.ProtoReflect.Descriptor instead.
 func (*CertificateAuthority) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{33}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *CertificateAuthority) GetServerCa() isCertificateAuthority_ServerCa {
@@ -3886,7 +4106,7 @@ type ClusterPersistenceConfig struct {
 
 func (x *ClusterPersistenceConfig) Reset() {
 	*x = ClusterPersistenceConfig{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[34]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3898,7 +4118,7 @@ func (x *ClusterPersistenceConfig) String() string {
 func (*ClusterPersistenceConfig) ProtoMessage() {}
 
 func (x *ClusterPersistenceConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[34]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3911,7 +4131,7 @@ func (x *ClusterPersistenceConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ClusterPersistenceConfig.ProtoReflect.Descriptor instead.
 func (*ClusterPersistenceConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{34}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *ClusterPersistenceConfig) GetMode() ClusterPersistenceConfig_PersistenceMode {
@@ -3951,7 +4171,7 @@ type ZoneDistributionConfig struct {
 
 func (x *ZoneDistributionConfig) Reset() {
 	*x = ZoneDistributionConfig{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[35]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3963,7 +4183,7 @@ func (x *ZoneDistributionConfig) String() string {
 func (*ZoneDistributionConfig) ProtoMessage() {}
 
 func (x *ZoneDistributionConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[35]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3976,7 +4196,7 @@ func (x *ZoneDistributionConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ZoneDistributionConfig.ProtoReflect.Descriptor instead.
 func (*ZoneDistributionConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{35}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *ZoneDistributionConfig) GetMode() ZoneDistributionConfig_ZoneDistributionMode {
@@ -4015,7 +4235,7 @@ type RescheduleClusterMaintenanceRequest struct {
 
 func (x *RescheduleClusterMaintenanceRequest) Reset() {
 	*x = RescheduleClusterMaintenanceRequest{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[36]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4027,7 +4247,7 @@ func (x *RescheduleClusterMaintenanceRequest) String() string {
 func (*RescheduleClusterMaintenanceRequest) ProtoMessage() {}
 
 func (x *RescheduleClusterMaintenanceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[36]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4040,7 +4260,7 @@ func (x *RescheduleClusterMaintenanceRequest) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use RescheduleClusterMaintenanceRequest.ProtoReflect.Descriptor instead.
 func (*RescheduleClusterMaintenanceRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{36}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *RescheduleClusterMaintenanceRequest) GetName() string {
@@ -4083,7 +4303,7 @@ type EncryptionInfo struct {
 
 func (x *EncryptionInfo) Reset() {
 	*x = EncryptionInfo{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[37]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4095,7 +4315,7 @@ func (x *EncryptionInfo) String() string {
 func (*EncryptionInfo) ProtoMessage() {}
 
 func (x *EncryptionInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[37]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4108,7 +4328,7 @@ func (x *EncryptionInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EncryptionInfo.ProtoReflect.Descriptor instead.
 func (*EncryptionInfo) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{37}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *EncryptionInfo) GetEncryptionType() EncryptionInfo_Type {
@@ -4152,7 +4372,7 @@ type Cluster_StateInfo struct {
 
 func (x *Cluster_StateInfo) Reset() {
 	*x = Cluster_StateInfo{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[38]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4164,7 +4384,7 @@ func (x *Cluster_StateInfo) String() string {
 func (*Cluster_StateInfo) ProtoMessage() {}
 
 func (x *Cluster_StateInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[38]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4220,7 +4440,7 @@ type Cluster_GcsBackupSource struct {
 
 func (x *Cluster_GcsBackupSource) Reset() {
 	*x = Cluster_GcsBackupSource{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[39]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4232,7 +4452,7 @@ func (x *Cluster_GcsBackupSource) String() string {
 func (*Cluster_GcsBackupSource) ProtoMessage() {}
 
 func (x *Cluster_GcsBackupSource) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[39]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4271,7 +4491,7 @@ type Cluster_ManagedBackupSource struct {
 
 func (x *Cluster_ManagedBackupSource) Reset() {
 	*x = Cluster_ManagedBackupSource{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[40]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4283,7 +4503,7 @@ func (x *Cluster_ManagedBackupSource) String() string {
 func (*Cluster_ManagedBackupSource) ProtoMessage() {}
 
 func (x *Cluster_ManagedBackupSource) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[40]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4319,7 +4539,7 @@ type Cluster_StateInfo_UpdateInfo struct {
 
 func (x *Cluster_StateInfo_UpdateInfo) Reset() {
 	*x = Cluster_StateInfo_UpdateInfo{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[42]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4331,7 +4551,7 @@ func (x *Cluster_StateInfo_UpdateInfo) String() string {
 func (*Cluster_StateInfo_UpdateInfo) ProtoMessage() {}
 
 func (x *Cluster_StateInfo_UpdateInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[42]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4374,7 +4594,7 @@ type AutomatedBackupConfig_FixedFrequencySchedule struct {
 
 func (x *AutomatedBackupConfig_FixedFrequencySchedule) Reset() {
 	*x = AutomatedBackupConfig_FixedFrequencySchedule{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[43]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4386,7 +4606,7 @@ func (x *AutomatedBackupConfig_FixedFrequencySchedule) String() string {
 func (*AutomatedBackupConfig_FixedFrequencySchedule) ProtoMessage() {}
 
 func (x *AutomatedBackupConfig_FixedFrequencySchedule) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[43]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4424,7 +4644,7 @@ type CrossClusterReplicationConfig_RemoteCluster struct {
 
 func (x *CrossClusterReplicationConfig_RemoteCluster) Reset() {
 	*x = CrossClusterReplicationConfig_RemoteCluster{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[44]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4436,7 +4656,7 @@ func (x *CrossClusterReplicationConfig_RemoteCluster) String() string {
 func (*CrossClusterReplicationConfig_RemoteCluster) ProtoMessage() {}
 
 func (x *CrossClusterReplicationConfig_RemoteCluster) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[44]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4482,7 +4702,7 @@ type CrossClusterReplicationConfig_Membership struct {
 
 func (x *CrossClusterReplicationConfig_Membership) Reset() {
 	*x = CrossClusterReplicationConfig_Membership{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[45]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4494,7 +4714,7 @@ func (x *CrossClusterReplicationConfig_Membership) String() string {
 func (*CrossClusterReplicationConfig_Membership) ProtoMessage() {}
 
 func (x *CrossClusterReplicationConfig_Membership) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[45]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4524,6 +4744,100 @@ func (x *CrossClusterReplicationConfig_Membership) GetSecondaryClusters() []*Cro
 	return nil
 }
 
+// CA certificate chains for redis managed server authentication.
+type SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The PEM encoded CA certificate chains for redis managed
+	// server authentication
+	CaCerts       []*SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority_RegionalCertChain `protobuf:"bytes,1,rep,name=ca_certs,json=caCerts,proto3" json:"ca_certs,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority) Reset() {
+	*x = SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority{}
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[48]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority) ProtoMessage() {}
+
+func (x *SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[48]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority.ProtoReflect.Descriptor instead.
+func (*SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority) Descriptor() ([]byte, []int) {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{32, 0}
+}
+
+func (x *SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority) GetCaCerts() []*SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority_RegionalCertChain {
+	if x != nil {
+		return x.CaCerts
+	}
+	return nil
+}
+
+// The certificates that form the CA chain, from leaf to root order.
+type SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority_RegionalCertChain struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The certificates that form the CA chain, from leaf to root order.
+	Certificates  []string `protobuf:"bytes,1,rep,name=certificates,proto3" json:"certificates,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority_RegionalCertChain) Reset() {
+	*x = SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority_RegionalCertChain{}
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[49]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority_RegionalCertChain) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority_RegionalCertChain) ProtoMessage() {
+}
+
+func (x *SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority_RegionalCertChain) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[49]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority_RegionalCertChain.ProtoReflect.Descriptor instead.
+func (*SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority_RegionalCertChain) Descriptor() ([]byte, []int) {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{32, 0, 0}
+}
+
+func (x *SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority_RegionalCertChain) GetCertificates() []string {
+	if x != nil {
+		return x.Certificates
+	}
+	return nil
+}
+
 type CertificateAuthority_ManagedCertificateAuthority struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The PEM encoded CA certificate chains for redis managed
@@ -4535,7 +4849,7 @@ type CertificateAuthority_ManagedCertificateAuthority struct {
 
 func (x *CertificateAuthority_ManagedCertificateAuthority) Reset() {
 	*x = CertificateAuthority_ManagedCertificateAuthority{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[46]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4547,7 +4861,7 @@ func (x *CertificateAuthority_ManagedCertificateAuthority) String() string {
 func (*CertificateAuthority_ManagedCertificateAuthority) ProtoMessage() {}
 
 func (x *CertificateAuthority_ManagedCertificateAuthority) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[46]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4560,7 +4874,7 @@ func (x *CertificateAuthority_ManagedCertificateAuthority) ProtoReflect() protor
 
 // Deprecated: Use CertificateAuthority_ManagedCertificateAuthority.ProtoReflect.Descriptor instead.
 func (*CertificateAuthority_ManagedCertificateAuthority) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{33, 0}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{35, 0}
 }
 
 func (x *CertificateAuthority_ManagedCertificateAuthority) GetCaCerts() []*CertificateAuthority_ManagedCertificateAuthority_CertChain {
@@ -4580,7 +4894,7 @@ type CertificateAuthority_ManagedCertificateAuthority_CertChain struct {
 
 func (x *CertificateAuthority_ManagedCertificateAuthority_CertChain) Reset() {
 	*x = CertificateAuthority_ManagedCertificateAuthority_CertChain{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[47]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[51]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4592,7 +4906,7 @@ func (x *CertificateAuthority_ManagedCertificateAuthority_CertChain) String() st
 func (*CertificateAuthority_ManagedCertificateAuthority_CertChain) ProtoMessage() {}
 
 func (x *CertificateAuthority_ManagedCertificateAuthority_CertChain) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[47]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[51]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4605,7 +4919,7 @@ func (x *CertificateAuthority_ManagedCertificateAuthority_CertChain) ProtoReflec
 
 // Deprecated: Use CertificateAuthority_ManagedCertificateAuthority_CertChain.ProtoReflect.Descriptor instead.
 func (*CertificateAuthority_ManagedCertificateAuthority_CertChain) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{33, 0, 0}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{35, 0, 0}
 }
 
 func (x *CertificateAuthority_ManagedCertificateAuthority_CertChain) GetCertificates() []string {
@@ -4630,7 +4944,7 @@ type ClusterPersistenceConfig_RDBConfig struct {
 
 func (x *ClusterPersistenceConfig_RDBConfig) Reset() {
 	*x = ClusterPersistenceConfig_RDBConfig{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[48]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4642,7 +4956,7 @@ func (x *ClusterPersistenceConfig_RDBConfig) String() string {
 func (*ClusterPersistenceConfig_RDBConfig) ProtoMessage() {}
 
 func (x *ClusterPersistenceConfig_RDBConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[48]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4655,7 +4969,7 @@ func (x *ClusterPersistenceConfig_RDBConfig) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use ClusterPersistenceConfig_RDBConfig.ProtoReflect.Descriptor instead.
 func (*ClusterPersistenceConfig_RDBConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{34, 0}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{36, 0}
 }
 
 func (x *ClusterPersistenceConfig_RDBConfig) GetRdbSnapshotPeriod() ClusterPersistenceConfig_RDBConfig_SnapshotPeriod {
@@ -4683,7 +4997,7 @@ type ClusterPersistenceConfig_AOFConfig struct {
 
 func (x *ClusterPersistenceConfig_AOFConfig) Reset() {
 	*x = ClusterPersistenceConfig_AOFConfig{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[49]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[53]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4695,7 +5009,7 @@ func (x *ClusterPersistenceConfig_AOFConfig) String() string {
 func (*ClusterPersistenceConfig_AOFConfig) ProtoMessage() {}
 
 func (x *ClusterPersistenceConfig_AOFConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[49]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[53]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4708,7 +5022,7 @@ func (x *ClusterPersistenceConfig_AOFConfig) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use ClusterPersistenceConfig_AOFConfig.ProtoReflect.Descriptor instead.
 func (*ClusterPersistenceConfig_AOFConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{34, 1}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{36, 1}
 }
 
 func (x *ClusterPersistenceConfig_AOFConfig) GetAppendFsync() ClusterPersistenceConfig_AOFConfig_AppendFsync {
@@ -4799,7 +5113,7 @@ const file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDesc = "" 
 	"\x03ttl\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x03ttl\x12%\n" +
 	"\tbackup_id\x18\x03 \x01(\tB\x03\xe0A\x01H\x00R\bbackupId\x88\x01\x01B\f\n" +
 	"\n" +
-	"_backup_id\"\x80\x1b\n" +
+	"_backup_id\"\xbe\x1d\n" +
 	"\aCluster\x12\\\n" +
 	"\n" +
 	"gcs_source\x18\" \x01(\v26.google.cloud.redis.cluster.v1.Cluster.GcsBackupSourceB\x03\xe0A\x01H\x00R\tgcsSource\x12u\n" +
@@ -4837,7 +5151,12 @@ const file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDesc = "" 
 	"\akms_key\x18( \x01(\tB)\xe0A\x01\xfaA#\n" +
 	"!cloudkms.googleapis.com/CryptoKeyH\tR\x06kmsKey\x88\x01\x01\x12q\n" +
 	"\x17automated_backup_config\x18* \x01(\v24.google.cloud.redis.cluster.v1.AutomatedBackupConfigB\x03\xe0A\x01R\x15automatedBackupConfig\x12[\n" +
-	"\x0fencryption_info\x18+ \x01(\v2-.google.cloud.redis.cluster.v1.EncryptionInfoB\x03\xe0A\x03R\x0eencryptionInfo\x1a\x9c\x02\n" +
+	"\x0fencryption_info\x18+ \x01(\v2-.google.cloud.redis.cluster.v1.EncryptionInfoB\x03\xe0A\x03R\x0eencryptionInfo\x12[\n" +
+	"\x0eserver_ca_mode\x185 \x01(\x0e2+.google.cloud.redis.cluster.v1.ServerCaModeB\x03\xe0A\x01H\n" +
+	"R\fserverCaMode\x88\x01\x01\x12R\n" +
+	"\x0eserver_ca_pool\x186 \x01(\tB'\xe0A\x01\xfaA!\n" +
+	"\x1fprivateca.googleapis.com/CaPoolH\vR\fserverCaPool\x88\x01\x01\x12G\n" +
+	"\x19rotate_server_certificate\x187 \x01(\bB\x06\xe0A\x01\xe0A\x04H\fR\x17rotateServerCertificate\x88\x01\x01\x1a\x9c\x02\n" +
 	"\tStateInfo\x12^\n" +
 	"\vupdate_info\x18\x01 \x01(\v2;.google.cloud.redis.cluster.v1.Cluster.StateInfo.UpdateInfoH\x00R\n" +
 	"updateInfo\x1a\xa6\x01\n" +
@@ -4874,7 +5193,10 @@ const file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDesc = "" 
 	"\x15_maintenance_scheduleB\x14\n" +
 	"\x12_backup_collectionB\n" +
 	"\n" +
-	"\b_kms_key\"\xca\x04\n" +
+	"\b_kms_keyB\x11\n" +
+	"\x0f_server_ca_modeB\x11\n" +
+	"\x0f_server_ca_poolB\x1c\n" +
+	"\x1a_rotate_server_certificate\"\xca\x04\n" +
 	"\x15AutomatedBackupConfig\x12\x8c\x01\n" +
 	"\x18fixed_frequency_schedule\x18\x02 \x01(\v2K.google.cloud.redis.cluster.v1.AutomatedBackupConfig.FixedFrequencyScheduleB\x03\xe0A\x01H\x00R\x16fixedFrequencySchedule\x12\x81\x01\n" +
 	"\x15automated_backup_mode\x18\x01 \x01(\x0e2H.google.cloud.redis.cluster.v1.AutomatedBackupConfig.AutomatedBackupModeB\x03\xe0A\x01R\x13automatedBackupMode\x12A\n" +
@@ -5023,7 +5345,19 @@ const file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDesc = "" 
 	"\x12service_attachment\x18\x06 \x01(\tB0\xe0A\x03\xfaA*\n" +
 	"(compute.googleapis.com/ServiceAttachmentR\x11serviceAttachment\x12k\n" +
 	"\x15psc_connection_status\x18\b \x01(\x0e22.google.cloud.redis.cluster.v1.PscConnectionStatusB\x03\xe0A\x03R\x13pscConnectionStatus\x12[\n" +
-	"\x0fconnection_type\x18\t \x01(\x0e2-.google.cloud.redis.cluster.v1.ConnectionTypeB\x03\xe0A\x03R\x0econnectionType\"\xd5\x02\n" +
+	"\x0fconnection_type\x18\t \x01(\x0e2-.google.cloud.redis.cluster.v1.ConnectionTypeB\x03\xe0A\x03R\x0econnectionType\"\xac\x05\n" +
+	"\"SharedRegionalCertificateAuthority\x12\x93\x01\n" +
+	"\x11managed_server_ca\x18\x02 \x01(\v2e.google.cloud.redis.cluster.v1.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthorityH\x00R\x0fmanagedServerCa\x12\x17\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x1a\xf3\x01\n" +
+	"#RegionalManagedCertificateAuthority\x12\x92\x01\n" +
+	"\bca_certs\x18\x01 \x03(\v2w.google.cloud.redis.cluster.v1.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthority.RegionalCertChainR\acaCerts\x1a7\n" +
+	"\x11RegionalCertChain\x12\"\n" +
+	"\fcertificates\x18\x01 \x03(\tR\fcertificates:\xd3\x01\xeaA\xcf\x01\n" +
+	"7redis.googleapis.com/SharedRegionalCertificateAuthority\x12Jprojects/{project}/locations/{location}/sharedRegionalCertificateAuthority*$sharedRegionalCertificateAuthorities2\"sharedRegionalCertificateAuthorityB\v\n" +
+	"\tserver_ca\"\x83\x01\n" +
+	",GetSharedRegionalCertificateAuthorityRequest\x12S\n" +
+	"\x04name\x18\x01 \x01(\tB?\xe0A\x02\xfaA9\n" +
+	"7redis.googleapis.com/SharedRegionalCertificateAuthorityR\x04name\"\xd5\x02\n" +
 	"\x11OperationMetadata\x12@\n" +
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime\x12:\n" +
@@ -5125,12 +5459,17 @@ const file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDesc = "" 
 	"\x15TransitEncryptionMode\x12'\n" +
 	"#TRANSIT_ENCRYPTION_MODE_UNSPECIFIED\x10\x00\x12$\n" +
 	" TRANSIT_ENCRYPTION_MODE_DISABLED\x10\x01\x121\n" +
-	"-TRANSIT_ENCRYPTION_MODE_SERVER_AUTHENTICATION\x10\x02*\x89\x01\n" +
+	"-TRANSIT_ENCRYPTION_MODE_SERVER_AUTHENTICATION\x10\x02*\xba\x01\n" +
+	"\fServerCaMode\x12\x1e\n" +
+	"\x1aSERVER_CA_MODE_UNSPECIFIED\x10\x00\x121\n" +
+	"-SERVER_CA_MODE_GOOGLE_MANAGED_PER_INSTANCE_CA\x10\x01\x12+\n" +
+	"'SERVER_CA_MODE_GOOGLE_MANAGED_SHARED_CA\x10\x02\x12*\n" +
+	"&SERVER_CA_MODE_CUSTOMER_MANAGED_CAS_CA\x10\x03*\x89\x01\n" +
 	"\x0eConnectionType\x12\x1f\n" +
 	"\x1bCONNECTION_TYPE_UNSPECIFIED\x10\x00\x12\x1d\n" +
 	"\x19CONNECTION_TYPE_DISCOVERY\x10\x01\x12\x1b\n" +
 	"\x17CONNECTION_TYPE_PRIMARY\x10\x02\x12\x1a\n" +
-	"\x16CONNECTION_TYPE_READER\x10\x032\x93\x18\n" +
+	"\x16CONNECTION_TYPE_READER\x10\x032\xa2\x1a\n" +
 	"\x11CloudRedisCluster\x12\xb6\x01\n" +
 	"\fListClusters\x122.google.cloud.redis.cluster.v1.ListClustersRequest\x1a3.google.cloud.redis.cluster.v1.ListClustersResponse\"=\xdaA\x06parent\x82\xd3\xe4\x93\x02.\x12,/v1/{parent=projects/*/locations/*}/clusters\x12\xa3\x01\n" +
 	"\n" +
@@ -5141,7 +5480,8 @@ const file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDesc = "" 
 	"\x15google.protobuf.Empty\x12\x13google.protobuf.Any\xdaA\x04name\x82\xd3\xe4\x93\x02.*,/v1/{name=projects/*/locations/*/clusters/*}\x12\xdf\x01\n" +
 	"\rCreateCluster\x123.google.cloud.redis.cluster.v1.CreateClusterRequest\x1a\x1d.google.longrunning.Operation\"z\xcaA\x1e\n" +
 	"\aCluster\x12\x13google.protobuf.Any\xdaA\x19parent,cluster,cluster_id\x82\xd3\xe4\x93\x027:\acluster\",/v1/{parent=projects/*/locations/*}/clusters\x12\xed\x01\n" +
-	"\x1eGetClusterCertificateAuthority\x12D.google.cloud.redis.cluster.v1.GetClusterCertificateAuthorityRequest\x1a3.google.cloud.redis.cluster.v1.CertificateAuthority\"P\xdaA\x04name\x82\xd3\xe4\x93\x02C\x12A/v1/{name=projects/*/locations/*/clusters/*/certificateAuthority}\x12\x9e\x02\n" +
+	"\x1eGetClusterCertificateAuthority\x12D.google.cloud.redis.cluster.v1.GetClusterCertificateAuthorityRequest\x1a3.google.cloud.redis.cluster.v1.CertificateAuthority\"P\xdaA\x04name\x82\xd3\xe4\x93\x02C\x12A/v1/{name=projects/*/locations/*/clusters/*/certificateAuthority}\x12\x8c\x02\n" +
+	"%GetSharedRegionalCertificateAuthority\x12K.google.cloud.redis.cluster.v1.GetSharedRegionalCertificateAuthorityRequest\x1aA.google.cloud.redis.cluster.v1.SharedRegionalCertificateAuthority\"S\xdaA\x04name\x82\xd3\xe4\x93\x02F\x12D/v1/{name=projects/*/locations/*/sharedRegionalCertificateAuthority}\x12\x9e\x02\n" +
 	"\x1cRescheduleClusterMaintenance\x12B.google.cloud.redis.cluster.v1.RescheduleClusterMaintenanceRequest\x1a\x1d.google.longrunning.Operation\"\x9a\x01\xcaA\x1e\n" +
 	"\aCluster\x12\x13google.protobuf.Any\xdaA\"name,reschedule_type,schedule_time\x82\xd3\xe4\x93\x02N:\x01*\"I/v1/{name=projects/*/locations/*/clusters/*}:rescheduleClusterMaintenance\x12\xda\x01\n" +
 	"\x15ListBackupCollections\x12;.google.cloud.redis.cluster.v1.ListBackupCollectionsRequest\x1a<.google.cloud.redis.cluster.v1.ListBackupCollectionsResponse\"F\xdaA\x06parent\x82\xd3\xe4\x93\x027\x125/v1/{parent=projects/*/locations/*}/backupCollections\x12\xc7\x01\n" +
@@ -5153,12 +5493,13 @@ const file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDesc = "" 
 	"\fExportBackup\x122.google.cloud.redis.cluster.v1.ExportBackupRequest\x1a\x1d.google.longrunning.Operation\"q\xcaA\x1d\n" +
 	"\x06Backup\x12\x13google.protobuf.Any\x82\xd3\xe4\x93\x02K:\x01*\"F/v1/{name=projects/*/locations/*/backupCollections/*/backups/*}:export\x12\xcb\x01\n" +
 	"\rBackupCluster\x123.google.cloud.redis.cluster.v1.BackupClusterRequest\x1a\x1d.google.longrunning.Operation\"f\xcaA\x1e\n" +
-	"\aCluster\x12\x13google.protobuf.Any\xdaA\x04name\x82\xd3\xe4\x93\x028:\x01*\"3/v1/{name=projects/*/locations/*/clusters/*}:backup\x1aH\xcaA\x14redis.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xff\x05\xeaAn\n" +
+	"\aCluster\x12\x13google.protobuf.Any\xdaA\x04name\x82\xd3\xe4\x93\x028:\x01*\"3/v1/{name=projects/*/locations/*/clusters/*}:backup\x1aH\xcaA\x14redis.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xde\x06\xeaAn\n" +
 	"%compute.googleapis.com/ForwardingRule\x12Eprojects/{project}/regions/{region}/forwardingRules/{forwarding_rule}\xeaAN\n" +
 	"\x1ecompute.googleapis.com/Network\x12,projects/{project}/global/networks/{network}\xeaAw\n" +
 	"(compute.googleapis.com/ServiceAttachment\x12Kprojects/{project}/regions/{region}/serviceAttachments/{service_attachment}\xeaAx\n" +
 	"!cloudkms.googleapis.com/CryptoKey\x12Sprojects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}\xeaA\xa6\x01\n" +
-	"(cloudkms.googleapis.com/CryptoKeyVersion\x12zprojects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}/cryptoKeyVersions/{crypto_key_version}\n" +
+	"(cloudkms.googleapis.com/CryptoKeyVersion\x12zprojects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}/cryptoKeyVersions/{crypto_key_version}\xeaA\\\n" +
+	"\x1fprivateca.googleapis.com/CaPool\x129projects/{project}/locations/{location}/caPools/{ca_pool}\n" +
 	"!com.google.cloud.redis.cluster.v1B\x16CloudRedisClusterProtoP\x01Z;cloud.google.com/go/redis/cluster/apiv1/clusterpb;clusterpb\xea\x02!Google::Cloud::Redis::Cluster::V1b\x06proto3"
 
 var (
@@ -5173,197 +5514,207 @@ func file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP() 
 	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescData
 }
 
-var file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes = make([]protoimpl.EnumInfo, 17)
-var file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes = make([]protoimpl.MessageInfo, 50)
+var file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes = make([]protoimpl.EnumInfo, 18)
+var file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes = make([]protoimpl.MessageInfo, 54)
 var file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_goTypes = []any{
-	(PscConnectionStatus)(0),                                           // 0: google.cloud.redis.cluster.v1.PscConnectionStatus
-	(AuthorizationMode)(0),                                             // 1: google.cloud.redis.cluster.v1.AuthorizationMode
-	(NodeType)(0),                                                      // 2: google.cloud.redis.cluster.v1.NodeType
-	(TransitEncryptionMode)(0),                                         // 3: google.cloud.redis.cluster.v1.TransitEncryptionMode
-	(ConnectionType)(0),                                                // 4: google.cloud.redis.cluster.v1.ConnectionType
-	(Cluster_State)(0),                                                 // 5: google.cloud.redis.cluster.v1.Cluster.State
-	(AutomatedBackupConfig_AutomatedBackupMode)(0),                     // 6: google.cloud.redis.cluster.v1.AutomatedBackupConfig.AutomatedBackupMode
-	(Backup_BackupType)(0),                                             // 7: google.cloud.redis.cluster.v1.Backup.BackupType
-	(Backup_State)(0),                                                  // 8: google.cloud.redis.cluster.v1.Backup.State
-	(CrossClusterReplicationConfig_ClusterRole)(0),                     // 9: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.ClusterRole
-	(ClusterPersistenceConfig_PersistenceMode)(0),                      // 10: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.PersistenceMode
-	(ClusterPersistenceConfig_RDBConfig_SnapshotPeriod)(0),             // 11: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.RDBConfig.SnapshotPeriod
-	(ClusterPersistenceConfig_AOFConfig_AppendFsync)(0),                // 12: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.AOFConfig.AppendFsync
-	(ZoneDistributionConfig_ZoneDistributionMode)(0),                   // 13: google.cloud.redis.cluster.v1.ZoneDistributionConfig.ZoneDistributionMode
-	(RescheduleClusterMaintenanceRequest_RescheduleType)(0),            // 14: google.cloud.redis.cluster.v1.RescheduleClusterMaintenanceRequest.RescheduleType
-	(EncryptionInfo_Type)(0),                                           // 15: google.cloud.redis.cluster.v1.EncryptionInfo.Type
-	(EncryptionInfo_KmsKeyState)(0),                                    // 16: google.cloud.redis.cluster.v1.EncryptionInfo.KmsKeyState
-	(*CreateClusterRequest)(nil),                                       // 17: google.cloud.redis.cluster.v1.CreateClusterRequest
-	(*ListClustersRequest)(nil),                                        // 18: google.cloud.redis.cluster.v1.ListClustersRequest
-	(*ListClustersResponse)(nil),                                       // 19: google.cloud.redis.cluster.v1.ListClustersResponse
-	(*UpdateClusterRequest)(nil),                                       // 20: google.cloud.redis.cluster.v1.UpdateClusterRequest
-	(*GetClusterRequest)(nil),                                          // 21: google.cloud.redis.cluster.v1.GetClusterRequest
-	(*DeleteClusterRequest)(nil),                                       // 22: google.cloud.redis.cluster.v1.DeleteClusterRequest
-	(*GetClusterCertificateAuthorityRequest)(nil),                      // 23: google.cloud.redis.cluster.v1.GetClusterCertificateAuthorityRequest
-	(*ListBackupCollectionsRequest)(nil),                               // 24: google.cloud.redis.cluster.v1.ListBackupCollectionsRequest
-	(*ListBackupCollectionsResponse)(nil),                              // 25: google.cloud.redis.cluster.v1.ListBackupCollectionsResponse
-	(*GetBackupCollectionRequest)(nil),                                 // 26: google.cloud.redis.cluster.v1.GetBackupCollectionRequest
-	(*ListBackupsRequest)(nil),                                         // 27: google.cloud.redis.cluster.v1.ListBackupsRequest
-	(*ListBackupsResponse)(nil),                                        // 28: google.cloud.redis.cluster.v1.ListBackupsResponse
-	(*GetBackupRequest)(nil),                                           // 29: google.cloud.redis.cluster.v1.GetBackupRequest
-	(*DeleteBackupRequest)(nil),                                        // 30: google.cloud.redis.cluster.v1.DeleteBackupRequest
-	(*ExportBackupRequest)(nil),                                        // 31: google.cloud.redis.cluster.v1.ExportBackupRequest
-	(*BackupClusterRequest)(nil),                                       // 32: google.cloud.redis.cluster.v1.BackupClusterRequest
-	(*Cluster)(nil),                                                    // 33: google.cloud.redis.cluster.v1.Cluster
-	(*AutomatedBackupConfig)(nil),                                      // 34: google.cloud.redis.cluster.v1.AutomatedBackupConfig
-	(*BackupCollection)(nil),                                           // 35: google.cloud.redis.cluster.v1.BackupCollection
-	(*Backup)(nil),                                                     // 36: google.cloud.redis.cluster.v1.Backup
-	(*BackupFile)(nil),                                                 // 37: google.cloud.redis.cluster.v1.BackupFile
-	(*PscServiceAttachment)(nil),                                       // 38: google.cloud.redis.cluster.v1.PscServiceAttachment
-	(*CrossClusterReplicationConfig)(nil),                              // 39: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig
-	(*ClusterMaintenancePolicy)(nil),                                   // 40: google.cloud.redis.cluster.v1.ClusterMaintenancePolicy
-	(*ClusterWeeklyMaintenanceWindow)(nil),                             // 41: google.cloud.redis.cluster.v1.ClusterWeeklyMaintenanceWindow
-	(*ClusterMaintenanceSchedule)(nil),                                 // 42: google.cloud.redis.cluster.v1.ClusterMaintenanceSchedule
-	(*PscConfig)(nil),                                                  // 43: google.cloud.redis.cluster.v1.PscConfig
-	(*DiscoveryEndpoint)(nil),                                          // 44: google.cloud.redis.cluster.v1.DiscoveryEndpoint
-	(*PscConnection)(nil),                                              // 45: google.cloud.redis.cluster.v1.PscConnection
-	(*ClusterEndpoint)(nil),                                            // 46: google.cloud.redis.cluster.v1.ClusterEndpoint
-	(*ConnectionDetail)(nil),                                           // 47: google.cloud.redis.cluster.v1.ConnectionDetail
-	(*PscAutoConnection)(nil),                                          // 48: google.cloud.redis.cluster.v1.PscAutoConnection
-	(*OperationMetadata)(nil),                                          // 49: google.cloud.redis.cluster.v1.OperationMetadata
-	(*CertificateAuthority)(nil),                                       // 50: google.cloud.redis.cluster.v1.CertificateAuthority
-	(*ClusterPersistenceConfig)(nil),                                   // 51: google.cloud.redis.cluster.v1.ClusterPersistenceConfig
-	(*ZoneDistributionConfig)(nil),                                     // 52: google.cloud.redis.cluster.v1.ZoneDistributionConfig
-	(*RescheduleClusterMaintenanceRequest)(nil),                        // 53: google.cloud.redis.cluster.v1.RescheduleClusterMaintenanceRequest
-	(*EncryptionInfo)(nil),                                             // 54: google.cloud.redis.cluster.v1.EncryptionInfo
-	(*Cluster_StateInfo)(nil),                                          // 55: google.cloud.redis.cluster.v1.Cluster.StateInfo
-	(*Cluster_GcsBackupSource)(nil),                                    // 56: google.cloud.redis.cluster.v1.Cluster.GcsBackupSource
-	(*Cluster_ManagedBackupSource)(nil),                                // 57: google.cloud.redis.cluster.v1.Cluster.ManagedBackupSource
-	nil,                                                                // 58: google.cloud.redis.cluster.v1.Cluster.RedisConfigsEntry
-	(*Cluster_StateInfo_UpdateInfo)(nil),                               // 59: google.cloud.redis.cluster.v1.Cluster.StateInfo.UpdateInfo
-	(*AutomatedBackupConfig_FixedFrequencySchedule)(nil),               // 60: google.cloud.redis.cluster.v1.AutomatedBackupConfig.FixedFrequencySchedule
-	(*CrossClusterReplicationConfig_RemoteCluster)(nil),                // 61: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.RemoteCluster
-	(*CrossClusterReplicationConfig_Membership)(nil),                   // 62: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.Membership
-	(*CertificateAuthority_ManagedCertificateAuthority)(nil),           // 63: google.cloud.redis.cluster.v1.CertificateAuthority.ManagedCertificateAuthority
-	(*CertificateAuthority_ManagedCertificateAuthority_CertChain)(nil), // 64: google.cloud.redis.cluster.v1.CertificateAuthority.ManagedCertificateAuthority.CertChain
-	(*ClusterPersistenceConfig_RDBConfig)(nil),                         // 65: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.RDBConfig
-	(*ClusterPersistenceConfig_AOFConfig)(nil),                         // 66: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.AOFConfig
-	(*fieldmaskpb.FieldMask)(nil),                                      // 67: google.protobuf.FieldMask
-	(*durationpb.Duration)(nil),                                        // 68: google.protobuf.Duration
-	(*timestamppb.Timestamp)(nil),                                      // 69: google.protobuf.Timestamp
-	(dayofweek.DayOfWeek)(0),                                           // 70: google.type.DayOfWeek
-	(*timeofday.TimeOfDay)(nil),                                        // 71: google.type.TimeOfDay
-	(*longrunningpb.Operation)(nil),                                    // 72: google.longrunning.Operation
+	(PscConnectionStatus)(0),                                // 0: google.cloud.redis.cluster.v1.PscConnectionStatus
+	(AuthorizationMode)(0),                                  // 1: google.cloud.redis.cluster.v1.AuthorizationMode
+	(NodeType)(0),                                           // 2: google.cloud.redis.cluster.v1.NodeType
+	(TransitEncryptionMode)(0),                              // 3: google.cloud.redis.cluster.v1.TransitEncryptionMode
+	(ServerCaMode)(0),                                       // 4: google.cloud.redis.cluster.v1.ServerCaMode
+	(ConnectionType)(0),                                     // 5: google.cloud.redis.cluster.v1.ConnectionType
+	(Cluster_State)(0),                                      // 6: google.cloud.redis.cluster.v1.Cluster.State
+	(AutomatedBackupConfig_AutomatedBackupMode)(0),          // 7: google.cloud.redis.cluster.v1.AutomatedBackupConfig.AutomatedBackupMode
+	(Backup_BackupType)(0),                                  // 8: google.cloud.redis.cluster.v1.Backup.BackupType
+	(Backup_State)(0),                                       // 9: google.cloud.redis.cluster.v1.Backup.State
+	(CrossClusterReplicationConfig_ClusterRole)(0),          // 10: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.ClusterRole
+	(ClusterPersistenceConfig_PersistenceMode)(0),           // 11: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.PersistenceMode
+	(ClusterPersistenceConfig_RDBConfig_SnapshotPeriod)(0),  // 12: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.RDBConfig.SnapshotPeriod
+	(ClusterPersistenceConfig_AOFConfig_AppendFsync)(0),     // 13: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.AOFConfig.AppendFsync
+	(ZoneDistributionConfig_ZoneDistributionMode)(0),        // 14: google.cloud.redis.cluster.v1.ZoneDistributionConfig.ZoneDistributionMode
+	(RescheduleClusterMaintenanceRequest_RescheduleType)(0), // 15: google.cloud.redis.cluster.v1.RescheduleClusterMaintenanceRequest.RescheduleType
+	(EncryptionInfo_Type)(0),                                // 16: google.cloud.redis.cluster.v1.EncryptionInfo.Type
+	(EncryptionInfo_KmsKeyState)(0),                         // 17: google.cloud.redis.cluster.v1.EncryptionInfo.KmsKeyState
+	(*CreateClusterRequest)(nil),                            // 18: google.cloud.redis.cluster.v1.CreateClusterRequest
+	(*ListClustersRequest)(nil),                             // 19: google.cloud.redis.cluster.v1.ListClustersRequest
+	(*ListClustersResponse)(nil),                            // 20: google.cloud.redis.cluster.v1.ListClustersResponse
+	(*UpdateClusterRequest)(nil),                            // 21: google.cloud.redis.cluster.v1.UpdateClusterRequest
+	(*GetClusterRequest)(nil),                               // 22: google.cloud.redis.cluster.v1.GetClusterRequest
+	(*DeleteClusterRequest)(nil),                            // 23: google.cloud.redis.cluster.v1.DeleteClusterRequest
+	(*GetClusterCertificateAuthorityRequest)(nil),           // 24: google.cloud.redis.cluster.v1.GetClusterCertificateAuthorityRequest
+	(*ListBackupCollectionsRequest)(nil),                    // 25: google.cloud.redis.cluster.v1.ListBackupCollectionsRequest
+	(*ListBackupCollectionsResponse)(nil),                   // 26: google.cloud.redis.cluster.v1.ListBackupCollectionsResponse
+	(*GetBackupCollectionRequest)(nil),                      // 27: google.cloud.redis.cluster.v1.GetBackupCollectionRequest
+	(*ListBackupsRequest)(nil),                              // 28: google.cloud.redis.cluster.v1.ListBackupsRequest
+	(*ListBackupsResponse)(nil),                             // 29: google.cloud.redis.cluster.v1.ListBackupsResponse
+	(*GetBackupRequest)(nil),                                // 30: google.cloud.redis.cluster.v1.GetBackupRequest
+	(*DeleteBackupRequest)(nil),                             // 31: google.cloud.redis.cluster.v1.DeleteBackupRequest
+	(*ExportBackupRequest)(nil),                             // 32: google.cloud.redis.cluster.v1.ExportBackupRequest
+	(*BackupClusterRequest)(nil),                            // 33: google.cloud.redis.cluster.v1.BackupClusterRequest
+	(*Cluster)(nil),                                         // 34: google.cloud.redis.cluster.v1.Cluster
+	(*AutomatedBackupConfig)(nil),                           // 35: google.cloud.redis.cluster.v1.AutomatedBackupConfig
+	(*BackupCollection)(nil),                                // 36: google.cloud.redis.cluster.v1.BackupCollection
+	(*Backup)(nil),                                          // 37: google.cloud.redis.cluster.v1.Backup
+	(*BackupFile)(nil),                                      // 38: google.cloud.redis.cluster.v1.BackupFile
+	(*PscServiceAttachment)(nil),                            // 39: google.cloud.redis.cluster.v1.PscServiceAttachment
+	(*CrossClusterReplicationConfig)(nil),                   // 40: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig
+	(*ClusterMaintenancePolicy)(nil),                        // 41: google.cloud.redis.cluster.v1.ClusterMaintenancePolicy
+	(*ClusterWeeklyMaintenanceWindow)(nil),                  // 42: google.cloud.redis.cluster.v1.ClusterWeeklyMaintenanceWindow
+	(*ClusterMaintenanceSchedule)(nil),                      // 43: google.cloud.redis.cluster.v1.ClusterMaintenanceSchedule
+	(*PscConfig)(nil),                                       // 44: google.cloud.redis.cluster.v1.PscConfig
+	(*DiscoveryEndpoint)(nil),                               // 45: google.cloud.redis.cluster.v1.DiscoveryEndpoint
+	(*PscConnection)(nil),                                   // 46: google.cloud.redis.cluster.v1.PscConnection
+	(*ClusterEndpoint)(nil),                                 // 47: google.cloud.redis.cluster.v1.ClusterEndpoint
+	(*ConnectionDetail)(nil),                                // 48: google.cloud.redis.cluster.v1.ConnectionDetail
+	(*PscAutoConnection)(nil),                               // 49: google.cloud.redis.cluster.v1.PscAutoConnection
+	(*SharedRegionalCertificateAuthority)(nil),              // 50: google.cloud.redis.cluster.v1.SharedRegionalCertificateAuthority
+	(*GetSharedRegionalCertificateAuthorityRequest)(nil),    // 51: google.cloud.redis.cluster.v1.GetSharedRegionalCertificateAuthorityRequest
+	(*OperationMetadata)(nil),                               // 52: google.cloud.redis.cluster.v1.OperationMetadata
+	(*CertificateAuthority)(nil),                            // 53: google.cloud.redis.cluster.v1.CertificateAuthority
+	(*ClusterPersistenceConfig)(nil),                        // 54: google.cloud.redis.cluster.v1.ClusterPersistenceConfig
+	(*ZoneDistributionConfig)(nil),                          // 55: google.cloud.redis.cluster.v1.ZoneDistributionConfig
+	(*RescheduleClusterMaintenanceRequest)(nil),             // 56: google.cloud.redis.cluster.v1.RescheduleClusterMaintenanceRequest
+	(*EncryptionInfo)(nil),                                  // 57: google.cloud.redis.cluster.v1.EncryptionInfo
+	(*Cluster_StateInfo)(nil),                               // 58: google.cloud.redis.cluster.v1.Cluster.StateInfo
+	(*Cluster_GcsBackupSource)(nil),                         // 59: google.cloud.redis.cluster.v1.Cluster.GcsBackupSource
+	(*Cluster_ManagedBackupSource)(nil),                     // 60: google.cloud.redis.cluster.v1.Cluster.ManagedBackupSource
+	nil,                                                     // 61: google.cloud.redis.cluster.v1.Cluster.RedisConfigsEntry
+	(*Cluster_StateInfo_UpdateInfo)(nil),                    // 62: google.cloud.redis.cluster.v1.Cluster.StateInfo.UpdateInfo
+	(*AutomatedBackupConfig_FixedFrequencySchedule)(nil),    // 63: google.cloud.redis.cluster.v1.AutomatedBackupConfig.FixedFrequencySchedule
+	(*CrossClusterReplicationConfig_RemoteCluster)(nil),     // 64: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.RemoteCluster
+	(*CrossClusterReplicationConfig_Membership)(nil),        // 65: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.Membership
+	(*SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority)(nil),                   // 66: google.cloud.redis.cluster.v1.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthority
+	(*SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority_RegionalCertChain)(nil), // 67: google.cloud.redis.cluster.v1.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthority.RegionalCertChain
+	(*CertificateAuthority_ManagedCertificateAuthority)(nil),                                         // 68: google.cloud.redis.cluster.v1.CertificateAuthority.ManagedCertificateAuthority
+	(*CertificateAuthority_ManagedCertificateAuthority_CertChain)(nil),                               // 69: google.cloud.redis.cluster.v1.CertificateAuthority.ManagedCertificateAuthority.CertChain
+	(*ClusterPersistenceConfig_RDBConfig)(nil),                                                       // 70: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.RDBConfig
+	(*ClusterPersistenceConfig_AOFConfig)(nil),                                                       // 71: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.AOFConfig
+	(*fieldmaskpb.FieldMask)(nil),                                                                    // 72: google.protobuf.FieldMask
+	(*durationpb.Duration)(nil),                                                                      // 73: google.protobuf.Duration
+	(*timestamppb.Timestamp)(nil),                                                                    // 74: google.protobuf.Timestamp
+	(dayofweek.DayOfWeek)(0),                                                                         // 75: google.type.DayOfWeek
+	(*timeofday.TimeOfDay)(nil),                                                                      // 76: google.type.TimeOfDay
+	(*longrunningpb.Operation)(nil),                                                                  // 77: google.longrunning.Operation
 }
 var file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_depIdxs = []int32{
-	33, // 0: google.cloud.redis.cluster.v1.CreateClusterRequest.cluster:type_name -> google.cloud.redis.cluster.v1.Cluster
-	33, // 1: google.cloud.redis.cluster.v1.ListClustersResponse.clusters:type_name -> google.cloud.redis.cluster.v1.Cluster
-	67, // 2: google.cloud.redis.cluster.v1.UpdateClusterRequest.update_mask:type_name -> google.protobuf.FieldMask
-	33, // 3: google.cloud.redis.cluster.v1.UpdateClusterRequest.cluster:type_name -> google.cloud.redis.cluster.v1.Cluster
-	35, // 4: google.cloud.redis.cluster.v1.ListBackupCollectionsResponse.backup_collections:type_name -> google.cloud.redis.cluster.v1.BackupCollection
-	36, // 5: google.cloud.redis.cluster.v1.ListBackupsResponse.backups:type_name -> google.cloud.redis.cluster.v1.Backup
-	68, // 6: google.cloud.redis.cluster.v1.BackupClusterRequest.ttl:type_name -> google.protobuf.Duration
-	56, // 7: google.cloud.redis.cluster.v1.Cluster.gcs_source:type_name -> google.cloud.redis.cluster.v1.Cluster.GcsBackupSource
-	57, // 8: google.cloud.redis.cluster.v1.Cluster.managed_backup_source:type_name -> google.cloud.redis.cluster.v1.Cluster.ManagedBackupSource
-	69, // 9: google.cloud.redis.cluster.v1.Cluster.create_time:type_name -> google.protobuf.Timestamp
-	5,  // 10: google.cloud.redis.cluster.v1.Cluster.state:type_name -> google.cloud.redis.cluster.v1.Cluster.State
+	34, // 0: google.cloud.redis.cluster.v1.CreateClusterRequest.cluster:type_name -> google.cloud.redis.cluster.v1.Cluster
+	34, // 1: google.cloud.redis.cluster.v1.ListClustersResponse.clusters:type_name -> google.cloud.redis.cluster.v1.Cluster
+	72, // 2: google.cloud.redis.cluster.v1.UpdateClusterRequest.update_mask:type_name -> google.protobuf.FieldMask
+	34, // 3: google.cloud.redis.cluster.v1.UpdateClusterRequest.cluster:type_name -> google.cloud.redis.cluster.v1.Cluster
+	36, // 4: google.cloud.redis.cluster.v1.ListBackupCollectionsResponse.backup_collections:type_name -> google.cloud.redis.cluster.v1.BackupCollection
+	37, // 5: google.cloud.redis.cluster.v1.ListBackupsResponse.backups:type_name -> google.cloud.redis.cluster.v1.Backup
+	73, // 6: google.cloud.redis.cluster.v1.BackupClusterRequest.ttl:type_name -> google.protobuf.Duration
+	59, // 7: google.cloud.redis.cluster.v1.Cluster.gcs_source:type_name -> google.cloud.redis.cluster.v1.Cluster.GcsBackupSource
+	60, // 8: google.cloud.redis.cluster.v1.Cluster.managed_backup_source:type_name -> google.cloud.redis.cluster.v1.Cluster.ManagedBackupSource
+	74, // 9: google.cloud.redis.cluster.v1.Cluster.create_time:type_name -> google.protobuf.Timestamp
+	6,  // 10: google.cloud.redis.cluster.v1.Cluster.state:type_name -> google.cloud.redis.cluster.v1.Cluster.State
 	1,  // 11: google.cloud.redis.cluster.v1.Cluster.authorization_mode:type_name -> google.cloud.redis.cluster.v1.AuthorizationMode
 	3,  // 12: google.cloud.redis.cluster.v1.Cluster.transit_encryption_mode:type_name -> google.cloud.redis.cluster.v1.TransitEncryptionMode
-	43, // 13: google.cloud.redis.cluster.v1.Cluster.psc_configs:type_name -> google.cloud.redis.cluster.v1.PscConfig
-	44, // 14: google.cloud.redis.cluster.v1.Cluster.discovery_endpoints:type_name -> google.cloud.redis.cluster.v1.DiscoveryEndpoint
-	45, // 15: google.cloud.redis.cluster.v1.Cluster.psc_connections:type_name -> google.cloud.redis.cluster.v1.PscConnection
-	55, // 16: google.cloud.redis.cluster.v1.Cluster.state_info:type_name -> google.cloud.redis.cluster.v1.Cluster.StateInfo
+	44, // 13: google.cloud.redis.cluster.v1.Cluster.psc_configs:type_name -> google.cloud.redis.cluster.v1.PscConfig
+	45, // 14: google.cloud.redis.cluster.v1.Cluster.discovery_endpoints:type_name -> google.cloud.redis.cluster.v1.DiscoveryEndpoint
+	46, // 15: google.cloud.redis.cluster.v1.Cluster.psc_connections:type_name -> google.cloud.redis.cluster.v1.PscConnection
+	58, // 16: google.cloud.redis.cluster.v1.Cluster.state_info:type_name -> google.cloud.redis.cluster.v1.Cluster.StateInfo
 	2,  // 17: google.cloud.redis.cluster.v1.Cluster.node_type:type_name -> google.cloud.redis.cluster.v1.NodeType
-	51, // 18: google.cloud.redis.cluster.v1.Cluster.persistence_config:type_name -> google.cloud.redis.cluster.v1.ClusterPersistenceConfig
-	58, // 19: google.cloud.redis.cluster.v1.Cluster.redis_configs:type_name -> google.cloud.redis.cluster.v1.Cluster.RedisConfigsEntry
-	52, // 20: google.cloud.redis.cluster.v1.Cluster.zone_distribution_config:type_name -> google.cloud.redis.cluster.v1.ZoneDistributionConfig
-	39, // 21: google.cloud.redis.cluster.v1.Cluster.cross_cluster_replication_config:type_name -> google.cloud.redis.cluster.v1.CrossClusterReplicationConfig
-	40, // 22: google.cloud.redis.cluster.v1.Cluster.maintenance_policy:type_name -> google.cloud.redis.cluster.v1.ClusterMaintenancePolicy
-	42, // 23: google.cloud.redis.cluster.v1.Cluster.maintenance_schedule:type_name -> google.cloud.redis.cluster.v1.ClusterMaintenanceSchedule
-	38, // 24: google.cloud.redis.cluster.v1.Cluster.psc_service_attachments:type_name -> google.cloud.redis.cluster.v1.PscServiceAttachment
-	46, // 25: google.cloud.redis.cluster.v1.Cluster.cluster_endpoints:type_name -> google.cloud.redis.cluster.v1.ClusterEndpoint
-	34, // 26: google.cloud.redis.cluster.v1.Cluster.automated_backup_config:type_name -> google.cloud.redis.cluster.v1.AutomatedBackupConfig
-	54, // 27: google.cloud.redis.cluster.v1.Cluster.encryption_info:type_name -> google.cloud.redis.cluster.v1.EncryptionInfo
-	60, // 28: google.cloud.redis.cluster.v1.AutomatedBackupConfig.fixed_frequency_schedule:type_name -> google.cloud.redis.cluster.v1.AutomatedBackupConfig.FixedFrequencySchedule
-	6,  // 29: google.cloud.redis.cluster.v1.AutomatedBackupConfig.automated_backup_mode:type_name -> google.cloud.redis.cluster.v1.AutomatedBackupConfig.AutomatedBackupMode
-	68, // 30: google.cloud.redis.cluster.v1.AutomatedBackupConfig.retention:type_name -> google.protobuf.Duration
-	69, // 31: google.cloud.redis.cluster.v1.Backup.create_time:type_name -> google.protobuf.Timestamp
-	69, // 32: google.cloud.redis.cluster.v1.Backup.expire_time:type_name -> google.protobuf.Timestamp
-	37, // 33: google.cloud.redis.cluster.v1.Backup.backup_files:type_name -> google.cloud.redis.cluster.v1.BackupFile
-	2,  // 34: google.cloud.redis.cluster.v1.Backup.node_type:type_name -> google.cloud.redis.cluster.v1.NodeType
-	7,  // 35: google.cloud.redis.cluster.v1.Backup.backup_type:type_name -> google.cloud.redis.cluster.v1.Backup.BackupType
-	8,  // 36: google.cloud.redis.cluster.v1.Backup.state:type_name -> google.cloud.redis.cluster.v1.Backup.State
-	54, // 37: google.cloud.redis.cluster.v1.Backup.encryption_info:type_name -> google.cloud.redis.cluster.v1.EncryptionInfo
-	69, // 38: google.cloud.redis.cluster.v1.BackupFile.create_time:type_name -> google.protobuf.Timestamp
-	4,  // 39: google.cloud.redis.cluster.v1.PscServiceAttachment.connection_type:type_name -> google.cloud.redis.cluster.v1.ConnectionType
-	9,  // 40: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.cluster_role:type_name -> google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.ClusterRole
-	61, // 41: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.primary_cluster:type_name -> google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.RemoteCluster
-	61, // 42: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.secondary_clusters:type_name -> google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.RemoteCluster
-	69, // 43: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.update_time:type_name -> google.protobuf.Timestamp
-	62, // 44: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.membership:type_name -> google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.Membership
-	69, // 45: google.cloud.redis.cluster.v1.ClusterMaintenancePolicy.create_time:type_name -> google.protobuf.Timestamp
-	69, // 46: google.cloud.redis.cluster.v1.ClusterMaintenancePolicy.update_time:type_name -> google.protobuf.Timestamp
-	41, // 47: google.cloud.redis.cluster.v1.ClusterMaintenancePolicy.weekly_maintenance_window:type_name -> google.cloud.redis.cluster.v1.ClusterWeeklyMaintenanceWindow
-	70, // 48: google.cloud.redis.cluster.v1.ClusterWeeklyMaintenanceWindow.day:type_name -> google.type.DayOfWeek
-	71, // 49: google.cloud.redis.cluster.v1.ClusterWeeklyMaintenanceWindow.start_time:type_name -> google.type.TimeOfDay
-	69, // 50: google.cloud.redis.cluster.v1.ClusterMaintenanceSchedule.start_time:type_name -> google.protobuf.Timestamp
-	69, // 51: google.cloud.redis.cluster.v1.ClusterMaintenanceSchedule.end_time:type_name -> google.protobuf.Timestamp
-	43, // 52: google.cloud.redis.cluster.v1.DiscoveryEndpoint.psc_config:type_name -> google.cloud.redis.cluster.v1.PscConfig
-	0,  // 53: google.cloud.redis.cluster.v1.PscConnection.psc_connection_status:type_name -> google.cloud.redis.cluster.v1.PscConnectionStatus
-	4,  // 54: google.cloud.redis.cluster.v1.PscConnection.connection_type:type_name -> google.cloud.redis.cluster.v1.ConnectionType
-	47, // 55: google.cloud.redis.cluster.v1.ClusterEndpoint.connections:type_name -> google.cloud.redis.cluster.v1.ConnectionDetail
-	48, // 56: google.cloud.redis.cluster.v1.ConnectionDetail.psc_auto_connection:type_name -> google.cloud.redis.cluster.v1.PscAutoConnection
-	45, // 57: google.cloud.redis.cluster.v1.ConnectionDetail.psc_connection:type_name -> google.cloud.redis.cluster.v1.PscConnection
-	0,  // 58: google.cloud.redis.cluster.v1.PscAutoConnection.psc_connection_status:type_name -> google.cloud.redis.cluster.v1.PscConnectionStatus
-	4,  // 59: google.cloud.redis.cluster.v1.PscAutoConnection.connection_type:type_name -> google.cloud.redis.cluster.v1.ConnectionType
-	69, // 60: google.cloud.redis.cluster.v1.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
-	69, // 61: google.cloud.redis.cluster.v1.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
-	63, // 62: google.cloud.redis.cluster.v1.CertificateAuthority.managed_server_ca:type_name -> google.cloud.redis.cluster.v1.CertificateAuthority.ManagedCertificateAuthority
-	10, // 63: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.mode:type_name -> google.cloud.redis.cluster.v1.ClusterPersistenceConfig.PersistenceMode
-	65, // 64: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.rdb_config:type_name -> google.cloud.redis.cluster.v1.ClusterPersistenceConfig.RDBConfig
-	66, // 65: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.aof_config:type_name -> google.cloud.redis.cluster.v1.ClusterPersistenceConfig.AOFConfig
-	13, // 66: google.cloud.redis.cluster.v1.ZoneDistributionConfig.mode:type_name -> google.cloud.redis.cluster.v1.ZoneDistributionConfig.ZoneDistributionMode
-	14, // 67: google.cloud.redis.cluster.v1.RescheduleClusterMaintenanceRequest.reschedule_type:type_name -> google.cloud.redis.cluster.v1.RescheduleClusterMaintenanceRequest.RescheduleType
-	69, // 68: google.cloud.redis.cluster.v1.RescheduleClusterMaintenanceRequest.schedule_time:type_name -> google.protobuf.Timestamp
-	15, // 69: google.cloud.redis.cluster.v1.EncryptionInfo.encryption_type:type_name -> google.cloud.redis.cluster.v1.EncryptionInfo.Type
-	16, // 70: google.cloud.redis.cluster.v1.EncryptionInfo.kms_key_primary_state:type_name -> google.cloud.redis.cluster.v1.EncryptionInfo.KmsKeyState
-	69, // 71: google.cloud.redis.cluster.v1.EncryptionInfo.last_update_time:type_name -> google.protobuf.Timestamp
-	59, // 72: google.cloud.redis.cluster.v1.Cluster.StateInfo.update_info:type_name -> google.cloud.redis.cluster.v1.Cluster.StateInfo.UpdateInfo
-	71, // 73: google.cloud.redis.cluster.v1.AutomatedBackupConfig.FixedFrequencySchedule.start_time:type_name -> google.type.TimeOfDay
-	61, // 74: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.Membership.primary_cluster:type_name -> google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.RemoteCluster
-	61, // 75: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.Membership.secondary_clusters:type_name -> google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.RemoteCluster
-	64, // 76: google.cloud.redis.cluster.v1.CertificateAuthority.ManagedCertificateAuthority.ca_certs:type_name -> google.cloud.redis.cluster.v1.CertificateAuthority.ManagedCertificateAuthority.CertChain
-	11, // 77: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.RDBConfig.rdb_snapshot_period:type_name -> google.cloud.redis.cluster.v1.ClusterPersistenceConfig.RDBConfig.SnapshotPeriod
-	69, // 78: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.RDBConfig.rdb_snapshot_start_time:type_name -> google.protobuf.Timestamp
-	12, // 79: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.AOFConfig.append_fsync:type_name -> google.cloud.redis.cluster.v1.ClusterPersistenceConfig.AOFConfig.AppendFsync
-	18, // 80: google.cloud.redis.cluster.v1.CloudRedisCluster.ListClusters:input_type -> google.cloud.redis.cluster.v1.ListClustersRequest
-	21, // 81: google.cloud.redis.cluster.v1.CloudRedisCluster.GetCluster:input_type -> google.cloud.redis.cluster.v1.GetClusterRequest
-	20, // 82: google.cloud.redis.cluster.v1.CloudRedisCluster.UpdateCluster:input_type -> google.cloud.redis.cluster.v1.UpdateClusterRequest
-	22, // 83: google.cloud.redis.cluster.v1.CloudRedisCluster.DeleteCluster:input_type -> google.cloud.redis.cluster.v1.DeleteClusterRequest
-	17, // 84: google.cloud.redis.cluster.v1.CloudRedisCluster.CreateCluster:input_type -> google.cloud.redis.cluster.v1.CreateClusterRequest
-	23, // 85: google.cloud.redis.cluster.v1.CloudRedisCluster.GetClusterCertificateAuthority:input_type -> google.cloud.redis.cluster.v1.GetClusterCertificateAuthorityRequest
-	53, // 86: google.cloud.redis.cluster.v1.CloudRedisCluster.RescheduleClusterMaintenance:input_type -> google.cloud.redis.cluster.v1.RescheduleClusterMaintenanceRequest
-	24, // 87: google.cloud.redis.cluster.v1.CloudRedisCluster.ListBackupCollections:input_type -> google.cloud.redis.cluster.v1.ListBackupCollectionsRequest
-	26, // 88: google.cloud.redis.cluster.v1.CloudRedisCluster.GetBackupCollection:input_type -> google.cloud.redis.cluster.v1.GetBackupCollectionRequest
-	27, // 89: google.cloud.redis.cluster.v1.CloudRedisCluster.ListBackups:input_type -> google.cloud.redis.cluster.v1.ListBackupsRequest
-	29, // 90: google.cloud.redis.cluster.v1.CloudRedisCluster.GetBackup:input_type -> google.cloud.redis.cluster.v1.GetBackupRequest
-	30, // 91: google.cloud.redis.cluster.v1.CloudRedisCluster.DeleteBackup:input_type -> google.cloud.redis.cluster.v1.DeleteBackupRequest
-	31, // 92: google.cloud.redis.cluster.v1.CloudRedisCluster.ExportBackup:input_type -> google.cloud.redis.cluster.v1.ExportBackupRequest
-	32, // 93: google.cloud.redis.cluster.v1.CloudRedisCluster.BackupCluster:input_type -> google.cloud.redis.cluster.v1.BackupClusterRequest
-	19, // 94: google.cloud.redis.cluster.v1.CloudRedisCluster.ListClusters:output_type -> google.cloud.redis.cluster.v1.ListClustersResponse
-	33, // 95: google.cloud.redis.cluster.v1.CloudRedisCluster.GetCluster:output_type -> google.cloud.redis.cluster.v1.Cluster
-	72, // 96: google.cloud.redis.cluster.v1.CloudRedisCluster.UpdateCluster:output_type -> google.longrunning.Operation
-	72, // 97: google.cloud.redis.cluster.v1.CloudRedisCluster.DeleteCluster:output_type -> google.longrunning.Operation
-	72, // 98: google.cloud.redis.cluster.v1.CloudRedisCluster.CreateCluster:output_type -> google.longrunning.Operation
-	50, // 99: google.cloud.redis.cluster.v1.CloudRedisCluster.GetClusterCertificateAuthority:output_type -> google.cloud.redis.cluster.v1.CertificateAuthority
-	72, // 100: google.cloud.redis.cluster.v1.CloudRedisCluster.RescheduleClusterMaintenance:output_type -> google.longrunning.Operation
-	25, // 101: google.cloud.redis.cluster.v1.CloudRedisCluster.ListBackupCollections:output_type -> google.cloud.redis.cluster.v1.ListBackupCollectionsResponse
-	35, // 102: google.cloud.redis.cluster.v1.CloudRedisCluster.GetBackupCollection:output_type -> google.cloud.redis.cluster.v1.BackupCollection
-	28, // 103: google.cloud.redis.cluster.v1.CloudRedisCluster.ListBackups:output_type -> google.cloud.redis.cluster.v1.ListBackupsResponse
-	36, // 104: google.cloud.redis.cluster.v1.CloudRedisCluster.GetBackup:output_type -> google.cloud.redis.cluster.v1.Backup
-	72, // 105: google.cloud.redis.cluster.v1.CloudRedisCluster.DeleteBackup:output_type -> google.longrunning.Operation
-	72, // 106: google.cloud.redis.cluster.v1.CloudRedisCluster.ExportBackup:output_type -> google.longrunning.Operation
-	72, // 107: google.cloud.redis.cluster.v1.CloudRedisCluster.BackupCluster:output_type -> google.longrunning.Operation
-	94, // [94:108] is the sub-list for method output_type
-	80, // [80:94] is the sub-list for method input_type
-	80, // [80:80] is the sub-list for extension type_name
-	80, // [80:80] is the sub-list for extension extendee
-	0,  // [0:80] is the sub-list for field type_name
+	54, // 18: google.cloud.redis.cluster.v1.Cluster.persistence_config:type_name -> google.cloud.redis.cluster.v1.ClusterPersistenceConfig
+	61, // 19: google.cloud.redis.cluster.v1.Cluster.redis_configs:type_name -> google.cloud.redis.cluster.v1.Cluster.RedisConfigsEntry
+	55, // 20: google.cloud.redis.cluster.v1.Cluster.zone_distribution_config:type_name -> google.cloud.redis.cluster.v1.ZoneDistributionConfig
+	40, // 21: google.cloud.redis.cluster.v1.Cluster.cross_cluster_replication_config:type_name -> google.cloud.redis.cluster.v1.CrossClusterReplicationConfig
+	41, // 22: google.cloud.redis.cluster.v1.Cluster.maintenance_policy:type_name -> google.cloud.redis.cluster.v1.ClusterMaintenancePolicy
+	43, // 23: google.cloud.redis.cluster.v1.Cluster.maintenance_schedule:type_name -> google.cloud.redis.cluster.v1.ClusterMaintenanceSchedule
+	39, // 24: google.cloud.redis.cluster.v1.Cluster.psc_service_attachments:type_name -> google.cloud.redis.cluster.v1.PscServiceAttachment
+	47, // 25: google.cloud.redis.cluster.v1.Cluster.cluster_endpoints:type_name -> google.cloud.redis.cluster.v1.ClusterEndpoint
+	35, // 26: google.cloud.redis.cluster.v1.Cluster.automated_backup_config:type_name -> google.cloud.redis.cluster.v1.AutomatedBackupConfig
+	57, // 27: google.cloud.redis.cluster.v1.Cluster.encryption_info:type_name -> google.cloud.redis.cluster.v1.EncryptionInfo
+	4,  // 28: google.cloud.redis.cluster.v1.Cluster.server_ca_mode:type_name -> google.cloud.redis.cluster.v1.ServerCaMode
+	63, // 29: google.cloud.redis.cluster.v1.AutomatedBackupConfig.fixed_frequency_schedule:type_name -> google.cloud.redis.cluster.v1.AutomatedBackupConfig.FixedFrequencySchedule
+	7,  // 30: google.cloud.redis.cluster.v1.AutomatedBackupConfig.automated_backup_mode:type_name -> google.cloud.redis.cluster.v1.AutomatedBackupConfig.AutomatedBackupMode
+	73, // 31: google.cloud.redis.cluster.v1.AutomatedBackupConfig.retention:type_name -> google.protobuf.Duration
+	74, // 32: google.cloud.redis.cluster.v1.Backup.create_time:type_name -> google.protobuf.Timestamp
+	74, // 33: google.cloud.redis.cluster.v1.Backup.expire_time:type_name -> google.protobuf.Timestamp
+	38, // 34: google.cloud.redis.cluster.v1.Backup.backup_files:type_name -> google.cloud.redis.cluster.v1.BackupFile
+	2,  // 35: google.cloud.redis.cluster.v1.Backup.node_type:type_name -> google.cloud.redis.cluster.v1.NodeType
+	8,  // 36: google.cloud.redis.cluster.v1.Backup.backup_type:type_name -> google.cloud.redis.cluster.v1.Backup.BackupType
+	9,  // 37: google.cloud.redis.cluster.v1.Backup.state:type_name -> google.cloud.redis.cluster.v1.Backup.State
+	57, // 38: google.cloud.redis.cluster.v1.Backup.encryption_info:type_name -> google.cloud.redis.cluster.v1.EncryptionInfo
+	74, // 39: google.cloud.redis.cluster.v1.BackupFile.create_time:type_name -> google.protobuf.Timestamp
+	5,  // 40: google.cloud.redis.cluster.v1.PscServiceAttachment.connection_type:type_name -> google.cloud.redis.cluster.v1.ConnectionType
+	10, // 41: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.cluster_role:type_name -> google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.ClusterRole
+	64, // 42: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.primary_cluster:type_name -> google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.RemoteCluster
+	64, // 43: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.secondary_clusters:type_name -> google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.RemoteCluster
+	74, // 44: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.update_time:type_name -> google.protobuf.Timestamp
+	65, // 45: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.membership:type_name -> google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.Membership
+	74, // 46: google.cloud.redis.cluster.v1.ClusterMaintenancePolicy.create_time:type_name -> google.protobuf.Timestamp
+	74, // 47: google.cloud.redis.cluster.v1.ClusterMaintenancePolicy.update_time:type_name -> google.protobuf.Timestamp
+	42, // 48: google.cloud.redis.cluster.v1.ClusterMaintenancePolicy.weekly_maintenance_window:type_name -> google.cloud.redis.cluster.v1.ClusterWeeklyMaintenanceWindow
+	75, // 49: google.cloud.redis.cluster.v1.ClusterWeeklyMaintenanceWindow.day:type_name -> google.type.DayOfWeek
+	76, // 50: google.cloud.redis.cluster.v1.ClusterWeeklyMaintenanceWindow.start_time:type_name -> google.type.TimeOfDay
+	74, // 51: google.cloud.redis.cluster.v1.ClusterMaintenanceSchedule.start_time:type_name -> google.protobuf.Timestamp
+	74, // 52: google.cloud.redis.cluster.v1.ClusterMaintenanceSchedule.end_time:type_name -> google.protobuf.Timestamp
+	44, // 53: google.cloud.redis.cluster.v1.DiscoveryEndpoint.psc_config:type_name -> google.cloud.redis.cluster.v1.PscConfig
+	0,  // 54: google.cloud.redis.cluster.v1.PscConnection.psc_connection_status:type_name -> google.cloud.redis.cluster.v1.PscConnectionStatus
+	5,  // 55: google.cloud.redis.cluster.v1.PscConnection.connection_type:type_name -> google.cloud.redis.cluster.v1.ConnectionType
+	48, // 56: google.cloud.redis.cluster.v1.ClusterEndpoint.connections:type_name -> google.cloud.redis.cluster.v1.ConnectionDetail
+	49, // 57: google.cloud.redis.cluster.v1.ConnectionDetail.psc_auto_connection:type_name -> google.cloud.redis.cluster.v1.PscAutoConnection
+	46, // 58: google.cloud.redis.cluster.v1.ConnectionDetail.psc_connection:type_name -> google.cloud.redis.cluster.v1.PscConnection
+	0,  // 59: google.cloud.redis.cluster.v1.PscAutoConnection.psc_connection_status:type_name -> google.cloud.redis.cluster.v1.PscConnectionStatus
+	5,  // 60: google.cloud.redis.cluster.v1.PscAutoConnection.connection_type:type_name -> google.cloud.redis.cluster.v1.ConnectionType
+	66, // 61: google.cloud.redis.cluster.v1.SharedRegionalCertificateAuthority.managed_server_ca:type_name -> google.cloud.redis.cluster.v1.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthority
+	74, // 62: google.cloud.redis.cluster.v1.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
+	74, // 63: google.cloud.redis.cluster.v1.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
+	68, // 64: google.cloud.redis.cluster.v1.CertificateAuthority.managed_server_ca:type_name -> google.cloud.redis.cluster.v1.CertificateAuthority.ManagedCertificateAuthority
+	11, // 65: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.mode:type_name -> google.cloud.redis.cluster.v1.ClusterPersistenceConfig.PersistenceMode
+	70, // 66: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.rdb_config:type_name -> google.cloud.redis.cluster.v1.ClusterPersistenceConfig.RDBConfig
+	71, // 67: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.aof_config:type_name -> google.cloud.redis.cluster.v1.ClusterPersistenceConfig.AOFConfig
+	14, // 68: google.cloud.redis.cluster.v1.ZoneDistributionConfig.mode:type_name -> google.cloud.redis.cluster.v1.ZoneDistributionConfig.ZoneDistributionMode
+	15, // 69: google.cloud.redis.cluster.v1.RescheduleClusterMaintenanceRequest.reschedule_type:type_name -> google.cloud.redis.cluster.v1.RescheduleClusterMaintenanceRequest.RescheduleType
+	74, // 70: google.cloud.redis.cluster.v1.RescheduleClusterMaintenanceRequest.schedule_time:type_name -> google.protobuf.Timestamp
+	16, // 71: google.cloud.redis.cluster.v1.EncryptionInfo.encryption_type:type_name -> google.cloud.redis.cluster.v1.EncryptionInfo.Type
+	17, // 72: google.cloud.redis.cluster.v1.EncryptionInfo.kms_key_primary_state:type_name -> google.cloud.redis.cluster.v1.EncryptionInfo.KmsKeyState
+	74, // 73: google.cloud.redis.cluster.v1.EncryptionInfo.last_update_time:type_name -> google.protobuf.Timestamp
+	62, // 74: google.cloud.redis.cluster.v1.Cluster.StateInfo.update_info:type_name -> google.cloud.redis.cluster.v1.Cluster.StateInfo.UpdateInfo
+	76, // 75: google.cloud.redis.cluster.v1.AutomatedBackupConfig.FixedFrequencySchedule.start_time:type_name -> google.type.TimeOfDay
+	64, // 76: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.Membership.primary_cluster:type_name -> google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.RemoteCluster
+	64, // 77: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.Membership.secondary_clusters:type_name -> google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.RemoteCluster
+	67, // 78: google.cloud.redis.cluster.v1.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthority.ca_certs:type_name -> google.cloud.redis.cluster.v1.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthority.RegionalCertChain
+	69, // 79: google.cloud.redis.cluster.v1.CertificateAuthority.ManagedCertificateAuthority.ca_certs:type_name -> google.cloud.redis.cluster.v1.CertificateAuthority.ManagedCertificateAuthority.CertChain
+	12, // 80: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.RDBConfig.rdb_snapshot_period:type_name -> google.cloud.redis.cluster.v1.ClusterPersistenceConfig.RDBConfig.SnapshotPeriod
+	74, // 81: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.RDBConfig.rdb_snapshot_start_time:type_name -> google.protobuf.Timestamp
+	13, // 82: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.AOFConfig.append_fsync:type_name -> google.cloud.redis.cluster.v1.ClusterPersistenceConfig.AOFConfig.AppendFsync
+	19, // 83: google.cloud.redis.cluster.v1.CloudRedisCluster.ListClusters:input_type -> google.cloud.redis.cluster.v1.ListClustersRequest
+	22, // 84: google.cloud.redis.cluster.v1.CloudRedisCluster.GetCluster:input_type -> google.cloud.redis.cluster.v1.GetClusterRequest
+	21, // 85: google.cloud.redis.cluster.v1.CloudRedisCluster.UpdateCluster:input_type -> google.cloud.redis.cluster.v1.UpdateClusterRequest
+	23, // 86: google.cloud.redis.cluster.v1.CloudRedisCluster.DeleteCluster:input_type -> google.cloud.redis.cluster.v1.DeleteClusterRequest
+	18, // 87: google.cloud.redis.cluster.v1.CloudRedisCluster.CreateCluster:input_type -> google.cloud.redis.cluster.v1.CreateClusterRequest
+	24, // 88: google.cloud.redis.cluster.v1.CloudRedisCluster.GetClusterCertificateAuthority:input_type -> google.cloud.redis.cluster.v1.GetClusterCertificateAuthorityRequest
+	51, // 89: google.cloud.redis.cluster.v1.CloudRedisCluster.GetSharedRegionalCertificateAuthority:input_type -> google.cloud.redis.cluster.v1.GetSharedRegionalCertificateAuthorityRequest
+	56, // 90: google.cloud.redis.cluster.v1.CloudRedisCluster.RescheduleClusterMaintenance:input_type -> google.cloud.redis.cluster.v1.RescheduleClusterMaintenanceRequest
+	25, // 91: google.cloud.redis.cluster.v1.CloudRedisCluster.ListBackupCollections:input_type -> google.cloud.redis.cluster.v1.ListBackupCollectionsRequest
+	27, // 92: google.cloud.redis.cluster.v1.CloudRedisCluster.GetBackupCollection:input_type -> google.cloud.redis.cluster.v1.GetBackupCollectionRequest
+	28, // 93: google.cloud.redis.cluster.v1.CloudRedisCluster.ListBackups:input_type -> google.cloud.redis.cluster.v1.ListBackupsRequest
+	30, // 94: google.cloud.redis.cluster.v1.CloudRedisCluster.GetBackup:input_type -> google.cloud.redis.cluster.v1.GetBackupRequest
+	31, // 95: google.cloud.redis.cluster.v1.CloudRedisCluster.DeleteBackup:input_type -> google.cloud.redis.cluster.v1.DeleteBackupRequest
+	32, // 96: google.cloud.redis.cluster.v1.CloudRedisCluster.ExportBackup:input_type -> google.cloud.redis.cluster.v1.ExportBackupRequest
+	33, // 97: google.cloud.redis.cluster.v1.CloudRedisCluster.BackupCluster:input_type -> google.cloud.redis.cluster.v1.BackupClusterRequest
+	20, // 98: google.cloud.redis.cluster.v1.CloudRedisCluster.ListClusters:output_type -> google.cloud.redis.cluster.v1.ListClustersResponse
+	34, // 99: google.cloud.redis.cluster.v1.CloudRedisCluster.GetCluster:output_type -> google.cloud.redis.cluster.v1.Cluster
+	77, // 100: google.cloud.redis.cluster.v1.CloudRedisCluster.UpdateCluster:output_type -> google.longrunning.Operation
+	77, // 101: google.cloud.redis.cluster.v1.CloudRedisCluster.DeleteCluster:output_type -> google.longrunning.Operation
+	77, // 102: google.cloud.redis.cluster.v1.CloudRedisCluster.CreateCluster:output_type -> google.longrunning.Operation
+	53, // 103: google.cloud.redis.cluster.v1.CloudRedisCluster.GetClusterCertificateAuthority:output_type -> google.cloud.redis.cluster.v1.CertificateAuthority
+	50, // 104: google.cloud.redis.cluster.v1.CloudRedisCluster.GetSharedRegionalCertificateAuthority:output_type -> google.cloud.redis.cluster.v1.SharedRegionalCertificateAuthority
+	77, // 105: google.cloud.redis.cluster.v1.CloudRedisCluster.RescheduleClusterMaintenance:output_type -> google.longrunning.Operation
+	26, // 106: google.cloud.redis.cluster.v1.CloudRedisCluster.ListBackupCollections:output_type -> google.cloud.redis.cluster.v1.ListBackupCollectionsResponse
+	36, // 107: google.cloud.redis.cluster.v1.CloudRedisCluster.GetBackupCollection:output_type -> google.cloud.redis.cluster.v1.BackupCollection
+	29, // 108: google.cloud.redis.cluster.v1.CloudRedisCluster.ListBackups:output_type -> google.cloud.redis.cluster.v1.ListBackupsResponse
+	37, // 109: google.cloud.redis.cluster.v1.CloudRedisCluster.GetBackup:output_type -> google.cloud.redis.cluster.v1.Backup
+	77, // 110: google.cloud.redis.cluster.v1.CloudRedisCluster.DeleteBackup:output_type -> google.longrunning.Operation
+	77, // 111: google.cloud.redis.cluster.v1.CloudRedisCluster.ExportBackup:output_type -> google.longrunning.Operation
+	77, // 112: google.cloud.redis.cluster.v1.CloudRedisCluster.BackupCluster:output_type -> google.longrunning.Operation
+	98, // [98:113] is the sub-list for method output_type
+	83, // [83:98] is the sub-list for method input_type
+	83, // [83:83] is the sub-list for extension type_name
+	83, // [83:83] is the sub-list for extension extendee
+	0,  // [0:83] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_init() }
@@ -5386,21 +5737,24 @@ func file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_init() {
 		(*ConnectionDetail_PscAutoConnection)(nil),
 		(*ConnectionDetail_PscConnection)(nil),
 	}
-	file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[33].OneofWrappers = []any{
+	file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[32].OneofWrappers = []any{
+		(*SharedRegionalCertificateAuthority_ManagedServerCa)(nil),
+	}
+	file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[35].OneofWrappers = []any{
 		(*CertificateAuthority_ManagedServerCa)(nil),
 	}
-	file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[38].OneofWrappers = []any{
+	file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[40].OneofWrappers = []any{
 		(*Cluster_StateInfo_UpdateInfo_)(nil),
 	}
-	file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[42].OneofWrappers = []any{}
-	file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[43].OneofWrappers = []any{}
+	file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[44].OneofWrappers = []any{}
+	file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[45].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDesc), len(file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDesc)),
-			NumEnums:      17,
-			NumMessages:   50,
+			NumEnums:      18,
+			NumMessages:   54,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

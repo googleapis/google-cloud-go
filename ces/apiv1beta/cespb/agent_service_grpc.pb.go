@@ -84,6 +84,7 @@ const (
 	AgentService_CreateAppVersion_FullMethodName         = "/google.cloud.ces.v1beta.AgentService/CreateAppVersion"
 	AgentService_DeleteAppVersion_FullMethodName         = "/google.cloud.ces.v1beta.AgentService/DeleteAppVersion"
 	AgentService_RestoreAppVersion_FullMethodName        = "/google.cloud.ces.v1beta.AgentService/RestoreAppVersion"
+	AgentService_GenerateAppResource_FullMethodName      = "/google.cloud.ces.v1beta.AgentService/GenerateAppResource"
 	AgentService_ListChangelogs_FullMethodName           = "/google.cloud.ces.v1beta.AgentService/ListChangelogs"
 	AgentService_GetChangelog_FullMethodName             = "/google.cloud.ces.v1beta.AgentService/GetChangelog"
 )
@@ -190,6 +191,8 @@ type AgentServiceClient interface {
 	// This will create a new app version from the current draft app and overwrite
 	// the current draft with the specified app version.
 	RestoreAppVersion(ctx context.Context, in *RestoreAppVersionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Generates specific resources (e.g. agent) in the app using LLM assistant.
+	GenerateAppResource(ctx context.Context, in *GenerateAppResourceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists the changelogs of the specified app.
 	ListChangelogs(ctx context.Context, in *ListChangelogsRequest, opts ...grpc.CallOption) (*ListChangelogsResponse, error)
 	// Gets the specified changelog.
@@ -636,6 +639,15 @@ func (c *agentServiceClient) RestoreAppVersion(ctx context.Context, in *RestoreA
 	return out, nil
 }
 
+func (c *agentServiceClient) GenerateAppResource(ctx context.Context, in *GenerateAppResourceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, AgentService_GenerateAppResource_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *agentServiceClient) ListChangelogs(ctx context.Context, in *ListChangelogsRequest, opts ...grpc.CallOption) (*ListChangelogsResponse, error) {
 	out := new(ListChangelogsResponse)
 	err := c.cc.Invoke(ctx, AgentService_ListChangelogs_FullMethodName, in, out, opts...)
@@ -756,6 +768,8 @@ type AgentServiceServer interface {
 	// This will create a new app version from the current draft app and overwrite
 	// the current draft with the specified app version.
 	RestoreAppVersion(context.Context, *RestoreAppVersionRequest) (*longrunningpb.Operation, error)
+	// Generates specific resources (e.g. agent) in the app using LLM assistant.
+	GenerateAppResource(context.Context, *GenerateAppResourceRequest) (*longrunningpb.Operation, error)
 	// Lists the changelogs of the specified app.
 	ListChangelogs(context.Context, *ListChangelogsRequest) (*ListChangelogsResponse, error)
 	// Gets the specified changelog.
@@ -909,6 +923,9 @@ func (UnimplementedAgentServiceServer) DeleteAppVersion(context.Context, *Delete
 }
 func (UnimplementedAgentServiceServer) RestoreAppVersion(context.Context, *RestoreAppVersionRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RestoreAppVersion not implemented")
+}
+func (UnimplementedAgentServiceServer) GenerateAppResource(context.Context, *GenerateAppResourceRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GenerateAppResource not implemented")
 }
 func (UnimplementedAgentServiceServer) ListChangelogs(context.Context, *ListChangelogsRequest) (*ListChangelogsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListChangelogs not implemented")
@@ -1792,6 +1809,24 @@ func _AgentService_RestoreAppVersion_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AgentService_GenerateAppResource_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GenerateAppResourceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AgentServiceServer).GenerateAppResource(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AgentService_GenerateAppResource_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AgentServiceServer).GenerateAppResource(ctx, req.(*GenerateAppResourceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AgentService_ListChangelogs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListChangelogsRequest)
 	if err := dec(in); err != nil {
@@ -2026,6 +2061,10 @@ var AgentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RestoreAppVersion",
 			Handler:    _AgentService_RestoreAppVersion_Handler,
+		},
+		{
+			MethodName: "GenerateAppResource",
+			Handler:    _AgentService_GenerateAppResource_Handler,
 		},
 		{
 			MethodName: "ListChangelogs",

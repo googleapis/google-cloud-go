@@ -75,6 +75,11 @@
                 "GetOperation"
               ]
             },
+            "GetSharedRegionalCertificateAuthority": {
+              "methods": [
+                "GetSharedRegionalCertificateAuthority"
+              ]
+            },
             "ListBackupCollections": {
               "methods": [
                 "ListBackupCollections"
@@ -178,6 +183,11 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "GetSharedRegionalCertificateAuthority": {
+              "methods": [
+                "GetSharedRegionalCertificateAuthority"
               ]
             },
             "ListBackupCollections": {

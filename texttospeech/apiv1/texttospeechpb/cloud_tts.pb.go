@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -183,6 +183,133 @@ func (AudioEncoding) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_texttospeech_v1_cloud_tts_proto_rawDescGZIP(), []int{1}
 }
 
+// Harm categories that will block the content.
+type AdvancedVoiceOptions_HarmCategory int32
+
+const (
+	// Default value. This value is unused.
+	AdvancedVoiceOptions_HARM_CATEGORY_UNSPECIFIED AdvancedVoiceOptions_HarmCategory = 0
+	// Content that promotes violence or incites hatred against individuals or
+	// groups based on certain attributes.
+	AdvancedVoiceOptions_HARM_CATEGORY_HATE_SPEECH AdvancedVoiceOptions_HarmCategory = 1
+	// Content that promotes, facilitates, or enables dangerous activities.
+	AdvancedVoiceOptions_HARM_CATEGORY_DANGEROUS_CONTENT AdvancedVoiceOptions_HarmCategory = 2
+	// Abusive, threatening, or content intended to bully, torment, or ridicule.
+	AdvancedVoiceOptions_HARM_CATEGORY_HARASSMENT AdvancedVoiceOptions_HarmCategory = 3
+	// Content that contains sexually explicit material.
+	AdvancedVoiceOptions_HARM_CATEGORY_SEXUALLY_EXPLICIT AdvancedVoiceOptions_HarmCategory = 4
+)
+
+// Enum value maps for AdvancedVoiceOptions_HarmCategory.
+var (
+	AdvancedVoiceOptions_HarmCategory_name = map[int32]string{
+		0: "HARM_CATEGORY_UNSPECIFIED",
+		1: "HARM_CATEGORY_HATE_SPEECH",
+		2: "HARM_CATEGORY_DANGEROUS_CONTENT",
+		3: "HARM_CATEGORY_HARASSMENT",
+		4: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+	}
+	AdvancedVoiceOptions_HarmCategory_value = map[string]int32{
+		"HARM_CATEGORY_UNSPECIFIED":       0,
+		"HARM_CATEGORY_HATE_SPEECH":       1,
+		"HARM_CATEGORY_DANGEROUS_CONTENT": 2,
+		"HARM_CATEGORY_HARASSMENT":        3,
+		"HARM_CATEGORY_SEXUALLY_EXPLICIT": 4,
+	}
+)
+
+func (x AdvancedVoiceOptions_HarmCategory) Enum() *AdvancedVoiceOptions_HarmCategory {
+	p := new(AdvancedVoiceOptions_HarmCategory)
+	*p = x
+	return p
+}
+
+func (x AdvancedVoiceOptions_HarmCategory) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (AdvancedVoiceOptions_HarmCategory) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_texttospeech_v1_cloud_tts_proto_enumTypes[2].Descriptor()
+}
+
+func (AdvancedVoiceOptions_HarmCategory) Type() protoreflect.EnumType {
+	return &file_google_cloud_texttospeech_v1_cloud_tts_proto_enumTypes[2]
+}
+
+func (x AdvancedVoiceOptions_HarmCategory) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use AdvancedVoiceOptions_HarmCategory.Descriptor instead.
+func (AdvancedVoiceOptions_HarmCategory) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_texttospeech_v1_cloud_tts_proto_rawDescGZIP(), []int{3, 0}
+}
+
+// Harm block thresholds for the safety settings.
+type AdvancedVoiceOptions_HarmBlockThreshold int32
+
+const (
+	// The harm block threshold is unspecified.
+	AdvancedVoiceOptions_HARM_BLOCK_THRESHOLD_UNSPECIFIED AdvancedVoiceOptions_HarmBlockThreshold = 0
+	// Block content with a low harm probability or higher.
+	AdvancedVoiceOptions_BLOCK_LOW_AND_ABOVE AdvancedVoiceOptions_HarmBlockThreshold = 1
+	// Block content with a medium harm probability or higher.
+	AdvancedVoiceOptions_BLOCK_MEDIUM_AND_ABOVE AdvancedVoiceOptions_HarmBlockThreshold = 2
+	// Block content with a high harm probability.
+	AdvancedVoiceOptions_BLOCK_ONLY_HIGH AdvancedVoiceOptions_HarmBlockThreshold = 3
+	// Do not block any content, regardless of its harm probability.
+	AdvancedVoiceOptions_BLOCK_NONE AdvancedVoiceOptions_HarmBlockThreshold = 4
+	// Turn off the safety filter entirely.
+	AdvancedVoiceOptions_OFF AdvancedVoiceOptions_HarmBlockThreshold = 5
+)
+
+// Enum value maps for AdvancedVoiceOptions_HarmBlockThreshold.
+var (
+	AdvancedVoiceOptions_HarmBlockThreshold_name = map[int32]string{
+		0: "HARM_BLOCK_THRESHOLD_UNSPECIFIED",
+		1: "BLOCK_LOW_AND_ABOVE",
+		2: "BLOCK_MEDIUM_AND_ABOVE",
+		3: "BLOCK_ONLY_HIGH",
+		4: "BLOCK_NONE",
+		5: "OFF",
+	}
+	AdvancedVoiceOptions_HarmBlockThreshold_value = map[string]int32{
+		"HARM_BLOCK_THRESHOLD_UNSPECIFIED": 0,
+		"BLOCK_LOW_AND_ABOVE":              1,
+		"BLOCK_MEDIUM_AND_ABOVE":           2,
+		"BLOCK_ONLY_HIGH":                  3,
+		"BLOCK_NONE":                       4,
+		"OFF":                              5,
+	}
+)
+
+func (x AdvancedVoiceOptions_HarmBlockThreshold) Enum() *AdvancedVoiceOptions_HarmBlockThreshold {
+	p := new(AdvancedVoiceOptions_HarmBlockThreshold)
+	*p = x
+	return p
+}
+
+func (x AdvancedVoiceOptions_HarmBlockThreshold) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (AdvancedVoiceOptions_HarmBlockThreshold) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_texttospeech_v1_cloud_tts_proto_enumTypes[3].Descriptor()
+}
+
+func (AdvancedVoiceOptions_HarmBlockThreshold) Type() protoreflect.EnumType {
+	return &file_google_cloud_texttospeech_v1_cloud_tts_proto_enumTypes[3]
+}
+
+func (x AdvancedVoiceOptions_HarmBlockThreshold) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use AdvancedVoiceOptions_HarmBlockThreshold.Descriptor instead.
+func (AdvancedVoiceOptions_HarmBlockThreshold) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_texttospeech_v1_cloud_tts_proto_rawDescGZIP(), []int{3, 1}
+}
+
 // The phonetic encoding of the phrase.
 type CustomPronunciationParams_PhoneticEncoding int32
 
@@ -248,11 +375,11 @@ func (x CustomPronunciationParams_PhoneticEncoding) String() string {
 }
 
 func (CustomPronunciationParams_PhoneticEncoding) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_texttospeech_v1_cloud_tts_proto_enumTypes[2].Descriptor()
+	return file_google_cloud_texttospeech_v1_cloud_tts_proto_enumTypes[4].Descriptor()
 }
 
 func (CustomPronunciationParams_PhoneticEncoding) Type() protoreflect.EnumType {
-	return &file_google_cloud_texttospeech_v1_cloud_tts_proto_enumTypes[2]
+	return &file_google_cloud_texttospeech_v1_cloud_tts_proto_enumTypes[4]
 }
 
 func (x CustomPronunciationParams_PhoneticEncoding) Number() protoreflect.EnumNumber {
@@ -305,11 +432,11 @@ func (x CustomVoiceParams_ReportedUsage) String() string {
 }
 
 func (CustomVoiceParams_ReportedUsage) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_texttospeech_v1_cloud_tts_proto_enumTypes[3].Descriptor()
+	return file_google_cloud_texttospeech_v1_cloud_tts_proto_enumTypes[5].Descriptor()
 }
 
 func (CustomVoiceParams_ReportedUsage) Type() protoreflect.EnumType {
-	return &file_google_cloud_texttospeech_v1_cloud_tts_proto_enumTypes[3]
+	return &file_google_cloud_texttospeech_v1_cloud_tts_proto_enumTypes[5]
 }
 
 func (x CustomVoiceParams_ReportedUsage) Number() protoreflect.EnumNumber {
@@ -501,13 +628,21 @@ type AdvancedVoiceOptions struct {
 	// Only for Journey voices. If false, the synthesis is context aware
 	// and has a higher latency.
 	LowLatencyJourneySynthesis *bool `protobuf:"varint,1,opt,name=low_latency_journey_synthesis,json=lowLatencyJourneySynthesis,proto3,oneof" json:"low_latency_journey_synthesis,omitempty"`
-	// Optional. Input only. If true, relaxes safety filters for Gemini TTS. Only
-	// supported for accounts linked to Invoiced (Offline) Cloud billing accounts.
-	// Otherwise, will return result
-	// [google.rpc.Code.INVALID_ARGUMENT][google.rpc.Code.INVALID_ARGUMENT].
+	// Optional. Input only. Deprecated, use safety_settings instead.
+	// If true, relaxes safety filters for Gemini TTS.
+	//
+	// Deprecated: Marked as deprecated in google/cloud/texttospeech/v1/cloud_tts.proto.
 	RelaxSafetyFilters bool `protobuf:"varint,8,opt,name=relax_safety_filters,json=relaxSafetyFilters,proto3" json:"relax_safety_filters,omitempty"`
-	unknownFields      protoimpl.UnknownFields
-	sizeCache          protoimpl.SizeCache
+	// Optional. Input only. This applies to Gemini TTS only. If set, the category
+	// specified in the safety setting will be blocked if the harm probability is
+	// above the threshold. Otherwise, the safety filter will be disabled by
+	// default.
+	SafetySettings *AdvancedVoiceOptions_SafetySettings `protobuf:"bytes,9,opt,name=safety_settings,json=safetySettings,proto3" json:"safety_settings,omitempty"`
+	// Optional. If true, textnorm will be applied to text input. This feature is
+	// enabled by default. Only applies for Gemini TTS.
+	EnableTextnorm *bool `protobuf:"varint,2,opt,name=enable_textnorm,json=enableTextnorm,proto3,oneof" json:"enable_textnorm,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *AdvancedVoiceOptions) Reset() {
@@ -547,9 +682,24 @@ func (x *AdvancedVoiceOptions) GetLowLatencyJourneySynthesis() bool {
 	return false
 }
 
+// Deprecated: Marked as deprecated in google/cloud/texttospeech/v1/cloud_tts.proto.
 func (x *AdvancedVoiceOptions) GetRelaxSafetyFilters() bool {
 	if x != nil {
 		return x.RelaxSafetyFilters
+	}
+	return false
+}
+
+func (x *AdvancedVoiceOptions) GetSafetySettings() *AdvancedVoiceOptions_SafetySettings {
+	if x != nil {
+		return x.SafetySettings
+	}
+	return nil
+}
+
+func (x *AdvancedVoiceOptions) GetEnableTextnorm() bool {
+	if x != nil && x.EnableTextnorm != nil {
+		return *x.EnableTextnorm
 	}
 	return false
 }
@@ -563,7 +713,7 @@ type SynthesizeSpeechRequest struct {
 	Voice *VoiceSelectionParams `protobuf:"bytes,2,opt,name=voice,proto3" json:"voice,omitempty"`
 	// Required. The configuration of the synthesized audio.
 	AudioConfig *AudioConfig `protobuf:"bytes,3,opt,name=audio_config,json=audioConfig,proto3" json:"audio_config,omitempty"`
-	// Advanced voice options.
+	// Optional. Advanced voice options.
 	AdvancedVoiceOptions *AdvancedVoiceOptions `protobuf:"bytes,8,opt,name=advanced_voice_options,json=advancedVoiceOptions,proto3,oneof" json:"advanced_voice_options,omitempty"`
 	unknownFields        protoimpl.UnknownFields
 	sizeCache            protoimpl.SizeCache
@@ -1025,8 +1175,8 @@ type SynthesisInput_Text struct {
 }
 
 type SynthesisInput_Markup struct {
-	// Markup for HD voices specifically. This field may not be used with any
-	// other voices.
+	// Markup for Chirp 3: HD voices specifically. This field may not be used
+	// with any other voices.
 	Markup string `protobuf:"bytes,5,opt,name=markup,proto3,oneof"`
 }
 
@@ -1531,6 +1681,8 @@ type StreamingSynthesizeConfig struct {
 	// match of the phrase in the input types. If using SSML, the phrase must not
 	// be inside a phoneme tag.
 	CustomPronunciations *CustomPronunciations `protobuf:"bytes,5,opt,name=custom_pronunciations,json=customPronunciations,proto3" json:"custom_pronunciations,omitempty"`
+	// Optional. Advanced voice options.
+	AdvancedVoiceOptions *AdvancedVoiceOptions `protobuf:"bytes,7,opt,name=advanced_voice_options,json=advancedVoiceOptions,proto3,oneof" json:"advanced_voice_options,omitempty"`
 	unknownFields        protoimpl.UnknownFields
 	sizeCache            protoimpl.SizeCache
 }
@@ -1582,6 +1734,13 @@ func (x *StreamingSynthesizeConfig) GetStreamingAudioConfig() *StreamingAudioCon
 func (x *StreamingSynthesizeConfig) GetCustomPronunciations() *CustomPronunciations {
 	if x != nil {
 		return x.CustomPronunciations
+	}
+	return nil
+}
+
+func (x *StreamingSynthesizeConfig) GetAdvancedVoiceOptions() *AdvancedVoiceOptions {
+	if x != nil {
+		return x.AdvancedVoiceOptions
 	}
 	return nil
 }
@@ -1684,8 +1843,8 @@ type StreamingSynthesisInput_Text struct {
 }
 
 type StreamingSynthesisInput_Markup struct {
-	// Markup for HD voices specifically. This field may not be used with any
-	// other voices.
+	// Markup for Chirp 3: HD voices specifically. This field may not be used
+	// with any other voices.
 	Markup string `protobuf:"bytes,5,opt,name=markup,proto3,oneof"`
 }
 
@@ -1844,6 +2003,107 @@ func (x *StreamingSynthesizeResponse) GetAudioContent() []byte {
 	return nil
 }
 
+// Safety setting for a single harm category.
+type AdvancedVoiceOptions_SafetySetting struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The harm category to apply the safety setting to.
+	Category AdvancedVoiceOptions_HarmCategory `protobuf:"varint,1,opt,name=category,proto3,enum=google.cloud.texttospeech.v1.AdvancedVoiceOptions_HarmCategory" json:"category,omitempty"`
+	// The harm block threshold for the safety setting.
+	Threshold     AdvancedVoiceOptions_HarmBlockThreshold `protobuf:"varint,2,opt,name=threshold,proto3,enum=google.cloud.texttospeech.v1.AdvancedVoiceOptions_HarmBlockThreshold" json:"threshold,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AdvancedVoiceOptions_SafetySetting) Reset() {
+	*x = AdvancedVoiceOptions_SafetySetting{}
+	mi := &file_google_cloud_texttospeech_v1_cloud_tts_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AdvancedVoiceOptions_SafetySetting) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AdvancedVoiceOptions_SafetySetting) ProtoMessage() {}
+
+func (x *AdvancedVoiceOptions_SafetySetting) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_texttospeech_v1_cloud_tts_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AdvancedVoiceOptions_SafetySetting.ProtoReflect.Descriptor instead.
+func (*AdvancedVoiceOptions_SafetySetting) Descriptor() ([]byte, []int) {
+	return file_google_cloud_texttospeech_v1_cloud_tts_proto_rawDescGZIP(), []int{3, 0}
+}
+
+func (x *AdvancedVoiceOptions_SafetySetting) GetCategory() AdvancedVoiceOptions_HarmCategory {
+	if x != nil {
+		return x.Category
+	}
+	return AdvancedVoiceOptions_HARM_CATEGORY_UNSPECIFIED
+}
+
+func (x *AdvancedVoiceOptions_SafetySetting) GetThreshold() AdvancedVoiceOptions_HarmBlockThreshold {
+	if x != nil {
+		return x.Threshold
+	}
+	return AdvancedVoiceOptions_HARM_BLOCK_THRESHOLD_UNSPECIFIED
+}
+
+// Safety settings for the request.
+type AdvancedVoiceOptions_SafetySettings struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The safety settings for the request.
+	Settings      []*AdvancedVoiceOptions_SafetySetting `protobuf:"bytes,1,rep,name=settings,proto3" json:"settings,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AdvancedVoiceOptions_SafetySettings) Reset() {
+	*x = AdvancedVoiceOptions_SafetySettings{}
+	mi := &file_google_cloud_texttospeech_v1_cloud_tts_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AdvancedVoiceOptions_SafetySettings) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AdvancedVoiceOptions_SafetySettings) ProtoMessage() {}
+
+func (x *AdvancedVoiceOptions_SafetySettings) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_texttospeech_v1_cloud_tts_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AdvancedVoiceOptions_SafetySettings.ProtoReflect.Descriptor instead.
+func (*AdvancedVoiceOptions_SafetySettings) Descriptor() ([]byte, []int) {
+	return file_google_cloud_texttospeech_v1_cloud_tts_proto_rawDescGZIP(), []int{3, 1}
+}
+
+func (x *AdvancedVoiceOptions_SafetySettings) GetSettings() []*AdvancedVoiceOptions_SafetySetting {
+	if x != nil {
+		return x.Settings
+	}
+	return nil
+}
+
 // A multi-speaker turn.
 type MultiSpeakerMarkup_Turn struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -1858,7 +2118,7 @@ type MultiSpeakerMarkup_Turn struct {
 
 func (x *MultiSpeakerMarkup_Turn) Reset() {
 	*x = MultiSpeakerMarkup_Turn{}
-	mi := &file_google_cloud_texttospeech_v1_cloud_tts_proto_msgTypes[21]
+	mi := &file_google_cloud_texttospeech_v1_cloud_tts_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1870,7 +2130,7 @@ func (x *MultiSpeakerMarkup_Turn) String() string {
 func (*MultiSpeakerMarkup_Turn) ProtoMessage() {}
 
 func (x *MultiSpeakerMarkup_Turn) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_texttospeech_v1_cloud_tts_proto_msgTypes[21]
+	mi := &file_google_cloud_texttospeech_v1_cloud_tts_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1914,16 +2174,38 @@ const file_google_cloud_texttospeech_v1_cloud_tts_proto_rawDesc = "" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12N\n" +
 	"\vssml_gender\x18\x03 \x01(\x0e2-.google.cloud.texttospeech.v1.SsmlVoiceGenderR\n" +
 	"ssmlGender\x129\n" +
-	"\x19natural_sample_rate_hertz\x18\x04 \x01(\x05R\x16naturalSampleRateHertz\"\xba\x01\n" +
+	"\x19natural_sample_rate_hertz\x18\x04 \x01(\x05R\x16naturalSampleRateHertz\"\x92\b\n" +
 	"\x14AdvancedVoiceOptions\x12F\n" +
-	"\x1dlow_latency_journey_synthesis\x18\x01 \x01(\bH\x00R\x1alowLatencyJourneySynthesis\x88\x01\x01\x128\n" +
-	"\x14relax_safety_filters\x18\b \x01(\bB\x06\xe0A\x04\xe0A\x01R\x12relaxSafetyFiltersB \n" +
-	"\x1e_low_latency_journey_synthesis\"\x8e\x03\n" +
+	"\x1dlow_latency_journey_synthesis\x18\x01 \x01(\bH\x00R\x1alowLatencyJourneySynthesis\x88\x01\x01\x12:\n" +
+	"\x14relax_safety_filters\x18\b \x01(\bB\b\xe0A\x04\xe0A\x01\x18\x01R\x12relaxSafetyFilters\x12r\n" +
+	"\x0fsafety_settings\x18\t \x01(\v2A.google.cloud.texttospeech.v1.AdvancedVoiceOptions.SafetySettingsB\x06\xe0A\x04\xe0A\x01R\x0esafetySettings\x121\n" +
+	"\x0fenable_textnorm\x18\x02 \x01(\bB\x03\xe0A\x01H\x01R\x0eenableTextnorm\x88\x01\x01\x1a\xd1\x01\n" +
+	"\rSafetySetting\x12[\n" +
+	"\bcategory\x18\x01 \x01(\x0e2?.google.cloud.texttospeech.v1.AdvancedVoiceOptions.HarmCategoryR\bcategory\x12c\n" +
+	"\tthreshold\x18\x02 \x01(\x0e2E.google.cloud.texttospeech.v1.AdvancedVoiceOptions.HarmBlockThresholdR\tthreshold\x1an\n" +
+	"\x0eSafetySettings\x12\\\n" +
+	"\bsettings\x18\x01 \x03(\v2@.google.cloud.texttospeech.v1.AdvancedVoiceOptions.SafetySettingR\bsettings\"\xb4\x01\n" +
+	"\fHarmCategory\x12\x1d\n" +
+	"\x19HARM_CATEGORY_UNSPECIFIED\x10\x00\x12\x1d\n" +
+	"\x19HARM_CATEGORY_HATE_SPEECH\x10\x01\x12#\n" +
+	"\x1fHARM_CATEGORY_DANGEROUS_CONTENT\x10\x02\x12\x1c\n" +
+	"\x18HARM_CATEGORY_HARASSMENT\x10\x03\x12#\n" +
+	"\x1fHARM_CATEGORY_SEXUALLY_EXPLICIT\x10\x04\"\x9d\x01\n" +
+	"\x12HarmBlockThreshold\x12$\n" +
+	" HARM_BLOCK_THRESHOLD_UNSPECIFIED\x10\x00\x12\x17\n" +
+	"\x13BLOCK_LOW_AND_ABOVE\x10\x01\x12\x1a\n" +
+	"\x16BLOCK_MEDIUM_AND_ABOVE\x10\x02\x12\x13\n" +
+	"\x0fBLOCK_ONLY_HIGH\x10\x03\x12\x0e\n" +
+	"\n" +
+	"BLOCK_NONE\x10\x04\x12\a\n" +
+	"\x03OFF\x10\x05B \n" +
+	"\x1e_low_latency_journey_synthesisB\x12\n" +
+	"\x10_enable_textnorm\"\x93\x03\n" +
 	"\x17SynthesizeSpeechRequest\x12G\n" +
 	"\x05input\x18\x01 \x01(\v2,.google.cloud.texttospeech.v1.SynthesisInputB\x03\xe0A\x02R\x05input\x12M\n" +
 	"\x05voice\x18\x02 \x01(\v22.google.cloud.texttospeech.v1.VoiceSelectionParamsB\x03\xe0A\x02R\x05voice\x12Q\n" +
-	"\faudio_config\x18\x03 \x01(\v2).google.cloud.texttospeech.v1.AudioConfigB\x03\xe0A\x02R\vaudioConfig\x12m\n" +
-	"\x16advanced_voice_options\x18\b \x01(\v22.google.cloud.texttospeech.v1.AdvancedVoiceOptionsH\x00R\x14advancedVoiceOptions\x88\x01\x01B\x19\n" +
+	"\faudio_config\x18\x03 \x01(\v2).google.cloud.texttospeech.v1.AudioConfigB\x03\xe0A\x02R\vaudioConfig\x12r\n" +
+	"\x16advanced_voice_options\x18\b \x01(\v22.google.cloud.texttospeech.v1.AdvancedVoiceOptionsB\x03\xe0A\x01H\x00R\x14advancedVoiceOptions\x88\x01\x01B\x19\n" +
 	"\x17_advanced_voice_options\"\xcb\x03\n" +
 	"\x19CustomPronunciationParams\x12\x1b\n" +
 	"\x06phrase\x18\x01 \x01(\tH\x00R\x06phrase\x88\x01\x01\x12z\n" +
@@ -1993,11 +2275,13 @@ const file_google_cloud_texttospeech_v1_cloud_tts_proto_rawDesc = "" +
 	"\x14StreamingAudioConfig\x12W\n" +
 	"\x0eaudio_encoding\x18\x01 \x01(\x0e2+.google.cloud.texttospeech.v1.AudioEncodingB\x03\xe0A\x02R\raudioEncoding\x12/\n" +
 	"\x11sample_rate_hertz\x18\x02 \x01(\x05B\x03\xe0A\x01R\x0fsampleRateHertz\x12+\n" +
-	"\rspeaking_rate\x18\x03 \x01(\x01B\x06\xe0A\x04\xe0A\x01R\fspeakingRate\"\xc7\x02\n" +
+	"\rspeaking_rate\x18\x03 \x01(\x01B\x06\xe0A\x04\xe0A\x01R\fspeakingRate\"\xd6\x03\n" +
 	"\x19StreamingSynthesizeConfig\x12M\n" +
 	"\x05voice\x18\x01 \x01(\v22.google.cloud.texttospeech.v1.VoiceSelectionParamsB\x03\xe0A\x02R\x05voice\x12m\n" +
 	"\x16streaming_audio_config\x18\x04 \x01(\v22.google.cloud.texttospeech.v1.StreamingAudioConfigB\x03\xe0A\x01R\x14streamingAudioConfig\x12l\n" +
-	"\x15custom_pronunciations\x18\x05 \x01(\v22.google.cloud.texttospeech.v1.CustomPronunciationsB\x03\xe0A\x01R\x14customPronunciations\"\xe7\x01\n" +
+	"\x15custom_pronunciations\x18\x05 \x01(\v22.google.cloud.texttospeech.v1.CustomPronunciationsB\x03\xe0A\x01R\x14customPronunciations\x12r\n" +
+	"\x16advanced_voice_options\x18\a \x01(\v22.google.cloud.texttospeech.v1.AdvancedVoiceOptionsB\x03\xe0A\x01H\x00R\x14advancedVoiceOptions\x88\x01\x01B\x19\n" +
+	"\x17_advanced_voice_options\"\xe7\x01\n" +
 	"\x17StreamingSynthesisInput\x12\x14\n" +
 	"\x04text\x18\x01 \x01(\tH\x00R\x04text\x12\x18\n" +
 	"\x06markup\x18\x05 \x01(\tH\x00R\x06markup\x12d\n" +
@@ -2047,73 +2331,82 @@ func file_google_cloud_texttospeech_v1_cloud_tts_proto_rawDescGZIP() []byte {
 	return file_google_cloud_texttospeech_v1_cloud_tts_proto_rawDescData
 }
 
-var file_google_cloud_texttospeech_v1_cloud_tts_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_google_cloud_texttospeech_v1_cloud_tts_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
+var file_google_cloud_texttospeech_v1_cloud_tts_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
+var file_google_cloud_texttospeech_v1_cloud_tts_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
 var file_google_cloud_texttospeech_v1_cloud_tts_proto_goTypes = []any{
 	(SsmlVoiceGender)(0),                            // 0: google.cloud.texttospeech.v1.SsmlVoiceGender
 	(AudioEncoding)(0),                              // 1: google.cloud.texttospeech.v1.AudioEncoding
-	(CustomPronunciationParams_PhoneticEncoding)(0), // 2: google.cloud.texttospeech.v1.CustomPronunciationParams.PhoneticEncoding
-	(CustomVoiceParams_ReportedUsage)(0),            // 3: google.cloud.texttospeech.v1.CustomVoiceParams.ReportedUsage
-	(*ListVoicesRequest)(nil),                       // 4: google.cloud.texttospeech.v1.ListVoicesRequest
-	(*ListVoicesResponse)(nil),                      // 5: google.cloud.texttospeech.v1.ListVoicesResponse
-	(*Voice)(nil),                                   // 6: google.cloud.texttospeech.v1.Voice
-	(*AdvancedVoiceOptions)(nil),                    // 7: google.cloud.texttospeech.v1.AdvancedVoiceOptions
-	(*SynthesizeSpeechRequest)(nil),                 // 8: google.cloud.texttospeech.v1.SynthesizeSpeechRequest
-	(*CustomPronunciationParams)(nil),               // 9: google.cloud.texttospeech.v1.CustomPronunciationParams
-	(*CustomPronunciations)(nil),                    // 10: google.cloud.texttospeech.v1.CustomPronunciations
-	(*MultiSpeakerMarkup)(nil),                      // 11: google.cloud.texttospeech.v1.MultiSpeakerMarkup
-	(*MultispeakerPrebuiltVoice)(nil),               // 12: google.cloud.texttospeech.v1.MultispeakerPrebuiltVoice
-	(*MultiSpeakerVoiceConfig)(nil),                 // 13: google.cloud.texttospeech.v1.MultiSpeakerVoiceConfig
-	(*SynthesisInput)(nil),                          // 14: google.cloud.texttospeech.v1.SynthesisInput
-	(*VoiceSelectionParams)(nil),                    // 15: google.cloud.texttospeech.v1.VoiceSelectionParams
-	(*AudioConfig)(nil),                             // 16: google.cloud.texttospeech.v1.AudioConfig
-	(*CustomVoiceParams)(nil),                       // 17: google.cloud.texttospeech.v1.CustomVoiceParams
-	(*VoiceCloneParams)(nil),                        // 18: google.cloud.texttospeech.v1.VoiceCloneParams
-	(*SynthesizeSpeechResponse)(nil),                // 19: google.cloud.texttospeech.v1.SynthesizeSpeechResponse
-	(*StreamingAudioConfig)(nil),                    // 20: google.cloud.texttospeech.v1.StreamingAudioConfig
-	(*StreamingSynthesizeConfig)(nil),               // 21: google.cloud.texttospeech.v1.StreamingSynthesizeConfig
-	(*StreamingSynthesisInput)(nil),                 // 22: google.cloud.texttospeech.v1.StreamingSynthesisInput
-	(*StreamingSynthesizeRequest)(nil),              // 23: google.cloud.texttospeech.v1.StreamingSynthesizeRequest
-	(*StreamingSynthesizeResponse)(nil),             // 24: google.cloud.texttospeech.v1.StreamingSynthesizeResponse
-	(*MultiSpeakerMarkup_Turn)(nil),                 // 25: google.cloud.texttospeech.v1.MultiSpeakerMarkup.Turn
+	(AdvancedVoiceOptions_HarmCategory)(0),          // 2: google.cloud.texttospeech.v1.AdvancedVoiceOptions.HarmCategory
+	(AdvancedVoiceOptions_HarmBlockThreshold)(0),    // 3: google.cloud.texttospeech.v1.AdvancedVoiceOptions.HarmBlockThreshold
+	(CustomPronunciationParams_PhoneticEncoding)(0), // 4: google.cloud.texttospeech.v1.CustomPronunciationParams.PhoneticEncoding
+	(CustomVoiceParams_ReportedUsage)(0),            // 5: google.cloud.texttospeech.v1.CustomVoiceParams.ReportedUsage
+	(*ListVoicesRequest)(nil),                       // 6: google.cloud.texttospeech.v1.ListVoicesRequest
+	(*ListVoicesResponse)(nil),                      // 7: google.cloud.texttospeech.v1.ListVoicesResponse
+	(*Voice)(nil),                                   // 8: google.cloud.texttospeech.v1.Voice
+	(*AdvancedVoiceOptions)(nil),                    // 9: google.cloud.texttospeech.v1.AdvancedVoiceOptions
+	(*SynthesizeSpeechRequest)(nil),                 // 10: google.cloud.texttospeech.v1.SynthesizeSpeechRequest
+	(*CustomPronunciationParams)(nil),               // 11: google.cloud.texttospeech.v1.CustomPronunciationParams
+	(*CustomPronunciations)(nil),                    // 12: google.cloud.texttospeech.v1.CustomPronunciations
+	(*MultiSpeakerMarkup)(nil),                      // 13: google.cloud.texttospeech.v1.MultiSpeakerMarkup
+	(*MultispeakerPrebuiltVoice)(nil),               // 14: google.cloud.texttospeech.v1.MultispeakerPrebuiltVoice
+	(*MultiSpeakerVoiceConfig)(nil),                 // 15: google.cloud.texttospeech.v1.MultiSpeakerVoiceConfig
+	(*SynthesisInput)(nil),                          // 16: google.cloud.texttospeech.v1.SynthesisInput
+	(*VoiceSelectionParams)(nil),                    // 17: google.cloud.texttospeech.v1.VoiceSelectionParams
+	(*AudioConfig)(nil),                             // 18: google.cloud.texttospeech.v1.AudioConfig
+	(*CustomVoiceParams)(nil),                       // 19: google.cloud.texttospeech.v1.CustomVoiceParams
+	(*VoiceCloneParams)(nil),                        // 20: google.cloud.texttospeech.v1.VoiceCloneParams
+	(*SynthesizeSpeechResponse)(nil),                // 21: google.cloud.texttospeech.v1.SynthesizeSpeechResponse
+	(*StreamingAudioConfig)(nil),                    // 22: google.cloud.texttospeech.v1.StreamingAudioConfig
+	(*StreamingSynthesizeConfig)(nil),               // 23: google.cloud.texttospeech.v1.StreamingSynthesizeConfig
+	(*StreamingSynthesisInput)(nil),                 // 24: google.cloud.texttospeech.v1.StreamingSynthesisInput
+	(*StreamingSynthesizeRequest)(nil),              // 25: google.cloud.texttospeech.v1.StreamingSynthesizeRequest
+	(*StreamingSynthesizeResponse)(nil),             // 26: google.cloud.texttospeech.v1.StreamingSynthesizeResponse
+	(*AdvancedVoiceOptions_SafetySetting)(nil),      // 27: google.cloud.texttospeech.v1.AdvancedVoiceOptions.SafetySetting
+	(*AdvancedVoiceOptions_SafetySettings)(nil),     // 28: google.cloud.texttospeech.v1.AdvancedVoiceOptions.SafetySettings
+	(*MultiSpeakerMarkup_Turn)(nil),                 // 29: google.cloud.texttospeech.v1.MultiSpeakerMarkup.Turn
 }
 var file_google_cloud_texttospeech_v1_cloud_tts_proto_depIdxs = []int32{
-	6,  // 0: google.cloud.texttospeech.v1.ListVoicesResponse.voices:type_name -> google.cloud.texttospeech.v1.Voice
+	8,  // 0: google.cloud.texttospeech.v1.ListVoicesResponse.voices:type_name -> google.cloud.texttospeech.v1.Voice
 	0,  // 1: google.cloud.texttospeech.v1.Voice.ssml_gender:type_name -> google.cloud.texttospeech.v1.SsmlVoiceGender
-	14, // 2: google.cloud.texttospeech.v1.SynthesizeSpeechRequest.input:type_name -> google.cloud.texttospeech.v1.SynthesisInput
-	15, // 3: google.cloud.texttospeech.v1.SynthesizeSpeechRequest.voice:type_name -> google.cloud.texttospeech.v1.VoiceSelectionParams
-	16, // 4: google.cloud.texttospeech.v1.SynthesizeSpeechRequest.audio_config:type_name -> google.cloud.texttospeech.v1.AudioConfig
-	7,  // 5: google.cloud.texttospeech.v1.SynthesizeSpeechRequest.advanced_voice_options:type_name -> google.cloud.texttospeech.v1.AdvancedVoiceOptions
-	2,  // 6: google.cloud.texttospeech.v1.CustomPronunciationParams.phonetic_encoding:type_name -> google.cloud.texttospeech.v1.CustomPronunciationParams.PhoneticEncoding
-	9,  // 7: google.cloud.texttospeech.v1.CustomPronunciations.pronunciations:type_name -> google.cloud.texttospeech.v1.CustomPronunciationParams
-	25, // 8: google.cloud.texttospeech.v1.MultiSpeakerMarkup.turns:type_name -> google.cloud.texttospeech.v1.MultiSpeakerMarkup.Turn
-	12, // 9: google.cloud.texttospeech.v1.MultiSpeakerVoiceConfig.speaker_voice_configs:type_name -> google.cloud.texttospeech.v1.MultispeakerPrebuiltVoice
-	11, // 10: google.cloud.texttospeech.v1.SynthesisInput.multi_speaker_markup:type_name -> google.cloud.texttospeech.v1.MultiSpeakerMarkup
-	10, // 11: google.cloud.texttospeech.v1.SynthesisInput.custom_pronunciations:type_name -> google.cloud.texttospeech.v1.CustomPronunciations
-	0,  // 12: google.cloud.texttospeech.v1.VoiceSelectionParams.ssml_gender:type_name -> google.cloud.texttospeech.v1.SsmlVoiceGender
-	17, // 13: google.cloud.texttospeech.v1.VoiceSelectionParams.custom_voice:type_name -> google.cloud.texttospeech.v1.CustomVoiceParams
-	18, // 14: google.cloud.texttospeech.v1.VoiceSelectionParams.voice_clone:type_name -> google.cloud.texttospeech.v1.VoiceCloneParams
-	13, // 15: google.cloud.texttospeech.v1.VoiceSelectionParams.multi_speaker_voice_config:type_name -> google.cloud.texttospeech.v1.MultiSpeakerVoiceConfig
-	1,  // 16: google.cloud.texttospeech.v1.AudioConfig.audio_encoding:type_name -> google.cloud.texttospeech.v1.AudioEncoding
-	3,  // 17: google.cloud.texttospeech.v1.CustomVoiceParams.reported_usage:type_name -> google.cloud.texttospeech.v1.CustomVoiceParams.ReportedUsage
-	1,  // 18: google.cloud.texttospeech.v1.StreamingAudioConfig.audio_encoding:type_name -> google.cloud.texttospeech.v1.AudioEncoding
-	15, // 19: google.cloud.texttospeech.v1.StreamingSynthesizeConfig.voice:type_name -> google.cloud.texttospeech.v1.VoiceSelectionParams
-	20, // 20: google.cloud.texttospeech.v1.StreamingSynthesizeConfig.streaming_audio_config:type_name -> google.cloud.texttospeech.v1.StreamingAudioConfig
-	10, // 21: google.cloud.texttospeech.v1.StreamingSynthesizeConfig.custom_pronunciations:type_name -> google.cloud.texttospeech.v1.CustomPronunciations
-	11, // 22: google.cloud.texttospeech.v1.StreamingSynthesisInput.multi_speaker_markup:type_name -> google.cloud.texttospeech.v1.MultiSpeakerMarkup
-	21, // 23: google.cloud.texttospeech.v1.StreamingSynthesizeRequest.streaming_config:type_name -> google.cloud.texttospeech.v1.StreamingSynthesizeConfig
-	22, // 24: google.cloud.texttospeech.v1.StreamingSynthesizeRequest.input:type_name -> google.cloud.texttospeech.v1.StreamingSynthesisInput
-	4,  // 25: google.cloud.texttospeech.v1.TextToSpeech.ListVoices:input_type -> google.cloud.texttospeech.v1.ListVoicesRequest
-	8,  // 26: google.cloud.texttospeech.v1.TextToSpeech.SynthesizeSpeech:input_type -> google.cloud.texttospeech.v1.SynthesizeSpeechRequest
-	23, // 27: google.cloud.texttospeech.v1.TextToSpeech.StreamingSynthesize:input_type -> google.cloud.texttospeech.v1.StreamingSynthesizeRequest
-	5,  // 28: google.cloud.texttospeech.v1.TextToSpeech.ListVoices:output_type -> google.cloud.texttospeech.v1.ListVoicesResponse
-	19, // 29: google.cloud.texttospeech.v1.TextToSpeech.SynthesizeSpeech:output_type -> google.cloud.texttospeech.v1.SynthesizeSpeechResponse
-	24, // 30: google.cloud.texttospeech.v1.TextToSpeech.StreamingSynthesize:output_type -> google.cloud.texttospeech.v1.StreamingSynthesizeResponse
-	28, // [28:31] is the sub-list for method output_type
-	25, // [25:28] is the sub-list for method input_type
-	25, // [25:25] is the sub-list for extension type_name
-	25, // [25:25] is the sub-list for extension extendee
-	0,  // [0:25] is the sub-list for field type_name
+	28, // 2: google.cloud.texttospeech.v1.AdvancedVoiceOptions.safety_settings:type_name -> google.cloud.texttospeech.v1.AdvancedVoiceOptions.SafetySettings
+	16, // 3: google.cloud.texttospeech.v1.SynthesizeSpeechRequest.input:type_name -> google.cloud.texttospeech.v1.SynthesisInput
+	17, // 4: google.cloud.texttospeech.v1.SynthesizeSpeechRequest.voice:type_name -> google.cloud.texttospeech.v1.VoiceSelectionParams
+	18, // 5: google.cloud.texttospeech.v1.SynthesizeSpeechRequest.audio_config:type_name -> google.cloud.texttospeech.v1.AudioConfig
+	9,  // 6: google.cloud.texttospeech.v1.SynthesizeSpeechRequest.advanced_voice_options:type_name -> google.cloud.texttospeech.v1.AdvancedVoiceOptions
+	4,  // 7: google.cloud.texttospeech.v1.CustomPronunciationParams.phonetic_encoding:type_name -> google.cloud.texttospeech.v1.CustomPronunciationParams.PhoneticEncoding
+	11, // 8: google.cloud.texttospeech.v1.CustomPronunciations.pronunciations:type_name -> google.cloud.texttospeech.v1.CustomPronunciationParams
+	29, // 9: google.cloud.texttospeech.v1.MultiSpeakerMarkup.turns:type_name -> google.cloud.texttospeech.v1.MultiSpeakerMarkup.Turn
+	14, // 10: google.cloud.texttospeech.v1.MultiSpeakerVoiceConfig.speaker_voice_configs:type_name -> google.cloud.texttospeech.v1.MultispeakerPrebuiltVoice
+	13, // 11: google.cloud.texttospeech.v1.SynthesisInput.multi_speaker_markup:type_name -> google.cloud.texttospeech.v1.MultiSpeakerMarkup
+	12, // 12: google.cloud.texttospeech.v1.SynthesisInput.custom_pronunciations:type_name -> google.cloud.texttospeech.v1.CustomPronunciations
+	0,  // 13: google.cloud.texttospeech.v1.VoiceSelectionParams.ssml_gender:type_name -> google.cloud.texttospeech.v1.SsmlVoiceGender
+	19, // 14: google.cloud.texttospeech.v1.VoiceSelectionParams.custom_voice:type_name -> google.cloud.texttospeech.v1.CustomVoiceParams
+	20, // 15: google.cloud.texttospeech.v1.VoiceSelectionParams.voice_clone:type_name -> google.cloud.texttospeech.v1.VoiceCloneParams
+	15, // 16: google.cloud.texttospeech.v1.VoiceSelectionParams.multi_speaker_voice_config:type_name -> google.cloud.texttospeech.v1.MultiSpeakerVoiceConfig
+	1,  // 17: google.cloud.texttospeech.v1.AudioConfig.audio_encoding:type_name -> google.cloud.texttospeech.v1.AudioEncoding
+	5,  // 18: google.cloud.texttospeech.v1.CustomVoiceParams.reported_usage:type_name -> google.cloud.texttospeech.v1.CustomVoiceParams.ReportedUsage
+	1,  // 19: google.cloud.texttospeech.v1.StreamingAudioConfig.audio_encoding:type_name -> google.cloud.texttospeech.v1.AudioEncoding
+	17, // 20: google.cloud.texttospeech.v1.StreamingSynthesizeConfig.voice:type_name -> google.cloud.texttospeech.v1.VoiceSelectionParams
+	22, // 21: google.cloud.texttospeech.v1.StreamingSynthesizeConfig.streaming_audio_config:type_name -> google.cloud.texttospeech.v1.StreamingAudioConfig
+	12, // 22: google.cloud.texttospeech.v1.StreamingSynthesizeConfig.custom_pronunciations:type_name -> google.cloud.texttospeech.v1.CustomPronunciations
+	9,  // 23: google.cloud.texttospeech.v1.StreamingSynthesizeConfig.advanced_voice_options:type_name -> google.cloud.texttospeech.v1.AdvancedVoiceOptions
+	13, // 24: google.cloud.texttospeech.v1.StreamingSynthesisInput.multi_speaker_markup:type_name -> google.cloud.texttospeech.v1.MultiSpeakerMarkup
+	23, // 25: google.cloud.texttospeech.v1.StreamingSynthesizeRequest.streaming_config:type_name -> google.cloud.texttospeech.v1.StreamingSynthesizeConfig
+	24, // 26: google.cloud.texttospeech.v1.StreamingSynthesizeRequest.input:type_name -> google.cloud.texttospeech.v1.StreamingSynthesisInput
+	2,  // 27: google.cloud.texttospeech.v1.AdvancedVoiceOptions.SafetySetting.category:type_name -> google.cloud.texttospeech.v1.AdvancedVoiceOptions.HarmCategory
+	3,  // 28: google.cloud.texttospeech.v1.AdvancedVoiceOptions.SafetySetting.threshold:type_name -> google.cloud.texttospeech.v1.AdvancedVoiceOptions.HarmBlockThreshold
+	27, // 29: google.cloud.texttospeech.v1.AdvancedVoiceOptions.SafetySettings.settings:type_name -> google.cloud.texttospeech.v1.AdvancedVoiceOptions.SafetySetting
+	6,  // 30: google.cloud.texttospeech.v1.TextToSpeech.ListVoices:input_type -> google.cloud.texttospeech.v1.ListVoicesRequest
+	10, // 31: google.cloud.texttospeech.v1.TextToSpeech.SynthesizeSpeech:input_type -> google.cloud.texttospeech.v1.SynthesizeSpeechRequest
+	25, // 32: google.cloud.texttospeech.v1.TextToSpeech.StreamingSynthesize:input_type -> google.cloud.texttospeech.v1.StreamingSynthesizeRequest
+	7,  // 33: google.cloud.texttospeech.v1.TextToSpeech.ListVoices:output_type -> google.cloud.texttospeech.v1.ListVoicesResponse
+	21, // 34: google.cloud.texttospeech.v1.TextToSpeech.SynthesizeSpeech:output_type -> google.cloud.texttospeech.v1.SynthesizeSpeechResponse
+	26, // 35: google.cloud.texttospeech.v1.TextToSpeech.StreamingSynthesize:output_type -> google.cloud.texttospeech.v1.StreamingSynthesizeResponse
+	33, // [33:36] is the sub-list for method output_type
+	30, // [30:33] is the sub-list for method input_type
+	30, // [30:30] is the sub-list for extension type_name
+	30, // [30:30] is the sub-list for extension extendee
+	0,  // [0:30] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_texttospeech_v1_cloud_tts_proto_init() }
@@ -2130,6 +2423,7 @@ func file_google_cloud_texttospeech_v1_cloud_tts_proto_init() {
 		(*SynthesisInput_Ssml)(nil),
 		(*SynthesisInput_MultiSpeakerMarkup)(nil),
 	}
+	file_google_cloud_texttospeech_v1_cloud_tts_proto_msgTypes[17].OneofWrappers = []any{}
 	file_google_cloud_texttospeech_v1_cloud_tts_proto_msgTypes[18].OneofWrappers = []any{
 		(*StreamingSynthesisInput_Text)(nil),
 		(*StreamingSynthesisInput_Markup)(nil),
@@ -2144,8 +2438,8 @@ func file_google_cloud_texttospeech_v1_cloud_tts_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_texttospeech_v1_cloud_tts_proto_rawDesc), len(file_google_cloud_texttospeech_v1_cloud_tts_proto_rawDesc)),
-			NumEnums:      4,
-			NumMessages:   22,
+			NumEnums:      6,
+			NumMessages:   24,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
