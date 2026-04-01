@@ -1632,7 +1632,7 @@ libraries:
       - internal/generated/snippets/pubsub/
     tag_format: '{id}/v{version}'
   - id: pubsub/v2
-    version: 2.5.0
+    version: 2.5.1
     last_generated_commit: ""
     apis: []
     source_roots:
