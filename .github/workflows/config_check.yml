@@ -7,8 +7,6 @@ on:
       - main
 permissions:
   contents: read
-env:
-  GOTOOLCHAIN: local
 jobs:
   config-check:
     runs-on: ubuntu-latest
