@@ -366,8 +366,8 @@ const (
 	resultNacked  = "nacked"
 	resultExpired = "expired"
 
-	// custom pubsub specific attributes
-	gcpProjectIDAttribute  = "gcp.project_id"
+	gcpProjectID           = "gcp.project_id"
+	gcpResourceName        = "gcp.resource.name"
 	pubsubPrefix           = "messaging.gcp_pubsub."
 	eosAttribute           = pubsubPrefix + "exactly_once_delivery"
 	resultAttribute        = pubsubPrefix + "result"
@@ -421,8 +421,8 @@ func getCommonOptions(projectID, resourceName string) []trace.SpanStartOption {
 	}
 	opts := []trace.SpanStartOption{
 		trace.WithAttributes(
-			attribute.String(gcpProjectIDAttribute, projectID),
-			attribute.String("gcp.resource.name", resourceName),
+			attribute.String(gcpProjectID, projectID),
+			attribute.String(gcpResourceName, resourceName),
 			semconv.MessagingSystemGCPPubsub,
 			semconv.MessagingDestinationName(id),
 		),
