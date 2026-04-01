@@ -19,9 +19,10 @@ jobs:
       - name: Update library versions and regenerate
         if: failure()
         run: |
-          echo "Library version is different between state.yaml and librarian.yaml.\n
-          Update versions in the configs and regenerate libraries.\n
+          echo "Library version is different between state.yaml and librarian.yaml.
+          Update versions in the configs according to the error message and
+          regenerate libraries using:
           
-          V=$(sed -n 's/^version: *//p' librarian.yaml)\n
-          go run github.com/googleapis/librarian/cmd/librarian@${V} generate --all
+          V=\$(sed -n 's/^version: *//p' librarian.yaml)
+          go run github.com/googleapis/librarian/cmd/librarian@\${V} generate --all
           "
