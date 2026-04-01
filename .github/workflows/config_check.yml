@@ -2,9 +2,13 @@
 name: config check
 on:
   pull_request:
+    paths:
+      - librarian.yaml
+      - .librarian
   push:
-    branches:
-      - main
+    paths:
+      - librarian.yaml
+      - .librarian
 permissions:
   contents: read
 jobs:
