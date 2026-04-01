@@ -82,7 +82,10 @@ func toProtoValue(v reflect.Value) (pbv *pb.Value, sawTransform bool, err error)
 		pbVal, err := exprToProtoValue(x)
 		return pbVal, false, err
 	case AggregateFunction:
-		if x == nil || (reflect.ValueOf(x).Kind() == reflect.Ptr && reflect.ValueOf(x).IsNil()) {
+		if x == nil {
+			return nullValue, false, nil
+		}
+		if v := reflect.ValueOf(x); v.Kind() == reflect.Ptr && v.IsNil() {
 			return nullValue, false, nil
 		}
 		pbVal, err := x.toProto()

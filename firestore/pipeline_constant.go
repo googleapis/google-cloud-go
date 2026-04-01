@@ -59,9 +59,13 @@ func ConstantOf(value any) Expression {
 	}
 
 	// Safely fall back to arrays/slices
-	switch reflect.TypeOf(value).Kind() {
+	v := reflect.ValueOf(value)
+	if !v.IsValid() {
+		return &constant{baseExpression: &baseExpression{err: fmt.Errorf("firestore: unknown constant type: %T", value)}}
+	}
+	switch v.Kind() {
 	case reflect.Slice, reflect.Array:
-		pbVal, _, err := toProtoValue(reflect.ValueOf(value))
+		pbVal, _, err := toProtoValue(v)
 		if err != nil {
 			return &constant{baseExpression: &baseExpression{err: err}}
 		}
