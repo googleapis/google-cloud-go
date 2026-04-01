@@ -11,8 +11,17 @@ jobs:
   config-check:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v6
-    - name: Config check
-      run: |
-        V=$(sed -n 's/^version: *//p' librarian.yaml)
-        go run github.com/googleapis/librarian/tool/cmd/configcheck@${V} .
+      - uses: actions/checkout@v6
+      - name: Config check
+        run: |
+          V=$(sed -n 's/^version: *//p' librarian.yaml)
+          go run github.com/googleapis/librarian/tool/cmd/configcheck@${V} .
+      - name: Update library versions and regenerate
+        if: failure()
+        run: |
+          echo "Library version is different between state.yaml and librarian.yaml.\n
+          Update versions in the configs and regenerate libraries.\n
+          
+          V=$(sed -n 's/^version: *//p' librarian.yaml)\n
+          go run github.com/googleapis/librarian/cmd/librarian@${V} generate --all
+          "
