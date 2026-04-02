@@ -1,5 +1,7 @@
 # Changes
 
+## [0.10.0](https://github.com/googleapis/google-cloud-go/releases/tag/dataqna%2Fv0.10.0) (2026-04-02)
+
 ## [0.9.8](https://github.com/googleapis/google-cloud-go/compare/dataqna/v0.9.7...dataqna/v0.9.8) (2025-10-15)
 
 

@@ -1,5 +1,7 @@
 # Changes
 
+## [1.25.0](https://github.com/googleapis/google-cloud-go/releases/tag/monitoring%2Fv1.25.0) (2026-04-02)
+
 ## [1.24.3](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.24.2...monitoring/v1.24.3) (2025-10-08)
 
 

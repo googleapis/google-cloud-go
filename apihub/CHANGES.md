@@ -1,5 +1,7 @@
 # Changes
 
+## [0.3.0](https://github.com/googleapis/google-cloud-go/releases/tag/apihub%2Fv0.3.0) (2026-04-02)
+
 ## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/apihub/v0.1.5...apihub/v0.2.0) (2025-09-11)
 
 

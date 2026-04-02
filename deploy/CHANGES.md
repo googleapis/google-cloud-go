@@ -1,6 +1,8 @@
 # Changes
 
 
+## [1.28.0](https://github.com/googleapis/google-cloud-go/releases/tag/deploy%2Fv1.28.0) (2026-04-02)
+
 ## [1.27.3](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.27.2...deploy/v1.27.3) (2025-09-16)
 
 

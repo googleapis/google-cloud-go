@@ -1,5 +1,7 @@
 # Changes
 
+## [1.9.0](https://github.com/googleapis/google-cloud-go/releases/tag/accessapproval%2Fv1.9.0) (2026-04-02)
+
 ## [1.8.8](https://github.com/googleapis/google-cloud-go/compare/accessapproval/v1.8.7...accessapproval/v1.8.8) (2025-10-15)
 
 

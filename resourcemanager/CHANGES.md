@@ -1,5 +1,7 @@
 # Changes
 
+## [1.11.0](https://github.com/googleapis/google-cloud-go/releases/tag/resourcemanager%2Fv1.11.0) (2026-04-02)
+
 ## [1.10.7](https://github.com/googleapis/google-cloud-go/compare/resourcemanager/v1.10.6...resourcemanager/v1.10.7) (2025-09-22)
 
 

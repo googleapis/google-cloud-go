@@ -1,6 +1,8 @@
 # Changes
 
 
+## [1.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/datastream%2Fv1.16.0) (2026-04-02)
+
 ## [1.15.1](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.15.0...datastream/v1.15.1) (2025-09-16)
 
 

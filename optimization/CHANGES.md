@@ -1,6 +1,8 @@
 # Changes
 
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/releases/tag/optimization%2Fv1.8.0) (2026-04-02)
+
 ## [1.7.7](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.7.6...optimization/v1.7.7) (2025-09-18)
 
 

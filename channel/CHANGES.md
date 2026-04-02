@@ -1,5 +1,7 @@
 # Changes
 
+## [1.22.0](https://github.com/googleapis/google-cloud-go/releases/tag/channel%2Fv1.22.0) (2026-04-02)
+
 ## [1.21.0](https://github.com/googleapis/google-cloud-go/releases/tag/channel%2Fv1.21.0) (2025-12-04)
 
 ### Bug Fixes

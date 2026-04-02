@@ -1,5 +1,7 @@
 # Changes
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/releases/tag/apigateway%2Fv1.8.0) (2026-04-02)
+
 ## [1.7.7](https://github.com/googleapis/google-cloud-go/compare/apigateway/v1.7.6...apigateway/v1.7.7) (2025-06-04)
 
 

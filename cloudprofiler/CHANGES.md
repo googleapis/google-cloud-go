@@ -1,6 +1,8 @@
 # Changes
 
 
+## [0.5.0](https://github.com/googleapis/google-cloud-go/releases/tag/cloudprofiler%2Fv0.5.0) (2026-04-02)
+
 ## [0.4.6](https://github.com/googleapis/google-cloud-go/compare/cloudprofiler/v0.4.5...cloudprofiler/v0.4.6) (2025-10-09)
 
 

@@ -1,6 +1,8 @@
 # Changes
 
 
+## [1.6.0](https://github.com/googleapis/google-cloud-go/releases/tag/support%2Fv1.6.0) (2026-04-02)
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/releases/tag/support%2Fv1.5.0) (2026-02-12)
 
 ## [1.4.1](https://github.com/googleapis/google-cloud-go/compare/support/v1.4.0...support/v1.4.1) (2025-09-22)

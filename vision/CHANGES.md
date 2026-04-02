@@ -1,5 +1,7 @@
 # Changes
 
+## [2.10.0](https://github.com/googleapis/google-cloud-go/releases/tag/vision%2Fv2.10.0) (2026-04-02)
+
 ## [2.9.6](https://github.com/googleapis/google-cloud-go/compare/vision/v2.9.5...vision/v2.9.6) (2025-10-07)
 
 

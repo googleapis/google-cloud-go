@@ -1,5 +1,7 @@
 # Changes
 
+## [0.4.0](https://github.com/googleapis/google-cloud-go/releases/tag/privilegedaccessmanager%2Fv0.4.0) (2026-04-02)
+
 ## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/privilegedaccessmanager/v0.3.0...privilegedaccessmanager/v0.3.1) (2025-09-18)
 
 

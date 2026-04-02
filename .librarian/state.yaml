@@ -1,7 +1,7 @@
 image: us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-prod/librarian-go@sha256:fc7fb9c27d224fab3aea2f95282b5d396c06554ac71a692a9b1a31cc97a8c91f
 libraries:
   - id: accessapproval
-    version: 1.8.8
+    version: 1.9.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -13,7 +13,7 @@ libraries:
       - internal/generated/snippets/accessapproval/
     tag_format: '{id}/v{version}'
   - id: accesscontextmanager
-    version: 1.9.7
+    version: 1.10.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -25,7 +25,7 @@ libraries:
       - internal/generated/snippets/accesscontextmanager/
     tag_format: '{id}/v{version}'
   - id: advisorynotifications
-    version: 1.5.6
+    version: 1.6.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -37,7 +37,7 @@ libraries:
       - internal/generated/snippets/advisorynotifications/
     tag_format: '{id}/v{version}'
   - id: ai
-    version: 0.15.0
+    version: 0.16.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -49,7 +49,7 @@ libraries:
       - internal/generated/snippets/ai/
     tag_format: '{id}/v{version}'
   - id: aiplatform
-    version: 1.121.0
+    version: 1.122.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -61,7 +61,7 @@ libraries:
       - internal/generated/snippets/aiplatform/
     tag_format: '{id}/v{version}'
   - id: alloydb
-    version: 1.21.0
+    version: 1.22.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -73,7 +73,7 @@ libraries:
       - internal/generated/snippets/alloydb/
     tag_format: '{id}/v{version}'
   - id: analytics
-    version: 0.30.1
+    version: 0.31.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -85,7 +85,7 @@ libraries:
       - internal/generated/snippets/analytics/
     tag_format: '{id}/v{version}'
   - id: apigateway
-    version: 1.7.7
+    version: 1.8.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -97,7 +97,7 @@ libraries:
       - internal/generated/snippets/apigateway/
     tag_format: '{id}/v{version}'
   - id: apigeeconnect
-    version: 1.7.7
+    version: 1.8.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -109,7 +109,7 @@ libraries:
       - internal/generated/snippets/apigeeconnect/
     tag_format: '{id}/v{version}'
   - id: apigeeregistry
-    version: 0.10.0
+    version: 0.11.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -121,7 +121,7 @@ libraries:
       - internal/generated/snippets/apigeeregistry/
     tag_format: '{id}/v{version}'
   - id: apihub
-    version: 0.2.0
+    version: 0.3.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -133,7 +133,7 @@ libraries:
       - internal/generated/snippets/apihub/
     tag_format: '{id}/v{version}'
   - id: apikeys
-    version: 1.2.7
+    version: 1.3.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -145,7 +145,7 @@ libraries:
       - internal/generated/snippets/apikeys/
     tag_format: '{id}/v{version}'
   - id: apiregistry
-    version: 0.2.0
+    version: 0.3.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -155,7 +155,7 @@ libraries:
     remove_regex: []
     tag_format: '{id}/v{version}'
   - id: appengine
-    version: 1.9.7
+    version: 1.10.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -167,7 +167,7 @@ libraries:
       - internal/generated/snippets/appengine/
     tag_format: '{id}/v{version}'
   - id: apphub
-    version: 0.4.0
+    version: 0.5.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -179,7 +179,7 @@ libraries:
       - internal/generated/snippets/apphub/
     tag_format: '{id}/v{version}'
   - id: apps
-    version: 0.8.0
+    version: 0.9.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -191,7 +191,7 @@ libraries:
       - internal/generated/snippets/apps/
     tag_format: '{id}/v{version}'
   - id: area120
-    version: 0.10.0
+    version: 0.11.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -203,7 +203,7 @@ libraries:
       - internal/generated/snippets/area120/
     tag_format: '{id}/v{version}'
   - id: artifactregistry
-    version: 1.20.0
+    version: 1.21.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -215,7 +215,7 @@ libraries:
       - internal/generated/snippets/artifactregistry/
     tag_format: '{id}/v{version}'
   - id: asset
-    version: 1.22.1
+    version: 1.23.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -227,7 +227,7 @@ libraries:
       - internal/generated/snippets/asset/
     tag_format: '{id}/v{version}'
   - id: assuredworkloads
-    version: 1.13.0
+    version: 1.14.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -239,7 +239,7 @@ libraries:
       - internal/generated/snippets/assuredworkloads/
     tag_format: '{id}/v{version}'
   - id: auditmanager
-    version: 0.2.0
+    version: 0.3.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -269,7 +269,7 @@ libraries:
     remove_regex: []
     tag_format: '{id}/v{version}'
   - id: automl
-    version: 1.15.0
+    version: 1.16.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -281,7 +281,7 @@ libraries:
       - internal/generated/snippets/automl/
     tag_format: '{id}/v{version}'
   - id: backupdr
-    version: 1.9.0
+    version: 1.10.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -293,7 +293,7 @@ libraries:
       - internal/generated/snippets/backupdr/
     tag_format: '{id}/v{version}'
   - id: baremetalsolution
-    version: 1.4.0
+    version: 1.5.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -305,7 +305,7 @@ libraries:
       - internal/generated/snippets/baremetalsolution/
     tag_format: '{id}/v{version}'
   - id: batch
-    version: 1.14.0
+    version: 1.15.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -318,7 +318,7 @@ libraries:
       - internal/generated/snippets/batch/
     tag_format: '{id}/v{version}'
   - id: beyondcorp
-    version: 1.2.0
+    version: 1.3.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -330,7 +330,7 @@ libraries:
       - internal/generated/snippets/beyondcorp/
     tag_format: '{id}/v{version}'
   - id: biglake
-    version: 0.0.0
+    version: 0.1.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -381,7 +381,7 @@ libraries:
       - bigtable/testdata
     tag_format: '{id}/v{version}'
   - id: billing
-    version: 1.21.0
+    version: 1.22.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -393,7 +393,7 @@ libraries:
       - internal/generated/snippets/billing/
     tag_format: '{id}/v{version}'
   - id: binaryauthorization
-    version: 1.10.0
+    version: 1.11.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -405,7 +405,7 @@ libraries:
       - internal/generated/snippets/binaryauthorization/
     tag_format: '{id}/v{version}'
   - id: capacityplanner
-    version: 0.2.0
+    version: 0.3.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -417,7 +417,7 @@ libraries:
       - internal/generated/snippets/capacityplanner/
     tag_format: '{id}/v{version}'
   - id: certificatemanager
-    version: 1.9.6
+    version: 1.10.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -429,7 +429,7 @@ libraries:
       - internal/generated/snippets/certificatemanager/
     tag_format: '{id}/v{version}'
   - id: ces
-    version: 0.4.0
+    version: 0.5.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -439,7 +439,7 @@ libraries:
     remove_regex: []
     tag_format: '{id}/v{version}'
   - id: channel
-    version: 1.21.0
+    version: 1.22.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -451,7 +451,7 @@ libraries:
       - internal/generated/snippets/channel/
     tag_format: '{id}/v{version}'
   - id: chat
-    version: 0.18.0
+    version: 0.19.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -463,7 +463,7 @@ libraries:
       - internal/generated/snippets/chat/
     tag_format: '{id}/v{version}'
   - id: chronicle
-    version: 0.2.0
+    version: 0.3.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -475,7 +475,7 @@ libraries:
       - internal/generated/snippets/chronicle/
     tag_format: '{id}/v{version}'
   - id: cloudbuild
-    version: 1.25.0
+    version: 1.26.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -487,7 +487,7 @@ libraries:
       - internal/generated/snippets/cloudbuild/
     tag_format: '{id}/v{version}'
   - id: cloudcontrolspartner
-    version: 1.5.0
+    version: 1.6.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -499,7 +499,7 @@ libraries:
       - internal/generated/snippets/cloudcontrolspartner/
     tag_format: '{id}/v{version}'
   - id: clouddms
-    version: 1.8.8
+    version: 1.9.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -511,7 +511,7 @@ libraries:
       - internal/generated/snippets/clouddms/
     tag_format: '{id}/v{version}'
   - id: cloudprofiler
-    version: 0.4.6
+    version: 0.5.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -523,7 +523,7 @@ libraries:
       - internal/generated/snippets/cloudprofiler/
     tag_format: '{id}/v{version}'
   - id: cloudquotas
-    version: 1.6.0
+    version: 1.7.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -535,7 +535,7 @@ libraries:
       - internal/generated/snippets/cloudquotas/
     tag_format: '{id}/v{version}'
   - id: cloudsecuritycompliance
-    version: 0.1.0
+    version: 0.2.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -545,7 +545,7 @@ libraries:
     remove_regex: []
     tag_format: '{id}/v{version}'
   - id: cloudtasks
-    version: 1.13.7
+    version: 1.14.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -557,7 +557,7 @@ libraries:
       - internal/generated/snippets/cloudtasks/
     tag_format: '{id}/v{version}'
   - id: commerce
-    version: 1.2.6
+    version: 1.3.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -569,7 +569,7 @@ libraries:
       - internal/generated/snippets/commerce/
     tag_format: '{id}/v{version}'
   - id: compute
-    version: 1.57.0
+    version: 1.58.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -591,7 +591,7 @@ libraries:
     remove_regex: []
     tag_format: '{id}/v{version}'
   - id: confidentialcomputing
-    version: 1.11.0
+    version: 1.12.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -603,7 +603,7 @@ libraries:
       - internal/generated/snippets/confidentialcomputing/
     tag_format: '{id}/v{version}'
   - id: config
-    version: 1.6.0
+    version: 1.7.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -615,7 +615,7 @@ libraries:
       - internal/generated/snippets/config/
     tag_format: '{id}/v{version}'
   - id: configdelivery
-    version: 0.1.1
+    version: 0.2.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -627,7 +627,7 @@ libraries:
       - internal/generated/snippets/configdelivery/
     tag_format: '{id}/v{version}'
   - id: contactcenterinsights
-    version: 1.17.4
+    version: 1.18.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -639,7 +639,7 @@ libraries:
       - internal/generated/snippets/contactcenterinsights/
     tag_format: '{id}/v{version}'
   - id: container
-    version: 1.46.0
+    version: 1.47.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -651,7 +651,7 @@ libraries:
       - internal/generated/snippets/container/
     tag_format: '{id}/v{version}'
   - id: containeranalysis
-    version: 0.14.2
+    version: 0.15.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -663,7 +663,7 @@ libraries:
       - internal/generated/snippets/containeranalysis/
     tag_format: '{id}/v{version}'
   - id: datacatalog
-    version: 1.26.1
+    version: 1.27.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -676,7 +676,7 @@ libraries:
       - internal/generated/snippets/datacatalog/
     tag_format: '{id}/v{version}'
   - id: dataflow
-    version: 0.11.1
+    version: 0.12.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -688,7 +688,7 @@ libraries:
       - internal/generated/snippets/dataflow/
     tag_format: '{id}/v{version}'
   - id: dataform
-    version: 0.14.0
+    version: 0.15.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -700,7 +700,7 @@ libraries:
       - internal/generated/snippets/dataform/
     tag_format: '{id}/v{version}'
   - id: datafusion
-    version: 1.8.7
+    version: 1.9.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -712,7 +712,7 @@ libraries:
       - internal/generated/snippets/datafusion/
     tag_format: '{id}/v{version}'
   - id: datalabeling
-    version: 0.9.7
+    version: 0.10.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -724,7 +724,7 @@ libraries:
       - internal/generated/snippets/datalabeling/
     tag_format: '{id}/v{version}'
   - id: datamanager
-    version: 0.3.0
+    version: 0.4.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -734,7 +734,7 @@ libraries:
     remove_regex: []
     tag_format: '{id}/v{version}'
   - id: dataplex
-    version: 1.29.0
+    version: 1.30.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -746,7 +746,7 @@ libraries:
       - internal/generated/snippets/dataplex/
     tag_format: '{id}/v{version}'
   - id: dataproc
-    version: 2.16.0
+    version: 2.17.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -758,7 +758,7 @@ libraries:
       - internal/generated/snippets/dataproc/
     tag_format: '{id}/v{version}'
   - id: dataqna
-    version: 0.9.8
+    version: 0.10.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -782,7 +782,7 @@ libraries:
       - internal/generated/snippets/datastore/
     tag_format: '{id}/v{version}'
   - id: datastream
-    version: 1.15.1
+    version: 1.16.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -795,7 +795,7 @@ libraries:
       - internal/generated/snippets/datastream/
     tag_format: '{id}/v{version}'
   - id: deploy
-    version: 1.27.3
+    version: 1.28.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -807,7 +807,7 @@ libraries:
       - internal/generated/snippets/deploy/
     tag_format: '{id}/v{version}'
   - id: developerconnect
-    version: 0.5.0
+    version: 0.6.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -819,7 +819,7 @@ libraries:
       - internal/generated/snippets/developerconnect/
     tag_format: '{id}/v{version}'
   - id: devicestreaming
-    version: 0.1.1
+    version: 0.2.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -831,7 +831,7 @@ libraries:
       - internal/generated/snippets/devicestreaming/
     tag_format: '{id}/v{version}'
   - id: dialogflow
-    version: 1.77.0
+    version: 1.78.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -843,7 +843,7 @@ libraries:
       - internal/generated/snippets/dialogflow/
     tag_format: '{id}/v{version}'
   - id: discoveryengine
-    version: 1.24.0
+    version: 1.25.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -855,7 +855,7 @@ libraries:
       - internal/generated/snippets/discoveryengine/
     tag_format: '{id}/v{version}'
   - id: dlp
-    version: 1.29.0
+    version: 1.30.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -865,7 +865,7 @@ libraries:
     remove_regex: []
     tag_format: '{id}/v{version}'
   - id: documentai
-    version: 1.43.0
+    version: 1.44.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -877,7 +877,7 @@ libraries:
       - internal/generated/snippets/documentai/
     tag_format: '{id}/v{version}'
   - id: domains
-    version: 0.10.7
+    version: 0.11.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -889,7 +889,7 @@ libraries:
       - internal/generated/snippets/domains/
     tag_format: '{id}/v{version}'
   - id: edgecontainer
-    version: 1.4.4
+    version: 1.5.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -901,7 +901,7 @@ libraries:
       - internal/generated/snippets/edgecontainer/
     tag_format: '{id}/v{version}'
   - id: edgenetwork
-    version: 1.3.0
+    version: 1.4.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -913,7 +913,7 @@ libraries:
       - internal/generated/snippets/edgenetwork/
     tag_format: '{id}/v{version}'
   - id: errorreporting
-    version: 0.4.0
+    version: 0.5.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -925,7 +925,7 @@ libraries:
       - internal/generated/snippets/errorreporting/
     tag_format: '{id}/v{version}'
   - id: essentialcontacts
-    version: 1.7.7
+    version: 1.8.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -937,7 +937,7 @@ libraries:
       - internal/generated/snippets/essentialcontacts/
     tag_format: '{id}/v{version}'
   - id: eventarc
-    version: 1.18.0
+    version: 1.19.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -949,7 +949,7 @@ libraries:
       - internal/generated/snippets/eventarc/
     tag_format: '{id}/v{version}'
   - id: filestore
-    version: 1.10.3
+    version: 1.11.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -961,7 +961,7 @@ libraries:
       - internal/generated/snippets/filestore/
     tag_format: '{id}/v{version}'
   - id: financialservices
-    version: 0.1.4
+    version: 0.2.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -985,7 +985,7 @@ libraries:
       - internal/generated/snippets/firestore/
     tag_format: '{id}/v{version}'
   - id: functions
-    version: 1.19.7
+    version: 1.20.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -997,7 +997,7 @@ libraries:
       - internal/generated/snippets/functions/
     tag_format: '{id}/v{version}'
   - id: geminidataanalytics
-    version: 0.8.0
+    version: 0.9.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1009,7 +1009,7 @@ libraries:
       - internal/generated/snippets/geminidataanalytics/
     tag_format: '{id}/v{version}'
   - id: gkebackup
-    version: 1.8.1
+    version: 1.9.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1021,7 +1021,7 @@ libraries:
       - internal/generated/snippets/gkebackup/
     tag_format: '{id}/v{version}'
   - id: gkeconnect
-    version: 0.12.5
+    version: 0.13.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1033,7 +1033,7 @@ libraries:
       - internal/generated/snippets/gkeconnect/
     tag_format: '{id}/v{version}'
   - id: gkehub
-    version: 0.16.0
+    version: 0.17.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1045,7 +1045,7 @@ libraries:
       - internal/generated/snippets/gkehub/
     tag_format: '{id}/v{version}'
   - id: gkemulticloud
-    version: 1.6.0
+    version: 1.7.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1057,7 +1057,7 @@ libraries:
       - internal/generated/snippets/gkemulticloud/
     tag_format: '{id}/v{version}'
   - id: gkerecommender
-    version: 0.1.0
+    version: 0.2.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1067,7 +1067,7 @@ libraries:
     remove_regex: []
     tag_format: '{id}/v{version}'
   - id: grafeas
-    version: 0.3.17
+    version: 0.4.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1076,7 +1076,7 @@ libraries:
     remove_regex: []
     tag_format: '{id}/v{version}'
   - id: gsuiteaddons
-    version: 1.7.8
+    version: 1.8.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1088,7 +1088,7 @@ libraries:
       - internal/generated/snippets/gsuiteaddons/
     tag_format: '{id}/v{version}'
   - id: hypercomputecluster
-    version: 0.2.0
+    version: 0.3.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1098,7 +1098,7 @@ libraries:
     remove_regex: []
     tag_format: '{id}/v{version}'
   - id: iam
-    version: 1.6.0
+    version: 1.7.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1110,7 +1110,7 @@ libraries:
       - internal/generated/snippets/iam/
     tag_format: '{id}/v{version}'
   - id: iap
-    version: 1.12.0
+    version: 1.13.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1122,7 +1122,7 @@ libraries:
       - internal/generated/snippets/iap/
     tag_format: '{id}/v{version}'
   - id: identitytoolkit
-    version: 0.2.6
+    version: 0.3.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1134,7 +1134,7 @@ libraries:
       - internal/generated/snippets/identitytoolkit/
     tag_format: '{id}/v{version}'
   - id: ids
-    version: 1.5.7
+    version: 1.6.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1146,7 +1146,7 @@ libraries:
       - internal/generated/snippets/ids/
     tag_format: '{id}/v{version}'
   - id: iot
-    version: 1.8.7
+    version: 1.9.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1158,7 +1158,7 @@ libraries:
       - internal/generated/snippets/iot/
     tag_format: '{id}/v{version}'
   - id: kms
-    version: 1.26.0
+    version: 1.27.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1170,7 +1170,7 @@ libraries:
       - internal/generated/snippets/kms/
     tag_format: '{id}/v{version}'
   - id: language
-    version: 1.14.6
+    version: 1.15.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1182,7 +1182,7 @@ libraries:
       - internal/generated/snippets/language/
     tag_format: '{id}/v{version}'
   - id: licensemanager
-    version: 0.1.1
+    version: 0.2.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1194,7 +1194,7 @@ libraries:
       - internal/generated/snippets/licensemanager/
     tag_format: '{id}/v{version}'
   - id: lifesciences
-    version: 0.10.7
+    version: 0.11.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1206,7 +1206,7 @@ libraries:
       - internal/generated/snippets/lifesciences/
     tag_format: '{id}/v{version}'
   - id: locationfinder
-    version: 0.1.1
+    version: 0.2.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1218,7 +1218,7 @@ libraries:
       - internal/generated/snippets/locationfinder/
     tag_format: '{id}/v{version}'
   - id: logging
-    version: 1.13.2
+    version: 1.14.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1230,7 +1230,7 @@ libraries:
       - internal/generated/snippets/logging/
     tag_format: '{id}/v{version}'
   - id: longrunning
-    version: 0.8.0
+    version: 0.9.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1242,7 +1242,7 @@ libraries:
       - internal/generated/snippets/longrunning/
     tag_format: '{id}/v{version}'
   - id: lustre
-    version: 0.2.1
+    version: 0.3.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1254,7 +1254,7 @@ libraries:
       - internal/generated/snippets/lustre/
     tag_format: '{id}/v{version}'
   - id: maintenance
-    version: 0.3.0
+    version: 0.4.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1264,7 +1264,7 @@ libraries:
     remove_regex: []
     tag_format: '{id}/v{version}'
   - id: managedidentities
-    version: 1.7.7
+    version: 1.8.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1276,7 +1276,7 @@ libraries:
       - internal/generated/snippets/managedidentities/
     tag_format: '{id}/v{version}'
   - id: managedkafka
-    version: 0.8.1
+    version: 0.9.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1288,7 +1288,7 @@ libraries:
       - internal/generated/snippets/managedkafka/
     tag_format: '{id}/v{version}'
   - id: maps
-    version: 1.30.0
+    version: 1.31.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1300,7 +1300,7 @@ libraries:
       - internal/generated/snippets/maps/
     tag_format: '{id}/v{version}'
   - id: mediatranslation
-    version: 0.9.7
+    version: 0.10.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1312,7 +1312,7 @@ libraries:
       - internal/generated/snippets/mediatranslation/
     tag_format: '{id}/v{version}'
   - id: memcache
-    version: 1.11.7
+    version: 1.12.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1324,7 +1324,7 @@ libraries:
       - internal/generated/snippets/memcache/
     tag_format: '{id}/v{version}'
   - id: memorystore
-    version: 0.4.0
+    version: 0.5.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1336,7 +1336,7 @@ libraries:
       - internal/generated/snippets/memorystore/
     tag_format: '{id}/v{version}'
   - id: metastore
-    version: 1.14.8
+    version: 1.15.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1348,7 +1348,7 @@ libraries:
       - internal/generated/snippets/metastore/
     tag_format: '{id}/v{version}'
   - id: migrationcenter
-    version: 1.1.6
+    version: 1.2.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1360,7 +1360,7 @@ libraries:
       - internal/generated/snippets/migrationcenter/
     tag_format: '{id}/v{version}'
   - id: modelarmor
-    version: 0.6.1
+    version: 0.7.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1372,7 +1372,7 @@ libraries:
       - internal/generated/snippets/modelarmor/
     tag_format: '{id}/v{version}'
   - id: monitoring
-    version: 1.24.3
+    version: 1.25.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1384,7 +1384,7 @@ libraries:
       - internal/generated/snippets/monitoring/
     tag_format: '{id}/v{version}'
   - id: netapp
-    version: 1.12.0
+    version: 1.13.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1396,7 +1396,7 @@ libraries:
       - internal/generated/snippets/netapp/
     tag_format: '{id}/v{version}'
   - id: networkconnectivity
-    version: 1.21.0
+    version: 1.22.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1406,7 +1406,7 @@ libraries:
     remove_regex: []
     tag_format: '{id}/v{version}'
   - id: networkmanagement
-    version: 1.23.0
+    version: 1.24.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1418,7 +1418,7 @@ libraries:
       - internal/generated/snippets/networkmanagement/
     tag_format: '{id}/v{version}'
   - id: networksecurity
-    version: 0.11.0
+    version: 0.12.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1430,7 +1430,7 @@ libraries:
       - internal/generated/snippets/networksecurity/
     tag_format: '{id}/v{version}'
   - id: networkservices
-    version: 0.6.0
+    version: 0.7.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1442,7 +1442,7 @@ libraries:
       - internal/generated/snippets/networkservices/
     tag_format: '{id}/v{version}'
   - id: notebooks
-    version: 1.12.7
+    version: 1.13.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1454,7 +1454,7 @@ libraries:
       - internal/generated/snippets/notebooks/
     tag_format: '{id}/v{version}'
   - id: optimization
-    version: 1.7.7
+    version: 1.8.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1466,7 +1466,7 @@ libraries:
       - internal/generated/snippets/optimization/
     tag_format: '{id}/v{version}'
   - id: oracledatabase
-    version: 0.6.0
+    version: 0.7.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1478,7 +1478,7 @@ libraries:
       - internal/generated/snippets/oracledatabase/
     tag_format: '{id}/v{version}'
   - id: orchestration
-    version: 1.11.10
+    version: 1.12.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1490,7 +1490,7 @@ libraries:
       - internal/generated/snippets/orchestration/
     tag_format: '{id}/v{version}'
   - id: orgpolicy
-    version: 1.15.1
+    version: 1.16.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1502,7 +1502,7 @@ libraries:
       - internal/generated/snippets/orgpolicy/
     tag_format: '{id}/v{version}'
   - id: osconfig
-    version: 1.16.0
+    version: 1.17.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1514,7 +1514,7 @@ libraries:
       - internal/generated/snippets/osconfig/
     tag_format: '{id}/v{version}'
   - id: oslogin
-    version: 1.14.7
+    version: 1.15.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1526,7 +1526,7 @@ libraries:
       - internal/generated/snippets/oslogin/
     tag_format: '{id}/v{version}'
   - id: parallelstore
-    version: 0.12.0
+    version: 0.13.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1538,7 +1538,7 @@ libraries:
       - internal/generated/snippets/parallelstore/
     tag_format: '{id}/v{version}'
   - id: parametermanager
-    version: 0.3.1
+    version: 0.4.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1550,7 +1550,7 @@ libraries:
       - internal/generated/snippets/parametermanager/
     tag_format: '{id}/v{version}'
   - id: phishingprotection
-    version: 0.9.7
+    version: 0.10.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1562,7 +1562,7 @@ libraries:
       - internal/generated/snippets/phishingprotection/
     tag_format: '{id}/v{version}'
   - id: policysimulator
-    version: 0.4.1
+    version: 0.5.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1574,7 +1574,7 @@ libraries:
       - internal/generated/snippets/policysimulator/
     tag_format: '{id}/v{version}'
   - id: policytroubleshooter
-    version: 1.11.7
+    version: 1.12.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1586,7 +1586,7 @@ libraries:
       - internal/generated/snippets/policytroubleshooter/
     tag_format: '{id}/v{version}'
   - id: privatecatalog
-    version: 0.10.8
+    version: 0.11.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1598,7 +1598,7 @@ libraries:
       - internal/generated/snippets/privatecatalog/
     tag_format: '{id}/v{version}'
   - id: privilegedaccessmanager
-    version: 0.3.1
+    version: 0.4.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1610,7 +1610,7 @@ libraries:
       - internal/generated/snippets/privilegedaccessmanager/
     tag_format: '{id}/v{version}'
   - id: profiler
-    version: 0.4.3
+    version: 0.5.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1656,7 +1656,7 @@ libraries:
       - internal/generated/snippets/pubsublite/
     tag_format: '{id}/v{version}'
   - id: rapidmigrationassessment
-    version: 1.1.8
+    version: 1.2.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1668,7 +1668,7 @@ libraries:
       - internal/generated/snippets/rapidmigrationassessment/
     tag_format: '{id}/v{version}'
   - id: recaptchaenterprise
-    version: 2.21.0
+    version: 2.22.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1680,7 +1680,7 @@ libraries:
       - internal/generated/snippets/recaptchaenterprise/
     tag_format: '{id}/v{version}'
   - id: recommendationengine
-    version: 0.9.7
+    version: 0.10.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1692,7 +1692,7 @@ libraries:
       - internal/generated/snippets/recommendationengine/
     tag_format: '{id}/v{version}'
   - id: recommender
-    version: 1.13.6
+    version: 1.14.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1704,7 +1704,7 @@ libraries:
       - internal/generated/snippets/recommender/
     tag_format: '{id}/v{version}'
   - id: redis
-    version: 1.18.3
+    version: 1.19.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1716,7 +1716,7 @@ libraries:
       - internal/generated/snippets/redis/
     tag_format: '{id}/v{version}'
   - id: resourcemanager
-    version: 1.10.7
+    version: 1.11.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1728,7 +1728,7 @@ libraries:
       - internal/generated/snippets/resourcemanager/
     tag_format: '{id}/v{version}'
   - id: retail
-    version: 1.26.0
+    version: 1.27.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1770,7 +1770,7 @@ libraries:
       - internal/version
     tag_format: v{version}
   - id: run
-    version: 1.16.0
+    version: 1.17.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1783,7 +1783,7 @@ libraries:
       - internal/generated/snippets/run/
     tag_format: '{id}/v{version}'
   - id: saasplatform
-    version: 0.2.0
+    version: 0.3.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1793,7 +1793,7 @@ libraries:
     remove_regex: []
     tag_format: '{id}/v{version}'
   - id: scheduler
-    version: 1.11.8
+    version: 1.12.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1805,7 +1805,7 @@ libraries:
       - internal/generated/snippets/scheduler/
     tag_format: '{id}/v{version}'
   - id: secretmanager
-    version: 1.16.0
+    version: 1.17.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1817,7 +1817,7 @@ libraries:
       - internal/generated/snippets/secretmanager/
     tag_format: '{id}/v{version}'
   - id: securesourcemanager
-    version: 1.4.1
+    version: 1.5.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1829,7 +1829,7 @@ libraries:
       - internal/generated/snippets/securesourcemanager/
     tag_format: '{id}/v{version}'
   - id: security
-    version: 1.19.2
+    version: 1.20.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1841,7 +1841,7 @@ libraries:
       - internal/generated/snippets/security/
     tag_format: '{id}/v{version}'
   - id: securitycenter
-    version: 1.39.0
+    version: 1.40.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1853,7 +1853,7 @@ libraries:
       - internal/generated/snippets/securitycenter/
     tag_format: '{id}/v{version}'
   - id: securitycentermanagement
-    version: 1.1.6
+    version: 1.2.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1865,7 +1865,7 @@ libraries:
       - internal/generated/snippets/securitycentermanagement/
     tag_format: '{id}/v{version}'
   - id: securityposture
-    version: 0.2.6
+    version: 0.3.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1877,7 +1877,7 @@ libraries:
       - internal/generated/snippets/securityposture/
     tag_format: '{id}/v{version}'
   - id: servicecontrol
-    version: 1.14.6
+    version: 1.15.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1889,7 +1889,7 @@ libraries:
       - internal/generated/snippets/servicecontrol/
     tag_format: '{id}/v{version}'
   - id: servicedirectory
-    version: 1.12.7
+    version: 1.13.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1901,7 +1901,7 @@ libraries:
       - internal/generated/snippets/servicedirectory/
     tag_format: '{id}/v{version}'
   - id: servicehealth
-    version: 1.2.4
+    version: 1.3.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1913,7 +1913,7 @@ libraries:
       - internal/generated/snippets/servicehealth/
     tag_format: '{id}/v{version}'
   - id: servicemanagement
-    version: 1.10.7
+    version: 1.11.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1925,7 +1925,7 @@ libraries:
       - internal/generated/snippets/servicemanagement/
     tag_format: '{id}/v{version}'
   - id: serviceusage
-    version: 1.9.7
+    version: 1.10.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1937,7 +1937,7 @@ libraries:
       - internal/generated/snippets/serviceusage/
     tag_format: '{id}/v{version}'
   - id: shell
-    version: 1.8.7
+    version: 1.9.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1949,7 +1949,7 @@ libraries:
       - internal/generated/snippets/shell/
     tag_format: '{id}/v{version}'
   - id: shopping
-    version: 1.6.0
+    version: 1.7.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -1980,7 +1980,7 @@ libraries:
       - spanner/testdata
     tag_format: '{id}/v{version}'
   - id: speech
-    version: 1.30.0
+    version: 1.31.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -2006,7 +2006,7 @@ libraries:
       - storage/internal/test
     tag_format: '{id}/v{version}'
   - id: storagebatchoperations
-    version: 0.4.0
+    version: 0.5.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -2018,7 +2018,7 @@ libraries:
       - internal/generated/snippets/storagebatchoperations/
     tag_format: '{id}/v{version}'
   - id: storageinsights
-    version: 1.2.1
+    version: 1.3.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -2030,7 +2030,7 @@ libraries:
       - internal/generated/snippets/storageinsights/
     tag_format: '{id}/v{version}'
   - id: storagetransfer
-    version: 1.13.1
+    version: 1.14.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -2042,7 +2042,7 @@ libraries:
       - internal/generated/snippets/storagetransfer/
     tag_format: '{id}/v{version}'
   - id: streetview
-    version: 0.2.6
+    version: 0.3.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -2054,7 +2054,7 @@ libraries:
       - internal/generated/snippets/streetview/
     tag_format: '{id}/v{version}'
   - id: support
-    version: 1.5.0
+    version: 1.6.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -2066,7 +2066,7 @@ libraries:
       - internal/generated/snippets/support/
     tag_format: '{id}/v{version}'
   - id: talent
-    version: 1.8.4
+    version: 1.9.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -2078,7 +2078,7 @@ libraries:
       - internal/generated/snippets/talent/
     tag_format: '{id}/v{version}'
   - id: telcoautomation
-    version: 1.1.6
+    version: 1.2.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -2090,7 +2090,7 @@ libraries:
       - internal/generated/snippets/telcoautomation/
     tag_format: '{id}/v{version}'
   - id: texttospeech
-    version: 1.16.0
+    version: 1.17.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -2102,7 +2102,7 @@ libraries:
       - internal/generated/snippets/texttospeech/
     tag_format: '{id}/v{version}'
   - id: tpu
-    version: 1.8.4
+    version: 1.9.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -2114,7 +2114,7 @@ libraries:
       - internal/generated/snippets/tpu/
     tag_format: '{id}/v{version}'
   - id: trace
-    version: 1.11.7
+    version: 1.12.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -2126,7 +2126,7 @@ libraries:
       - internal/generated/snippets/trace/
     tag_format: '{id}/v{version}'
   - id: translate
-    version: 1.12.7
+    version: 1.13.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -2138,7 +2138,7 @@ libraries:
       - internal/generated/snippets/translate/
     tag_format: '{id}/v{version}'
   - id: vectorsearch
-    version: 0.6.0
+    version: 0.7.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -2148,7 +2148,7 @@ libraries:
     remove_regex: []
     tag_format: '{id}/v{version}'
   - id: vertexai
-    version: 0.17.0
+    version: 0.18.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -2157,7 +2157,7 @@ libraries:
     remove_regex: []
     tag_format: '{id}/v{version}'
   - id: video
-    version: 1.27.1
+    version: 1.28.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -2169,7 +2169,7 @@ libraries:
       - internal/generated/snippets/video/
     tag_format: '{id}/v{version}'
   - id: videointelligence
-    version: 1.12.7
+    version: 1.13.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -2181,7 +2181,7 @@ libraries:
       - internal/generated/snippets/videointelligence/
     tag_format: '{id}/v{version}'
   - id: vision
-    version: 2.9.6
+    version: 2.10.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -2193,7 +2193,7 @@ libraries:
       - internal/generated/snippets/vision/
     tag_format: '{id}/v{version}'
   - id: visionai
-    version: 0.5.0
+    version: 0.6.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -2205,7 +2205,7 @@ libraries:
       - internal/generated/snippets/visionai/
     tag_format: '{id}/v{version}'
   - id: vmmigration
-    version: 1.10.0
+    version: 1.11.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -2218,7 +2218,7 @@ libraries:
       - internal/generated/snippets/vmmigration/
     tag_format: '{id}/v{version}'
   - id: vmwareengine
-    version: 1.3.6
+    version: 1.4.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -2230,7 +2230,7 @@ libraries:
       - internal/generated/snippets/vmwareengine/
     tag_format: '{id}/v{version}'
   - id: vpcaccess
-    version: 1.8.7
+    version: 1.9.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -2242,7 +2242,7 @@ libraries:
       - internal/generated/snippets/vpcaccess/
     tag_format: '{id}/v{version}'
   - id: webrisk
-    version: 1.11.2
+    version: 1.12.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -2254,7 +2254,7 @@ libraries:
       - internal/generated/snippets/webrisk/
     tag_format: '{id}/v{version}'
   - id: websecurityscanner
-    version: 1.7.7
+    version: 1.8.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -2266,7 +2266,7 @@ libraries:
       - internal/generated/snippets/websecurityscanner/
     tag_format: '{id}/v{version}'
   - id: workflows
-    version: 1.14.3
+    version: 1.15.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -2278,7 +2278,7 @@ libraries:
       - internal/generated/snippets/workflows/
     tag_format: '{id}/v{version}'
   - id: workloadmanager
-    version: 0.1.0
+    version: 0.2.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -2288,7 +2288,7 @@ libraries:
     remove_regex: []
     tag_format: '{id}/v{version}'
   - id: workstations
-    version: 1.1.6
+    version: 1.2.0
     last_generated_commit: ""
     apis: []
     source_roots:

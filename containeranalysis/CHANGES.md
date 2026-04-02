@@ -1,5 +1,7 @@
 # Changes
 
+## [0.15.0](https://github.com/googleapis/google-cloud-go/releases/tag/containeranalysis%2Fv0.15.0) (2026-04-02)
+
 ## [0.14.2](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.14.1...containeranalysis/v0.14.2) (2025-10-09)
 
 

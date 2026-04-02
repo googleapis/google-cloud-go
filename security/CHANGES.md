@@ -1,5 +1,7 @@
 # Changes
 
+## [1.20.0](https://github.com/googleapis/google-cloud-go/releases/tag/security%2Fv1.20.0) (2026-04-02)
+
 ## [1.19.2](https://github.com/googleapis/google-cloud-go/compare/security/v1.19.1...security/v1.19.2) (2025-09-22)
 
 

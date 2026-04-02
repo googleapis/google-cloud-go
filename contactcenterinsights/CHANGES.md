@@ -1,5 +1,7 @@
 # Changes
 
+## [1.18.0](https://github.com/googleapis/google-cloud-go/releases/tag/contactcenterinsights%2Fv1.18.0) (2026-04-02)
+
 ## [1.17.4](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.17.3...contactcenterinsights/v1.17.4) (2025-09-16)
 
 
