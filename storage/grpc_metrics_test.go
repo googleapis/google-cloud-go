@@ -156,7 +156,6 @@ func TestNewGRPCMetricContext(t *testing.T) {
 	mc, err := newGRPCMetricContext(ctx, cfg)
 	if err != nil {
 		t.Errorf("newGRPCMetricContext: %v", err)
-		return
 	}
 	defer mc.close()
 	rm := metricdata.ResourceMetrics{}
@@ -222,7 +221,6 @@ func TestNewGRPCMetricContextWithCustomProvider(t *testing.T) {
 	mc, err := newGRPCMetricContext(ctx, cfg)
 	if err != nil {
 		t.Errorf("newGRPCMetricContext: %v", err)
-		return
 	}
 	defer mc.close()
 
