@@ -183,17 +183,17 @@ type Writer struct {
 	// parallel. Supported exclusively for gRPC clients. If used with a JSON
 	// client, the configuration is ignored and a standard upload is performed.
 	//
-	// Parallel Composite Uploads can yield higher throughput when uploading
+	// Parallel uploads can yield higher throughput when uploading
 	// large objects. However, there are some things which must be kept in mind
 	// when choosing to use this strategy:
-	//   - Performing parallel composite uploads costs more money. Class A operations
-	//     are performed to create each part and to perform each compose. If a storage
+	//   - Performing parallel uploads costs more money. Class A operations
+	//     are performed to create each part. If a storage
 	//     tier other than STANDARD is used, early deletion fees apply to deletion of
 	//     the parts.
-	//   - The service account/credentials used to perform the parallel composite
+	//   - The service account/credentials used to perform the parallel
 	//     upload require `storage.objects.delete` in order to clean up the temporary
-	//     part and intermediary compose objects.
-	//   - A failed upload can leave part and intermediary compose objects behind
+	//     part objects.
+	//   - A failed upload can leave part objects behind
 	//     which will count as storage usage, and you will be billed for it.
 	//     Upon completion or failure of a parallel upload, the Writer makes a
 	//     best-effort attempt to clean up any temporary parts created. However, if the
@@ -201,11 +201,11 @@ type Writer struct {
 	//     Temporary parts have the prefix: "gcs-go-sdk-pu-tmp". It is recommended to
 	//     set appropriate bucket lifecycle policies to reliably clean up any leftover
 	//     objects to avoid unnecessary storage costs.
-	//   - Using parallel composite uploads is not a one size fits all solution.
+	//   - Using parallel uploads is not a one size fits all solution.
 	//     They have very real overhead until uploading a large enough object. The
 	//     inflection point is dependent upon many factors, and there is no one size
 	//     fits all value. You will need to experiment with your deployment and workload
-	//     to determine if parallel composite uploads are useful to you.
+	//     to determine if parallel uploads are useful to you.
 	//
 	// **Note:** This feature is currently experimental and its API surface may change
 	// in future releases. It is not yet recommended for production use.
