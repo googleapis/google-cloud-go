@@ -201,11 +201,11 @@ type Writer struct {
 	//     Temporary parts have the prefix: "gcs-go-sdk-pu-tmp". It is recommended to
 	//     set appropriate bucket lifecycle policies to reliably clean up any leftover
 	//     objects to avoid unnecessary storage costs.
-	//   - Using parallel uploads is not a one size fits all solution.
-	//     They have very real overhead until uploading a large enough object. The
-	//     inflection point is dependent upon many factors, and there is no one size
-	//     fits all value. You will need to experiment with your deployment and workload
-	//     to determine if parallel uploads are useful to you.
+	//   - Using parallel uploads is not a one-size-fits-all solution.
+	//     They introduce overhead that is only offset when uploading
+	//     sufficiently large objects. The optimal threshold depends on many
+	//     factors; therefore, you should experiment with your specific
+	//     workload to determine if parallel uploads provide a benefit.
 	//
 	// **Note:** This feature is currently experimental and its API surface may change
 	// in future releases. It is not yet recommended for production use.
