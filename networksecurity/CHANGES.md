@@ -1,5 +1,7 @@
 # Changes
 
+## [0.12.0](https://github.com/googleapis/google-cloud-go/releases/tag/networksecurity%2Fv0.12.0) (2026-04-02)
+
 ## [0.11.0](https://github.com/googleapis/google-cloud-go/releases/tag/networksecurity%2Fv0.11.0) (2025-12-04)
 
 ### Features

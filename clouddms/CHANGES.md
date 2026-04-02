@@ -1,5 +1,7 @@
 # Changes
 
+## [1.9.0](https://github.com/googleapis/google-cloud-go/releases/tag/clouddms%2Fv1.9.0) (2026-04-02)
+
 ## [1.8.8](https://github.com/googleapis/google-cloud-go/compare/clouddms/v1.8.7...clouddms/v1.8.8) (2025-09-16)
 
 

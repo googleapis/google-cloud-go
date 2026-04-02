@@ -1,5 +1,7 @@
 # Changes
 
+## [0.2.0](https://github.com/googleapis/google-cloud-go/releases/tag/financialservices%2Fv0.2.0) (2026-04-02)
+
 ## [0.1.4](https://github.com/googleapis/google-cloud-go/compare/financialservices/v0.1.3...financialservices/v0.1.4) (2025-09-18)
 
 

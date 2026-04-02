@@ -1,5 +1,7 @@
 # Changes
 
+## [0.9.0](https://github.com/googleapis/google-cloud-go/releases/tag/managedkafka%2Fv0.9.0) (2026-04-02)
+
 ## [0.8.1](https://github.com/googleapis/google-cloud-go/compare/managedkafka/v0.8.0...managedkafka/v0.8.1) (2025-09-18)
 
 

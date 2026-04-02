@@ -1,5 +1,7 @@
 # Changes
 
+## [0.2.0](https://github.com/googleapis/google-cloud-go/releases/tag/devicestreaming%2Fv0.2.0) (2026-04-02)
+
 ## [0.1.1](https://github.com/googleapis/google-cloud-go/compare/devicestreaming/v0.1.0...devicestreaming/v0.1.1) (2025-09-16)
 
 

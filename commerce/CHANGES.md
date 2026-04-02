@@ -1,6 +1,8 @@
 # Changes
 
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/releases/tag/commerce%2Fv1.3.0) (2026-04-02)
+
 ## [1.2.6](https://github.com/googleapis/google-cloud-go/compare/commerce/v1.2.5...commerce/v1.2.6) (2025-09-16)
 
 

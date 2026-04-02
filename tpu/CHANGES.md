@@ -1,5 +1,7 @@
 # Changes
 
+## [1.9.0](https://github.com/googleapis/google-cloud-go/releases/tag/tpu%2Fv1.9.0) (2026-04-02)
+
 ## [1.8.4](https://github.com/googleapis/google-cloud-go/compare/tpu/v1.8.3...tpu/v1.8.4) (2025-09-22)
 
 

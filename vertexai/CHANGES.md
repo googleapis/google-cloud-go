@@ -1,5 +1,7 @@
 # Changes
 
+## [0.18.0](https://github.com/googleapis/google-cloud-go/releases/tag/vertexai%2Fv0.18.0) (2026-04-02)
+
 ## [0.17.0](https://github.com/googleapis/google-cloud-go/releases/tag/vertexai%2Fv0.17.0) (2026-03-17)
 
 ## [0.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/vertexai%2Fv0.16.0) (2026-03-13)

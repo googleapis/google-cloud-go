@@ -1,5 +1,7 @@
 # Changes
 
+## [0.3.0](https://github.com/googleapis/google-cloud-go/releases/tag/identitytoolkit%2Fv0.3.0) (2026-04-02)
+
 ## [0.2.6](https://github.com/googleapis/google-cloud-go/compare/identitytoolkit/v0.2.5...identitytoolkit/v0.2.6) (2025-09-18)
 
 

@@ -1,5 +1,7 @@
 # Changes
 
+## [0.10.0](https://github.com/googleapis/google-cloud-go/releases/tag/phishingprotection%2Fv0.10.0) (2026-04-02)
+
 ## [0.9.7](https://github.com/googleapis/google-cloud-go/compare/phishingprotection/v0.9.6...phishingprotection/v0.9.7) (2025-09-18)
 
 

@@ -1,6 +1,8 @@
 # Changes
 
 
+## [0.5.0](https://github.com/googleapis/google-cloud-go/releases/tag/memorystore%2Fv0.5.0) (2026-04-02)
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/releases/tag/memorystore%2Fv0.4.0) (2025-12-18)
 
 ### Features

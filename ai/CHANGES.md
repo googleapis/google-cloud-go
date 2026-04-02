@@ -1,6 +1,8 @@
 # Changes
 
 
+## [0.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/ai%2Fv0.16.0) (2026-04-02)
+
 ## [0.15.0](https://github.com/googleapis/google-cloud-go/releases/tag/ai%2Fv0.15.0) (2026-01-08)
 
 ### Features

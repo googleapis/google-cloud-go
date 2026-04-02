@@ -1,5 +1,7 @@
 # Changes
 
+## [0.3.0](https://github.com/googleapis/google-cloud-go/releases/tag/capacityplanner%2Fv0.3.0) (2026-04-02)
+
 ## [0.2.0](https://github.com/googleapis/google-cloud-go/releases/tag/capacityplanner%2Fv0.2.0) (2025-10-10)
 
 ### Features
