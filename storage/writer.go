@@ -186,9 +186,9 @@ type Writer struct {
 	// Parallel uploads can yield higher throughput when uploading
 	// large objects. However, there are some things which must be kept in mind
 	// when choosing to use this strategy:
-	//   - Performing parallel uploads costs more money. Class A operations
-	//     are performed to create each part. If a storage
-	//     tier other than STANDARD is used, early deletion fees apply to deletion of
+	//   - Performing parallel uploads may incur additional costs. Class A
+	//     operations are performed to create each part. If a storage
+	//     class other than STANDARD is used, early deletion fees apply to deletion of
 	//     the parts.
 	//   - The service account/credentials used to perform the parallel
 	//     upload require `storage.objects.delete` in order to clean up the temporary
