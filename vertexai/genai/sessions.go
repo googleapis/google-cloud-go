@@ -54,6 +54,11 @@ func createAgentEngineSessionConfigToVertex(fromObject map[string]any, parentObj
 		genai.InternalSetValueByPath(parentObject, []string{"labels"}, fromLabels)
 	}
 
+	fromSessionId := genai.InternalGetValueByPath(fromObject, []string{"sessionId"})
+	if fromSessionId != nil {
+		genai.InternalSetValueByPath(parentObject, []string{"_query", "sessionId"}, fromSessionId)
+	}
+
 	return toObject, nil
 }
 
@@ -180,6 +185,11 @@ func updateAgentEngineSessionConfigToVertex(fromObject map[string]any, parentObj
 	fromLabels := genai.InternalGetValueByPath(fromObject, []string{"labels"})
 	if fromLabels != nil {
 		genai.InternalSetValueByPath(parentObject, []string{"labels"}, fromLabels)
+	}
+
+	fromSessionId := genai.InternalGetValueByPath(fromObject, []string{"sessionId"})
+	if fromSessionId != nil {
+		genai.InternalSetValueByPath(parentObject, []string{"_query", "sessionId"}, fromSessionId)
 	}
 
 	fromUpdateMask := genai.InternalGetValueByPath(fromObject, []string{"updateMask"})

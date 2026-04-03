@@ -466,6 +466,14 @@ type MemoryBankCustomizationConfigMemoryTopic struct {
 	ManagedMemoryTopic *MemoryBankCustomizationConfigMemoryTopicManagedMemoryTopic `json:"managedMemoryTopic,omitempty"`
 }
 
+// Represents configuration for customizing how memories are consolidated.
+type MemoryBankCustomizationConfigConsolidationConfig struct {
+	// Optional. Represents the maximum number of revisions to consider for each candidate
+	// memory. If not set, then the default value (1) will be used, which means that only
+	// the latest revision will be considered.
+	RevisionsPerCandidateCount *int32 `json:"revisionsPerCandidateCount,omitempty"`
+}
+
 // Configuration for organizing memories for a particular scope.
 type MemoryBankCustomizationConfig struct {
 	// Optional. If true, then the memories will be generated in the third person (i.e.
@@ -482,6 +490,9 @@ type MemoryBankCustomizationConfig struct {
 	// not matter). If empty, then the config will be used for all requests that do not
 	// have a more specific config. Only one default config is allowed per Memory Bank.
 	ScopeKeys []string `json:"scopeKeys,omitempty"`
+	// Optional. Represents configuration for customizing how memories are consolidated
+	// together.
+	ConsolidationConfig *MemoryBankCustomizationConfigConsolidationConfig `json:"consolidationConfig,omitempty"`
 }
 
 // Configuration for how to generate memories.
@@ -2238,6 +2249,12 @@ type CreateAgentEngineSessionConfig struct {
 	// characters are allowed. See https://goo.gl/xmQnxf for more information and examples
 	// of labels.
 	Labels map[string]string `json:"labels,omitempty"`
+	// Optional. The user defined ID to use for session, which will become the final component
+	// of the session resource name. If not provided, Vertex AI will generate a value for
+	// this ID. This value may be up to 63 characters, and valid characters are `[a-z0-9-]`.
+	// The first character must be a letter, and the last character must be a letter or
+	// number.
+	SessionID string `json:"sessionId,omitempty"`
 }
 
 func (c *CreateAgentEngineSessionConfig) UnmarshalJSON(data []byte) error {
@@ -2478,6 +2495,12 @@ type UpdateAgentEngineSessionConfig struct {
 	// characters are allowed. See https://goo.gl/xmQnxf for more information and examples
 	// of labels.
 	Labels map[string]string `json:"labels,omitempty"`
+	// Optional. The user defined ID to use for session, which will become the final component
+	// of the session resource name. If not provided, Vertex AI will generate a value for
+	// this ID. This value may be up to 63 characters, and valid characters are `[a-z0-9-]`.
+	// The first character must be a letter, and the last character must be a letter or
+	// number.
+	SessionID string `json:"sessionId,omitempty"`
 	// Optional. The update mask to apply. For the `FieldMask` definition, see
 	// https://protobuf.dev/reference/protobuf/google.protobuf/#field-mask.
 	UpdateMask string `json:"updateMask,omitempty"`
@@ -2831,8 +2854,13 @@ type RunQueryJobAgentEngineConfig struct {
 	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
 	// The query to send to the agent engine.
 	Query string `json:"query,omitempty"`
-	// The GCS bucket to use for the query.
-	GCSBucket string `json:"gcsBucket,omitempty"`
+	// The GCS URI to use for the output.
+	// If it is a file, the system use this file to store the response.
+	// If it represents a directory, the system automatically generate a file
+	// for the response.
+	// In both cases, the input query will be stored in the same directory under
+	// the same file name prefix as the output file.
+	OutputGCSURI string `json:"outputGcsUri,omitempty"`
 }
 
 // Result of running a query job.
