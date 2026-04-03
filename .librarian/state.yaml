@@ -428,7 +428,9 @@ libraries:
   - id: biglake
     version: 0.1.0
     last_generated_commit: ""
-    apis: []
+    apis:
+      - path: google/cloud/biglake/v1
+      - path: google/cloud/biglake/hive/v1beta
     source_roots:
       - biglake
     preserve_regex: []
@@ -882,6 +884,7 @@ libraries:
         service_config: datacatalog_v1.yaml
       - path: google/cloud/datacatalog/v1beta1
         service_config: datacatalog_v1beta1.yaml
+      - path: google/cloud/datacatalog/lineage/configmanagement/v1
     source_roots:
       - datacatalog
       - internal/generated/snippets/datacatalog
@@ -1673,6 +1676,7 @@ libraries:
         service_config: routes_v2.yaml
       - path: google/maps/solar/v1
         service_config: solar_v1.yaml
+      - path: google/maps/geocode/v4
     source_roots:
       - maps
       - internal/generated/snippets/maps
