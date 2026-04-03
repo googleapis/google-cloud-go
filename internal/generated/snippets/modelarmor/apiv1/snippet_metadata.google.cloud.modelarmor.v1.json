@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/modelarmor/apiv1",
-    "version": "0.6.1"
+    "version": "0.7.0"
   },
   "snippets": [
     {

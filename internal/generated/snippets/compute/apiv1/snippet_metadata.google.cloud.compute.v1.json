@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/compute/apiv1",
-    "version": "1.57.0"
+    "version": "1.58.0"
   },
   "snippets": [
     {

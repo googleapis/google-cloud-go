@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/gkebackup/apiv1",
-    "version": "1.8.1"
+    "version": "1.9.0"
   },
   "snippets": [
     {

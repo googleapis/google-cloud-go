@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/monitoring/dashboard/apiv1",
-    "version": "1.24.3"
+    "version": "1.25.0"
   },
   "snippets": [
     {

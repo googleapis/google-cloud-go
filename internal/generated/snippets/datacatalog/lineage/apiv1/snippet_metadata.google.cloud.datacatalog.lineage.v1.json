@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/datacatalog/lineage/apiv1",
-    "version": "1.26.1"
+    "version": "1.27.0"
   },
   "snippets": [
     {

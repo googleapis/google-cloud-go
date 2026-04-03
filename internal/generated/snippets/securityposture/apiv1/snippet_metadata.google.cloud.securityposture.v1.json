@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/securityposture/apiv1",
-    "version": "0.2.6"
+    "version": "0.3.0"
   },
   "snippets": [
     {

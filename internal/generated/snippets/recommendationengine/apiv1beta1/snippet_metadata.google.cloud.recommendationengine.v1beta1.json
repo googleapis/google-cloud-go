@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/recommendationengine/apiv1beta1",
-    "version": "0.9.7"
+    "version": "0.10.0"
   },
   "snippets": [
     {

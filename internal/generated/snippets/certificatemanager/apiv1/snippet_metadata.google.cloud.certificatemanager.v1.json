@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/certificatemanager/apiv1",
-    "version": "1.9.6"
+    "version": "1.10.0"
   },
   "snippets": [
     {

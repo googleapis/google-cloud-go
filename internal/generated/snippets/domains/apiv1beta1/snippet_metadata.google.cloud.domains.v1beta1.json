@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/domains/apiv1beta1",
-    "version": "0.10.7"
+    "version": "0.11.0"
   },
   "snippets": [
     {

@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/shopping/merchant/datasources/apiv1",
-    "version": "1.6.0"
+    "version": "1.7.0"
   },
   "snippets": [
     {
