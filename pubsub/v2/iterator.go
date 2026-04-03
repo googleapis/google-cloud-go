@@ -682,7 +682,8 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 					semconv.CodeFunction("sendAck"),
 				),
 			)
-			_, ackSpan := startSpan(context.Background(), ackSpanName, it.subID, opts...)
+			var ackSpan trace.Span
+			ctx, ackSpan = startSpan(ctx, ackSpanName, it.subID, opts...)
 			defer ackSpan.End()
 			if ackSpan.SpanContext().IsSampled() {
 				for _, s := range subscribeSpans {
@@ -777,7 +778,8 @@ func (it *messageIterator) sendModAck(ctx context.Context, m map[string]*AckResu
 					),
 				)
 			}
-			_, mSpan := startSpan(context.Background(), spanName, it.subID, opts...)
+			var mSpan trace.Span
+			ctx, mSpan = startSpan(ctx, spanName, it.subID, opts...)
 			defer mSpan.End()
 			if mSpan.SpanContext().IsSampled() {
 				for _, s := range subscribeSpans {
