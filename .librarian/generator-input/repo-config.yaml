@@ -17,7 +17,7 @@ modules:
       - path: google/bigtable/v2
         disable_gapic: true
       - path: google/bigtable/admin/v2
-        disable_gapic: true
+        client_directory: admin/apiv2
 
   - name: cloudbuild
     apis:
