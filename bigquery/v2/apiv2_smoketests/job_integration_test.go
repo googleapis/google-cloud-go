@@ -52,9 +52,12 @@ func TestInitStatelessQuery(t *testing.T) {
 			// assert that it must be the case.
 			if bv := queryResp.GetJobComplete(); bv != nil && bv.Value {
 				if jobRef := queryResp.GetJobReference(); jobRef != nil {
-					// We ended up with a job.  Ensure there's a reason at least.
-					if queryResp.GetJobCreationReason() != nil {
-						t.Error("there's a job reference in the response but no reason for it")
+					// We got a job reference, at least make sure it has the expected fields populated.
+					if jobRef.GetProjectId() == "" {
+						t.Errorf("JobReference present but ProjectId not populated.")
+					}
+					if jobRef.GetJobId() == "" {
+						t.Errorf("JobReference present but JobId not populated.")
 					}
 				} else {
 					if rowcount := len(queryResp.GetRows()); rowcount != 1 {
