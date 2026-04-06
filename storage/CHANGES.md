@@ -5,11 +5,11 @@
 
 ### Features
 
-* integrate parallel uploads into storage writer (#14232) ([370e0ed](https://github.com/googleapis/google-cloud-go/commit/370e0ed14e4628ac9a8b9e6e9050d974ffb75e17))
+* Integrate parallel uploads into storage writer (#14232) ([370e0ed](https://github.com/googleapis/google-cloud-go/commit/370e0ed14e4628ac9a8b9e6e9050d974ffb75e17))
 
 ### Bug Fixes
 
-* close HTTP2 response bodies to prevent flow-control leaks (#14324) ([b6bcfe8](https://github.com/googleapis/google-cloud-go/commit/b6bcfe8feb69afebe7a54a549097112bffcc7a27))
+* Close HTTP2 response bodies to prevent flow-control leaks (#14324) ([b6bcfe8](https://github.com/googleapis/google-cloud-go/commit/b6bcfe8feb69afebe7a54a549097112bffcc7a27))
 
 ### Documentation
 
