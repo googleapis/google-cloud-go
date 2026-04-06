@@ -856,3 +856,59 @@ func TestStreamingPullKeepAlive_ReopenStream(t *testing.T) {
 		t.Fatalf("expected at least 2 streams opened, got %v", streamsOpened)
 	}
 }
+
+// TestStreamingPullKeepAlive_Disabled verifies that when PUBSUB_EMULATOR_HOST is set,
+// the stream is not torn down even if the server does not respond to pings.
+func TestStreamingPullKeepAlive_Disabled(t *testing.T) {
+	// save old variables
+	oldClient := clientPingInterval
+	oldServerPing := serverPingTimeoutDuration
+	oldServerMonitor := serverMonitorInterval
+	oldProtocol := protocolVersion
+
+	// aggressive intervals so the handler would tear down the stream quickly if active
+	clientPingInterval = 1 * time.Second
+	serverPingTimeoutDuration = 0 * time.Second
+	serverMonitorInterval = 1 * time.Second
+
+	// make the fake server not respond to pings, simulating the binary emulator
+	protocolVersion = 0
+
+	t.Cleanup(func() {
+		clientPingInterval = oldClient
+		serverPingTimeoutDuration = oldServerPing
+		serverMonitorInterval = oldServerMonitor
+		protocolVersion = oldProtocol
+	})
+
+	t.Setenv("PUBSUB_EMULATOR_HOST", "localhost:9999")
+
+	c, srv := newFake(t)
+	ctx, cancel := context.WithCancel(t.Context())
+	defer cancel()
+
+	srv.Publish(fullyQualifiedTopicName, []byte("creating a topic"), nil)
+	_, err := c.SubscriptionAdminClient.CreateSubscription(ctx, &pb.Subscription{
+		Name:  fullyQualifiedSubName,
+		Topic: fullyQualifiedTopicName,
+	})
+	if err != nil {
+		t.Fatalf("failed to create subscription: %v", err)
+	}
+
+	iter := newMessageIterator(c.SubscriptionAdminClient, fullyQualifiedSubName, &pullOptions{})
+	defer iter.stop()
+
+	go func() {
+		iter.receive()
+	}()
+
+	// long enough for the handler to have fired multiple times if it were active
+	time.Sleep(3 * time.Second)
+	iter.stop()
+
+	streamsOpened := iter.ps.openCount.Load()
+	if streamsOpened != 1 {
+		t.Fatalf("expected exactly 1 stream opened (no reconnects), got %v", streamsOpened)
+	}
+}

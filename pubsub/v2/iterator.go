@@ -19,6 +19,7 @@ import (
 	"errors"
 	"io"
 	"log"
+	"os"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -163,7 +164,7 @@ func newMessageIterator(subc *vkit.SubscriptionAdminClient, subName string, po *
 	ackTicker := time.NewTicker(ackInterval)
 	nackTicker := time.NewTicker(nackInterval)
 	receiptTicker := time.NewTicker(receiptInterval)
-
+	
 	pingTicker := time.NewTicker(clientPingInterval)
 	serverMonitorTicker := time.NewTicker(serverMonitorInterval)
 
@@ -200,7 +201,11 @@ func newMessageIterator(subc *vkit.SubscriptionAdminClient, subName string, po *
 		serverTimeout:       serverPingTimeoutDuration,
 	}
 	it.wg.Add(1)
-	go it.streamKeepAliveHandler()
+	// skip dead-stream detection when using the binary PubSub emulator, which does
+	// not respond to keep-alive pings and would cause repeated false stream teardowns.
+	if os.Getenv("PUBSUB_EMULATOR_HOST") == "" {
+		go it.streamKeepAliveHandler()
+	}
 	go it.sender()
 	return it
 }
