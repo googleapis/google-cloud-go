@@ -437,8 +437,11 @@ libraries:
       - path: google/cloud/biglake/hive/v1beta
     source_roots:
       - biglake
+      - internal/generated/snippets/biglake
     preserve_regex: []
     remove_regex: []
+    release_exclude_paths:
+      - internal/generated/snippets/biglake/
     tag_format: '{id}/v{version}'
   - id: bigquery
     version: 1.75.0
