@@ -200,12 +200,12 @@ func newMessageIterator(subc *vkit.SubscriptionAdminClient, subName string, po *
 		lastClientPing:      time.UnixMicro(0),
 		serverTimeout:       serverPingTimeoutDuration,
 	}
-	it.wg.Add(1)
 	// skip dead-stream detection when using the binary PubSub emulator, which does
 	// not respond to keep-alive pings and would cause repeated false stream teardowns.
 	if os.Getenv("PUBSUB_EMULATOR_HOST") == "" {
 		go it.streamKeepAliveHandler()
 	}
+	it.wg.Add(1)
 	go it.sender()
 	return it
 }
