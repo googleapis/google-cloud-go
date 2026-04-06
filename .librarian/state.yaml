@@ -325,7 +325,7 @@ libraries:
     remove_regex: []
     tag_format: '{id}/v{version}'
   - id: auth
-    version: 0.19.0
+    version: 0.20.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -430,7 +430,9 @@ libraries:
     last_generated_commit: ""
     apis:
       - path: google/cloud/biglake/v1
+        service_config: ""
       - path: google/cloud/biglake/hive/v1beta
+        service_config: ""
     source_roots:
       - biglake
     preserve_regex: []
@@ -885,6 +887,7 @@ libraries:
       - path: google/cloud/datacatalog/v1beta1
         service_config: datacatalog_v1beta1.yaml
       - path: google/cloud/datacatalog/lineage/configmanagement/v1
+        service_config: ""
     source_roots:
       - datacatalog
       - internal/generated/snippets/datacatalog
@@ -1677,6 +1680,7 @@ libraries:
       - path: google/maps/solar/v1
         service_config: solar_v1.yaml
       - path: google/maps/geocode/v4
+        service_config: ""
     source_roots:
       - maps
       - internal/generated/snippets/maps
