@@ -199,6 +199,8 @@ libraries:
       - internal/generated/snippets/apiregistry
     preserve_regex: []
     remove_regex: []
+    release_exclude_paths:
+      - internal/generated/snippets/apiregistry/
     tag_format: '{id}/v{version}'
   - id: appengine
     version: 1.10.0
@@ -323,6 +325,8 @@ libraries:
       - internal/generated/snippets/auditmanager
     preserve_regex: []
     remove_regex: []
+    release_exclude_paths:
+      - internal/generated/snippets/auditmanager/
     tag_format: '{id}/v{version}'
   - id: auth
     version: 0.19.0
@@ -597,6 +601,8 @@ libraries:
       - internal/generated/snippets/ces
     preserve_regex: []
     remove_regex: []
+    release_exclude_paths:
+      - internal/generated/snippets/ces/
     tag_format: '{id}/v{version}'
   - id: channel
     version: 1.22.0
@@ -727,6 +733,8 @@ libraries:
       - internal/generated/snippets/cloudsecuritycompliance
     preserve_regex: []
     remove_regex: []
+    release_exclude_paths:
+      - internal/generated/snippets/cloudsecuritycompliance/
     tag_format: '{id}/v{version}'
   - id: cloudtasks
     version: 1.14.0
@@ -963,6 +971,8 @@ libraries:
       - internal/generated/snippets/datamanager
     preserve_regex: []
     remove_regex: []
+    release_exclude_paths:
+      - internal/generated/snippets/datamanager/
     tag_format: '{id}/v{version}'
   - id: dataplex
     version: 1.30.0
@@ -1130,6 +1140,8 @@ libraries:
       - internal/generated/snippets/dlp
     preserve_regex: []
     remove_regex: []
+    release_exclude_paths:
+      - internal/generated/snippets/dlp/
     tag_format: '{id}/v{version}'
   - id: documentai
     version: 1.44.0
@@ -1378,6 +1390,8 @@ libraries:
       - internal/generated/snippets/gkerecommender
     preserve_regex: []
     remove_regex: []
+    release_exclude_paths:
+      - internal/generated/snippets/gkerecommender/
     tag_format: '{id}/v{version}'
   - id: grafeas
     version: 0.4.0
@@ -1415,6 +1429,8 @@ libraries:
       - internal/generated/snippets/hypercomputecluster
     preserve_regex: []
     remove_regex: []
+    release_exclude_paths:
+      - internal/generated/snippets/hypercomputecluster/
     tag_format: '{id}/v{version}'
   - id: iam
     version: 1.7.0
@@ -1625,6 +1641,8 @@ libraries:
       - internal/generated/snippets/maintenance
     preserve_regex: []
     remove_regex: []
+    release_exclude_paths:
+      - internal/generated/snippets/maintenance/
     tag_format: '{id}/v{version}'
   - id: managedidentities
     version: 1.8.0
@@ -1826,6 +1844,8 @@ libraries:
       - internal/generated/snippets/networkconnectivity
     preserve_regex: []
     remove_regex: []
+    release_exclude_paths:
+      - internal/generated/snippets/networkconnectivity/
     tag_format: '{id}/v{version}'
   - id: networkmanagement
     version: 1.24.0
@@ -2305,6 +2325,8 @@ libraries:
       - internal/generated/snippets/saasplatform
     preserve_regex: []
     remove_regex: []
+    release_exclude_paths:
+      - internal/generated/snippets/saasplatform/
     tag_format: '{id}/v{version}'
   - id: scheduler
     version: 1.12.0
@@ -2812,6 +2834,8 @@ libraries:
       - internal/generated/snippets/vectorsearch
     preserve_regex: []
     remove_regex: []
+    release_exclude_paths:
+      - internal/generated/snippets/vectorsearch/
     tag_format: '{id}/v{version}'
   - id: vertexai
     version: 0.18.0
@@ -2992,6 +3016,8 @@ libraries:
       - internal/generated/snippets/workloadmanager
     preserve_regex: []
     remove_regex: []
+    release_exclude_paths:
+      - internal/generated/snippets/workloadmanager/
     tag_format: '{id}/v{version}'
   - id: workstations
     version: 1.2.0
