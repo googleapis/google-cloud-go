@@ -182,6 +182,8 @@ func (RawOptions) isDocumentsOption() {}
 
 func (RawOptions) isLiteralsOption() {}
 
+func (RawOptions) isDefineOption() {}
+
 func (r RawOptions) apply(eo *executeSettings) {
 	if eo.RawOptions == nil {
 		eo.RawOptions = make(map[string]any)
@@ -227,6 +229,15 @@ func Selectables(s ...Selectable) []Selectable {
 	return []Selectable(s)
 }
 
+// AliasedExpressions is a helper function that returns its arguments as a slice of *AliasedExpression.
+// It is used to provide variadic-like ergonomics for the [Pipeline.Define] pipeline stage.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func AliasedExpressions(v ...*AliasedExpression) []*AliasedExpression {
+	return v
+}
+
 // Execute executes the pipeline and returns a snapshot of the results.
 //
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
@@ -239,6 +250,15 @@ func (p *Pipeline) Execute(ctx context.Context, opts ...ExecuteOption) *Pipeline
 			if opt != nil {
 				opt.apply(newP.executeSettings)
 			}
+		}
+	}
+
+	if newP.c == nil {
+		newP.err = fmt.Errorf("This pipeline was created without a database (e.g., as a subcollection pipeline) and cannot be executed directly. It can only be used as part of another pipeline.")
+		return &PipelineSnapshot{
+			iter: &PipelineResultIterator{
+				err: newP.err,
+			},
 		}
 	}
 
@@ -877,6 +897,10 @@ func (p *Pipeline) Union(other *Pipeline, opts ...UnionOption) *Pipeline {
 	if p.err != nil {
 		return p
 	}
+	if other.c == nil {
+		p.err = fmt.Errorf("Union only supports combining root pipelines, doesn't support relative scope Pipeline like relative subcollection pipeline")
+		return p
+	}
 	options := make(map[string]any)
 	for _, opt := range opts {
 		if opt != nil {
@@ -913,19 +937,19 @@ type Sampler struct {
 	Mode SampleMode
 }
 
-// ByDocuments creates a Sampler for sampling a fixed number of documents.
+// WithDocLimit creates a Sampler for sampling a fixed number of documents.
 //
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
-func ByDocuments(limit int) *Sampler {
+func WithDocLimit(limit int) *Sampler {
 	return &Sampler{Size: limit, Mode: SampleModeDocuments}
 }
 
-// ByPercentage creates a Sampler for sampling a percentage of documents.
+// WithPercentage creates a Sampler for sampling a percentage of documents.
 //
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
-func ByPercentage(percentage float64) *Sampler {
+func WithPercentage(percentage float64) *Sampler {
 	return &Sampler{Size: percentage, Mode: SampleModePercent}
 }
 
@@ -941,15 +965,15 @@ type SampleOption interface {
 // Sample performs a pseudo-random sampling of the documents from the previous stage.
 //
 // This stage will filter documents pseudo-randomly. The behavior is defined by the Sampler.
-// Use ByDocuments or ByPercentage to create a Sampler.
+// Use WithDocLimit or WithPercentage to create a Sampler.
 //
 // Example:
 //
 //	// Sample 10 books, if available.
-//	client.Pipeline().Collection("books").Sample(ByDocuments(10))
+//	client.Pipeline().Collection("books").Sample(WithDocLimit(10))
 //
 //	// Sample 50% of books.
-//	client.Pipeline().Collection("books").Sample(ByPercentage(0.5))
+//	client.Pipeline().Collection("books").Sample(WithPercentage(0.5))
 //
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
@@ -1240,5 +1264,110 @@ func (p *Pipeline) Delete(opts ...DeleteOption) *Pipeline {
 		}
 	}
 	stage := newDeleteStage(options)
+	return p.append(stage)
+}
+
+// Scalar converts this Pipeline into an expression that evaluates to a single scalar result.
+// Used for 1:1 lookups or Aggregations when the subquery is expected to return a single value or object.
+//
+// Example:
+//
+//	// Calculate average rating for each restaurant using a subquery
+//	client.Pipeline().Collection("restaurants").
+//		AddFields(Selectables(
+//			Subcollection("reviews").
+//				Aggregate(Accumulators(Average("rating").As("avg_score"))).
+//				Scalar().As("stats"),
+//		))
+//	// Output format:
+//	// [
+//	//   {
+//	//     "name": "The Burger Joint",
+//	//     "stats": {
+//	//       "avg_score": 4.8,
+//	//       "review_count": 120
+//	//     }
+//	//   }
+//	// ]
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func (p *Pipeline) ToScalarExpression() Expression {
+	return newBaseFunction("scalar", []Expression{newPipelineValueExpression(p)})
+}
+
+// ToArrayExpression converts this Pipeline into an expression that evaluates to an array result.
+//
+// Example:
+//
+//	// Embed a subcollection of reviews as an array into each restaurant document
+//	client.Pipeline().Collection("restaurants").
+//		AddFields(Selectables(
+//			Subcollection("reviews").
+//				Select(Fields("reviewer", "rating")).
+//				ToArrayExpression().As("reviews"),
+//		))
+//	// Output format:
+//	// [
+//	//   {
+//	//     "name": "The Burger Joint",
+//	//     "reviews": [
+//	//       { "reviewer": "Alice", "rating": 5 },
+//	//       { "reviewer": "Bob", "rating": 4 }
+//	//     ]
+//	//   }
+//	// ]
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func (p *Pipeline) ToArrayExpression() Expression {
+	return newBaseFunction("array", []Expression{newPipelineValueExpression(p)})
+}
+
+// DefineOption is an option for a Define pipeline stage.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+type DefineOption interface {
+	StageOption
+	isDefineOption()
+}
+
+// Define adds a "let" stage to the pipeline to define variables.
+//
+// Defines one or more variables in the pipeline's scope. `Define` is used to bind a value to a
+// name, which can be referenced in subsequent stages using [Variable].
+//
+// Each variable is defined using an [AliasedExpression], which pairs an expression with
+// its alias (the variable name).
+//
+// Example:
+//
+//	// Define a variable and use it in a filter
+//	client.Pipeline().Collection("products").
+//		Define(AliasedExpressions(
+//			Multiply("price", 0.9).As("discountedPrice"),
+//			Add("stock", 10).As("newStock"),
+//		)).
+//		Where(LessThan(Variable("discountedPrice"), 100)).
+//		Select(Fields("name", Variable("newStock")))
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func (p *Pipeline) Define(variables []*AliasedExpression, opts ...DefineOption) *Pipeline {
+	if p.err != nil {
+		return p
+	}
+	options := make(map[string]any)
+	for _, opt := range opts {
+		if opt != nil {
+			opt.applyStage(options)
+		}
+	}
+	stage, err := newDefineStage(variables, options)
+	if err != nil {
+		p.err = err
+		return p
+	}
 	return p.append(stage)
 }

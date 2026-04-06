@@ -316,6 +316,10 @@ type Expression interface {
 	GetCollectionID() Expression
 	// GetDocumentID creates an expression that returns the ID of the document.
 	GetDocumentID() Expression
+	// GetField creates an expression that accesses a field/property of a document field using the provided key.
+	//
+	// The parameter 'key' can be a string constant or an [Expression] that evaluates to a string.
+	GetField(key any) Expression
 
 	// Logical functions
 	// IfError creates an expression that evaluates and returns the receiver expression if it does not produce an error;
@@ -506,7 +510,7 @@ type Expression interface {
 
 	// As assigns an alias to an expression.
 	// Aliases are useful for renaming fields in the output of a stage.
-	As(alias string) Selectable
+	As(alias string) *AliasedExpression
 }
 
 // baseExpression provides common methods for all Expr implementations, allowing for method chaining.
@@ -645,6 +649,7 @@ func (b *baseExpression) Concat(others ...any) Expression { return Concat(b, oth
 // Key functions
 func (b *baseExpression) GetCollectionID() Expression { return GetCollectionID(b) }
 func (b *baseExpression) GetDocumentID() Expression   { return GetDocumentID(b) }
+func (b *baseExpression) GetField(key any) Expression { return GetField(b, key) }
 
 // Logical functions
 func (b *baseExpression) IfError(catchExprOrValue any) Expression {
@@ -755,7 +760,7 @@ func (b *baseExpression) VectorLength() Expression               { return Vector
 func (b *baseExpression) Ascending() Ordering  { return Ascending(b) }
 func (b *baseExpression) Descending() Ordering { return Descending(b) }
 
-func (b *baseExpression) As(alias string) Selectable {
+func (b *baseExpression) As(alias string) *AliasedExpression {
 	return newAliasedExpr(b, alias)
 }
 

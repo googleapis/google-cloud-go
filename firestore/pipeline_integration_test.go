@@ -593,8 +593,8 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		}
 	})
 	t.Run("Sample", func(t *testing.T) {
-		t.Run("SampleByDocuments", func(t *testing.T) {
-			iter := client.Pipeline().Collection(coll.ID).Sample(ByDocuments(5)).Execute(ctx).Results()
+		t.Run("SampleWithDocLimit", func(t *testing.T) {
+			iter := client.Pipeline().Collection(coll.ID).Sample(WithDocLimit(5)).Execute(ctx).Results()
 			defer iter.Stop()
 			var got []map[string]interface{}
 			for {
@@ -615,8 +615,8 @@ func TestIntegration_PipelineStages(t *testing.T) {
 				t.Errorf("got %d documents, want 5", len(got))
 			}
 		})
-		t.Run("SampleByPercentage", func(t *testing.T) {
-			iter := client.Pipeline().Collection(coll.ID).Sample(ByPercentage(0.6)).Execute(ctx).Results()
+		t.Run("SampleWithPercentage", func(t *testing.T) {
+			iter := client.Pipeline().Collection(coll.ID).Sample(WithPercentage(0.6)).Execute(ctx).Results()
 			defer iter.Stop()
 			var got []map[string]interface{}
 			for {
@@ -2965,4 +2965,163 @@ func logicalFuncs(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestIntegration_PipelineSubqueriesAndVariables(t *testing.T) {
+	skipIfNotEnterprise(t)
+	ctx := context.Background()
+	client := integrationClient(t)
+	coll := integrationColl(t)
+
+	// Create test documents
+	restaurantsRef := coll.NewDoc()
+	_, err := restaurantsRef.Create(ctx, map[string]interface{}{
+		"name": "The Burger Joint",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		restaurantsRef.Delete(ctx)
+	})
+
+	review1Ref := restaurantsRef.Collection("reviews").NewDoc()
+	_, err = review1Ref.Create(ctx, map[string]interface{}{
+		"reviewer": "Alice",
+		"rating":   5,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	review2Ref := restaurantsRef.Collection("reviews").NewDoc()
+	_, err = review2Ref.Create(ctx, map[string]interface{}{
+		"reviewer": "Bob",
+		"rating":   4,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Cleanup(func() {
+		review1Ref.Delete(ctx)
+		review2Ref.Delete(ctx)
+	})
+
+	productsRef := coll.NewDoc()
+	_, err = productsRef.Create(ctx, map[string]interface{}{
+		"name":  "Widget",
+		"price": 100,
+		"stock": 20,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		productsRef.Delete(ctx)
+	})
+
+	t.Run("SubcollectionAndScalar", func(t *testing.T) {
+		iter := client.Pipeline().Documents([]*DocumentRef{restaurantsRef}).
+			AddFields(Selectables(
+				Subcollection("reviews").
+					Aggregate(Accumulators(Average("rating").As("avg_score"))).
+					ToScalarExpression().As("stats"),
+			)).Execute(ctx).Results()
+
+		res, err := iter.GetAll()
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(res) != 1 {
+			t.Fatalf("expected 1 doc, got %d", len(res))
+		}
+
+		data := res[0].Data()
+		stats, ok := data["stats"].(float64)
+		if !ok {
+			t.Fatalf("expected stats to be float64, got %T", data["stats"])
+		}
+		if stats != 4.5 {
+			t.Errorf("expected stats 4.5, got %v", stats)
+		}
+	})
+
+	t.Run("SubcollectionAndArray", func(t *testing.T) {
+		iter := client.Pipeline().Documents([]*DocumentRef{restaurantsRef}).
+			AddFields(Selectables(
+				Subcollection("reviews").
+					Select(Fields("reviewer", "rating")).
+					Sort(Orders(Ascending(FieldOf("reviewer")))).
+					ToArrayExpression().As("reviews"),
+			)).Execute(ctx).Results()
+
+		res, err := iter.GetAll()
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(res) != 1 {
+			t.Fatalf("expected 1 doc, got %d", len(res))
+		}
+
+		data := res[0].Data()
+		reviews, ok := data["reviews"].([]interface{})
+		if !ok {
+			t.Fatalf("expected reviews to be array, got %T", data["reviews"])
+		}
+		if len(reviews) != 2 {
+			t.Fatalf("expected 2 reviews, got %d", len(reviews))
+		}
+		r1 := reviews[0].(map[string]interface{})
+		if r1["reviewer"] != "Alice" || r1["rating"].(int64) != 5 {
+			t.Errorf("expected Alice with rating 5, got %v", r1)
+		}
+	})
+
+	t.Run("DefineAndVariable", func(t *testing.T) {
+		iter := client.Pipeline().Documents([]*DocumentRef{productsRef}).
+			Define(AliasedExpressions(
+				Multiply("price", 0.9).As("discountedPrice"),
+				Add("stock", 10).As("newStock"),
+			)).
+			Where(LessThan(Variable("discountedPrice"), 100)).
+			Select(Fields("name", Variable("newStock").As("newStock"))).
+			Execute(ctx).Results()
+
+		res, err := iter.GetAll()
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(res) != 1 {
+			t.Fatalf("expected 1 doc, got %d", len(res))
+		}
+
+		data := res[0].Data()
+		if data["name"] != "Widget" {
+			t.Errorf("expected name Widget, got %v", data["name"])
+		}
+		if data["newStock"].(int64) != 30 {
+			t.Errorf("expected newStock 30, got %v", data["newStock"])
+		}
+	})
+
+	t.Run("CurrentDocument", func(t *testing.T) {
+		iter := client.Pipeline().Documents([]*DocumentRef{productsRef}).
+			Define(AliasedExpressions(CurrentDocument().As("doc"))).
+			Select(Fields(MapGet(Variable("doc"), "name").As("name"))).
+			Execute(ctx).Results()
+
+		res, err := iter.GetAll()
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(res) != 1 {
+			t.Fatalf("expected 1 doc, got %d", len(res))
+		}
+
+		data := res[0].Data()
+		if data["name"] != "Widget" {
+			t.Errorf("expected name Widget, got %v", data["name"])
+		}
+	})
 }

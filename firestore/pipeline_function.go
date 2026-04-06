@@ -390,12 +390,48 @@ func CurrentTimestamp() Expression {
 	return newBaseFunction("current_timestamp", []Expression{})
 }
 
-// CurrentDocument creates an expression that returns the current document.
+// CurrentDocument creates an expression that represents the current document being processed.
+//
+// This expression is useful when you need to access the entire document as a map, or pass the
+// document itself to a function or subquery.
+//
+// Example:
+//
+//	// Define the current document as a variable "doc"
+//	client.Pipeline().Collection("books").
+//		Define(AliasedExpressions(CurrentDocument().As("doc"))).
+//		// Access a field from the defined document variable
+//		Select(Fields(GetField(Variable("doc"), "title")))
 //
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
 func CurrentDocument() Expression {
 	return newBaseFunction("current_document", []Expression{})
+}
+
+// Variable creates an expression that retrieves the value of a variable bound via Define.
+//
+// Example:
+//
+//	// Define a variable "discountedPrice" and use it in a filter
+//	client.Pipeline().Collection("products").
+//		Define(AliasedExpressions(Multiply("price", 0.9).As("discountedPrice"))).
+//		Where(LessThan(Variable("discountedPrice"), 100))
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func Variable(name string) Expression {
+	pbVal := &pb.Value{ValueType: &pb.Value_VariableReferenceValue{VariableReferenceValue: name}}
+	return &baseExpression{pbVal: pbVal}
+}
+
+// Scalar converts a Pipeline into an expression that evaluates to a single scalar result.
+// Used for 1:1 lookups or Aggregations when the subquery is expected to return a single value or object.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func Scalar(pipeline *Pipeline) Expression {
+	return newBaseFunction("scalar", []Expression{newPipelineValueExpression(pipeline)})
 }
 
 // ArrayLength creates an expression that calculates the length of an array.
@@ -910,6 +946,16 @@ func GetDocumentID(exprStringOrDocRef any) Expression {
 	}
 
 	return newBaseFunction("document_id", []Expression{expr})
+}
+
+// GetField creates an expression that accesses a field/property of a document field using the provided key.
+// - exprOrField: The expression representing the document or map.
+// - key: The key of the field to access.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func GetField(exprOrField any, key any) Expression {
+	return newBaseFunction("get_field", []Expression{asFieldExpr(exprOrField), asStringExpr(key)})
 }
 
 // Conditional creates an expression that evaluates a condition and returns one of two expressions.

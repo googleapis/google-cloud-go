@@ -118,6 +118,14 @@ func toExprOrConstant(val any) Expression {
 	return ConstantOf(val)
 }
 
+func newPipelineValueExpression(p *Pipeline) Expression {
+	pbVal, err := p.toProto()
+	if err != nil {
+		return &baseExpression{err: err}
+	}
+	return &baseExpression{pbVal: &pb.Value{ValueType: &pb.Value_PipelineValue{PipelineValue: pbVal}}}
+}
+
 // asFieldExpr converts a plain Go string or FieldPath into a field expression.
 // If the value is already an Expr, it's returned directly.
 func asFieldExpr(val any) Expression {

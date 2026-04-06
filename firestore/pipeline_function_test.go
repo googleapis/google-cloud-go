@@ -1080,3 +1080,41 @@ func TestArrayFunctions(t *testing.T) {
 		})
 	}
 }
+
+func TestGetFieldVariations(t *testing.T) {
+	// 1. (e Expression) GetField(string)
+	expr1 := FieldOf("doc").GetField("title")
+	if expr1 == nil {
+		t.Fatal("expected expr1 not to be nil")
+	}
+
+	// 2. (e Expression) GetField(Expression)
+	expr2 := FieldOf("doc").GetField(ConstantOf("title"))
+	if expr2 == nil {
+		t.Fatal("expected expr2 not to be nil")
+	}
+
+	// 3. GetField(string, string)
+	expr3 := GetField("doc", "title")
+	if expr3 == nil {
+		t.Fatal("expected expr3 not to be nil")
+	}
+
+	// 4. GetField(Expression, Expression)
+	expr4 := GetField(Variable("doc"), ConstantOf("title"))
+	if expr4 == nil {
+		t.Fatal("expected expr4 not to be nil")
+	}
+
+	// 5. GetField(string, Expression)
+	expr5 := GetField("doc", ConstantOf("title"))
+	if expr5 == nil {
+		t.Fatal("expected expr5 not to be nil")
+	}
+
+	// 6. GetField(Expression, string)
+	expr6 := GetField(Variable("doc"), "title")
+	if expr6 == nil {
+		t.Fatal("expected expr6 not to be nil")
+	}
+}

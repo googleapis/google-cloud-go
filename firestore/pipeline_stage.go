@@ -48,6 +48,7 @@ const (
 	stageNameUnnest          = "unnest"
 	stageNameUpdate          = "update"
 	stageNameWhere           = "where"
+	stageNameDefine          = "let"
 )
 
 // internal interface for pipeline stages.
@@ -168,6 +169,22 @@ func (s *inputStageDocuments) toProto() (*pb.Pipeline_Stage, error) {
 	}, nil
 }
 
+// inputStageSubcollection returns a pipeline starting from a subcollection of the current document.
+type inputStageSubcollection struct {
+	path string
+}
+
+func newInputStageSubcollection(path string) *inputStageSubcollection {
+	return &inputStageSubcollection{path: path}
+}
+func (s *inputStageSubcollection) name() string { return "subcollection" }
+func (s *inputStageSubcollection) toProto() (*pb.Pipeline_Stage, error) {
+	return &pb.Pipeline_Stage{
+		Name: s.name(),
+		Args: []*pb.Value{{ValueType: &pb.Value_StringValue{StringValue: s.path}}},
+	}, nil
+}
+
 // inputStageLiterals returns a fixed set of documents.
 type inputStageLiterals struct {
 	documents []map[string]any
@@ -194,6 +211,35 @@ func (s *inputStageLiterals) toProto() (*pb.Pipeline_Stage, error) {
 	return &pb.Pipeline_Stage{
 		Name:    s.name(),
 		Args:    args,
+		Options: optionsPb,
+	}, nil
+}
+
+type defineStage struct {
+	variables []*AliasedExpression
+	options   map[string]any
+}
+
+func newDefineStage(variables []*AliasedExpression, options map[string]any) (*defineStage, error) {
+	return &defineStage{variables: variables, options: options}, nil
+}
+func (s *defineStage) name() string { return stageNameDefine }
+func (s *defineStage) toProto() (*pb.Pipeline_Stage, error) {
+	selectables := make([]Selectable, len(s.variables))
+	for i, v := range s.variables {
+		selectables[i] = v
+	}
+	mapVal, err := projectionsToMapValue(selectables)
+	if err != nil {
+		return nil, err
+	}
+	optionsPb, err := stageOptionsToProto(s.options)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.Pipeline_Stage{
+		Name:    s.name(),
+		Args:    []*pb.Value{mapVal},
 		Options: optionsPb,
 	}, nil
 }

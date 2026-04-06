@@ -211,3 +211,26 @@ func (ps *PipelineSource) Literals(documents []map[string]any, opts ...LiteralsO
 	}
 	return newPipeline(ps.client, newInputStageLiterals(documents, options))
 }
+
+// Subcollection creates a new [Pipeline] that operates on a subcollection of the current document.
+//
+// This method allows you to start a new pipeline that operates on a subcollection of the
+// current document. It is intended to be used as a subquery.
+//
+// Note: A pipeline created with `Subcollection` cannot be executed directly using
+// [Pipeline.Execute]. It must be used within a parent pipeline.
+//
+// Example:
+//
+//	client.Pipeline().Collection("books").
+//		AddFields(Selectables(
+//			Subcollection("reviews").
+//				Aggregate(Accumulators(Average("rating").As("avg_rating"))).
+//				ToScalarExpression().As("average_rating"),
+//		))
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func Subcollection(path string) *Pipeline {
+	return newPipeline(nil, newInputStageSubcollection(path))
+}
