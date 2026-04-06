@@ -3,9 +3,7 @@ libraries:
   - id: accessapproval
     version: 1.9.0
     last_generated_commit: ""
-    apis:
-      - path: google/cloud/accessapproval/v1
-        service_config: accessapproval_v1.yaml
+    apis: []
     source_roots:
       - accessapproval
       - internal/generated/snippets/accessapproval
