@@ -254,7 +254,7 @@ func (p *Pipeline) Execute(ctx context.Context, opts ...ExecuteOption) *Pipeline
 	}
 
 	if newP.c == nil {
-		newP.err = fmt.Errorf("This pipeline was created without a database (e.g., as a subcollection pipeline) and cannot be executed directly. It can only be used as part of another pipeline.")
+		newP.err = fmt.Errorf("pipeline created without a database (e.g., as a subcollection pipeline) cannot be executed directly; it can only be used as part of another pipeline")
 		return &PipelineSnapshot{
 			iter: &PipelineResultIterator{
 				err: newP.err,
@@ -898,7 +898,7 @@ func (p *Pipeline) Union(other *Pipeline, opts ...UnionOption) *Pipeline {
 		return p
 	}
 	if other.c == nil {
-		p.err = fmt.Errorf("Union only supports combining root pipelines, doesn't support relative scope Pipeline like relative subcollection pipeline")
+		p.err = fmt.Errorf("union only supports combining root pipelines; relative scope pipelines (like subcollection pipelines) are not supported")
 		return p
 	}
 	options := make(map[string]any)
@@ -1267,7 +1267,7 @@ func (p *Pipeline) Delete(opts ...DeleteOption) *Pipeline {
 	return p.append(stage)
 }
 
-// Scalar converts this Pipeline into an expression that evaluates to a single scalar result.
+// ToScalarExpression converts this Pipeline into an expression that evaluates to a single scalar result.
 // Used for 1:1 lookups or Aggregations when the subquery is expected to return a single value or object.
 //
 // Example:
@@ -1277,7 +1277,7 @@ func (p *Pipeline) Delete(opts ...DeleteOption) *Pipeline {
 //		AddFields(Selectables(
 //			Subcollection("reviews").
 //				Aggregate(Accumulators(Average("rating").As("avg_score"))).
-//				Scalar().As("stats"),
+//				ToScalarExpression().As("stats"),
 //		))
 //	// Output format:
 //	// [
@@ -1333,13 +1333,15 @@ type DefineOption interface {
 	isDefineOption()
 }
 
-// Define adds a "let" stage to the pipeline to define variables.
+// Define defines one or more variables in the pipeline's scope. `Define` is used to bind a value to a
+// variable for internal reuse within the pipeline body (accessed via the [Variable] function).
 //
-// Defines one or more variables in the pipeline's scope. `Define` is used to bind a value to a
-// name, which can be referenced in subsequent stages using [Variable].
+// This stage is useful for declaring reusable values or intermediate calculations that can be
+// referenced multiple times in later parts of the pipeline, improving readability and
+// maintainability.
 //
 // Each variable is defined using an [AliasedExpression], which pairs an expression with
-// its alias (the variable name).
+// a name (alias).
 //
 // Example:
 //

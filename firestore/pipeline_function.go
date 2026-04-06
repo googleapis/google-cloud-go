@@ -425,15 +425,6 @@ func Variable(name string) Expression {
 	return &baseExpression{pbVal: pbVal}
 }
 
-// Scalar converts a Pipeline into an expression that evaluates to a single scalar result.
-// Used for 1:1 lookups or Aggregations when the subquery is expected to return a single value or object.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
-func Scalar(pipeline *Pipeline) Expression {
-	return newBaseFunction("scalar", []Expression{newPipelineValueExpression(pipeline)})
-}
-
 // ArrayLength creates an expression that calculates the length of an array.
 // - exprOrFieldPath can be a field path string, [FieldPath] or an [Expression] that evaluates to an array.
 //
