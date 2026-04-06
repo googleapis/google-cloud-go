@@ -21,9 +21,12 @@ sha256sum -c <(echo 877408bab02767938d1e5555f11c39dfe05e96f2a9571bc59dd2639f33d9
 sudo unzip -o /tmp/protoc.zip -d /usr/local
 protoc --version
 
-echo "==== Regenerate all the code ===="
+echo "==== Install tools ===="
 version=$(sed -n 's/^version: *//p' librarian.yaml)
-go run github.com/googleapis/librarian/cmd/librarian@${version} generate --all
+go run "github.com/googleapis/librarian/cmd/librarian@${version}" install
+
+echo "==== Regenerate all the code ===="
+go run "github.com/googleapis/librarian/cmd/librarian@${version}" generate --all
 
 # If there is any difference between the generated code and the
 # committed code that is an error. All the inputs should be pinned,
