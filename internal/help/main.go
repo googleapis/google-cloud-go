@@ -30,9 +30,10 @@ func main() {
 
 	files := []string{"README.md", "debug.md"}
 	for _, f := range files {
-		data, err := os.ReadFile(f)
+		path := filepath.Join("internal", "help", f)
+		data, err := os.ReadFile(path)
 		if err != nil {
-			log.Fatalf("failed to read %s: %v", f, err)
+			log.Fatalf("failed to read %s: %v", path, err)
 		}
 		if err := os.WriteFile(filepath.Join(outDir, f), data, 0644); err != nil {
 			log.Fatalf("failed to write %s: %v", f, err)
