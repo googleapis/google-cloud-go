@@ -461,9 +461,18 @@ func float32pToInt32p(x *float32) *int32 {
 
 // NewGenAIClient creates a new Google Vertex AI client and configures the the GenAI components.
 func NewGenAIClient(ctx context.Context, cc *genai.ClientConfig) (*Client, error) {
+	if cc == nil {
+		cc = &genai.ClientConfig{Backend: genai.BackendVertexAI}
+	}
+	if cc.Backend == genai.BackendUnspecified {
+		cc.Backend = genai.BackendVertexAI
+	}
 	ac, err := genai.NewInternalAPIClient(ctx, cc)
 	if err != nil {
 		return nil, err
+	}
+	if ac.ClientConfig().Backend != genai.BackendVertexAI {
+		return nil, fmt.Errorf("only Vertex AI backend is supported")
 	}
 	return &Client{
 		AgentEngines: &clientAgentEngines{
