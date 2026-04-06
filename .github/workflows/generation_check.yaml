@@ -6,6 +6,7 @@ on:
     - cron: '0 4 * * *'
   # Allows manual triggering for debugging purpose.
   workflow_dispatch:
+  pull_request:
 permissions:
   contents: read
   issues: write
