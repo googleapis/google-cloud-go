@@ -11,7 +11,7 @@ require (
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.31.0
 	go.opentelemetry.io/otel v1.42.0
 	go.opentelemetry.io/otel/sdk v1.42.0
-	google.golang.org/api v0.273.1
+	google.golang.org/api v0.274.0
 )
 
 require (
