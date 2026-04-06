@@ -3,6 +3,18 @@
 
 ## [1.62.0](https://github.com/googleapis/google-cloud-go/releases/tag/storage%2Fv1.62.0) (2026-04-06)
 
+### Features
+
+* integrate parallel uploads into storage writer (#14232) ([672760e](https://github.com/googleapis/google-cloud-go/commit/672760e58882d68288e3e6be504a3b232b5db1796))
+
+### Bug Fixes
+
+* close HTTP2 response bodies to prevent flow-control leaks (#14324) ([be3e190](https://github.com/googleapis/google-cloud-go/commit/be3e190847f9f05d1d8c88abc4d4e4d4e25ff2188))
+
+### Documentation
+
+* Update `EnableParallelUpload` documentation in `writer.go` (#14328) ([22d0749](http://github.com/googleapis/google-cloud-go/commit/22d0749f8fdbeaa34f2a836b63510bd0c3def990))
+
 ## [1.61.3](https://github.com/googleapis/google-cloud-go/releases/tag/storage%2Fv1.61.3) (2026-03-13)
 
 ### Documentation
