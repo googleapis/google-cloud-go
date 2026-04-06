@@ -164,7 +164,6 @@ func newMessageIterator(subc *vkit.SubscriptionAdminClient, subName string, po *
 	ackTicker := time.NewTicker(ackInterval)
 	nackTicker := time.NewTicker(nackInterval)
 	receiptTicker := time.NewTicker(receiptInterval)
-	
 	pingTicker := time.NewTicker(clientPingInterval)
 	serverMonitorTicker := time.NewTicker(serverMonitorInterval)
 
