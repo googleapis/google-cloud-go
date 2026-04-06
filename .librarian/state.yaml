@@ -1992,7 +1992,7 @@ libraries:
       - internal/generated/snippets/speech/
     tag_format: '{id}/v{version}'
   - id: storage
-    version: 1.61.3
+    version: 1.62.0
     last_generated_commit: ""
     apis: []
     source_roots:
