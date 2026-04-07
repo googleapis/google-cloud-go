@@ -47,6 +47,8 @@ type database struct {
 	indexes map[spansql.ID]struct{} // only record their existence
 	views   map[spansql.ID]struct{} // only record their existence
 
+	changeStreams map[spansql.ID]*changeStreamInfo
+
 	rwMu sync.Mutex // held by read-write transactions
 }
 
@@ -83,6 +85,121 @@ type constraintInfo struct {
 	Constraint spansql.Constraint
 }
 
+// changeStreamInfo holds the definition and event log for a change stream.
+type changeStreamInfo struct {
+	Name           spansql.ID
+	WatchAllTables bool
+	Watch          []spansql.WatchDef
+	Options        spansql.ChangeStreamOptions
+
+	mu  sync.Mutex
+	log []changeLogEntry
+}
+
+// changeLogEntry records a single row mutation observed by a change stream.
+type changeLogEntry struct {
+	CommitTimestamp time.Time
+	TxID            string
+	TableName       spansql.ID
+	ModType         string // "INSERT", "UPDATE", "DELETE"
+	ColNames        []spansql.ID
+	ColTypes        []spansql.Type
+	PKCols          int
+	NewRow          row
+}
+
+// watchesTable reports whether this change stream watches the given table.
+func (cs *changeStreamInfo) watchesTable(tbl spansql.ID) bool {
+	for _, w := range cs.Watch {
+		if w.Table == tbl {
+			return true
+		}
+	}
+	return false
+}
+
+// filterEntry returns a copy of e with columns filtered to those watched by cs.
+// PK columns are always included. For full-table watches or FOR ALL streams,
+// all columns are retained. For column-specific watches, only the listed
+// non-PK columns are kept.
+func (cs *changeStreamInfo) filterEntry(e changeLogEntry) changeLogEntry {
+	if cs.WatchAllTables {
+		return e
+	}
+	// Find the WatchDef for this table.
+	var watchedCols map[spansql.ID]bool
+	for _, w := range cs.Watch {
+		if w.Table == e.TableName && len(w.Columns) > 0 {
+			watchedCols = make(map[spansql.ID]bool, len(w.Columns))
+			for _, col := range w.Columns {
+				watchedCols[col] = true
+			}
+			break
+		}
+	}
+	if watchedCols == nil {
+		// Table is watched with no column restriction.
+		return e
+	}
+
+	// Keep PK columns and any non-PK column that is in the watch list.
+	var colNames []spansql.ID
+	var colTypes []spansql.Type
+	var newRow row
+	for i, name := range e.ColNames {
+		if i < e.PKCols || watchedCols[name] {
+			colNames = append(colNames, name)
+			colTypes = append(colTypes, e.ColTypes[i])
+			newRow = append(newRow, e.NewRow[i])
+		}
+	}
+	filtered := e
+	filtered.ColNames = colNames
+	filtered.ColTypes = colTypes
+	filtered.NewRow = newRow
+	// PKCols is still the same count; PK columns remain at the front.
+	return filtered
+}
+
+// tableChangeLogEntry constructs a changeLogEntry from a table row.
+func tableChangeLogEntry(tbl spansql.ID, modType string, t *table, r row) changeLogEntry {
+	colNames := make([]spansql.ID, len(t.cols))
+	colTypes := make([]spansql.Type, len(t.cols))
+	for i, c := range t.cols {
+		colNames[i] = c.Name
+		colTypes[i] = c.Type
+	}
+	return changeLogEntry{
+		TableName: tbl,
+		ModType:   modType,
+		ColNames:  colNames,
+		ColTypes:  colTypes,
+		PKCols:    t.pkCols,
+		NewRow:    r.copyAllData(),
+	}
+}
+
+// applyChangeRecords distributes committed changes to watching change streams.
+func (d *database) applyChangeRecords(changes []changeLogEntry, ts time.Time, txID string) {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	for _, cs := range d.changeStreams {
+		var relevant []changeLogEntry
+		for _, c := range changes {
+			if cs.WatchAllTables || cs.watchesTable(c.TableName) {
+				c.CommitTimestamp = ts
+				c.TxID = txID
+				relevant = append(relevant, cs.filterEntry(c))
+			}
+		}
+		if len(relevant) > 0 {
+			cs.mu.Lock()
+			cs.log = append(cs.log, relevant...)
+			cs.mu.Unlock()
+		}
+	}
+}
+
 // commitTimestampSentinel is a sentinel value for TIMESTAMP fields with allow_commit_timestamp=true.
 // It is accepted, but never stored.
 var commitTimestampSentinel = &struct{}{}
@@ -99,6 +216,9 @@ type transaction struct {
 	d               *database
 	commitTimestamp time.Time // not set if readOnly
 	unlock          func()    // may be nil
+
+	// pendingChanges accumulates mutation events for change stream delivery.
+	pendingChanges []changeLogEntry
 }
 
 func (d *database) NewReadOnlyTransaction() *transaction {
@@ -152,6 +272,9 @@ func (tx *transaction) checkMutable() error {
 func (tx *transaction) Commit() (time.Time, error) {
 	if tx.unlock != nil {
 		tx.unlock()
+	}
+	if tx.d != nil && len(tx.pendingChanges) > 0 {
+		tx.d.applyChangeRecords(tx.pendingChanges, tx.commitTimestamp, tx.id)
 	}
 	return tx.commitTimestamp, nil
 }
@@ -264,6 +387,9 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 	}
 	if d.views == nil {
 		d.views = make(map[spansql.ID]struct{})
+	}
+	if d.changeStreams == nil {
+		d.changeStreams = make(map[spansql.ID]*changeStreamInfo)
 	}
 
 	switch stmt := stmt.(type) {
@@ -404,6 +530,41 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 			}
 			return nil
 		}
+	case *spansql.CreateChangeStream:
+		if _, ok := d.changeStreams[stmt.Name]; ok {
+			return status.Newf(codes.AlreadyExists, "change stream %s already exists", stmt.Name)
+		}
+		d.changeStreams[stmt.Name] = &changeStreamInfo{
+			Name:           stmt.Name,
+			WatchAllTables: stmt.WatchAllTables,
+			Watch:          stmt.Watch,
+			Options:        stmt.Options,
+		}
+		return nil
+	case *spansql.AlterChangeStream:
+		cs, ok := d.changeStreams[stmt.Name]
+		if !ok {
+			return status.Newf(codes.NotFound, "change stream %s not found", stmt.Name)
+		}
+		switch alt := stmt.Alteration.(type) {
+		default:
+			return status.Newf(codes.Unimplemented, "unhandled change stream alteration type %T", alt)
+		case spansql.AlterWatch:
+			cs.WatchAllTables = alt.WatchAllTables
+			cs.Watch = alt.Watch
+		case spansql.DropChangeStreamWatch:
+			cs.WatchAllTables = false
+			cs.Watch = nil
+		case spansql.AlterChangeStreamOptions:
+			cs.Options = alt.Options
+		}
+		return nil
+	case *spansql.DropChangeStream:
+		if _, ok := d.changeStreams[stmt.Name]; !ok {
+			return status.Newf(codes.NotFound, "change stream %s not found", stmt.Name)
+		}
+		delete(d.changeStreams, stmt.Name)
+		return nil
 	}
 
 }
@@ -520,6 +681,7 @@ func (d *database) Insert(tx *transaction, tbl spansql.ID, cols []spansql.ID, va
 			return status.Errorf(codes.AlreadyExists, "row already in table")
 		}
 		t.insertRow(rowNum, r)
+		tx.pendingChanges = append(tx.pendingChanges, tableChangeLogEntry(tbl, "INSERT", t, r))
 		return nil
 	})
 }
@@ -539,6 +701,7 @@ func (d *database) Update(tx *transaction, tbl spansql.ID, cols []spansql.ID, va
 		for _, i := range colIndexes {
 			t.rows[rowNum][i] = r[i]
 		}
+		tx.pendingChanges = append(tx.pendingChanges, tableChangeLogEntry(tbl, "UPDATE", t, t.rows[rowNum]))
 		return nil
 	})
 }
@@ -547,20 +710,38 @@ func (d *database) InsertOrUpdate(tx *transaction, tbl spansql.ID, cols []spansq
 	return d.writeValues(tx, tbl, cols, values, func(t *table, colIndexes []int, r row) error {
 		pk := r[:t.pkCols]
 		rowNum, found := t.rowForPK(pk)
+		modType := "INSERT"
 		if !found {
 			// New row; do an insert.
 			t.insertRow(rowNum, r)
 		} else {
 			// Existing row; do an update.
+			modType = "UPDATE"
 			for _, i := range colIndexes {
 				t.rows[rowNum][i] = r[i]
 			}
 		}
+		tx.pendingChanges = append(tx.pendingChanges, tableChangeLogEntry(tbl, modType, t, t.rows[rowNum]))
 		return nil
 	})
 }
 
-// TODO: Replace
+func (d *database) Replace(tx *transaction, tbl spansql.ID, cols []spansql.ID, values []*structpb.ListValue) error {
+	return d.writeValues(tx, tbl, cols, values, func(t *table, colIndexes []int, r row) error {
+		pk := r[:t.pkCols]
+		rowNum, found := t.rowForPK(pk)
+		if found {
+			// Remove the existing row without emitting a DELETE record;
+			// the subsequent INSERT covers the full replacement.
+			copy(t.rows[rowNum:], t.rows[rowNum+1:])
+			t.rows = t.rows[:len(t.rows)-1]
+			rowNum, _ = t.rowForPK(pk)
+		}
+		t.insertRow(rowNum, r)
+		tx.pendingChanges = append(tx.pendingChanges, tableChangeLogEntry(tbl, "INSERT", t, t.rows[rowNum]))
+		return nil
+	})
+}
 
 func (d *database) Delete(tx *transaction, table spansql.ID, keys []*structpb.ListValue, keyRanges keyRangeList, all bool) error {
 	if err := tx.checkMutable(); err != nil {
@@ -576,6 +757,9 @@ func (d *database) Delete(tx *transaction, table spansql.ID, keys []*structpb.Li
 	defer t.mu.Unlock()
 
 	if all {
+		for _, r := range t.rows {
+			tx.pendingChanges = append(tx.pendingChanges, tableChangeLogEntry(table, "DELETE", t, r))
+		}
 		t.rows = nil
 		return nil
 	}
@@ -588,6 +772,7 @@ func (d *database) Delete(tx *transaction, table spansql.ID, keys []*structpb.Li
 		// Not an error if the key does not exist.
 		rowNum, found := t.rowForPK(pk)
 		if found {
+			tx.pendingChanges = append(tx.pendingChanges, tableChangeLogEntry(table, "DELETE", t, t.rows[rowNum]))
 			copy(t.rows[rowNum:], t.rows[rowNum+1:])
 			t.rows = t.rows[:len(t.rows)-1]
 		}
@@ -603,6 +788,9 @@ func (d *database) Delete(tx *transaction, table spansql.ID, keys []*structpb.Li
 			return err
 		}
 		startRow, endRow := t.findRange(r)
+		for i := startRow; i < endRow; i++ {
+			tx.pendingChanges = append(tx.pendingChanges, tableChangeLogEntry(table, "DELETE", t, t.rows[i]))
+		}
 		if n := endRow - startRow; n > 0 {
 			copy(t.rows[startRow:], t.rows[endRow:])
 			t.rows = t.rows[:len(t.rows)-n]
@@ -1170,7 +1358,7 @@ type keyRangeList []*keyRange
 
 // Execute runs a DML statement.
 // It returns the number of affected rows.
-func (d *database) Execute(stmt spansql.DMLStmt, params queryParams) (int, error) { // TODO: return *status.Status instead?
+func (d *database) Execute(tx *transaction, stmt spansql.DMLStmt, params queryParams) (int, error) { // TODO: return *status.Status instead?
 	switch stmt := stmt.(type) {
 	default:
 		return 0, status.Errorf(codes.Unimplemented, "unhandled DML statement type %T", stmt)
@@ -1195,6 +1383,9 @@ func (d *database) Execute(stmt spansql.DMLStmt, params queryParams) (int, error
 				return 0, err
 			}
 			if b != nil && *b {
+				if tx != nil {
+					tx.pendingChanges = append(tx.pendingChanges, tableChangeLogEntry(stmt.Table, "DELETE", t, t.rows[i]))
+				}
 				copy(t.rows[i:], t.rows[i+1:])
 				t.rows = t.rows[:len(t.rows)-1]
 				n++
@@ -1258,6 +1449,9 @@ func (d *database) Execute(stmt spansql.DMLStmt, params queryParams) (int, error
 				for j, v := range values {
 					t.rows[i][dstIndex[j]] = v
 				}
+				if tx != nil {
+					tx.pendingChanges = append(tx.pendingChanges, tableChangeLogEntry(stmt.Table, "UPDATE", t, t.rows[i]))
+				}
 				n++
 			}
 		}
@@ -1318,6 +1512,9 @@ func (d *database) Execute(stmt spansql.DMLStmt, params queryParams) (int, error
 			return 0, status.Errorf(codes.AlreadyExists, "row already in table")
 		}
 		t.insertRow(rowNum, values)
+		if tx != nil {
+			tx.pendingChanges = append(tx.pendingChanges, tableChangeLogEntry(stmt.Table, "INSERT", t, t.rows[rowNum]))
+		}
 
 		return 1, nil
 	}
