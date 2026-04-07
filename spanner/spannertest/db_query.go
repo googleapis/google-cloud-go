@@ -1261,10 +1261,13 @@ func (ci *changeStreamIter) Next() (row, error) {
 		return nil, io.EOF
 	}
 
-	// Collect all records at the same commit timestamp (one transaction).
+	// Collect all records belonging to the same transaction (same CommitTimestamp
+	// and TxID). Multiple transactions can share a timestamp in the emulator, so
+	// both fields are required to correctly identify a transaction boundary.
 	ts := ci.cs.log[ci.pos].CommitTimestamp
+	txID := ci.cs.log[ci.pos].TxID
 	var txEntries []changeLogEntry
-	for ci.pos < len(ci.cs.log) && ci.cs.log[ci.pos].CommitTimestamp.Equal(ts) {
+	for ci.pos < len(ci.cs.log) && ci.cs.log[ci.pos].CommitTimestamp.Equal(ts) && ci.cs.log[ci.pos].TxID == txID {
 		txEntries = append(txEntries, ci.cs.log[ci.pos])
 		ci.pos++
 	}
