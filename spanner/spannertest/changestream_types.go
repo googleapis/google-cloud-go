@@ -1,5 +1,5 @@
 /*
-Copyright 2025 Google LLC
+Copyright 2026 Google LLC
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -78,8 +78,8 @@ type ChildPartition struct {
 // ChildPartitionsRecord is returned when querying a change stream with
 // partition_token => NULL, identifying the initial set of partitions.
 type ChildPartitionsRecord struct {
-	StartTimestamp  time.Time        `spanner:"start_timestamp"`
-	RecordSequence  string           `spanner:"record_sequence"`
+	StartTimestamp  time.Time         `spanner:"start_timestamp"`
+	RecordSequence  string            `spanner:"record_sequence"`
 	ChildPartitions []*ChildPartition `spanner:"child_partitions"`
 }
 
