@@ -529,6 +529,19 @@ func (s *server) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlReques
 		return s.resultSet(ri)
 	}
 
+	// Try parsing as DML first. Non-DML statements (queries with an explicit
+	// read-only transaction) fall through to executeQuery without touching the
+	// write transaction map, which would not contain their transaction ID.
+	stmt, err := spansql.ParseDMLStmt(req.Sql)
+	if err != nil {
+		ri, err := s.executeQuery(req)
+		if err != nil {
+			return nil, err
+		}
+		return s.resultSet(ri)
+	}
+
+	// DML path: resolve the write transaction.
 	var tid string
 	obj, ok := req.Transaction.Selector.(*spannerpb.TransactionSelector_Id)
 	if ok {
@@ -561,11 +574,6 @@ func (s *server) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlReques
 	sess.mu.Unlock()
 	if !hasTx {
 		return nil, status.Errorf(codes.NotFound, "unknown transaction %q in session %q", tid, req.Session)
-	}
-
-	stmt, err := spansql.ParseDMLStmt(req.Sql)
-	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "bad DML: %v", err)
 	}
 	params, err := parseQueryParams(req.GetParams(), req.ParamTypes)
 	if err != nil {
