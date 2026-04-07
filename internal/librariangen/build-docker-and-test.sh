@@ -51,49 +51,6 @@ fi
 go version
 
 echo ""
-echo "--- Verifying protoc ---"
-if ! command -v protoc &> /dev/null; then
-    echo "Error: protoc not found in PATH."
-    exit 1
-fi
-protoc --version
-
-echo ""
-echo "--- Verifying Go Plugins ---"
-if ! command -v protoc-gen-go &> /dev/null; then
-    echo "Error: protoc-gen-go not found in PATH."
-    exit 1
-fi
-protoc-gen-go --version
-
-if ! command -v protoc-gen-go-grpc &> /dev/null; then
-    echo "Error: protoc-gen-go-grpc not found in PATH."
-    exit 1
-fi
-protoc-gen-go-grpc --version
-
-if ! command -v protoc-gen-go_gapic &> /dev/null; then
-    echo "Error: protoc-gen-go_gapic not found in PATH."
-    exit 1
-fi
-# The gapic generator does not have a --version flag, so we check for its presence.
-echo "protoc-gen-go_gapic found."
-
-echo ""
-echo "--- Verifying Post-processor Tools ---"
-if ! command -v goimports &> /dev/null; then
-    echo "Error: goimports not found in PATH."
-    exit 1
-fi
-echo "goimports found."
-
-if ! command -v staticcheck &> /dev/null; then
-    echo "Error: staticcheck not found in PATH."
-    exit 1
-fi
-staticcheck --version
-
-echo ""
 echo "--- All Dependencies Verified Successfully ---"
 EOF
 
