@@ -18,24 +18,12 @@ import (
 	"context"
 	"testing"
 
-	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/build"
-	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/configure"
-	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/generate"
 	"cloud.google.com/go/internal/postprocessor/librarian/librariangen/release"
 )
 
 func TestRun(t *testing.T) {
 	// Replace the real functions with fakes for testing.
-	generateFunc = func(ctx context.Context, cfg *generate.Config) error {
-		return nil
-	}
 	releaseStageFunc = func(ctx context.Context, cfg *release.Config) error {
-		return nil
-	}
-	buildFunc = func(ctx context.Context, cfg *build.Config) error {
-		return nil
-	}
-	configureFunc = func(ctx context.Context, cfg *configure.Config) error {
 		return nil
 	}
 
@@ -63,51 +51,6 @@ func TestRun(t *testing.T) {
 		{
 			name:    "unknown command",
 			args:    []string{"foo"},
-			wantErr: true,
-		},
-		{
-			name:    "build command no flags",
-			args:    []string{"build"},
-			wantErr: false,
-		},
-		{
-			name:    "build command with flags",
-			args:    []string{"build", "--repo=.", "--librarian=./.librarian"},
-			wantErr: false,
-		},
-		{
-			name:    "build command with bad flag",
-			args:    []string{"build", "--output=."},
-			wantErr: true,
-		},
-		{
-			name:    "configure command no flags",
-			args:    []string{"configure"},
-			wantErr: false,
-		},
-		{
-			name:    "configure command with flags",
-			args:    []string{"configure", "--source=.", "--output=./build_out"},
-			wantErr: false,
-		},
-		{
-			name:    "configure command with bad flag",
-			args:    []string{"configure", "--library=xyz"},
-			wantErr: true,
-		},
-		{
-			name:    "generate command no flags",
-			args:    []string{"generate"},
-			wantErr: false,
-		},
-		{
-			name:    "generate command with flags",
-			args:    []string{"generate", "--source=.", "--output=./build_out"},
-			wantErr: false,
-		},
-		{
-			name:    "generate command with bad flag",
-			args:    []string{"generate", "--repo=."},
 			wantErr: true,
 		},
 		{
