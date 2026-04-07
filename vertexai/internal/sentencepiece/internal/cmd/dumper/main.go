@@ -20,6 +20,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"unicode"
@@ -42,7 +43,7 @@ func main() {
 		log.Fatal("Need MODELPATH env var to run")
 	}
 
-	b, err := os.ReadFile(modelPath)
+	b, err := ioutil.ReadFile(modelPath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -81,7 +82,7 @@ func main() {
 			log.Fatal(err)
 		}
 
-		b, err := os.ReadFile(*fEncodeFile)
+		b, err := ioutil.ReadFile(*fEncodeFile)
 		if err != nil {
 			log.Fatal(err)
 		}
