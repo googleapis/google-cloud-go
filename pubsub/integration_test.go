@@ -20,7 +20,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 	"sync"
@@ -1882,7 +1881,7 @@ func TestIntegration_SchemaAdmin(t *testing.T) {
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
-			content, err := ioutil.ReadFile(tc.path)
+			content, err := os.ReadFile(tc.path)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -1955,7 +1954,7 @@ func TestIntegration_ValidateSchema(t *testing.T) {
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
-			content, err := ioutil.ReadFile(tc.path)
+			content, err := os.ReadFile(tc.path)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2020,7 +2019,7 @@ func TestIntegration_ValidateMessage(t *testing.T) {
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
-			content, err := ioutil.ReadFile(tc.schemaPath)
+			content, err := os.ReadFile(tc.schemaPath)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2030,7 +2029,7 @@ func TestIntegration_ValidateMessage(t *testing.T) {
 				Definition: def,
 			}
 
-			msg, err := ioutil.ReadFile(tc.messagePath)
+			msg, err := os.ReadFile(tc.messagePath)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2114,7 +2113,7 @@ func TestIntegration_TopicUpdateSchema(t *testing.T) {
 	sc := integrationTestSchemaClient(ctx, t)
 	defer sc.Close()
 
-	schemaContent, err := ioutil.ReadFile("testdata/schema/us-states.avsc")
+	schemaContent, err := os.ReadFile("testdata/schema/us-states.avsc")
 	if err != nil {
 		t.Fatal(err)
 	}
