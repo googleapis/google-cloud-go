@@ -76,14 +76,8 @@ func run(ctx context.Context, args []string) error {
 	}
 
 	switch cmd {
-	case "generate":
-		return handleGenerate(ctx, flags)
 	case "release-stage":
 		return handleReleaseStage(ctx, flags)
-	case "configure":
-		return handleConfigure(ctx, flags)
-	case "build":
-		return handleBuild(ctx, flags)
 	default:
 		return fmt.Errorf("librariangen: unknown command: %s", cmd)
 	}
