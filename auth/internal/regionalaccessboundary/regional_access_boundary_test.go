@@ -581,6 +581,7 @@ func TestGCEConfigProvider_CachesResults(t *testing.T) {
 }
 
 type mockConfigProvider struct {
+	mu                  sync.Mutex
 	endpointCallCount   int
 	universeCallCount   int
 	endpointToReturn    string
@@ -590,18 +591,30 @@ type mockConfigProvider struct {
 }
 
 func (m *mockConfigProvider) GetRegionalAccessBoundaryEndpoint(ctx context.Context) (string, error) {
+	m.mu.Lock()
 	m.endpointCallCount++
+	m.mu.Unlock()
 	return m.endpointToReturn, m.endpointErrToReturn
 }
 
 func (m *mockConfigProvider) GetUniverseDomain(ctx context.Context) (string, error) {
+	m.mu.Lock()
 	m.universeCallCount++
+	m.mu.Unlock()
 	return m.universeToReturn, m.universeErrToReturn
 }
 
 func (m *mockConfigProvider) Reset() {
+	m.mu.Lock()
 	m.endpointCallCount = 0
 	m.universeCallCount = 0
+	m.mu.Unlock()
+}
+
+func (m *mockConfigProvider) GetEndpointCallCount() int {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	return m.endpointCallCount
 }
 
 type mockTokenProvider struct {
@@ -664,7 +677,7 @@ func TestDataProvider_GetHeaderValue(t *testing.T) {
 					deadline := time.Now().Add(1 * time.Second)
 					var gotCall bool
 					for time.Now().Before(deadline) {
-						if mockConfig.endpointCallCount > 0 {
+						if mockConfig.GetEndpointCallCount() > 0 {
 							gotCall = true
 							break
 						}
@@ -675,7 +688,7 @@ func TestDataProvider_GetHeaderValue(t *testing.T) {
 					}
 				} else {
 					time.Sleep(50 * time.Millisecond)
-					if mockConfig.endpointCallCount > 0 {
+					if mockConfig.GetEndpointCallCount() > 0 {
 						t.Errorf("GetHeaderValue(%q) initiated fetch unexpectedly", tt.reqURL)
 					}
 				}
