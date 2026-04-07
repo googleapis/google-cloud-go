@@ -376,8 +376,14 @@ libraries:
     go:
       go_apis:
         - diregapic: true
+          enabled_generator_features:
+            - F_dynamic_resource_heuristics
+            - F_open_telemetry_attributes
           path: google/cloud/compute/v1
         - diregapic: true
+          enabled_generator_features:
+            - F_dynamic_resource_heuristics
+            - F_open_telemetry_attributes
           path: google/cloud/compute/v1beta
       nested_module: metadata
   - name: compute/metadata
@@ -1054,9 +1060,11 @@ libraries:
       go_apis:
         - enabled_generator_features:
             - F_mtls_hard_bound_tokens
+            - F_open_telemetry_attributes
           path: google/cloud/secretmanager/v1
         - enabled_generator_features:
             - F_mtls_hard_bound_tokens
+            - F_open_telemetry_attributes
           path: google/cloud/secretmanager/v1beta2
   - name: securesourcemanager
     version: 1.5.0
