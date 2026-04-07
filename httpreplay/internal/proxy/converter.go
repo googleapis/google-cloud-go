@@ -256,8 +256,8 @@ func scrubParam(buf *bytes.Buffer, param string, sep byte, clear, remove []tRege
 	}
 	key := param
 	value := ""
-	if i := strings.Index(param, "="); i >= 0 {
-		key, value = key[:i], key[i+1:]
+	if k, v, exists := strings.Cut(param, "="); exists {
+		key, value = k, v
 	}
 	ukey, err := url.QueryUnescape(key)
 	// If the key is bad, just pass it and the value through.
