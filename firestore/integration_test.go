@@ -27,12 +27,9 @@ import (
 	"runtime"
 	"sort"
 	"strings"
-	"sync"
 	"testing"
 	"time"
 
-	apiv1 "cloud.google.com/go/firestore/apiv1/admin"
-	"cloud.google.com/go/firestore/apiv1/admin/adminpb"
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/pretty"
 	"cloud.google.com/go/internal/testutil"
@@ -63,6 +60,7 @@ const (
 	indexBuilding          = "index is currently building"
 	databaseIDKey          = "databaseID"
 	firestoreEditionKey    = "edition"
+	indexedCollection      = "indexed_collection"
 )
 
 func TestMain(m *testing.M) {
@@ -72,10 +70,10 @@ func TestMain(m *testing.M) {
 		testParams[firestoreEditionKey] = edition
 		initIntegrationTest()
 		status := m.Run()
+		cleanupIntegrationTest()
 		if status != 0 {
 			os.Exit(status)
 		}
-		cleanupIntegrationTest()
 	}
 
 	os.Exit(0)
@@ -104,7 +102,6 @@ func parseDatabases() map[string]firestoreEdition {
 
 var (
 	iClient          *Client
-	iAdminClient     *apiv1.FirestoreAdminClient
 	iColl            *CollectionRef
 	collectionIDs    = uid.NewSpace("go-integration-test", nil)
 	wantDBPath       string
@@ -164,151 +161,24 @@ func initIntegrationTest() {
 	iClient = c
 	iColl = c.Collection(collectionIDs.New())
 
-	adminCtx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
-	defer cancel()
-	adminC, err := apiv1.NewFirestoreAdminClient(adminCtx, option.WithTokenSource(ts))
-	if err != nil {
-		log.Fatalf("NewFirestoreAdminClient: %v", err)
-	}
-	iAdminClient = adminC
-
 	refDoc := iColl.NewDoc()
 	integrationTestMap["ref"] = refDoc
 	wantIntegrationTestMap["ref"] = refDoc
 	integrationTestStruct.Ref = refDoc
 }
 
-type vectorIndex struct {
-	dimension int32
-	fieldPath string
-}
-
-func createVectorIndexes(ctx context.Context, t *testing.T, dbPath string, vectorModeIndexes []vectorIndex) []string {
-	collRef := integrationColl(t)
-	indexNames := make([]string, len(vectorModeIndexes))
-	indexParent := fmt.Sprintf("%s/collectionGroups/%s", dbPath, collRef.ID)
-
-	var wg sync.WaitGroup
-
-	// create vectore mode indexes
-	for i, vectorModeIndex := range vectorModeIndexes {
-		wg.Add(1)
-		req := &adminpb.CreateIndexRequest{
-			Parent: indexParent,
-			Index: &adminpb.Index{
-				QueryScope: adminpb.Index_COLLECTION,
-				Fields: []*adminpb.Index_IndexField{
-					{
-						FieldPath: vectorModeIndex.fieldPath,
-						ValueMode: &adminpb.Index_IndexField_VectorConfig_{
-							VectorConfig: &adminpb.Index_IndexField_VectorConfig{
-								Dimension: vectorModeIndex.dimension,
-								Type: &adminpb.Index_IndexField_VectorConfig_Flat{
-									Flat: &adminpb.Index_IndexField_VectorConfig_FlatIndex{},
-								},
-							},
-						},
-					},
-				},
-			},
-		}
-		op, createErr := iAdminClient.CreateIndex(ctx, req)
-		if createErr != nil {
-			log.Fatalf("CreateIndex vectorindexes: %v", createErr)
-		}
-		if i == 0 && !seededFirstIndex {
-			seededFirstIndex = true
-			handleCreateIndexResp(ctx, indexNames, &wg, i, op)
-		} else {
-			go handleCreateIndexResp(ctx, indexNames, &wg, i, op)
-		}
-	}
-
-	wg.Wait()
-	return indexNames
-}
-
-// createIndexes creates composite indexes on provided Firestore database
-// Indexes are required to run queries with composite filters on multiple fields.
-// Without indexes, FailedPrecondition rpc error is seen with
-// desc 'The query requires multiple indexes'.
-func createIndexes(ctx context.Context, dbPath string, orderModeindexFields [][]string) []string {
-	indexNames := make([]string, len(orderModeindexFields))
-	indexParent := fmt.Sprintf("%s/collectionGroups/%s", dbPath, iColl.ID)
-
-	var wg sync.WaitGroup
-
-	// Create order mode indexes
-	for i, fields := range orderModeindexFields {
-		wg.Add(1)
-		var adminPbIndexFields []*adminpb.Index_IndexField
-		for _, field := range fields {
-			adminPbIndexFields = append(adminPbIndexFields, &adminpb.Index_IndexField{
-				FieldPath: field,
-				ValueMode: &adminpb.Index_IndexField_Order_{
-					Order: adminpb.Index_IndexField_ASCENDING,
-				},
-			})
-		}
-		req := &adminpb.CreateIndexRequest{
-			Parent: indexParent,
-			Index: &adminpb.Index{
-				QueryScope: adminpb.Index_COLLECTION,
-				Fields:     adminPbIndexFields,
-			},
-		}
-		op, createErr := iAdminClient.CreateIndex(ctx, req)
-		if createErr != nil {
-			log.Fatalf("CreateIndex: %v", createErr)
-		}
-		if i == 0 && !seededFirstIndex {
-			seededFirstIndex = true
-			// Seed first index to prevent FirestoreMetadataWrite.BootstrapDatabase Concurrent access error
-			handleCreateIndexResp(ctx, indexNames, &wg, i, op)
-		} else {
-			go handleCreateIndexResp(ctx, indexNames, &wg, i, op)
-		}
-	}
-
-	wg.Wait()
-	return indexNames
-}
-
-// handleCreateIndexResp handles create index response and puts the created index name at index i in the indexNames array
-func handleCreateIndexResp(ctx context.Context, indexNames []string, wg *sync.WaitGroup, i int, op *apiv1.CreateIndexOperation) {
-	defer wg.Done()
-	createdIndex, waitErr := op.Wait(ctx)
-	if waitErr != nil {
-		log.Fatalf("CreateIndexes failed. Wait: %v", waitErr)
-	}
-	indexNames[i] = createdIndex.Name
-}
-
-// deleteIndexes deletes composite indexes created in createIndexes function
-func deleteIndexes(ctx context.Context, indexNames []string) {
-	for _, indexName := range indexNames {
-		testutil.RetryWithoutTest(5, 5*time.Second, func(r *testutil.R) {
-			err := iAdminClient.DeleteIndex(ctx, &adminpb.DeleteIndexRequest{
-				Name: indexName,
-			})
-			if err != nil {
-				r.Errorf("Failed to delete index \"%s\": %+v\n", indexName, err)
-			}
-		})
-	}
-}
 
 // deleteCollection recursively deletes the documents in the specified collection
 func deleteCollection(ctx context.Context, coll *CollectionRef) error {
 	bulkwriter := iClient.BulkWriter(ctx)
 
 	// Get  documents
-	iter := coll.Documents(ctx)
+	iter := coll.DocumentRefs(ctx)
 
 	// Iterate through the documents, adding
 	// a delete operation for each one to the BulkWriter.
 	for {
-		doc, err := iter.Next()
+		docRef, err := iter.Next()
 		if err == iterator.Done {
 			break
 		}
@@ -317,7 +187,7 @@ func deleteCollection(ctx context.Context, coll *CollectionRef) error {
 			return err
 		}
 
-		err = deleteDocument(ctx, doc.Ref, bulkwriter)
+		err = deleteDocument(ctx, docRef, bulkwriter)
 		if err != nil {
 			log.Printf("Failed to delete document: %+v\n", err)
 			return err
@@ -386,10 +256,6 @@ func cleanupIntegrationTest() {
 		ctx := context.Background()
 		deleteCollection(ctx, iColl)
 		iClient.Close()
-	}
-
-	if iAdminClient != nil {
-		iAdminClient.Close()
 	}
 }
 
@@ -1225,16 +1091,7 @@ func TestIntegration_WriteBatch(t *testing.T) {
 
 func TestIntegration_QueryDocuments_WhereEntity(t *testing.T) {
 	ctx := context.Background()
-	coll := integrationColl(t)
-
-	indexFields := [][]string{
-		{"updatedAt", "weight", "height"},
-		{"weight", "height"},
-	}
-	adminCtx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
-	defer cancel()
-	indexNames := createIndexes(adminCtx, wantDBPath, indexFields)
-	defer deleteIndexes(adminCtx, indexNames)
+	coll := integrationColl(t).NewDoc().Collection(indexedCollection)
 
 	h := testHelper{t}
 	nowTime := time.Now()
@@ -1530,19 +1387,7 @@ func TestIntegration_QueryDocuments_LimitToLast_Fail(t *testing.T) {
 // Test unary filters.
 func TestIntegration_QueryUnary(t *testing.T) {
 	ctx := context.Background()
-	coll := integrationColl(t)
-
-	// Create required indexes
-	indexFields := [][]string{
-		{"testNull", "x", "q"},
-		{"testNaN", "x", "q"},
-	}
-	adminCtx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
-	indexNames := createIndexes(adminCtx, wantDBPath, indexFields)
-	t.Cleanup(func() {
-		deleteIndexes(adminCtx, indexNames)
-		cancel()
-	})
+	coll := integrationColl(t).NewDoc().Collection(indexedCollection)
 
 	h := testHelper{t}
 	docRefs := []*DocumentRef{coll.NewDoc(), coll.NewDoc(), coll.NewDoc()}
@@ -2608,6 +2453,7 @@ func TestDetectProjectID(t *testing.T) {
 
 	ts := testutil.ErroringTokenSource{}
 	// Try to use creds without project ID.
+	t.Setenv("GOOGLE_CLOUD_PROJECT", "")
 	_, err := NewClient(ctx, DetectProjectID, option.WithTokenSource(ts))
 	if err == nil || err.Error() != "unable to detect projectID, please refer to docs for DetectProjectID" {
 		t.Errorf("expected an error while using TokenSource that does not have a project ID")
@@ -2781,6 +2627,9 @@ func TestIntegration_NewClientWithDatabase(t *testing.T) {
 // TestIntegration_BulkWriter_Set tests setting values and serverTimeStamp in single write.
 func TestIntegration_BulkWriter_Set(t *testing.T) {
 	doc := iColl.NewDoc()
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{doc})
+	})
 	c := integrationClient(t)
 	ctx := context.Background()
 	bw := c.BulkWriter(ctx)
@@ -2791,10 +2640,6 @@ func TestIntegration_BulkWriter_Set(t *testing.T) {
 	if err != nil {
 		t.Errorf("bulkwriter: error performing a set write: %v\n", err)
 	}
-
-	t.Cleanup(func() {
-		deleteDocuments([]*DocumentRef{doc})
-	})
 }
 
 func TestIntegration_BulkWriter_Create(t *testing.T) {
@@ -2806,6 +2651,12 @@ func TestIntegration_BulkWriter_Create(t *testing.T) {
 	}
 
 	docRef := iColl.Doc(fmt.Sprintf("bw_create_1_%d", time.Now().Unix()))
+	var docRefs []*DocumentRef
+	docRefs = append(docRefs, docRef)
+	t.Cleanup(func() {
+		deleteDocuments(docRefs)
+	})
+
 	_, err := docRef.Create(ctx, BWDoc{A: 6})
 	if err != nil {
 		t.Fatalf("Create: %v", err)
@@ -2828,6 +2679,13 @@ func TestIntegration_BulkWriter_Create(t *testing.T) {
 			wantStatusCode: codes.AlreadyExists,
 		},
 	}
+	
+	// Add successfully created testcases ref to cleanup list
+	for _, tc := range testcases {
+		if tc.wantStatusCode == codes.OK {
+			docRefs = append(docRefs, tc.ref)
+		}
+	}
 	for _, testcase := range testcases {
 		bw := c.BulkWriter(ctx)
 
@@ -2848,6 +2706,9 @@ func TestIntegration_BulkWriter_Create(t *testing.T) {
 func TestIntegration_BulkWriter(t *testing.T) {
 	doc := iColl.NewDoc()
 	docRefs := []*DocumentRef{doc}
+	t.Cleanup(func() {
+		deleteDocuments(docRefs)
+	})
 	c := integrationClient(t)
 	ctx := context.Background()
 	bw := c.BulkWriter(ctx)
@@ -2930,17 +2791,8 @@ func aggResultsEquals(r *testutil.R, m1, m2 AggregationResult) bool {
 
 func TestIntegration_AggregationQueries(t *testing.T) {
 	ctx := context.Background()
-	coll := integrationColl(t)
+	coll := integrationColl(t).NewDoc().Collection(indexedCollection)
 	client := integrationClient(t)
-
-	indexFields := [][]string{
-		{"weight", "model"},
-		{"weight", "volume"},
-	}
-	adminCtx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
-	defer cancel()
-	indexNames := createIndexes(adminCtx, wantDBPath, indexFields)
-	defer deleteIndexes(adminCtx, indexNames)
 
 	h := testHelper{t}
 	docs := []map[string]interface{}{
@@ -2954,18 +2806,18 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 		{"weight": 8.2, "volume": 93, "model": "A"},
 	}
 	docRefs := []*DocumentRef{}
+	t.Cleanup(func() {
+		deleteDocuments(docRefs)
+	})
 	for _, doc := range docs {
 		newDoc := coll.NewDoc()
 		docRefs = append(docRefs, newDoc)
 		h.mustCreate(newDoc, doc)
 	}
-	t.Cleanup(func() {
-		deleteDocuments(docRefs)
-	})
 
 	query := coll.Where("weight", ">=", 1)
 
-	limitQuery := coll.Where("weight", ">=", 1).Limit(4)
+	limitQuery := coll.Where("weight", ">=", 1).OrderBy("weight", Asc).Limit(4)
 	limitToLastQuery := coll.Where("weight", ">=", 2.6).OrderBy("weight", Asc).LimitToLast(4)
 
 	startAtQuery := coll.Where("weight", ">=", 2.6).OrderBy("weight", Asc).StartAt(3.7)
@@ -3172,7 +3024,7 @@ func TestIntegration_AggregationQueries_WithRunOptions(t *testing.T) {
 		t.Skip("Skipping. Query profiling not supported in emulator.")
 	}
 	ctx := context.Background()
-	coll := integrationColl(t)
+	coll := integrationColl(t).NewDoc().Collection(indexedCollection)
 
 	h := testHelper{t}
 	docs := []map[string]interface{}{
@@ -3180,8 +3032,13 @@ func TestIntegration_AggregationQueries_WithRunOptions(t *testing.T) {
 		{"weight": 0.5, "height": 98, "model": "A"},
 		{"weight": 0.5, "height": 97, "model": "B"},
 	}
+	var docRefs []*DocumentRef
+	t.Cleanup(func() {
+		deleteDocuments(docRefs)
+	})
 	for _, doc := range docs {
 		newDoc := coll.NewDoc()
+		docRefs = append(docRefs, newDoc)
 		h.mustCreate(newDoc, doc)
 	}
 
@@ -3424,22 +3281,9 @@ func TestIntegration_ClientReadTime(t *testing.T) {
 }
 
 func TestIntegration_FindNearest(t *testing.T) {
-	collRef := integrationColl(t)
-	adminCtx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
-	t.Cleanup(func() {
-		cancel()
-	})
+	collRef := integrationColl(t).NewDoc().Collection(indexedCollection)
 	queryField := "EmbeddedField64"
 	resultField := "vector_distance"
-	indexNames := createVectorIndexes(adminCtx, t, wantDBPath, []vectorIndex{
-		{
-			fieldPath: queryField,
-			dimension: 3,
-		},
-	})
-	t.Cleanup(func() {
-		deleteIndexes(adminCtx, indexNames)
-	})
 
 	type coffeeBean struct {
 		ID              int
@@ -3488,7 +3332,6 @@ func TestIntegration_FindNearest(t *testing.T) {
 		},
 	}
 	h := testHelper{t}
-	coll := integrationColl(t)
 	ctx := context.Background()
 	var docRefs []*DocumentRef
 	t.Cleanup(func() {
@@ -3497,7 +3340,7 @@ func TestIntegration_FindNearest(t *testing.T) {
 
 	// create documents with vector field
 	for i := 0; i < len(beans); i++ {
-		doc := coll.NewDoc()
+		doc := collRef.NewDoc()
 		docRefs = append(docRefs, doc)
 		h.mustCreate(doc, beans[i])
 	}
