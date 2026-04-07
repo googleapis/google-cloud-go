@@ -45,18 +45,19 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	ListInstances           []gax.CallOption
-	GetInstance             []gax.CallOption
-	CreateInstance          []gax.CallOption
-	UpdateInstance          []gax.CallOption
-	DeleteInstance          []gax.CallOption
-	GetCertificateAuthority []gax.CallOption
-	GetLocation             []gax.CallOption
-	ListLocations           []gax.CallOption
-	CancelOperation         []gax.CallOption
-	DeleteOperation         []gax.CallOption
-	GetOperation            []gax.CallOption
-	ListOperations          []gax.CallOption
+	ListInstances                         []gax.CallOption
+	GetInstance                           []gax.CallOption
+	CreateInstance                        []gax.CallOption
+	UpdateInstance                        []gax.CallOption
+	DeleteInstance                        []gax.CallOption
+	GetCertificateAuthority               []gax.CallOption
+	GetSharedRegionalCertificateAuthority []gax.CallOption
+	GetLocation                           []gax.CallOption
+	ListLocations                         []gax.CallOption
+	CancelOperation                       []gax.CallOption
+	DeleteOperation                       []gax.CallOption
+	GetOperation                          []gax.CallOption
+	ListOperations                        []gax.CallOption
 }
 
 func defaultRESTCallOptions() *CallOptions {
@@ -103,12 +104,13 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		GetLocation:     []gax.CallOption{},
-		ListLocations:   []gax.CallOption{},
-		CancelOperation: []gax.CallOption{},
-		DeleteOperation: []gax.CallOption{},
-		GetOperation:    []gax.CallOption{},
-		ListOperations:  []gax.CallOption{},
+		GetSharedRegionalCertificateAuthority: []gax.CallOption{},
+		GetLocation:                           []gax.CallOption{},
+		ListLocations:                         []gax.CallOption{},
+		CancelOperation:                       []gax.CallOption{},
+		DeleteOperation:                       []gax.CallOption{},
+		GetOperation:                          []gax.CallOption{},
+		ListOperations:                        []gax.CallOption{},
 	}
 }
 
@@ -126,6 +128,7 @@ type internalClient interface {
 	DeleteInstance(context.Context, *memorystorepb.DeleteInstanceRequest, ...gax.CallOption) (*DeleteInstanceOperation, error)
 	DeleteInstanceOperation(name string) *DeleteInstanceOperation
 	GetCertificateAuthority(context.Context, *memorystorepb.GetCertificateAuthorityRequest, ...gax.CallOption) (*memorystorepb.CertificateAuthority, error)
+	GetSharedRegionalCertificateAuthority(context.Context, *memorystorepb.GetSharedRegionalCertificateAuthorityRequest, ...gax.CallOption) (*memorystorepb.SharedRegionalCertificateAuthority, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -220,6 +223,12 @@ func (c *Client) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
 // GetCertificateAuthority gets details about the certificate authority for an Instance.
 func (c *Client) GetCertificateAuthority(ctx context.Context, req *memorystorepb.GetCertificateAuthorityRequest, opts ...gax.CallOption) (*memorystorepb.CertificateAuthority, error) {
 	return c.internalClient.GetCertificateAuthority(ctx, req, opts...)
+}
+
+// GetSharedRegionalCertificateAuthority gets the details of shared regional certificate authority information for
+// Memorystore instance.
+func (c *Client) GetSharedRegionalCertificateAuthority(ctx context.Context, req *memorystorepb.GetSharedRegionalCertificateAuthorityRequest, opts ...gax.CallOption) (*memorystorepb.SharedRegionalCertificateAuthority, error) {
+	return c.internalClient.GetSharedRegionalCertificateAuthority(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -702,6 +711,57 @@ func (c *restClient) GetCertificateAuthority(ctx context.Context, req *memorysto
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCertificateAuthority")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetSharedRegionalCertificateAuthority gets the details of shared regional certificate authority information for
+// Memorystore instance.
+func (c *restClient) GetSharedRegionalCertificateAuthority(ctx context.Context, req *memorystorepb.GetSharedRegionalCertificateAuthorityRequest, opts ...gax.CallOption) (*memorystorepb.SharedRegionalCertificateAuthority, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetSharedRegionalCertificateAuthority[0:len((*c.CallOptions).GetSharedRegionalCertificateAuthority):len((*c.CallOptions).GetSharedRegionalCertificateAuthority)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &memorystorepb.SharedRegionalCertificateAuthority{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSharedRegionalCertificateAuthority")
 		if err != nil {
 			return err
 		}

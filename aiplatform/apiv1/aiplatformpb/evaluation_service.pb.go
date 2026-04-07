@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,8 +26,10 @@ import (
 	unsafe "unsafe"
 
 	_ "google.golang.org/genproto/googleapis/api/annotations"
+	status "google.golang.org/genproto/googleapis/rpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	structpb "google.golang.org/protobuf/types/known/structpb"
 )
 
 const (
@@ -94,6 +96,149 @@ func (PairwiseChoice) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{0}
 }
 
+// The per-metric statistics on evaluation results supported by
+// `EvaluationService.EvaluateDataset`.
+type Metric_AggregationMetric int32
+
+const (
+	// Unspecified aggregation metric.
+	Metric_AGGREGATION_METRIC_UNSPECIFIED Metric_AggregationMetric = 0
+	// Average aggregation metric. Not supported for Pairwise metric.
+	Metric_AVERAGE Metric_AggregationMetric = 1
+	// Mode aggregation metric.
+	Metric_MODE Metric_AggregationMetric = 2
+	// Standard deviation aggregation metric. Not supported for pairwise metric.
+	Metric_STANDARD_DEVIATION Metric_AggregationMetric = 3
+	// Variance aggregation metric. Not supported for pairwise metric.
+	Metric_VARIANCE Metric_AggregationMetric = 4
+	// Minimum aggregation metric. Not supported for pairwise metric.
+	Metric_MINIMUM Metric_AggregationMetric = 5
+	// Maximum aggregation metric. Not supported for pairwise metric.
+	Metric_MAXIMUM Metric_AggregationMetric = 6
+	// Median aggregation metric. Not supported for pairwise metric.
+	Metric_MEDIAN Metric_AggregationMetric = 7
+	// 90th percentile aggregation metric. Not supported for pairwise metric.
+	Metric_PERCENTILE_P90 Metric_AggregationMetric = 8
+	// 95th percentile aggregation metric. Not supported for pairwise metric.
+	Metric_PERCENTILE_P95 Metric_AggregationMetric = 9
+	// 99th percentile aggregation metric. Not supported for pairwise metric.
+	Metric_PERCENTILE_P99 Metric_AggregationMetric = 10
+)
+
+// Enum value maps for Metric_AggregationMetric.
+var (
+	Metric_AggregationMetric_name = map[int32]string{
+		0:  "AGGREGATION_METRIC_UNSPECIFIED",
+		1:  "AVERAGE",
+		2:  "MODE",
+		3:  "STANDARD_DEVIATION",
+		4:  "VARIANCE",
+		5:  "MINIMUM",
+		6:  "MAXIMUM",
+		7:  "MEDIAN",
+		8:  "PERCENTILE_P90",
+		9:  "PERCENTILE_P95",
+		10: "PERCENTILE_P99",
+	}
+	Metric_AggregationMetric_value = map[string]int32{
+		"AGGREGATION_METRIC_UNSPECIFIED": 0,
+		"AVERAGE":                        1,
+		"MODE":                           2,
+		"STANDARD_DEVIATION":             3,
+		"VARIANCE":                       4,
+		"MINIMUM":                        5,
+		"MAXIMUM":                        6,
+		"MEDIAN":                         7,
+		"PERCENTILE_P90":                 8,
+		"PERCENTILE_P95":                 9,
+		"PERCENTILE_P99":                 10,
+	}
+)
+
+func (x Metric_AggregationMetric) Enum() *Metric_AggregationMetric {
+	p := new(Metric_AggregationMetric)
+	*p = x
+	return p
+}
+
+func (x Metric_AggregationMetric) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Metric_AggregationMetric) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_enumTypes[1].Descriptor()
+}
+
+func (Metric_AggregationMetric) Type() protoreflect.EnumType {
+	return &file_google_cloud_aiplatform_v1_evaluation_service_proto_enumTypes[1]
+}
+
+func (x Metric_AggregationMetric) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Metric_AggregationMetric.Descriptor instead.
+func (Metric_AggregationMetric) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{1, 0}
+}
+
+// Types of computation based metrics.
+type ComputationBasedMetricSpec_ComputationBasedMetricType int32
+
+const (
+	// Unspecified computation based metric type.
+	ComputationBasedMetricSpec_COMPUTATION_BASED_METRIC_TYPE_UNSPECIFIED ComputationBasedMetricSpec_ComputationBasedMetricType = 0
+	// Exact match metric.
+	ComputationBasedMetricSpec_EXACT_MATCH ComputationBasedMetricSpec_ComputationBasedMetricType = 1
+	// BLEU metric.
+	ComputationBasedMetricSpec_BLEU ComputationBasedMetricSpec_ComputationBasedMetricType = 2
+	// ROUGE metric.
+	ComputationBasedMetricSpec_ROUGE ComputationBasedMetricSpec_ComputationBasedMetricType = 3
+)
+
+// Enum value maps for ComputationBasedMetricSpec_ComputationBasedMetricType.
+var (
+	ComputationBasedMetricSpec_ComputationBasedMetricType_name = map[int32]string{
+		0: "COMPUTATION_BASED_METRIC_TYPE_UNSPECIFIED",
+		1: "EXACT_MATCH",
+		2: "BLEU",
+		3: "ROUGE",
+	}
+	ComputationBasedMetricSpec_ComputationBasedMetricType_value = map[string]int32{
+		"COMPUTATION_BASED_METRIC_TYPE_UNSPECIFIED": 0,
+		"EXACT_MATCH": 1,
+		"BLEU":        2,
+		"ROUGE":       3,
+	}
+)
+
+func (x ComputationBasedMetricSpec_ComputationBasedMetricType) Enum() *ComputationBasedMetricSpec_ComputationBasedMetricType {
+	p := new(ComputationBasedMetricSpec_ComputationBasedMetricType)
+	*p = x
+	return p
+}
+
+func (x ComputationBasedMetricSpec_ComputationBasedMetricType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ComputationBasedMetricSpec_ComputationBasedMetricType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_enumTypes[2].Descriptor()
+}
+
+func (ComputationBasedMetricSpec_ComputationBasedMetricType) Type() protoreflect.EnumType {
+	return &file_google_cloud_aiplatform_v1_evaluation_service_proto_enumTypes[2]
+}
+
+func (x ComputationBasedMetricSpec_ComputationBasedMetricType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ComputationBasedMetricSpec_ComputationBasedMetricType.Descriptor instead.
+func (ComputationBasedMetricSpec_ComputationBasedMetricType) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{12, 0}
+}
+
 // Comet version options.
 type CometSpec_CometVersion int32
 
@@ -128,11 +273,11 @@ func (x CometSpec_CometVersion) String() string {
 }
 
 func (CometSpec_CometVersion) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_enumTypes[1].Descriptor()
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_enumTypes[3].Descriptor()
 }
 
 func (CometSpec_CometVersion) Type() protoreflect.EnumType {
-	return &file_google_cloud_aiplatform_v1_evaluation_service_proto_enumTypes[1]
+	return &file_google_cloud_aiplatform_v1_evaluation_service_proto_enumTypes[3]
 }
 
 func (x CometSpec_CometVersion) Number() protoreflect.EnumNumber {
@@ -141,7 +286,7 @@ func (x CometSpec_CometVersion) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use CometSpec_CometVersion.Descriptor instead.
 func (CometSpec_CometVersion) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{102, 0}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{117, 0}
 }
 
 // MetricX Version options.
@@ -186,11 +331,11 @@ func (x MetricxSpec_MetricxVersion) String() string {
 }
 
 func (MetricxSpec_MetricxVersion) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_enumTypes[2].Descriptor()
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_enumTypes[4].Descriptor()
 }
 
 func (MetricxSpec_MetricxVersion) Type() protoreflect.EnumType {
-	return &file_google_cloud_aiplatform_v1_evaluation_service_proto_enumTypes[2]
+	return &file_google_cloud_aiplatform_v1_evaluation_service_proto_enumTypes[4]
 }
 
 func (x MetricxSpec_MetricxVersion) Number() protoreflect.EnumNumber {
@@ -199,7 +344,7 @@ func (x MetricxSpec_MetricxVersion) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use MetricxSpec_MetricxVersion.Descriptor instead.
 func (MetricxSpec_MetricxVersion) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{106, 0}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{121, 0}
 }
 
 // Request message for EvaluationService.EvaluateInstances.
@@ -708,6 +853,293 @@ func (*EvaluateInstancesRequest_CometInput) isEvaluateInstancesRequest_MetricInp
 
 func (*EvaluateInstancesRequest_MetricxInput) isEvaluateInstancesRequest_MetricInputs() {}
 
+// The metric used for running evaluations.
+type Metric struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The spec for the metric.
+	// It would be either a pre-defined metric, or a inline metric spec.
+	//
+	// Types that are valid to be assigned to MetricSpec:
+	//
+	//	*Metric_PredefinedMetricSpec
+	//	*Metric_ComputationBasedMetricSpec
+	//	*Metric_LlmBasedMetricSpec
+	//	*Metric_PointwiseMetricSpec
+	//	*Metric_PairwiseMetricSpec
+	//	*Metric_ExactMatchSpec
+	//	*Metric_BleuSpec
+	//	*Metric_RougeSpec
+	MetricSpec isMetric_MetricSpec `protobuf_oneof:"metric_spec"`
+	// Optional. The aggregation metrics to use.
+	AggregationMetrics []Metric_AggregationMetric `protobuf:"varint,1,rep,packed,name=aggregation_metrics,json=aggregationMetrics,proto3,enum=google.cloud.aiplatform.v1.Metric_AggregationMetric" json:"aggregation_metrics,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *Metric) Reset() {
+	*x = Metric{}
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Metric) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Metric) ProtoMessage() {}
+
+func (x *Metric) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Metric.ProtoReflect.Descriptor instead.
+func (*Metric) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *Metric) GetMetricSpec() isMetric_MetricSpec {
+	if x != nil {
+		return x.MetricSpec
+	}
+	return nil
+}
+
+func (x *Metric) GetPredefinedMetricSpec() *PredefinedMetricSpec {
+	if x != nil {
+		if x, ok := x.MetricSpec.(*Metric_PredefinedMetricSpec); ok {
+			return x.PredefinedMetricSpec
+		}
+	}
+	return nil
+}
+
+func (x *Metric) GetComputationBasedMetricSpec() *ComputationBasedMetricSpec {
+	if x != nil {
+		if x, ok := x.MetricSpec.(*Metric_ComputationBasedMetricSpec); ok {
+			return x.ComputationBasedMetricSpec
+		}
+	}
+	return nil
+}
+
+func (x *Metric) GetLlmBasedMetricSpec() *LLMBasedMetricSpec {
+	if x != nil {
+		if x, ok := x.MetricSpec.(*Metric_LlmBasedMetricSpec); ok {
+			return x.LlmBasedMetricSpec
+		}
+	}
+	return nil
+}
+
+func (x *Metric) GetPointwiseMetricSpec() *PointwiseMetricSpec {
+	if x != nil {
+		if x, ok := x.MetricSpec.(*Metric_PointwiseMetricSpec); ok {
+			return x.PointwiseMetricSpec
+		}
+	}
+	return nil
+}
+
+func (x *Metric) GetPairwiseMetricSpec() *PairwiseMetricSpec {
+	if x != nil {
+		if x, ok := x.MetricSpec.(*Metric_PairwiseMetricSpec); ok {
+			return x.PairwiseMetricSpec
+		}
+	}
+	return nil
+}
+
+func (x *Metric) GetExactMatchSpec() *ExactMatchSpec {
+	if x != nil {
+		if x, ok := x.MetricSpec.(*Metric_ExactMatchSpec); ok {
+			return x.ExactMatchSpec
+		}
+	}
+	return nil
+}
+
+func (x *Metric) GetBleuSpec() *BleuSpec {
+	if x != nil {
+		if x, ok := x.MetricSpec.(*Metric_BleuSpec); ok {
+			return x.BleuSpec
+		}
+	}
+	return nil
+}
+
+func (x *Metric) GetRougeSpec() *RougeSpec {
+	if x != nil {
+		if x, ok := x.MetricSpec.(*Metric_RougeSpec); ok {
+			return x.RougeSpec
+		}
+	}
+	return nil
+}
+
+func (x *Metric) GetAggregationMetrics() []Metric_AggregationMetric {
+	if x != nil {
+		return x.AggregationMetrics
+	}
+	return nil
+}
+
+type isMetric_MetricSpec interface {
+	isMetric_MetricSpec()
+}
+
+type Metric_PredefinedMetricSpec struct {
+	// The spec for a pre-defined metric.
+	PredefinedMetricSpec *PredefinedMetricSpec `protobuf:"bytes,8,opt,name=predefined_metric_spec,json=predefinedMetricSpec,proto3,oneof"`
+}
+
+type Metric_ComputationBasedMetricSpec struct {
+	// Spec for a computation based metric.
+	ComputationBasedMetricSpec *ComputationBasedMetricSpec `protobuf:"bytes,9,opt,name=computation_based_metric_spec,json=computationBasedMetricSpec,proto3,oneof"`
+}
+
+type Metric_LlmBasedMetricSpec struct {
+	// Spec for an LLM based metric.
+	LlmBasedMetricSpec *LLMBasedMetricSpec `protobuf:"bytes,10,opt,name=llm_based_metric_spec,json=llmBasedMetricSpec,proto3,oneof"`
+}
+
+type Metric_PointwiseMetricSpec struct {
+	// Spec for pointwise metric.
+	PointwiseMetricSpec *PointwiseMetricSpec `protobuf:"bytes,2,opt,name=pointwise_metric_spec,json=pointwiseMetricSpec,proto3,oneof"`
+}
+
+type Metric_PairwiseMetricSpec struct {
+	// Spec for pairwise metric.
+	PairwiseMetricSpec *PairwiseMetricSpec `protobuf:"bytes,3,opt,name=pairwise_metric_spec,json=pairwiseMetricSpec,proto3,oneof"`
+}
+
+type Metric_ExactMatchSpec struct {
+	// Spec for exact match metric.
+	ExactMatchSpec *ExactMatchSpec `protobuf:"bytes,4,opt,name=exact_match_spec,json=exactMatchSpec,proto3,oneof"`
+}
+
+type Metric_BleuSpec struct {
+	// Spec for bleu metric.
+	BleuSpec *BleuSpec `protobuf:"bytes,5,opt,name=bleu_spec,json=bleuSpec,proto3,oneof"`
+}
+
+type Metric_RougeSpec struct {
+	// Spec for rouge metric.
+	RougeSpec *RougeSpec `protobuf:"bytes,6,opt,name=rouge_spec,json=rougeSpec,proto3,oneof"`
+}
+
+func (*Metric_PredefinedMetricSpec) isMetric_MetricSpec() {}
+
+func (*Metric_ComputationBasedMetricSpec) isMetric_MetricSpec() {}
+
+func (*Metric_LlmBasedMetricSpec) isMetric_MetricSpec() {}
+
+func (*Metric_PointwiseMetricSpec) isMetric_MetricSpec() {}
+
+func (*Metric_PairwiseMetricSpec) isMetric_MetricSpec() {}
+
+func (*Metric_ExactMatchSpec) isMetric_MetricSpec() {}
+
+func (*Metric_BleuSpec) isMetric_MetricSpec() {}
+
+func (*Metric_RougeSpec) isMetric_MetricSpec() {}
+
+// The configs for autorater. This is applicable to both EvaluateInstances and
+// EvaluateDataset.
+type AutoraterConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Number of samples for each instance in the dataset.
+	// If not specified, the default is 4. Minimum value is 1, maximum value
+	// is 32.
+	SamplingCount *int32 `protobuf:"varint,1,opt,name=sampling_count,json=samplingCount,proto3,oneof" json:"sampling_count,omitempty"`
+	// Optional. Default is true. Whether to flip the candidate and baseline
+	// responses. This is only applicable to the pairwise metric. If enabled, also
+	// provide PairwiseMetricSpec.candidate_response_field_name and
+	// PairwiseMetricSpec.baseline_response_field_name. When rendering
+	// PairwiseMetricSpec.metric_prompt_template, the candidate and baseline
+	// fields will be flipped for half of the samples to reduce bias.
+	FlipEnabled *bool `protobuf:"varint,2,opt,name=flip_enabled,json=flipEnabled,proto3,oneof" json:"flip_enabled,omitempty"`
+	// Optional. The fully qualified name of the publisher model or tuned
+	// autorater endpoint to use.
+	//
+	// Publisher model format:
+	// `projects/{project}/locations/{location}/publishers/*/models/*`
+	//
+	// Tuned model endpoint format:
+	// `projects/{project}/locations/{location}/endpoints/{endpoint}`
+	AutoraterModel string `protobuf:"bytes,3,opt,name=autorater_model,json=autoraterModel,proto3" json:"autorater_model,omitempty"`
+	// Optional. Configuration options for model generation and outputs.
+	GenerationConfig *GenerationConfig `protobuf:"bytes,4,opt,name=generation_config,json=generationConfig,proto3" json:"generation_config,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *AutoraterConfig) Reset() {
+	*x = AutoraterConfig{}
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AutoraterConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AutoraterConfig) ProtoMessage() {}
+
+func (x *AutoraterConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AutoraterConfig.ProtoReflect.Descriptor instead.
+func (*AutoraterConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *AutoraterConfig) GetSamplingCount() int32 {
+	if x != nil && x.SamplingCount != nil {
+		return *x.SamplingCount
+	}
+	return 0
+}
+
+func (x *AutoraterConfig) GetFlipEnabled() bool {
+	if x != nil && x.FlipEnabled != nil {
+		return *x.FlipEnabled
+	}
+	return false
+}
+
+func (x *AutoraterConfig) GetAutoraterModel() string {
+	if x != nil {
+		return x.AutoraterModel
+	}
+	return ""
+}
+
+func (x *AutoraterConfig) GetGenerationConfig() *GenerationConfig {
+	if x != nil {
+		return x.GenerationConfig
+	}
+	return nil
+}
+
 // Response message for EvaluationService.EvaluateInstances.
 type EvaluateInstancesResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -742,13 +1174,17 @@ type EvaluateInstancesResponse struct {
 	//	*EvaluateInstancesResponse_CometResult
 	//	*EvaluateInstancesResponse_MetricxResult
 	EvaluationResults isEvaluateInstancesResponse_EvaluationResults `protobuf_oneof:"evaluation_results"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	// Metric results for each instance.
+	// The order of the metric results is guaranteed to be the same as the order
+	// of the instances in the request.
+	MetricResults []*MetricResult `protobuf:"bytes,43,rep,name=metric_results,json=metricResults,proto3" json:"metric_results,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *EvaluateInstancesResponse) Reset() {
 	*x = EvaluateInstancesResponse{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[1]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -760,7 +1196,7 @@ func (x *EvaluateInstancesResponse) String() string {
 func (*EvaluateInstancesResponse) ProtoMessage() {}
 
 func (x *EvaluateInstancesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[1]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -773,7 +1209,7 @@ func (x *EvaluateInstancesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EvaluateInstancesResponse.ProtoReflect.Descriptor instead.
 func (*EvaluateInstancesResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{1}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *EvaluateInstancesResponse) GetEvaluationResults() isEvaluateInstancesResponse_EvaluationResults {
@@ -1008,6 +1444,13 @@ func (x *EvaluateInstancesResponse) GetMetricxResult() *MetricxResult {
 	return nil
 }
 
+func (x *EvaluateInstancesResponse) GetMetricResults() []*MetricResult {
+	if x != nil {
+		return x.MetricResults
+	}
+	return nil
+}
+
 type isEvaluateInstancesResponse_EvaluationResults interface {
 	isEvaluateInstancesResponse_EvaluationResults()
 }
@@ -1212,6 +1655,794 @@ func (*EvaluateInstancesResponse_CometResult) isEvaluateInstancesResponse_Evalua
 
 func (*EvaluateInstancesResponse_MetricxResult) isEvaluateInstancesResponse_EvaluationResults() {}
 
+// Result for a single metric on a single instance.
+type MetricResult struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. The score for the metric.
+	// Please refer to each metric's documentation for the meaning of the score.
+	Score *float32 `protobuf:"fixed32,1,opt,name=score,proto3,oneof" json:"score,omitempty"`
+	// Output only. The explanation for the metric result.
+	Explanation *string `protobuf:"bytes,3,opt,name=explanation,proto3,oneof" json:"explanation,omitempty"`
+	// Output only. The error status for the metric result.
+	Error         *status.Status `protobuf:"bytes,4,opt,name=error,proto3,oneof" json:"error,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MetricResult) Reset() {
+	*x = MetricResult{}
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MetricResult) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MetricResult) ProtoMessage() {}
+
+func (x *MetricResult) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MetricResult.ProtoReflect.Descriptor instead.
+func (*MetricResult) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *MetricResult) GetScore() float32 {
+	if x != nil && x.Score != nil {
+		return *x.Score
+	}
+	return 0
+}
+
+func (x *MetricResult) GetExplanation() string {
+	if x != nil && x.Explanation != nil {
+		return *x.Explanation
+	}
+	return ""
+}
+
+func (x *MetricResult) GetError() *status.Status {
+	if x != nil {
+		return x.Error
+	}
+	return nil
+}
+
+// Config for evaluation output.
+type OutputConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The destination for evaluation output.
+	//
+	// Types that are valid to be assigned to Destination:
+	//
+	//	*OutputConfig_GcsDestination
+	Destination   isOutputConfig_Destination `protobuf_oneof:"destination"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *OutputConfig) Reset() {
+	*x = OutputConfig{}
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OutputConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OutputConfig) ProtoMessage() {}
+
+func (x *OutputConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OutputConfig.ProtoReflect.Descriptor instead.
+func (*OutputConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *OutputConfig) GetDestination() isOutputConfig_Destination {
+	if x != nil {
+		return x.Destination
+	}
+	return nil
+}
+
+func (x *OutputConfig) GetGcsDestination() *GcsDestination {
+	if x != nil {
+		if x, ok := x.Destination.(*OutputConfig_GcsDestination); ok {
+			return x.GcsDestination
+		}
+	}
+	return nil
+}
+
+type isOutputConfig_Destination interface {
+	isOutputConfig_Destination()
+}
+
+type OutputConfig_GcsDestination struct {
+	// Cloud storage destination for evaluation output.
+	GcsDestination *GcsDestination `protobuf:"bytes,1,opt,name=gcs_destination,json=gcsDestination,proto3,oneof"`
+}
+
+func (*OutputConfig_GcsDestination) isOutputConfig_Destination() {}
+
+// The dataset used for evaluation.
+type EvaluationDataset struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The source of the dataset.
+	//
+	// Types that are valid to be assigned to Source:
+	//
+	//	*EvaluationDataset_GcsSource
+	//	*EvaluationDataset_BigquerySource
+	Source        isEvaluationDataset_Source `protobuf_oneof:"source"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *EvaluationDataset) Reset() {
+	*x = EvaluationDataset{}
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EvaluationDataset) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EvaluationDataset) ProtoMessage() {}
+
+func (x *EvaluationDataset) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EvaluationDataset.ProtoReflect.Descriptor instead.
+func (*EvaluationDataset) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *EvaluationDataset) GetSource() isEvaluationDataset_Source {
+	if x != nil {
+		return x.Source
+	}
+	return nil
+}
+
+func (x *EvaluationDataset) GetGcsSource() *GcsSource {
+	if x != nil {
+		if x, ok := x.Source.(*EvaluationDataset_GcsSource); ok {
+			return x.GcsSource
+		}
+	}
+	return nil
+}
+
+func (x *EvaluationDataset) GetBigquerySource() *BigQuerySource {
+	if x != nil {
+		if x, ok := x.Source.(*EvaluationDataset_BigquerySource); ok {
+			return x.BigquerySource
+		}
+	}
+	return nil
+}
+
+type isEvaluationDataset_Source interface {
+	isEvaluationDataset_Source()
+}
+
+type EvaluationDataset_GcsSource struct {
+	// Cloud storage source holds the dataset. Currently only one Cloud Storage
+	// file path is supported.
+	GcsSource *GcsSource `protobuf:"bytes,1,opt,name=gcs_source,json=gcsSource,proto3,oneof"`
+}
+
+type EvaluationDataset_BigquerySource struct {
+	// BigQuery source holds the dataset.
+	BigquerySource *BigQuerySource `protobuf:"bytes,2,opt,name=bigquery_source,json=bigquerySource,proto3,oneof"`
+}
+
+func (*EvaluationDataset_GcsSource) isEvaluationDataset_Source() {}
+
+func (*EvaluationDataset_BigquerySource) isEvaluationDataset_Source() {}
+
+// The results from an evaluation run performed by the EvaluationService.
+type EvaluateDatasetResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. Aggregation statistics derived from results of
+	// EvaluationService.
+	AggregationOutput *AggregationOutput `protobuf:"bytes,1,opt,name=aggregation_output,json=aggregationOutput,proto3" json:"aggregation_output,omitempty"`
+	// Output only. Output info for EvaluationService.
+	OutputInfo    *OutputInfo `protobuf:"bytes,3,opt,name=output_info,json=outputInfo,proto3" json:"output_info,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *EvaluateDatasetResponse) Reset() {
+	*x = EvaluateDatasetResponse{}
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EvaluateDatasetResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EvaluateDatasetResponse) ProtoMessage() {}
+
+func (x *EvaluateDatasetResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EvaluateDatasetResponse.ProtoReflect.Descriptor instead.
+func (*EvaluateDatasetResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *EvaluateDatasetResponse) GetAggregationOutput() *AggregationOutput {
+	if x != nil {
+		return x.AggregationOutput
+	}
+	return nil
+}
+
+func (x *EvaluateDatasetResponse) GetOutputInfo() *OutputInfo {
+	if x != nil {
+		return x.OutputInfo
+	}
+	return nil
+}
+
+// Describes the info for output of EvaluationService.
+type OutputInfo struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The output location into which evaluation output is written.
+	//
+	// Types that are valid to be assigned to OutputLocation:
+	//
+	//	*OutputInfo_GcsOutputDirectory
+	OutputLocation isOutputInfo_OutputLocation `protobuf_oneof:"output_location"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *OutputInfo) Reset() {
+	*x = OutputInfo{}
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OutputInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OutputInfo) ProtoMessage() {}
+
+func (x *OutputInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OutputInfo.ProtoReflect.Descriptor instead.
+func (*OutputInfo) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *OutputInfo) GetOutputLocation() isOutputInfo_OutputLocation {
+	if x != nil {
+		return x.OutputLocation
+	}
+	return nil
+}
+
+func (x *OutputInfo) GetGcsOutputDirectory() string {
+	if x != nil {
+		if x, ok := x.OutputLocation.(*OutputInfo_GcsOutputDirectory); ok {
+			return x.GcsOutputDirectory
+		}
+	}
+	return ""
+}
+
+type isOutputInfo_OutputLocation interface {
+	isOutputInfo_OutputLocation()
+}
+
+type OutputInfo_GcsOutputDirectory struct {
+	// Output only. The full path of the Cloud Storage directory created, into
+	// which the evaluation results and aggregation results are written.
+	GcsOutputDirectory string `protobuf:"bytes,1,opt,name=gcs_output_directory,json=gcsOutputDirectory,proto3,oneof"`
+}
+
+func (*OutputInfo_GcsOutputDirectory) isOutputInfo_OutputLocation() {}
+
+// The aggregation result for the entire dataset and all metrics.
+type AggregationOutput struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The dataset used for evaluation & aggregation.
+	Dataset *EvaluationDataset `protobuf:"bytes,1,opt,name=dataset,proto3" json:"dataset,omitempty"`
+	// One AggregationResult per metric.
+	AggregationResults []*AggregationResult `protobuf:"bytes,2,rep,name=aggregation_results,json=aggregationResults,proto3" json:"aggregation_results,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *AggregationOutput) Reset() {
+	*x = AggregationOutput{}
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AggregationOutput) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AggregationOutput) ProtoMessage() {}
+
+func (x *AggregationOutput) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AggregationOutput.ProtoReflect.Descriptor instead.
+func (*AggregationOutput) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *AggregationOutput) GetDataset() *EvaluationDataset {
+	if x != nil {
+		return x.Dataset
+	}
+	return nil
+}
+
+func (x *AggregationOutput) GetAggregationResults() []*AggregationResult {
+	if x != nil {
+		return x.AggregationResults
+	}
+	return nil
+}
+
+// The aggregation result for a single metric.
+type AggregationResult struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The aggregation result.
+	//
+	// Types that are valid to be assigned to AggregationResult:
+	//
+	//	*AggregationResult_PointwiseMetricResult
+	//	*AggregationResult_PairwiseMetricResult
+	//	*AggregationResult_ExactMatchMetricValue
+	//	*AggregationResult_BleuMetricValue
+	//	*AggregationResult_RougeMetricValue
+	AggregationResult isAggregationResult_AggregationResult `protobuf_oneof:"aggregation_result"`
+	// Aggregation metric.
+	AggregationMetric Metric_AggregationMetric `protobuf:"varint,4,opt,name=aggregation_metric,json=aggregationMetric,proto3,enum=google.cloud.aiplatform.v1.Metric_AggregationMetric" json:"aggregation_metric,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *AggregationResult) Reset() {
+	*x = AggregationResult{}
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AggregationResult) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AggregationResult) ProtoMessage() {}
+
+func (x *AggregationResult) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AggregationResult.ProtoReflect.Descriptor instead.
+func (*AggregationResult) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *AggregationResult) GetAggregationResult() isAggregationResult_AggregationResult {
+	if x != nil {
+		return x.AggregationResult
+	}
+	return nil
+}
+
+func (x *AggregationResult) GetPointwiseMetricResult() *PointwiseMetricResult {
+	if x != nil {
+		if x, ok := x.AggregationResult.(*AggregationResult_PointwiseMetricResult); ok {
+			return x.PointwiseMetricResult
+		}
+	}
+	return nil
+}
+
+func (x *AggregationResult) GetPairwiseMetricResult() *PairwiseMetricResult {
+	if x != nil {
+		if x, ok := x.AggregationResult.(*AggregationResult_PairwiseMetricResult); ok {
+			return x.PairwiseMetricResult
+		}
+	}
+	return nil
+}
+
+func (x *AggregationResult) GetExactMatchMetricValue() *ExactMatchMetricValue {
+	if x != nil {
+		if x, ok := x.AggregationResult.(*AggregationResult_ExactMatchMetricValue); ok {
+			return x.ExactMatchMetricValue
+		}
+	}
+	return nil
+}
+
+func (x *AggregationResult) GetBleuMetricValue() *BleuMetricValue {
+	if x != nil {
+		if x, ok := x.AggregationResult.(*AggregationResult_BleuMetricValue); ok {
+			return x.BleuMetricValue
+		}
+	}
+	return nil
+}
+
+func (x *AggregationResult) GetRougeMetricValue() *RougeMetricValue {
+	if x != nil {
+		if x, ok := x.AggregationResult.(*AggregationResult_RougeMetricValue); ok {
+			return x.RougeMetricValue
+		}
+	}
+	return nil
+}
+
+func (x *AggregationResult) GetAggregationMetric() Metric_AggregationMetric {
+	if x != nil {
+		return x.AggregationMetric
+	}
+	return Metric_AGGREGATION_METRIC_UNSPECIFIED
+}
+
+type isAggregationResult_AggregationResult interface {
+	isAggregationResult_AggregationResult()
+}
+
+type AggregationResult_PointwiseMetricResult struct {
+	// Result for pointwise metric.
+	PointwiseMetricResult *PointwiseMetricResult `protobuf:"bytes,5,opt,name=pointwise_metric_result,json=pointwiseMetricResult,proto3,oneof"`
+}
+
+type AggregationResult_PairwiseMetricResult struct {
+	// Result for pairwise metric.
+	PairwiseMetricResult *PairwiseMetricResult `protobuf:"bytes,6,opt,name=pairwise_metric_result,json=pairwiseMetricResult,proto3,oneof"`
+}
+
+type AggregationResult_ExactMatchMetricValue struct {
+	// Results for exact match metric.
+	ExactMatchMetricValue *ExactMatchMetricValue `protobuf:"bytes,7,opt,name=exact_match_metric_value,json=exactMatchMetricValue,proto3,oneof"`
+}
+
+type AggregationResult_BleuMetricValue struct {
+	// Results for bleu metric.
+	BleuMetricValue *BleuMetricValue `protobuf:"bytes,8,opt,name=bleu_metric_value,json=bleuMetricValue,proto3,oneof"`
+}
+
+type AggregationResult_RougeMetricValue struct {
+	// Results for rouge metric.
+	RougeMetricValue *RougeMetricValue `protobuf:"bytes,9,opt,name=rouge_metric_value,json=rougeMetricValue,proto3,oneof"`
+}
+
+func (*AggregationResult_PointwiseMetricResult) isAggregationResult_AggregationResult() {}
+
+func (*AggregationResult_PairwiseMetricResult) isAggregationResult_AggregationResult() {}
+
+func (*AggregationResult_ExactMatchMetricValue) isAggregationResult_AggregationResult() {}
+
+func (*AggregationResult_BleuMetricValue) isAggregationResult_AggregationResult() {}
+
+func (*AggregationResult_RougeMetricValue) isAggregationResult_AggregationResult() {}
+
+// The spec for a pre-defined metric.
+type PredefinedMetricSpec struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The name of a pre-defined metric, such as
+	// "instruction_following_v1" or "text_quality_v1".
+	MetricSpecName string `protobuf:"bytes,1,opt,name=metric_spec_name,json=metricSpecName,proto3" json:"metric_spec_name,omitempty"`
+	// Optional. The parameters needed to run the pre-defined metric.
+	MetricSpecParameters *structpb.Struct `protobuf:"bytes,2,opt,name=metric_spec_parameters,json=metricSpecParameters,proto3" json:"metric_spec_parameters,omitempty"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
+}
+
+func (x *PredefinedMetricSpec) Reset() {
+	*x = PredefinedMetricSpec{}
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PredefinedMetricSpec) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PredefinedMetricSpec) ProtoMessage() {}
+
+func (x *PredefinedMetricSpec) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PredefinedMetricSpec.ProtoReflect.Descriptor instead.
+func (*PredefinedMetricSpec) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *PredefinedMetricSpec) GetMetricSpecName() string {
+	if x != nil {
+		return x.MetricSpecName
+	}
+	return ""
+}
+
+func (x *PredefinedMetricSpec) GetMetricSpecParameters() *structpb.Struct {
+	if x != nil {
+		return x.MetricSpecParameters
+	}
+	return nil
+}
+
+// Specification for a computation based metric.
+type ComputationBasedMetricSpec struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The type of the computation based metric.
+	Type *ComputationBasedMetricSpec_ComputationBasedMetricType `protobuf:"varint,1,opt,name=type,proto3,enum=google.cloud.aiplatform.v1.ComputationBasedMetricSpec_ComputationBasedMetricType,oneof" json:"type,omitempty"`
+	// Optional. A map of parameters for the metric, e.g. {"rouge_type":
+	// "rougeL"}.
+	Parameters    *structpb.Struct `protobuf:"bytes,2,opt,name=parameters,proto3,oneof" json:"parameters,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ComputationBasedMetricSpec) Reset() {
+	*x = ComputationBasedMetricSpec{}
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ComputationBasedMetricSpec) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ComputationBasedMetricSpec) ProtoMessage() {}
+
+func (x *ComputationBasedMetricSpec) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ComputationBasedMetricSpec.ProtoReflect.Descriptor instead.
+func (*ComputationBasedMetricSpec) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *ComputationBasedMetricSpec) GetType() ComputationBasedMetricSpec_ComputationBasedMetricType {
+	if x != nil && x.Type != nil {
+		return *x.Type
+	}
+	return ComputationBasedMetricSpec_COMPUTATION_BASED_METRIC_TYPE_UNSPECIFIED
+}
+
+func (x *ComputationBasedMetricSpec) GetParameters() *structpb.Struct {
+	if x != nil {
+		return x.Parameters
+	}
+	return nil
+}
+
+// Specification for an LLM based metric.
+type LLMBasedMetricSpec struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Source of the rubrics to be used for evaluation.
+	//
+	// Types that are valid to be assigned to RubricsSource:
+	//
+	//	*LLMBasedMetricSpec_RubricGroupKey
+	//	*LLMBasedMetricSpec_PredefinedRubricGenerationSpec
+	RubricsSource isLLMBasedMetricSpec_RubricsSource `protobuf_oneof:"rubrics_source"`
+	// Required. Template for the prompt sent to the judge model.
+	MetricPromptTemplate *string `protobuf:"bytes,1,opt,name=metric_prompt_template,json=metricPromptTemplate,proto3,oneof" json:"metric_prompt_template,omitempty"`
+	// Optional. System instructions for the judge model.
+	SystemInstruction *string `protobuf:"bytes,2,opt,name=system_instruction,json=systemInstruction,proto3,oneof" json:"system_instruction,omitempty"`
+	// Optional. Optional configuration for the judge LLM (Autorater).
+	JudgeAutoraterConfig *AutoraterConfig `protobuf:"bytes,3,opt,name=judge_autorater_config,json=judgeAutoraterConfig,proto3,oneof" json:"judge_autorater_config,omitempty"`
+	// Optional. Optional additional configuration for the metric.
+	AdditionalConfig *structpb.Struct `protobuf:"bytes,7,opt,name=additional_config,json=additionalConfig,proto3,oneof" json:"additional_config,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *LLMBasedMetricSpec) Reset() {
+	*x = LLMBasedMetricSpec{}
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LLMBasedMetricSpec) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LLMBasedMetricSpec) ProtoMessage() {}
+
+func (x *LLMBasedMetricSpec) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LLMBasedMetricSpec.ProtoReflect.Descriptor instead.
+func (*LLMBasedMetricSpec) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *LLMBasedMetricSpec) GetRubricsSource() isLLMBasedMetricSpec_RubricsSource {
+	if x != nil {
+		return x.RubricsSource
+	}
+	return nil
+}
+
+func (x *LLMBasedMetricSpec) GetRubricGroupKey() string {
+	if x != nil {
+		if x, ok := x.RubricsSource.(*LLMBasedMetricSpec_RubricGroupKey); ok {
+			return x.RubricGroupKey
+		}
+	}
+	return ""
+}
+
+func (x *LLMBasedMetricSpec) GetPredefinedRubricGenerationSpec() *PredefinedMetricSpec {
+	if x != nil {
+		if x, ok := x.RubricsSource.(*LLMBasedMetricSpec_PredefinedRubricGenerationSpec); ok {
+			return x.PredefinedRubricGenerationSpec
+		}
+	}
+	return nil
+}
+
+func (x *LLMBasedMetricSpec) GetMetricPromptTemplate() string {
+	if x != nil && x.MetricPromptTemplate != nil {
+		return *x.MetricPromptTemplate
+	}
+	return ""
+}
+
+func (x *LLMBasedMetricSpec) GetSystemInstruction() string {
+	if x != nil && x.SystemInstruction != nil {
+		return *x.SystemInstruction
+	}
+	return ""
+}
+
+func (x *LLMBasedMetricSpec) GetJudgeAutoraterConfig() *AutoraterConfig {
+	if x != nil {
+		return x.JudgeAutoraterConfig
+	}
+	return nil
+}
+
+func (x *LLMBasedMetricSpec) GetAdditionalConfig() *structpb.Struct {
+	if x != nil {
+		return x.AdditionalConfig
+	}
+	return nil
+}
+
+type isLLMBasedMetricSpec_RubricsSource interface {
+	isLLMBasedMetricSpec_RubricsSource()
+}
+
+type LLMBasedMetricSpec_RubricGroupKey struct {
+	// Use a pre-defined group of rubrics associated with the input.
+	// Refers to a key in the rubric_groups map of EvaluationInstance.
+	RubricGroupKey string `protobuf:"bytes,4,opt,name=rubric_group_key,json=rubricGroupKey,proto3,oneof"`
+}
+
+type LLMBasedMetricSpec_PredefinedRubricGenerationSpec struct {
+	// Dynamically generate rubrics using a predefined spec.
+	PredefinedRubricGenerationSpec *PredefinedMetricSpec `protobuf:"bytes,6,opt,name=predefined_rubric_generation_spec,json=predefinedRubricGenerationSpec,proto3,oneof"`
+}
+
+func (*LLMBasedMetricSpec_RubricGroupKey) isLLMBasedMetricSpec_RubricsSource() {}
+
+func (*LLMBasedMetricSpec_PredefinedRubricGenerationSpec) isLLMBasedMetricSpec_RubricsSource() {}
+
 // Input for exact match metric.
 type ExactMatchInput struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -1225,7 +2456,7 @@ type ExactMatchInput struct {
 
 func (x *ExactMatchInput) Reset() {
 	*x = ExactMatchInput{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[2]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1237,7 +2468,7 @@ func (x *ExactMatchInput) String() string {
 func (*ExactMatchInput) ProtoMessage() {}
 
 func (x *ExactMatchInput) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[2]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1250,7 +2481,7 @@ func (x *ExactMatchInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExactMatchInput.ProtoReflect.Descriptor instead.
 func (*ExactMatchInput) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{2}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *ExactMatchInput) GetMetricSpec() *ExactMatchSpec {
@@ -1280,7 +2511,7 @@ type ExactMatchInstance struct {
 
 func (x *ExactMatchInstance) Reset() {
 	*x = ExactMatchInstance{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[3]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1292,7 +2523,7 @@ func (x *ExactMatchInstance) String() string {
 func (*ExactMatchInstance) ProtoMessage() {}
 
 func (x *ExactMatchInstance) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[3]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1305,7 +2536,7 @@ func (x *ExactMatchInstance) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExactMatchInstance.ProtoReflect.Descriptor instead.
 func (*ExactMatchInstance) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{3}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *ExactMatchInstance) GetPrediction() string {
@@ -1332,7 +2563,7 @@ type ExactMatchSpec struct {
 
 func (x *ExactMatchSpec) Reset() {
 	*x = ExactMatchSpec{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[4]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1344,7 +2575,7 @@ func (x *ExactMatchSpec) String() string {
 func (*ExactMatchSpec) ProtoMessage() {}
 
 func (x *ExactMatchSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[4]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1357,7 +2588,7 @@ func (x *ExactMatchSpec) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExactMatchSpec.ProtoReflect.Descriptor instead.
 func (*ExactMatchSpec) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{4}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{16}
 }
 
 // Results for exact match metric.
@@ -1371,7 +2602,7 @@ type ExactMatchResults struct {
 
 func (x *ExactMatchResults) Reset() {
 	*x = ExactMatchResults{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[5]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1383,7 +2614,7 @@ func (x *ExactMatchResults) String() string {
 func (*ExactMatchResults) ProtoMessage() {}
 
 func (x *ExactMatchResults) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[5]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1396,7 +2627,7 @@ func (x *ExactMatchResults) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExactMatchResults.ProtoReflect.Descriptor instead.
 func (*ExactMatchResults) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{5}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *ExactMatchResults) GetExactMatchMetricValues() []*ExactMatchMetricValue {
@@ -1417,7 +2648,7 @@ type ExactMatchMetricValue struct {
 
 func (x *ExactMatchMetricValue) Reset() {
 	*x = ExactMatchMetricValue{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[6]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1429,7 +2660,7 @@ func (x *ExactMatchMetricValue) String() string {
 func (*ExactMatchMetricValue) ProtoMessage() {}
 
 func (x *ExactMatchMetricValue) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[6]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1442,7 +2673,7 @@ func (x *ExactMatchMetricValue) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExactMatchMetricValue.ProtoReflect.Descriptor instead.
 func (*ExactMatchMetricValue) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{6}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *ExactMatchMetricValue) GetScore() float32 {
@@ -1465,7 +2696,7 @@ type BleuInput struct {
 
 func (x *BleuInput) Reset() {
 	*x = BleuInput{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[7]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1477,7 +2708,7 @@ func (x *BleuInput) String() string {
 func (*BleuInput) ProtoMessage() {}
 
 func (x *BleuInput) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[7]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1490,7 +2721,7 @@ func (x *BleuInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BleuInput.ProtoReflect.Descriptor instead.
 func (*BleuInput) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{7}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *BleuInput) GetMetricSpec() *BleuSpec {
@@ -1520,7 +2751,7 @@ type BleuInstance struct {
 
 func (x *BleuInstance) Reset() {
 	*x = BleuInstance{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[8]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1532,7 +2763,7 @@ func (x *BleuInstance) String() string {
 func (*BleuInstance) ProtoMessage() {}
 
 func (x *BleuInstance) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[8]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1545,7 +2776,7 @@ func (x *BleuInstance) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BleuInstance.ProtoReflect.Descriptor instead.
 func (*BleuInstance) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{8}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *BleuInstance) GetPrediction() string {
@@ -1574,7 +2805,7 @@ type BleuSpec struct {
 
 func (x *BleuSpec) Reset() {
 	*x = BleuSpec{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[9]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1586,7 +2817,7 @@ func (x *BleuSpec) String() string {
 func (*BleuSpec) ProtoMessage() {}
 
 func (x *BleuSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[9]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1599,7 +2830,7 @@ func (x *BleuSpec) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BleuSpec.ProtoReflect.Descriptor instead.
 func (*BleuSpec) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{9}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *BleuSpec) GetUseEffectiveOrder() bool {
@@ -1620,7 +2851,7 @@ type BleuResults struct {
 
 func (x *BleuResults) Reset() {
 	*x = BleuResults{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[10]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1632,7 +2863,7 @@ func (x *BleuResults) String() string {
 func (*BleuResults) ProtoMessage() {}
 
 func (x *BleuResults) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[10]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1645,7 +2876,7 @@ func (x *BleuResults) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BleuResults.ProtoReflect.Descriptor instead.
 func (*BleuResults) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{10}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *BleuResults) GetBleuMetricValues() []*BleuMetricValue {
@@ -1666,7 +2897,7 @@ type BleuMetricValue struct {
 
 func (x *BleuMetricValue) Reset() {
 	*x = BleuMetricValue{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[11]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1678,7 +2909,7 @@ func (x *BleuMetricValue) String() string {
 func (*BleuMetricValue) ProtoMessage() {}
 
 func (x *BleuMetricValue) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[11]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1691,7 +2922,7 @@ func (x *BleuMetricValue) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BleuMetricValue.ProtoReflect.Descriptor instead.
 func (*BleuMetricValue) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{11}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *BleuMetricValue) GetScore() float32 {
@@ -1714,7 +2945,7 @@ type RougeInput struct {
 
 func (x *RougeInput) Reset() {
 	*x = RougeInput{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[12]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1726,7 +2957,7 @@ func (x *RougeInput) String() string {
 func (*RougeInput) ProtoMessage() {}
 
 func (x *RougeInput) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[12]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1739,7 +2970,7 @@ func (x *RougeInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RougeInput.ProtoReflect.Descriptor instead.
 func (*RougeInput) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{12}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *RougeInput) GetMetricSpec() *RougeSpec {
@@ -1769,7 +3000,7 @@ type RougeInstance struct {
 
 func (x *RougeInstance) Reset() {
 	*x = RougeInstance{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[13]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1781,7 +3012,7 @@ func (x *RougeInstance) String() string {
 func (*RougeInstance) ProtoMessage() {}
 
 func (x *RougeInstance) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[13]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1794,7 +3025,7 @@ func (x *RougeInstance) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RougeInstance.ProtoReflect.Descriptor instead.
 func (*RougeInstance) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{13}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *RougeInstance) GetPrediction() string {
@@ -1827,7 +3058,7 @@ type RougeSpec struct {
 
 func (x *RougeSpec) Reset() {
 	*x = RougeSpec{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[14]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1839,7 +3070,7 @@ func (x *RougeSpec) String() string {
 func (*RougeSpec) ProtoMessage() {}
 
 func (x *RougeSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[14]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1852,7 +3083,7 @@ func (x *RougeSpec) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RougeSpec.ProtoReflect.Descriptor instead.
 func (*RougeSpec) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{14}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *RougeSpec) GetRougeType() string {
@@ -1887,7 +3118,7 @@ type RougeResults struct {
 
 func (x *RougeResults) Reset() {
 	*x = RougeResults{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[15]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1899,7 +3130,7 @@ func (x *RougeResults) String() string {
 func (*RougeResults) ProtoMessage() {}
 
 func (x *RougeResults) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[15]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1912,7 +3143,7 @@ func (x *RougeResults) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RougeResults.ProtoReflect.Descriptor instead.
 func (*RougeResults) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{15}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *RougeResults) GetRougeMetricValues() []*RougeMetricValue {
@@ -1933,7 +3164,7 @@ type RougeMetricValue struct {
 
 func (x *RougeMetricValue) Reset() {
 	*x = RougeMetricValue{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[16]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1945,7 +3176,7 @@ func (x *RougeMetricValue) String() string {
 func (*RougeMetricValue) ProtoMessage() {}
 
 func (x *RougeMetricValue) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[16]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1958,7 +3189,7 @@ func (x *RougeMetricValue) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RougeMetricValue.ProtoReflect.Descriptor instead.
 func (*RougeMetricValue) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{16}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *RougeMetricValue) GetScore() float32 {
@@ -1981,7 +3212,7 @@ type CoherenceInput struct {
 
 func (x *CoherenceInput) Reset() {
 	*x = CoherenceInput{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[17]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1993,7 +3224,7 @@ func (x *CoherenceInput) String() string {
 func (*CoherenceInput) ProtoMessage() {}
 
 func (x *CoherenceInput) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[17]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2006,7 +3237,7 @@ func (x *CoherenceInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CoherenceInput.ProtoReflect.Descriptor instead.
 func (*CoherenceInput) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{17}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *CoherenceInput) GetMetricSpec() *CoherenceSpec {
@@ -2034,7 +3265,7 @@ type CoherenceInstance struct {
 
 func (x *CoherenceInstance) Reset() {
 	*x = CoherenceInstance{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[18]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2046,7 +3277,7 @@ func (x *CoherenceInstance) String() string {
 func (*CoherenceInstance) ProtoMessage() {}
 
 func (x *CoherenceInstance) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[18]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2059,7 +3290,7 @@ func (x *CoherenceInstance) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CoherenceInstance.ProtoReflect.Descriptor instead.
 func (*CoherenceInstance) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{18}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *CoherenceInstance) GetPrediction() string {
@@ -2080,7 +3311,7 @@ type CoherenceSpec struct {
 
 func (x *CoherenceSpec) Reset() {
 	*x = CoherenceSpec{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[19]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2092,7 +3323,7 @@ func (x *CoherenceSpec) String() string {
 func (*CoherenceSpec) ProtoMessage() {}
 
 func (x *CoherenceSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[19]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2105,7 +3336,7 @@ func (x *CoherenceSpec) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CoherenceSpec.ProtoReflect.Descriptor instead.
 func (*CoherenceSpec) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{19}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *CoherenceSpec) GetVersion() int32 {
@@ -2130,7 +3361,7 @@ type CoherenceResult struct {
 
 func (x *CoherenceResult) Reset() {
 	*x = CoherenceResult{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[20]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2142,7 +3373,7 @@ func (x *CoherenceResult) String() string {
 func (*CoherenceResult) ProtoMessage() {}
 
 func (x *CoherenceResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[20]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2155,7 +3386,7 @@ func (x *CoherenceResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CoherenceResult.ProtoReflect.Descriptor instead.
 func (*CoherenceResult) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{20}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *CoherenceResult) GetScore() float32 {
@@ -2192,7 +3423,7 @@ type FluencyInput struct {
 
 func (x *FluencyInput) Reset() {
 	*x = FluencyInput{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[21]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2204,7 +3435,7 @@ func (x *FluencyInput) String() string {
 func (*FluencyInput) ProtoMessage() {}
 
 func (x *FluencyInput) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[21]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2217,7 +3448,7 @@ func (x *FluencyInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FluencyInput.ProtoReflect.Descriptor instead.
 func (*FluencyInput) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{21}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *FluencyInput) GetMetricSpec() *FluencySpec {
@@ -2245,7 +3476,7 @@ type FluencyInstance struct {
 
 func (x *FluencyInstance) Reset() {
 	*x = FluencyInstance{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[22]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2257,7 +3488,7 @@ func (x *FluencyInstance) String() string {
 func (*FluencyInstance) ProtoMessage() {}
 
 func (x *FluencyInstance) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[22]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2270,7 +3501,7 @@ func (x *FluencyInstance) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FluencyInstance.ProtoReflect.Descriptor instead.
 func (*FluencyInstance) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{22}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *FluencyInstance) GetPrediction() string {
@@ -2291,7 +3522,7 @@ type FluencySpec struct {
 
 func (x *FluencySpec) Reset() {
 	*x = FluencySpec{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[23]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2303,7 +3534,7 @@ func (x *FluencySpec) String() string {
 func (*FluencySpec) ProtoMessage() {}
 
 func (x *FluencySpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[23]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2316,7 +3547,7 @@ func (x *FluencySpec) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FluencySpec.ProtoReflect.Descriptor instead.
 func (*FluencySpec) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{23}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *FluencySpec) GetVersion() int32 {
@@ -2341,7 +3572,7 @@ type FluencyResult struct {
 
 func (x *FluencyResult) Reset() {
 	*x = FluencyResult{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[24]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2353,7 +3584,7 @@ func (x *FluencyResult) String() string {
 func (*FluencyResult) ProtoMessage() {}
 
 func (x *FluencyResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[24]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2366,7 +3597,7 @@ func (x *FluencyResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FluencyResult.ProtoReflect.Descriptor instead.
 func (*FluencyResult) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{24}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *FluencyResult) GetScore() float32 {
@@ -2403,7 +3634,7 @@ type SafetyInput struct {
 
 func (x *SafetyInput) Reset() {
 	*x = SafetyInput{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[25]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2415,7 +3646,7 @@ func (x *SafetyInput) String() string {
 func (*SafetyInput) ProtoMessage() {}
 
 func (x *SafetyInput) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[25]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2428,7 +3659,7 @@ func (x *SafetyInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SafetyInput.ProtoReflect.Descriptor instead.
 func (*SafetyInput) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{25}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *SafetyInput) GetMetricSpec() *SafetySpec {
@@ -2456,7 +3687,7 @@ type SafetyInstance struct {
 
 func (x *SafetyInstance) Reset() {
 	*x = SafetyInstance{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[26]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2468,7 +3699,7 @@ func (x *SafetyInstance) String() string {
 func (*SafetyInstance) ProtoMessage() {}
 
 func (x *SafetyInstance) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[26]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2481,7 +3712,7 @@ func (x *SafetyInstance) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SafetyInstance.ProtoReflect.Descriptor instead.
 func (*SafetyInstance) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{26}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *SafetyInstance) GetPrediction() string {
@@ -2502,7 +3733,7 @@ type SafetySpec struct {
 
 func (x *SafetySpec) Reset() {
 	*x = SafetySpec{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[27]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2514,7 +3745,7 @@ func (x *SafetySpec) String() string {
 func (*SafetySpec) ProtoMessage() {}
 
 func (x *SafetySpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[27]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2527,7 +3758,7 @@ func (x *SafetySpec) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SafetySpec.ProtoReflect.Descriptor instead.
 func (*SafetySpec) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{27}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *SafetySpec) GetVersion() int32 {
@@ -2552,7 +3783,7 @@ type SafetyResult struct {
 
 func (x *SafetyResult) Reset() {
 	*x = SafetyResult{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[28]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2564,7 +3795,7 @@ func (x *SafetyResult) String() string {
 func (*SafetyResult) ProtoMessage() {}
 
 func (x *SafetyResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[28]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2577,7 +3808,7 @@ func (x *SafetyResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SafetyResult.ProtoReflect.Descriptor instead.
 func (*SafetyResult) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{28}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *SafetyResult) GetScore() float32 {
@@ -2614,7 +3845,7 @@ type GroundednessInput struct {
 
 func (x *GroundednessInput) Reset() {
 	*x = GroundednessInput{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[29]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2626,7 +3857,7 @@ func (x *GroundednessInput) String() string {
 func (*GroundednessInput) ProtoMessage() {}
 
 func (x *GroundednessInput) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[29]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2639,7 +3870,7 @@ func (x *GroundednessInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GroundednessInput.ProtoReflect.Descriptor instead.
 func (*GroundednessInput) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{29}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *GroundednessInput) GetMetricSpec() *GroundednessSpec {
@@ -2670,7 +3901,7 @@ type GroundednessInstance struct {
 
 func (x *GroundednessInstance) Reset() {
 	*x = GroundednessInstance{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[30]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2682,7 +3913,7 @@ func (x *GroundednessInstance) String() string {
 func (*GroundednessInstance) ProtoMessage() {}
 
 func (x *GroundednessInstance) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[30]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2695,7 +3926,7 @@ func (x *GroundednessInstance) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GroundednessInstance.ProtoReflect.Descriptor instead.
 func (*GroundednessInstance) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{30}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *GroundednessInstance) GetPrediction() string {
@@ -2723,7 +3954,7 @@ type GroundednessSpec struct {
 
 func (x *GroundednessSpec) Reset() {
 	*x = GroundednessSpec{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[31]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2735,7 +3966,7 @@ func (x *GroundednessSpec) String() string {
 func (*GroundednessSpec) ProtoMessage() {}
 
 func (x *GroundednessSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[31]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2748,7 +3979,7 @@ func (x *GroundednessSpec) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GroundednessSpec.ProtoReflect.Descriptor instead.
 func (*GroundednessSpec) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{31}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *GroundednessSpec) GetVersion() int32 {
@@ -2773,7 +4004,7 @@ type GroundednessResult struct {
 
 func (x *GroundednessResult) Reset() {
 	*x = GroundednessResult{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[32]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2785,7 +4016,7 @@ func (x *GroundednessResult) String() string {
 func (*GroundednessResult) ProtoMessage() {}
 
 func (x *GroundednessResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[32]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2798,7 +4029,7 @@ func (x *GroundednessResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GroundednessResult.ProtoReflect.Descriptor instead.
 func (*GroundednessResult) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{32}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *GroundednessResult) GetScore() float32 {
@@ -2835,7 +4066,7 @@ type FulfillmentInput struct {
 
 func (x *FulfillmentInput) Reset() {
 	*x = FulfillmentInput{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[33]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2847,7 +4078,7 @@ func (x *FulfillmentInput) String() string {
 func (*FulfillmentInput) ProtoMessage() {}
 
 func (x *FulfillmentInput) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[33]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2860,7 +4091,7 @@ func (x *FulfillmentInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FulfillmentInput.ProtoReflect.Descriptor instead.
 func (*FulfillmentInput) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{33}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{45}
 }
 
 func (x *FulfillmentInput) GetMetricSpec() *FulfillmentSpec {
@@ -2890,7 +4121,7 @@ type FulfillmentInstance struct {
 
 func (x *FulfillmentInstance) Reset() {
 	*x = FulfillmentInstance{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[34]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2902,7 +4133,7 @@ func (x *FulfillmentInstance) String() string {
 func (*FulfillmentInstance) ProtoMessage() {}
 
 func (x *FulfillmentInstance) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[34]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2915,7 +4146,7 @@ func (x *FulfillmentInstance) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FulfillmentInstance.ProtoReflect.Descriptor instead.
 func (*FulfillmentInstance) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{34}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *FulfillmentInstance) GetPrediction() string {
@@ -2943,7 +4174,7 @@ type FulfillmentSpec struct {
 
 func (x *FulfillmentSpec) Reset() {
 	*x = FulfillmentSpec{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[35]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2955,7 +4186,7 @@ func (x *FulfillmentSpec) String() string {
 func (*FulfillmentSpec) ProtoMessage() {}
 
 func (x *FulfillmentSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[35]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2968,7 +4199,7 @@ func (x *FulfillmentSpec) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FulfillmentSpec.ProtoReflect.Descriptor instead.
 func (*FulfillmentSpec) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{35}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *FulfillmentSpec) GetVersion() int32 {
@@ -2993,7 +4224,7 @@ type FulfillmentResult struct {
 
 func (x *FulfillmentResult) Reset() {
 	*x = FulfillmentResult{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[36]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3005,7 +4236,7 @@ func (x *FulfillmentResult) String() string {
 func (*FulfillmentResult) ProtoMessage() {}
 
 func (x *FulfillmentResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[36]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3018,7 +4249,7 @@ func (x *FulfillmentResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FulfillmentResult.ProtoReflect.Descriptor instead.
 func (*FulfillmentResult) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{36}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{48}
 }
 
 func (x *FulfillmentResult) GetScore() float32 {
@@ -3055,7 +4286,7 @@ type SummarizationQualityInput struct {
 
 func (x *SummarizationQualityInput) Reset() {
 	*x = SummarizationQualityInput{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[37]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3067,7 +4298,7 @@ func (x *SummarizationQualityInput) String() string {
 func (*SummarizationQualityInput) ProtoMessage() {}
 
 func (x *SummarizationQualityInput) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[37]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3080,7 +4311,7 @@ func (x *SummarizationQualityInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SummarizationQualityInput.ProtoReflect.Descriptor instead.
 func (*SummarizationQualityInput) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{37}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{49}
 }
 
 func (x *SummarizationQualityInput) GetMetricSpec() *SummarizationQualitySpec {
@@ -3114,7 +4345,7 @@ type SummarizationQualityInstance struct {
 
 func (x *SummarizationQualityInstance) Reset() {
 	*x = SummarizationQualityInstance{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[38]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3126,7 +4357,7 @@ func (x *SummarizationQualityInstance) String() string {
 func (*SummarizationQualityInstance) ProtoMessage() {}
 
 func (x *SummarizationQualityInstance) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[38]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3139,7 +4370,7 @@ func (x *SummarizationQualityInstance) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SummarizationQualityInstance.ProtoReflect.Descriptor instead.
 func (*SummarizationQualityInstance) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{38}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{50}
 }
 
 func (x *SummarizationQualityInstance) GetPrediction() string {
@@ -3184,7 +4415,7 @@ type SummarizationQualitySpec struct {
 
 func (x *SummarizationQualitySpec) Reset() {
 	*x = SummarizationQualitySpec{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[39]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[51]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3196,7 +4427,7 @@ func (x *SummarizationQualitySpec) String() string {
 func (*SummarizationQualitySpec) ProtoMessage() {}
 
 func (x *SummarizationQualitySpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[39]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[51]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3209,7 +4440,7 @@ func (x *SummarizationQualitySpec) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SummarizationQualitySpec.ProtoReflect.Descriptor instead.
 func (*SummarizationQualitySpec) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{39}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{51}
 }
 
 func (x *SummarizationQualitySpec) GetUseReference() bool {
@@ -3241,7 +4472,7 @@ type SummarizationQualityResult struct {
 
 func (x *SummarizationQualityResult) Reset() {
 	*x = SummarizationQualityResult{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[40]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3253,7 +4484,7 @@ func (x *SummarizationQualityResult) String() string {
 func (*SummarizationQualityResult) ProtoMessage() {}
 
 func (x *SummarizationQualityResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[40]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3266,7 +4497,7 @@ func (x *SummarizationQualityResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SummarizationQualityResult.ProtoReflect.Descriptor instead.
 func (*SummarizationQualityResult) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{40}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{52}
 }
 
 func (x *SummarizationQualityResult) GetScore() float32 {
@@ -3303,7 +4534,7 @@ type PairwiseSummarizationQualityInput struct {
 
 func (x *PairwiseSummarizationQualityInput) Reset() {
 	*x = PairwiseSummarizationQualityInput{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[41]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[53]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3315,7 +4546,7 @@ func (x *PairwiseSummarizationQualityInput) String() string {
 func (*PairwiseSummarizationQualityInput) ProtoMessage() {}
 
 func (x *PairwiseSummarizationQualityInput) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[41]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[53]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3328,7 +4559,7 @@ func (x *PairwiseSummarizationQualityInput) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use PairwiseSummarizationQualityInput.ProtoReflect.Descriptor instead.
 func (*PairwiseSummarizationQualityInput) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{41}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{53}
 }
 
 func (x *PairwiseSummarizationQualityInput) GetMetricSpec() *PairwiseSummarizationQualitySpec {
@@ -3364,7 +4595,7 @@ type PairwiseSummarizationQualityInstance struct {
 
 func (x *PairwiseSummarizationQualityInstance) Reset() {
 	*x = PairwiseSummarizationQualityInstance{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[42]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[54]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3376,7 +4607,7 @@ func (x *PairwiseSummarizationQualityInstance) String() string {
 func (*PairwiseSummarizationQualityInstance) ProtoMessage() {}
 
 func (x *PairwiseSummarizationQualityInstance) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[42]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[54]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3389,7 +4620,7 @@ func (x *PairwiseSummarizationQualityInstance) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use PairwiseSummarizationQualityInstance.ProtoReflect.Descriptor instead.
 func (*PairwiseSummarizationQualityInstance) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{42}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{54}
 }
 
 func (x *PairwiseSummarizationQualityInstance) GetPrediction() string {
@@ -3441,7 +4672,7 @@ type PairwiseSummarizationQualitySpec struct {
 
 func (x *PairwiseSummarizationQualitySpec) Reset() {
 	*x = PairwiseSummarizationQualitySpec{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[43]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[55]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3453,7 +4684,7 @@ func (x *PairwiseSummarizationQualitySpec) String() string {
 func (*PairwiseSummarizationQualitySpec) ProtoMessage() {}
 
 func (x *PairwiseSummarizationQualitySpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[43]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[55]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3466,7 +4697,7 @@ func (x *PairwiseSummarizationQualitySpec) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PairwiseSummarizationQualitySpec.ProtoReflect.Descriptor instead.
 func (*PairwiseSummarizationQualitySpec) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{43}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{55}
 }
 
 func (x *PairwiseSummarizationQualitySpec) GetUseReference() bool {
@@ -3498,7 +4729,7 @@ type PairwiseSummarizationQualityResult struct {
 
 func (x *PairwiseSummarizationQualityResult) Reset() {
 	*x = PairwiseSummarizationQualityResult{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[44]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[56]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3510,7 +4741,7 @@ func (x *PairwiseSummarizationQualityResult) String() string {
 func (*PairwiseSummarizationQualityResult) ProtoMessage() {}
 
 func (x *PairwiseSummarizationQualityResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[44]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[56]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3523,7 +4754,7 @@ func (x *PairwiseSummarizationQualityResult) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use PairwiseSummarizationQualityResult.ProtoReflect.Descriptor instead.
 func (*PairwiseSummarizationQualityResult) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{44}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{56}
 }
 
 func (x *PairwiseSummarizationQualityResult) GetPairwiseChoice() PairwiseChoice {
@@ -3560,7 +4791,7 @@ type SummarizationHelpfulnessInput struct {
 
 func (x *SummarizationHelpfulnessInput) Reset() {
 	*x = SummarizationHelpfulnessInput{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[45]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[57]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3572,7 +4803,7 @@ func (x *SummarizationHelpfulnessInput) String() string {
 func (*SummarizationHelpfulnessInput) ProtoMessage() {}
 
 func (x *SummarizationHelpfulnessInput) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[45]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[57]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3585,7 +4816,7 @@ func (x *SummarizationHelpfulnessInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SummarizationHelpfulnessInput.ProtoReflect.Descriptor instead.
 func (*SummarizationHelpfulnessInput) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{45}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{57}
 }
 
 func (x *SummarizationHelpfulnessInput) GetMetricSpec() *SummarizationHelpfulnessSpec {
@@ -3619,7 +4850,7 @@ type SummarizationHelpfulnessInstance struct {
 
 func (x *SummarizationHelpfulnessInstance) Reset() {
 	*x = SummarizationHelpfulnessInstance{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[46]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[58]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3631,7 +4862,7 @@ func (x *SummarizationHelpfulnessInstance) String() string {
 func (*SummarizationHelpfulnessInstance) ProtoMessage() {}
 
 func (x *SummarizationHelpfulnessInstance) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[46]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[58]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3644,7 +4875,7 @@ func (x *SummarizationHelpfulnessInstance) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SummarizationHelpfulnessInstance.ProtoReflect.Descriptor instead.
 func (*SummarizationHelpfulnessInstance) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{46}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{58}
 }
 
 func (x *SummarizationHelpfulnessInstance) GetPrediction() string {
@@ -3689,7 +4920,7 @@ type SummarizationHelpfulnessSpec struct {
 
 func (x *SummarizationHelpfulnessSpec) Reset() {
 	*x = SummarizationHelpfulnessSpec{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[47]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[59]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3701,7 +4932,7 @@ func (x *SummarizationHelpfulnessSpec) String() string {
 func (*SummarizationHelpfulnessSpec) ProtoMessage() {}
 
 func (x *SummarizationHelpfulnessSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[47]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[59]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3714,7 +4945,7 @@ func (x *SummarizationHelpfulnessSpec) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SummarizationHelpfulnessSpec.ProtoReflect.Descriptor instead.
 func (*SummarizationHelpfulnessSpec) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{47}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{59}
 }
 
 func (x *SummarizationHelpfulnessSpec) GetUseReference() bool {
@@ -3746,7 +4977,7 @@ type SummarizationHelpfulnessResult struct {
 
 func (x *SummarizationHelpfulnessResult) Reset() {
 	*x = SummarizationHelpfulnessResult{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[48]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[60]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3758,7 +4989,7 @@ func (x *SummarizationHelpfulnessResult) String() string {
 func (*SummarizationHelpfulnessResult) ProtoMessage() {}
 
 func (x *SummarizationHelpfulnessResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[48]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[60]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3771,7 +5002,7 @@ func (x *SummarizationHelpfulnessResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SummarizationHelpfulnessResult.ProtoReflect.Descriptor instead.
 func (*SummarizationHelpfulnessResult) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{48}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{60}
 }
 
 func (x *SummarizationHelpfulnessResult) GetScore() float32 {
@@ -3808,7 +5039,7 @@ type SummarizationVerbosityInput struct {
 
 func (x *SummarizationVerbosityInput) Reset() {
 	*x = SummarizationVerbosityInput{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[49]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[61]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3820,7 +5051,7 @@ func (x *SummarizationVerbosityInput) String() string {
 func (*SummarizationVerbosityInput) ProtoMessage() {}
 
 func (x *SummarizationVerbosityInput) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[49]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[61]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3833,7 +5064,7 @@ func (x *SummarizationVerbosityInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SummarizationVerbosityInput.ProtoReflect.Descriptor instead.
 func (*SummarizationVerbosityInput) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{49}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{61}
 }
 
 func (x *SummarizationVerbosityInput) GetMetricSpec() *SummarizationVerbositySpec {
@@ -3867,7 +5098,7 @@ type SummarizationVerbosityInstance struct {
 
 func (x *SummarizationVerbosityInstance) Reset() {
 	*x = SummarizationVerbosityInstance{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[50]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[62]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3879,7 +5110,7 @@ func (x *SummarizationVerbosityInstance) String() string {
 func (*SummarizationVerbosityInstance) ProtoMessage() {}
 
 func (x *SummarizationVerbosityInstance) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[50]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[62]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3892,7 +5123,7 @@ func (x *SummarizationVerbosityInstance) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SummarizationVerbosityInstance.ProtoReflect.Descriptor instead.
 func (*SummarizationVerbosityInstance) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{50}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{62}
 }
 
 func (x *SummarizationVerbosityInstance) GetPrediction() string {
@@ -3937,7 +5168,7 @@ type SummarizationVerbositySpec struct {
 
 func (x *SummarizationVerbositySpec) Reset() {
 	*x = SummarizationVerbositySpec{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[51]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[63]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3949,7 +5180,7 @@ func (x *SummarizationVerbositySpec) String() string {
 func (*SummarizationVerbositySpec) ProtoMessage() {}
 
 func (x *SummarizationVerbositySpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[51]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[63]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3962,7 +5193,7 @@ func (x *SummarizationVerbositySpec) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SummarizationVerbositySpec.ProtoReflect.Descriptor instead.
 func (*SummarizationVerbositySpec) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{51}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{63}
 }
 
 func (x *SummarizationVerbositySpec) GetUseReference() bool {
@@ -3994,7 +5225,7 @@ type SummarizationVerbosityResult struct {
 
 func (x *SummarizationVerbosityResult) Reset() {
 	*x = SummarizationVerbosityResult{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[52]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[64]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4006,7 +5237,7 @@ func (x *SummarizationVerbosityResult) String() string {
 func (*SummarizationVerbosityResult) ProtoMessage() {}
 
 func (x *SummarizationVerbosityResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[52]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[64]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4019,7 +5250,7 @@ func (x *SummarizationVerbosityResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SummarizationVerbosityResult.ProtoReflect.Descriptor instead.
 func (*SummarizationVerbosityResult) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{52}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{64}
 }
 
 func (x *SummarizationVerbosityResult) GetScore() float32 {
@@ -4056,7 +5287,7 @@ type QuestionAnsweringQualityInput struct {
 
 func (x *QuestionAnsweringQualityInput) Reset() {
 	*x = QuestionAnsweringQualityInput{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[53]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[65]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4068,7 +5299,7 @@ func (x *QuestionAnsweringQualityInput) String() string {
 func (*QuestionAnsweringQualityInput) ProtoMessage() {}
 
 func (x *QuestionAnsweringQualityInput) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[53]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[65]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4081,7 +5312,7 @@ func (x *QuestionAnsweringQualityInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QuestionAnsweringQualityInput.ProtoReflect.Descriptor instead.
 func (*QuestionAnsweringQualityInput) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{53}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{65}
 }
 
 func (x *QuestionAnsweringQualityInput) GetMetricSpec() *QuestionAnsweringQualitySpec {
@@ -4115,7 +5346,7 @@ type QuestionAnsweringQualityInstance struct {
 
 func (x *QuestionAnsweringQualityInstance) Reset() {
 	*x = QuestionAnsweringQualityInstance{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[54]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[66]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4127,7 +5358,7 @@ func (x *QuestionAnsweringQualityInstance) String() string {
 func (*QuestionAnsweringQualityInstance) ProtoMessage() {}
 
 func (x *QuestionAnsweringQualityInstance) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[54]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[66]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4140,7 +5371,7 @@ func (x *QuestionAnsweringQualityInstance) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QuestionAnsweringQualityInstance.ProtoReflect.Descriptor instead.
 func (*QuestionAnsweringQualityInstance) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{54}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{66}
 }
 
 func (x *QuestionAnsweringQualityInstance) GetPrediction() string {
@@ -4185,7 +5416,7 @@ type QuestionAnsweringQualitySpec struct {
 
 func (x *QuestionAnsweringQualitySpec) Reset() {
 	*x = QuestionAnsweringQualitySpec{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[55]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[67]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4197,7 +5428,7 @@ func (x *QuestionAnsweringQualitySpec) String() string {
 func (*QuestionAnsweringQualitySpec) ProtoMessage() {}
 
 func (x *QuestionAnsweringQualitySpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[55]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[67]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4210,7 +5441,7 @@ func (x *QuestionAnsweringQualitySpec) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QuestionAnsweringQualitySpec.ProtoReflect.Descriptor instead.
 func (*QuestionAnsweringQualitySpec) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{55}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{67}
 }
 
 func (x *QuestionAnsweringQualitySpec) GetUseReference() bool {
@@ -4242,7 +5473,7 @@ type QuestionAnsweringQualityResult struct {
 
 func (x *QuestionAnsweringQualityResult) Reset() {
 	*x = QuestionAnsweringQualityResult{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[56]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[68]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4254,7 +5485,7 @@ func (x *QuestionAnsweringQualityResult) String() string {
 func (*QuestionAnsweringQualityResult) ProtoMessage() {}
 
 func (x *QuestionAnsweringQualityResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[56]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[68]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4267,7 +5498,7 @@ func (x *QuestionAnsweringQualityResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QuestionAnsweringQualityResult.ProtoReflect.Descriptor instead.
 func (*QuestionAnsweringQualityResult) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{56}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{68}
 }
 
 func (x *QuestionAnsweringQualityResult) GetScore() float32 {
@@ -4304,7 +5535,7 @@ type PairwiseQuestionAnsweringQualityInput struct {
 
 func (x *PairwiseQuestionAnsweringQualityInput) Reset() {
 	*x = PairwiseQuestionAnsweringQualityInput{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[57]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[69]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4316,7 +5547,7 @@ func (x *PairwiseQuestionAnsweringQualityInput) String() string {
 func (*PairwiseQuestionAnsweringQualityInput) ProtoMessage() {}
 
 func (x *PairwiseQuestionAnsweringQualityInput) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[57]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[69]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4329,7 +5560,7 @@ func (x *PairwiseQuestionAnsweringQualityInput) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use PairwiseQuestionAnsweringQualityInput.ProtoReflect.Descriptor instead.
 func (*PairwiseQuestionAnsweringQualityInput) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{57}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{69}
 }
 
 func (x *PairwiseQuestionAnsweringQualityInput) GetMetricSpec() *PairwiseQuestionAnsweringQualitySpec {
@@ -4365,7 +5596,7 @@ type PairwiseQuestionAnsweringQualityInstance struct {
 
 func (x *PairwiseQuestionAnsweringQualityInstance) Reset() {
 	*x = PairwiseQuestionAnsweringQualityInstance{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[58]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[70]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4377,7 +5608,7 @@ func (x *PairwiseQuestionAnsweringQualityInstance) String() string {
 func (*PairwiseQuestionAnsweringQualityInstance) ProtoMessage() {}
 
 func (x *PairwiseQuestionAnsweringQualityInstance) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[58]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[70]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4390,7 +5621,7 @@ func (x *PairwiseQuestionAnsweringQualityInstance) ProtoReflect() protoreflect.M
 
 // Deprecated: Use PairwiseQuestionAnsweringQualityInstance.ProtoReflect.Descriptor instead.
 func (*PairwiseQuestionAnsweringQualityInstance) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{58}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{70}
 }
 
 func (x *PairwiseQuestionAnsweringQualityInstance) GetPrediction() string {
@@ -4442,7 +5673,7 @@ type PairwiseQuestionAnsweringQualitySpec struct {
 
 func (x *PairwiseQuestionAnsweringQualitySpec) Reset() {
 	*x = PairwiseQuestionAnsweringQualitySpec{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[59]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[71]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4454,7 +5685,7 @@ func (x *PairwiseQuestionAnsweringQualitySpec) String() string {
 func (*PairwiseQuestionAnsweringQualitySpec) ProtoMessage() {}
 
 func (x *PairwiseQuestionAnsweringQualitySpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[59]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[71]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4467,7 +5698,7 @@ func (x *PairwiseQuestionAnsweringQualitySpec) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use PairwiseQuestionAnsweringQualitySpec.ProtoReflect.Descriptor instead.
 func (*PairwiseQuestionAnsweringQualitySpec) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{59}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{71}
 }
 
 func (x *PairwiseQuestionAnsweringQualitySpec) GetUseReference() bool {
@@ -4499,7 +5730,7 @@ type PairwiseQuestionAnsweringQualityResult struct {
 
 func (x *PairwiseQuestionAnsweringQualityResult) Reset() {
 	*x = PairwiseQuestionAnsweringQualityResult{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[60]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[72]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4511,7 +5742,7 @@ func (x *PairwiseQuestionAnsweringQualityResult) String() string {
 func (*PairwiseQuestionAnsweringQualityResult) ProtoMessage() {}
 
 func (x *PairwiseQuestionAnsweringQualityResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[60]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[72]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4524,7 +5755,7 @@ func (x *PairwiseQuestionAnsweringQualityResult) ProtoReflect() protoreflect.Mes
 
 // Deprecated: Use PairwiseQuestionAnsweringQualityResult.ProtoReflect.Descriptor instead.
 func (*PairwiseQuestionAnsweringQualityResult) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{60}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{72}
 }
 
 func (x *PairwiseQuestionAnsweringQualityResult) GetPairwiseChoice() PairwiseChoice {
@@ -4561,7 +5792,7 @@ type QuestionAnsweringRelevanceInput struct {
 
 func (x *QuestionAnsweringRelevanceInput) Reset() {
 	*x = QuestionAnsweringRelevanceInput{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[61]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[73]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4573,7 +5804,7 @@ func (x *QuestionAnsweringRelevanceInput) String() string {
 func (*QuestionAnsweringRelevanceInput) ProtoMessage() {}
 
 func (x *QuestionAnsweringRelevanceInput) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[61]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[73]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4586,7 +5817,7 @@ func (x *QuestionAnsweringRelevanceInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QuestionAnsweringRelevanceInput.ProtoReflect.Descriptor instead.
 func (*QuestionAnsweringRelevanceInput) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{61}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{73}
 }
 
 func (x *QuestionAnsweringRelevanceInput) GetMetricSpec() *QuestionAnsweringRelevanceSpec {
@@ -4620,7 +5851,7 @@ type QuestionAnsweringRelevanceInstance struct {
 
 func (x *QuestionAnsweringRelevanceInstance) Reset() {
 	*x = QuestionAnsweringRelevanceInstance{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[62]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[74]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4632,7 +5863,7 @@ func (x *QuestionAnsweringRelevanceInstance) String() string {
 func (*QuestionAnsweringRelevanceInstance) ProtoMessage() {}
 
 func (x *QuestionAnsweringRelevanceInstance) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[62]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[74]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4645,7 +5876,7 @@ func (x *QuestionAnsweringRelevanceInstance) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use QuestionAnsweringRelevanceInstance.ProtoReflect.Descriptor instead.
 func (*QuestionAnsweringRelevanceInstance) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{62}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{74}
 }
 
 func (x *QuestionAnsweringRelevanceInstance) GetPrediction() string {
@@ -4690,7 +5921,7 @@ type QuestionAnsweringRelevanceSpec struct {
 
 func (x *QuestionAnsweringRelevanceSpec) Reset() {
 	*x = QuestionAnsweringRelevanceSpec{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[63]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[75]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4702,7 +5933,7 @@ func (x *QuestionAnsweringRelevanceSpec) String() string {
 func (*QuestionAnsweringRelevanceSpec) ProtoMessage() {}
 
 func (x *QuestionAnsweringRelevanceSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[63]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[75]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4715,7 +5946,7 @@ func (x *QuestionAnsweringRelevanceSpec) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QuestionAnsweringRelevanceSpec.ProtoReflect.Descriptor instead.
 func (*QuestionAnsweringRelevanceSpec) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{63}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{75}
 }
 
 func (x *QuestionAnsweringRelevanceSpec) GetUseReference() bool {
@@ -4747,7 +5978,7 @@ type QuestionAnsweringRelevanceResult struct {
 
 func (x *QuestionAnsweringRelevanceResult) Reset() {
 	*x = QuestionAnsweringRelevanceResult{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[64]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[76]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4759,7 +5990,7 @@ func (x *QuestionAnsweringRelevanceResult) String() string {
 func (*QuestionAnsweringRelevanceResult) ProtoMessage() {}
 
 func (x *QuestionAnsweringRelevanceResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[64]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[76]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4772,7 +6003,7 @@ func (x *QuestionAnsweringRelevanceResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QuestionAnsweringRelevanceResult.ProtoReflect.Descriptor instead.
 func (*QuestionAnsweringRelevanceResult) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{64}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{76}
 }
 
 func (x *QuestionAnsweringRelevanceResult) GetScore() float32 {
@@ -4809,7 +6040,7 @@ type QuestionAnsweringHelpfulnessInput struct {
 
 func (x *QuestionAnsweringHelpfulnessInput) Reset() {
 	*x = QuestionAnsweringHelpfulnessInput{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[65]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[77]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4821,7 +6052,7 @@ func (x *QuestionAnsweringHelpfulnessInput) String() string {
 func (*QuestionAnsweringHelpfulnessInput) ProtoMessage() {}
 
 func (x *QuestionAnsweringHelpfulnessInput) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[65]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[77]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4834,7 +6065,7 @@ func (x *QuestionAnsweringHelpfulnessInput) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use QuestionAnsweringHelpfulnessInput.ProtoReflect.Descriptor instead.
 func (*QuestionAnsweringHelpfulnessInput) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{65}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{77}
 }
 
 func (x *QuestionAnsweringHelpfulnessInput) GetMetricSpec() *QuestionAnsweringHelpfulnessSpec {
@@ -4868,7 +6099,7 @@ type QuestionAnsweringHelpfulnessInstance struct {
 
 func (x *QuestionAnsweringHelpfulnessInstance) Reset() {
 	*x = QuestionAnsweringHelpfulnessInstance{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[66]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[78]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4880,7 +6111,7 @@ func (x *QuestionAnsweringHelpfulnessInstance) String() string {
 func (*QuestionAnsweringHelpfulnessInstance) ProtoMessage() {}
 
 func (x *QuestionAnsweringHelpfulnessInstance) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[66]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[78]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4893,7 +6124,7 @@ func (x *QuestionAnsweringHelpfulnessInstance) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use QuestionAnsweringHelpfulnessInstance.ProtoReflect.Descriptor instead.
 func (*QuestionAnsweringHelpfulnessInstance) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{66}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{78}
 }
 
 func (x *QuestionAnsweringHelpfulnessInstance) GetPrediction() string {
@@ -4938,7 +6169,7 @@ type QuestionAnsweringHelpfulnessSpec struct {
 
 func (x *QuestionAnsweringHelpfulnessSpec) Reset() {
 	*x = QuestionAnsweringHelpfulnessSpec{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[67]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[79]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4950,7 +6181,7 @@ func (x *QuestionAnsweringHelpfulnessSpec) String() string {
 func (*QuestionAnsweringHelpfulnessSpec) ProtoMessage() {}
 
 func (x *QuestionAnsweringHelpfulnessSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[67]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[79]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4963,7 +6194,7 @@ func (x *QuestionAnsweringHelpfulnessSpec) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QuestionAnsweringHelpfulnessSpec.ProtoReflect.Descriptor instead.
 func (*QuestionAnsweringHelpfulnessSpec) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{67}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{79}
 }
 
 func (x *QuestionAnsweringHelpfulnessSpec) GetUseReference() bool {
@@ -4995,7 +6226,7 @@ type QuestionAnsweringHelpfulnessResult struct {
 
 func (x *QuestionAnsweringHelpfulnessResult) Reset() {
 	*x = QuestionAnsweringHelpfulnessResult{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[68]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[80]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5007,7 +6238,7 @@ func (x *QuestionAnsweringHelpfulnessResult) String() string {
 func (*QuestionAnsweringHelpfulnessResult) ProtoMessage() {}
 
 func (x *QuestionAnsweringHelpfulnessResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[68]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[80]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5020,7 +6251,7 @@ func (x *QuestionAnsweringHelpfulnessResult) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use QuestionAnsweringHelpfulnessResult.ProtoReflect.Descriptor instead.
 func (*QuestionAnsweringHelpfulnessResult) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{68}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{80}
 }
 
 func (x *QuestionAnsweringHelpfulnessResult) GetScore() float32 {
@@ -5057,7 +6288,7 @@ type QuestionAnsweringCorrectnessInput struct {
 
 func (x *QuestionAnsweringCorrectnessInput) Reset() {
 	*x = QuestionAnsweringCorrectnessInput{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[69]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[81]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5069,7 +6300,7 @@ func (x *QuestionAnsweringCorrectnessInput) String() string {
 func (*QuestionAnsweringCorrectnessInput) ProtoMessage() {}
 
 func (x *QuestionAnsweringCorrectnessInput) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[69]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[81]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5082,7 +6313,7 @@ func (x *QuestionAnsweringCorrectnessInput) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use QuestionAnsweringCorrectnessInput.ProtoReflect.Descriptor instead.
 func (*QuestionAnsweringCorrectnessInput) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{69}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{81}
 }
 
 func (x *QuestionAnsweringCorrectnessInput) GetMetricSpec() *QuestionAnsweringCorrectnessSpec {
@@ -5116,7 +6347,7 @@ type QuestionAnsweringCorrectnessInstance struct {
 
 func (x *QuestionAnsweringCorrectnessInstance) Reset() {
 	*x = QuestionAnsweringCorrectnessInstance{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[70]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[82]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5128,7 +6359,7 @@ func (x *QuestionAnsweringCorrectnessInstance) String() string {
 func (*QuestionAnsweringCorrectnessInstance) ProtoMessage() {}
 
 func (x *QuestionAnsweringCorrectnessInstance) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[70]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[82]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5141,7 +6372,7 @@ func (x *QuestionAnsweringCorrectnessInstance) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use QuestionAnsweringCorrectnessInstance.ProtoReflect.Descriptor instead.
 func (*QuestionAnsweringCorrectnessInstance) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{70}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{82}
 }
 
 func (x *QuestionAnsweringCorrectnessInstance) GetPrediction() string {
@@ -5186,7 +6417,7 @@ type QuestionAnsweringCorrectnessSpec struct {
 
 func (x *QuestionAnsweringCorrectnessSpec) Reset() {
 	*x = QuestionAnsweringCorrectnessSpec{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[71]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[83]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5198,7 +6429,7 @@ func (x *QuestionAnsweringCorrectnessSpec) String() string {
 func (*QuestionAnsweringCorrectnessSpec) ProtoMessage() {}
 
 func (x *QuestionAnsweringCorrectnessSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[71]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[83]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5211,7 +6442,7 @@ func (x *QuestionAnsweringCorrectnessSpec) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QuestionAnsweringCorrectnessSpec.ProtoReflect.Descriptor instead.
 func (*QuestionAnsweringCorrectnessSpec) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{71}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{83}
 }
 
 func (x *QuestionAnsweringCorrectnessSpec) GetUseReference() bool {
@@ -5243,7 +6474,7 @@ type QuestionAnsweringCorrectnessResult struct {
 
 func (x *QuestionAnsweringCorrectnessResult) Reset() {
 	*x = QuestionAnsweringCorrectnessResult{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[72]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[84]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5255,7 +6486,7 @@ func (x *QuestionAnsweringCorrectnessResult) String() string {
 func (*QuestionAnsweringCorrectnessResult) ProtoMessage() {}
 
 func (x *QuestionAnsweringCorrectnessResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[72]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[84]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5268,7 +6499,7 @@ func (x *QuestionAnsweringCorrectnessResult) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use QuestionAnsweringCorrectnessResult.ProtoReflect.Descriptor instead.
 func (*QuestionAnsweringCorrectnessResult) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{72}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{84}
 }
 
 func (x *QuestionAnsweringCorrectnessResult) GetScore() float32 {
@@ -5305,7 +6536,7 @@ type PointwiseMetricInput struct {
 
 func (x *PointwiseMetricInput) Reset() {
 	*x = PointwiseMetricInput{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[73]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[85]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5317,7 +6548,7 @@ func (x *PointwiseMetricInput) String() string {
 func (*PointwiseMetricInput) ProtoMessage() {}
 
 func (x *PointwiseMetricInput) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[73]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[85]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5330,7 +6561,7 @@ func (x *PointwiseMetricInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PointwiseMetricInput.ProtoReflect.Descriptor instead.
 func (*PointwiseMetricInput) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{73}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{85}
 }
 
 func (x *PointwiseMetricInput) GetMetricSpec() *PointwiseMetricSpec {
@@ -5356,6 +6587,7 @@ type PointwiseMetricInstance struct {
 	// Types that are valid to be assigned to Instance:
 	//
 	//	*PointwiseMetricInstance_JsonInstance
+	//	*PointwiseMetricInstance_ContentMapInstance
 	Instance      isPointwiseMetricInstance_Instance `protobuf_oneof:"instance"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -5363,7 +6595,7 @@ type PointwiseMetricInstance struct {
 
 func (x *PointwiseMetricInstance) Reset() {
 	*x = PointwiseMetricInstance{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[74]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[86]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5375,7 +6607,7 @@ func (x *PointwiseMetricInstance) String() string {
 func (*PointwiseMetricInstance) ProtoMessage() {}
 
 func (x *PointwiseMetricInstance) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[74]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[86]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5388,7 +6620,7 @@ func (x *PointwiseMetricInstance) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PointwiseMetricInstance.ProtoReflect.Descriptor instead.
 func (*PointwiseMetricInstance) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{74}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{86}
 }
 
 func (x *PointwiseMetricInstance) GetInstance() isPointwiseMetricInstance_Instance {
@@ -5407,6 +6639,15 @@ func (x *PointwiseMetricInstance) GetJsonInstance() string {
 	return ""
 }
 
+func (x *PointwiseMetricInstance) GetContentMapInstance() *ContentMap {
+	if x != nil {
+		if x, ok := x.Instance.(*PointwiseMetricInstance_ContentMapInstance); ok {
+			return x.ContentMapInstance
+		}
+	}
+	return nil
+}
+
 type isPointwiseMetricInstance_Instance interface {
 	isPointwiseMetricInstance_Instance()
 }
@@ -5418,20 +6659,40 @@ type PointwiseMetricInstance_JsonInstance struct {
 	JsonInstance string `protobuf:"bytes,1,opt,name=json_instance,json=jsonInstance,proto3,oneof"`
 }
 
+type PointwiseMetricInstance_ContentMapInstance struct {
+	// Key-value contents for the mutlimodality input, including text, image,
+	// video, audio, and pdf, etc. The key is placeholder in metric prompt
+	// template, and the value is the multimodal content.
+	ContentMapInstance *ContentMap `protobuf:"bytes,2,opt,name=content_map_instance,json=contentMapInstance,proto3,oneof"`
+}
+
 func (*PointwiseMetricInstance_JsonInstance) isPointwiseMetricInstance_Instance() {}
+
+func (*PointwiseMetricInstance_ContentMapInstance) isPointwiseMetricInstance_Instance() {}
 
 // Spec for pointwise metric.
 type PointwiseMetricSpec struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. Metric prompt template for pointwise metric.
 	MetricPromptTemplate *string `protobuf:"bytes,1,opt,name=metric_prompt_template,json=metricPromptTemplate,proto3,oneof" json:"metric_prompt_template,omitempty"`
-	unknownFields        protoimpl.UnknownFields
-	sizeCache            protoimpl.SizeCache
+	// Optional. System instructions for pointwise metric.
+	SystemInstruction *string `protobuf:"bytes,2,opt,name=system_instruction,json=systemInstruction,proto3,oneof" json:"system_instruction,omitempty"`
+	// Optional. CustomOutputFormatConfig allows customization of metric output.
+	// By default, metrics return a score and explanation.
+	// When this config is set, the default output is replaced with either:
+	//   - The raw output string.
+	//   - A parsed output based on a user-defined schema.
+	//
+	// If a custom format is chosen, the `score` and `explanation` fields in the
+	// corresponding metric result will be empty.
+	CustomOutputFormatConfig *CustomOutputFormatConfig `protobuf:"bytes,3,opt,name=custom_output_format_config,json=customOutputFormatConfig,proto3" json:"custom_output_format_config,omitempty"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
 }
 
 func (x *PointwiseMetricSpec) Reset() {
 	*x = PointwiseMetricSpec{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[75]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[87]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5443,7 +6704,7 @@ func (x *PointwiseMetricSpec) String() string {
 func (*PointwiseMetricSpec) ProtoMessage() {}
 
 func (x *PointwiseMetricSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[75]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[87]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5456,7 +6717,7 @@ func (x *PointwiseMetricSpec) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PointwiseMetricSpec.ProtoReflect.Descriptor instead.
 func (*PointwiseMetricSpec) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{75}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{87}
 }
 
 func (x *PointwiseMetricSpec) GetMetricPromptTemplate() string {
@@ -5466,20 +6727,107 @@ func (x *PointwiseMetricSpec) GetMetricPromptTemplate() string {
 	return ""
 }
 
+func (x *PointwiseMetricSpec) GetSystemInstruction() string {
+	if x != nil && x.SystemInstruction != nil {
+		return *x.SystemInstruction
+	}
+	return ""
+}
+
+func (x *PointwiseMetricSpec) GetCustomOutputFormatConfig() *CustomOutputFormatConfig {
+	if x != nil {
+		return x.CustomOutputFormatConfig
+	}
+	return nil
+}
+
+// Spec for custom output format configuration.
+type CustomOutputFormatConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Custom output format configuration.
+	//
+	// Types that are valid to be assigned to CustomOutputFormatConfig:
+	//
+	//	*CustomOutputFormatConfig_ReturnRawOutput
+	CustomOutputFormatConfig isCustomOutputFormatConfig_CustomOutputFormatConfig `protobuf_oneof:"custom_output_format_config"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
+}
+
+func (x *CustomOutputFormatConfig) Reset() {
+	*x = CustomOutputFormatConfig{}
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[88]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CustomOutputFormatConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CustomOutputFormatConfig) ProtoMessage() {}
+
+func (x *CustomOutputFormatConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[88]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CustomOutputFormatConfig.ProtoReflect.Descriptor instead.
+func (*CustomOutputFormatConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{88}
+}
+
+func (x *CustomOutputFormatConfig) GetCustomOutputFormatConfig() isCustomOutputFormatConfig_CustomOutputFormatConfig {
+	if x != nil {
+		return x.CustomOutputFormatConfig
+	}
+	return nil
+}
+
+func (x *CustomOutputFormatConfig) GetReturnRawOutput() bool {
+	if x != nil {
+		if x, ok := x.CustomOutputFormatConfig.(*CustomOutputFormatConfig_ReturnRawOutput); ok {
+			return x.ReturnRawOutput
+		}
+	}
+	return false
+}
+
+type isCustomOutputFormatConfig_CustomOutputFormatConfig interface {
+	isCustomOutputFormatConfig_CustomOutputFormatConfig()
+}
+
+type CustomOutputFormatConfig_ReturnRawOutput struct {
+	// Optional. Whether to return raw output.
+	ReturnRawOutput bool `protobuf:"varint,1,opt,name=return_raw_output,json=returnRawOutput,proto3,oneof"`
+}
+
+func (*CustomOutputFormatConfig_ReturnRawOutput) isCustomOutputFormatConfig_CustomOutputFormatConfig() {
+}
+
 // Spec for pointwise metric result.
 type PointwiseMetricResult struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Output only. Pointwise metric score.
 	Score *float32 `protobuf:"fixed32,1,opt,name=score,proto3,oneof" json:"score,omitempty"`
 	// Output only. Explanation for pointwise metric score.
-	Explanation   string `protobuf:"bytes,2,opt,name=explanation,proto3" json:"explanation,omitempty"`
+	Explanation string `protobuf:"bytes,2,opt,name=explanation,proto3" json:"explanation,omitempty"`
+	// Output only. Spec for custom output.
+	CustomOutput  *CustomOutput `protobuf:"bytes,3,opt,name=custom_output,json=customOutput,proto3" json:"custom_output,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *PointwiseMetricResult) Reset() {
 	*x = PointwiseMetricResult{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[76]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[89]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5491,7 +6839,7 @@ func (x *PointwiseMetricResult) String() string {
 func (*PointwiseMetricResult) ProtoMessage() {}
 
 func (x *PointwiseMetricResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[76]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[89]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5504,7 +6852,7 @@ func (x *PointwiseMetricResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PointwiseMetricResult.ProtoReflect.Descriptor instead.
 func (*PointwiseMetricResult) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{76}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{89}
 }
 
 func (x *PointwiseMetricResult) GetScore() float32 {
@@ -5521,6 +6869,129 @@ func (x *PointwiseMetricResult) GetExplanation() string {
 	return ""
 }
 
+func (x *PointwiseMetricResult) GetCustomOutput() *CustomOutput {
+	if x != nil {
+		return x.CustomOutput
+	}
+	return nil
+}
+
+// Spec for custom output.
+type CustomOutput struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Custom output.
+	//
+	// Types that are valid to be assigned to CustomOutput:
+	//
+	//	*CustomOutput_RawOutputs
+	CustomOutput  isCustomOutput_CustomOutput `protobuf_oneof:"custom_output"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CustomOutput) Reset() {
+	*x = CustomOutput{}
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[90]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CustomOutput) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CustomOutput) ProtoMessage() {}
+
+func (x *CustomOutput) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[90]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CustomOutput.ProtoReflect.Descriptor instead.
+func (*CustomOutput) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{90}
+}
+
+func (x *CustomOutput) GetCustomOutput() isCustomOutput_CustomOutput {
+	if x != nil {
+		return x.CustomOutput
+	}
+	return nil
+}
+
+func (x *CustomOutput) GetRawOutputs() *RawOutput {
+	if x != nil {
+		if x, ok := x.CustomOutput.(*CustomOutput_RawOutputs); ok {
+			return x.RawOutputs
+		}
+	}
+	return nil
+}
+
+type isCustomOutput_CustomOutput interface {
+	isCustomOutput_CustomOutput()
+}
+
+type CustomOutput_RawOutputs struct {
+	// Output only. List of raw output strings.
+	RawOutputs *RawOutput `protobuf:"bytes,1,opt,name=raw_outputs,json=rawOutputs,proto3,oneof"`
+}
+
+func (*CustomOutput_RawOutputs) isCustomOutput_CustomOutput() {}
+
+// Raw output.
+type RawOutput struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. Raw output string.
+	RawOutput     []string `protobuf:"bytes,1,rep,name=raw_output,json=rawOutput,proto3" json:"raw_output,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RawOutput) Reset() {
+	*x = RawOutput{}
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[91]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RawOutput) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RawOutput) ProtoMessage() {}
+
+func (x *RawOutput) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[91]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RawOutput.ProtoReflect.Descriptor instead.
+func (*RawOutput) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{91}
+}
+
+func (x *RawOutput) GetRawOutput() []string {
+	if x != nil {
+		return x.RawOutput
+	}
+	return nil
+}
+
 // Input for pairwise metric.
 type PairwiseMetricInput struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -5534,7 +7005,7 @@ type PairwiseMetricInput struct {
 
 func (x *PairwiseMetricInput) Reset() {
 	*x = PairwiseMetricInput{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[77]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[92]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5546,7 +7017,7 @@ func (x *PairwiseMetricInput) String() string {
 func (*PairwiseMetricInput) ProtoMessage() {}
 
 func (x *PairwiseMetricInput) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[77]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[92]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5559,7 +7030,7 @@ func (x *PairwiseMetricInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PairwiseMetricInput.ProtoReflect.Descriptor instead.
 func (*PairwiseMetricInput) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{77}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{92}
 }
 
 func (x *PairwiseMetricInput) GetMetricSpec() *PairwiseMetricSpec {
@@ -5585,6 +7056,7 @@ type PairwiseMetricInstance struct {
 	// Types that are valid to be assigned to Instance:
 	//
 	//	*PairwiseMetricInstance_JsonInstance
+	//	*PairwiseMetricInstance_ContentMapInstance
 	Instance      isPairwiseMetricInstance_Instance `protobuf_oneof:"instance"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -5592,7 +7064,7 @@ type PairwiseMetricInstance struct {
 
 func (x *PairwiseMetricInstance) Reset() {
 	*x = PairwiseMetricInstance{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[78]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[93]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5604,7 +7076,7 @@ func (x *PairwiseMetricInstance) String() string {
 func (*PairwiseMetricInstance) ProtoMessage() {}
 
 func (x *PairwiseMetricInstance) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[78]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[93]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5617,7 +7089,7 @@ func (x *PairwiseMetricInstance) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PairwiseMetricInstance.ProtoReflect.Descriptor instead.
 func (*PairwiseMetricInstance) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{78}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{93}
 }
 
 func (x *PairwiseMetricInstance) GetInstance() isPairwiseMetricInstance_Instance {
@@ -5636,6 +7108,15 @@ func (x *PairwiseMetricInstance) GetJsonInstance() string {
 	return ""
 }
 
+func (x *PairwiseMetricInstance) GetContentMapInstance() *ContentMap {
+	if x != nil {
+		if x, ok := x.Instance.(*PairwiseMetricInstance_ContentMapInstance); ok {
+			return x.ContentMapInstance
+		}
+	}
+	return nil
+}
+
 type isPairwiseMetricInstance_Instance interface {
 	isPairwiseMetricInstance_Instance()
 }
@@ -5647,20 +7128,41 @@ type PairwiseMetricInstance_JsonInstance struct {
 	JsonInstance string `protobuf:"bytes,1,opt,name=json_instance,json=jsonInstance,proto3,oneof"`
 }
 
+type PairwiseMetricInstance_ContentMapInstance struct {
+	// Key-value contents for the mutlimodality input, including text, image,
+	// video, audio, and pdf, etc. The key is placeholder in metric prompt
+	// template, and the value is the multimodal content.
+	ContentMapInstance *ContentMap `protobuf:"bytes,2,opt,name=content_map_instance,json=contentMapInstance,proto3,oneof"`
+}
+
 func (*PairwiseMetricInstance_JsonInstance) isPairwiseMetricInstance_Instance() {}
+
+func (*PairwiseMetricInstance_ContentMapInstance) isPairwiseMetricInstance_Instance() {}
 
 // Spec for pairwise metric.
 type PairwiseMetricSpec struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. Metric prompt template for pairwise metric.
 	MetricPromptTemplate *string `protobuf:"bytes,1,opt,name=metric_prompt_template,json=metricPromptTemplate,proto3,oneof" json:"metric_prompt_template,omitempty"`
-	unknownFields        protoimpl.UnknownFields
-	sizeCache            protoimpl.SizeCache
+	// Optional. The field name of the candidate response.
+	CandidateResponseFieldName string `protobuf:"bytes,2,opt,name=candidate_response_field_name,json=candidateResponseFieldName,proto3" json:"candidate_response_field_name,omitempty"`
+	// Optional. The field name of the baseline response.
+	BaselineResponseFieldName string `protobuf:"bytes,3,opt,name=baseline_response_field_name,json=baselineResponseFieldName,proto3" json:"baseline_response_field_name,omitempty"`
+	// Optional. System instructions for pairwise metric.
+	SystemInstruction *string `protobuf:"bytes,4,opt,name=system_instruction,json=systemInstruction,proto3,oneof" json:"system_instruction,omitempty"`
+	// Optional. CustomOutputFormatConfig allows customization of metric output.
+	// When this config is set, the default output is replaced with
+	// the raw output string.
+	// If a custom format is chosen, the `pairwise_choice` and `explanation`
+	// fields in the corresponding metric result will be empty.
+	CustomOutputFormatConfig *CustomOutputFormatConfig `protobuf:"bytes,5,opt,name=custom_output_format_config,json=customOutputFormatConfig,proto3" json:"custom_output_format_config,omitempty"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
 }
 
 func (x *PairwiseMetricSpec) Reset() {
 	*x = PairwiseMetricSpec{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[79]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[94]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5672,7 +7174,7 @@ func (x *PairwiseMetricSpec) String() string {
 func (*PairwiseMetricSpec) ProtoMessage() {}
 
 func (x *PairwiseMetricSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[79]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[94]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5685,7 +7187,7 @@ func (x *PairwiseMetricSpec) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PairwiseMetricSpec.ProtoReflect.Descriptor instead.
 func (*PairwiseMetricSpec) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{79}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{94}
 }
 
 func (x *PairwiseMetricSpec) GetMetricPromptTemplate() string {
@@ -5695,20 +7197,50 @@ func (x *PairwiseMetricSpec) GetMetricPromptTemplate() string {
 	return ""
 }
 
+func (x *PairwiseMetricSpec) GetCandidateResponseFieldName() string {
+	if x != nil {
+		return x.CandidateResponseFieldName
+	}
+	return ""
+}
+
+func (x *PairwiseMetricSpec) GetBaselineResponseFieldName() string {
+	if x != nil {
+		return x.BaselineResponseFieldName
+	}
+	return ""
+}
+
+func (x *PairwiseMetricSpec) GetSystemInstruction() string {
+	if x != nil && x.SystemInstruction != nil {
+		return *x.SystemInstruction
+	}
+	return ""
+}
+
+func (x *PairwiseMetricSpec) GetCustomOutputFormatConfig() *CustomOutputFormatConfig {
+	if x != nil {
+		return x.CustomOutputFormatConfig
+	}
+	return nil
+}
+
 // Spec for pairwise metric result.
 type PairwiseMetricResult struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Output only. Pairwise metric choice.
 	PairwiseChoice PairwiseChoice `protobuf:"varint,1,opt,name=pairwise_choice,json=pairwiseChoice,proto3,enum=google.cloud.aiplatform.v1.PairwiseChoice" json:"pairwise_choice,omitempty"`
 	// Output only. Explanation for pairwise metric score.
-	Explanation   string `protobuf:"bytes,2,opt,name=explanation,proto3" json:"explanation,omitempty"`
+	Explanation string `protobuf:"bytes,2,opt,name=explanation,proto3" json:"explanation,omitempty"`
+	// Output only. Spec for custom output.
+	CustomOutput  *CustomOutput `protobuf:"bytes,3,opt,name=custom_output,json=customOutput,proto3" json:"custom_output,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *PairwiseMetricResult) Reset() {
 	*x = PairwiseMetricResult{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[80]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[95]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5720,7 +7252,7 @@ func (x *PairwiseMetricResult) String() string {
 func (*PairwiseMetricResult) ProtoMessage() {}
 
 func (x *PairwiseMetricResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[80]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[95]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5733,7 +7265,7 @@ func (x *PairwiseMetricResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PairwiseMetricResult.ProtoReflect.Descriptor instead.
 func (*PairwiseMetricResult) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{80}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{95}
 }
 
 func (x *PairwiseMetricResult) GetPairwiseChoice() PairwiseChoice {
@@ -5750,6 +7282,13 @@ func (x *PairwiseMetricResult) GetExplanation() string {
 	return ""
 }
 
+func (x *PairwiseMetricResult) GetCustomOutput() *CustomOutput {
+	if x != nil {
+		return x.CustomOutput
+	}
+	return nil
+}
+
 // Input for tool call valid metric.
 type ToolCallValidInput struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -5763,7 +7302,7 @@ type ToolCallValidInput struct {
 
 func (x *ToolCallValidInput) Reset() {
 	*x = ToolCallValidInput{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[81]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[96]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5775,7 +7314,7 @@ func (x *ToolCallValidInput) String() string {
 func (*ToolCallValidInput) ProtoMessage() {}
 
 func (x *ToolCallValidInput) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[81]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[96]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5788,7 +7327,7 @@ func (x *ToolCallValidInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ToolCallValidInput.ProtoReflect.Descriptor instead.
 func (*ToolCallValidInput) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{81}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{96}
 }
 
 func (x *ToolCallValidInput) GetMetricSpec() *ToolCallValidSpec {
@@ -5814,7 +7353,7 @@ type ToolCallValidSpec struct {
 
 func (x *ToolCallValidSpec) Reset() {
 	*x = ToolCallValidSpec{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[82]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[97]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5826,7 +7365,7 @@ func (x *ToolCallValidSpec) String() string {
 func (*ToolCallValidSpec) ProtoMessage() {}
 
 func (x *ToolCallValidSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[82]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[97]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5839,7 +7378,7 @@ func (x *ToolCallValidSpec) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ToolCallValidSpec.ProtoReflect.Descriptor instead.
 func (*ToolCallValidSpec) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{82}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{97}
 }
 
 // Spec for tool call valid instance.
@@ -5855,7 +7394,7 @@ type ToolCallValidInstance struct {
 
 func (x *ToolCallValidInstance) Reset() {
 	*x = ToolCallValidInstance{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[83]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[98]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5867,7 +7406,7 @@ func (x *ToolCallValidInstance) String() string {
 func (*ToolCallValidInstance) ProtoMessage() {}
 
 func (x *ToolCallValidInstance) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[83]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[98]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5880,7 +7419,7 @@ func (x *ToolCallValidInstance) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ToolCallValidInstance.ProtoReflect.Descriptor instead.
 func (*ToolCallValidInstance) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{83}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{98}
 }
 
 func (x *ToolCallValidInstance) GetPrediction() string {
@@ -5908,7 +7447,7 @@ type ToolCallValidResults struct {
 
 func (x *ToolCallValidResults) Reset() {
 	*x = ToolCallValidResults{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[84]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[99]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5920,7 +7459,7 @@ func (x *ToolCallValidResults) String() string {
 func (*ToolCallValidResults) ProtoMessage() {}
 
 func (x *ToolCallValidResults) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[84]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[99]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5933,7 +7472,7 @@ func (x *ToolCallValidResults) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ToolCallValidResults.ProtoReflect.Descriptor instead.
 func (*ToolCallValidResults) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{84}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{99}
 }
 
 func (x *ToolCallValidResults) GetToolCallValidMetricValues() []*ToolCallValidMetricValue {
@@ -5954,7 +7493,7 @@ type ToolCallValidMetricValue struct {
 
 func (x *ToolCallValidMetricValue) Reset() {
 	*x = ToolCallValidMetricValue{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[85]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[100]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5966,7 +7505,7 @@ func (x *ToolCallValidMetricValue) String() string {
 func (*ToolCallValidMetricValue) ProtoMessage() {}
 
 func (x *ToolCallValidMetricValue) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[85]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[100]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5979,7 +7518,7 @@ func (x *ToolCallValidMetricValue) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ToolCallValidMetricValue.ProtoReflect.Descriptor instead.
 func (*ToolCallValidMetricValue) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{85}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{100}
 }
 
 func (x *ToolCallValidMetricValue) GetScore() float32 {
@@ -6002,7 +7541,7 @@ type ToolNameMatchInput struct {
 
 func (x *ToolNameMatchInput) Reset() {
 	*x = ToolNameMatchInput{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[86]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[101]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6014,7 +7553,7 @@ func (x *ToolNameMatchInput) String() string {
 func (*ToolNameMatchInput) ProtoMessage() {}
 
 func (x *ToolNameMatchInput) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[86]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[101]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6027,7 +7566,7 @@ func (x *ToolNameMatchInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ToolNameMatchInput.ProtoReflect.Descriptor instead.
 func (*ToolNameMatchInput) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{86}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{101}
 }
 
 func (x *ToolNameMatchInput) GetMetricSpec() *ToolNameMatchSpec {
@@ -6053,7 +7592,7 @@ type ToolNameMatchSpec struct {
 
 func (x *ToolNameMatchSpec) Reset() {
 	*x = ToolNameMatchSpec{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[87]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[102]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6065,7 +7604,7 @@ func (x *ToolNameMatchSpec) String() string {
 func (*ToolNameMatchSpec) ProtoMessage() {}
 
 func (x *ToolNameMatchSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[87]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[102]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6078,7 +7617,7 @@ func (x *ToolNameMatchSpec) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ToolNameMatchSpec.ProtoReflect.Descriptor instead.
 func (*ToolNameMatchSpec) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{87}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{102}
 }
 
 // Spec for tool name match instance.
@@ -6094,7 +7633,7 @@ type ToolNameMatchInstance struct {
 
 func (x *ToolNameMatchInstance) Reset() {
 	*x = ToolNameMatchInstance{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[88]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[103]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6106,7 +7645,7 @@ func (x *ToolNameMatchInstance) String() string {
 func (*ToolNameMatchInstance) ProtoMessage() {}
 
 func (x *ToolNameMatchInstance) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[88]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[103]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6119,7 +7658,7 @@ func (x *ToolNameMatchInstance) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ToolNameMatchInstance.ProtoReflect.Descriptor instead.
 func (*ToolNameMatchInstance) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{88}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{103}
 }
 
 func (x *ToolNameMatchInstance) GetPrediction() string {
@@ -6147,7 +7686,7 @@ type ToolNameMatchResults struct {
 
 func (x *ToolNameMatchResults) Reset() {
 	*x = ToolNameMatchResults{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[89]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[104]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6159,7 +7698,7 @@ func (x *ToolNameMatchResults) String() string {
 func (*ToolNameMatchResults) ProtoMessage() {}
 
 func (x *ToolNameMatchResults) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[89]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[104]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6172,7 +7711,7 @@ func (x *ToolNameMatchResults) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ToolNameMatchResults.ProtoReflect.Descriptor instead.
 func (*ToolNameMatchResults) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{89}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{104}
 }
 
 func (x *ToolNameMatchResults) GetToolNameMatchMetricValues() []*ToolNameMatchMetricValue {
@@ -6193,7 +7732,7 @@ type ToolNameMatchMetricValue struct {
 
 func (x *ToolNameMatchMetricValue) Reset() {
 	*x = ToolNameMatchMetricValue{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[90]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[105]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6205,7 +7744,7 @@ func (x *ToolNameMatchMetricValue) String() string {
 func (*ToolNameMatchMetricValue) ProtoMessage() {}
 
 func (x *ToolNameMatchMetricValue) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[90]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[105]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6218,7 +7757,7 @@ func (x *ToolNameMatchMetricValue) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ToolNameMatchMetricValue.ProtoReflect.Descriptor instead.
 func (*ToolNameMatchMetricValue) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{90}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{105}
 }
 
 func (x *ToolNameMatchMetricValue) GetScore() float32 {
@@ -6241,7 +7780,7 @@ type ToolParameterKeyMatchInput struct {
 
 func (x *ToolParameterKeyMatchInput) Reset() {
 	*x = ToolParameterKeyMatchInput{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[91]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[106]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6253,7 +7792,7 @@ func (x *ToolParameterKeyMatchInput) String() string {
 func (*ToolParameterKeyMatchInput) ProtoMessage() {}
 
 func (x *ToolParameterKeyMatchInput) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[91]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[106]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6266,7 +7805,7 @@ func (x *ToolParameterKeyMatchInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ToolParameterKeyMatchInput.ProtoReflect.Descriptor instead.
 func (*ToolParameterKeyMatchInput) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{91}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{106}
 }
 
 func (x *ToolParameterKeyMatchInput) GetMetricSpec() *ToolParameterKeyMatchSpec {
@@ -6292,7 +7831,7 @@ type ToolParameterKeyMatchSpec struct {
 
 func (x *ToolParameterKeyMatchSpec) Reset() {
 	*x = ToolParameterKeyMatchSpec{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[92]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[107]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6304,7 +7843,7 @@ func (x *ToolParameterKeyMatchSpec) String() string {
 func (*ToolParameterKeyMatchSpec) ProtoMessage() {}
 
 func (x *ToolParameterKeyMatchSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[92]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[107]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6317,7 +7856,7 @@ func (x *ToolParameterKeyMatchSpec) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ToolParameterKeyMatchSpec.ProtoReflect.Descriptor instead.
 func (*ToolParameterKeyMatchSpec) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{92}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{107}
 }
 
 // Spec for tool parameter key match instance.
@@ -6333,7 +7872,7 @@ type ToolParameterKeyMatchInstance struct {
 
 func (x *ToolParameterKeyMatchInstance) Reset() {
 	*x = ToolParameterKeyMatchInstance{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[93]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[108]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6345,7 +7884,7 @@ func (x *ToolParameterKeyMatchInstance) String() string {
 func (*ToolParameterKeyMatchInstance) ProtoMessage() {}
 
 func (x *ToolParameterKeyMatchInstance) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[93]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[108]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6358,7 +7897,7 @@ func (x *ToolParameterKeyMatchInstance) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ToolParameterKeyMatchInstance.ProtoReflect.Descriptor instead.
 func (*ToolParameterKeyMatchInstance) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{93}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{108}
 }
 
 func (x *ToolParameterKeyMatchInstance) GetPrediction() string {
@@ -6386,7 +7925,7 @@ type ToolParameterKeyMatchResults struct {
 
 func (x *ToolParameterKeyMatchResults) Reset() {
 	*x = ToolParameterKeyMatchResults{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[94]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[109]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6398,7 +7937,7 @@ func (x *ToolParameterKeyMatchResults) String() string {
 func (*ToolParameterKeyMatchResults) ProtoMessage() {}
 
 func (x *ToolParameterKeyMatchResults) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[94]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[109]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6411,7 +7950,7 @@ func (x *ToolParameterKeyMatchResults) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ToolParameterKeyMatchResults.ProtoReflect.Descriptor instead.
 func (*ToolParameterKeyMatchResults) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{94}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{109}
 }
 
 func (x *ToolParameterKeyMatchResults) GetToolParameterKeyMatchMetricValues() []*ToolParameterKeyMatchMetricValue {
@@ -6432,7 +7971,7 @@ type ToolParameterKeyMatchMetricValue struct {
 
 func (x *ToolParameterKeyMatchMetricValue) Reset() {
 	*x = ToolParameterKeyMatchMetricValue{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[95]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[110]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6444,7 +7983,7 @@ func (x *ToolParameterKeyMatchMetricValue) String() string {
 func (*ToolParameterKeyMatchMetricValue) ProtoMessage() {}
 
 func (x *ToolParameterKeyMatchMetricValue) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[95]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[110]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6457,7 +7996,7 @@ func (x *ToolParameterKeyMatchMetricValue) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ToolParameterKeyMatchMetricValue.ProtoReflect.Descriptor instead.
 func (*ToolParameterKeyMatchMetricValue) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{95}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{110}
 }
 
 func (x *ToolParameterKeyMatchMetricValue) GetScore() float32 {
@@ -6480,7 +8019,7 @@ type ToolParameterKVMatchInput struct {
 
 func (x *ToolParameterKVMatchInput) Reset() {
 	*x = ToolParameterKVMatchInput{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[96]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[111]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6492,7 +8031,7 @@ func (x *ToolParameterKVMatchInput) String() string {
 func (*ToolParameterKVMatchInput) ProtoMessage() {}
 
 func (x *ToolParameterKVMatchInput) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[96]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[111]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6505,7 +8044,7 @@ func (x *ToolParameterKVMatchInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ToolParameterKVMatchInput.ProtoReflect.Descriptor instead.
 func (*ToolParameterKVMatchInput) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{96}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{111}
 }
 
 func (x *ToolParameterKVMatchInput) GetMetricSpec() *ToolParameterKVMatchSpec {
@@ -6533,7 +8072,7 @@ type ToolParameterKVMatchSpec struct {
 
 func (x *ToolParameterKVMatchSpec) Reset() {
 	*x = ToolParameterKVMatchSpec{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[97]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[112]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6545,7 +8084,7 @@ func (x *ToolParameterKVMatchSpec) String() string {
 func (*ToolParameterKVMatchSpec) ProtoMessage() {}
 
 func (x *ToolParameterKVMatchSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[97]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[112]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6558,7 +8097,7 @@ func (x *ToolParameterKVMatchSpec) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ToolParameterKVMatchSpec.ProtoReflect.Descriptor instead.
 func (*ToolParameterKVMatchSpec) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{97}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{112}
 }
 
 func (x *ToolParameterKVMatchSpec) GetUseStrictStringMatch() bool {
@@ -6581,7 +8120,7 @@ type ToolParameterKVMatchInstance struct {
 
 func (x *ToolParameterKVMatchInstance) Reset() {
 	*x = ToolParameterKVMatchInstance{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[98]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[113]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6593,7 +8132,7 @@ func (x *ToolParameterKVMatchInstance) String() string {
 func (*ToolParameterKVMatchInstance) ProtoMessage() {}
 
 func (x *ToolParameterKVMatchInstance) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[98]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[113]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6606,7 +8145,7 @@ func (x *ToolParameterKVMatchInstance) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ToolParameterKVMatchInstance.ProtoReflect.Descriptor instead.
 func (*ToolParameterKVMatchInstance) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{98}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{113}
 }
 
 func (x *ToolParameterKVMatchInstance) GetPrediction() string {
@@ -6634,7 +8173,7 @@ type ToolParameterKVMatchResults struct {
 
 func (x *ToolParameterKVMatchResults) Reset() {
 	*x = ToolParameterKVMatchResults{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[99]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[114]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6646,7 +8185,7 @@ func (x *ToolParameterKVMatchResults) String() string {
 func (*ToolParameterKVMatchResults) ProtoMessage() {}
 
 func (x *ToolParameterKVMatchResults) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[99]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[114]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6659,7 +8198,7 @@ func (x *ToolParameterKVMatchResults) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ToolParameterKVMatchResults.ProtoReflect.Descriptor instead.
 func (*ToolParameterKVMatchResults) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{99}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{114}
 }
 
 func (x *ToolParameterKVMatchResults) GetToolParameterKvMatchMetricValues() []*ToolParameterKVMatchMetricValue {
@@ -6680,7 +8219,7 @@ type ToolParameterKVMatchMetricValue struct {
 
 func (x *ToolParameterKVMatchMetricValue) Reset() {
 	*x = ToolParameterKVMatchMetricValue{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[100]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[115]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6692,7 +8231,7 @@ func (x *ToolParameterKVMatchMetricValue) String() string {
 func (*ToolParameterKVMatchMetricValue) ProtoMessage() {}
 
 func (x *ToolParameterKVMatchMetricValue) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[100]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[115]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6705,7 +8244,7 @@ func (x *ToolParameterKVMatchMetricValue) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ToolParameterKVMatchMetricValue.ProtoReflect.Descriptor instead.
 func (*ToolParameterKVMatchMetricValue) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{100}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{115}
 }
 
 func (x *ToolParameterKVMatchMetricValue) GetScore() float32 {
@@ -6728,7 +8267,7 @@ type CometInput struct {
 
 func (x *CometInput) Reset() {
 	*x = CometInput{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[101]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[116]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6740,7 +8279,7 @@ func (x *CometInput) String() string {
 func (*CometInput) ProtoMessage() {}
 
 func (x *CometInput) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[101]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[116]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6753,7 +8292,7 @@ func (x *CometInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CometInput.ProtoReflect.Descriptor instead.
 func (*CometInput) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{101}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{116}
 }
 
 func (x *CometInput) GetMetricSpec() *CometSpec {
@@ -6786,7 +8325,7 @@ type CometSpec struct {
 
 func (x *CometSpec) Reset() {
 	*x = CometSpec{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[102]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[117]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6798,7 +8337,7 @@ func (x *CometSpec) String() string {
 func (*CometSpec) ProtoMessage() {}
 
 func (x *CometSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[102]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[117]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6811,7 +8350,7 @@ func (x *CometSpec) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CometSpec.ProtoReflect.Descriptor instead.
 func (*CometSpec) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{102}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{117}
 }
 
 func (x *CometSpec) GetVersion() CometSpec_CometVersion {
@@ -6851,7 +8390,7 @@ type CometInstance struct {
 
 func (x *CometInstance) Reset() {
 	*x = CometInstance{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[103]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[118]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6863,7 +8402,7 @@ func (x *CometInstance) String() string {
 func (*CometInstance) ProtoMessage() {}
 
 func (x *CometInstance) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[103]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[118]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6876,7 +8415,7 @@ func (x *CometInstance) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CometInstance.ProtoReflect.Descriptor instead.
 func (*CometInstance) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{103}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{118}
 }
 
 func (x *CometInstance) GetPrediction() string {
@@ -6912,7 +8451,7 @@ type CometResult struct {
 
 func (x *CometResult) Reset() {
 	*x = CometResult{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[104]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[119]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6924,7 +8463,7 @@ func (x *CometResult) String() string {
 func (*CometResult) ProtoMessage() {}
 
 func (x *CometResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[104]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[119]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6937,7 +8476,7 @@ func (x *CometResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CometResult.ProtoReflect.Descriptor instead.
 func (*CometResult) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{104}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{119}
 }
 
 func (x *CometResult) GetScore() float32 {
@@ -6960,7 +8499,7 @@ type MetricxInput struct {
 
 func (x *MetricxInput) Reset() {
 	*x = MetricxInput{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[105]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[120]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6972,7 +8511,7 @@ func (x *MetricxInput) String() string {
 func (*MetricxInput) ProtoMessage() {}
 
 func (x *MetricxInput) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[105]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[120]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6985,7 +8524,7 @@ func (x *MetricxInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MetricxInput.ProtoReflect.Descriptor instead.
 func (*MetricxInput) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{105}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{120}
 }
 
 func (x *MetricxInput) GetMetricSpec() *MetricxSpec {
@@ -7018,7 +8557,7 @@ type MetricxSpec struct {
 
 func (x *MetricxSpec) Reset() {
 	*x = MetricxSpec{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[106]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[121]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7030,7 +8569,7 @@ func (x *MetricxSpec) String() string {
 func (*MetricxSpec) ProtoMessage() {}
 
 func (x *MetricxSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[106]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[121]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7043,7 +8582,7 @@ func (x *MetricxSpec) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MetricxSpec.ProtoReflect.Descriptor instead.
 func (*MetricxSpec) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{106}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{121}
 }
 
 func (x *MetricxSpec) GetVersion() MetricxSpec_MetricxVersion {
@@ -7083,7 +8622,7 @@ type MetricxInstance struct {
 
 func (x *MetricxInstance) Reset() {
 	*x = MetricxInstance{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[107]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[122]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7095,7 +8634,7 @@ func (x *MetricxInstance) String() string {
 func (*MetricxInstance) ProtoMessage() {}
 
 func (x *MetricxInstance) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[107]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[122]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7108,7 +8647,7 @@ func (x *MetricxInstance) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MetricxInstance.ProtoReflect.Descriptor instead.
 func (*MetricxInstance) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{107}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{122}
 }
 
 func (x *MetricxInstance) GetPrediction() string {
@@ -7144,7 +8683,7 @@ type MetricxResult struct {
 
 func (x *MetricxResult) Reset() {
 	*x = MetricxResult{}
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[108]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[123]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7156,7 +8695,7 @@ func (x *MetricxResult) String() string {
 func (*MetricxResult) ProtoMessage() {}
 
 func (x *MetricxResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[108]
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[123]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7169,7 +8708,7 @@ func (x *MetricxResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MetricxResult.ProtoReflect.Descriptor instead.
 func (*MetricxResult) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{108}
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{123}
 }
 
 func (x *MetricxResult) GetScore() float32 {
@@ -7179,11 +8718,103 @@ func (x *MetricxResult) GetScore() float32 {
 	return 0
 }
 
+// Map of placeholder in metric prompt template to contents of model input.
+type ContentMap struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Map of placeholder to contents.
+	Values        map[string]*ContentMap_Contents `protobuf:"bytes,1,rep,name=values,proto3" json:"values,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ContentMap) Reset() {
+	*x = ContentMap{}
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[124]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ContentMap) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ContentMap) ProtoMessage() {}
+
+func (x *ContentMap) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[124]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ContentMap.ProtoReflect.Descriptor instead.
+func (*ContentMap) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{124}
+}
+
+func (x *ContentMap) GetValues() map[string]*ContentMap_Contents {
+	if x != nil {
+		return x.Values
+	}
+	return nil
+}
+
+// Repeated Content type.
+type ContentMap_Contents struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Repeated contents.
+	Contents      []*Content `protobuf:"bytes,1,rep,name=contents,proto3" json:"contents,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ContentMap_Contents) Reset() {
+	*x = ContentMap_Contents{}
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[125]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ContentMap_Contents) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ContentMap_Contents) ProtoMessage() {}
+
+func (x *ContentMap_Contents) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[125]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ContentMap_Contents.ProtoReflect.Descriptor instead.
+func (*ContentMap_Contents) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP(), []int{124, 0}
+}
+
+func (x *ContentMap_Contents) GetContents() []*Content {
+	if x != nil {
+		return x.Contents
+	}
+	return nil
+}
+
 var File_google_cloud_aiplatform_v1_evaluation_service_proto protoreflect.FileDescriptor
 
 const file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/aiplatform/v1/evaluation_service.proto\x12\x1agoogle.cloud.aiplatform.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xae\x16\n" +
+	"3google/cloud/aiplatform/v1/evaluation_service.proto\x12\x1agoogle.cloud.aiplatform.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/aiplatform/v1/content.proto\x1a#google/cloud/aiplatform/v1/io.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x17google/rpc/status.proto\"\xae\x16\n" +
 	"\x18EvaluateInstancesRequest\x12Y\n" +
 	"\x11exact_match_input\x18\x02 \x01(\v2+.google.cloud.aiplatform.v1.ExactMatchInputH\x00R\x0fexactMatchInput\x12F\n" +
 	"\n" +
@@ -7216,7 +8847,41 @@ const file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDesc = "" +
 	"\rmetricx_input\x18  \x01(\v2(.google.cloud.aiplatform.v1.MetricxInputH\x00R\fmetricxInput\x12E\n" +
 	"\blocation\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\blocationB\x0f\n" +
-	"\rmetric_inputs\"\xcf\x16\n" +
+	"\rmetric_inputs\"\xd8\b\n" +
+	"\x06Metric\x12h\n" +
+	"\x16predefined_metric_spec\x18\b \x01(\v20.google.cloud.aiplatform.v1.PredefinedMetricSpecH\x00R\x14predefinedMetricSpec\x12{\n" +
+	"\x1dcomputation_based_metric_spec\x18\t \x01(\v26.google.cloud.aiplatform.v1.ComputationBasedMetricSpecH\x00R\x1acomputationBasedMetricSpec\x12c\n" +
+	"\x15llm_based_metric_spec\x18\n" +
+	" \x01(\v2..google.cloud.aiplatform.v1.LLMBasedMetricSpecH\x00R\x12llmBasedMetricSpec\x12e\n" +
+	"\x15pointwise_metric_spec\x18\x02 \x01(\v2/.google.cloud.aiplatform.v1.PointwiseMetricSpecH\x00R\x13pointwiseMetricSpec\x12b\n" +
+	"\x14pairwise_metric_spec\x18\x03 \x01(\v2..google.cloud.aiplatform.v1.PairwiseMetricSpecH\x00R\x12pairwiseMetricSpec\x12V\n" +
+	"\x10exact_match_spec\x18\x04 \x01(\v2*.google.cloud.aiplatform.v1.ExactMatchSpecH\x00R\x0eexactMatchSpec\x12C\n" +
+	"\tbleu_spec\x18\x05 \x01(\v2$.google.cloud.aiplatform.v1.BleuSpecH\x00R\bbleuSpec\x12F\n" +
+	"\n" +
+	"rouge_spec\x18\x06 \x01(\v2%.google.cloud.aiplatform.v1.RougeSpecH\x00R\trougeSpec\x12j\n" +
+	"\x13aggregation_metrics\x18\x01 \x03(\x0e24.google.cloud.aiplatform.v1.Metric.AggregationMetricB\x03\xe0A\x01R\x12aggregationMetrics\"\xd6\x01\n" +
+	"\x11AggregationMetric\x12\"\n" +
+	"\x1eAGGREGATION_METRIC_UNSPECIFIED\x10\x00\x12\v\n" +
+	"\aAVERAGE\x10\x01\x12\b\n" +
+	"\x04MODE\x10\x02\x12\x16\n" +
+	"\x12STANDARD_DEVIATION\x10\x03\x12\f\n" +
+	"\bVARIANCE\x10\x04\x12\v\n" +
+	"\aMINIMUM\x10\x05\x12\v\n" +
+	"\aMAXIMUM\x10\x06\x12\n" +
+	"\n" +
+	"\x06MEDIAN\x10\a\x12\x12\n" +
+	"\x0ePERCENTILE_P90\x10\b\x12\x12\n" +
+	"\x0ePERCENTILE_P95\x10\t\x12\x12\n" +
+	"\x0ePERCENTILE_P99\x10\n" +
+	"B\r\n" +
+	"\vmetric_spec\"\xa1\x02\n" +
+	"\x0fAutoraterConfig\x12/\n" +
+	"\x0esampling_count\x18\x01 \x01(\x05B\x03\xe0A\x01H\x00R\rsamplingCount\x88\x01\x01\x12+\n" +
+	"\fflip_enabled\x18\x02 \x01(\bB\x03\xe0A\x01H\x01R\vflipEnabled\x88\x01\x01\x12,\n" +
+	"\x0fautorater_model\x18\x03 \x01(\tB\x03\xe0A\x01R\x0eautoraterModel\x12^\n" +
+	"\x11generation_config\x18\x04 \x01(\v2,.google.cloud.aiplatform.v1.GenerationConfigB\x03\xe0A\x01R\x10generationConfigB\x11\n" +
+	"\x0f_sampling_countB\x0f\n" +
+	"\r_flip_enabled\"\xa0\x17\n" +
 	"\x19EvaluateInstancesResponse\x12_\n" +
 	"\x13exact_match_results\x18\x01 \x01(\v2-.google.cloud.aiplatform.v1.ExactMatchResultsH\x00R\x11exactMatchResults\x12L\n" +
 	"\fbleu_results\x18\x02 \x01(\v2'.google.cloud.aiplatform.v1.BleuResultsH\x00R\vbleuResults\x12O\n" +
@@ -7242,8 +8907,70 @@ const file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDesc = "" +
 	" tool_parameter_key_match_results\x18\x14 \x01(\v28.google.cloud.aiplatform.v1.ToolParameterKeyMatchResultsH\x00R\x1ctoolParameterKeyMatchResults\x12\x7f\n" +
 	"\x1ftool_parameter_kv_match_results\x18\x15 \x01(\v27.google.cloud.aiplatform.v1.ToolParameterKVMatchResultsH\x00R\x1btoolParameterKvMatchResults\x12L\n" +
 	"\fcomet_result\x18\x1d \x01(\v2'.google.cloud.aiplatform.v1.CometResultH\x00R\vcometResult\x12R\n" +
-	"\x0emetricx_result\x18\x1e \x01(\v2).google.cloud.aiplatform.v1.MetricxResultH\x00R\rmetricxResultB\x14\n" +
-	"\x12evaluation_results\"\xb6\x01\n" +
+	"\x0emetricx_result\x18\x1e \x01(\v2).google.cloud.aiplatform.v1.MetricxResultH\x00R\rmetricxResult\x12O\n" +
+	"\x0emetric_results\x18+ \x03(\v2(.google.cloud.aiplatform.v1.MetricResultR\rmetricResultsB\x14\n" +
+	"\x12evaluation_results\"\xb2\x01\n" +
+	"\fMetricResult\x12\x1e\n" +
+	"\x05score\x18\x01 \x01(\x02B\x03\xe0A\x03H\x00R\x05score\x88\x01\x01\x12*\n" +
+	"\vexplanation\x18\x03 \x01(\tB\x03\xe0A\x03H\x01R\vexplanation\x88\x01\x01\x122\n" +
+	"\x05error\x18\x04 \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03H\x02R\x05error\x88\x01\x01B\b\n" +
+	"\x06_scoreB\x0e\n" +
+	"\f_explanationB\b\n" +
+	"\x06_error\"t\n" +
+	"\fOutputConfig\x12U\n" +
+	"\x0fgcs_destination\x18\x01 \x01(\v2*.google.cloud.aiplatform.v1.GcsDestinationH\x00R\x0egcsDestinationB\r\n" +
+	"\vdestination\"\xbc\x01\n" +
+	"\x11EvaluationDataset\x12F\n" +
+	"\n" +
+	"gcs_source\x18\x01 \x01(\v2%.google.cloud.aiplatform.v1.GcsSourceH\x00R\tgcsSource\x12U\n" +
+	"\x0fbigquery_source\x18\x02 \x01(\v2*.google.cloud.aiplatform.v1.BigQuerySourceH\x00R\x0ebigquerySourceB\b\n" +
+	"\x06source\"\xca\x01\n" +
+	"\x17EvaluateDatasetResponse\x12a\n" +
+	"\x12aggregation_output\x18\x01 \x01(\v2-.google.cloud.aiplatform.v1.AggregationOutputB\x03\xe0A\x03R\x11aggregationOutput\x12L\n" +
+	"\voutput_info\x18\x03 \x01(\v2&.google.cloud.aiplatform.v1.OutputInfoB\x03\xe0A\x03R\n" +
+	"outputInfo\"X\n" +
+	"\n" +
+	"OutputInfo\x127\n" +
+	"\x14gcs_output_directory\x18\x01 \x01(\tB\x03\xe0A\x03H\x00R\x12gcsOutputDirectoryB\x11\n" +
+	"\x0foutput_location\"\xbc\x01\n" +
+	"\x11AggregationOutput\x12G\n" +
+	"\adataset\x18\x01 \x01(\v2-.google.cloud.aiplatform.v1.EvaluationDatasetR\adataset\x12^\n" +
+	"\x13aggregation_results\x18\x02 \x03(\v2-.google.cloud.aiplatform.v1.AggregationResultR\x12aggregationResults\"\x8c\x05\n" +
+	"\x11AggregationResult\x12k\n" +
+	"\x17pointwise_metric_result\x18\x05 \x01(\v21.google.cloud.aiplatform.v1.PointwiseMetricResultH\x00R\x15pointwiseMetricResult\x12h\n" +
+	"\x16pairwise_metric_result\x18\x06 \x01(\v20.google.cloud.aiplatform.v1.PairwiseMetricResultH\x00R\x14pairwiseMetricResult\x12l\n" +
+	"\x18exact_match_metric_value\x18\a \x01(\v21.google.cloud.aiplatform.v1.ExactMatchMetricValueH\x00R\x15exactMatchMetricValue\x12Y\n" +
+	"\x11bleu_metric_value\x18\b \x01(\v2+.google.cloud.aiplatform.v1.BleuMetricValueH\x00R\x0fbleuMetricValue\x12\\\n" +
+	"\x12rouge_metric_value\x18\t \x01(\v2,.google.cloud.aiplatform.v1.RougeMetricValueH\x00R\x10rougeMetricValue\x12c\n" +
+	"\x12aggregation_metric\x18\x04 \x01(\x0e24.google.cloud.aiplatform.v1.Metric.AggregationMetricR\x11aggregationMetricB\x14\n" +
+	"\x12aggregation_result\"\x99\x01\n" +
+	"\x14PredefinedMetricSpec\x12-\n" +
+	"\x10metric_spec_name\x18\x01 \x01(\tB\x03\xe0A\x02R\x0emetricSpecName\x12R\n" +
+	"\x16metric_spec_parameters\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x14metricSpecParameters\"\xdb\x02\n" +
+	"\x1aComputationBasedMetricSpec\x12o\n" +
+	"\x04type\x18\x01 \x01(\x0e2Q.google.cloud.aiplatform.v1.ComputationBasedMetricSpec.ComputationBasedMetricTypeB\x03\xe0A\x02H\x00R\x04type\x88\x01\x01\x12A\n" +
+	"\n" +
+	"parameters\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01H\x01R\n" +
+	"parameters\x88\x01\x01\"q\n" +
+	"\x1aComputationBasedMetricType\x12-\n" +
+	")COMPUTATION_BASED_METRIC_TYPE_UNSPECIFIED\x10\x00\x12\x0f\n" +
+	"\vEXACT_MATCH\x10\x01\x12\b\n" +
+	"\x04BLEU\x10\x02\x12\t\n" +
+	"\x05ROUGE\x10\x03B\a\n" +
+	"\x05_typeB\r\n" +
+	"\v_parameters\"\xea\x04\n" +
+	"\x12LLMBasedMetricSpec\x12*\n" +
+	"\x10rubric_group_key\x18\x04 \x01(\tH\x00R\x0erubricGroupKey\x12}\n" +
+	"!predefined_rubric_generation_spec\x18\x06 \x01(\v20.google.cloud.aiplatform.v1.PredefinedMetricSpecH\x00R\x1epredefinedRubricGenerationSpec\x12>\n" +
+	"\x16metric_prompt_template\x18\x01 \x01(\tB\x03\xe0A\x02H\x01R\x14metricPromptTemplate\x88\x01\x01\x127\n" +
+	"\x12system_instruction\x18\x02 \x01(\tB\x03\xe0A\x01H\x02R\x11systemInstruction\x88\x01\x01\x12k\n" +
+	"\x16judge_autorater_config\x18\x03 \x01(\v2+.google.cloud.aiplatform.v1.AutoraterConfigB\x03\xe0A\x01H\x03R\x14judgeAutoraterConfig\x88\x01\x01\x12N\n" +
+	"\x11additional_config\x18\a \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01H\x04R\x10additionalConfig\x88\x01\x01B\x10\n" +
+	"\x0erubrics_sourceB\x19\n" +
+	"\x17_metric_prompt_templateB\x15\n" +
+	"\x13_system_instructionB\x19\n" +
+	"\x17_judge_autorater_configB\x14\n" +
+	"\x12_additional_config\"\xb6\x01\n" +
 	"\x0fExactMatchInput\x12P\n" +
 	"\vmetric_spec\x18\x01 \x01(\v2*.google.cloud.aiplatform.v1.ExactMatchSpecB\x03\xe0A\x02R\n" +
 	"metricSpec\x12Q\n" +
@@ -7663,32 +9390,54 @@ const file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDesc = "" +
 	"\x14PointwiseMetricInput\x12U\n" +
 	"\vmetric_spec\x18\x01 \x01(\v2/.google.cloud.aiplatform.v1.PointwiseMetricSpecB\x03\xe0A\x02R\n" +
 	"metricSpec\x12T\n" +
-	"\binstance\x18\x02 \x01(\v23.google.cloud.aiplatform.v1.PointwiseMetricInstanceB\x03\xe0A\x02R\binstance\"L\n" +
+	"\binstance\x18\x02 \x01(\v23.google.cloud.aiplatform.v1.PointwiseMetricInstanceB\x03\xe0A\x02R\binstance\"\xa8\x01\n" +
 	"\x17PointwiseMetricInstance\x12%\n" +
-	"\rjson_instance\x18\x01 \x01(\tH\x00R\fjsonInstanceB\n" +
+	"\rjson_instance\x18\x01 \x01(\tH\x00R\fjsonInstance\x12Z\n" +
+	"\x14content_map_instance\x18\x02 \x01(\v2&.google.cloud.aiplatform.v1.ContentMapH\x00R\x12contentMapInstanceB\n" +
 	"\n" +
-	"\binstance\"p\n" +
+	"\binstance\"\xba\x02\n" +
 	"\x13PointwiseMetricSpec\x12>\n" +
-	"\x16metric_prompt_template\x18\x01 \x01(\tB\x03\xe0A\x02H\x00R\x14metricPromptTemplate\x88\x01\x01B\x19\n" +
-	"\x17_metric_prompt_template\"h\n" +
+	"\x16metric_prompt_template\x18\x01 \x01(\tB\x03\xe0A\x02H\x00R\x14metricPromptTemplate\x88\x01\x01\x127\n" +
+	"\x12system_instruction\x18\x02 \x01(\tB\x03\xe0A\x01H\x01R\x11systemInstruction\x88\x01\x01\x12x\n" +
+	"\x1bcustom_output_format_config\x18\x03 \x01(\v24.google.cloud.aiplatform.v1.CustomOutputFormatConfigB\x03\xe0A\x01R\x18customOutputFormatConfigB\x19\n" +
+	"\x17_metric_prompt_templateB\x15\n" +
+	"\x13_system_instruction\"l\n" +
+	"\x18CustomOutputFormatConfig\x121\n" +
+	"\x11return_raw_output\x18\x01 \x01(\bB\x03\xe0A\x01H\x00R\x0freturnRawOutputB\x1d\n" +
+	"\x1bcustom_output_format_config\"\xbc\x01\n" +
 	"\x15PointwiseMetricResult\x12\x1e\n" +
 	"\x05score\x18\x01 \x01(\x02B\x03\xe0A\x03H\x00R\x05score\x88\x01\x01\x12%\n" +
-	"\vexplanation\x18\x02 \x01(\tB\x03\xe0A\x03R\vexplanationB\b\n" +
-	"\x06_score\"\xc0\x01\n" +
+	"\vexplanation\x18\x02 \x01(\tB\x03\xe0A\x03R\vexplanation\x12R\n" +
+	"\rcustom_output\x18\x03 \x01(\v2(.google.cloud.aiplatform.v1.CustomOutputB\x03\xe0A\x03R\fcustomOutputB\b\n" +
+	"\x06_score\"n\n" +
+	"\fCustomOutput\x12M\n" +
+	"\vraw_outputs\x18\x01 \x01(\v2%.google.cloud.aiplatform.v1.RawOutputB\x03\xe0A\x03H\x00R\n" +
+	"rawOutputsB\x0f\n" +
+	"\rcustom_output\"/\n" +
+	"\tRawOutput\x12\"\n" +
+	"\n" +
+	"raw_output\x18\x01 \x03(\tB\x03\xe0A\x03R\trawOutput\"\xc0\x01\n" +
 	"\x13PairwiseMetricInput\x12T\n" +
 	"\vmetric_spec\x18\x01 \x01(\v2..google.cloud.aiplatform.v1.PairwiseMetricSpecB\x03\xe0A\x02R\n" +
 	"metricSpec\x12S\n" +
-	"\binstance\x18\x02 \x01(\v22.google.cloud.aiplatform.v1.PairwiseMetricInstanceB\x03\xe0A\x02R\binstance\"K\n" +
+	"\binstance\x18\x02 \x01(\v22.google.cloud.aiplatform.v1.PairwiseMetricInstanceB\x03\xe0A\x02R\binstance\"\xa7\x01\n" +
 	"\x16PairwiseMetricInstance\x12%\n" +
-	"\rjson_instance\x18\x01 \x01(\tH\x00R\fjsonInstanceB\n" +
+	"\rjson_instance\x18\x01 \x01(\tH\x00R\fjsonInstance\x12Z\n" +
+	"\x14content_map_instance\x18\x02 \x01(\v2&.google.cloud.aiplatform.v1.ContentMapH\x00R\x12contentMapInstanceB\n" +
 	"\n" +
-	"\binstance\"o\n" +
+	"\binstance\"\xc7\x03\n" +
 	"\x12PairwiseMetricSpec\x12>\n" +
-	"\x16metric_prompt_template\x18\x01 \x01(\tB\x03\xe0A\x02H\x00R\x14metricPromptTemplate\x88\x01\x01B\x19\n" +
-	"\x17_metric_prompt_template\"\x97\x01\n" +
+	"\x16metric_prompt_template\x18\x01 \x01(\tB\x03\xe0A\x02H\x00R\x14metricPromptTemplate\x88\x01\x01\x12F\n" +
+	"\x1dcandidate_response_field_name\x18\x02 \x01(\tB\x03\xe0A\x01R\x1acandidateResponseFieldName\x12D\n" +
+	"\x1cbaseline_response_field_name\x18\x03 \x01(\tB\x03\xe0A\x01R\x19baselineResponseFieldName\x127\n" +
+	"\x12system_instruction\x18\x04 \x01(\tB\x03\xe0A\x01H\x01R\x11systemInstruction\x88\x01\x01\x12x\n" +
+	"\x1bcustom_output_format_config\x18\x05 \x01(\v24.google.cloud.aiplatform.v1.CustomOutputFormatConfigB\x03\xe0A\x01R\x18customOutputFormatConfigB\x19\n" +
+	"\x17_metric_prompt_templateB\x15\n" +
+	"\x13_system_instruction\"\xeb\x01\n" +
 	"\x14PairwiseMetricResult\x12X\n" +
 	"\x0fpairwise_choice\x18\x01 \x01(\x0e2*.google.cloud.aiplatform.v1.PairwiseChoiceB\x03\xe0A\x03R\x0epairwiseChoice\x12%\n" +
-	"\vexplanation\x18\x02 \x01(\tB\x03\xe0A\x03R\vexplanation\"\xbf\x01\n" +
+	"\vexplanation\x18\x02 \x01(\tB\x03\xe0A\x03R\vexplanation\x12R\n" +
+	"\rcustom_output\x18\x03 \x01(\v2(.google.cloud.aiplatform.v1.CustomOutputB\x03\xe0A\x03R\fcustomOutput\"\xbf\x01\n" +
 	"\x12ToolCallValidInput\x12S\n" +
 	"\vmetric_spec\x18\x01 \x01(\v2-.google.cloud.aiplatform.v1.ToolCallValidSpecB\x03\xe0A\x02R\n" +
 	"metricSpec\x12T\n" +
@@ -7816,7 +9565,15 @@ const file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDesc = "" +
 	"\a_source\"9\n" +
 	"\rMetricxResult\x12\x1e\n" +
 	"\x05score\x18\x01 \x01(\x02B\x03\xe0A\x03H\x00R\x05score\x88\x01\x01B\b\n" +
-	"\x06_score*W\n" +
+	"\x06_score\"\x9b\x02\n" +
+	"\n" +
+	"ContentMap\x12O\n" +
+	"\x06values\x18\x01 \x03(\v22.google.cloud.aiplatform.v1.ContentMap.ValuesEntryB\x03\xe0A\x01R\x06values\x1aP\n" +
+	"\bContents\x12D\n" +
+	"\bcontents\x18\x01 \x03(\v2#.google.cloud.aiplatform.v1.ContentB\x03\xe0A\x01R\bcontents\x1aj\n" +
+	"\vValuesEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12E\n" +
+	"\x05value\x18\x02 \x01(\v2/.google.cloud.aiplatform.v1.ContentMap.ContentsR\x05value:\x028\x01*W\n" +
 	"\x0ePairwiseChoice\x12\x1f\n" +
 	"\x1bPAIRWISE_CHOICE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bBASELINE\x10\x01\x12\r\n" +
@@ -7838,242 +9595,310 @@ func file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescGZIP() []by
 	return file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDescData
 }
 
-var file_google_cloud_aiplatform_v1_evaluation_service_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes = make([]protoimpl.MessageInfo, 109)
+var file_google_cloud_aiplatform_v1_evaluation_service_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
+var file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes = make([]protoimpl.MessageInfo, 127)
 var file_google_cloud_aiplatform_v1_evaluation_service_proto_goTypes = []any{
-	(PairwiseChoice)(0),                              // 0: google.cloud.aiplatform.v1.PairwiseChoice
-	(CometSpec_CometVersion)(0),                      // 1: google.cloud.aiplatform.v1.CometSpec.CometVersion
-	(MetricxSpec_MetricxVersion)(0),                  // 2: google.cloud.aiplatform.v1.MetricxSpec.MetricxVersion
-	(*EvaluateInstancesRequest)(nil),                 // 3: google.cloud.aiplatform.v1.EvaluateInstancesRequest
-	(*EvaluateInstancesResponse)(nil),                // 4: google.cloud.aiplatform.v1.EvaluateInstancesResponse
-	(*ExactMatchInput)(nil),                          // 5: google.cloud.aiplatform.v1.ExactMatchInput
-	(*ExactMatchInstance)(nil),                       // 6: google.cloud.aiplatform.v1.ExactMatchInstance
-	(*ExactMatchSpec)(nil),                           // 7: google.cloud.aiplatform.v1.ExactMatchSpec
-	(*ExactMatchResults)(nil),                        // 8: google.cloud.aiplatform.v1.ExactMatchResults
-	(*ExactMatchMetricValue)(nil),                    // 9: google.cloud.aiplatform.v1.ExactMatchMetricValue
-	(*BleuInput)(nil),                                // 10: google.cloud.aiplatform.v1.BleuInput
-	(*BleuInstance)(nil),                             // 11: google.cloud.aiplatform.v1.BleuInstance
-	(*BleuSpec)(nil),                                 // 12: google.cloud.aiplatform.v1.BleuSpec
-	(*BleuResults)(nil),                              // 13: google.cloud.aiplatform.v1.BleuResults
-	(*BleuMetricValue)(nil),                          // 14: google.cloud.aiplatform.v1.BleuMetricValue
-	(*RougeInput)(nil),                               // 15: google.cloud.aiplatform.v1.RougeInput
-	(*RougeInstance)(nil),                            // 16: google.cloud.aiplatform.v1.RougeInstance
-	(*RougeSpec)(nil),                                // 17: google.cloud.aiplatform.v1.RougeSpec
-	(*RougeResults)(nil),                             // 18: google.cloud.aiplatform.v1.RougeResults
-	(*RougeMetricValue)(nil),                         // 19: google.cloud.aiplatform.v1.RougeMetricValue
-	(*CoherenceInput)(nil),                           // 20: google.cloud.aiplatform.v1.CoherenceInput
-	(*CoherenceInstance)(nil),                        // 21: google.cloud.aiplatform.v1.CoherenceInstance
-	(*CoherenceSpec)(nil),                            // 22: google.cloud.aiplatform.v1.CoherenceSpec
-	(*CoherenceResult)(nil),                          // 23: google.cloud.aiplatform.v1.CoherenceResult
-	(*FluencyInput)(nil),                             // 24: google.cloud.aiplatform.v1.FluencyInput
-	(*FluencyInstance)(nil),                          // 25: google.cloud.aiplatform.v1.FluencyInstance
-	(*FluencySpec)(nil),                              // 26: google.cloud.aiplatform.v1.FluencySpec
-	(*FluencyResult)(nil),                            // 27: google.cloud.aiplatform.v1.FluencyResult
-	(*SafetyInput)(nil),                              // 28: google.cloud.aiplatform.v1.SafetyInput
-	(*SafetyInstance)(nil),                           // 29: google.cloud.aiplatform.v1.SafetyInstance
-	(*SafetySpec)(nil),                               // 30: google.cloud.aiplatform.v1.SafetySpec
-	(*SafetyResult)(nil),                             // 31: google.cloud.aiplatform.v1.SafetyResult
-	(*GroundednessInput)(nil),                        // 32: google.cloud.aiplatform.v1.GroundednessInput
-	(*GroundednessInstance)(nil),                     // 33: google.cloud.aiplatform.v1.GroundednessInstance
-	(*GroundednessSpec)(nil),                         // 34: google.cloud.aiplatform.v1.GroundednessSpec
-	(*GroundednessResult)(nil),                       // 35: google.cloud.aiplatform.v1.GroundednessResult
-	(*FulfillmentInput)(nil),                         // 36: google.cloud.aiplatform.v1.FulfillmentInput
-	(*FulfillmentInstance)(nil),                      // 37: google.cloud.aiplatform.v1.FulfillmentInstance
-	(*FulfillmentSpec)(nil),                          // 38: google.cloud.aiplatform.v1.FulfillmentSpec
-	(*FulfillmentResult)(nil),                        // 39: google.cloud.aiplatform.v1.FulfillmentResult
-	(*SummarizationQualityInput)(nil),                // 40: google.cloud.aiplatform.v1.SummarizationQualityInput
-	(*SummarizationQualityInstance)(nil),             // 41: google.cloud.aiplatform.v1.SummarizationQualityInstance
-	(*SummarizationQualitySpec)(nil),                 // 42: google.cloud.aiplatform.v1.SummarizationQualitySpec
-	(*SummarizationQualityResult)(nil),               // 43: google.cloud.aiplatform.v1.SummarizationQualityResult
-	(*PairwiseSummarizationQualityInput)(nil),        // 44: google.cloud.aiplatform.v1.PairwiseSummarizationQualityInput
-	(*PairwiseSummarizationQualityInstance)(nil),     // 45: google.cloud.aiplatform.v1.PairwiseSummarizationQualityInstance
-	(*PairwiseSummarizationQualitySpec)(nil),         // 46: google.cloud.aiplatform.v1.PairwiseSummarizationQualitySpec
-	(*PairwiseSummarizationQualityResult)(nil),       // 47: google.cloud.aiplatform.v1.PairwiseSummarizationQualityResult
-	(*SummarizationHelpfulnessInput)(nil),            // 48: google.cloud.aiplatform.v1.SummarizationHelpfulnessInput
-	(*SummarizationHelpfulnessInstance)(nil),         // 49: google.cloud.aiplatform.v1.SummarizationHelpfulnessInstance
-	(*SummarizationHelpfulnessSpec)(nil),             // 50: google.cloud.aiplatform.v1.SummarizationHelpfulnessSpec
-	(*SummarizationHelpfulnessResult)(nil),           // 51: google.cloud.aiplatform.v1.SummarizationHelpfulnessResult
-	(*SummarizationVerbosityInput)(nil),              // 52: google.cloud.aiplatform.v1.SummarizationVerbosityInput
-	(*SummarizationVerbosityInstance)(nil),           // 53: google.cloud.aiplatform.v1.SummarizationVerbosityInstance
-	(*SummarizationVerbositySpec)(nil),               // 54: google.cloud.aiplatform.v1.SummarizationVerbositySpec
-	(*SummarizationVerbosityResult)(nil),             // 55: google.cloud.aiplatform.v1.SummarizationVerbosityResult
-	(*QuestionAnsweringQualityInput)(nil),            // 56: google.cloud.aiplatform.v1.QuestionAnsweringQualityInput
-	(*QuestionAnsweringQualityInstance)(nil),         // 57: google.cloud.aiplatform.v1.QuestionAnsweringQualityInstance
-	(*QuestionAnsweringQualitySpec)(nil),             // 58: google.cloud.aiplatform.v1.QuestionAnsweringQualitySpec
-	(*QuestionAnsweringQualityResult)(nil),           // 59: google.cloud.aiplatform.v1.QuestionAnsweringQualityResult
-	(*PairwiseQuestionAnsweringQualityInput)(nil),    // 60: google.cloud.aiplatform.v1.PairwiseQuestionAnsweringQualityInput
-	(*PairwiseQuestionAnsweringQualityInstance)(nil), // 61: google.cloud.aiplatform.v1.PairwiseQuestionAnsweringQualityInstance
-	(*PairwiseQuestionAnsweringQualitySpec)(nil),     // 62: google.cloud.aiplatform.v1.PairwiseQuestionAnsweringQualitySpec
-	(*PairwiseQuestionAnsweringQualityResult)(nil),   // 63: google.cloud.aiplatform.v1.PairwiseQuestionAnsweringQualityResult
-	(*QuestionAnsweringRelevanceInput)(nil),          // 64: google.cloud.aiplatform.v1.QuestionAnsweringRelevanceInput
-	(*QuestionAnsweringRelevanceInstance)(nil),       // 65: google.cloud.aiplatform.v1.QuestionAnsweringRelevanceInstance
-	(*QuestionAnsweringRelevanceSpec)(nil),           // 66: google.cloud.aiplatform.v1.QuestionAnsweringRelevanceSpec
-	(*QuestionAnsweringRelevanceResult)(nil),         // 67: google.cloud.aiplatform.v1.QuestionAnsweringRelevanceResult
-	(*QuestionAnsweringHelpfulnessInput)(nil),        // 68: google.cloud.aiplatform.v1.QuestionAnsweringHelpfulnessInput
-	(*QuestionAnsweringHelpfulnessInstance)(nil),     // 69: google.cloud.aiplatform.v1.QuestionAnsweringHelpfulnessInstance
-	(*QuestionAnsweringHelpfulnessSpec)(nil),         // 70: google.cloud.aiplatform.v1.QuestionAnsweringHelpfulnessSpec
-	(*QuestionAnsweringHelpfulnessResult)(nil),       // 71: google.cloud.aiplatform.v1.QuestionAnsweringHelpfulnessResult
-	(*QuestionAnsweringCorrectnessInput)(nil),        // 72: google.cloud.aiplatform.v1.QuestionAnsweringCorrectnessInput
-	(*QuestionAnsweringCorrectnessInstance)(nil),     // 73: google.cloud.aiplatform.v1.QuestionAnsweringCorrectnessInstance
-	(*QuestionAnsweringCorrectnessSpec)(nil),         // 74: google.cloud.aiplatform.v1.QuestionAnsweringCorrectnessSpec
-	(*QuestionAnsweringCorrectnessResult)(nil),       // 75: google.cloud.aiplatform.v1.QuestionAnsweringCorrectnessResult
-	(*PointwiseMetricInput)(nil),                     // 76: google.cloud.aiplatform.v1.PointwiseMetricInput
-	(*PointwiseMetricInstance)(nil),                  // 77: google.cloud.aiplatform.v1.PointwiseMetricInstance
-	(*PointwiseMetricSpec)(nil),                      // 78: google.cloud.aiplatform.v1.PointwiseMetricSpec
-	(*PointwiseMetricResult)(nil),                    // 79: google.cloud.aiplatform.v1.PointwiseMetricResult
-	(*PairwiseMetricInput)(nil),                      // 80: google.cloud.aiplatform.v1.PairwiseMetricInput
-	(*PairwiseMetricInstance)(nil),                   // 81: google.cloud.aiplatform.v1.PairwiseMetricInstance
-	(*PairwiseMetricSpec)(nil),                       // 82: google.cloud.aiplatform.v1.PairwiseMetricSpec
-	(*PairwiseMetricResult)(nil),                     // 83: google.cloud.aiplatform.v1.PairwiseMetricResult
-	(*ToolCallValidInput)(nil),                       // 84: google.cloud.aiplatform.v1.ToolCallValidInput
-	(*ToolCallValidSpec)(nil),                        // 85: google.cloud.aiplatform.v1.ToolCallValidSpec
-	(*ToolCallValidInstance)(nil),                    // 86: google.cloud.aiplatform.v1.ToolCallValidInstance
-	(*ToolCallValidResults)(nil),                     // 87: google.cloud.aiplatform.v1.ToolCallValidResults
-	(*ToolCallValidMetricValue)(nil),                 // 88: google.cloud.aiplatform.v1.ToolCallValidMetricValue
-	(*ToolNameMatchInput)(nil),                       // 89: google.cloud.aiplatform.v1.ToolNameMatchInput
-	(*ToolNameMatchSpec)(nil),                        // 90: google.cloud.aiplatform.v1.ToolNameMatchSpec
-	(*ToolNameMatchInstance)(nil),                    // 91: google.cloud.aiplatform.v1.ToolNameMatchInstance
-	(*ToolNameMatchResults)(nil),                     // 92: google.cloud.aiplatform.v1.ToolNameMatchResults
-	(*ToolNameMatchMetricValue)(nil),                 // 93: google.cloud.aiplatform.v1.ToolNameMatchMetricValue
-	(*ToolParameterKeyMatchInput)(nil),               // 94: google.cloud.aiplatform.v1.ToolParameterKeyMatchInput
-	(*ToolParameterKeyMatchSpec)(nil),                // 95: google.cloud.aiplatform.v1.ToolParameterKeyMatchSpec
-	(*ToolParameterKeyMatchInstance)(nil),            // 96: google.cloud.aiplatform.v1.ToolParameterKeyMatchInstance
-	(*ToolParameterKeyMatchResults)(nil),             // 97: google.cloud.aiplatform.v1.ToolParameterKeyMatchResults
-	(*ToolParameterKeyMatchMetricValue)(nil),         // 98: google.cloud.aiplatform.v1.ToolParameterKeyMatchMetricValue
-	(*ToolParameterKVMatchInput)(nil),                // 99: google.cloud.aiplatform.v1.ToolParameterKVMatchInput
-	(*ToolParameterKVMatchSpec)(nil),                 // 100: google.cloud.aiplatform.v1.ToolParameterKVMatchSpec
-	(*ToolParameterKVMatchInstance)(nil),             // 101: google.cloud.aiplatform.v1.ToolParameterKVMatchInstance
-	(*ToolParameterKVMatchResults)(nil),              // 102: google.cloud.aiplatform.v1.ToolParameterKVMatchResults
-	(*ToolParameterKVMatchMetricValue)(nil),          // 103: google.cloud.aiplatform.v1.ToolParameterKVMatchMetricValue
-	(*CometInput)(nil),                               // 104: google.cloud.aiplatform.v1.CometInput
-	(*CometSpec)(nil),                                // 105: google.cloud.aiplatform.v1.CometSpec
-	(*CometInstance)(nil),                            // 106: google.cloud.aiplatform.v1.CometInstance
-	(*CometResult)(nil),                              // 107: google.cloud.aiplatform.v1.CometResult
-	(*MetricxInput)(nil),                             // 108: google.cloud.aiplatform.v1.MetricxInput
-	(*MetricxSpec)(nil),                              // 109: google.cloud.aiplatform.v1.MetricxSpec
-	(*MetricxInstance)(nil),                          // 110: google.cloud.aiplatform.v1.MetricxInstance
-	(*MetricxResult)(nil),                            // 111: google.cloud.aiplatform.v1.MetricxResult
+	(PairwiseChoice)(0),                                        // 0: google.cloud.aiplatform.v1.PairwiseChoice
+	(Metric_AggregationMetric)(0),                              // 1: google.cloud.aiplatform.v1.Metric.AggregationMetric
+	(ComputationBasedMetricSpec_ComputationBasedMetricType)(0), // 2: google.cloud.aiplatform.v1.ComputationBasedMetricSpec.ComputationBasedMetricType
+	(CometSpec_CometVersion)(0),                                // 3: google.cloud.aiplatform.v1.CometSpec.CometVersion
+	(MetricxSpec_MetricxVersion)(0),                            // 4: google.cloud.aiplatform.v1.MetricxSpec.MetricxVersion
+	(*EvaluateInstancesRequest)(nil),                           // 5: google.cloud.aiplatform.v1.EvaluateInstancesRequest
+	(*Metric)(nil),                                             // 6: google.cloud.aiplatform.v1.Metric
+	(*AutoraterConfig)(nil),                                    // 7: google.cloud.aiplatform.v1.AutoraterConfig
+	(*EvaluateInstancesResponse)(nil),                          // 8: google.cloud.aiplatform.v1.EvaluateInstancesResponse
+	(*MetricResult)(nil),                                       // 9: google.cloud.aiplatform.v1.MetricResult
+	(*OutputConfig)(nil),                                       // 10: google.cloud.aiplatform.v1.OutputConfig
+	(*EvaluationDataset)(nil),                                  // 11: google.cloud.aiplatform.v1.EvaluationDataset
+	(*EvaluateDatasetResponse)(nil),                            // 12: google.cloud.aiplatform.v1.EvaluateDatasetResponse
+	(*OutputInfo)(nil),                                         // 13: google.cloud.aiplatform.v1.OutputInfo
+	(*AggregationOutput)(nil),                                  // 14: google.cloud.aiplatform.v1.AggregationOutput
+	(*AggregationResult)(nil),                                  // 15: google.cloud.aiplatform.v1.AggregationResult
+	(*PredefinedMetricSpec)(nil),                               // 16: google.cloud.aiplatform.v1.PredefinedMetricSpec
+	(*ComputationBasedMetricSpec)(nil),                         // 17: google.cloud.aiplatform.v1.ComputationBasedMetricSpec
+	(*LLMBasedMetricSpec)(nil),                                 // 18: google.cloud.aiplatform.v1.LLMBasedMetricSpec
+	(*ExactMatchInput)(nil),                                    // 19: google.cloud.aiplatform.v1.ExactMatchInput
+	(*ExactMatchInstance)(nil),                                 // 20: google.cloud.aiplatform.v1.ExactMatchInstance
+	(*ExactMatchSpec)(nil),                                     // 21: google.cloud.aiplatform.v1.ExactMatchSpec
+	(*ExactMatchResults)(nil),                                  // 22: google.cloud.aiplatform.v1.ExactMatchResults
+	(*ExactMatchMetricValue)(nil),                              // 23: google.cloud.aiplatform.v1.ExactMatchMetricValue
+	(*BleuInput)(nil),                                          // 24: google.cloud.aiplatform.v1.BleuInput
+	(*BleuInstance)(nil),                                       // 25: google.cloud.aiplatform.v1.BleuInstance
+	(*BleuSpec)(nil),                                           // 26: google.cloud.aiplatform.v1.BleuSpec
+	(*BleuResults)(nil),                                        // 27: google.cloud.aiplatform.v1.BleuResults
+	(*BleuMetricValue)(nil),                                    // 28: google.cloud.aiplatform.v1.BleuMetricValue
+	(*RougeInput)(nil),                                         // 29: google.cloud.aiplatform.v1.RougeInput
+	(*RougeInstance)(nil),                                      // 30: google.cloud.aiplatform.v1.RougeInstance
+	(*RougeSpec)(nil),                                          // 31: google.cloud.aiplatform.v1.RougeSpec
+	(*RougeResults)(nil),                                       // 32: google.cloud.aiplatform.v1.RougeResults
+	(*RougeMetricValue)(nil),                                   // 33: google.cloud.aiplatform.v1.RougeMetricValue
+	(*CoherenceInput)(nil),                                     // 34: google.cloud.aiplatform.v1.CoherenceInput
+	(*CoherenceInstance)(nil),                                  // 35: google.cloud.aiplatform.v1.CoherenceInstance
+	(*CoherenceSpec)(nil),                                      // 36: google.cloud.aiplatform.v1.CoherenceSpec
+	(*CoherenceResult)(nil),                                    // 37: google.cloud.aiplatform.v1.CoherenceResult
+	(*FluencyInput)(nil),                                       // 38: google.cloud.aiplatform.v1.FluencyInput
+	(*FluencyInstance)(nil),                                    // 39: google.cloud.aiplatform.v1.FluencyInstance
+	(*FluencySpec)(nil),                                        // 40: google.cloud.aiplatform.v1.FluencySpec
+	(*FluencyResult)(nil),                                      // 41: google.cloud.aiplatform.v1.FluencyResult
+	(*SafetyInput)(nil),                                        // 42: google.cloud.aiplatform.v1.SafetyInput
+	(*SafetyInstance)(nil),                                     // 43: google.cloud.aiplatform.v1.SafetyInstance
+	(*SafetySpec)(nil),                                         // 44: google.cloud.aiplatform.v1.SafetySpec
+	(*SafetyResult)(nil),                                       // 45: google.cloud.aiplatform.v1.SafetyResult
+	(*GroundednessInput)(nil),                                  // 46: google.cloud.aiplatform.v1.GroundednessInput
+	(*GroundednessInstance)(nil),                               // 47: google.cloud.aiplatform.v1.GroundednessInstance
+	(*GroundednessSpec)(nil),                                   // 48: google.cloud.aiplatform.v1.GroundednessSpec
+	(*GroundednessResult)(nil),                                 // 49: google.cloud.aiplatform.v1.GroundednessResult
+	(*FulfillmentInput)(nil),                                   // 50: google.cloud.aiplatform.v1.FulfillmentInput
+	(*FulfillmentInstance)(nil),                                // 51: google.cloud.aiplatform.v1.FulfillmentInstance
+	(*FulfillmentSpec)(nil),                                    // 52: google.cloud.aiplatform.v1.FulfillmentSpec
+	(*FulfillmentResult)(nil),                                  // 53: google.cloud.aiplatform.v1.FulfillmentResult
+	(*SummarizationQualityInput)(nil),                          // 54: google.cloud.aiplatform.v1.SummarizationQualityInput
+	(*SummarizationQualityInstance)(nil),                       // 55: google.cloud.aiplatform.v1.SummarizationQualityInstance
+	(*SummarizationQualitySpec)(nil),                           // 56: google.cloud.aiplatform.v1.SummarizationQualitySpec
+	(*SummarizationQualityResult)(nil),                         // 57: google.cloud.aiplatform.v1.SummarizationQualityResult
+	(*PairwiseSummarizationQualityInput)(nil),                  // 58: google.cloud.aiplatform.v1.PairwiseSummarizationQualityInput
+	(*PairwiseSummarizationQualityInstance)(nil),               // 59: google.cloud.aiplatform.v1.PairwiseSummarizationQualityInstance
+	(*PairwiseSummarizationQualitySpec)(nil),                   // 60: google.cloud.aiplatform.v1.PairwiseSummarizationQualitySpec
+	(*PairwiseSummarizationQualityResult)(nil),                 // 61: google.cloud.aiplatform.v1.PairwiseSummarizationQualityResult
+	(*SummarizationHelpfulnessInput)(nil),                      // 62: google.cloud.aiplatform.v1.SummarizationHelpfulnessInput
+	(*SummarizationHelpfulnessInstance)(nil),                   // 63: google.cloud.aiplatform.v1.SummarizationHelpfulnessInstance
+	(*SummarizationHelpfulnessSpec)(nil),                       // 64: google.cloud.aiplatform.v1.SummarizationHelpfulnessSpec
+	(*SummarizationHelpfulnessResult)(nil),                     // 65: google.cloud.aiplatform.v1.SummarizationHelpfulnessResult
+	(*SummarizationVerbosityInput)(nil),                        // 66: google.cloud.aiplatform.v1.SummarizationVerbosityInput
+	(*SummarizationVerbosityInstance)(nil),                     // 67: google.cloud.aiplatform.v1.SummarizationVerbosityInstance
+	(*SummarizationVerbositySpec)(nil),                         // 68: google.cloud.aiplatform.v1.SummarizationVerbositySpec
+	(*SummarizationVerbosityResult)(nil),                       // 69: google.cloud.aiplatform.v1.SummarizationVerbosityResult
+	(*QuestionAnsweringQualityInput)(nil),                      // 70: google.cloud.aiplatform.v1.QuestionAnsweringQualityInput
+	(*QuestionAnsweringQualityInstance)(nil),                   // 71: google.cloud.aiplatform.v1.QuestionAnsweringQualityInstance
+	(*QuestionAnsweringQualitySpec)(nil),                       // 72: google.cloud.aiplatform.v1.QuestionAnsweringQualitySpec
+	(*QuestionAnsweringQualityResult)(nil),                     // 73: google.cloud.aiplatform.v1.QuestionAnsweringQualityResult
+	(*PairwiseQuestionAnsweringQualityInput)(nil),              // 74: google.cloud.aiplatform.v1.PairwiseQuestionAnsweringQualityInput
+	(*PairwiseQuestionAnsweringQualityInstance)(nil),           // 75: google.cloud.aiplatform.v1.PairwiseQuestionAnsweringQualityInstance
+	(*PairwiseQuestionAnsweringQualitySpec)(nil),               // 76: google.cloud.aiplatform.v1.PairwiseQuestionAnsweringQualitySpec
+	(*PairwiseQuestionAnsweringQualityResult)(nil),             // 77: google.cloud.aiplatform.v1.PairwiseQuestionAnsweringQualityResult
+	(*QuestionAnsweringRelevanceInput)(nil),                    // 78: google.cloud.aiplatform.v1.QuestionAnsweringRelevanceInput
+	(*QuestionAnsweringRelevanceInstance)(nil),                 // 79: google.cloud.aiplatform.v1.QuestionAnsweringRelevanceInstance
+	(*QuestionAnsweringRelevanceSpec)(nil),                     // 80: google.cloud.aiplatform.v1.QuestionAnsweringRelevanceSpec
+	(*QuestionAnsweringRelevanceResult)(nil),                   // 81: google.cloud.aiplatform.v1.QuestionAnsweringRelevanceResult
+	(*QuestionAnsweringHelpfulnessInput)(nil),                  // 82: google.cloud.aiplatform.v1.QuestionAnsweringHelpfulnessInput
+	(*QuestionAnsweringHelpfulnessInstance)(nil),               // 83: google.cloud.aiplatform.v1.QuestionAnsweringHelpfulnessInstance
+	(*QuestionAnsweringHelpfulnessSpec)(nil),                   // 84: google.cloud.aiplatform.v1.QuestionAnsweringHelpfulnessSpec
+	(*QuestionAnsweringHelpfulnessResult)(nil),                 // 85: google.cloud.aiplatform.v1.QuestionAnsweringHelpfulnessResult
+	(*QuestionAnsweringCorrectnessInput)(nil),                  // 86: google.cloud.aiplatform.v1.QuestionAnsweringCorrectnessInput
+	(*QuestionAnsweringCorrectnessInstance)(nil),               // 87: google.cloud.aiplatform.v1.QuestionAnsweringCorrectnessInstance
+	(*QuestionAnsweringCorrectnessSpec)(nil),                   // 88: google.cloud.aiplatform.v1.QuestionAnsweringCorrectnessSpec
+	(*QuestionAnsweringCorrectnessResult)(nil),                 // 89: google.cloud.aiplatform.v1.QuestionAnsweringCorrectnessResult
+	(*PointwiseMetricInput)(nil),                               // 90: google.cloud.aiplatform.v1.PointwiseMetricInput
+	(*PointwiseMetricInstance)(nil),                            // 91: google.cloud.aiplatform.v1.PointwiseMetricInstance
+	(*PointwiseMetricSpec)(nil),                                // 92: google.cloud.aiplatform.v1.PointwiseMetricSpec
+	(*CustomOutputFormatConfig)(nil),                           // 93: google.cloud.aiplatform.v1.CustomOutputFormatConfig
+	(*PointwiseMetricResult)(nil),                              // 94: google.cloud.aiplatform.v1.PointwiseMetricResult
+	(*CustomOutput)(nil),                                       // 95: google.cloud.aiplatform.v1.CustomOutput
+	(*RawOutput)(nil),                                          // 96: google.cloud.aiplatform.v1.RawOutput
+	(*PairwiseMetricInput)(nil),                                // 97: google.cloud.aiplatform.v1.PairwiseMetricInput
+	(*PairwiseMetricInstance)(nil),                             // 98: google.cloud.aiplatform.v1.PairwiseMetricInstance
+	(*PairwiseMetricSpec)(nil),                                 // 99: google.cloud.aiplatform.v1.PairwiseMetricSpec
+	(*PairwiseMetricResult)(nil),                               // 100: google.cloud.aiplatform.v1.PairwiseMetricResult
+	(*ToolCallValidInput)(nil),                                 // 101: google.cloud.aiplatform.v1.ToolCallValidInput
+	(*ToolCallValidSpec)(nil),                                  // 102: google.cloud.aiplatform.v1.ToolCallValidSpec
+	(*ToolCallValidInstance)(nil),                              // 103: google.cloud.aiplatform.v1.ToolCallValidInstance
+	(*ToolCallValidResults)(nil),                               // 104: google.cloud.aiplatform.v1.ToolCallValidResults
+	(*ToolCallValidMetricValue)(nil),                           // 105: google.cloud.aiplatform.v1.ToolCallValidMetricValue
+	(*ToolNameMatchInput)(nil),                                 // 106: google.cloud.aiplatform.v1.ToolNameMatchInput
+	(*ToolNameMatchSpec)(nil),                                  // 107: google.cloud.aiplatform.v1.ToolNameMatchSpec
+	(*ToolNameMatchInstance)(nil),                              // 108: google.cloud.aiplatform.v1.ToolNameMatchInstance
+	(*ToolNameMatchResults)(nil),                               // 109: google.cloud.aiplatform.v1.ToolNameMatchResults
+	(*ToolNameMatchMetricValue)(nil),                           // 110: google.cloud.aiplatform.v1.ToolNameMatchMetricValue
+	(*ToolParameterKeyMatchInput)(nil),                         // 111: google.cloud.aiplatform.v1.ToolParameterKeyMatchInput
+	(*ToolParameterKeyMatchSpec)(nil),                          // 112: google.cloud.aiplatform.v1.ToolParameterKeyMatchSpec
+	(*ToolParameterKeyMatchInstance)(nil),                      // 113: google.cloud.aiplatform.v1.ToolParameterKeyMatchInstance
+	(*ToolParameterKeyMatchResults)(nil),                       // 114: google.cloud.aiplatform.v1.ToolParameterKeyMatchResults
+	(*ToolParameterKeyMatchMetricValue)(nil),                   // 115: google.cloud.aiplatform.v1.ToolParameterKeyMatchMetricValue
+	(*ToolParameterKVMatchInput)(nil),                          // 116: google.cloud.aiplatform.v1.ToolParameterKVMatchInput
+	(*ToolParameterKVMatchSpec)(nil),                           // 117: google.cloud.aiplatform.v1.ToolParameterKVMatchSpec
+	(*ToolParameterKVMatchInstance)(nil),                       // 118: google.cloud.aiplatform.v1.ToolParameterKVMatchInstance
+	(*ToolParameterKVMatchResults)(nil),                        // 119: google.cloud.aiplatform.v1.ToolParameterKVMatchResults
+	(*ToolParameterKVMatchMetricValue)(nil),                    // 120: google.cloud.aiplatform.v1.ToolParameterKVMatchMetricValue
+	(*CometInput)(nil),                                         // 121: google.cloud.aiplatform.v1.CometInput
+	(*CometSpec)(nil),                                          // 122: google.cloud.aiplatform.v1.CometSpec
+	(*CometInstance)(nil),                                      // 123: google.cloud.aiplatform.v1.CometInstance
+	(*CometResult)(nil),                                        // 124: google.cloud.aiplatform.v1.CometResult
+	(*MetricxInput)(nil),                                       // 125: google.cloud.aiplatform.v1.MetricxInput
+	(*MetricxSpec)(nil),                                        // 126: google.cloud.aiplatform.v1.MetricxSpec
+	(*MetricxInstance)(nil),                                    // 127: google.cloud.aiplatform.v1.MetricxInstance
+	(*MetricxResult)(nil),                                      // 128: google.cloud.aiplatform.v1.MetricxResult
+	(*ContentMap)(nil),                                         // 129: google.cloud.aiplatform.v1.ContentMap
+	(*ContentMap_Contents)(nil),                                // 130: google.cloud.aiplatform.v1.ContentMap.Contents
+	nil,                                                        // 131: google.cloud.aiplatform.v1.ContentMap.ValuesEntry
+	(*GenerationConfig)(nil),                                   // 132: google.cloud.aiplatform.v1.GenerationConfig
+	(*status.Status)(nil),                                      // 133: google.rpc.Status
+	(*GcsDestination)(nil),                                     // 134: google.cloud.aiplatform.v1.GcsDestination
+	(*GcsSource)(nil),                                          // 135: google.cloud.aiplatform.v1.GcsSource
+	(*BigQuerySource)(nil),                                     // 136: google.cloud.aiplatform.v1.BigQuerySource
+	(*structpb.Struct)(nil),                                    // 137: google.protobuf.Struct
+	(*Content)(nil),                                            // 138: google.cloud.aiplatform.v1.Content
 }
 var file_google_cloud_aiplatform_v1_evaluation_service_proto_depIdxs = []int32{
-	5,   // 0: google.cloud.aiplatform.v1.EvaluateInstancesRequest.exact_match_input:type_name -> google.cloud.aiplatform.v1.ExactMatchInput
-	10,  // 1: google.cloud.aiplatform.v1.EvaluateInstancesRequest.bleu_input:type_name -> google.cloud.aiplatform.v1.BleuInput
-	15,  // 2: google.cloud.aiplatform.v1.EvaluateInstancesRequest.rouge_input:type_name -> google.cloud.aiplatform.v1.RougeInput
-	24,  // 3: google.cloud.aiplatform.v1.EvaluateInstancesRequest.fluency_input:type_name -> google.cloud.aiplatform.v1.FluencyInput
-	20,  // 4: google.cloud.aiplatform.v1.EvaluateInstancesRequest.coherence_input:type_name -> google.cloud.aiplatform.v1.CoherenceInput
-	28,  // 5: google.cloud.aiplatform.v1.EvaluateInstancesRequest.safety_input:type_name -> google.cloud.aiplatform.v1.SafetyInput
-	32,  // 6: google.cloud.aiplatform.v1.EvaluateInstancesRequest.groundedness_input:type_name -> google.cloud.aiplatform.v1.GroundednessInput
-	36,  // 7: google.cloud.aiplatform.v1.EvaluateInstancesRequest.fulfillment_input:type_name -> google.cloud.aiplatform.v1.FulfillmentInput
-	40,  // 8: google.cloud.aiplatform.v1.EvaluateInstancesRequest.summarization_quality_input:type_name -> google.cloud.aiplatform.v1.SummarizationQualityInput
-	44,  // 9: google.cloud.aiplatform.v1.EvaluateInstancesRequest.pairwise_summarization_quality_input:type_name -> google.cloud.aiplatform.v1.PairwiseSummarizationQualityInput
-	48,  // 10: google.cloud.aiplatform.v1.EvaluateInstancesRequest.summarization_helpfulness_input:type_name -> google.cloud.aiplatform.v1.SummarizationHelpfulnessInput
-	52,  // 11: google.cloud.aiplatform.v1.EvaluateInstancesRequest.summarization_verbosity_input:type_name -> google.cloud.aiplatform.v1.SummarizationVerbosityInput
-	56,  // 12: google.cloud.aiplatform.v1.EvaluateInstancesRequest.question_answering_quality_input:type_name -> google.cloud.aiplatform.v1.QuestionAnsweringQualityInput
-	60,  // 13: google.cloud.aiplatform.v1.EvaluateInstancesRequest.pairwise_question_answering_quality_input:type_name -> google.cloud.aiplatform.v1.PairwiseQuestionAnsweringQualityInput
-	64,  // 14: google.cloud.aiplatform.v1.EvaluateInstancesRequest.question_answering_relevance_input:type_name -> google.cloud.aiplatform.v1.QuestionAnsweringRelevanceInput
-	68,  // 15: google.cloud.aiplatform.v1.EvaluateInstancesRequest.question_answering_helpfulness_input:type_name -> google.cloud.aiplatform.v1.QuestionAnsweringHelpfulnessInput
-	72,  // 16: google.cloud.aiplatform.v1.EvaluateInstancesRequest.question_answering_correctness_input:type_name -> google.cloud.aiplatform.v1.QuestionAnsweringCorrectnessInput
-	76,  // 17: google.cloud.aiplatform.v1.EvaluateInstancesRequest.pointwise_metric_input:type_name -> google.cloud.aiplatform.v1.PointwiseMetricInput
-	80,  // 18: google.cloud.aiplatform.v1.EvaluateInstancesRequest.pairwise_metric_input:type_name -> google.cloud.aiplatform.v1.PairwiseMetricInput
-	84,  // 19: google.cloud.aiplatform.v1.EvaluateInstancesRequest.tool_call_valid_input:type_name -> google.cloud.aiplatform.v1.ToolCallValidInput
-	89,  // 20: google.cloud.aiplatform.v1.EvaluateInstancesRequest.tool_name_match_input:type_name -> google.cloud.aiplatform.v1.ToolNameMatchInput
-	94,  // 21: google.cloud.aiplatform.v1.EvaluateInstancesRequest.tool_parameter_key_match_input:type_name -> google.cloud.aiplatform.v1.ToolParameterKeyMatchInput
-	99,  // 22: google.cloud.aiplatform.v1.EvaluateInstancesRequest.tool_parameter_kv_match_input:type_name -> google.cloud.aiplatform.v1.ToolParameterKVMatchInput
-	104, // 23: google.cloud.aiplatform.v1.EvaluateInstancesRequest.comet_input:type_name -> google.cloud.aiplatform.v1.CometInput
-	108, // 24: google.cloud.aiplatform.v1.EvaluateInstancesRequest.metricx_input:type_name -> google.cloud.aiplatform.v1.MetricxInput
-	8,   // 25: google.cloud.aiplatform.v1.EvaluateInstancesResponse.exact_match_results:type_name -> google.cloud.aiplatform.v1.ExactMatchResults
-	13,  // 26: google.cloud.aiplatform.v1.EvaluateInstancesResponse.bleu_results:type_name -> google.cloud.aiplatform.v1.BleuResults
-	18,  // 27: google.cloud.aiplatform.v1.EvaluateInstancesResponse.rouge_results:type_name -> google.cloud.aiplatform.v1.RougeResults
-	27,  // 28: google.cloud.aiplatform.v1.EvaluateInstancesResponse.fluency_result:type_name -> google.cloud.aiplatform.v1.FluencyResult
-	23,  // 29: google.cloud.aiplatform.v1.EvaluateInstancesResponse.coherence_result:type_name -> google.cloud.aiplatform.v1.CoherenceResult
-	31,  // 30: google.cloud.aiplatform.v1.EvaluateInstancesResponse.safety_result:type_name -> google.cloud.aiplatform.v1.SafetyResult
-	35,  // 31: google.cloud.aiplatform.v1.EvaluateInstancesResponse.groundedness_result:type_name -> google.cloud.aiplatform.v1.GroundednessResult
-	39,  // 32: google.cloud.aiplatform.v1.EvaluateInstancesResponse.fulfillment_result:type_name -> google.cloud.aiplatform.v1.FulfillmentResult
-	43,  // 33: google.cloud.aiplatform.v1.EvaluateInstancesResponse.summarization_quality_result:type_name -> google.cloud.aiplatform.v1.SummarizationQualityResult
-	47,  // 34: google.cloud.aiplatform.v1.EvaluateInstancesResponse.pairwise_summarization_quality_result:type_name -> google.cloud.aiplatform.v1.PairwiseSummarizationQualityResult
-	51,  // 35: google.cloud.aiplatform.v1.EvaluateInstancesResponse.summarization_helpfulness_result:type_name -> google.cloud.aiplatform.v1.SummarizationHelpfulnessResult
-	55,  // 36: google.cloud.aiplatform.v1.EvaluateInstancesResponse.summarization_verbosity_result:type_name -> google.cloud.aiplatform.v1.SummarizationVerbosityResult
-	59,  // 37: google.cloud.aiplatform.v1.EvaluateInstancesResponse.question_answering_quality_result:type_name -> google.cloud.aiplatform.v1.QuestionAnsweringQualityResult
-	63,  // 38: google.cloud.aiplatform.v1.EvaluateInstancesResponse.pairwise_question_answering_quality_result:type_name -> google.cloud.aiplatform.v1.PairwiseQuestionAnsweringQualityResult
-	67,  // 39: google.cloud.aiplatform.v1.EvaluateInstancesResponse.question_answering_relevance_result:type_name -> google.cloud.aiplatform.v1.QuestionAnsweringRelevanceResult
-	71,  // 40: google.cloud.aiplatform.v1.EvaluateInstancesResponse.question_answering_helpfulness_result:type_name -> google.cloud.aiplatform.v1.QuestionAnsweringHelpfulnessResult
-	75,  // 41: google.cloud.aiplatform.v1.EvaluateInstancesResponse.question_answering_correctness_result:type_name -> google.cloud.aiplatform.v1.QuestionAnsweringCorrectnessResult
-	79,  // 42: google.cloud.aiplatform.v1.EvaluateInstancesResponse.pointwise_metric_result:type_name -> google.cloud.aiplatform.v1.PointwiseMetricResult
-	83,  // 43: google.cloud.aiplatform.v1.EvaluateInstancesResponse.pairwise_metric_result:type_name -> google.cloud.aiplatform.v1.PairwiseMetricResult
-	87,  // 44: google.cloud.aiplatform.v1.EvaluateInstancesResponse.tool_call_valid_results:type_name -> google.cloud.aiplatform.v1.ToolCallValidResults
-	92,  // 45: google.cloud.aiplatform.v1.EvaluateInstancesResponse.tool_name_match_results:type_name -> google.cloud.aiplatform.v1.ToolNameMatchResults
-	97,  // 46: google.cloud.aiplatform.v1.EvaluateInstancesResponse.tool_parameter_key_match_results:type_name -> google.cloud.aiplatform.v1.ToolParameterKeyMatchResults
-	102, // 47: google.cloud.aiplatform.v1.EvaluateInstancesResponse.tool_parameter_kv_match_results:type_name -> google.cloud.aiplatform.v1.ToolParameterKVMatchResults
-	107, // 48: google.cloud.aiplatform.v1.EvaluateInstancesResponse.comet_result:type_name -> google.cloud.aiplatform.v1.CometResult
-	111, // 49: google.cloud.aiplatform.v1.EvaluateInstancesResponse.metricx_result:type_name -> google.cloud.aiplatform.v1.MetricxResult
-	7,   // 50: google.cloud.aiplatform.v1.ExactMatchInput.metric_spec:type_name -> google.cloud.aiplatform.v1.ExactMatchSpec
-	6,   // 51: google.cloud.aiplatform.v1.ExactMatchInput.instances:type_name -> google.cloud.aiplatform.v1.ExactMatchInstance
-	9,   // 52: google.cloud.aiplatform.v1.ExactMatchResults.exact_match_metric_values:type_name -> google.cloud.aiplatform.v1.ExactMatchMetricValue
-	12,  // 53: google.cloud.aiplatform.v1.BleuInput.metric_spec:type_name -> google.cloud.aiplatform.v1.BleuSpec
-	11,  // 54: google.cloud.aiplatform.v1.BleuInput.instances:type_name -> google.cloud.aiplatform.v1.BleuInstance
-	14,  // 55: google.cloud.aiplatform.v1.BleuResults.bleu_metric_values:type_name -> google.cloud.aiplatform.v1.BleuMetricValue
-	17,  // 56: google.cloud.aiplatform.v1.RougeInput.metric_spec:type_name -> google.cloud.aiplatform.v1.RougeSpec
-	16,  // 57: google.cloud.aiplatform.v1.RougeInput.instances:type_name -> google.cloud.aiplatform.v1.RougeInstance
-	19,  // 58: google.cloud.aiplatform.v1.RougeResults.rouge_metric_values:type_name -> google.cloud.aiplatform.v1.RougeMetricValue
-	22,  // 59: google.cloud.aiplatform.v1.CoherenceInput.metric_spec:type_name -> google.cloud.aiplatform.v1.CoherenceSpec
-	21,  // 60: google.cloud.aiplatform.v1.CoherenceInput.instance:type_name -> google.cloud.aiplatform.v1.CoherenceInstance
-	26,  // 61: google.cloud.aiplatform.v1.FluencyInput.metric_spec:type_name -> google.cloud.aiplatform.v1.FluencySpec
-	25,  // 62: google.cloud.aiplatform.v1.FluencyInput.instance:type_name -> google.cloud.aiplatform.v1.FluencyInstance
-	30,  // 63: google.cloud.aiplatform.v1.SafetyInput.metric_spec:type_name -> google.cloud.aiplatform.v1.SafetySpec
-	29,  // 64: google.cloud.aiplatform.v1.SafetyInput.instance:type_name -> google.cloud.aiplatform.v1.SafetyInstance
-	34,  // 65: google.cloud.aiplatform.v1.GroundednessInput.metric_spec:type_name -> google.cloud.aiplatform.v1.GroundednessSpec
-	33,  // 66: google.cloud.aiplatform.v1.GroundednessInput.instance:type_name -> google.cloud.aiplatform.v1.GroundednessInstance
-	38,  // 67: google.cloud.aiplatform.v1.FulfillmentInput.metric_spec:type_name -> google.cloud.aiplatform.v1.FulfillmentSpec
-	37,  // 68: google.cloud.aiplatform.v1.FulfillmentInput.instance:type_name -> google.cloud.aiplatform.v1.FulfillmentInstance
-	42,  // 69: google.cloud.aiplatform.v1.SummarizationQualityInput.metric_spec:type_name -> google.cloud.aiplatform.v1.SummarizationQualitySpec
-	41,  // 70: google.cloud.aiplatform.v1.SummarizationQualityInput.instance:type_name -> google.cloud.aiplatform.v1.SummarizationQualityInstance
-	46,  // 71: google.cloud.aiplatform.v1.PairwiseSummarizationQualityInput.metric_spec:type_name -> google.cloud.aiplatform.v1.PairwiseSummarizationQualitySpec
-	45,  // 72: google.cloud.aiplatform.v1.PairwiseSummarizationQualityInput.instance:type_name -> google.cloud.aiplatform.v1.PairwiseSummarizationQualityInstance
-	0,   // 73: google.cloud.aiplatform.v1.PairwiseSummarizationQualityResult.pairwise_choice:type_name -> google.cloud.aiplatform.v1.PairwiseChoice
-	50,  // 74: google.cloud.aiplatform.v1.SummarizationHelpfulnessInput.metric_spec:type_name -> google.cloud.aiplatform.v1.SummarizationHelpfulnessSpec
-	49,  // 75: google.cloud.aiplatform.v1.SummarizationHelpfulnessInput.instance:type_name -> google.cloud.aiplatform.v1.SummarizationHelpfulnessInstance
-	54,  // 76: google.cloud.aiplatform.v1.SummarizationVerbosityInput.metric_spec:type_name -> google.cloud.aiplatform.v1.SummarizationVerbositySpec
-	53,  // 77: google.cloud.aiplatform.v1.SummarizationVerbosityInput.instance:type_name -> google.cloud.aiplatform.v1.SummarizationVerbosityInstance
-	58,  // 78: google.cloud.aiplatform.v1.QuestionAnsweringQualityInput.metric_spec:type_name -> google.cloud.aiplatform.v1.QuestionAnsweringQualitySpec
-	57,  // 79: google.cloud.aiplatform.v1.QuestionAnsweringQualityInput.instance:type_name -> google.cloud.aiplatform.v1.QuestionAnsweringQualityInstance
-	62,  // 80: google.cloud.aiplatform.v1.PairwiseQuestionAnsweringQualityInput.metric_spec:type_name -> google.cloud.aiplatform.v1.PairwiseQuestionAnsweringQualitySpec
-	61,  // 81: google.cloud.aiplatform.v1.PairwiseQuestionAnsweringQualityInput.instance:type_name -> google.cloud.aiplatform.v1.PairwiseQuestionAnsweringQualityInstance
-	0,   // 82: google.cloud.aiplatform.v1.PairwiseQuestionAnsweringQualityResult.pairwise_choice:type_name -> google.cloud.aiplatform.v1.PairwiseChoice
-	66,  // 83: google.cloud.aiplatform.v1.QuestionAnsweringRelevanceInput.metric_spec:type_name -> google.cloud.aiplatform.v1.QuestionAnsweringRelevanceSpec
-	65,  // 84: google.cloud.aiplatform.v1.QuestionAnsweringRelevanceInput.instance:type_name -> google.cloud.aiplatform.v1.QuestionAnsweringRelevanceInstance
-	70,  // 85: google.cloud.aiplatform.v1.QuestionAnsweringHelpfulnessInput.metric_spec:type_name -> google.cloud.aiplatform.v1.QuestionAnsweringHelpfulnessSpec
-	69,  // 86: google.cloud.aiplatform.v1.QuestionAnsweringHelpfulnessInput.instance:type_name -> google.cloud.aiplatform.v1.QuestionAnsweringHelpfulnessInstance
-	74,  // 87: google.cloud.aiplatform.v1.QuestionAnsweringCorrectnessInput.metric_spec:type_name -> google.cloud.aiplatform.v1.QuestionAnsweringCorrectnessSpec
-	73,  // 88: google.cloud.aiplatform.v1.QuestionAnsweringCorrectnessInput.instance:type_name -> google.cloud.aiplatform.v1.QuestionAnsweringCorrectnessInstance
-	78,  // 89: google.cloud.aiplatform.v1.PointwiseMetricInput.metric_spec:type_name -> google.cloud.aiplatform.v1.PointwiseMetricSpec
-	77,  // 90: google.cloud.aiplatform.v1.PointwiseMetricInput.instance:type_name -> google.cloud.aiplatform.v1.PointwiseMetricInstance
-	82,  // 91: google.cloud.aiplatform.v1.PairwiseMetricInput.metric_spec:type_name -> google.cloud.aiplatform.v1.PairwiseMetricSpec
-	81,  // 92: google.cloud.aiplatform.v1.PairwiseMetricInput.instance:type_name -> google.cloud.aiplatform.v1.PairwiseMetricInstance
-	0,   // 93: google.cloud.aiplatform.v1.PairwiseMetricResult.pairwise_choice:type_name -> google.cloud.aiplatform.v1.PairwiseChoice
-	85,  // 94: google.cloud.aiplatform.v1.ToolCallValidInput.metric_spec:type_name -> google.cloud.aiplatform.v1.ToolCallValidSpec
-	86,  // 95: google.cloud.aiplatform.v1.ToolCallValidInput.instances:type_name -> google.cloud.aiplatform.v1.ToolCallValidInstance
-	88,  // 96: google.cloud.aiplatform.v1.ToolCallValidResults.tool_call_valid_metric_values:type_name -> google.cloud.aiplatform.v1.ToolCallValidMetricValue
-	90,  // 97: google.cloud.aiplatform.v1.ToolNameMatchInput.metric_spec:type_name -> google.cloud.aiplatform.v1.ToolNameMatchSpec
-	91,  // 98: google.cloud.aiplatform.v1.ToolNameMatchInput.instances:type_name -> google.cloud.aiplatform.v1.ToolNameMatchInstance
-	93,  // 99: google.cloud.aiplatform.v1.ToolNameMatchResults.tool_name_match_metric_values:type_name -> google.cloud.aiplatform.v1.ToolNameMatchMetricValue
-	95,  // 100: google.cloud.aiplatform.v1.ToolParameterKeyMatchInput.metric_spec:type_name -> google.cloud.aiplatform.v1.ToolParameterKeyMatchSpec
-	96,  // 101: google.cloud.aiplatform.v1.ToolParameterKeyMatchInput.instances:type_name -> google.cloud.aiplatform.v1.ToolParameterKeyMatchInstance
-	98,  // 102: google.cloud.aiplatform.v1.ToolParameterKeyMatchResults.tool_parameter_key_match_metric_values:type_name -> google.cloud.aiplatform.v1.ToolParameterKeyMatchMetricValue
-	100, // 103: google.cloud.aiplatform.v1.ToolParameterKVMatchInput.metric_spec:type_name -> google.cloud.aiplatform.v1.ToolParameterKVMatchSpec
-	101, // 104: google.cloud.aiplatform.v1.ToolParameterKVMatchInput.instances:type_name -> google.cloud.aiplatform.v1.ToolParameterKVMatchInstance
-	103, // 105: google.cloud.aiplatform.v1.ToolParameterKVMatchResults.tool_parameter_kv_match_metric_values:type_name -> google.cloud.aiplatform.v1.ToolParameterKVMatchMetricValue
-	105, // 106: google.cloud.aiplatform.v1.CometInput.metric_spec:type_name -> google.cloud.aiplatform.v1.CometSpec
-	106, // 107: google.cloud.aiplatform.v1.CometInput.instance:type_name -> google.cloud.aiplatform.v1.CometInstance
-	1,   // 108: google.cloud.aiplatform.v1.CometSpec.version:type_name -> google.cloud.aiplatform.v1.CometSpec.CometVersion
-	109, // 109: google.cloud.aiplatform.v1.MetricxInput.metric_spec:type_name -> google.cloud.aiplatform.v1.MetricxSpec
-	110, // 110: google.cloud.aiplatform.v1.MetricxInput.instance:type_name -> google.cloud.aiplatform.v1.MetricxInstance
-	2,   // 111: google.cloud.aiplatform.v1.MetricxSpec.version:type_name -> google.cloud.aiplatform.v1.MetricxSpec.MetricxVersion
-	3,   // 112: google.cloud.aiplatform.v1.EvaluationService.EvaluateInstances:input_type -> google.cloud.aiplatform.v1.EvaluateInstancesRequest
-	4,   // 113: google.cloud.aiplatform.v1.EvaluationService.EvaluateInstances:output_type -> google.cloud.aiplatform.v1.EvaluateInstancesResponse
-	113, // [113:114] is the sub-list for method output_type
-	112, // [112:113] is the sub-list for method input_type
-	112, // [112:112] is the sub-list for extension type_name
-	112, // [112:112] is the sub-list for extension extendee
-	0,   // [0:112] is the sub-list for field type_name
+	19,  // 0: google.cloud.aiplatform.v1.EvaluateInstancesRequest.exact_match_input:type_name -> google.cloud.aiplatform.v1.ExactMatchInput
+	24,  // 1: google.cloud.aiplatform.v1.EvaluateInstancesRequest.bleu_input:type_name -> google.cloud.aiplatform.v1.BleuInput
+	29,  // 2: google.cloud.aiplatform.v1.EvaluateInstancesRequest.rouge_input:type_name -> google.cloud.aiplatform.v1.RougeInput
+	38,  // 3: google.cloud.aiplatform.v1.EvaluateInstancesRequest.fluency_input:type_name -> google.cloud.aiplatform.v1.FluencyInput
+	34,  // 4: google.cloud.aiplatform.v1.EvaluateInstancesRequest.coherence_input:type_name -> google.cloud.aiplatform.v1.CoherenceInput
+	42,  // 5: google.cloud.aiplatform.v1.EvaluateInstancesRequest.safety_input:type_name -> google.cloud.aiplatform.v1.SafetyInput
+	46,  // 6: google.cloud.aiplatform.v1.EvaluateInstancesRequest.groundedness_input:type_name -> google.cloud.aiplatform.v1.GroundednessInput
+	50,  // 7: google.cloud.aiplatform.v1.EvaluateInstancesRequest.fulfillment_input:type_name -> google.cloud.aiplatform.v1.FulfillmentInput
+	54,  // 8: google.cloud.aiplatform.v1.EvaluateInstancesRequest.summarization_quality_input:type_name -> google.cloud.aiplatform.v1.SummarizationQualityInput
+	58,  // 9: google.cloud.aiplatform.v1.EvaluateInstancesRequest.pairwise_summarization_quality_input:type_name -> google.cloud.aiplatform.v1.PairwiseSummarizationQualityInput
+	62,  // 10: google.cloud.aiplatform.v1.EvaluateInstancesRequest.summarization_helpfulness_input:type_name -> google.cloud.aiplatform.v1.SummarizationHelpfulnessInput
+	66,  // 11: google.cloud.aiplatform.v1.EvaluateInstancesRequest.summarization_verbosity_input:type_name -> google.cloud.aiplatform.v1.SummarizationVerbosityInput
+	70,  // 12: google.cloud.aiplatform.v1.EvaluateInstancesRequest.question_answering_quality_input:type_name -> google.cloud.aiplatform.v1.QuestionAnsweringQualityInput
+	74,  // 13: google.cloud.aiplatform.v1.EvaluateInstancesRequest.pairwise_question_answering_quality_input:type_name -> google.cloud.aiplatform.v1.PairwiseQuestionAnsweringQualityInput
+	78,  // 14: google.cloud.aiplatform.v1.EvaluateInstancesRequest.question_answering_relevance_input:type_name -> google.cloud.aiplatform.v1.QuestionAnsweringRelevanceInput
+	82,  // 15: google.cloud.aiplatform.v1.EvaluateInstancesRequest.question_answering_helpfulness_input:type_name -> google.cloud.aiplatform.v1.QuestionAnsweringHelpfulnessInput
+	86,  // 16: google.cloud.aiplatform.v1.EvaluateInstancesRequest.question_answering_correctness_input:type_name -> google.cloud.aiplatform.v1.QuestionAnsweringCorrectnessInput
+	90,  // 17: google.cloud.aiplatform.v1.EvaluateInstancesRequest.pointwise_metric_input:type_name -> google.cloud.aiplatform.v1.PointwiseMetricInput
+	97,  // 18: google.cloud.aiplatform.v1.EvaluateInstancesRequest.pairwise_metric_input:type_name -> google.cloud.aiplatform.v1.PairwiseMetricInput
+	101, // 19: google.cloud.aiplatform.v1.EvaluateInstancesRequest.tool_call_valid_input:type_name -> google.cloud.aiplatform.v1.ToolCallValidInput
+	106, // 20: google.cloud.aiplatform.v1.EvaluateInstancesRequest.tool_name_match_input:type_name -> google.cloud.aiplatform.v1.ToolNameMatchInput
+	111, // 21: google.cloud.aiplatform.v1.EvaluateInstancesRequest.tool_parameter_key_match_input:type_name -> google.cloud.aiplatform.v1.ToolParameterKeyMatchInput
+	116, // 22: google.cloud.aiplatform.v1.EvaluateInstancesRequest.tool_parameter_kv_match_input:type_name -> google.cloud.aiplatform.v1.ToolParameterKVMatchInput
+	121, // 23: google.cloud.aiplatform.v1.EvaluateInstancesRequest.comet_input:type_name -> google.cloud.aiplatform.v1.CometInput
+	125, // 24: google.cloud.aiplatform.v1.EvaluateInstancesRequest.metricx_input:type_name -> google.cloud.aiplatform.v1.MetricxInput
+	16,  // 25: google.cloud.aiplatform.v1.Metric.predefined_metric_spec:type_name -> google.cloud.aiplatform.v1.PredefinedMetricSpec
+	17,  // 26: google.cloud.aiplatform.v1.Metric.computation_based_metric_spec:type_name -> google.cloud.aiplatform.v1.ComputationBasedMetricSpec
+	18,  // 27: google.cloud.aiplatform.v1.Metric.llm_based_metric_spec:type_name -> google.cloud.aiplatform.v1.LLMBasedMetricSpec
+	92,  // 28: google.cloud.aiplatform.v1.Metric.pointwise_metric_spec:type_name -> google.cloud.aiplatform.v1.PointwiseMetricSpec
+	99,  // 29: google.cloud.aiplatform.v1.Metric.pairwise_metric_spec:type_name -> google.cloud.aiplatform.v1.PairwiseMetricSpec
+	21,  // 30: google.cloud.aiplatform.v1.Metric.exact_match_spec:type_name -> google.cloud.aiplatform.v1.ExactMatchSpec
+	26,  // 31: google.cloud.aiplatform.v1.Metric.bleu_spec:type_name -> google.cloud.aiplatform.v1.BleuSpec
+	31,  // 32: google.cloud.aiplatform.v1.Metric.rouge_spec:type_name -> google.cloud.aiplatform.v1.RougeSpec
+	1,   // 33: google.cloud.aiplatform.v1.Metric.aggregation_metrics:type_name -> google.cloud.aiplatform.v1.Metric.AggregationMetric
+	132, // 34: google.cloud.aiplatform.v1.AutoraterConfig.generation_config:type_name -> google.cloud.aiplatform.v1.GenerationConfig
+	22,  // 35: google.cloud.aiplatform.v1.EvaluateInstancesResponse.exact_match_results:type_name -> google.cloud.aiplatform.v1.ExactMatchResults
+	27,  // 36: google.cloud.aiplatform.v1.EvaluateInstancesResponse.bleu_results:type_name -> google.cloud.aiplatform.v1.BleuResults
+	32,  // 37: google.cloud.aiplatform.v1.EvaluateInstancesResponse.rouge_results:type_name -> google.cloud.aiplatform.v1.RougeResults
+	41,  // 38: google.cloud.aiplatform.v1.EvaluateInstancesResponse.fluency_result:type_name -> google.cloud.aiplatform.v1.FluencyResult
+	37,  // 39: google.cloud.aiplatform.v1.EvaluateInstancesResponse.coherence_result:type_name -> google.cloud.aiplatform.v1.CoherenceResult
+	45,  // 40: google.cloud.aiplatform.v1.EvaluateInstancesResponse.safety_result:type_name -> google.cloud.aiplatform.v1.SafetyResult
+	49,  // 41: google.cloud.aiplatform.v1.EvaluateInstancesResponse.groundedness_result:type_name -> google.cloud.aiplatform.v1.GroundednessResult
+	53,  // 42: google.cloud.aiplatform.v1.EvaluateInstancesResponse.fulfillment_result:type_name -> google.cloud.aiplatform.v1.FulfillmentResult
+	57,  // 43: google.cloud.aiplatform.v1.EvaluateInstancesResponse.summarization_quality_result:type_name -> google.cloud.aiplatform.v1.SummarizationQualityResult
+	61,  // 44: google.cloud.aiplatform.v1.EvaluateInstancesResponse.pairwise_summarization_quality_result:type_name -> google.cloud.aiplatform.v1.PairwiseSummarizationQualityResult
+	65,  // 45: google.cloud.aiplatform.v1.EvaluateInstancesResponse.summarization_helpfulness_result:type_name -> google.cloud.aiplatform.v1.SummarizationHelpfulnessResult
+	69,  // 46: google.cloud.aiplatform.v1.EvaluateInstancesResponse.summarization_verbosity_result:type_name -> google.cloud.aiplatform.v1.SummarizationVerbosityResult
+	73,  // 47: google.cloud.aiplatform.v1.EvaluateInstancesResponse.question_answering_quality_result:type_name -> google.cloud.aiplatform.v1.QuestionAnsweringQualityResult
+	77,  // 48: google.cloud.aiplatform.v1.EvaluateInstancesResponse.pairwise_question_answering_quality_result:type_name -> google.cloud.aiplatform.v1.PairwiseQuestionAnsweringQualityResult
+	81,  // 49: google.cloud.aiplatform.v1.EvaluateInstancesResponse.question_answering_relevance_result:type_name -> google.cloud.aiplatform.v1.QuestionAnsweringRelevanceResult
+	85,  // 50: google.cloud.aiplatform.v1.EvaluateInstancesResponse.question_answering_helpfulness_result:type_name -> google.cloud.aiplatform.v1.QuestionAnsweringHelpfulnessResult
+	89,  // 51: google.cloud.aiplatform.v1.EvaluateInstancesResponse.question_answering_correctness_result:type_name -> google.cloud.aiplatform.v1.QuestionAnsweringCorrectnessResult
+	94,  // 52: google.cloud.aiplatform.v1.EvaluateInstancesResponse.pointwise_metric_result:type_name -> google.cloud.aiplatform.v1.PointwiseMetricResult
+	100, // 53: google.cloud.aiplatform.v1.EvaluateInstancesResponse.pairwise_metric_result:type_name -> google.cloud.aiplatform.v1.PairwiseMetricResult
+	104, // 54: google.cloud.aiplatform.v1.EvaluateInstancesResponse.tool_call_valid_results:type_name -> google.cloud.aiplatform.v1.ToolCallValidResults
+	109, // 55: google.cloud.aiplatform.v1.EvaluateInstancesResponse.tool_name_match_results:type_name -> google.cloud.aiplatform.v1.ToolNameMatchResults
+	114, // 56: google.cloud.aiplatform.v1.EvaluateInstancesResponse.tool_parameter_key_match_results:type_name -> google.cloud.aiplatform.v1.ToolParameterKeyMatchResults
+	119, // 57: google.cloud.aiplatform.v1.EvaluateInstancesResponse.tool_parameter_kv_match_results:type_name -> google.cloud.aiplatform.v1.ToolParameterKVMatchResults
+	124, // 58: google.cloud.aiplatform.v1.EvaluateInstancesResponse.comet_result:type_name -> google.cloud.aiplatform.v1.CometResult
+	128, // 59: google.cloud.aiplatform.v1.EvaluateInstancesResponse.metricx_result:type_name -> google.cloud.aiplatform.v1.MetricxResult
+	9,   // 60: google.cloud.aiplatform.v1.EvaluateInstancesResponse.metric_results:type_name -> google.cloud.aiplatform.v1.MetricResult
+	133, // 61: google.cloud.aiplatform.v1.MetricResult.error:type_name -> google.rpc.Status
+	134, // 62: google.cloud.aiplatform.v1.OutputConfig.gcs_destination:type_name -> google.cloud.aiplatform.v1.GcsDestination
+	135, // 63: google.cloud.aiplatform.v1.EvaluationDataset.gcs_source:type_name -> google.cloud.aiplatform.v1.GcsSource
+	136, // 64: google.cloud.aiplatform.v1.EvaluationDataset.bigquery_source:type_name -> google.cloud.aiplatform.v1.BigQuerySource
+	14,  // 65: google.cloud.aiplatform.v1.EvaluateDatasetResponse.aggregation_output:type_name -> google.cloud.aiplatform.v1.AggregationOutput
+	13,  // 66: google.cloud.aiplatform.v1.EvaluateDatasetResponse.output_info:type_name -> google.cloud.aiplatform.v1.OutputInfo
+	11,  // 67: google.cloud.aiplatform.v1.AggregationOutput.dataset:type_name -> google.cloud.aiplatform.v1.EvaluationDataset
+	15,  // 68: google.cloud.aiplatform.v1.AggregationOutput.aggregation_results:type_name -> google.cloud.aiplatform.v1.AggregationResult
+	94,  // 69: google.cloud.aiplatform.v1.AggregationResult.pointwise_metric_result:type_name -> google.cloud.aiplatform.v1.PointwiseMetricResult
+	100, // 70: google.cloud.aiplatform.v1.AggregationResult.pairwise_metric_result:type_name -> google.cloud.aiplatform.v1.PairwiseMetricResult
+	23,  // 71: google.cloud.aiplatform.v1.AggregationResult.exact_match_metric_value:type_name -> google.cloud.aiplatform.v1.ExactMatchMetricValue
+	28,  // 72: google.cloud.aiplatform.v1.AggregationResult.bleu_metric_value:type_name -> google.cloud.aiplatform.v1.BleuMetricValue
+	33,  // 73: google.cloud.aiplatform.v1.AggregationResult.rouge_metric_value:type_name -> google.cloud.aiplatform.v1.RougeMetricValue
+	1,   // 74: google.cloud.aiplatform.v1.AggregationResult.aggregation_metric:type_name -> google.cloud.aiplatform.v1.Metric.AggregationMetric
+	137, // 75: google.cloud.aiplatform.v1.PredefinedMetricSpec.metric_spec_parameters:type_name -> google.protobuf.Struct
+	2,   // 76: google.cloud.aiplatform.v1.ComputationBasedMetricSpec.type:type_name -> google.cloud.aiplatform.v1.ComputationBasedMetricSpec.ComputationBasedMetricType
+	137, // 77: google.cloud.aiplatform.v1.ComputationBasedMetricSpec.parameters:type_name -> google.protobuf.Struct
+	16,  // 78: google.cloud.aiplatform.v1.LLMBasedMetricSpec.predefined_rubric_generation_spec:type_name -> google.cloud.aiplatform.v1.PredefinedMetricSpec
+	7,   // 79: google.cloud.aiplatform.v1.LLMBasedMetricSpec.judge_autorater_config:type_name -> google.cloud.aiplatform.v1.AutoraterConfig
+	137, // 80: google.cloud.aiplatform.v1.LLMBasedMetricSpec.additional_config:type_name -> google.protobuf.Struct
+	21,  // 81: google.cloud.aiplatform.v1.ExactMatchInput.metric_spec:type_name -> google.cloud.aiplatform.v1.ExactMatchSpec
+	20,  // 82: google.cloud.aiplatform.v1.ExactMatchInput.instances:type_name -> google.cloud.aiplatform.v1.ExactMatchInstance
+	23,  // 83: google.cloud.aiplatform.v1.ExactMatchResults.exact_match_metric_values:type_name -> google.cloud.aiplatform.v1.ExactMatchMetricValue
+	26,  // 84: google.cloud.aiplatform.v1.BleuInput.metric_spec:type_name -> google.cloud.aiplatform.v1.BleuSpec
+	25,  // 85: google.cloud.aiplatform.v1.BleuInput.instances:type_name -> google.cloud.aiplatform.v1.BleuInstance
+	28,  // 86: google.cloud.aiplatform.v1.BleuResults.bleu_metric_values:type_name -> google.cloud.aiplatform.v1.BleuMetricValue
+	31,  // 87: google.cloud.aiplatform.v1.RougeInput.metric_spec:type_name -> google.cloud.aiplatform.v1.RougeSpec
+	30,  // 88: google.cloud.aiplatform.v1.RougeInput.instances:type_name -> google.cloud.aiplatform.v1.RougeInstance
+	33,  // 89: google.cloud.aiplatform.v1.RougeResults.rouge_metric_values:type_name -> google.cloud.aiplatform.v1.RougeMetricValue
+	36,  // 90: google.cloud.aiplatform.v1.CoherenceInput.metric_spec:type_name -> google.cloud.aiplatform.v1.CoherenceSpec
+	35,  // 91: google.cloud.aiplatform.v1.CoherenceInput.instance:type_name -> google.cloud.aiplatform.v1.CoherenceInstance
+	40,  // 92: google.cloud.aiplatform.v1.FluencyInput.metric_spec:type_name -> google.cloud.aiplatform.v1.FluencySpec
+	39,  // 93: google.cloud.aiplatform.v1.FluencyInput.instance:type_name -> google.cloud.aiplatform.v1.FluencyInstance
+	44,  // 94: google.cloud.aiplatform.v1.SafetyInput.metric_spec:type_name -> google.cloud.aiplatform.v1.SafetySpec
+	43,  // 95: google.cloud.aiplatform.v1.SafetyInput.instance:type_name -> google.cloud.aiplatform.v1.SafetyInstance
+	48,  // 96: google.cloud.aiplatform.v1.GroundednessInput.metric_spec:type_name -> google.cloud.aiplatform.v1.GroundednessSpec
+	47,  // 97: google.cloud.aiplatform.v1.GroundednessInput.instance:type_name -> google.cloud.aiplatform.v1.GroundednessInstance
+	52,  // 98: google.cloud.aiplatform.v1.FulfillmentInput.metric_spec:type_name -> google.cloud.aiplatform.v1.FulfillmentSpec
+	51,  // 99: google.cloud.aiplatform.v1.FulfillmentInput.instance:type_name -> google.cloud.aiplatform.v1.FulfillmentInstance
+	56,  // 100: google.cloud.aiplatform.v1.SummarizationQualityInput.metric_spec:type_name -> google.cloud.aiplatform.v1.SummarizationQualitySpec
+	55,  // 101: google.cloud.aiplatform.v1.SummarizationQualityInput.instance:type_name -> google.cloud.aiplatform.v1.SummarizationQualityInstance
+	60,  // 102: google.cloud.aiplatform.v1.PairwiseSummarizationQualityInput.metric_spec:type_name -> google.cloud.aiplatform.v1.PairwiseSummarizationQualitySpec
+	59,  // 103: google.cloud.aiplatform.v1.PairwiseSummarizationQualityInput.instance:type_name -> google.cloud.aiplatform.v1.PairwiseSummarizationQualityInstance
+	0,   // 104: google.cloud.aiplatform.v1.PairwiseSummarizationQualityResult.pairwise_choice:type_name -> google.cloud.aiplatform.v1.PairwiseChoice
+	64,  // 105: google.cloud.aiplatform.v1.SummarizationHelpfulnessInput.metric_spec:type_name -> google.cloud.aiplatform.v1.SummarizationHelpfulnessSpec
+	63,  // 106: google.cloud.aiplatform.v1.SummarizationHelpfulnessInput.instance:type_name -> google.cloud.aiplatform.v1.SummarizationHelpfulnessInstance
+	68,  // 107: google.cloud.aiplatform.v1.SummarizationVerbosityInput.metric_spec:type_name -> google.cloud.aiplatform.v1.SummarizationVerbositySpec
+	67,  // 108: google.cloud.aiplatform.v1.SummarizationVerbosityInput.instance:type_name -> google.cloud.aiplatform.v1.SummarizationVerbosityInstance
+	72,  // 109: google.cloud.aiplatform.v1.QuestionAnsweringQualityInput.metric_spec:type_name -> google.cloud.aiplatform.v1.QuestionAnsweringQualitySpec
+	71,  // 110: google.cloud.aiplatform.v1.QuestionAnsweringQualityInput.instance:type_name -> google.cloud.aiplatform.v1.QuestionAnsweringQualityInstance
+	76,  // 111: google.cloud.aiplatform.v1.PairwiseQuestionAnsweringQualityInput.metric_spec:type_name -> google.cloud.aiplatform.v1.PairwiseQuestionAnsweringQualitySpec
+	75,  // 112: google.cloud.aiplatform.v1.PairwiseQuestionAnsweringQualityInput.instance:type_name -> google.cloud.aiplatform.v1.PairwiseQuestionAnsweringQualityInstance
+	0,   // 113: google.cloud.aiplatform.v1.PairwiseQuestionAnsweringQualityResult.pairwise_choice:type_name -> google.cloud.aiplatform.v1.PairwiseChoice
+	80,  // 114: google.cloud.aiplatform.v1.QuestionAnsweringRelevanceInput.metric_spec:type_name -> google.cloud.aiplatform.v1.QuestionAnsweringRelevanceSpec
+	79,  // 115: google.cloud.aiplatform.v1.QuestionAnsweringRelevanceInput.instance:type_name -> google.cloud.aiplatform.v1.QuestionAnsweringRelevanceInstance
+	84,  // 116: google.cloud.aiplatform.v1.QuestionAnsweringHelpfulnessInput.metric_spec:type_name -> google.cloud.aiplatform.v1.QuestionAnsweringHelpfulnessSpec
+	83,  // 117: google.cloud.aiplatform.v1.QuestionAnsweringHelpfulnessInput.instance:type_name -> google.cloud.aiplatform.v1.QuestionAnsweringHelpfulnessInstance
+	88,  // 118: google.cloud.aiplatform.v1.QuestionAnsweringCorrectnessInput.metric_spec:type_name -> google.cloud.aiplatform.v1.QuestionAnsweringCorrectnessSpec
+	87,  // 119: google.cloud.aiplatform.v1.QuestionAnsweringCorrectnessInput.instance:type_name -> google.cloud.aiplatform.v1.QuestionAnsweringCorrectnessInstance
+	92,  // 120: google.cloud.aiplatform.v1.PointwiseMetricInput.metric_spec:type_name -> google.cloud.aiplatform.v1.PointwiseMetricSpec
+	91,  // 121: google.cloud.aiplatform.v1.PointwiseMetricInput.instance:type_name -> google.cloud.aiplatform.v1.PointwiseMetricInstance
+	129, // 122: google.cloud.aiplatform.v1.PointwiseMetricInstance.content_map_instance:type_name -> google.cloud.aiplatform.v1.ContentMap
+	93,  // 123: google.cloud.aiplatform.v1.PointwiseMetricSpec.custom_output_format_config:type_name -> google.cloud.aiplatform.v1.CustomOutputFormatConfig
+	95,  // 124: google.cloud.aiplatform.v1.PointwiseMetricResult.custom_output:type_name -> google.cloud.aiplatform.v1.CustomOutput
+	96,  // 125: google.cloud.aiplatform.v1.CustomOutput.raw_outputs:type_name -> google.cloud.aiplatform.v1.RawOutput
+	99,  // 126: google.cloud.aiplatform.v1.PairwiseMetricInput.metric_spec:type_name -> google.cloud.aiplatform.v1.PairwiseMetricSpec
+	98,  // 127: google.cloud.aiplatform.v1.PairwiseMetricInput.instance:type_name -> google.cloud.aiplatform.v1.PairwiseMetricInstance
+	129, // 128: google.cloud.aiplatform.v1.PairwiseMetricInstance.content_map_instance:type_name -> google.cloud.aiplatform.v1.ContentMap
+	93,  // 129: google.cloud.aiplatform.v1.PairwiseMetricSpec.custom_output_format_config:type_name -> google.cloud.aiplatform.v1.CustomOutputFormatConfig
+	0,   // 130: google.cloud.aiplatform.v1.PairwiseMetricResult.pairwise_choice:type_name -> google.cloud.aiplatform.v1.PairwiseChoice
+	95,  // 131: google.cloud.aiplatform.v1.PairwiseMetricResult.custom_output:type_name -> google.cloud.aiplatform.v1.CustomOutput
+	102, // 132: google.cloud.aiplatform.v1.ToolCallValidInput.metric_spec:type_name -> google.cloud.aiplatform.v1.ToolCallValidSpec
+	103, // 133: google.cloud.aiplatform.v1.ToolCallValidInput.instances:type_name -> google.cloud.aiplatform.v1.ToolCallValidInstance
+	105, // 134: google.cloud.aiplatform.v1.ToolCallValidResults.tool_call_valid_metric_values:type_name -> google.cloud.aiplatform.v1.ToolCallValidMetricValue
+	107, // 135: google.cloud.aiplatform.v1.ToolNameMatchInput.metric_spec:type_name -> google.cloud.aiplatform.v1.ToolNameMatchSpec
+	108, // 136: google.cloud.aiplatform.v1.ToolNameMatchInput.instances:type_name -> google.cloud.aiplatform.v1.ToolNameMatchInstance
+	110, // 137: google.cloud.aiplatform.v1.ToolNameMatchResults.tool_name_match_metric_values:type_name -> google.cloud.aiplatform.v1.ToolNameMatchMetricValue
+	112, // 138: google.cloud.aiplatform.v1.ToolParameterKeyMatchInput.metric_spec:type_name -> google.cloud.aiplatform.v1.ToolParameterKeyMatchSpec
+	113, // 139: google.cloud.aiplatform.v1.ToolParameterKeyMatchInput.instances:type_name -> google.cloud.aiplatform.v1.ToolParameterKeyMatchInstance
+	115, // 140: google.cloud.aiplatform.v1.ToolParameterKeyMatchResults.tool_parameter_key_match_metric_values:type_name -> google.cloud.aiplatform.v1.ToolParameterKeyMatchMetricValue
+	117, // 141: google.cloud.aiplatform.v1.ToolParameterKVMatchInput.metric_spec:type_name -> google.cloud.aiplatform.v1.ToolParameterKVMatchSpec
+	118, // 142: google.cloud.aiplatform.v1.ToolParameterKVMatchInput.instances:type_name -> google.cloud.aiplatform.v1.ToolParameterKVMatchInstance
+	120, // 143: google.cloud.aiplatform.v1.ToolParameterKVMatchResults.tool_parameter_kv_match_metric_values:type_name -> google.cloud.aiplatform.v1.ToolParameterKVMatchMetricValue
+	122, // 144: google.cloud.aiplatform.v1.CometInput.metric_spec:type_name -> google.cloud.aiplatform.v1.CometSpec
+	123, // 145: google.cloud.aiplatform.v1.CometInput.instance:type_name -> google.cloud.aiplatform.v1.CometInstance
+	3,   // 146: google.cloud.aiplatform.v1.CometSpec.version:type_name -> google.cloud.aiplatform.v1.CometSpec.CometVersion
+	126, // 147: google.cloud.aiplatform.v1.MetricxInput.metric_spec:type_name -> google.cloud.aiplatform.v1.MetricxSpec
+	127, // 148: google.cloud.aiplatform.v1.MetricxInput.instance:type_name -> google.cloud.aiplatform.v1.MetricxInstance
+	4,   // 149: google.cloud.aiplatform.v1.MetricxSpec.version:type_name -> google.cloud.aiplatform.v1.MetricxSpec.MetricxVersion
+	131, // 150: google.cloud.aiplatform.v1.ContentMap.values:type_name -> google.cloud.aiplatform.v1.ContentMap.ValuesEntry
+	138, // 151: google.cloud.aiplatform.v1.ContentMap.Contents.contents:type_name -> google.cloud.aiplatform.v1.Content
+	130, // 152: google.cloud.aiplatform.v1.ContentMap.ValuesEntry.value:type_name -> google.cloud.aiplatform.v1.ContentMap.Contents
+	5,   // 153: google.cloud.aiplatform.v1.EvaluationService.EvaluateInstances:input_type -> google.cloud.aiplatform.v1.EvaluateInstancesRequest
+	8,   // 154: google.cloud.aiplatform.v1.EvaluationService.EvaluateInstances:output_type -> google.cloud.aiplatform.v1.EvaluateInstancesResponse
+	154, // [154:155] is the sub-list for method output_type
+	153, // [153:154] is the sub-list for method input_type
+	153, // [153:153] is the sub-list for extension type_name
+	153, // [153:153] is the sub-list for extension extendee
+	0,   // [0:153] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_aiplatform_v1_evaluation_service_proto_init() }
@@ -8081,6 +9906,8 @@ func file_google_cloud_aiplatform_v1_evaluation_service_proto_init() {
 	if File_google_cloud_aiplatform_v1_evaluation_service_proto != nil {
 		return
 	}
+	file_google_cloud_aiplatform_v1_content_proto_init()
+	file_google_cloud_aiplatform_v1_io_proto_init()
 	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[0].OneofWrappers = []any{
 		(*EvaluateInstancesRequest_ExactMatchInput)(nil),
 		(*EvaluateInstancesRequest_BleuInput)(nil),
@@ -8109,6 +9936,17 @@ func file_google_cloud_aiplatform_v1_evaluation_service_proto_init() {
 		(*EvaluateInstancesRequest_MetricxInput)(nil),
 	}
 	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[1].OneofWrappers = []any{
+		(*Metric_PredefinedMetricSpec)(nil),
+		(*Metric_ComputationBasedMetricSpec)(nil),
+		(*Metric_LlmBasedMetricSpec)(nil),
+		(*Metric_PointwiseMetricSpec)(nil),
+		(*Metric_PairwiseMetricSpec)(nil),
+		(*Metric_ExactMatchSpec)(nil),
+		(*Metric_BleuSpec)(nil),
+		(*Metric_RougeSpec)(nil),
+	}
+	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[2].OneofWrappers = []any{}
+	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[3].OneofWrappers = []any{
 		(*EvaluateInstancesResponse_ExactMatchResults)(nil),
 		(*EvaluateInstancesResponse_BleuResults)(nil),
 		(*EvaluateInstancesResponse_RougeResults)(nil),
@@ -8135,17 +9973,34 @@ func file_google_cloud_aiplatform_v1_evaluation_service_proto_init() {
 		(*EvaluateInstancesResponse_CometResult)(nil),
 		(*EvaluateInstancesResponse_MetricxResult)(nil),
 	}
-	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[3].OneofWrappers = []any{}
-	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[6].OneofWrappers = []any{}
-	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[8].OneofWrappers = []any{}
-	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[11].OneofWrappers = []any{}
-	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[13].OneofWrappers = []any{}
-	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[16].OneofWrappers = []any{}
+	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[4].OneofWrappers = []any{}
+	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[5].OneofWrappers = []any{
+		(*OutputConfig_GcsDestination)(nil),
+	}
+	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[6].OneofWrappers = []any{
+		(*EvaluationDataset_GcsSource)(nil),
+		(*EvaluationDataset_BigquerySource)(nil),
+	}
+	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[8].OneofWrappers = []any{
+		(*OutputInfo_GcsOutputDirectory)(nil),
+	}
+	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[10].OneofWrappers = []any{
+		(*AggregationResult_PointwiseMetricResult)(nil),
+		(*AggregationResult_PairwiseMetricResult)(nil),
+		(*AggregationResult_ExactMatchMetricValue)(nil),
+		(*AggregationResult_BleuMetricValue)(nil),
+		(*AggregationResult_RougeMetricValue)(nil),
+	}
+	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[12].OneofWrappers = []any{}
+	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[13].OneofWrappers = []any{
+		(*LLMBasedMetricSpec_RubricGroupKey)(nil),
+		(*LLMBasedMetricSpec_PredefinedRubricGenerationSpec)(nil),
+	}
+	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[15].OneofWrappers = []any{}
 	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[18].OneofWrappers = []any{}
 	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[20].OneofWrappers = []any{}
-	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[22].OneofWrappers = []any{}
-	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[24].OneofWrappers = []any{}
-	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[26].OneofWrappers = []any{}
+	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[23].OneofWrappers = []any{}
+	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[25].OneofWrappers = []any{}
 	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[28].OneofWrappers = []any{}
 	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[30].OneofWrappers = []any{}
 	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[32].OneofWrappers = []any{}
@@ -8169,36 +10024,50 @@ func file_google_cloud_aiplatform_v1_evaluation_service_proto_init() {
 	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[68].OneofWrappers = []any{}
 	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[70].OneofWrappers = []any{}
 	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[72].OneofWrappers = []any{}
-	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[74].OneofWrappers = []any{
-		(*PointwiseMetricInstance_JsonInstance)(nil),
-	}
-	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[75].OneofWrappers = []any{}
+	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[74].OneofWrappers = []any{}
 	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[76].OneofWrappers = []any{}
-	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[78].OneofWrappers = []any{
-		(*PairwiseMetricInstance_JsonInstance)(nil),
+	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[78].OneofWrappers = []any{}
+	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[80].OneofWrappers = []any{}
+	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[82].OneofWrappers = []any{}
+	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[84].OneofWrappers = []any{}
+	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[86].OneofWrappers = []any{
+		(*PointwiseMetricInstance_JsonInstance)(nil),
+		(*PointwiseMetricInstance_ContentMapInstance)(nil),
 	}
-	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[79].OneofWrappers = []any{}
-	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[83].OneofWrappers = []any{}
-	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[85].OneofWrappers = []any{}
-	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[88].OneofWrappers = []any{}
-	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[90].OneofWrappers = []any{}
-	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[93].OneofWrappers = []any{}
-	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[95].OneofWrappers = []any{}
+	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[87].OneofWrappers = []any{}
+	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[88].OneofWrappers = []any{
+		(*CustomOutputFormatConfig_ReturnRawOutput)(nil),
+	}
+	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[89].OneofWrappers = []any{}
+	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[90].OneofWrappers = []any{
+		(*CustomOutput_RawOutputs)(nil),
+	}
+	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[93].OneofWrappers = []any{
+		(*PairwiseMetricInstance_JsonInstance)(nil),
+		(*PairwiseMetricInstance_ContentMapInstance)(nil),
+	}
+	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[94].OneofWrappers = []any{}
 	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[98].OneofWrappers = []any{}
 	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[100].OneofWrappers = []any{}
-	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[102].OneofWrappers = []any{}
 	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[103].OneofWrappers = []any{}
-	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[104].OneofWrappers = []any{}
-	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[106].OneofWrappers = []any{}
-	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[107].OneofWrappers = []any{}
+	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[105].OneofWrappers = []any{}
 	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[108].OneofWrappers = []any{}
+	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[110].OneofWrappers = []any{}
+	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[113].OneofWrappers = []any{}
+	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[115].OneofWrappers = []any{}
+	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[117].OneofWrappers = []any{}
+	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[118].OneofWrappers = []any{}
+	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[119].OneofWrappers = []any{}
+	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[121].OneofWrappers = []any{}
+	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[122].OneofWrappers = []any{}
+	file_google_cloud_aiplatform_v1_evaluation_service_proto_msgTypes[123].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDesc), len(file_google_cloud_aiplatform_v1_evaluation_service_proto_rawDesc)),
-			NumEnums:      3,
-			NumMessages:   109,
+			NumEnums:      5,
+			NumMessages:   127,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

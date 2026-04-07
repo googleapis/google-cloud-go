@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -449,7 +449,7 @@ func (x Document_EntityValidationOutput_ValidationResult_ValidationResultType) N
 
 // Deprecated: Use Document_EntityValidationOutput_ValidationResult_ValidationResultType.Descriptor instead.
 func (Document_EntityValidationOutput_ValidationResult_ValidationResultType) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 12, 0, 0}
+	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 14, 0, 0}
 }
 
 // Document represents the canonical document resource in Document AI. It is an
@@ -501,6 +501,11 @@ type Document struct {
 	DocumentLayout *Document_DocumentLayout `protobuf:"bytes,17,opt,name=document_layout,json=documentLayout,proto3" json:"document_layout,omitempty"`
 	// Document chunked based on chunking config.
 	ChunkedDocument *Document_ChunkedDocument `protobuf:"bytes,18,opt,name=chunked_document,json=chunkedDocument,proto3" json:"chunked_document,omitempty"`
+	// Optional. The blob assets in this document. This is used to store the
+	// content of the inline blobs in this document, for example, image bytes,
+	// such that it can be referenced by other fields in the document via asset
+	// id.
+	BlobAssets []*Document_BlobAsset `protobuf:"bytes,19,rep,name=blob_assets,json=blobAssets,proto3" json:"blob_assets,omitempty"`
 	// The entity validation output for the document. This is the validation
 	// output for `document.entities` field.
 	EntityValidationOutput *Document_EntityValidationOutput `protobuf:"bytes,21,opt,name=entity_validation_output,json=entityValidationOutput,proto3" json:"entity_validation_output,omitempty"`
@@ -511,7 +516,7 @@ type Document struct {
 	// The entity revision ID that `document.entities` field is based on.
 	// If this field is set and `entities_revisions` is not empty, the entities in
 	// `document.entities` field are the entities in the entity revision with this
-	// ID and `document.entity_validation_output` field is the
+	// id and `document.entity_validation_output` field is the
 	// `entity_validation_output` field in this entity revision.
 	EntitiesRevisionId string `protobuf:"bytes,23,opt,name=entities_revision_id,json=entitiesRevisionId,proto3" json:"entities_revision_id,omitempty"`
 	unknownFields      protoimpl.UnknownFields
@@ -661,6 +666,13 @@ func (x *Document) GetDocumentLayout() *Document_DocumentLayout {
 func (x *Document) GetChunkedDocument() *Document_ChunkedDocument {
 	if x != nil {
 		return x.ChunkedDocument
+	}
+	return nil
+}
+
+func (x *Document) GetBlobAssets() []*Document_BlobAsset {
+	if x != nil {
+		return x.BlobAssets
 	}
 	return nil
 }
@@ -928,7 +940,7 @@ type Document_Page struct {
 	Lines []*Document_Page_Line `protobuf:"bytes,7,rep,name=lines,proto3" json:"lines,omitempty"`
 	// A list of visually detected tokens on the page.
 	Tokens []*Document_Page_Token `protobuf:"bytes,8,rep,name=tokens,proto3" json:"tokens,omitempty"`
-	// A list of detected non-text visual elements e.g. checkbox,
+	// A list of detected non-text visual elements, for example, checkbox,
 	// signature etc. on the page.
 	VisualElements []*Document_Page_VisualElement `protobuf:"bytes,9,rep,name=visual_elements,json=visualElements,proto3" json:"visual_elements,omitempty"`
 	// A list of visually detected tables on the page.
@@ -1108,9 +1120,10 @@ type Document_Entity struct {
 	// Text anchor indexing into the
 	// [Document.text][google.cloud.documentai.v1.Document.text].
 	TextAnchor *Document_TextAnchor `protobuf:"bytes,1,opt,name=text_anchor,json=textAnchor,proto3" json:"text_anchor,omitempty"`
-	// Required. Entity type from a schema e.g. `Address`.
+	// Required. Entity type from a schema, for example, `Address`.
 	Type string `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"`
-	// Optional. Text value of the entity e.g. `1600 Amphitheatre Pkwy`.
+	// Optional. Text value of the entity, for example, `1600 Amphitheatre
+	// Pkwy`.
 	MentionText string `protobuf:"bytes,3,opt,name=mention_text,json=mentionText,proto3" json:"mention_text,omitempty"`
 	// Optional. Deprecated.  Use `id` field instead.
 	MentionId string `protobuf:"bytes,4,opt,name=mention_id,json=mentionId,proto3" json:"mention_id,omitempty"`
@@ -1123,9 +1136,9 @@ type Document_Entity struct {
 	// for this document.
 	Id string `protobuf:"bytes,7,opt,name=id,proto3" json:"id,omitempty"`
 	// Optional. Normalized entity value. Absent if the extracted value could
-	// not be converted or the type (e.g. address) is not supported for certain
-	// parsers. This field is also only populated for certain supported document
-	// types.
+	// not be converted or the type (for example, address) is not supported for
+	// certain parsers. This field is also only populated for certain supported
+	// document types.
 	NormalizedValue *Document_Entity_NormalizedValue `protobuf:"bytes,9,opt,name=normalized_value,json=normalizedValue,proto3" json:"normalized_value,omitempty"`
 	// Optional. Entities can be nested to form a hierarchical data structure
 	// representing the content in the document.
@@ -1724,6 +1737,52 @@ func (x *Document_TextChange) GetProvenance() []*Document_Provenance {
 	return nil
 }
 
+// Represents the annotation of a block or a chunk.
+type Document_Annotations struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The description of the content with this annotation.
+	Description   string `protobuf:"bytes,1,opt,name=description,proto3" json:"description,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Document_Annotations) Reset() {
+	*x = Document_Annotations{}
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Document_Annotations) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Document_Annotations) ProtoMessage() {}
+
+func (x *Document_Annotations) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Document_Annotations.ProtoReflect.Descriptor instead.
+func (*Document_Annotations) Descriptor() ([]byte, []int) {
+	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 10}
+}
+
+func (x *Document_Annotations) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
 // Represents the parsed layout of a document as a collection of blocks that
 // the document is divided into.
 type Document_DocumentLayout struct {
@@ -1736,7 +1795,7 @@ type Document_DocumentLayout struct {
 
 func (x *Document_DocumentLayout) Reset() {
 	*x = Document_DocumentLayout{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[11]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1748,7 +1807,7 @@ func (x *Document_DocumentLayout) String() string {
 func (*Document_DocumentLayout) ProtoMessage() {}
 
 func (x *Document_DocumentLayout) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[11]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1761,7 +1820,7 @@ func (x *Document_DocumentLayout) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Document_DocumentLayout.ProtoReflect.Descriptor instead.
 func (*Document_DocumentLayout) Descriptor() ([]byte, []int) {
-	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 10}
+	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 11}
 }
 
 func (x *Document_DocumentLayout) GetBlocks() []*Document_DocumentLayout_DocumentLayoutBlock {
@@ -1782,7 +1841,7 @@ type Document_ChunkedDocument struct {
 
 func (x *Document_ChunkedDocument) Reset() {
 	*x = Document_ChunkedDocument{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[12]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1794,7 +1853,7 @@ func (x *Document_ChunkedDocument) String() string {
 func (*Document_ChunkedDocument) ProtoMessage() {}
 
 func (x *Document_ChunkedDocument) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[12]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1807,7 +1866,7 @@ func (x *Document_ChunkedDocument) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Document_ChunkedDocument.ProtoReflect.Descriptor instead.
 func (*Document_ChunkedDocument) Descriptor() ([]byte, []int) {
-	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 11}
+	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 12}
 }
 
 func (x *Document_ChunkedDocument) GetChunks() []*Document_ChunkedDocument_Chunk {
@@ -1815,6 +1874,74 @@ func (x *Document_ChunkedDocument) GetChunks() []*Document_ChunkedDocument_Chunk
 		return x.Chunks
 	}
 	return nil
+}
+
+// Represents a blob asset. It's used to store the content of the inline blob
+// in this document, for example, image bytes, such that it can be referenced
+// by other fields in the document via asset ID.
+type Document_BlobAsset struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The id of the blob asset.
+	AssetId string `protobuf:"bytes,1,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty"`
+	// Optional. The content of the blob asset, for example, image bytes.
+	Content []byte `protobuf:"bytes,2,opt,name=content,proto3" json:"content,omitempty"`
+	// The mime type of the blob asset.
+	// An IANA published [media type (MIME
+	// type)](https://www.iana.org/assignments/media-types/media-types.xhtml).
+	MimeType      string `protobuf:"bytes,3,opt,name=mime_type,json=mimeType,proto3" json:"mime_type,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Document_BlobAsset) Reset() {
+	*x = Document_BlobAsset{}
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Document_BlobAsset) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Document_BlobAsset) ProtoMessage() {}
+
+func (x *Document_BlobAsset) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Document_BlobAsset.ProtoReflect.Descriptor instead.
+func (*Document_BlobAsset) Descriptor() ([]byte, []int) {
+	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 13}
+}
+
+func (x *Document_BlobAsset) GetAssetId() string {
+	if x != nil {
+		return x.AssetId
+	}
+	return ""
+}
+
+func (x *Document_BlobAsset) GetContent() []byte {
+	if x != nil {
+		return x.Content
+	}
+	return nil
+}
+
+func (x *Document_BlobAsset) GetMimeType() string {
+	if x != nil {
+		return x.MimeType
+	}
+	return ""
 }
 
 // The output of the validation given the document and the validation rules.
@@ -1831,7 +1958,7 @@ type Document_EntityValidationOutput struct {
 
 func (x *Document_EntityValidationOutput) Reset() {
 	*x = Document_EntityValidationOutput{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[13]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1843,7 +1970,7 @@ func (x *Document_EntityValidationOutput) String() string {
 func (*Document_EntityValidationOutput) ProtoMessage() {}
 
 func (x *Document_EntityValidationOutput) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[13]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1856,7 +1983,7 @@ func (x *Document_EntityValidationOutput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Document_EntityValidationOutput.ProtoReflect.Descriptor instead.
 func (*Document_EntityValidationOutput) Descriptor() ([]byte, []int) {
-	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 12}
+	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 14}
 }
 
 func (x *Document_EntityValidationOutput) GetValidationResults() []*Document_EntityValidationOutput_ValidationResult {
@@ -1888,7 +2015,7 @@ type Document_EntitiesRevision struct {
 
 func (x *Document_EntitiesRevision) Reset() {
 	*x = Document_EntitiesRevision{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[14]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1900,7 +2027,7 @@ func (x *Document_EntitiesRevision) String() string {
 func (*Document_EntitiesRevision) ProtoMessage() {}
 
 func (x *Document_EntitiesRevision) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[14]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1913,7 +2040,7 @@ func (x *Document_EntitiesRevision) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Document_EntitiesRevision.ProtoReflect.Descriptor instead.
 func (*Document_EntitiesRevision) Descriptor() ([]byte, []int) {
-	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 13}
+	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 15}
 }
 
 func (x *Document_EntitiesRevision) GetRevisionId() string {
@@ -1951,7 +2078,7 @@ type Document_Style_FontSize struct {
 
 func (x *Document_Style_FontSize) Reset() {
 	*x = Document_Style_FontSize{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[15]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1963,7 +2090,7 @@ func (x *Document_Style_FontSize) String() string {
 func (*Document_Style_FontSize) ProtoMessage() {}
 
 func (x *Document_Style_FontSize) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[15]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2008,7 +2135,7 @@ type Document_Page_Dimension struct {
 
 func (x *Document_Page_Dimension) Reset() {
 	*x = Document_Page_Dimension{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[16]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2020,7 +2147,7 @@ func (x *Document_Page_Dimension) String() string {
 func (*Document_Page_Dimension) ProtoMessage() {}
 
 func (x *Document_Page_Dimension) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[16]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2076,7 +2203,7 @@ type Document_Page_Image struct {
 
 func (x *Document_Page_Image) Reset() {
 	*x = Document_Page_Image{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[17]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2088,7 +2215,7 @@ func (x *Document_Page_Image) String() string {
 func (*Document_Page_Image) ProtoMessage() {}
 
 func (x *Document_Page_Image) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[17]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2153,7 +2280,7 @@ type Document_Page_Matrix struct {
 
 func (x *Document_Page_Matrix) Reset() {
 	*x = Document_Page_Matrix{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[18]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2165,7 +2292,7 @@ func (x *Document_Page_Matrix) String() string {
 func (*Document_Page_Matrix) ProtoMessage() {}
 
 func (x *Document_Page_Matrix) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[18]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2217,9 +2344,9 @@ type Document_Page_Layout struct {
 	TextAnchor *Document_TextAnchor `protobuf:"bytes,1,opt,name=text_anchor,json=textAnchor,proto3" json:"text_anchor,omitempty"`
 	// Confidence of the current
 	// [Layout][google.cloud.documentai.v1.Document.Page.Layout] within
-	// context of the object this layout is for. e.g. confidence can be for a
-	// single token, a table, a visual element, etc. depending on context.
-	// Range `[0, 1]`.
+	// context of the object this layout is for. For example, confidence can
+	// be for a single token, a table, a visual element, etc. depending on
+	// context. Range `[0, 1]`.
 	Confidence float32 `protobuf:"fixed32,2,opt,name=confidence,proto3" json:"confidence,omitempty"`
 	// The bounding polygon for the
 	// [Layout][google.cloud.documentai.v1.Document.Page.Layout].
@@ -2233,7 +2360,7 @@ type Document_Page_Layout struct {
 
 func (x *Document_Page_Layout) Reset() {
 	*x = Document_Page_Layout{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[19]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2245,7 +2372,7 @@ func (x *Document_Page_Layout) String() string {
 func (*Document_Page_Layout) ProtoMessage() {}
 
 func (x *Document_Page_Layout) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[19]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2308,7 +2435,7 @@ type Document_Page_Block struct {
 
 func (x *Document_Page_Block) Reset() {
 	*x = Document_Page_Block{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[20]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2320,7 +2447,7 @@ func (x *Document_Page_Block) String() string {
 func (*Document_Page_Block) ProtoMessage() {}
 
 func (x *Document_Page_Block) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[20]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2376,7 +2503,7 @@ type Document_Page_Paragraph struct {
 
 func (x *Document_Page_Paragraph) Reset() {
 	*x = Document_Page_Paragraph{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[21]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2388,7 +2515,7 @@ func (x *Document_Page_Paragraph) String() string {
 func (*Document_Page_Paragraph) ProtoMessage() {}
 
 func (x *Document_Page_Paragraph) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[21]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2445,7 +2572,7 @@ type Document_Page_Line struct {
 
 func (x *Document_Page_Line) Reset() {
 	*x = Document_Page_Line{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[22]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2457,7 +2584,7 @@ func (x *Document_Page_Line) String() string {
 func (*Document_Page_Line) ProtoMessage() {}
 
 func (x *Document_Page_Line) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[22]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2518,7 +2645,7 @@ type Document_Page_Token struct {
 
 func (x *Document_Page_Token) Reset() {
 	*x = Document_Page_Token{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[23]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2530,7 +2657,7 @@ func (x *Document_Page_Token) String() string {
 func (*Document_Page_Token) ProtoMessage() {}
 
 func (x *Document_Page_Token) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[23]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2596,7 +2723,7 @@ type Document_Page_Symbol struct {
 
 func (x *Document_Page_Symbol) Reset() {
 	*x = Document_Page_Symbol{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[24]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2608,7 +2735,7 @@ func (x *Document_Page_Symbol) String() string {
 func (*Document_Page_Symbol) ProtoMessage() {}
 
 func (x *Document_Page_Symbol) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[24]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2638,8 +2765,8 @@ func (x *Document_Page_Symbol) GetDetectedLanguages() []*Document_Page_DetectedL
 	return nil
 }
 
-// Detected non-text visual elements e.g. checkbox, signature etc. on the
-// page.
+// Detected non-text visual elements, for example, checkbox, signature etc.
+// on the page.
 type Document_Page_VisualElement struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// [Layout][google.cloud.documentai.v1.Document.Page.Layout] for
@@ -2656,7 +2783,7 @@ type Document_Page_VisualElement struct {
 
 func (x *Document_Page_VisualElement) Reset() {
 	*x = Document_Page_VisualElement{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[25]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2668,7 +2795,7 @@ func (x *Document_Page_VisualElement) String() string {
 func (*Document_Page_VisualElement) ProtoMessage() {}
 
 func (x *Document_Page_VisualElement) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[25]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2727,7 +2854,7 @@ type Document_Page_Table struct {
 
 func (x *Document_Page_Table) Reset() {
 	*x = Document_Page_Table{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[26]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2739,7 +2866,7 @@ func (x *Document_Page_Table) String() string {
 func (*Document_Page_Table) ProtoMessage() {}
 
 func (x *Document_Page_Table) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[26]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2796,7 +2923,7 @@ type Document_Page_FormField struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// [Layout][google.cloud.documentai.v1.Document.Page.Layout] for the
 	// [FormField][google.cloud.documentai.v1.Document.Page.FormField] name.
-	// e.g. `Address`, `Email`, `Grand total`, `Phone number`, etc.
+	// For example, `Address`, `Email`, `Grand total`, `Phone number`, etc.
 	FieldName *Document_Page_Layout `protobuf:"bytes,1,opt,name=field_name,json=fieldName,proto3" json:"field_name,omitempty"`
 	// [Layout][google.cloud.documentai.v1.Document.Page.Layout] for the
 	// [FormField][google.cloud.documentai.v1.Document.Page.FormField] value.
@@ -2828,7 +2955,7 @@ type Document_Page_FormField struct {
 
 func (x *Document_Page_FormField) Reset() {
 	*x = Document_Page_FormField{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[27]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2840,7 +2967,7 @@ func (x *Document_Page_FormField) String() string {
 func (*Document_Page_FormField) ProtoMessage() {}
 
 func (x *Document_Page_FormField) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[27]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2927,7 +3054,7 @@ type Document_Page_DetectedBarcode struct {
 
 func (x *Document_Page_DetectedBarcode) Reset() {
 	*x = Document_Page_DetectedBarcode{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[28]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2939,7 +3066,7 @@ func (x *Document_Page_DetectedBarcode) String() string {
 func (*Document_Page_DetectedBarcode) ProtoMessage() {}
 
 func (x *Document_Page_DetectedBarcode) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[28]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2984,7 +3111,7 @@ type Document_Page_DetectedLanguage struct {
 
 func (x *Document_Page_DetectedLanguage) Reset() {
 	*x = Document_Page_DetectedLanguage{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[29]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2996,7 +3123,7 @@ func (x *Document_Page_DetectedLanguage) String() string {
 func (*Document_Page_DetectedLanguage) ProtoMessage() {}
 
 func (x *Document_Page_DetectedLanguage) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[29]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3039,7 +3166,7 @@ type Document_Page_ImageQualityScores struct {
 
 func (x *Document_Page_ImageQualityScores) Reset() {
 	*x = Document_Page_ImageQualityScores{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[30]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3051,7 +3178,7 @@ func (x *Document_Page_ImageQualityScores) String() string {
 func (*Document_Page_ImageQualityScores) ProtoMessage() {}
 
 func (x *Document_Page_ImageQualityScores) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[30]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3093,7 +3220,7 @@ type Document_Page_Token_DetectedBreak struct {
 
 func (x *Document_Page_Token_DetectedBreak) Reset() {
 	*x = Document_Page_Token_DetectedBreak{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[31]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3105,7 +3232,7 @@ func (x *Document_Page_Token_DetectedBreak) String() string {
 func (*Document_Page_Token_DetectedBreak) ProtoMessage() {}
 
 func (x *Document_Page_Token_DetectedBreak) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[31]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3172,7 +3299,7 @@ type Document_Page_Token_StyleInfo struct {
 
 func (x *Document_Page_Token_StyleInfo) Reset() {
 	*x = Document_Page_Token_StyleInfo{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[32]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3184,7 +3311,7 @@ func (x *Document_Page_Token_StyleInfo) String() string {
 func (*Document_Page_Token_StyleInfo) ProtoMessage() {}
 
 func (x *Document_Page_Token_StyleInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[32]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3316,7 +3443,7 @@ type Document_Page_Table_TableRow struct {
 
 func (x *Document_Page_Table_TableRow) Reset() {
 	*x = Document_Page_Table_TableRow{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[33]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3328,7 +3455,7 @@ func (x *Document_Page_Table_TableRow) String() string {
 func (*Document_Page_Table_TableRow) ProtoMessage() {}
 
 func (x *Document_Page_Table_TableRow) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[33]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3369,7 +3496,7 @@ type Document_Page_Table_TableCell struct {
 
 func (x *Document_Page_Table_TableCell) Reset() {
 	*x = Document_Page_Table_TableCell{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[34]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3381,7 +3508,7 @@ func (x *Document_Page_Table_TableCell) String() string {
 func (*Document_Page_Table_TableCell) ProtoMessage() {}
 
 func (x *Document_Page_Table_TableCell) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[34]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3448,7 +3575,7 @@ type Document_Page_ImageQualityScores_DetectedDefect struct {
 
 func (x *Document_Page_ImageQualityScores_DetectedDefect) Reset() {
 	*x = Document_Page_ImageQualityScores_DetectedDefect{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[35]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3460,7 +3587,7 @@ func (x *Document_Page_ImageQualityScores_DetectedDefect) String() string {
 func (*Document_Page_ImageQualityScores_DetectedDefect) ProtoMessage() {}
 
 func (x *Document_Page_ImageQualityScores_DetectedDefect) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[35]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3527,7 +3654,7 @@ type Document_Entity_NormalizedValue struct {
 
 func (x *Document_Entity_NormalizedValue) Reset() {
 	*x = Document_Entity_NormalizedValue{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[36]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3539,7 +3666,7 @@ func (x *Document_Entity_NormalizedValue) String() string {
 func (*Document_Entity_NormalizedValue) ProtoMessage() {}
 
 func (x *Document_Entity_NormalizedValue) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[36]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3686,6 +3813,8 @@ type Document_Entity_NormalizedValue_FloatValue struct {
 }
 
 type Document_Entity_NormalizedValue_SignatureValue struct {
+	// A signature - a graphical representation of a person's name,
+	// often used to sign a document.
 	SignatureValue bool `protobuf:"varint,10,opt,name=signature_value,json=signatureValue,proto3,oneof"`
 }
 
@@ -3734,7 +3863,7 @@ type Document_TextAnchor_TextSegment struct {
 
 func (x *Document_TextAnchor_TextSegment) Reset() {
 	*x = Document_TextAnchor_TextSegment{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[37]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3746,7 +3875,7 @@ func (x *Document_TextAnchor_TextSegment) String() string {
 func (*Document_TextAnchor_TextSegment) ProtoMessage() {}
 
 func (x *Document_TextAnchor_TextSegment) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[37]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3808,7 +3937,7 @@ type Document_PageAnchor_PageRef struct {
 
 func (x *Document_PageAnchor_PageRef) Reset() {
 	*x = Document_PageAnchor_PageRef{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[38]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3820,7 +3949,7 @@ func (x *Document_PageAnchor_PageRef) String() string {
 func (*Document_PageAnchor_PageRef) ProtoMessage() {}
 
 func (x *Document_PageAnchor_PageRef) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[38]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3891,7 +4020,7 @@ type Document_Provenance_Parent struct {
 
 func (x *Document_Provenance_Parent) Reset() {
 	*x = Document_Provenance_Parent{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[39]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3903,7 +4032,7 @@ func (x *Document_Provenance_Parent) String() string {
 func (*Document_Provenance_Parent) ProtoMessage() {}
 
 func (x *Document_Provenance_Parent) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[39]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3944,7 +4073,7 @@ func (x *Document_Provenance_Parent) GetId() int32 {
 // Human Review information of the document.
 type Document_Revision_HumanReview struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Human review state. e.g. `requested`, `succeeded`, `rejected`.
+	// Human review state. For example, `requested`, `succeeded`, `rejected`.
 	State string `protobuf:"bytes,1,opt,name=state,proto3" json:"state,omitempty"`
 	// A message providing more details about the current state of processing.
 	// For example, the rejection reason when the state is `rejected`.
@@ -3955,7 +4084,7 @@ type Document_Revision_HumanReview struct {
 
 func (x *Document_Revision_HumanReview) Reset() {
 	*x = Document_Revision_HumanReview{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[40]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3967,7 +4096,7 @@ func (x *Document_Revision_HumanReview) String() string {
 func (*Document_Revision_HumanReview) ProtoMessage() {}
 
 func (x *Document_Revision_HumanReview) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[40]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4006,6 +4135,7 @@ type Document_DocumentLayout_DocumentLayoutBlock struct {
 	//	*Document_DocumentLayout_DocumentLayoutBlock_TextBlock
 	//	*Document_DocumentLayout_DocumentLayoutBlock_TableBlock
 	//	*Document_DocumentLayout_DocumentLayoutBlock_ListBlock
+	//	*Document_DocumentLayout_DocumentLayoutBlock_ImageBlock
 	Block isDocument_DocumentLayout_DocumentLayoutBlock_Block `protobuf_oneof:"block"`
 	// ID of the block.
 	BlockId string `protobuf:"bytes,1,opt,name=block_id,json=blockId,proto3" json:"block_id,omitempty"`
@@ -4019,7 +4149,7 @@ type Document_DocumentLayout_DocumentLayoutBlock struct {
 
 func (x *Document_DocumentLayout_DocumentLayoutBlock) Reset() {
 	*x = Document_DocumentLayout_DocumentLayoutBlock{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[41]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4031,7 +4161,7 @@ func (x *Document_DocumentLayout_DocumentLayoutBlock) String() string {
 func (*Document_DocumentLayout_DocumentLayoutBlock) ProtoMessage() {}
 
 func (x *Document_DocumentLayout_DocumentLayoutBlock) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[41]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4044,7 +4174,7 @@ func (x *Document_DocumentLayout_DocumentLayoutBlock) ProtoReflect() protoreflec
 
 // Deprecated: Use Document_DocumentLayout_DocumentLayoutBlock.ProtoReflect.Descriptor instead.
 func (*Document_DocumentLayout_DocumentLayoutBlock) Descriptor() ([]byte, []int) {
-	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 10, 0}
+	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 11, 0}
 }
 
 func (x *Document_DocumentLayout_DocumentLayoutBlock) GetBlock() isDocument_DocumentLayout_DocumentLayoutBlock_Block {
@@ -4076,6 +4206,15 @@ func (x *Document_DocumentLayout_DocumentLayoutBlock) GetListBlock() *Document_D
 	if x != nil {
 		if x, ok := x.Block.(*Document_DocumentLayout_DocumentLayoutBlock_ListBlock); ok {
 			return x.ListBlock
+		}
+	}
+	return nil
+}
+
+func (x *Document_DocumentLayout_DocumentLayoutBlock) GetImageBlock() *Document_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock {
+	if x != nil {
+		if x, ok := x.Block.(*Document_DocumentLayout_DocumentLayoutBlock_ImageBlock); ok {
+			return x.ImageBlock
 		}
 	}
 	return nil
@@ -4121,6 +4260,11 @@ type Document_DocumentLayout_DocumentLayoutBlock_ListBlock struct {
 	ListBlock *Document_DocumentLayout_DocumentLayoutBlock_LayoutListBlock `protobuf:"bytes,4,opt,name=list_block,json=listBlock,proto3,oneof"`
 }
 
+type Document_DocumentLayout_DocumentLayoutBlock_ImageBlock struct {
+	// Block consisting of image content.
+	ImageBlock *Document_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock `protobuf:"bytes,7,opt,name=image_block,json=imageBlock,proto3,oneof"`
+}
+
 func (*Document_DocumentLayout_DocumentLayoutBlock_TextBlock) isDocument_DocumentLayout_DocumentLayoutBlock_Block() {
 }
 
@@ -4128,6 +4272,9 @@ func (*Document_DocumentLayout_DocumentLayoutBlock_TableBlock) isDocument_Docume
 }
 
 func (*Document_DocumentLayout_DocumentLayoutBlock_ListBlock) isDocument_DocumentLayout_DocumentLayoutBlock_Block() {
+}
+
+func (*Document_DocumentLayout_DocumentLayoutBlock_ImageBlock) isDocument_DocumentLayout_DocumentLayoutBlock_Block() {
 }
 
 // Represents where the block starts and ends in the document.
@@ -4143,7 +4290,7 @@ type Document_DocumentLayout_DocumentLayoutBlock_LayoutPageSpan struct {
 
 func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutPageSpan) Reset() {
 	*x = Document_DocumentLayout_DocumentLayoutBlock_LayoutPageSpan{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[42]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4155,7 +4302,7 @@ func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutPageSpan) String() st
 func (*Document_DocumentLayout_DocumentLayoutBlock_LayoutPageSpan) ProtoMessage() {}
 
 func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutPageSpan) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[42]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4168,7 +4315,7 @@ func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutPageSpan) ProtoReflec
 
 // Deprecated: Use Document_DocumentLayout_DocumentLayoutBlock_LayoutPageSpan.ProtoReflect.Descriptor instead.
 func (*Document_DocumentLayout_DocumentLayoutBlock_LayoutPageSpan) Descriptor() ([]byte, []int) {
-	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 10, 0, 0}
+	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 11, 0, 0}
 }
 
 func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutPageSpan) GetPageStart() int32 {
@@ -4196,14 +4343,16 @@ type Document_DocumentLayout_DocumentLayoutBlock_LayoutTextBlock struct {
 	Type string `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"`
 	// A text block could further have child blocks.
 	// Repeated blocks support further hierarchies and nested blocks.
-	Blocks        []*Document_DocumentLayout_DocumentLayoutBlock `protobuf:"bytes,3,rep,name=blocks,proto3" json:"blocks,omitempty"`
+	Blocks []*Document_DocumentLayout_DocumentLayoutBlock `protobuf:"bytes,3,rep,name=blocks,proto3" json:"blocks,omitempty"`
+	// Annotation of the text block.
+	Annotations   *Document_Annotations `protobuf:"bytes,4,opt,name=annotations,proto3" json:"annotations,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutTextBlock) Reset() {
 	*x = Document_DocumentLayout_DocumentLayoutBlock_LayoutTextBlock{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[43]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4215,7 +4364,7 @@ func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutTextBlock) String() s
 func (*Document_DocumentLayout_DocumentLayoutBlock_LayoutTextBlock) ProtoMessage() {}
 
 func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutTextBlock) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[43]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4228,7 +4377,7 @@ func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutTextBlock) ProtoRefle
 
 // Deprecated: Use Document_DocumentLayout_DocumentLayoutBlock_LayoutTextBlock.ProtoReflect.Descriptor instead.
 func (*Document_DocumentLayout_DocumentLayoutBlock_LayoutTextBlock) Descriptor() ([]byte, []int) {
-	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 10, 0, 1}
+	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 11, 0, 1}
 }
 
 func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutTextBlock) GetText() string {
@@ -4252,6 +4401,13 @@ func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutTextBlock) GetBlocks(
 	return nil
 }
 
+func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutTextBlock) GetAnnotations() *Document_Annotations {
+	if x != nil {
+		return x.Annotations
+	}
+	return nil
+}
+
 // Represents a table type block.
 type Document_DocumentLayout_DocumentLayoutBlock_LayoutTableBlock struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -4260,14 +4416,16 @@ type Document_DocumentLayout_DocumentLayoutBlock_LayoutTableBlock struct {
 	// Body rows containing main table content.
 	BodyRows []*Document_DocumentLayout_DocumentLayoutBlock_LayoutTableRow `protobuf:"bytes,2,rep,name=body_rows,json=bodyRows,proto3" json:"body_rows,omitempty"`
 	// Table caption/title.
-	Caption       string `protobuf:"bytes,3,opt,name=caption,proto3" json:"caption,omitempty"`
+	Caption string `protobuf:"bytes,3,opt,name=caption,proto3" json:"caption,omitempty"`
+	// Annotation of the table block.
+	Annotations   *Document_Annotations `protobuf:"bytes,4,opt,name=annotations,proto3" json:"annotations,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutTableBlock) Reset() {
 	*x = Document_DocumentLayout_DocumentLayoutBlock_LayoutTableBlock{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[44]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4279,7 +4437,7 @@ func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutTableBlock) String() 
 func (*Document_DocumentLayout_DocumentLayoutBlock_LayoutTableBlock) ProtoMessage() {}
 
 func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutTableBlock) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[44]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4292,7 +4450,7 @@ func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutTableBlock) ProtoRefl
 
 // Deprecated: Use Document_DocumentLayout_DocumentLayoutBlock_LayoutTableBlock.ProtoReflect.Descriptor instead.
 func (*Document_DocumentLayout_DocumentLayoutBlock_LayoutTableBlock) Descriptor() ([]byte, []int) {
-	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 10, 0, 2}
+	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 11, 0, 2}
 }
 
 func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutTableBlock) GetHeaderRows() []*Document_DocumentLayout_DocumentLayoutBlock_LayoutTableRow {
@@ -4316,6 +4474,13 @@ func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutTableBlock) GetCaptio
 	return ""
 }
 
+func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutTableBlock) GetAnnotations() *Document_Annotations {
+	if x != nil {
+		return x.Annotations
+	}
+	return nil
+}
+
 // Represents a row in a table.
 type Document_DocumentLayout_DocumentLayoutBlock_LayoutTableRow struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -4327,7 +4492,7 @@ type Document_DocumentLayout_DocumentLayoutBlock_LayoutTableRow struct {
 
 func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutTableRow) Reset() {
 	*x = Document_DocumentLayout_DocumentLayoutBlock_LayoutTableRow{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[45]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4339,7 +4504,7 @@ func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutTableRow) String() st
 func (*Document_DocumentLayout_DocumentLayoutBlock_LayoutTableRow) ProtoMessage() {}
 
 func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutTableRow) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[45]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4352,7 +4517,7 @@ func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutTableRow) ProtoReflec
 
 // Deprecated: Use Document_DocumentLayout_DocumentLayoutBlock_LayoutTableRow.ProtoReflect.Descriptor instead.
 func (*Document_DocumentLayout_DocumentLayoutBlock_LayoutTableRow) Descriptor() ([]byte, []int) {
-	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 10, 0, 3}
+	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 11, 0, 3}
 }
 
 func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutTableRow) GetCells() []*Document_DocumentLayout_DocumentLayoutBlock_LayoutTableCell {
@@ -4378,7 +4543,7 @@ type Document_DocumentLayout_DocumentLayoutBlock_LayoutTableCell struct {
 
 func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutTableCell) Reset() {
 	*x = Document_DocumentLayout_DocumentLayoutBlock_LayoutTableCell{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[46]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4390,7 +4555,7 @@ func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutTableCell) String() s
 func (*Document_DocumentLayout_DocumentLayoutBlock_LayoutTableCell) ProtoMessage() {}
 
 func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutTableCell) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[46]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4403,7 +4568,7 @@ func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutTableCell) ProtoRefle
 
 // Deprecated: Use Document_DocumentLayout_DocumentLayoutBlock_LayoutTableCell.ProtoReflect.Descriptor instead.
 func (*Document_DocumentLayout_DocumentLayoutBlock_LayoutTableCell) Descriptor() ([]byte, []int) {
-	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 10, 0, 4}
+	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 11, 0, 4}
 }
 
 func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutTableCell) GetBlocks() []*Document_DocumentLayout_DocumentLayoutBlock {
@@ -4441,7 +4606,7 @@ type Document_DocumentLayout_DocumentLayoutBlock_LayoutListBlock struct {
 
 func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutListBlock) Reset() {
 	*x = Document_DocumentLayout_DocumentLayoutBlock_LayoutListBlock{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[47]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4453,7 +4618,7 @@ func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutListBlock) String() s
 func (*Document_DocumentLayout_DocumentLayoutBlock_LayoutListBlock) ProtoMessage() {}
 
 func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutListBlock) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[47]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4466,7 +4631,7 @@ func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutListBlock) ProtoRefle
 
 // Deprecated: Use Document_DocumentLayout_DocumentLayoutBlock_LayoutListBlock.ProtoReflect.Descriptor instead.
 func (*Document_DocumentLayout_DocumentLayoutBlock_LayoutListBlock) Descriptor() ([]byte, []int) {
-	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 10, 0, 5}
+	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 11, 0, 5}
 }
 
 func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutListBlock) GetListEntries() []*Document_DocumentLayout_DocumentLayoutBlock_LayoutListEntry {
@@ -4495,7 +4660,7 @@ type Document_DocumentLayout_DocumentLayoutBlock_LayoutListEntry struct {
 
 func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutListEntry) Reset() {
 	*x = Document_DocumentLayout_DocumentLayoutBlock_LayoutListEntry{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[48]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4507,7 +4672,7 @@ func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutListEntry) String() s
 func (*Document_DocumentLayout_DocumentLayoutBlock_LayoutListEntry) ProtoMessage() {}
 
 func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutListEntry) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[48]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4520,7 +4685,7 @@ func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutListEntry) ProtoRefle
 
 // Deprecated: Use Document_DocumentLayout_DocumentLayoutBlock_LayoutListEntry.ProtoReflect.Descriptor instead.
 func (*Document_DocumentLayout_DocumentLayoutBlock_LayoutListEntry) Descriptor() ([]byte, []int) {
-	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 10, 0, 6}
+	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 11, 0, 6}
 }
 
 func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutListEntry) GetBlocks() []*Document_DocumentLayout_DocumentLayoutBlock {
@@ -4528,6 +4693,147 @@ func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutListEntry) GetBlocks(
 		return x.Blocks
 	}
 	return nil
+}
+
+// Represents an image type block.
+type Document_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Source of the image.
+	//
+	// Types that are valid to be assigned to ImageSource:
+	//
+	//	*Document_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock_BlobAssetId
+	//	*Document_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock_GcsUri
+	//	*Document_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock_DataUri
+	ImageSource isDocument_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock_ImageSource `protobuf_oneof:"image_source"`
+	// Mime type of the image. An IANA published [media type (MIME type)]
+	// (https://www.iana.org/assignments/media-types/media-types.xhtml).
+	MimeType string `protobuf:"bytes,1,opt,name=mime_type,json=mimeType,proto3" json:"mime_type,omitempty"`
+	// Text extracted from the image using OCR or alt text describing the
+	// image.
+	ImageText string `protobuf:"bytes,2,opt,name=image_text,json=imageText,proto3" json:"image_text,omitempty"`
+	// Annotation of the image block.
+	Annotations   *Document_Annotations `protobuf:"bytes,3,opt,name=annotations,proto3" json:"annotations,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock) Reset() {
+	*x = Document_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock{}
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[51]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Document_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock) ProtoMessage() {}
+
+func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[51]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Document_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock.ProtoReflect.Descriptor instead.
+func (*Document_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock) Descriptor() ([]byte, []int) {
+	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 11, 0, 7}
+}
+
+func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock) GetImageSource() isDocument_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock_ImageSource {
+	if x != nil {
+		return x.ImageSource
+	}
+	return nil
+}
+
+func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock) GetBlobAssetId() string {
+	if x != nil {
+		if x, ok := x.ImageSource.(*Document_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock_BlobAssetId); ok {
+			return x.BlobAssetId
+		}
+	}
+	return ""
+}
+
+func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock) GetGcsUri() string {
+	if x != nil {
+		if x, ok := x.ImageSource.(*Document_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock_GcsUri); ok {
+			return x.GcsUri
+		}
+	}
+	return ""
+}
+
+func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock) GetDataUri() string {
+	if x != nil {
+		if x, ok := x.ImageSource.(*Document_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock_DataUri); ok {
+			return x.DataUri
+		}
+	}
+	return ""
+}
+
+func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock) GetMimeType() string {
+	if x != nil {
+		return x.MimeType
+	}
+	return ""
+}
+
+func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock) GetImageText() string {
+	if x != nil {
+		return x.ImageText
+	}
+	return ""
+}
+
+func (x *Document_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock) GetAnnotations() *Document_Annotations {
+	if x != nil {
+		return x.Annotations
+	}
+	return nil
+}
+
+type isDocument_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock_ImageSource interface {
+	isDocument_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock_ImageSource()
+}
+
+type Document_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock_BlobAssetId struct {
+	// Optional. Asset id of the inline image. If set, find the image
+	// content in the blob_assets field.
+	BlobAssetId string `protobuf:"bytes,4,opt,name=blob_asset_id,json=blobAssetId,proto3,oneof"`
+}
+
+type Document_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock_GcsUri struct {
+	// Optional. Google Cloud Storage uri of the image.
+	GcsUri string `protobuf:"bytes,5,opt,name=gcs_uri,json=gcsUri,proto3,oneof"`
+}
+
+type Document_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock_DataUri struct {
+	// Optional. Data uri of the image.
+	// It is composed of four parts: a prefix (data:), a MIME type
+	// indicating the type of data, an optional base64 token if
+	// non-textual, and the data itself:
+	// data:[<mediatype>][;base64],<data>
+	DataUri string `protobuf:"bytes,6,opt,name=data_uri,json=dataUri,proto3,oneof"`
+}
+
+func (*Document_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock_BlobAssetId) isDocument_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock_ImageSource() {
+}
+
+func (*Document_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock_GcsUri) isDocument_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock_ImageSource() {
+}
+
+func (*Document_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock_DataUri) isDocument_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock_ImageSource() {
 }
 
 // Represents a chunk.
@@ -4544,14 +4850,16 @@ type Document_ChunkedDocument_Chunk struct {
 	// Page headers associated with the chunk.
 	PageHeaders []*Document_ChunkedDocument_Chunk_ChunkPageHeader `protobuf:"bytes,5,rep,name=page_headers,json=pageHeaders,proto3" json:"page_headers,omitempty"`
 	// Page footers associated with the chunk.
-	PageFooters   []*Document_ChunkedDocument_Chunk_ChunkPageFooter `protobuf:"bytes,6,rep,name=page_footers,json=pageFooters,proto3" json:"page_footers,omitempty"`
+	PageFooters []*Document_ChunkedDocument_Chunk_ChunkPageFooter `protobuf:"bytes,6,rep,name=page_footers,json=pageFooters,proto3" json:"page_footers,omitempty"`
+	// Chunk fields inside this chunk.
+	ChunkFields   []*Document_ChunkedDocument_Chunk_ChunkField `protobuf:"bytes,7,rep,name=chunk_fields,json=chunkFields,proto3" json:"chunk_fields,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Document_ChunkedDocument_Chunk) Reset() {
 	*x = Document_ChunkedDocument_Chunk{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[49]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4563,7 +4871,7 @@ func (x *Document_ChunkedDocument_Chunk) String() string {
 func (*Document_ChunkedDocument_Chunk) ProtoMessage() {}
 
 func (x *Document_ChunkedDocument_Chunk) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[49]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4576,7 +4884,7 @@ func (x *Document_ChunkedDocument_Chunk) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Document_ChunkedDocument_Chunk.ProtoReflect.Descriptor instead.
 func (*Document_ChunkedDocument_Chunk) Descriptor() ([]byte, []int) {
-	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 11, 0}
+	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 12, 0}
 }
 
 func (x *Document_ChunkedDocument_Chunk) GetChunkId() string {
@@ -4621,6 +4929,13 @@ func (x *Document_ChunkedDocument_Chunk) GetPageFooters() []*Document_ChunkedDoc
 	return nil
 }
 
+func (x *Document_ChunkedDocument_Chunk) GetChunkFields() []*Document_ChunkedDocument_Chunk_ChunkField {
+	if x != nil {
+		return x.ChunkFields
+	}
+	return nil
+}
+
 // Represents where the chunk starts and ends in the document.
 type Document_ChunkedDocument_Chunk_ChunkPageSpan struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -4634,7 +4949,7 @@ type Document_ChunkedDocument_Chunk_ChunkPageSpan struct {
 
 func (x *Document_ChunkedDocument_Chunk_ChunkPageSpan) Reset() {
 	*x = Document_ChunkedDocument_Chunk_ChunkPageSpan{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[50]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[53]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4646,7 +4961,7 @@ func (x *Document_ChunkedDocument_Chunk_ChunkPageSpan) String() string {
 func (*Document_ChunkedDocument_Chunk_ChunkPageSpan) ProtoMessage() {}
 
 func (x *Document_ChunkedDocument_Chunk_ChunkPageSpan) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[50]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[53]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4659,7 +4974,7 @@ func (x *Document_ChunkedDocument_Chunk_ChunkPageSpan) ProtoReflect() protorefle
 
 // Deprecated: Use Document_ChunkedDocument_Chunk_ChunkPageSpan.ProtoReflect.Descriptor instead.
 func (*Document_ChunkedDocument_Chunk_ChunkPageSpan) Descriptor() ([]byte, []int) {
-	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 11, 0, 0}
+	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 12, 0, 0}
 }
 
 func (x *Document_ChunkedDocument_Chunk_ChunkPageSpan) GetPageStart() int32 {
@@ -4689,7 +5004,7 @@ type Document_ChunkedDocument_Chunk_ChunkPageHeader struct {
 
 func (x *Document_ChunkedDocument_Chunk_ChunkPageHeader) Reset() {
 	*x = Document_ChunkedDocument_Chunk_ChunkPageHeader{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[51]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[54]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4701,7 +5016,7 @@ func (x *Document_ChunkedDocument_Chunk_ChunkPageHeader) String() string {
 func (*Document_ChunkedDocument_Chunk_ChunkPageHeader) ProtoMessage() {}
 
 func (x *Document_ChunkedDocument_Chunk_ChunkPageHeader) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[51]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[54]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4714,7 +5029,7 @@ func (x *Document_ChunkedDocument_Chunk_ChunkPageHeader) ProtoReflect() protoref
 
 // Deprecated: Use Document_ChunkedDocument_Chunk_ChunkPageHeader.ProtoReflect.Descriptor instead.
 func (*Document_ChunkedDocument_Chunk_ChunkPageHeader) Descriptor() ([]byte, []int) {
-	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 11, 0, 1}
+	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 12, 0, 1}
 }
 
 func (x *Document_ChunkedDocument_Chunk_ChunkPageHeader) GetText() string {
@@ -4744,7 +5059,7 @@ type Document_ChunkedDocument_Chunk_ChunkPageFooter struct {
 
 func (x *Document_ChunkedDocument_Chunk_ChunkPageFooter) Reset() {
 	*x = Document_ChunkedDocument_Chunk_ChunkPageFooter{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[52]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[55]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4756,7 +5071,7 @@ func (x *Document_ChunkedDocument_Chunk_ChunkPageFooter) String() string {
 func (*Document_ChunkedDocument_Chunk_ChunkPageFooter) ProtoMessage() {}
 
 func (x *Document_ChunkedDocument_Chunk_ChunkPageFooter) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[52]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[55]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4769,7 +5084,7 @@ func (x *Document_ChunkedDocument_Chunk_ChunkPageFooter) ProtoReflect() protoref
 
 // Deprecated: Use Document_ChunkedDocument_Chunk_ChunkPageFooter.ProtoReflect.Descriptor instead.
 func (*Document_ChunkedDocument_Chunk_ChunkPageFooter) Descriptor() ([]byte, []int) {
-	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 11, 0, 2}
+	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 12, 0, 2}
 }
 
 func (x *Document_ChunkedDocument_Chunk_ChunkPageFooter) GetText() string {
@@ -4784,6 +5099,263 @@ func (x *Document_ChunkedDocument_Chunk_ChunkPageFooter) GetPageSpan() *Document
 		return x.PageSpan
 	}
 	return nil
+}
+
+// The image chunk field in the chunk.
+type Document_ChunkedDocument_Chunk_ImageChunkField struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Source of the image.
+	//
+	// Types that are valid to be assigned to ImageSource:
+	//
+	//	*Document_ChunkedDocument_Chunk_ImageChunkField_BlobAssetId
+	//	*Document_ChunkedDocument_Chunk_ImageChunkField_GcsUri
+	//	*Document_ChunkedDocument_Chunk_ImageChunkField_DataUri
+	ImageSource isDocument_ChunkedDocument_Chunk_ImageChunkField_ImageSource `protobuf_oneof:"image_source"`
+	// Annotation of the image chunk field.
+	Annotations   *Document_Annotations `protobuf:"bytes,4,opt,name=annotations,proto3" json:"annotations,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Document_ChunkedDocument_Chunk_ImageChunkField) Reset() {
+	*x = Document_ChunkedDocument_Chunk_ImageChunkField{}
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[56]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Document_ChunkedDocument_Chunk_ImageChunkField) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Document_ChunkedDocument_Chunk_ImageChunkField) ProtoMessage() {}
+
+func (x *Document_ChunkedDocument_Chunk_ImageChunkField) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[56]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Document_ChunkedDocument_Chunk_ImageChunkField.ProtoReflect.Descriptor instead.
+func (*Document_ChunkedDocument_Chunk_ImageChunkField) Descriptor() ([]byte, []int) {
+	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 12, 0, 3}
+}
+
+func (x *Document_ChunkedDocument_Chunk_ImageChunkField) GetImageSource() isDocument_ChunkedDocument_Chunk_ImageChunkField_ImageSource {
+	if x != nil {
+		return x.ImageSource
+	}
+	return nil
+}
+
+func (x *Document_ChunkedDocument_Chunk_ImageChunkField) GetBlobAssetId() string {
+	if x != nil {
+		if x, ok := x.ImageSource.(*Document_ChunkedDocument_Chunk_ImageChunkField_BlobAssetId); ok {
+			return x.BlobAssetId
+		}
+	}
+	return ""
+}
+
+func (x *Document_ChunkedDocument_Chunk_ImageChunkField) GetGcsUri() string {
+	if x != nil {
+		if x, ok := x.ImageSource.(*Document_ChunkedDocument_Chunk_ImageChunkField_GcsUri); ok {
+			return x.GcsUri
+		}
+	}
+	return ""
+}
+
+func (x *Document_ChunkedDocument_Chunk_ImageChunkField) GetDataUri() string {
+	if x != nil {
+		if x, ok := x.ImageSource.(*Document_ChunkedDocument_Chunk_ImageChunkField_DataUri); ok {
+			return x.DataUri
+		}
+	}
+	return ""
+}
+
+func (x *Document_ChunkedDocument_Chunk_ImageChunkField) GetAnnotations() *Document_Annotations {
+	if x != nil {
+		return x.Annotations
+	}
+	return nil
+}
+
+type isDocument_ChunkedDocument_Chunk_ImageChunkField_ImageSource interface {
+	isDocument_ChunkedDocument_Chunk_ImageChunkField_ImageSource()
+}
+
+type Document_ChunkedDocument_Chunk_ImageChunkField_BlobAssetId struct {
+	// Optional. Asset id of the inline image. If set, find the image
+	// content in the blob_assets field.
+	BlobAssetId string `protobuf:"bytes,1,opt,name=blob_asset_id,json=blobAssetId,proto3,oneof"`
+}
+
+type Document_ChunkedDocument_Chunk_ImageChunkField_GcsUri struct {
+	// Optional. Google Cloud Storage uri of the image.
+	GcsUri string `protobuf:"bytes,2,opt,name=gcs_uri,json=gcsUri,proto3,oneof"`
+}
+
+type Document_ChunkedDocument_Chunk_ImageChunkField_DataUri struct {
+	// Optional. Data uri of the image.
+	// It is composed of four parts: a prefix (data:), a MIME type
+	// indicating the type of data, an optional base64 token if
+	// non-textual, and the data itself:
+	// data:[<mediatype>][;base64],<data>
+	DataUri string `protobuf:"bytes,3,opt,name=data_uri,json=dataUri,proto3,oneof"`
+}
+
+func (*Document_ChunkedDocument_Chunk_ImageChunkField_BlobAssetId) isDocument_ChunkedDocument_Chunk_ImageChunkField_ImageSource() {
+}
+
+func (*Document_ChunkedDocument_Chunk_ImageChunkField_GcsUri) isDocument_ChunkedDocument_Chunk_ImageChunkField_ImageSource() {
+}
+
+func (*Document_ChunkedDocument_Chunk_ImageChunkField_DataUri) isDocument_ChunkedDocument_Chunk_ImageChunkField_ImageSource() {
+}
+
+// The table chunk field in the chunk.
+type Document_ChunkedDocument_Chunk_TableChunkField struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Annotation of the table chunk field.
+	Annotations   *Document_Annotations `protobuf:"bytes,1,opt,name=annotations,proto3" json:"annotations,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Document_ChunkedDocument_Chunk_TableChunkField) Reset() {
+	*x = Document_ChunkedDocument_Chunk_TableChunkField{}
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[57]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Document_ChunkedDocument_Chunk_TableChunkField) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Document_ChunkedDocument_Chunk_TableChunkField) ProtoMessage() {}
+
+func (x *Document_ChunkedDocument_Chunk_TableChunkField) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[57]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Document_ChunkedDocument_Chunk_TableChunkField.ProtoReflect.Descriptor instead.
+func (*Document_ChunkedDocument_Chunk_TableChunkField) Descriptor() ([]byte, []int) {
+	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 12, 0, 4}
+}
+
+func (x *Document_ChunkedDocument_Chunk_TableChunkField) GetAnnotations() *Document_Annotations {
+	if x != nil {
+		return x.Annotations
+	}
+	return nil
+}
+
+// The chunk field in the chunk. A chunk field could be one of the various
+// types (for example, image, table) supported.
+type Document_ChunkedDocument_Chunk_ChunkField struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The type of the chunk field.
+	//
+	// Types that are valid to be assigned to FieldType:
+	//
+	//	*Document_ChunkedDocument_Chunk_ChunkField_ImageChunkField
+	//	*Document_ChunkedDocument_Chunk_ChunkField_TableChunkField
+	FieldType     isDocument_ChunkedDocument_Chunk_ChunkField_FieldType `protobuf_oneof:"field_type"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Document_ChunkedDocument_Chunk_ChunkField) Reset() {
+	*x = Document_ChunkedDocument_Chunk_ChunkField{}
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[58]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Document_ChunkedDocument_Chunk_ChunkField) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Document_ChunkedDocument_Chunk_ChunkField) ProtoMessage() {}
+
+func (x *Document_ChunkedDocument_Chunk_ChunkField) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[58]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Document_ChunkedDocument_Chunk_ChunkField.ProtoReflect.Descriptor instead.
+func (*Document_ChunkedDocument_Chunk_ChunkField) Descriptor() ([]byte, []int) {
+	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 12, 0, 5}
+}
+
+func (x *Document_ChunkedDocument_Chunk_ChunkField) GetFieldType() isDocument_ChunkedDocument_Chunk_ChunkField_FieldType {
+	if x != nil {
+		return x.FieldType
+	}
+	return nil
+}
+
+func (x *Document_ChunkedDocument_Chunk_ChunkField) GetImageChunkField() *Document_ChunkedDocument_Chunk_ImageChunkField {
+	if x != nil {
+		if x, ok := x.FieldType.(*Document_ChunkedDocument_Chunk_ChunkField_ImageChunkField); ok {
+			return x.ImageChunkField
+		}
+	}
+	return nil
+}
+
+func (x *Document_ChunkedDocument_Chunk_ChunkField) GetTableChunkField() *Document_ChunkedDocument_Chunk_TableChunkField {
+	if x != nil {
+		if x, ok := x.FieldType.(*Document_ChunkedDocument_Chunk_ChunkField_TableChunkField); ok {
+			return x.TableChunkField
+		}
+	}
+	return nil
+}
+
+type isDocument_ChunkedDocument_Chunk_ChunkField_FieldType interface {
+	isDocument_ChunkedDocument_Chunk_ChunkField_FieldType()
+}
+
+type Document_ChunkedDocument_Chunk_ChunkField_ImageChunkField struct {
+	// The image chunk field in the chunk.
+	ImageChunkField *Document_ChunkedDocument_Chunk_ImageChunkField `protobuf:"bytes,1,opt,name=image_chunk_field,json=imageChunkField,proto3,oneof"`
+}
+
+type Document_ChunkedDocument_Chunk_ChunkField_TableChunkField struct {
+	// The table chunk field in the chunk.
+	TableChunkField *Document_ChunkedDocument_Chunk_TableChunkField `protobuf:"bytes,2,opt,name=table_chunk_field,json=tableChunkField,proto3,oneof"`
+}
+
+func (*Document_ChunkedDocument_Chunk_ChunkField_ImageChunkField) isDocument_ChunkedDocument_Chunk_ChunkField_FieldType() {
+}
+
+func (*Document_ChunkedDocument_Chunk_ChunkField_TableChunkField) isDocument_ChunkedDocument_Chunk_ChunkField_FieldType() {
 }
 
 // Validation result for a single validation rule.
@@ -4804,7 +5376,7 @@ type Document_EntityValidationOutput_ValidationResult struct {
 
 func (x *Document_EntityValidationOutput_ValidationResult) Reset() {
 	*x = Document_EntityValidationOutput_ValidationResult{}
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[53]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[59]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4816,7 +5388,7 @@ func (x *Document_EntityValidationOutput_ValidationResult) String() string {
 func (*Document_EntityValidationOutput_ValidationResult) ProtoMessage() {}
 
 func (x *Document_EntityValidationOutput_ValidationResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[53]
+	mi := &file_google_cloud_documentai_v1_document_proto_msgTypes[59]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4829,7 +5401,7 @@ func (x *Document_EntityValidationOutput_ValidationResult) ProtoReflect() protor
 
 // Deprecated: Use Document_EntityValidationOutput_ValidationResult.ProtoReflect.Descriptor instead.
 func (*Document_EntityValidationOutput_ValidationResult) Descriptor() ([]byte, []int) {
-	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 12, 0}
+	return file_google_cloud_documentai_v1_document_proto_rawDescGZIP(), []int{0, 14, 0}
 }
 
 func (x *Document_EntityValidationOutput_ValidationResult) GetRuleName() string {
@@ -4864,7 +5436,7 @@ var File_google_cloud_documentai_v1_document_proto protoreflect.FileDescriptor
 
 const file_google_cloud_documentai_v1_document_proto_rawDesc = "" +
 	"\n" +
-	")google/cloud/documentai/v1/document.proto\x12\x1agoogle.cloud.documentai.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a(google/cloud/documentai/v1/barcode.proto\x1a)google/cloud/documentai/v1/geometry.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\x1a\x17google/type/color.proto\x1a\x16google/type/date.proto\x1a\x1agoogle/type/datetime.proto\x1a\x17google/type/money.proto\x1a google/type/postal_address.proto\"\xdfu\n" +
+	")google/cloud/documentai/v1/document.proto\x12\x1agoogle.cloud.documentai.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/documentai/v1/barcode.proto\x1a)google/cloud/documentai/v1/geometry.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\x1a\x17google/type/color.proto\x1a\x16google/type/date.proto\x1a\x1agoogle/type/datetime.proto\x1a\x17google/type/money.proto\x1a google/type/postal_address.proto\"݁\x01\n" +
 	"\bDocument\x12\x17\n" +
 	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x01H\x00R\x03uri\x12\x1f\n" +
 	"\acontent\x18\x02 \x01(\fB\x03\xe0A\x01H\x00R\acontent\x12\x19\n" +
@@ -4883,7 +5455,9 @@ const file_google_cloud_documentai_v1_document_proto_rawDesc = "" +
 	" \x01(\v2\x12.google.rpc.StatusR\x05error\x12K\n" +
 	"\trevisions\x18\r \x03(\v2-.google.cloud.documentai.v1.Document.RevisionR\trevisions\x12\\\n" +
 	"\x0fdocument_layout\x18\x11 \x01(\v23.google.cloud.documentai.v1.Document.DocumentLayoutR\x0edocumentLayout\x12_\n" +
-	"\x10chunked_document\x18\x12 \x01(\v24.google.cloud.documentai.v1.Document.ChunkedDocumentR\x0fchunkedDocument\x12u\n" +
+	"\x10chunked_document\x18\x12 \x01(\v24.google.cloud.documentai.v1.Document.ChunkedDocumentR\x0fchunkedDocument\x12T\n" +
+	"\vblob_assets\x18\x13 \x03(\v2..google.cloud.documentai.v1.Document.BlobAssetB\x03\xe0A\x01R\n" +
+	"blobAssets\x12u\n" +
 	"\x18entity_validation_output\x18\x15 \x01(\v2;.google.cloud.documentai.v1.Document.EntityValidationOutputR\x16entityValidationOutput\x12d\n" +
 	"\x12entities_revisions\x18\x16 \x03(\v25.google.cloud.documentai.v1.Document.EntitiesRevisionR\x11entitiesRevisions\x120\n" +
 	"\x14entities_revision_id\x18\x17 \x01(\tR\x12entitiesRevisionId\x1an\n" +
@@ -5197,32 +5771,38 @@ const file_google_cloud_documentai_v1_document_proto_rawDesc = "" +
 	"\fchanged_text\x18\x02 \x01(\tR\vchangedText\x12S\n" +
 	"\n" +
 	"provenance\x18\x03 \x03(\v2/.google.cloud.documentai.v1.Document.ProvenanceB\x02\x18\x01R\n" +
-	"provenance\x1a\xaa\x0e\n" +
+	"provenance\x1a/\n" +
+	"\vAnnotations\x12 \n" +
+	"\vdescription\x18\x01 \x01(\tR\vdescription\x1a\xf1\x12\n" +
 	"\x0eDocumentLayout\x12_\n" +
-	"\x06blocks\x18\x01 \x03(\v2G.google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlockR\x06blocks\x1a\xb6\r\n" +
+	"\x06blocks\x18\x01 \x03(\v2G.google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlockR\x06blocks\x1a\xfd\x11\n" +
 	"\x13DocumentLayoutBlock\x12x\n" +
 	"\n" +
 	"text_block\x18\x02 \x01(\v2W.google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutTextBlockH\x00R\ttextBlock\x12{\n" +
 	"\vtable_block\x18\x03 \x01(\v2X.google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutTableBlockH\x00R\n" +
 	"tableBlock\x12x\n" +
 	"\n" +
-	"list_block\x18\x04 \x01(\v2W.google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutListBlockH\x00R\tlistBlock\x12\x19\n" +
+	"list_block\x18\x04 \x01(\v2W.google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutListBlockH\x00R\tlistBlock\x12{\n" +
+	"\vimage_block\x18\a \x01(\v2X.google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutImageBlockH\x00R\n" +
+	"imageBlock\x12\x19\n" +
 	"\bblock_id\x18\x01 \x01(\tR\ablockId\x12s\n" +
 	"\tpage_span\x18\x05 \x01(\v2V.google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutPageSpanR\bpageSpan\x12K\n" +
 	"\fbounding_box\x18\x06 \x01(\v2(.google.cloud.documentai.v1.BoundingPolyR\vboundingBox\x1aJ\n" +
 	"\x0eLayoutPageSpan\x12\x1d\n" +
 	"\n" +
 	"page_start\x18\x01 \x01(\x05R\tpageStart\x12\x19\n" +
-	"\bpage_end\x18\x02 \x01(\x05R\apageEnd\x1a\x9a\x01\n" +
+	"\bpage_end\x18\x02 \x01(\x05R\apageEnd\x1a\xee\x01\n" +
 	"\x0fLayoutTextBlock\x12\x12\n" +
 	"\x04text\x18\x01 \x01(\tR\x04text\x12\x12\n" +
 	"\x04type\x18\x02 \x01(\tR\x04type\x12_\n" +
-	"\x06blocks\x18\x03 \x03(\v2G.google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlockR\x06blocks\x1a\x9a\x02\n" +
+	"\x06blocks\x18\x03 \x03(\v2G.google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlockR\x06blocks\x12R\n" +
+	"\vannotations\x18\x04 \x01(\v20.google.cloud.documentai.v1.Document.AnnotationsR\vannotations\x1a\xee\x02\n" +
 	"\x10LayoutTableBlock\x12w\n" +
 	"\vheader_rows\x18\x01 \x03(\v2V.google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutTableRowR\n" +
 	"headerRows\x12s\n" +
 	"\tbody_rows\x18\x02 \x03(\v2V.google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutTableRowR\bbodyRows\x12\x18\n" +
-	"\acaption\x18\x03 \x01(\tR\acaption\x1a\x7f\n" +
+	"\acaption\x18\x03 \x01(\tR\acaption\x12R\n" +
+	"\vannotations\x18\x04 \x01(\v20.google.cloud.documentai.v1.Document.AnnotationsR\vannotations\x1a\x7f\n" +
 	"\x0eLayoutTableRow\x12m\n" +
 	"\x05cells\x18\x01 \x03(\v2W.google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutTableCellR\x05cells\x1a\xa8\x01\n" +
 	"\x0fLayoutTableCell\x12_\n" +
@@ -5233,17 +5813,27 @@ const file_google_cloud_documentai_v1_document_proto_rawDesc = "" +
 	"\flist_entries\x18\x01 \x03(\v2W.google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutListEntryR\vlistEntries\x12\x12\n" +
 	"\x04type\x18\x02 \x01(\tR\x04type\x1ar\n" +
 	"\x0fLayoutListEntry\x12_\n" +
-	"\x06blocks\x18\x01 \x03(\v2G.google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlockR\x06blocksB\a\n" +
-	"\x05block\x1a\xfc\x06\n" +
+	"\x06blocks\x18\x01 \x03(\v2G.google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlockR\x06blocks\x1a\x9f\x02\n" +
+	"\x10LayoutImageBlock\x12)\n" +
+	"\rblob_asset_id\x18\x04 \x01(\tB\x03\xe0A\x01H\x00R\vblobAssetId\x12\x1e\n" +
+	"\agcs_uri\x18\x05 \x01(\tB\x03\xe0A\x01H\x00R\x06gcsUri\x12 \n" +
+	"\bdata_uri\x18\x06 \x01(\tB\x03\xe0A\x01H\x00R\adataUri\x12\x1b\n" +
+	"\tmime_type\x18\x01 \x01(\tR\bmimeType\x12\x1d\n" +
+	"\n" +
+	"image_text\x18\x02 \x01(\tR\timageText\x12R\n" +
+	"\vannotations\x18\x03 \x01(\v20.google.cloud.documentai.v1.Document.AnnotationsR\vannotationsB\x0e\n" +
+	"\fimage_sourceB\a\n" +
+	"\x05block\x1a\xc3\f\n" +
 	"\x0fChunkedDocument\x12R\n" +
-	"\x06chunks\x18\x01 \x03(\v2:.google.cloud.documentai.v1.Document.ChunkedDocument.ChunkR\x06chunks\x1a\x94\x06\n" +
+	"\x06chunks\x18\x01 \x03(\v2:.google.cloud.documentai.v1.Document.ChunkedDocument.ChunkR\x06chunks\x1a\xdb\v\n" +
 	"\x05Chunk\x12\x19\n" +
 	"\bchunk_id\x18\x01 \x01(\tR\achunkId\x12(\n" +
 	"\x10source_block_ids\x18\x02 \x03(\tR\x0esourceBlockIds\x12\x18\n" +
 	"\acontent\x18\x03 \x01(\tR\acontent\x12e\n" +
 	"\tpage_span\x18\x04 \x01(\v2H.google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ChunkPageSpanR\bpageSpan\x12m\n" +
 	"\fpage_headers\x18\x05 \x03(\v2J.google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ChunkPageHeaderR\vpageHeaders\x12m\n" +
-	"\fpage_footers\x18\x06 \x03(\v2J.google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ChunkPageFooterR\vpageFooters\x1aI\n" +
+	"\fpage_footers\x18\x06 \x03(\v2J.google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ChunkPageFooterR\vpageFooters\x12h\n" +
+	"\fchunk_fields\x18\a \x03(\v2E.google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ChunkFieldR\vchunkFields\x1aI\n" +
 	"\rChunkPageSpan\x12\x1d\n" +
 	"\n" +
 	"page_start\x18\x01 \x01(\x05R\tpageStart\x12\x19\n" +
@@ -5253,7 +5843,25 @@ const file_google_cloud_documentai_v1_document_proto_rawDesc = "" +
 	"\tpage_span\x18\x02 \x01(\v2H.google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ChunkPageSpanR\bpageSpan\x1a\x8c\x01\n" +
 	"\x0fChunkPageFooter\x12\x12\n" +
 	"\x04text\x18\x01 \x01(\tR\x04text\x12e\n" +
-	"\tpage_span\x18\x02 \x01(\v2H.google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ChunkPageSpanR\bpageSpan\x1a\xb7\x05\n" +
+	"\tpage_span\x18\x02 \x01(\v2H.google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ChunkPageSpanR\bpageSpan\x1a\xe2\x01\n" +
+	"\x0fImageChunkField\x12)\n" +
+	"\rblob_asset_id\x18\x01 \x01(\tB\x03\xe0A\x01H\x00R\vblobAssetId\x12\x1e\n" +
+	"\agcs_uri\x18\x02 \x01(\tB\x03\xe0A\x01H\x00R\x06gcsUri\x12 \n" +
+	"\bdata_uri\x18\x03 \x01(\tB\x03\xe0A\x01H\x00R\adataUri\x12R\n" +
+	"\vannotations\x18\x04 \x01(\v20.google.cloud.documentai.v1.Document.AnnotationsR\vannotationsB\x0e\n" +
+	"\fimage_source\x1ae\n" +
+	"\x0fTableChunkField\x12R\n" +
+	"\vannotations\x18\x01 \x01(\v20.google.cloud.documentai.v1.Document.AnnotationsR\vannotations\x1a\x8e\x02\n" +
+	"\n" +
+	"ChunkField\x12x\n" +
+	"\x11image_chunk_field\x18\x01 \x01(\v2J.google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ImageChunkFieldH\x00R\x0fimageChunkField\x12x\n" +
+	"\x11table_chunk_field\x18\x02 \x01(\v2J.google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.TableChunkFieldH\x00R\x0ftableChunkFieldB\f\n" +
+	"\n" +
+	"field_type\x1ag\n" +
+	"\tBlobAsset\x12\x1e\n" +
+	"\basset_id\x18\x01 \x01(\tB\x03\xe0A\x01R\aassetId\x12\x1d\n" +
+	"\acontent\x18\x02 \x01(\fB\x03\xe0A\x01R\acontent\x12\x1b\n" +
+	"\tmime_type\x18\x03 \x01(\tR\bmimeType\x1a\xb7\x05\n" +
 	"\x16EntityValidationOutput\x12{\n" +
 	"\x12validation_results\x18\x01 \x03(\v2L.google.cloud.documentai.v1.Document.EntityValidationOutput.ValidationResultR\x11validationResults\x12$\n" +
 	"\x0epass_all_rules\x18\x02 \x01(\bR\fpassAllRules\x1a\xf9\x03\n" +
@@ -5289,7 +5897,7 @@ func file_google_cloud_documentai_v1_document_proto_rawDescGZIP() []byte {
 }
 
 var file_google_cloud_documentai_v1_document_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
-var file_google_cloud_documentai_v1_document_proto_msgTypes = make([]protoimpl.MessageInfo, 54)
+var file_google_cloud_documentai_v1_document_proto_msgTypes = make([]protoimpl.MessageInfo, 60)
 var file_google_cloud_documentai_v1_document_proto_goTypes = []any{
 	(Document_Page_Layout_Orientation)(0),                                      // 0: google.cloud.documentai.v1.Document.Page.Layout.Orientation
 	(Document_Page_Token_DetectedBreak_Type)(0),                                // 1: google.cloud.documentai.v1.Document.Page.Token.DetectedBreak.Type
@@ -5308,58 +5916,64 @@ var file_google_cloud_documentai_v1_document_proto_goTypes = []any{
 	(*Document_Provenance)(nil),                                          // 14: google.cloud.documentai.v1.Document.Provenance
 	(*Document_Revision)(nil),                                            // 15: google.cloud.documentai.v1.Document.Revision
 	(*Document_TextChange)(nil),                                          // 16: google.cloud.documentai.v1.Document.TextChange
-	(*Document_DocumentLayout)(nil),                                      // 17: google.cloud.documentai.v1.Document.DocumentLayout
-	(*Document_ChunkedDocument)(nil),                                     // 18: google.cloud.documentai.v1.Document.ChunkedDocument
-	(*Document_EntityValidationOutput)(nil),                              // 19: google.cloud.documentai.v1.Document.EntityValidationOutput
-	(*Document_EntitiesRevision)(nil),                                    // 20: google.cloud.documentai.v1.Document.EntitiesRevision
-	(*Document_Style_FontSize)(nil),                                      // 21: google.cloud.documentai.v1.Document.Style.FontSize
-	(*Document_Page_Dimension)(nil),                                      // 22: google.cloud.documentai.v1.Document.Page.Dimension
-	(*Document_Page_Image)(nil),                                          // 23: google.cloud.documentai.v1.Document.Page.Image
-	(*Document_Page_Matrix)(nil),                                         // 24: google.cloud.documentai.v1.Document.Page.Matrix
-	(*Document_Page_Layout)(nil),                                         // 25: google.cloud.documentai.v1.Document.Page.Layout
-	(*Document_Page_Block)(nil),                                          // 26: google.cloud.documentai.v1.Document.Page.Block
-	(*Document_Page_Paragraph)(nil),                                      // 27: google.cloud.documentai.v1.Document.Page.Paragraph
-	(*Document_Page_Line)(nil),                                           // 28: google.cloud.documentai.v1.Document.Page.Line
-	(*Document_Page_Token)(nil),                                          // 29: google.cloud.documentai.v1.Document.Page.Token
-	(*Document_Page_Symbol)(nil),                                         // 30: google.cloud.documentai.v1.Document.Page.Symbol
-	(*Document_Page_VisualElement)(nil),                                  // 31: google.cloud.documentai.v1.Document.Page.VisualElement
-	(*Document_Page_Table)(nil),                                          // 32: google.cloud.documentai.v1.Document.Page.Table
-	(*Document_Page_FormField)(nil),                                      // 33: google.cloud.documentai.v1.Document.Page.FormField
-	(*Document_Page_DetectedBarcode)(nil),                                // 34: google.cloud.documentai.v1.Document.Page.DetectedBarcode
-	(*Document_Page_DetectedLanguage)(nil),                               // 35: google.cloud.documentai.v1.Document.Page.DetectedLanguage
-	(*Document_Page_ImageQualityScores)(nil),                             // 36: google.cloud.documentai.v1.Document.Page.ImageQualityScores
-	(*Document_Page_Token_DetectedBreak)(nil),                            // 37: google.cloud.documentai.v1.Document.Page.Token.DetectedBreak
-	(*Document_Page_Token_StyleInfo)(nil),                                // 38: google.cloud.documentai.v1.Document.Page.Token.StyleInfo
-	(*Document_Page_Table_TableRow)(nil),                                 // 39: google.cloud.documentai.v1.Document.Page.Table.TableRow
-	(*Document_Page_Table_TableCell)(nil),                                // 40: google.cloud.documentai.v1.Document.Page.Table.TableCell
-	(*Document_Page_ImageQualityScores_DetectedDefect)(nil),              // 41: google.cloud.documentai.v1.Document.Page.ImageQualityScores.DetectedDefect
-	(*Document_Entity_NormalizedValue)(nil),                              // 42: google.cloud.documentai.v1.Document.Entity.NormalizedValue
-	(*Document_TextAnchor_TextSegment)(nil),                              // 43: google.cloud.documentai.v1.Document.TextAnchor.TextSegment
-	(*Document_PageAnchor_PageRef)(nil),                                  // 44: google.cloud.documentai.v1.Document.PageAnchor.PageRef
-	(*Document_Provenance_Parent)(nil),                                   // 45: google.cloud.documentai.v1.Document.Provenance.Parent
-	(*Document_Revision_HumanReview)(nil),                                // 46: google.cloud.documentai.v1.Document.Revision.HumanReview
-	(*Document_DocumentLayout_DocumentLayoutBlock)(nil),                  // 47: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock
-	(*Document_DocumentLayout_DocumentLayoutBlock_LayoutPageSpan)(nil),   // 48: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutPageSpan
-	(*Document_DocumentLayout_DocumentLayoutBlock_LayoutTextBlock)(nil),  // 49: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutTextBlock
-	(*Document_DocumentLayout_DocumentLayoutBlock_LayoutTableBlock)(nil), // 50: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutTableBlock
-	(*Document_DocumentLayout_DocumentLayoutBlock_LayoutTableRow)(nil),   // 51: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutTableRow
-	(*Document_DocumentLayout_DocumentLayoutBlock_LayoutTableCell)(nil),  // 52: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutTableCell
-	(*Document_DocumentLayout_DocumentLayoutBlock_LayoutListBlock)(nil),  // 53: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutListBlock
-	(*Document_DocumentLayout_DocumentLayoutBlock_LayoutListEntry)(nil),  // 54: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutListEntry
-	(*Document_ChunkedDocument_Chunk)(nil),                               // 55: google.cloud.documentai.v1.Document.ChunkedDocument.Chunk
-	(*Document_ChunkedDocument_Chunk_ChunkPageSpan)(nil),                 // 56: google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ChunkPageSpan
-	(*Document_ChunkedDocument_Chunk_ChunkPageHeader)(nil),               // 57: google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ChunkPageHeader
-	(*Document_ChunkedDocument_Chunk_ChunkPageFooter)(nil),               // 58: google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ChunkPageFooter
-	(*Document_EntityValidationOutput_ValidationResult)(nil),             // 59: google.cloud.documentai.v1.Document.EntityValidationOutput.ValidationResult
-	(*status.Status)(nil),                                                // 60: google.rpc.Status
-	(*color.Color)(nil),                                                  // 61: google.type.Color
-	(*timestamppb.Timestamp)(nil),                                        // 62: google.protobuf.Timestamp
-	(*BoundingPoly)(nil),                                                 // 63: google.cloud.documentai.v1.BoundingPoly
-	(*Barcode)(nil),                                                      // 64: google.cloud.documentai.v1.Barcode
-	(*money.Money)(nil),                                                  // 65: google.type.Money
-	(*date.Date)(nil),                                                    // 66: google.type.Date
-	(*datetime.DateTime)(nil),                                            // 67: google.type.DateTime
-	(*postaladdress.PostalAddress)(nil),                                  // 68: google.type.PostalAddress
+	(*Document_Annotations)(nil),                                         // 17: google.cloud.documentai.v1.Document.Annotations
+	(*Document_DocumentLayout)(nil),                                      // 18: google.cloud.documentai.v1.Document.DocumentLayout
+	(*Document_ChunkedDocument)(nil),                                     // 19: google.cloud.documentai.v1.Document.ChunkedDocument
+	(*Document_BlobAsset)(nil),                                           // 20: google.cloud.documentai.v1.Document.BlobAsset
+	(*Document_EntityValidationOutput)(nil),                              // 21: google.cloud.documentai.v1.Document.EntityValidationOutput
+	(*Document_EntitiesRevision)(nil),                                    // 22: google.cloud.documentai.v1.Document.EntitiesRevision
+	(*Document_Style_FontSize)(nil),                                      // 23: google.cloud.documentai.v1.Document.Style.FontSize
+	(*Document_Page_Dimension)(nil),                                      // 24: google.cloud.documentai.v1.Document.Page.Dimension
+	(*Document_Page_Image)(nil),                                          // 25: google.cloud.documentai.v1.Document.Page.Image
+	(*Document_Page_Matrix)(nil),                                         // 26: google.cloud.documentai.v1.Document.Page.Matrix
+	(*Document_Page_Layout)(nil),                                         // 27: google.cloud.documentai.v1.Document.Page.Layout
+	(*Document_Page_Block)(nil),                                          // 28: google.cloud.documentai.v1.Document.Page.Block
+	(*Document_Page_Paragraph)(nil),                                      // 29: google.cloud.documentai.v1.Document.Page.Paragraph
+	(*Document_Page_Line)(nil),                                           // 30: google.cloud.documentai.v1.Document.Page.Line
+	(*Document_Page_Token)(nil),                                          // 31: google.cloud.documentai.v1.Document.Page.Token
+	(*Document_Page_Symbol)(nil),                                         // 32: google.cloud.documentai.v1.Document.Page.Symbol
+	(*Document_Page_VisualElement)(nil),                                  // 33: google.cloud.documentai.v1.Document.Page.VisualElement
+	(*Document_Page_Table)(nil),                                          // 34: google.cloud.documentai.v1.Document.Page.Table
+	(*Document_Page_FormField)(nil),                                      // 35: google.cloud.documentai.v1.Document.Page.FormField
+	(*Document_Page_DetectedBarcode)(nil),                                // 36: google.cloud.documentai.v1.Document.Page.DetectedBarcode
+	(*Document_Page_DetectedLanguage)(nil),                               // 37: google.cloud.documentai.v1.Document.Page.DetectedLanguage
+	(*Document_Page_ImageQualityScores)(nil),                             // 38: google.cloud.documentai.v1.Document.Page.ImageQualityScores
+	(*Document_Page_Token_DetectedBreak)(nil),                            // 39: google.cloud.documentai.v1.Document.Page.Token.DetectedBreak
+	(*Document_Page_Token_StyleInfo)(nil),                                // 40: google.cloud.documentai.v1.Document.Page.Token.StyleInfo
+	(*Document_Page_Table_TableRow)(nil),                                 // 41: google.cloud.documentai.v1.Document.Page.Table.TableRow
+	(*Document_Page_Table_TableCell)(nil),                                // 42: google.cloud.documentai.v1.Document.Page.Table.TableCell
+	(*Document_Page_ImageQualityScores_DetectedDefect)(nil),              // 43: google.cloud.documentai.v1.Document.Page.ImageQualityScores.DetectedDefect
+	(*Document_Entity_NormalizedValue)(nil),                              // 44: google.cloud.documentai.v1.Document.Entity.NormalizedValue
+	(*Document_TextAnchor_TextSegment)(nil),                              // 45: google.cloud.documentai.v1.Document.TextAnchor.TextSegment
+	(*Document_PageAnchor_PageRef)(nil),                                  // 46: google.cloud.documentai.v1.Document.PageAnchor.PageRef
+	(*Document_Provenance_Parent)(nil),                                   // 47: google.cloud.documentai.v1.Document.Provenance.Parent
+	(*Document_Revision_HumanReview)(nil),                                // 48: google.cloud.documentai.v1.Document.Revision.HumanReview
+	(*Document_DocumentLayout_DocumentLayoutBlock)(nil),                  // 49: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock
+	(*Document_DocumentLayout_DocumentLayoutBlock_LayoutPageSpan)(nil),   // 50: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutPageSpan
+	(*Document_DocumentLayout_DocumentLayoutBlock_LayoutTextBlock)(nil),  // 51: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutTextBlock
+	(*Document_DocumentLayout_DocumentLayoutBlock_LayoutTableBlock)(nil), // 52: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutTableBlock
+	(*Document_DocumentLayout_DocumentLayoutBlock_LayoutTableRow)(nil),   // 53: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutTableRow
+	(*Document_DocumentLayout_DocumentLayoutBlock_LayoutTableCell)(nil),  // 54: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutTableCell
+	(*Document_DocumentLayout_DocumentLayoutBlock_LayoutListBlock)(nil),  // 55: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutListBlock
+	(*Document_DocumentLayout_DocumentLayoutBlock_LayoutListEntry)(nil),  // 56: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutListEntry
+	(*Document_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock)(nil), // 57: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutImageBlock
+	(*Document_ChunkedDocument_Chunk)(nil),                               // 58: google.cloud.documentai.v1.Document.ChunkedDocument.Chunk
+	(*Document_ChunkedDocument_Chunk_ChunkPageSpan)(nil),                 // 59: google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ChunkPageSpan
+	(*Document_ChunkedDocument_Chunk_ChunkPageHeader)(nil),               // 60: google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ChunkPageHeader
+	(*Document_ChunkedDocument_Chunk_ChunkPageFooter)(nil),               // 61: google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ChunkPageFooter
+	(*Document_ChunkedDocument_Chunk_ImageChunkField)(nil),               // 62: google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ImageChunkField
+	(*Document_ChunkedDocument_Chunk_TableChunkField)(nil),               // 63: google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.TableChunkField
+	(*Document_ChunkedDocument_Chunk_ChunkField)(nil),                    // 64: google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ChunkField
+	(*Document_EntityValidationOutput_ValidationResult)(nil),             // 65: google.cloud.documentai.v1.Document.EntityValidationOutput.ValidationResult
+	(*status.Status)(nil),                                                // 66: google.rpc.Status
+	(*color.Color)(nil),                                                  // 67: google.type.Color
+	(*timestamppb.Timestamp)(nil),                                        // 68: google.protobuf.Timestamp
+	(*BoundingPoly)(nil),                                                 // 69: google.cloud.documentai.v1.BoundingPoly
+	(*Barcode)(nil),                                                      // 70: google.cloud.documentai.v1.Barcode
+	(*money.Money)(nil),                                                  // 71: google.type.Money
+	(*date.Date)(nil),                                                    // 72: google.type.Date
+	(*datetime.DateTime)(nil),                                            // 73: google.type.DateTime
+	(*postaladdress.PostalAddress)(nil),                                  // 74: google.type.PostalAddress
 }
 var file_google_cloud_documentai_v1_document_proto_depIdxs = []int32{
 	8,   // 0: google.cloud.documentai.v1.Document.text_styles:type_name -> google.cloud.documentai.v1.Document.Style
@@ -5368,120 +5982,130 @@ var file_google_cloud_documentai_v1_document_proto_depIdxs = []int32{
 	11,  // 3: google.cloud.documentai.v1.Document.entity_relations:type_name -> google.cloud.documentai.v1.Document.EntityRelation
 	16,  // 4: google.cloud.documentai.v1.Document.text_changes:type_name -> google.cloud.documentai.v1.Document.TextChange
 	7,   // 5: google.cloud.documentai.v1.Document.shard_info:type_name -> google.cloud.documentai.v1.Document.ShardInfo
-	60,  // 6: google.cloud.documentai.v1.Document.error:type_name -> google.rpc.Status
+	66,  // 6: google.cloud.documentai.v1.Document.error:type_name -> google.rpc.Status
 	15,  // 7: google.cloud.documentai.v1.Document.revisions:type_name -> google.cloud.documentai.v1.Document.Revision
-	17,  // 8: google.cloud.documentai.v1.Document.document_layout:type_name -> google.cloud.documentai.v1.Document.DocumentLayout
-	18,  // 9: google.cloud.documentai.v1.Document.chunked_document:type_name -> google.cloud.documentai.v1.Document.ChunkedDocument
-	19,  // 10: google.cloud.documentai.v1.Document.entity_validation_output:type_name -> google.cloud.documentai.v1.Document.EntityValidationOutput
-	20,  // 11: google.cloud.documentai.v1.Document.entities_revisions:type_name -> google.cloud.documentai.v1.Document.EntitiesRevision
-	12,  // 12: google.cloud.documentai.v1.Document.Style.text_anchor:type_name -> google.cloud.documentai.v1.Document.TextAnchor
-	61,  // 13: google.cloud.documentai.v1.Document.Style.color:type_name -> google.type.Color
-	61,  // 14: google.cloud.documentai.v1.Document.Style.background_color:type_name -> google.type.Color
-	21,  // 15: google.cloud.documentai.v1.Document.Style.font_size:type_name -> google.cloud.documentai.v1.Document.Style.FontSize
-	23,  // 16: google.cloud.documentai.v1.Document.Page.image:type_name -> google.cloud.documentai.v1.Document.Page.Image
-	24,  // 17: google.cloud.documentai.v1.Document.Page.transforms:type_name -> google.cloud.documentai.v1.Document.Page.Matrix
-	22,  // 18: google.cloud.documentai.v1.Document.Page.dimension:type_name -> google.cloud.documentai.v1.Document.Page.Dimension
-	25,  // 19: google.cloud.documentai.v1.Document.Page.layout:type_name -> google.cloud.documentai.v1.Document.Page.Layout
-	35,  // 20: google.cloud.documentai.v1.Document.Page.detected_languages:type_name -> google.cloud.documentai.v1.Document.Page.DetectedLanguage
-	26,  // 21: google.cloud.documentai.v1.Document.Page.blocks:type_name -> google.cloud.documentai.v1.Document.Page.Block
-	27,  // 22: google.cloud.documentai.v1.Document.Page.paragraphs:type_name -> google.cloud.documentai.v1.Document.Page.Paragraph
-	28,  // 23: google.cloud.documentai.v1.Document.Page.lines:type_name -> google.cloud.documentai.v1.Document.Page.Line
-	29,  // 24: google.cloud.documentai.v1.Document.Page.tokens:type_name -> google.cloud.documentai.v1.Document.Page.Token
-	31,  // 25: google.cloud.documentai.v1.Document.Page.visual_elements:type_name -> google.cloud.documentai.v1.Document.Page.VisualElement
-	32,  // 26: google.cloud.documentai.v1.Document.Page.tables:type_name -> google.cloud.documentai.v1.Document.Page.Table
-	33,  // 27: google.cloud.documentai.v1.Document.Page.form_fields:type_name -> google.cloud.documentai.v1.Document.Page.FormField
-	30,  // 28: google.cloud.documentai.v1.Document.Page.symbols:type_name -> google.cloud.documentai.v1.Document.Page.Symbol
-	34,  // 29: google.cloud.documentai.v1.Document.Page.detected_barcodes:type_name -> google.cloud.documentai.v1.Document.Page.DetectedBarcode
-	36,  // 30: google.cloud.documentai.v1.Document.Page.image_quality_scores:type_name -> google.cloud.documentai.v1.Document.Page.ImageQualityScores
-	14,  // 31: google.cloud.documentai.v1.Document.Page.provenance:type_name -> google.cloud.documentai.v1.Document.Provenance
-	12,  // 32: google.cloud.documentai.v1.Document.Entity.text_anchor:type_name -> google.cloud.documentai.v1.Document.TextAnchor
-	13,  // 33: google.cloud.documentai.v1.Document.Entity.page_anchor:type_name -> google.cloud.documentai.v1.Document.PageAnchor
-	42,  // 34: google.cloud.documentai.v1.Document.Entity.normalized_value:type_name -> google.cloud.documentai.v1.Document.Entity.NormalizedValue
-	10,  // 35: google.cloud.documentai.v1.Document.Entity.properties:type_name -> google.cloud.documentai.v1.Document.Entity
-	14,  // 36: google.cloud.documentai.v1.Document.Entity.provenance:type_name -> google.cloud.documentai.v1.Document.Provenance
-	2,   // 37: google.cloud.documentai.v1.Document.Entity.method:type_name -> google.cloud.documentai.v1.Document.Entity.Method
-	43,  // 38: google.cloud.documentai.v1.Document.TextAnchor.text_segments:type_name -> google.cloud.documentai.v1.Document.TextAnchor.TextSegment
-	44,  // 39: google.cloud.documentai.v1.Document.PageAnchor.page_refs:type_name -> google.cloud.documentai.v1.Document.PageAnchor.PageRef
-	45,  // 40: google.cloud.documentai.v1.Document.Provenance.parents:type_name -> google.cloud.documentai.v1.Document.Provenance.Parent
-	4,   // 41: google.cloud.documentai.v1.Document.Provenance.type:type_name -> google.cloud.documentai.v1.Document.Provenance.OperationType
-	62,  // 42: google.cloud.documentai.v1.Document.Revision.create_time:type_name -> google.protobuf.Timestamp
-	46,  // 43: google.cloud.documentai.v1.Document.Revision.human_review:type_name -> google.cloud.documentai.v1.Document.Revision.HumanReview
-	12,  // 44: google.cloud.documentai.v1.Document.TextChange.text_anchor:type_name -> google.cloud.documentai.v1.Document.TextAnchor
-	14,  // 45: google.cloud.documentai.v1.Document.TextChange.provenance:type_name -> google.cloud.documentai.v1.Document.Provenance
-	47,  // 46: google.cloud.documentai.v1.Document.DocumentLayout.blocks:type_name -> google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock
-	55,  // 47: google.cloud.documentai.v1.Document.ChunkedDocument.chunks:type_name -> google.cloud.documentai.v1.Document.ChunkedDocument.Chunk
-	59,  // 48: google.cloud.documentai.v1.Document.EntityValidationOutput.validation_results:type_name -> google.cloud.documentai.v1.Document.EntityValidationOutput.ValidationResult
-	10,  // 49: google.cloud.documentai.v1.Document.EntitiesRevision.entities:type_name -> google.cloud.documentai.v1.Document.Entity
-	19,  // 50: google.cloud.documentai.v1.Document.EntitiesRevision.entity_validation_output:type_name -> google.cloud.documentai.v1.Document.EntityValidationOutput
-	12,  // 51: google.cloud.documentai.v1.Document.Page.Layout.text_anchor:type_name -> google.cloud.documentai.v1.Document.TextAnchor
-	63,  // 52: google.cloud.documentai.v1.Document.Page.Layout.bounding_poly:type_name -> google.cloud.documentai.v1.BoundingPoly
-	0,   // 53: google.cloud.documentai.v1.Document.Page.Layout.orientation:type_name -> google.cloud.documentai.v1.Document.Page.Layout.Orientation
-	25,  // 54: google.cloud.documentai.v1.Document.Page.Block.layout:type_name -> google.cloud.documentai.v1.Document.Page.Layout
-	35,  // 55: google.cloud.documentai.v1.Document.Page.Block.detected_languages:type_name -> google.cloud.documentai.v1.Document.Page.DetectedLanguage
-	14,  // 56: google.cloud.documentai.v1.Document.Page.Block.provenance:type_name -> google.cloud.documentai.v1.Document.Provenance
-	25,  // 57: google.cloud.documentai.v1.Document.Page.Paragraph.layout:type_name -> google.cloud.documentai.v1.Document.Page.Layout
-	35,  // 58: google.cloud.documentai.v1.Document.Page.Paragraph.detected_languages:type_name -> google.cloud.documentai.v1.Document.Page.DetectedLanguage
-	14,  // 59: google.cloud.documentai.v1.Document.Page.Paragraph.provenance:type_name -> google.cloud.documentai.v1.Document.Provenance
-	25,  // 60: google.cloud.documentai.v1.Document.Page.Line.layout:type_name -> google.cloud.documentai.v1.Document.Page.Layout
-	35,  // 61: google.cloud.documentai.v1.Document.Page.Line.detected_languages:type_name -> google.cloud.documentai.v1.Document.Page.DetectedLanguage
-	14,  // 62: google.cloud.documentai.v1.Document.Page.Line.provenance:type_name -> google.cloud.documentai.v1.Document.Provenance
-	25,  // 63: google.cloud.documentai.v1.Document.Page.Token.layout:type_name -> google.cloud.documentai.v1.Document.Page.Layout
-	37,  // 64: google.cloud.documentai.v1.Document.Page.Token.detected_break:type_name -> google.cloud.documentai.v1.Document.Page.Token.DetectedBreak
-	35,  // 65: google.cloud.documentai.v1.Document.Page.Token.detected_languages:type_name -> google.cloud.documentai.v1.Document.Page.DetectedLanguage
-	14,  // 66: google.cloud.documentai.v1.Document.Page.Token.provenance:type_name -> google.cloud.documentai.v1.Document.Provenance
-	38,  // 67: google.cloud.documentai.v1.Document.Page.Token.style_info:type_name -> google.cloud.documentai.v1.Document.Page.Token.StyleInfo
-	25,  // 68: google.cloud.documentai.v1.Document.Page.Symbol.layout:type_name -> google.cloud.documentai.v1.Document.Page.Layout
-	35,  // 69: google.cloud.documentai.v1.Document.Page.Symbol.detected_languages:type_name -> google.cloud.documentai.v1.Document.Page.DetectedLanguage
-	25,  // 70: google.cloud.documentai.v1.Document.Page.VisualElement.layout:type_name -> google.cloud.documentai.v1.Document.Page.Layout
-	35,  // 71: google.cloud.documentai.v1.Document.Page.VisualElement.detected_languages:type_name -> google.cloud.documentai.v1.Document.Page.DetectedLanguage
-	25,  // 72: google.cloud.documentai.v1.Document.Page.Table.layout:type_name -> google.cloud.documentai.v1.Document.Page.Layout
-	39,  // 73: google.cloud.documentai.v1.Document.Page.Table.header_rows:type_name -> google.cloud.documentai.v1.Document.Page.Table.TableRow
-	39,  // 74: google.cloud.documentai.v1.Document.Page.Table.body_rows:type_name -> google.cloud.documentai.v1.Document.Page.Table.TableRow
-	35,  // 75: google.cloud.documentai.v1.Document.Page.Table.detected_languages:type_name -> google.cloud.documentai.v1.Document.Page.DetectedLanguage
-	14,  // 76: google.cloud.documentai.v1.Document.Page.Table.provenance:type_name -> google.cloud.documentai.v1.Document.Provenance
-	25,  // 77: google.cloud.documentai.v1.Document.Page.FormField.field_name:type_name -> google.cloud.documentai.v1.Document.Page.Layout
-	25,  // 78: google.cloud.documentai.v1.Document.Page.FormField.field_value:type_name -> google.cloud.documentai.v1.Document.Page.Layout
-	35,  // 79: google.cloud.documentai.v1.Document.Page.FormField.name_detected_languages:type_name -> google.cloud.documentai.v1.Document.Page.DetectedLanguage
-	35,  // 80: google.cloud.documentai.v1.Document.Page.FormField.value_detected_languages:type_name -> google.cloud.documentai.v1.Document.Page.DetectedLanguage
-	14,  // 81: google.cloud.documentai.v1.Document.Page.FormField.provenance:type_name -> google.cloud.documentai.v1.Document.Provenance
-	25,  // 82: google.cloud.documentai.v1.Document.Page.DetectedBarcode.layout:type_name -> google.cloud.documentai.v1.Document.Page.Layout
-	64,  // 83: google.cloud.documentai.v1.Document.Page.DetectedBarcode.barcode:type_name -> google.cloud.documentai.v1.Barcode
-	41,  // 84: google.cloud.documentai.v1.Document.Page.ImageQualityScores.detected_defects:type_name -> google.cloud.documentai.v1.Document.Page.ImageQualityScores.DetectedDefect
-	1,   // 85: google.cloud.documentai.v1.Document.Page.Token.DetectedBreak.type:type_name -> google.cloud.documentai.v1.Document.Page.Token.DetectedBreak.Type
-	61,  // 86: google.cloud.documentai.v1.Document.Page.Token.StyleInfo.text_color:type_name -> google.type.Color
-	61,  // 87: google.cloud.documentai.v1.Document.Page.Token.StyleInfo.background_color:type_name -> google.type.Color
-	40,  // 88: google.cloud.documentai.v1.Document.Page.Table.TableRow.cells:type_name -> google.cloud.documentai.v1.Document.Page.Table.TableCell
-	25,  // 89: google.cloud.documentai.v1.Document.Page.Table.TableCell.layout:type_name -> google.cloud.documentai.v1.Document.Page.Layout
-	35,  // 90: google.cloud.documentai.v1.Document.Page.Table.TableCell.detected_languages:type_name -> google.cloud.documentai.v1.Document.Page.DetectedLanguage
-	65,  // 91: google.cloud.documentai.v1.Document.Entity.NormalizedValue.money_value:type_name -> google.type.Money
-	66,  // 92: google.cloud.documentai.v1.Document.Entity.NormalizedValue.date_value:type_name -> google.type.Date
-	67,  // 93: google.cloud.documentai.v1.Document.Entity.NormalizedValue.datetime_value:type_name -> google.type.DateTime
-	68,  // 94: google.cloud.documentai.v1.Document.Entity.NormalizedValue.address_value:type_name -> google.type.PostalAddress
-	3,   // 95: google.cloud.documentai.v1.Document.PageAnchor.PageRef.layout_type:type_name -> google.cloud.documentai.v1.Document.PageAnchor.PageRef.LayoutType
-	63,  // 96: google.cloud.documentai.v1.Document.PageAnchor.PageRef.bounding_poly:type_name -> google.cloud.documentai.v1.BoundingPoly
-	49,  // 97: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.text_block:type_name -> google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutTextBlock
-	50,  // 98: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.table_block:type_name -> google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutTableBlock
-	53,  // 99: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.list_block:type_name -> google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutListBlock
-	48,  // 100: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.page_span:type_name -> google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutPageSpan
-	63,  // 101: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.bounding_box:type_name -> google.cloud.documentai.v1.BoundingPoly
-	47,  // 102: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutTextBlock.blocks:type_name -> google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock
-	51,  // 103: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutTableBlock.header_rows:type_name -> google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutTableRow
-	51,  // 104: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutTableBlock.body_rows:type_name -> google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutTableRow
-	52,  // 105: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutTableRow.cells:type_name -> google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutTableCell
-	47,  // 106: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutTableCell.blocks:type_name -> google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock
-	54,  // 107: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutListBlock.list_entries:type_name -> google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutListEntry
-	47,  // 108: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutListEntry.blocks:type_name -> google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock
-	56,  // 109: google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.page_span:type_name -> google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ChunkPageSpan
-	57,  // 110: google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.page_headers:type_name -> google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ChunkPageHeader
-	58,  // 111: google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.page_footers:type_name -> google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ChunkPageFooter
-	56,  // 112: google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ChunkPageHeader.page_span:type_name -> google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ChunkPageSpan
-	56,  // 113: google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ChunkPageFooter.page_span:type_name -> google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ChunkPageSpan
-	5,   // 114: google.cloud.documentai.v1.Document.EntityValidationOutput.ValidationResult.validation_result_type:type_name -> google.cloud.documentai.v1.Document.EntityValidationOutput.ValidationResult.ValidationResultType
-	115, // [115:115] is the sub-list for method output_type
-	115, // [115:115] is the sub-list for method input_type
-	115, // [115:115] is the sub-list for extension type_name
-	115, // [115:115] is the sub-list for extension extendee
-	0,   // [0:115] is the sub-list for field type_name
+	18,  // 8: google.cloud.documentai.v1.Document.document_layout:type_name -> google.cloud.documentai.v1.Document.DocumentLayout
+	19,  // 9: google.cloud.documentai.v1.Document.chunked_document:type_name -> google.cloud.documentai.v1.Document.ChunkedDocument
+	20,  // 10: google.cloud.documentai.v1.Document.blob_assets:type_name -> google.cloud.documentai.v1.Document.BlobAsset
+	21,  // 11: google.cloud.documentai.v1.Document.entity_validation_output:type_name -> google.cloud.documentai.v1.Document.EntityValidationOutput
+	22,  // 12: google.cloud.documentai.v1.Document.entities_revisions:type_name -> google.cloud.documentai.v1.Document.EntitiesRevision
+	12,  // 13: google.cloud.documentai.v1.Document.Style.text_anchor:type_name -> google.cloud.documentai.v1.Document.TextAnchor
+	67,  // 14: google.cloud.documentai.v1.Document.Style.color:type_name -> google.type.Color
+	67,  // 15: google.cloud.documentai.v1.Document.Style.background_color:type_name -> google.type.Color
+	23,  // 16: google.cloud.documentai.v1.Document.Style.font_size:type_name -> google.cloud.documentai.v1.Document.Style.FontSize
+	25,  // 17: google.cloud.documentai.v1.Document.Page.image:type_name -> google.cloud.documentai.v1.Document.Page.Image
+	26,  // 18: google.cloud.documentai.v1.Document.Page.transforms:type_name -> google.cloud.documentai.v1.Document.Page.Matrix
+	24,  // 19: google.cloud.documentai.v1.Document.Page.dimension:type_name -> google.cloud.documentai.v1.Document.Page.Dimension
+	27,  // 20: google.cloud.documentai.v1.Document.Page.layout:type_name -> google.cloud.documentai.v1.Document.Page.Layout
+	37,  // 21: google.cloud.documentai.v1.Document.Page.detected_languages:type_name -> google.cloud.documentai.v1.Document.Page.DetectedLanguage
+	28,  // 22: google.cloud.documentai.v1.Document.Page.blocks:type_name -> google.cloud.documentai.v1.Document.Page.Block
+	29,  // 23: google.cloud.documentai.v1.Document.Page.paragraphs:type_name -> google.cloud.documentai.v1.Document.Page.Paragraph
+	30,  // 24: google.cloud.documentai.v1.Document.Page.lines:type_name -> google.cloud.documentai.v1.Document.Page.Line
+	31,  // 25: google.cloud.documentai.v1.Document.Page.tokens:type_name -> google.cloud.documentai.v1.Document.Page.Token
+	33,  // 26: google.cloud.documentai.v1.Document.Page.visual_elements:type_name -> google.cloud.documentai.v1.Document.Page.VisualElement
+	34,  // 27: google.cloud.documentai.v1.Document.Page.tables:type_name -> google.cloud.documentai.v1.Document.Page.Table
+	35,  // 28: google.cloud.documentai.v1.Document.Page.form_fields:type_name -> google.cloud.documentai.v1.Document.Page.FormField
+	32,  // 29: google.cloud.documentai.v1.Document.Page.symbols:type_name -> google.cloud.documentai.v1.Document.Page.Symbol
+	36,  // 30: google.cloud.documentai.v1.Document.Page.detected_barcodes:type_name -> google.cloud.documentai.v1.Document.Page.DetectedBarcode
+	38,  // 31: google.cloud.documentai.v1.Document.Page.image_quality_scores:type_name -> google.cloud.documentai.v1.Document.Page.ImageQualityScores
+	14,  // 32: google.cloud.documentai.v1.Document.Page.provenance:type_name -> google.cloud.documentai.v1.Document.Provenance
+	12,  // 33: google.cloud.documentai.v1.Document.Entity.text_anchor:type_name -> google.cloud.documentai.v1.Document.TextAnchor
+	13,  // 34: google.cloud.documentai.v1.Document.Entity.page_anchor:type_name -> google.cloud.documentai.v1.Document.PageAnchor
+	44,  // 35: google.cloud.documentai.v1.Document.Entity.normalized_value:type_name -> google.cloud.documentai.v1.Document.Entity.NormalizedValue
+	10,  // 36: google.cloud.documentai.v1.Document.Entity.properties:type_name -> google.cloud.documentai.v1.Document.Entity
+	14,  // 37: google.cloud.documentai.v1.Document.Entity.provenance:type_name -> google.cloud.documentai.v1.Document.Provenance
+	2,   // 38: google.cloud.documentai.v1.Document.Entity.method:type_name -> google.cloud.documentai.v1.Document.Entity.Method
+	45,  // 39: google.cloud.documentai.v1.Document.TextAnchor.text_segments:type_name -> google.cloud.documentai.v1.Document.TextAnchor.TextSegment
+	46,  // 40: google.cloud.documentai.v1.Document.PageAnchor.page_refs:type_name -> google.cloud.documentai.v1.Document.PageAnchor.PageRef
+	47,  // 41: google.cloud.documentai.v1.Document.Provenance.parents:type_name -> google.cloud.documentai.v1.Document.Provenance.Parent
+	4,   // 42: google.cloud.documentai.v1.Document.Provenance.type:type_name -> google.cloud.documentai.v1.Document.Provenance.OperationType
+	68,  // 43: google.cloud.documentai.v1.Document.Revision.create_time:type_name -> google.protobuf.Timestamp
+	48,  // 44: google.cloud.documentai.v1.Document.Revision.human_review:type_name -> google.cloud.documentai.v1.Document.Revision.HumanReview
+	12,  // 45: google.cloud.documentai.v1.Document.TextChange.text_anchor:type_name -> google.cloud.documentai.v1.Document.TextAnchor
+	14,  // 46: google.cloud.documentai.v1.Document.TextChange.provenance:type_name -> google.cloud.documentai.v1.Document.Provenance
+	49,  // 47: google.cloud.documentai.v1.Document.DocumentLayout.blocks:type_name -> google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock
+	58,  // 48: google.cloud.documentai.v1.Document.ChunkedDocument.chunks:type_name -> google.cloud.documentai.v1.Document.ChunkedDocument.Chunk
+	65,  // 49: google.cloud.documentai.v1.Document.EntityValidationOutput.validation_results:type_name -> google.cloud.documentai.v1.Document.EntityValidationOutput.ValidationResult
+	10,  // 50: google.cloud.documentai.v1.Document.EntitiesRevision.entities:type_name -> google.cloud.documentai.v1.Document.Entity
+	21,  // 51: google.cloud.documentai.v1.Document.EntitiesRevision.entity_validation_output:type_name -> google.cloud.documentai.v1.Document.EntityValidationOutput
+	12,  // 52: google.cloud.documentai.v1.Document.Page.Layout.text_anchor:type_name -> google.cloud.documentai.v1.Document.TextAnchor
+	69,  // 53: google.cloud.documentai.v1.Document.Page.Layout.bounding_poly:type_name -> google.cloud.documentai.v1.BoundingPoly
+	0,   // 54: google.cloud.documentai.v1.Document.Page.Layout.orientation:type_name -> google.cloud.documentai.v1.Document.Page.Layout.Orientation
+	27,  // 55: google.cloud.documentai.v1.Document.Page.Block.layout:type_name -> google.cloud.documentai.v1.Document.Page.Layout
+	37,  // 56: google.cloud.documentai.v1.Document.Page.Block.detected_languages:type_name -> google.cloud.documentai.v1.Document.Page.DetectedLanguage
+	14,  // 57: google.cloud.documentai.v1.Document.Page.Block.provenance:type_name -> google.cloud.documentai.v1.Document.Provenance
+	27,  // 58: google.cloud.documentai.v1.Document.Page.Paragraph.layout:type_name -> google.cloud.documentai.v1.Document.Page.Layout
+	37,  // 59: google.cloud.documentai.v1.Document.Page.Paragraph.detected_languages:type_name -> google.cloud.documentai.v1.Document.Page.DetectedLanguage
+	14,  // 60: google.cloud.documentai.v1.Document.Page.Paragraph.provenance:type_name -> google.cloud.documentai.v1.Document.Provenance
+	27,  // 61: google.cloud.documentai.v1.Document.Page.Line.layout:type_name -> google.cloud.documentai.v1.Document.Page.Layout
+	37,  // 62: google.cloud.documentai.v1.Document.Page.Line.detected_languages:type_name -> google.cloud.documentai.v1.Document.Page.DetectedLanguage
+	14,  // 63: google.cloud.documentai.v1.Document.Page.Line.provenance:type_name -> google.cloud.documentai.v1.Document.Provenance
+	27,  // 64: google.cloud.documentai.v1.Document.Page.Token.layout:type_name -> google.cloud.documentai.v1.Document.Page.Layout
+	39,  // 65: google.cloud.documentai.v1.Document.Page.Token.detected_break:type_name -> google.cloud.documentai.v1.Document.Page.Token.DetectedBreak
+	37,  // 66: google.cloud.documentai.v1.Document.Page.Token.detected_languages:type_name -> google.cloud.documentai.v1.Document.Page.DetectedLanguage
+	14,  // 67: google.cloud.documentai.v1.Document.Page.Token.provenance:type_name -> google.cloud.documentai.v1.Document.Provenance
+	40,  // 68: google.cloud.documentai.v1.Document.Page.Token.style_info:type_name -> google.cloud.documentai.v1.Document.Page.Token.StyleInfo
+	27,  // 69: google.cloud.documentai.v1.Document.Page.Symbol.layout:type_name -> google.cloud.documentai.v1.Document.Page.Layout
+	37,  // 70: google.cloud.documentai.v1.Document.Page.Symbol.detected_languages:type_name -> google.cloud.documentai.v1.Document.Page.DetectedLanguage
+	27,  // 71: google.cloud.documentai.v1.Document.Page.VisualElement.layout:type_name -> google.cloud.documentai.v1.Document.Page.Layout
+	37,  // 72: google.cloud.documentai.v1.Document.Page.VisualElement.detected_languages:type_name -> google.cloud.documentai.v1.Document.Page.DetectedLanguage
+	27,  // 73: google.cloud.documentai.v1.Document.Page.Table.layout:type_name -> google.cloud.documentai.v1.Document.Page.Layout
+	41,  // 74: google.cloud.documentai.v1.Document.Page.Table.header_rows:type_name -> google.cloud.documentai.v1.Document.Page.Table.TableRow
+	41,  // 75: google.cloud.documentai.v1.Document.Page.Table.body_rows:type_name -> google.cloud.documentai.v1.Document.Page.Table.TableRow
+	37,  // 76: google.cloud.documentai.v1.Document.Page.Table.detected_languages:type_name -> google.cloud.documentai.v1.Document.Page.DetectedLanguage
+	14,  // 77: google.cloud.documentai.v1.Document.Page.Table.provenance:type_name -> google.cloud.documentai.v1.Document.Provenance
+	27,  // 78: google.cloud.documentai.v1.Document.Page.FormField.field_name:type_name -> google.cloud.documentai.v1.Document.Page.Layout
+	27,  // 79: google.cloud.documentai.v1.Document.Page.FormField.field_value:type_name -> google.cloud.documentai.v1.Document.Page.Layout
+	37,  // 80: google.cloud.documentai.v1.Document.Page.FormField.name_detected_languages:type_name -> google.cloud.documentai.v1.Document.Page.DetectedLanguage
+	37,  // 81: google.cloud.documentai.v1.Document.Page.FormField.value_detected_languages:type_name -> google.cloud.documentai.v1.Document.Page.DetectedLanguage
+	14,  // 82: google.cloud.documentai.v1.Document.Page.FormField.provenance:type_name -> google.cloud.documentai.v1.Document.Provenance
+	27,  // 83: google.cloud.documentai.v1.Document.Page.DetectedBarcode.layout:type_name -> google.cloud.documentai.v1.Document.Page.Layout
+	70,  // 84: google.cloud.documentai.v1.Document.Page.DetectedBarcode.barcode:type_name -> google.cloud.documentai.v1.Barcode
+	43,  // 85: google.cloud.documentai.v1.Document.Page.ImageQualityScores.detected_defects:type_name -> google.cloud.documentai.v1.Document.Page.ImageQualityScores.DetectedDefect
+	1,   // 86: google.cloud.documentai.v1.Document.Page.Token.DetectedBreak.type:type_name -> google.cloud.documentai.v1.Document.Page.Token.DetectedBreak.Type
+	67,  // 87: google.cloud.documentai.v1.Document.Page.Token.StyleInfo.text_color:type_name -> google.type.Color
+	67,  // 88: google.cloud.documentai.v1.Document.Page.Token.StyleInfo.background_color:type_name -> google.type.Color
+	42,  // 89: google.cloud.documentai.v1.Document.Page.Table.TableRow.cells:type_name -> google.cloud.documentai.v1.Document.Page.Table.TableCell
+	27,  // 90: google.cloud.documentai.v1.Document.Page.Table.TableCell.layout:type_name -> google.cloud.documentai.v1.Document.Page.Layout
+	37,  // 91: google.cloud.documentai.v1.Document.Page.Table.TableCell.detected_languages:type_name -> google.cloud.documentai.v1.Document.Page.DetectedLanguage
+	71,  // 92: google.cloud.documentai.v1.Document.Entity.NormalizedValue.money_value:type_name -> google.type.Money
+	72,  // 93: google.cloud.documentai.v1.Document.Entity.NormalizedValue.date_value:type_name -> google.type.Date
+	73,  // 94: google.cloud.documentai.v1.Document.Entity.NormalizedValue.datetime_value:type_name -> google.type.DateTime
+	74,  // 95: google.cloud.documentai.v1.Document.Entity.NormalizedValue.address_value:type_name -> google.type.PostalAddress
+	3,   // 96: google.cloud.documentai.v1.Document.PageAnchor.PageRef.layout_type:type_name -> google.cloud.documentai.v1.Document.PageAnchor.PageRef.LayoutType
+	69,  // 97: google.cloud.documentai.v1.Document.PageAnchor.PageRef.bounding_poly:type_name -> google.cloud.documentai.v1.BoundingPoly
+	51,  // 98: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.text_block:type_name -> google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutTextBlock
+	52,  // 99: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.table_block:type_name -> google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutTableBlock
+	55,  // 100: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.list_block:type_name -> google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutListBlock
+	57,  // 101: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.image_block:type_name -> google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutImageBlock
+	50,  // 102: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.page_span:type_name -> google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutPageSpan
+	69,  // 103: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.bounding_box:type_name -> google.cloud.documentai.v1.BoundingPoly
+	49,  // 104: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutTextBlock.blocks:type_name -> google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock
+	17,  // 105: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutTextBlock.annotations:type_name -> google.cloud.documentai.v1.Document.Annotations
+	53,  // 106: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutTableBlock.header_rows:type_name -> google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutTableRow
+	53,  // 107: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutTableBlock.body_rows:type_name -> google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutTableRow
+	17,  // 108: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutTableBlock.annotations:type_name -> google.cloud.documentai.v1.Document.Annotations
+	54,  // 109: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutTableRow.cells:type_name -> google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutTableCell
+	49,  // 110: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutTableCell.blocks:type_name -> google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock
+	56,  // 111: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutListBlock.list_entries:type_name -> google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutListEntry
+	49,  // 112: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutListEntry.blocks:type_name -> google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock
+	17,  // 113: google.cloud.documentai.v1.Document.DocumentLayout.DocumentLayoutBlock.LayoutImageBlock.annotations:type_name -> google.cloud.documentai.v1.Document.Annotations
+	59,  // 114: google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.page_span:type_name -> google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ChunkPageSpan
+	60,  // 115: google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.page_headers:type_name -> google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ChunkPageHeader
+	61,  // 116: google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.page_footers:type_name -> google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ChunkPageFooter
+	64,  // 117: google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.chunk_fields:type_name -> google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ChunkField
+	59,  // 118: google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ChunkPageHeader.page_span:type_name -> google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ChunkPageSpan
+	59,  // 119: google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ChunkPageFooter.page_span:type_name -> google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ChunkPageSpan
+	17,  // 120: google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ImageChunkField.annotations:type_name -> google.cloud.documentai.v1.Document.Annotations
+	17,  // 121: google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.TableChunkField.annotations:type_name -> google.cloud.documentai.v1.Document.Annotations
+	62,  // 122: google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ChunkField.image_chunk_field:type_name -> google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ImageChunkField
+	63,  // 123: google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.ChunkField.table_chunk_field:type_name -> google.cloud.documentai.v1.Document.ChunkedDocument.Chunk.TableChunkField
+	5,   // 124: google.cloud.documentai.v1.Document.EntityValidationOutput.ValidationResult.validation_result_type:type_name -> google.cloud.documentai.v1.Document.EntityValidationOutput.ValidationResult.ValidationResultType
+	125, // [125:125] is the sub-list for method output_type
+	125, // [125:125] is the sub-list for method input_type
+	125, // [125:125] is the sub-list for extension type_name
+	125, // [125:125] is the sub-list for extension extendee
+	0,   // [0:125] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_documentai_v1_document_proto_init() }
@@ -5499,7 +6123,7 @@ func file_google_cloud_documentai_v1_document_proto_init() {
 		(*Document_Revision_Agent)(nil),
 		(*Document_Revision_Processor)(nil),
 	}
-	file_google_cloud_documentai_v1_document_proto_msgTypes[36].OneofWrappers = []any{
+	file_google_cloud_documentai_v1_document_proto_msgTypes[38].OneofWrappers = []any{
 		(*Document_Entity_NormalizedValue_MoneyValue)(nil),
 		(*Document_Entity_NormalizedValue_DateValue)(nil),
 		(*Document_Entity_NormalizedValue_DatetimeValue)(nil),
@@ -5509,10 +6133,25 @@ func file_google_cloud_documentai_v1_document_proto_init() {
 		(*Document_Entity_NormalizedValue_FloatValue)(nil),
 		(*Document_Entity_NormalizedValue_SignatureValue)(nil),
 	}
-	file_google_cloud_documentai_v1_document_proto_msgTypes[41].OneofWrappers = []any{
+	file_google_cloud_documentai_v1_document_proto_msgTypes[43].OneofWrappers = []any{
 		(*Document_DocumentLayout_DocumentLayoutBlock_TextBlock)(nil),
 		(*Document_DocumentLayout_DocumentLayoutBlock_TableBlock)(nil),
 		(*Document_DocumentLayout_DocumentLayoutBlock_ListBlock)(nil),
+		(*Document_DocumentLayout_DocumentLayoutBlock_ImageBlock)(nil),
+	}
+	file_google_cloud_documentai_v1_document_proto_msgTypes[51].OneofWrappers = []any{
+		(*Document_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock_BlobAssetId)(nil),
+		(*Document_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock_GcsUri)(nil),
+		(*Document_DocumentLayout_DocumentLayoutBlock_LayoutImageBlock_DataUri)(nil),
+	}
+	file_google_cloud_documentai_v1_document_proto_msgTypes[56].OneofWrappers = []any{
+		(*Document_ChunkedDocument_Chunk_ImageChunkField_BlobAssetId)(nil),
+		(*Document_ChunkedDocument_Chunk_ImageChunkField_GcsUri)(nil),
+		(*Document_ChunkedDocument_Chunk_ImageChunkField_DataUri)(nil),
+	}
+	file_google_cloud_documentai_v1_document_proto_msgTypes[58].OneofWrappers = []any{
+		(*Document_ChunkedDocument_Chunk_ChunkField_ImageChunkField)(nil),
+		(*Document_ChunkedDocument_Chunk_ChunkField_TableChunkField)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -5520,7 +6159,7 @@ func file_google_cloud_documentai_v1_document_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_documentai_v1_document_proto_rawDesc), len(file_google_cloud_documentai_v1_document_proto_rawDesc)),
 			NumEnums:      6,
-			NumMessages:   54,
+			NumMessages:   60,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

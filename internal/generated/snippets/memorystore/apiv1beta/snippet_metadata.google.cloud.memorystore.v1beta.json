@@ -383,6 +383,52 @@
           "fullName": "google.cloud.memorystore.v1beta.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.memorystore.v1beta.Client.GetSharedRegionalCertificateAuthority",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1beta.Memorystore.GetSharedRegionalCertificateAuthority",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1beta.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "GetSharedRegionalCertificateAuthority"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.GetSharedRegionalCertificateAuthorityRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*memorystorepb.SharedRegionalCertificateAuthority",
+        "shortName": "GetSharedRegionalCertificateAuthority"
+      },
+      "description": "GetSharedRegionalCertificateAuthority gets the details of shared regional certificate authority information for\nMemorystore instance.",
+      "file": "Client/GetSharedRegionalCertificateAuthority/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1beta_generated_Memorystore_GetSharedRegionalCertificateAuthority_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore GetSharedRegionalCertificateAuthority Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1beta.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.memorystore.v1beta.Client.ListInstances",
         "method": {
           "fullName": "google.cloud.memorystore.v1beta.Memorystore.ListInstances",

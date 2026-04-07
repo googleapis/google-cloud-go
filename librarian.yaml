@@ -16,8 +16,8 @@ version: v0.10.0
 repo: googleapis/google-cloud-go
 sources:
   googleapis:
-    commit: 775a3cb5d47dc07d3a18660cab9c4924e5231ad9
-    sha256: bf7d6f40d51bc866181defa85ad6491349cae3c5e7bc9a17f5224c2e7c12e4f8
+    commit: cd090841ab172574e740c214c99df00aef9c0dee
+    sha256: 08e4b7744dc23b6e3320a3f1d05db9f40853aaf1089d06bfb8d79044b7a66f21
 release: {}
 default:
   tag_format: '{name}/v{version}'

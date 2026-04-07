@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,12 +35,13 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Memorystore_ListInstances_FullMethodName           = "/google.cloud.memorystore.v1beta.Memorystore/ListInstances"
-	Memorystore_GetInstance_FullMethodName             = "/google.cloud.memorystore.v1beta.Memorystore/GetInstance"
-	Memorystore_CreateInstance_FullMethodName          = "/google.cloud.memorystore.v1beta.Memorystore/CreateInstance"
-	Memorystore_UpdateInstance_FullMethodName          = "/google.cloud.memorystore.v1beta.Memorystore/UpdateInstance"
-	Memorystore_DeleteInstance_FullMethodName          = "/google.cloud.memorystore.v1beta.Memorystore/DeleteInstance"
-	Memorystore_GetCertificateAuthority_FullMethodName = "/google.cloud.memorystore.v1beta.Memorystore/GetCertificateAuthority"
+	Memorystore_ListInstances_FullMethodName                         = "/google.cloud.memorystore.v1beta.Memorystore/ListInstances"
+	Memorystore_GetInstance_FullMethodName                           = "/google.cloud.memorystore.v1beta.Memorystore/GetInstance"
+	Memorystore_CreateInstance_FullMethodName                        = "/google.cloud.memorystore.v1beta.Memorystore/CreateInstance"
+	Memorystore_UpdateInstance_FullMethodName                        = "/google.cloud.memorystore.v1beta.Memorystore/UpdateInstance"
+	Memorystore_DeleteInstance_FullMethodName                        = "/google.cloud.memorystore.v1beta.Memorystore/DeleteInstance"
+	Memorystore_GetCertificateAuthority_FullMethodName               = "/google.cloud.memorystore.v1beta.Memorystore/GetCertificateAuthority"
+	Memorystore_GetSharedRegionalCertificateAuthority_FullMethodName = "/google.cloud.memorystore.v1beta.Memorystore/GetSharedRegionalCertificateAuthority"
 )
 
 // MemorystoreClient is the client API for Memorystore service.
@@ -59,6 +60,9 @@ type MemorystoreClient interface {
 	DeleteInstance(ctx context.Context, in *DeleteInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets details about the certificate authority for an Instance.
 	GetCertificateAuthority(ctx context.Context, in *GetCertificateAuthorityRequest, opts ...grpc.CallOption) (*CertificateAuthority, error)
+	// Gets the details of shared regional certificate authority information for
+	// Memorystore instance.
+	GetSharedRegionalCertificateAuthority(ctx context.Context, in *GetSharedRegionalCertificateAuthorityRequest, opts ...grpc.CallOption) (*SharedRegionalCertificateAuthority, error)
 }
 
 type memorystoreClient struct {
@@ -123,6 +127,15 @@ func (c *memorystoreClient) GetCertificateAuthority(ctx context.Context, in *Get
 	return out, nil
 }
 
+func (c *memorystoreClient) GetSharedRegionalCertificateAuthority(ctx context.Context, in *GetSharedRegionalCertificateAuthorityRequest, opts ...grpc.CallOption) (*SharedRegionalCertificateAuthority, error) {
+	out := new(SharedRegionalCertificateAuthority)
+	err := c.cc.Invoke(ctx, Memorystore_GetSharedRegionalCertificateAuthority_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MemorystoreServer is the server API for Memorystore service.
 // All implementations should embed UnimplementedMemorystoreServer
 // for forward compatibility
@@ -139,6 +152,9 @@ type MemorystoreServer interface {
 	DeleteInstance(context.Context, *DeleteInstanceRequest) (*longrunningpb.Operation, error)
 	// Gets details about the certificate authority for an Instance.
 	GetCertificateAuthority(context.Context, *GetCertificateAuthorityRequest) (*CertificateAuthority, error)
+	// Gets the details of shared regional certificate authority information for
+	// Memorystore instance.
+	GetSharedRegionalCertificateAuthority(context.Context, *GetSharedRegionalCertificateAuthorityRequest) (*SharedRegionalCertificateAuthority, error)
 }
 
 // UnimplementedMemorystoreServer should be embedded to have forward compatible implementations.
@@ -162,6 +178,9 @@ func (UnimplementedMemorystoreServer) DeleteInstance(context.Context, *DeleteIns
 }
 func (UnimplementedMemorystoreServer) GetCertificateAuthority(context.Context, *GetCertificateAuthorityRequest) (*CertificateAuthority, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCertificateAuthority not implemented")
+}
+func (UnimplementedMemorystoreServer) GetSharedRegionalCertificateAuthority(context.Context, *GetSharedRegionalCertificateAuthorityRequest) (*SharedRegionalCertificateAuthority, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSharedRegionalCertificateAuthority not implemented")
 }
 
 // UnsafeMemorystoreServer may be embedded to opt out of forward compatibility for this service.
@@ -283,6 +302,24 @@ func _Memorystore_GetCertificateAuthority_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Memorystore_GetSharedRegionalCertificateAuthority_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSharedRegionalCertificateAuthorityRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemorystoreServer).GetSharedRegionalCertificateAuthority(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Memorystore_GetSharedRegionalCertificateAuthority_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemorystoreServer).GetSharedRegionalCertificateAuthority(ctx, req.(*GetSharedRegionalCertificateAuthorityRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Memorystore_ServiceDesc is the grpc.ServiceDesc for Memorystore service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -313,6 +350,10 @@ var Memorystore_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetCertificateAuthority",
 			Handler:    _Memorystore_GetCertificateAuthority_Handler,
+		},
+		{
+			MethodName: "GetSharedRegionalCertificateAuthority",
+			Handler:    _Memorystore_GetSharedRegionalCertificateAuthority_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

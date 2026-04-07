@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -70,6 +70,13 @@ const (
 	ChatService_ListSpaceEvents_FullMethodName                = "/google.chat.v1.ChatService/ListSpaceEvents"
 	ChatService_GetSpaceNotificationSetting_FullMethodName    = "/google.chat.v1.ChatService/GetSpaceNotificationSetting"
 	ChatService_UpdateSpaceNotificationSetting_FullMethodName = "/google.chat.v1.ChatService/UpdateSpaceNotificationSetting"
+	ChatService_CreateSection_FullMethodName                  = "/google.chat.v1.ChatService/CreateSection"
+	ChatService_DeleteSection_FullMethodName                  = "/google.chat.v1.ChatService/DeleteSection"
+	ChatService_UpdateSection_FullMethodName                  = "/google.chat.v1.ChatService/UpdateSection"
+	ChatService_ListSections_FullMethodName                   = "/google.chat.v1.ChatService/ListSections"
+	ChatService_PositionSection_FullMethodName                = "/google.chat.v1.ChatService/PositionSection"
+	ChatService_ListSectionItems_FullMethodName               = "/google.chat.v1.ChatService/ListSectionItems"
+	ChatService_MoveSectionItem_FullMethodName                = "/google.chat.v1.ChatService/MoveSectionItem"
 )
 
 // ChatServiceClient is the client API for ChatService service.
@@ -137,13 +144,11 @@ type ChatServiceClient interface {
 	// - [App
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
 	// with [administrator
-	// approval](https://support.google.com/a?p=chat-app-auth) in
-	// [Developer Preview](https://developers.google.com/workspace/preview)
-	//
-	//	with the authorization scope:
-	//	   - `https://www.googleapis.com/auth/chat.app.messages.readonly`. When
-	//	   using this authentication scope, this method only returns public
-	//	   messages in a space. It doesn't include private messages.
+	// approval](https://support.google.com/a?p=chat-app-auth)
+	// with the authorization scope:
+	//   - `https://www.googleapis.com/auth/chat.app.messages.readonly`. When
+	//     using this authentication scope, this method only returns public
+	//     messages in a space. It doesn't include private messages.
 	//
 	// - [User
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
@@ -230,8 +235,7 @@ type ChatServiceClient interface {
 	//     that invoke the Chat app.
 	//   - `https://www.googleapis.com/auth/chat.app.messages.readonly`
 	//     with [administrator
-	//     approval](https://support.google.com/a?p=chat-app-auth) (available in
-	//     [Developer Preview](https://developers.google.com/workspace/preview)).
+	//     approval](https://support.google.com/a?p=chat-app-auth).
 	//     When using this authentication scope,
 	//     this method returns details about a public message in a space.
 	//
@@ -875,13 +879,13 @@ type ChatServiceClient interface {
 	// - [App
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
 	// with [administrator
-	// approval](https://support.google.com/a?p=chat-app-auth) in
-	// [Developer Preview](https://developers.google.com/workspace/preview)
-	//
-	//	with one of the following authorization scopes:
-	//	   - `https://www.googleapis.com/auth/chat.app.spaces`
-	//	   - `https://www.googleapis.com/auth/chat.app.messages.readonly`
-	//	   - `https://www.googleapis.com/auth/chat.app.memberships`
+	// approval](https://support.google.com/a?p=chat-app-auth)
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.app.spaces`
+	//   - `https://www.googleapis.com/auth/chat.app.spaces.readonly`
+	//   - `https://www.googleapis.com/auth/chat.app.messages.readonly`
+	//   - `https://www.googleapis.com/auth/chat.app.memberships`
+	//   - `https://www.googleapis.com/auth/chat.app.memberships.readonly`
 	//
 	// - [User
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
@@ -919,13 +923,13 @@ type ChatServiceClient interface {
 	// - [App
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
 	// with [administrator
-	// approval](https://support.google.com/a?p=chat-app-auth) in
-	// [Developer Preview](https://developers.google.com/workspace/preview)
-	//
-	//	with one of the following authorization scopes:
-	//	   - `https://www.googleapis.com/auth/chat.app.spaces`
-	//	   - `https://www.googleapis.com/auth/chat.app.messages.readonly`
-	//	   - `https://www.googleapis.com/auth/chat.app.memberships`
+	// approval](https://support.google.com/a?p=chat-app-auth)
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.app.spaces`
+	//   - `https://www.googleapis.com/auth/chat.app.spaces.readonly`
+	//   - `https://www.googleapis.com/auth/chat.app.messages.readonly`
+	//   - `https://www.googleapis.com/auth/chat.app.memberships`
+	//   - `https://www.googleapis.com/auth/chat.app.memberships.readonly`
 	//
 	// - [User
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
@@ -966,6 +970,93 @@ type ChatServiceClient interface {
 	//
 	//   - `https://www.googleapis.com/auth/chat.users.spacesettings`
 	UpdateSpaceNotificationSetting(ctx context.Context, in *UpdateSpaceNotificationSettingRequest, opts ...grpc.CallOption) (*SpaceNotificationSetting, error)
+	// Creates a section in Google Chat. Sections help users group conversations
+	// and customize the list of spaces displayed in Chat navigation panel. Only
+	// sections of type `CUSTOM_SECTION` can be created. For details, see [Create
+	// and organize sections in Google
+	// Chat](https://support.google.com/chat/answer/16059854).
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with the [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.users.sections`
+	CreateSection(ctx context.Context, in *CreateSectionRequest, opts ...grpc.CallOption) (*Section, error)
+	// Deletes a section of type `CUSTOM_SECTION`.
+	//
+	// If the section contains items, such as spaces, the items are moved to
+	// Google Chat's default sections and are not deleted.
+	//
+	// For details, see [Create and organize sections in Google
+	// Chat](https://support.google.com/chat/answer/16059854).
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with the [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.users.sections`
+	DeleteSection(ctx context.Context, in *DeleteSectionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Updates a section. Only sections of type `CUSTOM_SECTION` can be updated.
+	// For details, see [Create and organize sections in Google
+	// Chat](https://support.google.com/chat/answer/16059854).
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with the [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.users.sections`
+	UpdateSection(ctx context.Context, in *UpdateSectionRequest, opts ...grpc.CallOption) (*Section, error)
+	// Lists sections available to the Chat user. Sections help users group their
+	// conversations and customize the list of spaces displayed in Chat
+	// navigation panel. For details, see [Create and organize sections in Google
+	// Chat](https://support.google.com/chat/answer/16059854).
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with the [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.users.sections`
+	//   - `https://www.googleapis.com/auth/chat.users.sections.readonly`
+	ListSections(ctx context.Context, in *ListSectionsRequest, opts ...grpc.CallOption) (*ListSectionsResponse, error)
+	// Changes the sort order of a section. For details, see [Create and organize
+	// sections in Google Chat](https://support.google.com/chat/answer/16059854).
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with the [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.users.sections`
+	PositionSection(ctx context.Context, in *PositionSectionRequest, opts ...grpc.CallOption) (*PositionSectionResponse, error)
+	// Lists items in a section.
+	//
+	// Only spaces can be section items. For details, see [Create and organize
+	// sections in Google Chat](https://support.google.com/chat/answer/16059854).
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with the [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.users.sections`
+	//   - `https://www.googleapis.com/auth/chat.users.sections.readonly`
+	ListSectionItems(ctx context.Context, in *ListSectionItemsRequest, opts ...grpc.CallOption) (*ListSectionItemsResponse, error)
+	// Moves an item from one section to another. For example, if a section
+	// contains spaces, this method can be used to move a space to a different
+	// section. For details, see [Create and organize sections in Google
+	// Chat](https://support.google.com/chat/answer/16059854).
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with the [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.users.sections`
+	MoveSectionItem(ctx context.Context, in *MoveSectionItemRequest, opts ...grpc.CallOption) (*MoveSectionItemResponse, error)
 }
 
 type chatServiceClient struct {
@@ -1291,6 +1382,69 @@ func (c *chatServiceClient) UpdateSpaceNotificationSetting(ctx context.Context, 
 	return out, nil
 }
 
+func (c *chatServiceClient) CreateSection(ctx context.Context, in *CreateSectionRequest, opts ...grpc.CallOption) (*Section, error) {
+	out := new(Section)
+	err := c.cc.Invoke(ctx, ChatService_CreateSection_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatServiceClient) DeleteSection(ctx context.Context, in *DeleteSectionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, ChatService_DeleteSection_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatServiceClient) UpdateSection(ctx context.Context, in *UpdateSectionRequest, opts ...grpc.CallOption) (*Section, error) {
+	out := new(Section)
+	err := c.cc.Invoke(ctx, ChatService_UpdateSection_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatServiceClient) ListSections(ctx context.Context, in *ListSectionsRequest, opts ...grpc.CallOption) (*ListSectionsResponse, error) {
+	out := new(ListSectionsResponse)
+	err := c.cc.Invoke(ctx, ChatService_ListSections_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatServiceClient) PositionSection(ctx context.Context, in *PositionSectionRequest, opts ...grpc.CallOption) (*PositionSectionResponse, error) {
+	out := new(PositionSectionResponse)
+	err := c.cc.Invoke(ctx, ChatService_PositionSection_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatServiceClient) ListSectionItems(ctx context.Context, in *ListSectionItemsRequest, opts ...grpc.CallOption) (*ListSectionItemsResponse, error) {
+	out := new(ListSectionItemsResponse)
+	err := c.cc.Invoke(ctx, ChatService_ListSectionItems_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatServiceClient) MoveSectionItem(ctx context.Context, in *MoveSectionItemRequest, opts ...grpc.CallOption) (*MoveSectionItemResponse, error) {
+	out := new(MoveSectionItemResponse)
+	err := c.cc.Invoke(ctx, ChatService_MoveSectionItem_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ChatServiceServer is the server API for ChatService service.
 // All implementations should embed UnimplementedChatServiceServer
 // for forward compatibility
@@ -1356,13 +1510,11 @@ type ChatServiceServer interface {
 	// - [App
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
 	// with [administrator
-	// approval](https://support.google.com/a?p=chat-app-auth) in
-	// [Developer Preview](https://developers.google.com/workspace/preview)
-	//
-	//	with the authorization scope:
-	//	   - `https://www.googleapis.com/auth/chat.app.messages.readonly`. When
-	//	   using this authentication scope, this method only returns public
-	//	   messages in a space. It doesn't include private messages.
+	// approval](https://support.google.com/a?p=chat-app-auth)
+	// with the authorization scope:
+	//   - `https://www.googleapis.com/auth/chat.app.messages.readonly`. When
+	//     using this authentication scope, this method only returns public
+	//     messages in a space. It doesn't include private messages.
 	//
 	// - [User
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
@@ -1449,8 +1601,7 @@ type ChatServiceServer interface {
 	//     that invoke the Chat app.
 	//   - `https://www.googleapis.com/auth/chat.app.messages.readonly`
 	//     with [administrator
-	//     approval](https://support.google.com/a?p=chat-app-auth) (available in
-	//     [Developer Preview](https://developers.google.com/workspace/preview)).
+	//     approval](https://support.google.com/a?p=chat-app-auth).
 	//     When using this authentication scope,
 	//     this method returns details about a public message in a space.
 	//
@@ -2094,13 +2245,13 @@ type ChatServiceServer interface {
 	// - [App
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
 	// with [administrator
-	// approval](https://support.google.com/a?p=chat-app-auth) in
-	// [Developer Preview](https://developers.google.com/workspace/preview)
-	//
-	//	with one of the following authorization scopes:
-	//	   - `https://www.googleapis.com/auth/chat.app.spaces`
-	//	   - `https://www.googleapis.com/auth/chat.app.messages.readonly`
-	//	   - `https://www.googleapis.com/auth/chat.app.memberships`
+	// approval](https://support.google.com/a?p=chat-app-auth)
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.app.spaces`
+	//   - `https://www.googleapis.com/auth/chat.app.spaces.readonly`
+	//   - `https://www.googleapis.com/auth/chat.app.messages.readonly`
+	//   - `https://www.googleapis.com/auth/chat.app.memberships`
+	//   - `https://www.googleapis.com/auth/chat.app.memberships.readonly`
 	//
 	// - [User
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
@@ -2138,13 +2289,13 @@ type ChatServiceServer interface {
 	// - [App
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
 	// with [administrator
-	// approval](https://support.google.com/a?p=chat-app-auth) in
-	// [Developer Preview](https://developers.google.com/workspace/preview)
-	//
-	//	with one of the following authorization scopes:
-	//	   - `https://www.googleapis.com/auth/chat.app.spaces`
-	//	   - `https://www.googleapis.com/auth/chat.app.messages.readonly`
-	//	   - `https://www.googleapis.com/auth/chat.app.memberships`
+	// approval](https://support.google.com/a?p=chat-app-auth)
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.app.spaces`
+	//   - `https://www.googleapis.com/auth/chat.app.spaces.readonly`
+	//   - `https://www.googleapis.com/auth/chat.app.messages.readonly`
+	//   - `https://www.googleapis.com/auth/chat.app.memberships`
+	//   - `https://www.googleapis.com/auth/chat.app.memberships.readonly`
 	//
 	// - [User
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
@@ -2185,6 +2336,93 @@ type ChatServiceServer interface {
 	//
 	//   - `https://www.googleapis.com/auth/chat.users.spacesettings`
 	UpdateSpaceNotificationSetting(context.Context, *UpdateSpaceNotificationSettingRequest) (*SpaceNotificationSetting, error)
+	// Creates a section in Google Chat. Sections help users group conversations
+	// and customize the list of spaces displayed in Chat navigation panel. Only
+	// sections of type `CUSTOM_SECTION` can be created. For details, see [Create
+	// and organize sections in Google
+	// Chat](https://support.google.com/chat/answer/16059854).
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with the [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.users.sections`
+	CreateSection(context.Context, *CreateSectionRequest) (*Section, error)
+	// Deletes a section of type `CUSTOM_SECTION`.
+	//
+	// If the section contains items, such as spaces, the items are moved to
+	// Google Chat's default sections and are not deleted.
+	//
+	// For details, see [Create and organize sections in Google
+	// Chat](https://support.google.com/chat/answer/16059854).
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with the [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.users.sections`
+	DeleteSection(context.Context, *DeleteSectionRequest) (*emptypb.Empty, error)
+	// Updates a section. Only sections of type `CUSTOM_SECTION` can be updated.
+	// For details, see [Create and organize sections in Google
+	// Chat](https://support.google.com/chat/answer/16059854).
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with the [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.users.sections`
+	UpdateSection(context.Context, *UpdateSectionRequest) (*Section, error)
+	// Lists sections available to the Chat user. Sections help users group their
+	// conversations and customize the list of spaces displayed in Chat
+	// navigation panel. For details, see [Create and organize sections in Google
+	// Chat](https://support.google.com/chat/answer/16059854).
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with the [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.users.sections`
+	//   - `https://www.googleapis.com/auth/chat.users.sections.readonly`
+	ListSections(context.Context, *ListSectionsRequest) (*ListSectionsResponse, error)
+	// Changes the sort order of a section. For details, see [Create and organize
+	// sections in Google Chat](https://support.google.com/chat/answer/16059854).
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with the [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.users.sections`
+	PositionSection(context.Context, *PositionSectionRequest) (*PositionSectionResponse, error)
+	// Lists items in a section.
+	//
+	// Only spaces can be section items. For details, see [Create and organize
+	// sections in Google Chat](https://support.google.com/chat/answer/16059854).
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with the [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.users.sections`
+	//   - `https://www.googleapis.com/auth/chat.users.sections.readonly`
+	ListSectionItems(context.Context, *ListSectionItemsRequest) (*ListSectionItemsResponse, error)
+	// Moves an item from one section to another. For example, if a section
+	// contains spaces, this method can be used to move a space to a different
+	// section. For details, see [Create and organize sections in Google
+	// Chat](https://support.google.com/chat/answer/16059854).
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with the [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.users.sections`
+	MoveSectionItem(context.Context, *MoveSectionItemRequest) (*MoveSectionItemResponse, error)
 }
 
 // UnimplementedChatServiceServer should be embedded to have forward compatible implementations.
@@ -2295,6 +2533,27 @@ func (UnimplementedChatServiceServer) GetSpaceNotificationSetting(context.Contex
 }
 func (UnimplementedChatServiceServer) UpdateSpaceNotificationSetting(context.Context, *UpdateSpaceNotificationSettingRequest) (*SpaceNotificationSetting, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateSpaceNotificationSetting not implemented")
+}
+func (UnimplementedChatServiceServer) CreateSection(context.Context, *CreateSectionRequest) (*Section, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateSection not implemented")
+}
+func (UnimplementedChatServiceServer) DeleteSection(context.Context, *DeleteSectionRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteSection not implemented")
+}
+func (UnimplementedChatServiceServer) UpdateSection(context.Context, *UpdateSectionRequest) (*Section, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateSection not implemented")
+}
+func (UnimplementedChatServiceServer) ListSections(context.Context, *ListSectionsRequest) (*ListSectionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListSections not implemented")
+}
+func (UnimplementedChatServiceServer) PositionSection(context.Context, *PositionSectionRequest) (*PositionSectionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PositionSection not implemented")
+}
+func (UnimplementedChatServiceServer) ListSectionItems(context.Context, *ListSectionItemsRequest) (*ListSectionItemsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListSectionItems not implemented")
+}
+func (UnimplementedChatServiceServer) MoveSectionItem(context.Context, *MoveSectionItemRequest) (*MoveSectionItemResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MoveSectionItem not implemented")
 }
 
 // UnsafeChatServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -2938,6 +3197,132 @@ func _ChatService_UpdateSpaceNotificationSetting_Handler(srv interface{}, ctx co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ChatService_CreateSection_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateSectionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).CreateSection(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ChatService_CreateSection_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).CreateSection(ctx, req.(*CreateSectionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatService_DeleteSection_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteSectionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).DeleteSection(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ChatService_DeleteSection_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).DeleteSection(ctx, req.(*DeleteSectionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatService_UpdateSection_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateSectionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).UpdateSection(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ChatService_UpdateSection_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).UpdateSection(ctx, req.(*UpdateSectionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatService_ListSections_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListSectionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).ListSections(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ChatService_ListSections_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).ListSections(ctx, req.(*ListSectionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatService_PositionSection_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PositionSectionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).PositionSection(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ChatService_PositionSection_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).PositionSection(ctx, req.(*PositionSectionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatService_ListSectionItems_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListSectionItemsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).ListSectionItems(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ChatService_ListSectionItems_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).ListSectionItems(ctx, req.(*ListSectionItemsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatService_MoveSectionItem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MoveSectionItemRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).MoveSectionItem(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ChatService_MoveSectionItem_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).MoveSectionItem(ctx, req.(*MoveSectionItemRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ChatService_ServiceDesc is the grpc.ServiceDesc for ChatService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -3084,6 +3469,34 @@ var ChatService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateSpaceNotificationSetting",
 			Handler:    _ChatService_UpdateSpaceNotificationSetting_Handler,
+		},
+		{
+			MethodName: "CreateSection",
+			Handler:    _ChatService_CreateSection_Handler,
+		},
+		{
+			MethodName: "DeleteSection",
+			Handler:    _ChatService_DeleteSection_Handler,
+		},
+		{
+			MethodName: "UpdateSection",
+			Handler:    _ChatService_UpdateSection_Handler,
+		},
+		{
+			MethodName: "ListSections",
+			Handler:    _ChatService_ListSections_Handler,
+		},
+		{
+			MethodName: "PositionSection",
+			Handler:    _ChatService_PositionSection_Handler,
+		},
+		{
+			MethodName: "ListSectionItems",
+			Handler:    _ChatService_ListSectionItems_Handler,
+		},
+		{
+			MethodName: "MoveSectionItem",
+			Handler:    _ChatService_MoveSectionItem_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

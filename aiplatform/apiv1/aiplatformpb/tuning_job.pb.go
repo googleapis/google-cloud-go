@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -185,8 +185,10 @@ type TuningJob struct {
 	// Users starting the pipeline must have the `iam.serviceAccounts.actAs`
 	// permission on this service account.
 	ServiceAccount string `protobuf:"bytes,22,opt,name=service_account,json=serviceAccount,proto3" json:"service_account,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// Output only. Evaluation runs for the Tuning Job.
+	EvaluateDatasetRuns []*EvaluateDatasetRun `protobuf:"bytes,32,rep,name=evaluate_dataset_runs,json=evaluateDatasetRuns,proto3" json:"evaluate_dataset_runs,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *TuningJob) Reset() {
@@ -363,6 +365,13 @@ func (x *TuningJob) GetServiceAccount() string {
 		return x.ServiceAccount
 	}
 	return ""
+}
+
+func (x *TuningJob) GetEvaluateDatasetRuns() []*EvaluateDatasetRun {
+	if x != nil {
+		return x.EvaluateDatasetRuns
+	}
+	return nil
 }
 
 type isTuningJob_SourceModel interface {
@@ -894,8 +903,10 @@ type SupervisedTuningSpec struct {
 	// the last checkpoint will be exported. Otherwise, enable intermediate
 	// checkpoints for SFT. Default is false.
 	ExportLastCheckpointOnly bool `protobuf:"varint,6,opt,name=export_last_checkpoint_only,json=exportLastCheckpointOnly,proto3" json:"export_last_checkpoint_only,omitempty"`
-	unknownFields            protoimpl.UnknownFields
-	sizeCache                protoimpl.SizeCache
+	// Optional. Evaluation Config for Tuning Job.
+	EvaluationConfig *EvaluationConfig `protobuf:"bytes,5,opt,name=evaluation_config,json=evaluationConfig,proto3" json:"evaluation_config,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *SupervisedTuningSpec) Reset() {
@@ -954,6 +965,13 @@ func (x *SupervisedTuningSpec) GetExportLastCheckpointOnly() bool {
 		return x.ExportLastCheckpointOnly
 	}
 	return false
+}
+
+func (x *SupervisedTuningSpec) GetEvaluationConfig() *EvaluationConfig {
+	if x != nil {
+		return x.EvaluationConfig
+	}
+	return nil
 }
 
 // TunedModel Reference for legacy model migration.
@@ -1062,6 +1080,168 @@ func (*TunedModelRef_TuningJob) isTunedModelRef_TunedModelRef() {}
 
 func (*TunedModelRef_PipelineJob) isTunedModelRef_TunedModelRef() {}
 
+// Evaluation Config for Tuning Job.
+type EvaluationConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The metrics used for evaluation.
+	Metrics []*Metric `protobuf:"bytes,1,rep,name=metrics,proto3" json:"metrics,omitempty"`
+	// Required. Config for evaluation output.
+	OutputConfig *OutputConfig `protobuf:"bytes,2,opt,name=output_config,json=outputConfig,proto3" json:"output_config,omitempty"`
+	// Optional. Autorater config for evaluation.
+	AutoraterConfig *AutoraterConfig `protobuf:"bytes,3,opt,name=autorater_config,json=autoraterConfig,proto3" json:"autorater_config,omitempty"`
+	// Optional. Configuration options for inference generation and outputs.
+	// If not set, default generation parameters are used.
+	InferenceGenerationConfig *GenerationConfig `protobuf:"bytes,5,opt,name=inference_generation_config,json=inferenceGenerationConfig,proto3" json:"inference_generation_config,omitempty"`
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
+}
+
+func (x *EvaluationConfig) Reset() {
+	*x = EvaluationConfig{}
+	mi := &file_google_cloud_aiplatform_v1_tuning_job_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EvaluationConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EvaluationConfig) ProtoMessage() {}
+
+func (x *EvaluationConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1_tuning_job_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EvaluationConfig.ProtoReflect.Descriptor instead.
+func (*EvaluationConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1_tuning_job_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *EvaluationConfig) GetMetrics() []*Metric {
+	if x != nil {
+		return x.Metrics
+	}
+	return nil
+}
+
+func (x *EvaluationConfig) GetOutputConfig() *OutputConfig {
+	if x != nil {
+		return x.OutputConfig
+	}
+	return nil
+}
+
+func (x *EvaluationConfig) GetAutoraterConfig() *AutoraterConfig {
+	if x != nil {
+		return x.AutoraterConfig
+	}
+	return nil
+}
+
+func (x *EvaluationConfig) GetInferenceGenerationConfig() *GenerationConfig {
+	if x != nil {
+		return x.InferenceGenerationConfig
+	}
+	return nil
+}
+
+// Evaluate Dataset Run Result for Tuning Job.
+type EvaluateDatasetRun struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. Deprecated: The updated architecture uses evaluation_run
+	// instead.
+	//
+	// Deprecated: Marked as deprecated in google/cloud/aiplatform/v1/tuning_job.proto.
+	OperationName string `protobuf:"bytes,1,opt,name=operation_name,json=operationName,proto3" json:"operation_name,omitempty"`
+	// Output only. The resource name of the evaluation run. Format:
+	// `projects/{project}/locations/{location}/evaluationRuns/{evaluation_run_id}`.
+	EvaluationRun string `protobuf:"bytes,5,opt,name=evaluation_run,json=evaluationRun,proto3" json:"evaluation_run,omitempty"`
+	// Output only. The checkpoint id used in the evaluation run. Only populated
+	// when evaluating checkpoints.
+	CheckpointId string `protobuf:"bytes,2,opt,name=checkpoint_id,json=checkpointId,proto3" json:"checkpoint_id,omitempty"`
+	// Output only. Results for EvaluationService.
+	EvaluateDatasetResponse *EvaluateDatasetResponse `protobuf:"bytes,3,opt,name=evaluate_dataset_response,json=evaluateDatasetResponse,proto3" json:"evaluate_dataset_response,omitempty"`
+	// Output only. The error of the evaluation run if any.
+	Error         *status.Status `protobuf:"bytes,4,opt,name=error,proto3" json:"error,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *EvaluateDatasetRun) Reset() {
+	*x = EvaluateDatasetRun{}
+	mi := &file_google_cloud_aiplatform_v1_tuning_job_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EvaluateDatasetRun) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EvaluateDatasetRun) ProtoMessage() {}
+
+func (x *EvaluateDatasetRun) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1_tuning_job_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EvaluateDatasetRun.ProtoReflect.Descriptor instead.
+func (*EvaluateDatasetRun) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1_tuning_job_proto_rawDescGZIP(), []int{9}
+}
+
+// Deprecated: Marked as deprecated in google/cloud/aiplatform/v1/tuning_job.proto.
+func (x *EvaluateDatasetRun) GetOperationName() string {
+	if x != nil {
+		return x.OperationName
+	}
+	return ""
+}
+
+func (x *EvaluateDatasetRun) GetEvaluationRun() string {
+	if x != nil {
+		return x.EvaluationRun
+	}
+	return ""
+}
+
+func (x *EvaluateDatasetRun) GetCheckpointId() string {
+	if x != nil {
+		return x.CheckpointId
+	}
+	return ""
+}
+
+func (x *EvaluateDatasetRun) GetEvaluateDatasetResponse() *EvaluateDatasetResponse {
+	if x != nil {
+		return x.EvaluateDatasetResponse
+	}
+	return nil
+}
+
+func (x *EvaluateDatasetRun) GetError() *status.Status {
+	if x != nil {
+		return x.Error
+	}
+	return nil
+}
+
 // TunedModelCheckpoint for the Tuned Model of a Tuning Job.
 type TunedModelCheckpoint struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -1080,7 +1260,7 @@ type TunedModelCheckpoint struct {
 
 func (x *TunedModelCheckpoint) Reset() {
 	*x = TunedModelCheckpoint{}
-	mi := &file_google_cloud_aiplatform_v1_tuning_job_proto_msgTypes[8]
+	mi := &file_google_cloud_aiplatform_v1_tuning_job_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1092,7 +1272,7 @@ func (x *TunedModelCheckpoint) String() string {
 func (*TunedModelCheckpoint) ProtoMessage() {}
 
 func (x *TunedModelCheckpoint) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_tuning_job_proto_msgTypes[8]
+	mi := &file_google_cloud_aiplatform_v1_tuning_job_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1105,7 +1285,7 @@ func (x *TunedModelCheckpoint) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TunedModelCheckpoint.ProtoReflect.Descriptor instead.
 func (*TunedModelCheckpoint) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_tuning_job_proto_rawDescGZIP(), []int{8}
+	return file_google_cloud_aiplatform_v1_tuning_job_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *TunedModelCheckpoint) GetCheckpointId() string {
@@ -1162,7 +1342,7 @@ type PreTunedModel struct {
 
 func (x *PreTunedModel) Reset() {
 	*x = PreTunedModel{}
-	mi := &file_google_cloud_aiplatform_v1_tuning_job_proto_msgTypes[9]
+	mi := &file_google_cloud_aiplatform_v1_tuning_job_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1174,7 +1354,7 @@ func (x *PreTunedModel) String() string {
 func (*PreTunedModel) ProtoMessage() {}
 
 func (x *PreTunedModel) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_tuning_job_proto_msgTypes[9]
+	mi := &file_google_cloud_aiplatform_v1_tuning_job_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1187,7 +1367,7 @@ func (x *PreTunedModel) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PreTunedModel.ProtoReflect.Descriptor instead.
 func (*PreTunedModel) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_tuning_job_proto_rawDescGZIP(), []int{9}
+	return file_google_cloud_aiplatform_v1_tuning_job_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *PreTunedModel) GetTunedModelName() string {
@@ -1227,7 +1407,7 @@ type SupervisedTuningDatasetDistribution_DatasetBucket struct {
 
 func (x *SupervisedTuningDatasetDistribution_DatasetBucket) Reset() {
 	*x = SupervisedTuningDatasetDistribution_DatasetBucket{}
-	mi := &file_google_cloud_aiplatform_v1_tuning_job_proto_msgTypes[11]
+	mi := &file_google_cloud_aiplatform_v1_tuning_job_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1239,7 +1419,7 @@ func (x *SupervisedTuningDatasetDistribution_DatasetBucket) String() string {
 func (*SupervisedTuningDatasetDistribution_DatasetBucket) ProtoMessage() {}
 
 func (x *SupervisedTuningDatasetDistribution_DatasetBucket) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_tuning_job_proto_msgTypes[11]
+	mi := &file_google_cloud_aiplatform_v1_tuning_job_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1280,8 +1460,7 @@ var File_google_cloud_aiplatform_v1_tuning_job_proto protoreflect.FileDescriptor
 
 const file_google_cloud_aiplatform_v1_tuning_job_proto_rawDesc = "" +
 	"\n" +
-	"+google/cloud/aiplatform/v1/tuning_job.proto\x12\x1agoogle.cloud.aiplatform.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/aiplatform/v1/content.proto\x1a0google/cloud/aiplatform/v1/encryption_spec.proto\x1a*google/cloud/aiplatform/v1/job_state.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xfe\n" +
-	"\n" +
+	"+google/cloud/aiplatform/v1/tuning_job.proto\x12\x1agoogle.cloud.aiplatform.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/aiplatform/v1/content.proto\x1a0google/cloud/aiplatform/v1/encryption_spec.proto\x1a3google/cloud/aiplatform/v1/evaluation_service.proto\x1a*google/cloud/aiplatform/v1/job_state.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xe7\v\n" +
 	"\tTuningJob\x12\x1f\n" +
 	"\n" +
 	"base_model\x18\x04 \x01(\tH\x00R\tbaseModel\x12S\n" +
@@ -1309,7 +1488,8 @@ const file_google_cloud_aiplatform_v1_tuning_job_proto_rawDesc = "" +
 	"tunedModel\x12\\\n" +
 	"\x11tuning_data_stats\x18\x0f \x01(\v2+.google.cloud.aiplatform.v1.TuningDataStatsB\x03\xe0A\x03R\x0ftuningDataStats\x12S\n" +
 	"\x0fencryption_spec\x18\x10 \x01(\v2*.google.cloud.aiplatform.v1.EncryptionSpecR\x0eencryptionSpec\x12'\n" +
-	"\x0fservice_account\x18\x16 \x01(\tR\x0eserviceAccount\x1a9\n" +
+	"\x0fservice_account\x18\x16 \x01(\tR\x0eserviceAccount\x12g\n" +
+	"\x15evaluate_dataset_runs\x18  \x03(\v2..google.cloud.aiplatform.v1.EvaluateDatasetRunB\x03\xe0A\x03R\x13evaluateDatasetRuns\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x80\x01\xeaA}\n" +
@@ -1367,12 +1547,13 @@ const file_google_cloud_aiplatform_v1_tuning_job_proto_rawDesc = "" +
 	"\x11ADAPTER_SIZE_FOUR\x10\x02\x12\x16\n" +
 	"\x12ADAPTER_SIZE_EIGHT\x10\x03\x12\x18\n" +
 	"\x14ADAPTER_SIZE_SIXTEEN\x10\x04\x12\x1b\n" +
-	"\x17ADAPTER_SIZE_THIRTY_TWO\x10\x05\"\xb3\x02\n" +
+	"\x17ADAPTER_SIZE_THIRTY_TWO\x10\x05\"\x93\x03\n" +
 	"\x14SupervisedTuningSpec\x125\n" +
 	"\x14training_dataset_uri\x18\x01 \x01(\tB\x03\xe0A\x02R\x12trainingDatasetUri\x129\n" +
 	"\x16validation_dataset_uri\x18\x02 \x01(\tB\x03\xe0A\x01R\x14validationDatasetUri\x12e\n" +
 	"\x10hyper_parameters\x18\x03 \x01(\v25.google.cloud.aiplatform.v1.SupervisedHyperParametersB\x03\xe0A\x01R\x0fhyperParameters\x12B\n" +
-	"\x1bexport_last_checkpoint_only\x18\x06 \x01(\bB\x03\xe0A\x01R\x18exportLastCheckpointOnly\"\x87\x02\n" +
+	"\x1bexport_last_checkpoint_only\x18\x06 \x01(\bB\x03\xe0A\x01R\x18exportLastCheckpointOnly\x12^\n" +
+	"\x11evaluation_config\x18\x05 \x01(\v2,.google.cloud.aiplatform.v1.EvaluationConfigB\x03\xe0A\x01R\x10evaluationConfig\"\x87\x02\n" +
 	"\rTunedModelRef\x12G\n" +
 	"\vtuned_model\x18\x01 \x01(\tB$\xfaA!\n" +
 	"\x1faiplatform.googleapis.com/ModelH\x00R\n" +
@@ -1382,7 +1563,18 @@ const file_google_cloud_aiplatform_v1_tuning_job_proto_rawDesc = "" +
 	"#aiplatform.googleapis.com/TuningJobH\x00R\ttuningJob\x12O\n" +
 	"\fpipeline_job\x18\x03 \x01(\tB*\xfaA'\n" +
 	"%aiplatform.googleapis.com/PipelineJobH\x00R\vpipelineJobB\x11\n" +
-	"\x0ftuned_model_ref\"\x81\x01\n" +
+	"\x0ftuned_model_ref\"\xf9\x02\n" +
+	"\x10EvaluationConfig\x12A\n" +
+	"\ametrics\x18\x01 \x03(\v2\".google.cloud.aiplatform.v1.MetricB\x03\xe0A\x02R\ametrics\x12R\n" +
+	"\routput_config\x18\x02 \x01(\v2(.google.cloud.aiplatform.v1.OutputConfigB\x03\xe0A\x02R\foutputConfig\x12[\n" +
+	"\x10autorater_config\x18\x03 \x01(\v2+.google.cloud.aiplatform.v1.AutoraterConfigB\x03\xe0A\x01R\x0fautoraterConfig\x12q\n" +
+	"\x1binference_generation_config\x18\x05 \x01(\v2,.google.cloud.aiplatform.v1.GenerationConfigB\x03\xe0A\x01R\x19inferenceGenerationConfig\"\xbd\x02\n" +
+	"\x12EvaluateDatasetRun\x12,\n" +
+	"\x0eoperation_name\x18\x01 \x01(\tB\x05\xe0A\x03\x18\x01R\roperationName\x12*\n" +
+	"\x0eevaluation_run\x18\x05 \x01(\tB\x03\xe0A\x03R\revaluationRun\x12(\n" +
+	"\rcheckpoint_id\x18\x02 \x01(\tB\x03\xe0A\x03R\fcheckpointId\x12t\n" +
+	"\x19evaluate_dataset_response\x18\x03 \x01(\v23.google.cloud.aiplatform.v1.EvaluateDatasetResponseB\x03\xe0A\x03R\x17evaluateDatasetResponse\x12-\n" +
+	"\x05error\x18\x04 \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x05error\"\x81\x01\n" +
 	"\x14TunedModelCheckpoint\x12#\n" +
 	"\rcheckpoint_id\x18\x01 \x01(\tR\fcheckpointId\x12\x14\n" +
 	"\x05epoch\x18\x02 \x01(\x03R\x05epoch\x12\x12\n" +
@@ -1409,7 +1601,7 @@ func file_google_cloud_aiplatform_v1_tuning_job_proto_rawDescGZIP() []byte {
 }
 
 var file_google_cloud_aiplatform_v1_tuning_job_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_google_cloud_aiplatform_v1_tuning_job_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_google_cloud_aiplatform_v1_tuning_job_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
 var file_google_cloud_aiplatform_v1_tuning_job_proto_goTypes = []any{
 	(SupervisedHyperParameters_AdapterSize)(0),  // 0: google.cloud.aiplatform.v1.SupervisedHyperParameters.AdapterSize
 	(*TuningJob)(nil),                           // 1: google.cloud.aiplatform.v1.TuningJob
@@ -1420,43 +1612,58 @@ var file_google_cloud_aiplatform_v1_tuning_job_proto_goTypes = []any{
 	(*SupervisedHyperParameters)(nil),           // 6: google.cloud.aiplatform.v1.SupervisedHyperParameters
 	(*SupervisedTuningSpec)(nil),                // 7: google.cloud.aiplatform.v1.SupervisedTuningSpec
 	(*TunedModelRef)(nil),                       // 8: google.cloud.aiplatform.v1.TunedModelRef
-	(*TunedModelCheckpoint)(nil),                // 9: google.cloud.aiplatform.v1.TunedModelCheckpoint
-	(*PreTunedModel)(nil),                       // 10: google.cloud.aiplatform.v1.PreTunedModel
-	nil,                                         // 11: google.cloud.aiplatform.v1.TuningJob.LabelsEntry
-	(*SupervisedTuningDatasetDistribution_DatasetBucket)(nil), // 12: google.cloud.aiplatform.v1.SupervisedTuningDatasetDistribution.DatasetBucket
-	(JobState)(0),                 // 13: google.cloud.aiplatform.v1.JobState
-	(*timestamppb.Timestamp)(nil), // 14: google.protobuf.Timestamp
-	(*status.Status)(nil),         // 15: google.rpc.Status
-	(*EncryptionSpec)(nil),        // 16: google.cloud.aiplatform.v1.EncryptionSpec
-	(*Content)(nil),               // 17: google.cloud.aiplatform.v1.Content
+	(*EvaluationConfig)(nil),                    // 9: google.cloud.aiplatform.v1.EvaluationConfig
+	(*EvaluateDatasetRun)(nil),                  // 10: google.cloud.aiplatform.v1.EvaluateDatasetRun
+	(*TunedModelCheckpoint)(nil),                // 11: google.cloud.aiplatform.v1.TunedModelCheckpoint
+	(*PreTunedModel)(nil),                       // 12: google.cloud.aiplatform.v1.PreTunedModel
+	nil,                                         // 13: google.cloud.aiplatform.v1.TuningJob.LabelsEntry
+	(*SupervisedTuningDatasetDistribution_DatasetBucket)(nil), // 14: google.cloud.aiplatform.v1.SupervisedTuningDatasetDistribution.DatasetBucket
+	(JobState)(0),                   // 15: google.cloud.aiplatform.v1.JobState
+	(*timestamppb.Timestamp)(nil),   // 16: google.protobuf.Timestamp
+	(*status.Status)(nil),           // 17: google.rpc.Status
+	(*EncryptionSpec)(nil),          // 18: google.cloud.aiplatform.v1.EncryptionSpec
+	(*Content)(nil),                 // 19: google.cloud.aiplatform.v1.Content
+	(*Metric)(nil),                  // 20: google.cloud.aiplatform.v1.Metric
+	(*OutputConfig)(nil),            // 21: google.cloud.aiplatform.v1.OutputConfig
+	(*AutoraterConfig)(nil),         // 22: google.cloud.aiplatform.v1.AutoraterConfig
+	(*GenerationConfig)(nil),        // 23: google.cloud.aiplatform.v1.GenerationConfig
+	(*EvaluateDatasetResponse)(nil), // 24: google.cloud.aiplatform.v1.EvaluateDatasetResponse
 }
 var file_google_cloud_aiplatform_v1_tuning_job_proto_depIdxs = []int32{
-	10, // 0: google.cloud.aiplatform.v1.TuningJob.pre_tuned_model:type_name -> google.cloud.aiplatform.v1.PreTunedModel
+	12, // 0: google.cloud.aiplatform.v1.TuningJob.pre_tuned_model:type_name -> google.cloud.aiplatform.v1.PreTunedModel
 	7,  // 1: google.cloud.aiplatform.v1.TuningJob.supervised_tuning_spec:type_name -> google.cloud.aiplatform.v1.SupervisedTuningSpec
-	13, // 2: google.cloud.aiplatform.v1.TuningJob.state:type_name -> google.cloud.aiplatform.v1.JobState
-	14, // 3: google.cloud.aiplatform.v1.TuningJob.create_time:type_name -> google.protobuf.Timestamp
-	14, // 4: google.cloud.aiplatform.v1.TuningJob.start_time:type_name -> google.protobuf.Timestamp
-	14, // 5: google.cloud.aiplatform.v1.TuningJob.end_time:type_name -> google.protobuf.Timestamp
-	14, // 6: google.cloud.aiplatform.v1.TuningJob.update_time:type_name -> google.protobuf.Timestamp
-	15, // 7: google.cloud.aiplatform.v1.TuningJob.error:type_name -> google.rpc.Status
-	11, // 8: google.cloud.aiplatform.v1.TuningJob.labels:type_name -> google.cloud.aiplatform.v1.TuningJob.LabelsEntry
+	15, // 2: google.cloud.aiplatform.v1.TuningJob.state:type_name -> google.cloud.aiplatform.v1.JobState
+	16, // 3: google.cloud.aiplatform.v1.TuningJob.create_time:type_name -> google.protobuf.Timestamp
+	16, // 4: google.cloud.aiplatform.v1.TuningJob.start_time:type_name -> google.protobuf.Timestamp
+	16, // 5: google.cloud.aiplatform.v1.TuningJob.end_time:type_name -> google.protobuf.Timestamp
+	16, // 6: google.cloud.aiplatform.v1.TuningJob.update_time:type_name -> google.protobuf.Timestamp
+	17, // 7: google.cloud.aiplatform.v1.TuningJob.error:type_name -> google.rpc.Status
+	13, // 8: google.cloud.aiplatform.v1.TuningJob.labels:type_name -> google.cloud.aiplatform.v1.TuningJob.LabelsEntry
 	2,  // 9: google.cloud.aiplatform.v1.TuningJob.tuned_model:type_name -> google.cloud.aiplatform.v1.TunedModel
 	5,  // 10: google.cloud.aiplatform.v1.TuningJob.tuning_data_stats:type_name -> google.cloud.aiplatform.v1.TuningDataStats
-	16, // 11: google.cloud.aiplatform.v1.TuningJob.encryption_spec:type_name -> google.cloud.aiplatform.v1.EncryptionSpec
-	9,  // 12: google.cloud.aiplatform.v1.TunedModel.checkpoints:type_name -> google.cloud.aiplatform.v1.TunedModelCheckpoint
-	12, // 13: google.cloud.aiplatform.v1.SupervisedTuningDatasetDistribution.buckets:type_name -> google.cloud.aiplatform.v1.SupervisedTuningDatasetDistribution.DatasetBucket
-	3,  // 14: google.cloud.aiplatform.v1.SupervisedTuningDataStats.user_input_token_distribution:type_name -> google.cloud.aiplatform.v1.SupervisedTuningDatasetDistribution
-	3,  // 15: google.cloud.aiplatform.v1.SupervisedTuningDataStats.user_output_token_distribution:type_name -> google.cloud.aiplatform.v1.SupervisedTuningDatasetDistribution
-	3,  // 16: google.cloud.aiplatform.v1.SupervisedTuningDataStats.user_message_per_example_distribution:type_name -> google.cloud.aiplatform.v1.SupervisedTuningDatasetDistribution
-	17, // 17: google.cloud.aiplatform.v1.SupervisedTuningDataStats.user_dataset_examples:type_name -> google.cloud.aiplatform.v1.Content
-	4,  // 18: google.cloud.aiplatform.v1.TuningDataStats.supervised_tuning_data_stats:type_name -> google.cloud.aiplatform.v1.SupervisedTuningDataStats
-	0,  // 19: google.cloud.aiplatform.v1.SupervisedHyperParameters.adapter_size:type_name -> google.cloud.aiplatform.v1.SupervisedHyperParameters.AdapterSize
-	6,  // 20: google.cloud.aiplatform.v1.SupervisedTuningSpec.hyper_parameters:type_name -> google.cloud.aiplatform.v1.SupervisedHyperParameters
-	21, // [21:21] is the sub-list for method output_type
-	21, // [21:21] is the sub-list for method input_type
-	21, // [21:21] is the sub-list for extension type_name
-	21, // [21:21] is the sub-list for extension extendee
-	0,  // [0:21] is the sub-list for field type_name
+	18, // 11: google.cloud.aiplatform.v1.TuningJob.encryption_spec:type_name -> google.cloud.aiplatform.v1.EncryptionSpec
+	10, // 12: google.cloud.aiplatform.v1.TuningJob.evaluate_dataset_runs:type_name -> google.cloud.aiplatform.v1.EvaluateDatasetRun
+	11, // 13: google.cloud.aiplatform.v1.TunedModel.checkpoints:type_name -> google.cloud.aiplatform.v1.TunedModelCheckpoint
+	14, // 14: google.cloud.aiplatform.v1.SupervisedTuningDatasetDistribution.buckets:type_name -> google.cloud.aiplatform.v1.SupervisedTuningDatasetDistribution.DatasetBucket
+	3,  // 15: google.cloud.aiplatform.v1.SupervisedTuningDataStats.user_input_token_distribution:type_name -> google.cloud.aiplatform.v1.SupervisedTuningDatasetDistribution
+	3,  // 16: google.cloud.aiplatform.v1.SupervisedTuningDataStats.user_output_token_distribution:type_name -> google.cloud.aiplatform.v1.SupervisedTuningDatasetDistribution
+	3,  // 17: google.cloud.aiplatform.v1.SupervisedTuningDataStats.user_message_per_example_distribution:type_name -> google.cloud.aiplatform.v1.SupervisedTuningDatasetDistribution
+	19, // 18: google.cloud.aiplatform.v1.SupervisedTuningDataStats.user_dataset_examples:type_name -> google.cloud.aiplatform.v1.Content
+	4,  // 19: google.cloud.aiplatform.v1.TuningDataStats.supervised_tuning_data_stats:type_name -> google.cloud.aiplatform.v1.SupervisedTuningDataStats
+	0,  // 20: google.cloud.aiplatform.v1.SupervisedHyperParameters.adapter_size:type_name -> google.cloud.aiplatform.v1.SupervisedHyperParameters.AdapterSize
+	6,  // 21: google.cloud.aiplatform.v1.SupervisedTuningSpec.hyper_parameters:type_name -> google.cloud.aiplatform.v1.SupervisedHyperParameters
+	9,  // 22: google.cloud.aiplatform.v1.SupervisedTuningSpec.evaluation_config:type_name -> google.cloud.aiplatform.v1.EvaluationConfig
+	20, // 23: google.cloud.aiplatform.v1.EvaluationConfig.metrics:type_name -> google.cloud.aiplatform.v1.Metric
+	21, // 24: google.cloud.aiplatform.v1.EvaluationConfig.output_config:type_name -> google.cloud.aiplatform.v1.OutputConfig
+	22, // 25: google.cloud.aiplatform.v1.EvaluationConfig.autorater_config:type_name -> google.cloud.aiplatform.v1.AutoraterConfig
+	23, // 26: google.cloud.aiplatform.v1.EvaluationConfig.inference_generation_config:type_name -> google.cloud.aiplatform.v1.GenerationConfig
+	24, // 27: google.cloud.aiplatform.v1.EvaluateDatasetRun.evaluate_dataset_response:type_name -> google.cloud.aiplatform.v1.EvaluateDatasetResponse
+	17, // 28: google.cloud.aiplatform.v1.EvaluateDatasetRun.error:type_name -> google.rpc.Status
+	29, // [29:29] is the sub-list for method output_type
+	29, // [29:29] is the sub-list for method input_type
+	29, // [29:29] is the sub-list for extension type_name
+	29, // [29:29] is the sub-list for extension extendee
+	0,  // [0:29] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_aiplatform_v1_tuning_job_proto_init() }
@@ -1466,6 +1673,7 @@ func file_google_cloud_aiplatform_v1_tuning_job_proto_init() {
 	}
 	file_google_cloud_aiplatform_v1_content_proto_init()
 	file_google_cloud_aiplatform_v1_encryption_spec_proto_init()
+	file_google_cloud_aiplatform_v1_evaluation_service_proto_init()
 	file_google_cloud_aiplatform_v1_job_state_proto_init()
 	file_google_cloud_aiplatform_v1_tuning_job_proto_msgTypes[0].OneofWrappers = []any{
 		(*TuningJob_BaseModel)(nil),
@@ -1486,7 +1694,7 @@ func file_google_cloud_aiplatform_v1_tuning_job_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_aiplatform_v1_tuning_job_proto_rawDesc), len(file_google_cloud_aiplatform_v1_tuning_job_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   12,
+			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

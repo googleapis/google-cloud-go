@@ -78,6 +78,13 @@ type CallOptions struct {
 	ListSpaceEvents                []gax.CallOption
 	GetSpaceNotificationSetting    []gax.CallOption
 	UpdateSpaceNotificationSetting []gax.CallOption
+	CreateSection                  []gax.CallOption
+	DeleteSection                  []gax.CallOption
+	UpdateSection                  []gax.CallOption
+	ListSections                   []gax.CallOption
+	PositionSection                []gax.CallOption
+	ListSectionItems               []gax.CallOption
+	MoveSectionItem                []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -517,6 +524,90 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		CreateSection: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteSection: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateSection: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListSections: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		PositionSection: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListSectionItems: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		MoveSectionItem: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
@@ -907,6 +998,83 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		CreateSection: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		DeleteSection: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		UpdateSection: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListSections: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		PositionSection: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListSectionItems: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		MoveSectionItem: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 	}
 }
 
@@ -950,6 +1118,13 @@ type internalClient interface {
 	ListSpaceEvents(context.Context, *chatpb.ListSpaceEventsRequest, ...gax.CallOption) *SpaceEventIterator
 	GetSpaceNotificationSetting(context.Context, *chatpb.GetSpaceNotificationSettingRequest, ...gax.CallOption) (*chatpb.SpaceNotificationSetting, error)
 	UpdateSpaceNotificationSetting(context.Context, *chatpb.UpdateSpaceNotificationSettingRequest, ...gax.CallOption) (*chatpb.SpaceNotificationSetting, error)
+	CreateSection(context.Context, *chatpb.CreateSectionRequest, ...gax.CallOption) (*chatpb.Section, error)
+	DeleteSection(context.Context, *chatpb.DeleteSectionRequest, ...gax.CallOption) error
+	UpdateSection(context.Context, *chatpb.UpdateSectionRequest, ...gax.CallOption) (*chatpb.Section, error)
+	ListSections(context.Context, *chatpb.ListSectionsRequest, ...gax.CallOption) *SectionIterator
+	PositionSection(context.Context, *chatpb.PositionSectionRequest, ...gax.CallOption) (*chatpb.PositionSectionResponse, error)
+	ListSectionItems(context.Context, *chatpb.ListSectionItemsRequest, ...gax.CallOption) *SectionItemIterator
+	MoveSectionItem(context.Context, *chatpb.MoveSectionItemRequest, ...gax.CallOption) (*chatpb.MoveSectionItemResponse, error)
 }
 
 // Client is a client for interacting with Google Chat API.
@@ -1050,8 +1225,7 @@ func (c *Client) CreateMessage(ctx context.Context, req *chatpb.CreateMessageReq
 //	App
 //	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
 //	with administrator
-//	approval (at https://support.google.com/a?p=chat-app-auth) in
-//	Developer Preview (at https://developers.google.com/workspace/preview)
+//	approval (at https://support.google.com/a?p=chat-app-auth)
 //	with the authorization scope:
 //
 //	  https://www.googleapis.com/auth/chat.app.messages.readonly. When
@@ -1172,8 +1346,7 @@ func (c *Client) GetMembership(ctx context.Context, req *chatpb.GetMembershipReq
 //
 //	  https://www.googleapis.com/auth/chat.app.messages.readonly
 //	  with administrator
-//	  approval (at https://support.google.com/a?p=chat-app-auth) (available in
-//	  Developer Preview (at https://developers.google.com/workspace/preview)).
+//	  approval (at https://support.google.com/a?p=chat-app-auth).
 //	  When using this authentication scope,
 //	  this method returns details about a public message in a space.
 //
@@ -1975,15 +2148,18 @@ func (c *Client) GetThreadReadState(ctx context.Context, req *chatpb.GetThreadRe
 //	App
 //	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
 //	with administrator
-//	approval (at https://support.google.com/a?p=chat-app-auth) in
-//	Developer Preview (at https://developers.google.com/workspace/preview)
+//	approval (at https://support.google.com/a?p=chat-app-auth)
 //	with one of the following authorization scopes:
 //
 //	  https://www.googleapis.com/auth/chat.app.spaces
 //
+//	  https://www.googleapis.com/auth/chat.app.spaces.readonly
+//
 //	  https://www.googleapis.com/auth/chat.app.messages.readonly
 //
 //	  https://www.googleapis.com/auth/chat.app.memberships
+//
+//	  https://www.googleapis.com/auth/chat.app.memberships.readonly
 //
 //	User
 //	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
@@ -2032,15 +2208,18 @@ func (c *Client) GetSpaceEvent(ctx context.Context, req *chatpb.GetSpaceEventReq
 //	App
 //	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
 //	with administrator
-//	approval (at https://support.google.com/a?p=chat-app-auth) in
-//	Developer Preview (at https://developers.google.com/workspace/preview)
+//	approval (at https://support.google.com/a?p=chat-app-auth)
 //	with one of the following authorization scopes:
 //
 //	  https://www.googleapis.com/auth/chat.app.spaces
 //
+//	  https://www.googleapis.com/auth/chat.app.spaces.readonly
+//
 //	  https://www.googleapis.com/auth/chat.app.messages.readonly
 //
 //	  https://www.googleapis.com/auth/chat.app.memberships
+//
+//	  https://www.googleapis.com/auth/chat.app.memberships.readonly
 //
 //	User
 //	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
@@ -2096,6 +2275,116 @@ func (c *Client) GetSpaceNotificationSetting(ctx context.Context, req *chatpb.Ge
 //	https://www.googleapis.com/auth/chat.users.spacesettings
 func (c *Client) UpdateSpaceNotificationSetting(ctx context.Context, req *chatpb.UpdateSpaceNotificationSettingRequest, opts ...gax.CallOption) (*chatpb.SpaceNotificationSetting, error) {
 	return c.internalClient.UpdateSpaceNotificationSetting(ctx, req, opts...)
+}
+
+// CreateSection creates a section in Google Chat. Sections help users group conversations
+// and customize the list of spaces displayed in Chat navigation panel. Only
+// sections of type CUSTOM_SECTION can be created. For details, see Create
+// and organize sections in Google
+// Chat (at https://support.google.com/chat/answer/16059854).
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+// with the authorization
+// scope (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	https://www.googleapis.com/auth/chat.users.sections
+func (c *Client) CreateSection(ctx context.Context, req *chatpb.CreateSectionRequest, opts ...gax.CallOption) (*chatpb.Section, error) {
+	return c.internalClient.CreateSection(ctx, req, opts...)
+}
+
+// DeleteSection deletes a section of type CUSTOM_SECTION.
+//
+// If the section contains items, such as spaces, the items are moved to
+// Google Chat’s default sections and are not deleted.
+//
+// For details, see Create and organize sections in Google
+// Chat (at https://support.google.com/chat/answer/16059854).
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+// with the authorization
+// scope (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	https://www.googleapis.com/auth/chat.users.sections
+func (c *Client) DeleteSection(ctx context.Context, req *chatpb.DeleteSectionRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteSection(ctx, req, opts...)
+}
+
+// UpdateSection updates a section. Only sections of type CUSTOM_SECTION can be updated.
+// For details, see Create and organize sections in Google
+// Chat (at https://support.google.com/chat/answer/16059854).
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+// with the authorization
+// scope (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	https://www.googleapis.com/auth/chat.users.sections
+func (c *Client) UpdateSection(ctx context.Context, req *chatpb.UpdateSectionRequest, opts ...gax.CallOption) (*chatpb.Section, error) {
+	return c.internalClient.UpdateSection(ctx, req, opts...)
+}
+
+// ListSections lists sections available to the Chat user. Sections help users group their
+// conversations and customize the list of spaces displayed in Chat
+// navigation panel. For details, see Create and organize sections in Google
+// Chat (at https://support.google.com/chat/answer/16059854).
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+// with the authorization
+// scope (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	https://www.googleapis.com/auth/chat.users.sections
+//
+//	https://www.googleapis.com/auth/chat.users.sections.readonly
+func (c *Client) ListSections(ctx context.Context, req *chatpb.ListSectionsRequest, opts ...gax.CallOption) *SectionIterator {
+	return c.internalClient.ListSections(ctx, req, opts...)
+}
+
+// PositionSection changes the sort order of a section. For details, see Create and organize
+// sections in Google Chat (at https://support.google.com/chat/answer/16059854).
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+// with the authorization
+// scope (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	https://www.googleapis.com/auth/chat.users.sections
+func (c *Client) PositionSection(ctx context.Context, req *chatpb.PositionSectionRequest, opts ...gax.CallOption) (*chatpb.PositionSectionResponse, error) {
+	return c.internalClient.PositionSection(ctx, req, opts...)
+}
+
+// ListSectionItems lists items in a section.
+//
+// Only spaces can be section items. For details, see Create and organize
+// sections in Google Chat (at https://support.google.com/chat/answer/16059854).
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+// with the authorization
+// scope (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	https://www.googleapis.com/auth/chat.users.sections
+//
+//	https://www.googleapis.com/auth/chat.users.sections.readonly
+func (c *Client) ListSectionItems(ctx context.Context, req *chatpb.ListSectionItemsRequest, opts ...gax.CallOption) *SectionItemIterator {
+	return c.internalClient.ListSectionItems(ctx, req, opts...)
+}
+
+// MoveSectionItem moves an item from one section to another. For example, if a section
+// contains spaces, this method can be used to move a space to a different
+// section. For details, see Create and organize sections in Google
+// Chat (at https://support.google.com/chat/answer/16059854).
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+// with the authorization
+// scope (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	https://www.googleapis.com/auth/chat.users.sections
+func (c *Client) MoveSectionItem(ctx context.Context, req *chatpb.MoveSectionItemRequest, opts ...gax.CallOption) (*chatpb.MoveSectionItemResponse, error) {
+	return c.internalClient.MoveSectionItem(ctx, req, opts...)
 }
 
 // gRPCClient is a client for interacting with Google Chat API over gRPC transport.
@@ -3042,6 +3331,184 @@ func (c *gRPCClient) UpdateSpaceNotificationSetting(ctx context.Context, req *ch
 	return resp, nil
 }
 
+func (c *gRPCClient) CreateSection(ctx context.Context, req *chatpb.CreateSectionRequest, opts ...gax.CallOption) (*chatpb.Section, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateSection[0:len((*c.CallOptions).CreateSection):len((*c.CallOptions).CreateSection)], opts...)
+	var resp *chatpb.Section
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateSection, req, settings.GRPC, c.logger, "CreateSection")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) DeleteSection(ctx context.Context, req *chatpb.DeleteSectionRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteSection[0:len((*c.CallOptions).DeleteSection):len((*c.CallOptions).DeleteSection)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.client.DeleteSection, req, settings.GRPC, c.logger, "DeleteSection")
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) UpdateSection(ctx context.Context, req *chatpb.UpdateSectionRequest, opts ...gax.CallOption) (*chatpb.Section, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "section.name", url.QueryEscape(req.GetSection().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateSection[0:len((*c.CallOptions).UpdateSection):len((*c.CallOptions).UpdateSection)], opts...)
+	var resp *chatpb.Section
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateSection, req, settings.GRPC, c.logger, "UpdateSection")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListSections(ctx context.Context, req *chatpb.ListSectionsRequest, opts ...gax.CallOption) *SectionIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListSections[0:len((*c.CallOptions).ListSections):len((*c.CallOptions).ListSections)], opts...)
+	it := &SectionIterator{}
+	req = proto.Clone(req).(*chatpb.ListSectionsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*chatpb.Section, string, error) {
+		resp := &chatpb.ListSectionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListSections, req, settings.GRPC, c.logger, "ListSections")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetSections(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) PositionSection(ctx context.Context, req *chatpb.PositionSectionRequest, opts ...gax.CallOption) (*chatpb.PositionSectionResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).PositionSection[0:len((*c.CallOptions).PositionSection):len((*c.CallOptions).PositionSection)], opts...)
+	var resp *chatpb.PositionSectionResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.PositionSection, req, settings.GRPC, c.logger, "PositionSection")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListSectionItems(ctx context.Context, req *chatpb.ListSectionItemsRequest, opts ...gax.CallOption) *SectionItemIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListSectionItems[0:len((*c.CallOptions).ListSectionItems):len((*c.CallOptions).ListSectionItems)], opts...)
+	it := &SectionItemIterator{}
+	req = proto.Clone(req).(*chatpb.ListSectionItemsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*chatpb.SectionItem, string, error) {
+		resp := &chatpb.ListSectionItemsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListSectionItems, req, settings.GRPC, c.logger, "ListSectionItems")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetSectionItems(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) MoveSectionItem(ctx context.Context, req *chatpb.MoveSectionItemRequest, opts ...gax.CallOption) (*chatpb.MoveSectionItemResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).MoveSectionItem[0:len((*c.CallOptions).MoveSectionItem):len((*c.CallOptions).MoveSectionItem)], opts...)
+	var resp *chatpb.MoveSectionItemResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.MoveSectionItem, req, settings.GRPC, c.logger, "MoveSectionItem")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 // CreateMessage creates a message in a Google Chat space. For an example, see Send a
 // message (at https://developers.google.com/workspace/chat/create-messages).
 //
@@ -3168,8 +3635,7 @@ func (c *restClient) CreateMessage(ctx context.Context, req *chatpb.CreateMessag
 //	App
 //	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
 //	with administrator
-//	approval (at https://support.google.com/a?p=chat-app-auth) in
-//	Developer Preview (at https://developers.google.com/workspace/preview)
+//	approval (at https://support.google.com/a?p=chat-app-auth)
 //	with the authorization scope:
 //
 //	  https://www.googleapis.com/auth/chat.app.messages.readonly. When
@@ -3505,8 +3971,7 @@ func (c *restClient) GetMembership(ctx context.Context, req *chatpb.GetMembershi
 //
 //	  https://www.googleapis.com/auth/chat.app.messages.readonly
 //	  with administrator
-//	  approval (at https://support.google.com/a?p=chat-app-auth) (available in
-//	  Developer Preview (at https://developers.google.com/workspace/preview)).
+//	  approval (at https://support.google.com/a?p=chat-app-auth).
 //	  When using this authentication scope,
 //	  this method returns details about a public message in a space.
 //
@@ -5709,15 +6174,18 @@ func (c *restClient) GetThreadReadState(ctx context.Context, req *chatpb.GetThre
 //	App
 //	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
 //	with administrator
-//	approval (at https://support.google.com/a?p=chat-app-auth) in
-//	Developer Preview (at https://developers.google.com/workspace/preview)
+//	approval (at https://support.google.com/a?p=chat-app-auth)
 //	with one of the following authorization scopes:
 //
 //	  https://www.googleapis.com/auth/chat.app.spaces
 //
+//	  https://www.googleapis.com/auth/chat.app.spaces.readonly
+//
 //	  https://www.googleapis.com/auth/chat.app.messages.readonly
 //
 //	  https://www.googleapis.com/auth/chat.app.memberships
+//
+//	  https://www.googleapis.com/auth/chat.app.memberships.readonly
 //
 //	User
 //	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
@@ -5811,15 +6279,18 @@ func (c *restClient) GetSpaceEvent(ctx context.Context, req *chatpb.GetSpaceEven
 //	App
 //	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
 //	with administrator
-//	approval (at https://support.google.com/a?p=chat-app-auth) in
-//	Developer Preview (at https://developers.google.com/workspace/preview)
+//	approval (at https://support.google.com/a?p=chat-app-auth)
 //	with one of the following authorization scopes:
 //
 //	  https://www.googleapis.com/auth/chat.app.spaces
 //
+//	  https://www.googleapis.com/auth/chat.app.spaces.readonly
+//
 //	  https://www.googleapis.com/auth/chat.app.messages.readonly
 //
 //	  https://www.googleapis.com/auth/chat.app.memberships
+//
+//	  https://www.googleapis.com/auth/chat.app.memberships.readonly
 //
 //	User
 //	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
@@ -6039,6 +6510,508 @@ func (c *restClient) UpdateSpaceNotificationSetting(ctx context.Context, req *ch
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateSpaceNotificationSetting")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateSection creates a section in Google Chat. Sections help users group conversations
+// and customize the list of spaces displayed in Chat navigation panel. Only
+// sections of type CUSTOM_SECTION can be created. For details, see Create
+// and organize sections in Google
+// Chat (at https://support.google.com/chat/answer/16059854).
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+// with the authorization
+// scope (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	https://www.googleapis.com/auth/chat.users.sections
+func (c *restClient) CreateSection(ctx context.Context, req *chatpb.CreateSectionRequest, opts ...gax.CallOption) (*chatpb.Section, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetSection()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/sections", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateSection[0:len((*c.CallOptions).CreateSection):len((*c.CallOptions).CreateSection)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &chatpb.Section{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateSection")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteSection deletes a section of type CUSTOM_SECTION.
+//
+// If the section contains items, such as spaces, the items are moved to
+// Google Chat’s default sections and are not deleted.
+//
+// For details, see Create and organize sections in Google
+// Chat (at https://support.google.com/chat/answer/16059854).
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+// with the authorization
+// scope (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	https://www.googleapis.com/auth/chat.users.sections
+func (c *restClient) DeleteSection(ctx context.Context, req *chatpb.DeleteSectionRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteSection")
+		return err
+	}, opts...)
+}
+
+// UpdateSection updates a section. Only sections of type CUSTOM_SECTION can be updated.
+// For details, see Create and organize sections in Google
+// Chat (at https://support.google.com/chat/answer/16059854).
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+// with the authorization
+// scope (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	https://www.googleapis.com/auth/chat.users.sections
+func (c *restClient) UpdateSection(ctx context.Context, req *chatpb.UpdateSectionRequest, opts ...gax.CallOption) (*chatpb.Section, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetSection()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetSection().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "section.name", url.QueryEscape(req.GetSection().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateSection[0:len((*c.CallOptions).UpdateSection):len((*c.CallOptions).UpdateSection)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &chatpb.Section{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateSection")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListSections lists sections available to the Chat user. Sections help users group their
+// conversations and customize the list of spaces displayed in Chat
+// navigation panel. For details, see Create and organize sections in Google
+// Chat (at https://support.google.com/chat/answer/16059854).
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+// with the authorization
+// scope (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	https://www.googleapis.com/auth/chat.users.sections
+//
+//	https://www.googleapis.com/auth/chat.users.sections.readonly
+func (c *restClient) ListSections(ctx context.Context, req *chatpb.ListSectionsRequest, opts ...gax.CallOption) *SectionIterator {
+	it := &SectionIterator{}
+	req = proto.Clone(req).(*chatpb.ListSectionsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*chatpb.Section, string, error) {
+		resp := &chatpb.ListSectionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/sections", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSections")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetSections(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// PositionSection changes the sort order of a section. For details, see Create and organize
+// sections in Google Chat (at https://support.google.com/chat/answer/16059854).
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+// with the authorization
+// scope (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	https://www.googleapis.com/auth/chat.users.sections
+func (c *restClient) PositionSection(ctx context.Context, req *chatpb.PositionSectionRequest, opts ...gax.CallOption) (*chatpb.PositionSectionResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:position", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).PositionSection[0:len((*c.CallOptions).PositionSection):len((*c.CallOptions).PositionSection)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &chatpb.PositionSectionResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PositionSection")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListSectionItems lists items in a section.
+//
+// Only spaces can be section items. For details, see Create and organize
+// sections in Google Chat (at https://support.google.com/chat/answer/16059854).
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+// with the authorization
+// scope (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	https://www.googleapis.com/auth/chat.users.sections
+//
+//	https://www.googleapis.com/auth/chat.users.sections.readonly
+func (c *restClient) ListSectionItems(ctx context.Context, req *chatpb.ListSectionItemsRequest, opts ...gax.CallOption) *SectionItemIterator {
+	it := &SectionItemIterator{}
+	req = proto.Clone(req).(*chatpb.ListSectionItemsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*chatpb.SectionItem, string, error) {
+		resp := &chatpb.ListSectionItemsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/items", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSectionItems")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetSectionItems(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// MoveSectionItem moves an item from one section to another. For example, if a section
+// contains spaces, this method can be used to move a space to a different
+// section. For details, see Create and organize sections in Google
+// Chat (at https://support.google.com/chat/answer/16059854).
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+// with the authorization
+// scope (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	https://www.googleapis.com/auth/chat.users.sections
+func (c *restClient) MoveSectionItem(ctx context.Context, req *chatpb.MoveSectionItemRequest, opts ...gax.CallOption) (*chatpb.MoveSectionItemResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:move", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).MoveSectionItem[0:len((*c.CallOptions).MoveSectionItem):len((*c.CallOptions).MoveSectionItem)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &chatpb.MoveSectionItemResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "MoveSectionItem")
 		if err != nil {
 			return err
 		}

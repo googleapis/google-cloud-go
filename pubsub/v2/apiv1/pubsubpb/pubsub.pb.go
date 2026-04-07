@@ -1412,7 +1412,7 @@ type AIInference struct {
 	// endpoints. The resource creator or updater that specifies this field must
 	// have `iam.serviceAccounts.actAs` permission on the service account. If not
 	// specified, the Pub/Sub [service
-	// agent]({$universe.dns_names.final_documentation_domain}/iam/docs/service-agents),
+	// agent](https://cloud.google.com/iam/docs/service-agents),
 	// service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com, is used.
 	ServiceAccountEmail string `protobuf:"bytes,3,opt,name=service_account_email,json=serviceAccountEmail,proto3" json:"service_account_email,omitempty"`
 	unknownFields       protoimpl.UnknownFields

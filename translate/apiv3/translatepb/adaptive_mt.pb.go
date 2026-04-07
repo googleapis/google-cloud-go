@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -441,6 +441,8 @@ type AdaptiveMtTranslateRequest struct {
 	Dataset string `protobuf:"bytes,2,opt,name=dataset,proto3" json:"dataset,omitempty"`
 	// Required. The content of the input in string format.
 	Content []string `protobuf:"bytes,3,rep,name=content,proto3" json:"content,omitempty"`
+	// The format of the source text.
+	MimeType string `protobuf:"bytes,4,opt,name=mime_type,json=mimeType,proto3" json:"mime_type,omitempty"`
 	// Configuration for caller provided reference sentences.
 	ReferenceSentenceConfig *AdaptiveMtTranslateRequest_ReferenceSentenceConfig `protobuf:"bytes,6,opt,name=reference_sentence_config,json=referenceSentenceConfig,proto3,oneof" json:"reference_sentence_config,omitempty"`
 	// Optional. Glossary to be applied. The glossary must be
@@ -500,6 +502,13 @@ func (x *AdaptiveMtTranslateRequest) GetContent() []string {
 		return x.Content
 	}
 	return nil
+}
+
+func (x *AdaptiveMtTranslateRequest) GetMimeType() string {
+	if x != nil {
+		return x.MimeType
+	}
+	return ""
 }
 
 func (x *AdaptiveMtTranslateRequest) GetReferenceSentenceConfig() *AdaptiveMtTranslateRequest_ReferenceSentenceConfig {
@@ -1561,14 +1570,15 @@ const file_google_cloud_translate_v3_adaptive_mt_proto_rawDesc = "" +
 	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\xb4\x01\n" +
 	"\x1eListAdaptiveMtDatasetsResponse\x12e\n" +
 	"\x14adaptive_mt_datasets\x18\x01 \x03(\v2..google.cloud.translation.v3.AdaptiveMtDatasetB\x03\xe0A\x03R\x12adaptiveMtDatasets\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\rnextPageToken\"\x81\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\rnextPageToken\"\x9e\n" +
 	"\n" +
 	"\x1aAdaptiveMtTranslateRequest\x12A\n" +
 	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12L\n" +
 	"\adataset\x18\x02 \x01(\tB2\xe0A\x02\xfaA,\n" +
 	"*translate.googleapis.com/AdaptiveMtDatasetR\adataset\x12\x1d\n" +
-	"\acontent\x18\x03 \x03(\tB\x03\xe0A\x02R\acontent\x12\x90\x01\n" +
+	"\acontent\x18\x03 \x03(\tB\x03\xe0A\x02R\acontent\x12\x1b\n" +
+	"\tmime_type\x18\x04 \x01(\tR\bmimeType\x12\x90\x01\n" +
 	"\x19reference_sentence_config\x18\x06 \x01(\v2O.google.cloud.translation.v3.AdaptiveMtTranslateRequest.ReferenceSentenceConfigH\x00R\x17referenceSentenceConfig\x88\x01\x01\x12y\n" +
 	"\x0fglossary_config\x18\a \x01(\v2F.google.cloud.translation.v3.AdaptiveMtTranslateRequest.GlossaryConfigB\x03\xe0A\x01H\x01R\x0eglossaryConfig\x88\x01\x01\x1ai\n" +
 	"\x15ReferenceSentencePair\x12'\n" +
