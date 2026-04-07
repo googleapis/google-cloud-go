@@ -1,0 +1,518 @@
+{
+  "clientLibrary": {
+    "apis": [
+      {
+        "id": "google.cloud.appoptimize.v1beta",
+        "version": "v1beta"
+      }
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/appoptimize/apiv1beta",
+    "version": "0.0.0"
+  },
+  "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.appoptimize.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.appoptimize.v1beta.Client.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/CancelOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appoptimize_v1beta_generated_AppOptimize_CancelOperation_sync",
+      "segments": [
+        {
+          "end": 51,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appoptimize CancelOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.appoptimize.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.appoptimize.v1beta.Client.CreateReport",
+        "method": {
+          "fullName": "google.cloud.appoptimize.v1beta.AppOptimize.CreateReport",
+          "service": {
+            "fullName": "google.cloud.appoptimize.v1beta.AppOptimize",
+            "shortName": "AppOptimize"
+          },
+          "shortName": "CreateReport"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appoptimizepb.CreateReportRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateReportOperation",
+        "shortName": "CreateReport"
+      },
+      "description": "CreateReport creates a new report.\n\nThis initiates a long-running operation that, upon completion, results\nin a report resource. Once the report is created, its results can be read\nvia `ReadReport`.",
+      "file": "Client/CreateReport/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appoptimize_v1beta_generated_AppOptimize_CreateReport_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appoptimize CreateReport Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.appoptimize.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.appoptimize.v1beta.Client.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/DeleteOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appoptimize_v1beta_generated_AppOptimize_DeleteOperation_sync",
+      "segments": [
+        {
+          "end": 51,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appoptimize DeleteOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.appoptimize.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.appoptimize.v1beta.Client.DeleteReport",
+        "method": {
+          "fullName": "google.cloud.appoptimize.v1beta.AppOptimize.DeleteReport",
+          "service": {
+            "fullName": "google.cloud.appoptimize.v1beta.AppOptimize",
+            "shortName": "AppOptimize"
+          },
+          "shortName": "DeleteReport"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appoptimizepb.DeleteReportRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteReport"
+      },
+      "description": "DeleteReport deletes the specified report.",
+      "file": "Client/DeleteReport/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appoptimize_v1beta_generated_AppOptimize_DeleteReport_sync",
+      "segments": [
+        {
+          "end": 51,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appoptimize DeleteReport Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.appoptimize.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.appoptimize.v1beta.Client.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "shortName": "GetLocation"
+      },
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appoptimize_v1beta_generated_AppOptimize_GetLocation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appoptimize GetLocation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.appoptimize.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.appoptimize.v1beta.Client.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appoptimize_v1beta_generated_AppOptimize_GetOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appoptimize GetOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.appoptimize.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.appoptimize.v1beta.Client.GetReport",
+        "method": {
+          "fullName": "google.cloud.appoptimize.v1beta.AppOptimize.GetReport",
+          "service": {
+            "fullName": "google.cloud.appoptimize.v1beta.AppOptimize",
+            "shortName": "AppOptimize"
+          },
+          "shortName": "GetReport"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appoptimizepb.GetReportRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*appoptimizepb.Report",
+        "shortName": "GetReport"
+      },
+      "description": "GetReport retrieves the details of a report configuration.",
+      "file": "Client/GetReport/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appoptimize_v1beta_generated_AppOptimize_GetReport_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appoptimize GetReport Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.appoptimize.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.appoptimize.v1beta.Client.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "shortName": "ListLocations"
+      },
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appoptimize_v1beta_generated_AppOptimize_ListLocations_sync",
+      "segments": [
+        {
+          "end": 66,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appoptimize ListLocations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.appoptimize.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.appoptimize.v1beta.Client.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appoptimize_v1beta_generated_AppOptimize_ListOperations_sync",
+      "segments": [
+        {
+          "end": 66,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appoptimize ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.appoptimize.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.appoptimize.v1beta.Client.ListReports",
+        "method": {
+          "fullName": "google.cloud.appoptimize.v1beta.AppOptimize.ListReports",
+          "service": {
+            "fullName": "google.cloud.appoptimize.v1beta.AppOptimize",
+            "shortName": "AppOptimize"
+          },
+          "shortName": "ListReports"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appoptimizepb.ListReportsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ReportIterator",
+        "shortName": "ListReports"
+      },
+      "description": "ListReports lists reports within a given project.",
+      "file": "Client/ListReports/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appoptimize_v1beta_generated_AppOptimize_ListReports_sync",
+      "segments": [
+        {
+          "end": 66,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appoptimize ListReports Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.appoptimize.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.appoptimize.v1beta.Client.ReadReport",
+        "method": {
+          "fullName": "google.cloud.appoptimize.v1beta.AppOptimize.ReadReport",
+          "service": {
+            "fullName": "google.cloud.appoptimize.v1beta.AppOptimize",
+            "shortName": "AppOptimize"
+          },
+          "shortName": "ReadReport"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appoptimizepb.ReadReportRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ListValueIterator",
+        "shortName": "ReadReport"
+      },
+      "description": "ReadReport reads data within a specified report.",
+      "file": "Client/ReadReport/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appoptimize_v1beta_generated_AppOptimize_ReadReport_sync",
+      "segments": [
+        {
+          "end": 66,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appoptimize ReadReport Sample"
+    }
+  ]
+}
