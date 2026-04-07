@@ -15,7 +15,7 @@ require (
 	cloud.google.com/go/apigeeregistry v0.10.0
 	cloud.google.com/go/apikeys v0.6.0
 	cloud.google.com/go/appengine v1.9.7
-	cloud.google.com/go/appoptimize 1.9.7
+	cloud.google.com/go/appoptimize v0.1.0
 	cloud.google.com/go/area120 v0.10.0
 	cloud.google.com/go/artifactregistry v1.20.0
 	cloud.google.com/go/asset v1.22.1
