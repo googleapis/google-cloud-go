@@ -167,7 +167,6 @@ func initIntegrationTest() {
 	integrationTestStruct.Ref = refDoc
 }
 
-
 // deleteCollection recursively deletes the documents in the specified collection
 func deleteCollection(ctx context.Context, coll *CollectionRef) error {
 	bulkwriter := iClient.BulkWriter(ctx)
@@ -2679,7 +2678,7 @@ func TestIntegration_BulkWriter_Create(t *testing.T) {
 			wantStatusCode: codes.AlreadyExists,
 		},
 	}
-	
+
 	// Add successfully created testcases ref to cleanup list
 	for _, tc := range testcases {
 		if tc.wantStatusCode == codes.OK {
