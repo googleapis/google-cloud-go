@@ -412,60 +412,79 @@ libraries:
     go:
       go_apis:
         - enabled_generator_features:
+            - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
           path: google/cloud/bigquery/migration/v2
         - enabled_generator_features:
+            - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
           path: google/cloud/bigquery/datapolicies/v2
         - enabled_generator_features:
+            - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
           path: google/cloud/bigquery/datatransfer/v1
         - enabled_generator_features:
+            - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
           path: google/cloud/bigquery/biglake/v1
         - enabled_generator_features:
+            - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
           path: google/cloud/bigquery/storage/v1
         - enabled_generator_features:
+            - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
           path: google/cloud/bigquery/connection/v1
         - enabled_generator_features:
+            - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
           path: google/cloud/bigquery/reservation/v1
         - enabled_generator_features:
+            - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
           path: google/cloud/bigquery/analyticshub/v1
         - enabled_generator_features:
+            - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
           path: google/cloud/bigquery/datapolicies/v1
         - enabled_generator_features:
+            - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
           path: google/cloud/bigquery/datapolicies/v2beta1
         - enabled_generator_features:
+            - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
           path: google/cloud/bigquery/migration/v2alpha
         - enabled_generator_features:
+            - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
           path: google/cloud/bigquery/storage/v1beta2
         - enabled_generator_features:
+            - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
           path: google/cloud/bigquery/datapolicies/v1beta1
         - enabled_generator_features:
+            - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
           path: google/cloud/bigquery/dataexchange/v1beta1
         - enabled_generator_features:
+            - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
           path: google/cloud/bigquery/connection/v1beta1
         - enabled_generator_features:
+            - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
           path: google/cloud/bigquery/storage/v1beta1
         - enabled_generator_features:
+            - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
           path: google/cloud/bigquery/storage/v1beta
         - enabled_generator_features:
+            - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
           path: google/cloud/bigquery/biglake/v1alpha1
         - enabled_generator_features:
+            - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
           path: google/cloud/bigquery/storage/v1alpha
       nested_module: v2
@@ -479,6 +498,7 @@ libraries:
     go:
       go_apis:
         - enabled_generator_features:
+            - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_wrapper_types_for_page_size
           import_path: bigquery/v2/apiv2
