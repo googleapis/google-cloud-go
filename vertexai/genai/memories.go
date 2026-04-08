@@ -463,7 +463,8 @@ func updateAgentEngineMemoryRequestParametersToVertex(fromObject map[string]any,
 }
 
 type Memories struct {
-	apiClient *genai.InternalAPIClient
+	apiClient       *genai.InternalAPIClient
+	MemoryRevisions *MemoryRevisions
 }
 
 func (m Memories) create(ctx context.Context, name string, fact string, scope map[string]string, config *types.AgentEngineMemoryConfig) (*types.AgentEngineMemoryOperation, error) {
