@@ -243,6 +243,19 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/apphub/
     tag_format: '{id}/v{version}'
+  - id: appoptimize
+    version: 0.0.0
+    last_generated_commit: ""
+    apis:
+      - path: google/cloud/appoptimize/v1beta
+    source_roots:
+      - appoptimize
+      - internal/generated/snippets/appoptimize
+    preserve_regex: []
+    remove_regex: []
+    release_exclude_paths:
+      - internal/generated/snippets/appoptimize/
+    tag_format: '{id}/v{version}'
   - id: apps
     version: 0.9.0
     last_generated_commit: ""
