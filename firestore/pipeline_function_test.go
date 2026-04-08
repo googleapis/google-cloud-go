@@ -1150,7 +1150,7 @@ func TestSearchFunctions(t *testing.T) {
 	if expr5 == nil {
 		t.Fatal("expected expr5 not to be nil")
 	}
-	
+
 	// 6. Snippet method
 	expr6 := FieldOf("menu").Snippet("waffles")
 	if expr6 == nil {
