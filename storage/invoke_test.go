@@ -455,13 +455,18 @@ func TestShouldRetry(t *testing.T) {
 			shouldRetry: true,
 		},
 		{
+			desc:        "nil error",
+			inputErr:    nil,
+			shouldRetry: false,
+		},
+		{
 			desc:        "http2: client connection lost",
-			inputErr:    errors.New("http2: client connection lost"),
+			inputErr:    &url.Error{Op: "blah", URL: "blah", Err: errors.New("http2: client connection lost")},
 			shouldRetry: true,
 		},
 		{
 			desc:        "wrapped http2: client connection lost",
-			inputErr:    fmt.Errorf("wrapped error: %w", errors.New("http2: client connection lost")),
+			inputErr:    fmt.Errorf("wrapped error: %w", &url.Error{Op: "blah", URL: "blah", Err: errors.New("http2: client connection lost")}),
 			shouldRetry: true,
 		},
 	} {
