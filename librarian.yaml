@@ -1052,7 +1052,7 @@ libraries:
       - path: google/cloud/scheduler/v1
       - path: google/cloud/scheduler/v1beta1
   - name: secretmanager
-    version: 1.17.0
+    version: 1.18.0
     apis:
       - path: google/cloud/secretmanager/v1
       - path: google/cloud/secretmanager/v1beta2
