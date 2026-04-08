@@ -369,7 +369,7 @@ libraries:
     apis:
       - path: google/cloud/commerce/consumer/procurement/v1
   - name: compute
-    version: 1.58.0
+    version: 1.59.0
     apis:
       - path: google/cloud/compute/v1
       - path: google/cloud/compute/v1beta
