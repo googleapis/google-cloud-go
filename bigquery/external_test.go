@@ -111,6 +111,19 @@ func TestExternalDataConfig(t *testing.T) {
 			DateFormat:      "%A %b %e %Y",
 			DatetimeFormat:  "%a %b %e %I:%M:%S %Y",
 		},
+		{
+			SourceFormat: JSON,
+			Options: &JsonOptions{
+				Encoding: UTF_8,
+			},
+		},
+		{
+			SourceFormat:             CSV,
+			FileSetSpecType:          FileSetSpecTypeFileSystemMatch,
+			JsonExtension:            JsonExtensionGeoJson,
+			ObjectMetadata:           ObjectMetadataSimple,
+			TimestampTargetPrecision: []int64{6, 12},
+		},
 	} {
 		q := want.toBQ()
 		got, err := bqToExternalDataConfig(&q)

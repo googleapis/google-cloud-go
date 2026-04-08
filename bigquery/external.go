@@ -56,6 +56,38 @@ const (
 	Manual MetadataCacheMode = "MANUAL"
 )
 
+// FileSetSpecType describes the file set specification type for external data.
+type FileSetSpecType string
+
+const (
+	// FileSetSpecTypeFileSystemMatch is the default behavior.
+	FileSetSpecTypeFileSystemMatch FileSetSpecType = "FILE_SET_SPEC_TYPE_FILE_SYSTEM_MATCH"
+	// FileSetSpecTypeNewLineDelimitedManifest indicates a manifest file.
+	FileSetSpecTypeNewLineDelimitedManifest FileSetSpecType = "FILE_SET_SPEC_TYPE_NEW_LINE_DELIMITED_MANIFEST"
+)
+
+// JsonExtension describes the JSON extension for external data.
+type JsonExtension string
+
+const (
+	// JsonExtensionUnspecified is the default.
+	JsonExtensionUnspecified JsonExtension = "JSON_EXTENSION_UNSPECIFIED"
+	// JsonExtensionGeoJson indicates GeoJSON data.
+	JsonExtensionGeoJson JsonExtension = "GEOJSON"
+)
+
+// ObjectMetadata describes the object metadata for external data.
+type ObjectMetadata string
+
+const (
+	// ObjectMetadataUnspecified is the default.
+	ObjectMetadataUnspecified ObjectMetadata = "OBJECT_METADATA_UNSPECIFIED"
+	// ObjectMetadataDirectory indicates directory metadata.
+	ObjectMetadataDirectory ObjectMetadata = "DIRECTORY"
+	// ObjectMetadataSimple indicates simple metadata.
+	ObjectMetadataSimple ObjectMetadata = "SIMPLE"
+)
+
 // ExternalData is a table which is stored outside of BigQuery. It is implemented by
 // *ExternalDataConfig.
 // GCSReference also implements it, for backwards compatibility.
@@ -154,6 +186,18 @@ type ExternalDataConfig struct {
 	// Format used to parse TIMESTAMP values. Supports
 	// C-style and SQL-style values.
 	TimestampFormat string
+
+	// FileSetSpecType specifies the file set specification type.
+	FileSetSpecType FileSetSpecType
+
+	// JsonExtension specifies the JSON extension.
+	JsonExtension JsonExtension
+
+	// ObjectMetadata specifies the object metadata.
+	ObjectMetadata ObjectMetadata
+
+	// TimestampTargetPrecision specifies the timestamp target precision.
+	TimestampTargetPrecision []int64
 }
 
 func (e *ExternalDataConfig) toBQ() bq.ExternalDataConfiguration {
@@ -168,11 +212,15 @@ func (e *ExternalDataConfig) toBQ() bq.ExternalDataConfiguration {
 		ConnectionId:            e.ConnectionID,
 		ReferenceFileSchemaUri:  e.ReferenceFileSchemaURI,
 		MetadataCacheMode:       string(e.MetadataCacheMode),
-		TimeZone:                e.TimeZone,
-		DateFormat:              e.DateFormat,
-		DatetimeFormat:          e.DatetimeFormat,
-		TimeFormat:              e.TimeFormat,
-		TimestampFormat:         e.TimestampFormat,
+		TimeZone:                 e.TimeZone,
+		DateFormat:               e.DateFormat,
+		DatetimeFormat:           e.DatetimeFormat,
+		TimeFormat:               e.TimeFormat,
+		TimestampFormat:          e.TimestampFormat,
+		FileSetSpecType:          string(e.FileSetSpecType),
+		JsonExtension:            string(e.JsonExtension),
+		ObjectMetadata:           string(e.ObjectMetadata),
+		TimestampTargetPrecision: e.TimestampTargetPrecision,
 	}
 	if e.Schema != nil {
 		q.Schema = e.Schema.toBQ()
@@ -199,11 +247,15 @@ func bqToExternalDataConfig(q *bq.ExternalDataConfiguration) (*ExternalDataConfi
 		ConnectionID:            q.ConnectionId,
 		ReferenceFileSchemaURI:  q.ReferenceFileSchemaUri,
 		MetadataCacheMode:       MetadataCacheMode(q.MetadataCacheMode),
-		TimeZone:                q.TimeZone,
-		TimestampFormat:         q.TimestampFormat,
-		TimeFormat:              q.TimeFormat,
-		DateFormat:              q.DateFormat,
-		DatetimeFormat:          q.DatetimeFormat,
+		TimeZone:                 q.TimeZone,
+		TimestampFormat:          q.TimestampFormat,
+		TimeFormat:               q.TimeFormat,
+		DateFormat:               q.DateFormat,
+		DatetimeFormat:           q.DatetimeFormat,
+		FileSetSpecType:          FileSetSpecType(q.FileSetSpecType),
+		JsonExtension:            JsonExtension(q.JsonExtension),
+		ObjectMetadata:           ObjectMetadata(q.ObjectMetadata),
+		TimestampTargetPrecision: q.TimestampTargetPrecision,
 	}
 	for _, v := range q.DecimalTargetTypes {
 		e.DecimalTargetTypes = append(e.DecimalTargetTypes, DecimalTargetType(v))
@@ -213,6 +265,8 @@ func bqToExternalDataConfig(q *bq.ExternalDataConfiguration) (*ExternalDataConfi
 		e.Options = bqToAvroOptions(q.AvroOptions)
 	case q.CsvOptions != nil:
 		e.Options = bqToCSVOptions(q.CsvOptions)
+	case q.JsonOptions != nil:
+		e.Options = bqToJsonOptions(q.JsonOptions)
 	case q.GoogleSheetsOptions != nil:
 		e.Options = bqToGoogleSheetsOptions(q.GoogleSheetsOptions)
 	case q.BigtableOptions != nil:
@@ -360,6 +414,27 @@ func bqToCSVOptions(q *bq.CsvOptions) *CSVOptions {
 	}
 	o.setQuote(q.Quote)
 	return o
+}
+
+// JsonOptions are additional options for JSON external data sources.
+type JsonOptions struct {
+	// Encoding is the character encoding of data to be read.
+	Encoding Encoding
+}
+
+func (o *JsonOptions) populateExternalDataConfig(c *bq.ExternalDataConfiguration) {
+	c.JsonOptions = &bq.JsonOptions{
+		Encoding: string(o.Encoding),
+	}
+}
+
+func bqToJsonOptions(q *bq.JsonOptions) *JsonOptions {
+	if q == nil {
+		return nil
+	}
+	return &JsonOptions{
+		Encoding: Encoding(q.Encoding),
+	}
 }
 
 // GoogleSheetsOptions are additional options for GoogleSheets external data sources.
