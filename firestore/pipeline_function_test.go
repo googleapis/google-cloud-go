@@ -19,6 +19,7 @@ import (
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/testutil"
+	"google.golang.org/genproto/googleapis/type/latlng"
 )
 
 func TestTruncFunctions(t *testing.T) {
@@ -1116,5 +1117,55 @@ func TestGetFieldVariations(t *testing.T) {
 	expr6 := GetField(Variable("doc"), "title")
 	if expr6 == nil {
 		t.Fatal("expected expr6 not to be nil")
+	}
+}
+
+func TestSearchFunctions(t *testing.T) {
+	// 1. DocumentMatches
+	expr1 := DocumentMatches("waffles")
+	if expr1 == nil {
+		t.Fatal("expected expr1 not to be nil")
+	}
+
+	// 2. Matches
+	expr2 := Matches("menu", "waffles")
+	if expr2 == nil {
+		t.Fatal("expected expr2 not to be nil")
+	}
+
+	// 3. GeoDistance
+	expr3 := GeoDistance("location", &latlng.LatLng{Latitude: 37.0, Longitude: -122.0})
+	if expr3 == nil {
+		t.Fatal("expected expr3 not to be nil")
+	}
+
+	// 4. Score
+	expr4 := Score()
+	if expr4 == nil {
+		t.Fatal("expected expr4 not to be nil")
+	}
+
+	// 5. Snippet
+	expr5 := Snippet("menu", "waffles")
+	if expr5 == nil {
+		t.Fatal("expected expr5 not to be nil")
+	}
+	
+	// 6. Snippet method
+	expr6 := FieldOf("menu").Snippet("waffles")
+	if expr6 == nil {
+		t.Fatal("expected expr6 not to be nil")
+	}
+
+	// 7. GeoDistance method
+	expr7 := FieldOf("location").GeoDistance(&latlng.LatLng{Latitude: 37.0, Longitude: -122.0})
+	if expr7 == nil {
+		t.Fatal("expected expr7 not to be nil")
+	}
+
+	// 8. Matches method
+	expr8 := FieldOf("menu").Matches("waffles")
+	if expr8 == nil {
+		t.Fatal("expected expr8 not to be nil")
 	}
 }

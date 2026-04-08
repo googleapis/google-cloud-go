@@ -18,6 +18,7 @@ import (
 	"fmt"
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
+	"google.golang.org/genproto/googleapis/type/latlng"
 )
 
 // FunctionExpression represents Firestore [Pipeline] functions, which can be evaluated within pipeline
@@ -1153,4 +1154,98 @@ func RegexFindAll(exprOrField any, pattern any) Expression {
 // Rand returns a pseudo-random floating point number, chosen uniformly between 0.0 (inclusive) and 1.0 (exclusive).
 func Rand() Expression {
 	return newBaseFunction("rand", nil)
+}
+
+// DocumentMatches creates a boolean expression that performs a full-text search on all indexed search fields in the document.
+//
+// This Expression can only be used within a Search stage.
+//
+// Example:
+//
+//	client.Pipeline().Collection("restaurants").
+//		Search(DocumentMatches("waffles OR pancakes"))
+//
+// - query: Define the search query using the search domain-specific language (DSL).
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func DocumentMatches(query string) BooleanExpression {
+	return &baseBooleanExpression{baseFunction: newBaseFunction("document_matches", []Expression{ConstantOf(query)})}
+}
+
+// Matches creates a boolean expression that performs a full-text search on the specified field.
+//
+// This Expression can only be used within a Search stage.
+//
+// Example:
+//
+//	client.Pipeline().Collection("restaurants").
+//		Search(Matches("menu", "waffles"))
+//
+// - field: Perform search on this field. The field path string, [FieldPath] or [Expression] to search.
+// - query: Define the search query using the search domain-specific language (DSL).
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func Matches(field any, query string) BooleanExpression {
+	return &baseBooleanExpression{baseFunction: newBaseFunction("matches", []Expression{asFieldExpr(field), ConstantOf(query)})}
+}
+
+// GeoDistance creates an expression that evaluates to the distance in meters between the location in the specified field and the query location.
+//
+// This Expression can only be used within a Search stage.
+//
+// Example:
+//
+//	client.Pipeline().Collection("restaurants").
+//		Search(
+//			"waffles",
+//			WithSearchSort(Ascending(GeoDistance("location", &latlng.LatLng{Latitude: 37.0, Longitude: -122.0}))),
+//		)
+//
+// - field: Specifies the field in the document which contains the GeoPoint for distance computation. It can be a field path string, [FieldPath] or [Expression].
+// - location: Compute distance to this GeoPoint.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func GeoDistance(field any, location *latlng.LatLng) Expression {
+	return newBaseFunction("geo_distance", []Expression{asFieldExpr(field), ConstantOf(location)})
+}
+
+// Score creates an expression that evaluates to the search score that reflects the topicality of the document to all of the text
+// predicates (for example: DocumentMatches) in the search query.
+//
+// This Expression can only be used within a Search stage.
+//
+// Example:
+//
+//	client.Pipeline().Collection("restaurants").
+//		Search("waffles", WithSearchSort(Descending(Score())))
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func Score() Expression {
+	return newBaseFunction("score", nil)
+}
+
+// Snippet creates an expression that evaluates to an HTML-formatted text snippet that highlights terms matching the search query in
+// bold.
+//
+// This Expression can only be used within a Search stage.
+//
+// Example:
+//
+//	client.Pipeline().Collection("restaurants").
+//		Search(
+//			"waffles",
+//			WithSearchAddFields(Snippet("menu", "waffles").As("snippet")),
+//		)
+//
+// - field: Search the specified field for matching terms. It can be a field path string, [FieldPath] or [Expression].
+// - query: Define the search query using the search domain-specific language (DSL).
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func Snippet(field any, query string) Expression {
+	return newBaseFunction("snippet", []Expression{asFieldExpr(field), ConstantOf(query)})
 }

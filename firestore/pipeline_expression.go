@@ -16,6 +16,7 @@ package firestore
 
 import (
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
+	"google.golang.org/genproto/googleapis/type/latlng"
 )
 
 // Selectable is an interface for expressions that can be selected in a pipeline.
@@ -508,6 +509,30 @@ type Expression interface {
 	// Descending creates an ordering expression for descending order.
 	Descending() Ordering
 
+	// GeoDistance creates an expression that evaluates to the distance in meters between the location in the expression and the query location.
+	//
+	// The parameter 'location' is the query location.
+	//
+	// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+	// regardless of any other documented package stability guarantees.
+	GeoDistance(location *latlng.LatLng) Expression
+
+	// Matches creates a boolean expression that performs a full-text search on this expression.
+	//
+	// The parameter 'query' is the search query.
+	//
+	// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+	// regardless of any other documented package stability guarantees.
+	Matches(query string) BooleanExpression
+
+	// Snippet creates an expression that evaluates to an HTML-formatted text snippet that highlights terms matching the search query.
+	//
+	// The parameter 'query' is the search query using the search domain-specific language (DSL).
+	//
+	// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+	// regardless of any other documented package stability guarantees.
+	Snippet(query string) Expression
+
 	// As assigns an alias to an expression.
 	// Aliases are useful for renaming fields in the output of a stage.
 	As(alias string) *AliasedExpression
@@ -759,6 +784,18 @@ func (b *baseExpression) VectorLength() Expression               { return Vector
 // Ordering
 func (b *baseExpression) Ascending() Ordering  { return Ascending(b) }
 func (b *baseExpression) Descending() Ordering { return Descending(b) }
+
+func (b *baseExpression) GeoDistance(location *latlng.LatLng) Expression {
+	return GeoDistance(b, location)
+}
+
+func (b *baseExpression) Matches(query string) BooleanExpression {
+	return Matches(b, query)
+}
+
+func (b *baseExpression) Snippet(query string) Expression {
+	return Snippet(b, query)
+}
 
 func (b *baseExpression) As(alias string) *AliasedExpression {
 	return newAliasedExpr(b, alias)

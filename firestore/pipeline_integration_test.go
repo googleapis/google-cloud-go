@@ -407,6 +407,19 @@ func TestIntegration_PipelineStages(t *testing.T) {
 			t.Errorf("got %d documents, want 2", len(results))
 		}
 	})
+	t.Run("Search", func(t *testing.T) {
+		iter := client.Pipeline().Collection(coll.ID).Search(
+			WithSearchQuery("waffles"),
+			WithSearchRetrievalDepth(10),
+		).Execute(ctx).Results()
+		defer iter.Stop()
+		_, err := iter.GetAll()
+		if err != nil {
+			if status.Code(err) != codes.Unimplemented && status.Code(err) != codes.FailedPrecondition {
+				t.Fatalf("Failed to execute search: %v", err)
+			}
+		}
+	})
 	t.Run("Constants", func(t *testing.T) {
 		iter := client.Pipeline().Literals([]map[string]any{map[string]any{"a": 1}}).
 			Select(Fields(

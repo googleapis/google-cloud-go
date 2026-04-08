@@ -42,6 +42,7 @@ const (
 	stageNameRemoveFields    = "remove_fields"
 	stageNameReplaceWith     = "replace_with"
 	stageNameSample          = "sample"
+	stageNameSearch          = "search"
 	stageNameSelect          = "select"
 	stageNameSort            = "sort"
 	stageNameUnion           = "union"
@@ -576,6 +577,132 @@ func (s *sampleStage) toProto() (*pb.Pipeline_Stage, error) {
 	return &pb.Pipeline_Stage{
 		Name:    s.name(),
 		Args:    []*pb.Value{sizePb, modePb},
+		Options: optionsPb,
+	}, nil
+}
+
+type searchStage struct {
+	options map[string]any
+}
+
+func newSearchStage(options map[string]any) (*searchStage, error) {
+	return &searchStage{options: options}, nil
+}
+func (s *searchStage) name() string { return stageNameSearch }
+func (s *searchStage) toProto() (*pb.Pipeline_Stage, error) {
+	optsCopy := make(map[string]any)
+	for k, v := range s.options {
+		optsCopy[k] = v
+	}
+
+	var queryPb *pb.Value
+	if query, ok := optsCopy["query"]; ok {
+		var queryExpr Expression
+		switch v := query.(type) {
+		case string:
+			queryExpr = DocumentMatches(v)
+		case BooleanExpression:
+			queryExpr = v
+		default:
+			return nil, errInvalidArg("Search", query, "string", "BooleanExpression")
+		}
+		var err error
+		queryPb, err = queryExpr.toProto()
+		if err != nil {
+			return nil, err
+		}
+		delete(optsCopy, "query")
+	}
+
+	if t, ok := optsCopy["add_fields"].([]Selectable); ok {
+		mapVal, err := projectionsToMapValue(t)
+		if err != nil {
+			return nil, err
+		}
+		optsCopy["add_fields"] = mapVal
+	}
+
+	if t, ok := optsCopy["sort"].([]Ordering); ok {
+		sortOrders := make([]*pb.Value, len(t))
+		for i, so := range t {
+			fieldPb, err := so.Expr.toProto()
+			if err != nil {
+				return nil, err
+			}
+			sortOrders[i] = &pb.Value{
+				ValueType: &pb.Value_MapValue{
+					MapValue: &pb.MapValue{
+						Fields: map[string]*pb.Value{
+							"direction": {
+								ValueType: &pb.Value_StringValue{
+									StringValue: string(so.Direction),
+								},
+							},
+							"expression": fieldPb,
+						},
+					},
+				},
+			}
+		}
+		optsCopy["sort"] = sortOrders
+	}
+
+	var sortVal []*pb.Value
+	if val, ok := optsCopy["sort"].([]*pb.Value); ok {
+		sortVal = val
+		delete(optsCopy, "sort")
+	}
+
+	var addFieldsVal *pb.Value
+	if val, ok := optsCopy["add_fields"].(*pb.Value); ok {
+		addFieldsVal = val
+		delete(optsCopy, "add_fields")
+	}
+
+	var retrievalDepthVal *pb.Value
+	if depth, ok := optsCopy["retrieval_depth"].(int64); ok {
+		retrievalDepthVal = &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: depth}}
+		delete(optsCopy, "retrieval_depth")
+	} else if depth, ok := optsCopy["retrieval_depth"].(int); ok {
+		retrievalDepthVal = &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(depth)}}
+		delete(optsCopy, "retrieval_depth")
+	}
+
+	optionsPb, err := stageOptionsToProto(optsCopy)
+	if err != nil {
+		return nil, err
+	}
+
+	// Override map fields that are already pb.Value (like add_fields and sort)
+	if optionsPb == nil {
+		optionsPb = make(map[string]*pb.Value)
+	}
+
+	if queryPb != nil {
+		optionsPb["query"] = queryPb
+	}
+
+	if addFieldsVal != nil {
+		optionsPb["add_fields"] = addFieldsVal
+	}
+
+	if sortVal != nil {
+		optionsPb["sort"] = &pb.Value{
+			ValueType: &pb.Value_ArrayValue{
+				ArrayValue: &pb.ArrayValue{
+					Values: sortVal,
+				},
+			},
+		}
+	}
+
+	if retrievalDepthVal != nil {
+		optionsPb["retrieval_depth"] = retrievalDepthVal
+	}
+
+	return &pb.Pipeline_Stage{
+		Name:    s.name(),
+		Args:    []*pb.Value{},
 		Options: optionsPb,
 	}, nil
 }
