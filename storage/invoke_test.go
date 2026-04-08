@@ -454,6 +454,16 @@ func TestShouldRetry(t *testing.T) {
 			inputErr:    &net.OpError{Err: net.ErrClosed},
 			shouldRetry: true,
 		},
+		{
+			desc:        "http2: client connection lost",
+			inputErr:    errors.New("http2: client connection lost"),
+			shouldRetry: true,
+		},
+		{
+			desc:        "wrapped http2: client connection lost",
+			inputErr:    fmt.Errorf("wrapped error: %w", errors.New("http2: client connection lost")),
+			shouldRetry: true,
+		},
 	} {
 		t.Run(test.desc, func(s *testing.T) {
 			got := ShouldRetry(test.inputErr)

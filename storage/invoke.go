@@ -199,6 +199,9 @@ func ShouldRetry(err error) bool {
 	if errors.Is(err, net.ErrClosed) {
 		return true
 	}
+	if strings.Contains(err.Error(), "http2: client connection lost") {
+		return true
+	}
 
 	switch e := err.(type) {
 	case *googleapi.Error:
