@@ -28,6 +28,7 @@ import (
 
 	identitytoolkitpb "cloud.google.com/go/identitytoolkit/apiv2/identitytoolkitpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -174,6 +175,16 @@ type accountManagementGRPCClient struct {
 // Account management for Identity Toolkit
 func NewAccountManagementClient(ctx context.Context, opts ...option.ClientOption) (*AccountManagementClient, error) {
 	clientOpts := defaultAccountManagementGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "identitytoolkit",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/identitytoolkit/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "identitytoolkit.googleapis.com",
+		}))
+	}
 	if newAccountManagementClientHook != nil {
 		hookOpts, err := newAccountManagementClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -195,6 +206,22 @@ func NewAccountManagementClient(ctx context.Context, opts ...option.ClientOption
 		logger:                  internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "identitytoolkit",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/identitytoolkit/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "identitytoolkit.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.FinalizeMfaEnrollment = append(client.CallOptions.FinalizeMfaEnrollment, gax.WithClientMetrics(metrics))
+		client.CallOptions.StartMfaEnrollment = append(client.CallOptions.StartMfaEnrollment, gax.WithClientMetrics(metrics))
+		client.CallOptions.WithdrawMfa = append(client.CallOptions.WithdrawMfa, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -248,6 +275,16 @@ type accountManagementRESTClient struct {
 // Account management for Identity Toolkit
 func NewAccountManagementRESTClient(ctx context.Context, opts ...option.ClientOption) (*AccountManagementClient, error) {
 	clientOpts := append(defaultAccountManagementRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "identitytoolkit",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/identitytoolkit/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "identitytoolkit.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -261,6 +298,23 @@ func NewAccountManagementRESTClient(ctx context.Context, opts ...option.ClientOp
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "identitytoolkit",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/identitytoolkit/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "identitytoolkit.googleapis.com",
+			}),
+		)
+
+		callOpts.FinalizeMfaEnrollment = append(callOpts.FinalizeMfaEnrollment, gax.WithClientMetrics(metrics))
+		callOpts.StartMfaEnrollment = append(callOpts.StartMfaEnrollment, gax.WithClientMetrics(metrics))
+		callOpts.WithdrawMfa = append(callOpts.WithdrawMfa, gax.WithClientMetrics(metrics))
+	}
 
 	return &AccountManagementClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -304,6 +358,9 @@ func (c *accountManagementRESTClient) Connection() *grpc.ClientConn {
 }
 func (c *accountManagementGRPCClient) FinalizeMfaEnrollment(ctx context.Context, req *identitytoolkitpb.FinalizeMfaEnrollmentRequest, opts ...gax.CallOption) (*identitytoolkitpb.FinalizeMfaEnrollmentResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.identitytoolkit.v2.AccountManagementService/FinalizeMfaEnrollment")
+	}
 	opts = append((*c.CallOptions).FinalizeMfaEnrollment[0:len((*c.CallOptions).FinalizeMfaEnrollment):len((*c.CallOptions).FinalizeMfaEnrollment)], opts...)
 	var resp *identitytoolkitpb.FinalizeMfaEnrollmentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -319,6 +376,9 @@ func (c *accountManagementGRPCClient) FinalizeMfaEnrollment(ctx context.Context,
 
 func (c *accountManagementGRPCClient) StartMfaEnrollment(ctx context.Context, req *identitytoolkitpb.StartMfaEnrollmentRequest, opts ...gax.CallOption) (*identitytoolkitpb.StartMfaEnrollmentResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.identitytoolkit.v2.AccountManagementService/StartMfaEnrollment")
+	}
 	opts = append((*c.CallOptions).StartMfaEnrollment[0:len((*c.CallOptions).StartMfaEnrollment):len((*c.CallOptions).StartMfaEnrollment)], opts...)
 	var resp *identitytoolkitpb.StartMfaEnrollmentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -334,6 +394,9 @@ func (c *accountManagementGRPCClient) StartMfaEnrollment(ctx context.Context, re
 
 func (c *accountManagementGRPCClient) WithdrawMfa(ctx context.Context, req *identitytoolkitpb.WithdrawMfaRequest, opts ...gax.CallOption) (*identitytoolkitpb.WithdrawMfaResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.identitytoolkit.v2.AccountManagementService/WithdrawMfa")
+	}
 	opts = append((*c.CallOptions).WithdrawMfa[0:len((*c.CallOptions).WithdrawMfa):len((*c.CallOptions).WithdrawMfa)], opts...)
 	var resp *identitytoolkitpb.WithdrawMfaResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -369,6 +432,10 @@ func (c *accountManagementRESTClient) FinalizeMfaEnrollment(ctx context.Context,
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.identitytoolkit.v2.AccountManagementService/FinalizeMfaEnrollment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/accounts/mfaEnrollment:finalize")
+	}
 	opts = append((*c.CallOptions).FinalizeMfaEnrollment[0:len((*c.CallOptions).FinalizeMfaEnrollment):len((*c.CallOptions).FinalizeMfaEnrollment)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &identitytoolkitpb.FinalizeMfaEnrollmentResponse{}
@@ -423,6 +490,10 @@ func (c *accountManagementRESTClient) StartMfaEnrollment(ctx context.Context, re
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.identitytoolkit.v2.AccountManagementService/StartMfaEnrollment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/accounts/mfaEnrollment:start")
+	}
 	opts = append((*c.CallOptions).StartMfaEnrollment[0:len((*c.CallOptions).StartMfaEnrollment):len((*c.CallOptions).StartMfaEnrollment)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &identitytoolkitpb.StartMfaEnrollmentResponse{}
@@ -476,6 +547,10 @@ func (c *accountManagementRESTClient) WithdrawMfa(ctx context.Context, req *iden
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.identitytoolkit.v2.AccountManagementService/WithdrawMfa")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/accounts/mfaEnrollment:withdraw")
+	}
 	opts = append((*c.CallOptions).WithdrawMfa[0:len((*c.CallOptions).WithdrawMfa):len((*c.CallOptions).WithdrawMfa)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &identitytoolkitpb.WithdrawMfaResponse{}

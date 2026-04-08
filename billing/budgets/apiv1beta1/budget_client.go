@@ -28,6 +28,7 @@ import (
 
 	budgetspb "cloud.google.com/go/billing/budgets/apiv1beta1/budgetspb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -296,6 +297,16 @@ type budgetGRPCClient struct {
 // budget plan and rules to execute as we track spend against that plan.
 func NewBudgetClient(ctx context.Context, opts ...option.ClientOption) (*BudgetClient, error) {
 	clientOpts := defaultBudgetGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "billingbudgets",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/billing/budgets/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "billingbudgets.googleapis.com",
+		}))
+	}
 	if newBudgetClientHook != nil {
 		hookOpts, err := newBudgetClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -317,6 +328,24 @@ func NewBudgetClient(ctx context.Context, opts ...option.ClientOption) (*BudgetC
 		logger:       internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "billingbudgets",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/billing/budgets/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "billingbudgets.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateBudget = append(client.CallOptions.CreateBudget, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateBudget = append(client.CallOptions.UpdateBudget, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetBudget = append(client.CallOptions.GetBudget, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListBudgets = append(client.CallOptions.ListBudgets, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteBudget = append(client.CallOptions.DeleteBudget, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -371,6 +400,16 @@ type budgetRESTClient struct {
 // budget plan and rules to execute as we track spend against that plan.
 func NewBudgetRESTClient(ctx context.Context, opts ...option.ClientOption) (*BudgetClient, error) {
 	clientOpts := append(defaultBudgetRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "billingbudgets",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/billing/budgets/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "billingbudgets.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -384,6 +423,25 @@ func NewBudgetRESTClient(ctx context.Context, opts ...option.ClientOption) (*Bud
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "billingbudgets",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/billing/budgets/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "billingbudgets.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateBudget = append(callOpts.CreateBudget, gax.WithClientMetrics(metrics))
+		callOpts.UpdateBudget = append(callOpts.UpdateBudget, gax.WithClientMetrics(metrics))
+		callOpts.GetBudget = append(callOpts.GetBudget, gax.WithClientMetrics(metrics))
+		callOpts.ListBudgets = append(callOpts.ListBudgets, gax.WithClientMetrics(metrics))
+		callOpts.DeleteBudget = append(callOpts.DeleteBudget, gax.WithClientMetrics(metrics))
+	}
 
 	return &BudgetClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -430,6 +488,12 @@ func (c *budgetGRPCClient) CreateBudget(ctx context.Context, req *budgetspb.Crea
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//billingbudgets.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.billing.budgets.v1beta1.BudgetService/CreateBudget")
+	}
 	opts = append((*c.CallOptions).CreateBudget[0:len((*c.CallOptions).CreateBudget):len((*c.CallOptions).CreateBudget)], opts...)
 	var resp *budgetspb.Budget
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -448,6 +512,9 @@ func (c *budgetGRPCClient) UpdateBudget(ctx context.Context, req *budgetspb.Upda
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.billing.budgets.v1beta1.BudgetService/UpdateBudget")
+	}
 	opts = append((*c.CallOptions).UpdateBudget[0:len((*c.CallOptions).UpdateBudget):len((*c.CallOptions).UpdateBudget)], opts...)
 	var resp *budgetspb.Budget
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -466,6 +533,12 @@ func (c *budgetGRPCClient) GetBudget(ctx context.Context, req *budgetspb.GetBudg
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//billingbudgets.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.billing.budgets.v1beta1.BudgetService/GetBudget")
+	}
 	opts = append((*c.CallOptions).GetBudget[0:len((*c.CallOptions).GetBudget):len((*c.CallOptions).GetBudget)], opts...)
 	var resp *budgetspb.Budget
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -484,6 +557,12 @@ func (c *budgetGRPCClient) ListBudgets(ctx context.Context, req *budgetspb.ListB
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//billingbudgets.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.billing.budgets.v1beta1.BudgetService/ListBudgets")
+	}
 	opts = append((*c.CallOptions).ListBudgets[0:len((*c.CallOptions).ListBudgets):len((*c.CallOptions).ListBudgets)], opts...)
 	it := &BudgetIterator{}
 	req = proto.Clone(req).(*budgetspb.ListBudgetsRequest)
@@ -530,6 +609,12 @@ func (c *budgetGRPCClient) DeleteBudget(ctx context.Context, req *budgetspb.Dele
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//billingbudgets.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.billing.budgets.v1beta1.BudgetService/DeleteBudget")
+	}
 	opts = append((*c.CallOptions).DeleteBudget[0:len((*c.CallOptions).DeleteBudget):len((*c.CallOptions).DeleteBudget)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -566,6 +651,13 @@ func (c *budgetRESTClient) CreateBudget(ctx context.Context, req *budgetspb.Crea
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//billingbudgets.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.billing.budgets.v1beta1.BudgetService/CreateBudget")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=billingAccounts/*}/budgets")
+	}
 	opts = append((*c.CallOptions).CreateBudget[0:len((*c.CallOptions).CreateBudget):len((*c.CallOptions).CreateBudget)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &budgetspb.Budget{}
@@ -626,6 +718,10 @@ func (c *budgetRESTClient) UpdateBudget(ctx context.Context, req *budgetspb.Upda
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.billing.budgets.v1beta1.BudgetService/UpdateBudget")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{budget.name=billingAccounts/*/budgets/*}")
+	}
 	opts = append((*c.CallOptions).UpdateBudget[0:len((*c.CallOptions).UpdateBudget):len((*c.CallOptions).UpdateBudget)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &budgetspb.Budget{}
@@ -681,6 +777,13 @@ func (c *budgetRESTClient) GetBudget(ctx context.Context, req *budgetspb.GetBudg
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//billingbudgets.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.billing.budgets.v1beta1.BudgetService/GetBudget")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=billingAccounts/*/budgets/*}")
+	}
 	opts = append((*c.CallOptions).GetBudget[0:len((*c.CallOptions).GetBudget):len((*c.CallOptions).GetBudget)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &budgetspb.Budget{}
@@ -817,6 +920,13 @@ func (c *budgetRESTClient) DeleteBudget(ctx context.Context, req *budgetspb.Dele
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//billingbudgets.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.billing.budgets.v1beta1.BudgetService/DeleteBudget")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=billingAccounts/*/budgets/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path

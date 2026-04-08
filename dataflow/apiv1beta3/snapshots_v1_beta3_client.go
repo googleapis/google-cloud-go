@@ -27,6 +27,7 @@ import (
 
 	dataflowpb "cloud.google.com/go/dataflow/apiv1beta3/dataflowpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -173,6 +174,16 @@ type snapshotsV1Beta3GRPCClient struct {
 // Provides methods to manage snapshots of Google Cloud Dataflow jobs.
 func NewSnapshotsV1Beta3Client(ctx context.Context, opts ...option.ClientOption) (*SnapshotsV1Beta3Client, error) {
 	clientOpts := defaultSnapshotsV1Beta3GRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "dataflow",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/dataflow/apiv1beta3",
+			"gcp.client.language": "go",
+			"url.domain":          "dataflow.googleapis.com",
+		}))
+	}
 	if newSnapshotsV1Beta3ClientHook != nil {
 		hookOpts, err := newSnapshotsV1Beta3ClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -194,6 +205,22 @@ func NewSnapshotsV1Beta3Client(ctx context.Context, opts ...option.ClientOption)
 		logger:                 internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "dataflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataflow/apiv1beta3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dataflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetSnapshot = append(client.CallOptions.GetSnapshot, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteSnapshot = append(client.CallOptions.DeleteSnapshot, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListSnapshots = append(client.CallOptions.ListSnapshots, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -247,6 +274,16 @@ type snapshotsV1Beta3RESTClient struct {
 // Provides methods to manage snapshots of Google Cloud Dataflow jobs.
 func NewSnapshotsV1Beta3RESTClient(ctx context.Context, opts ...option.ClientOption) (*SnapshotsV1Beta3Client, error) {
 	clientOpts := append(defaultSnapshotsV1Beta3RESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "dataflow",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/dataflow/apiv1beta3",
+			"gcp.client.language": "go",
+			"url.domain":          "dataflow.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -260,6 +297,23 @@ func NewSnapshotsV1Beta3RESTClient(ctx context.Context, opts ...option.ClientOpt
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "dataflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataflow/apiv1beta3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dataflow.googleapis.com",
+			}),
+		)
+
+		callOpts.GetSnapshot = append(callOpts.GetSnapshot, gax.WithClientMetrics(metrics))
+		callOpts.DeleteSnapshot = append(callOpts.DeleteSnapshot, gax.WithClientMetrics(metrics))
+		callOpts.ListSnapshots = append(callOpts.ListSnapshots, gax.WithClientMetrics(metrics))
+	}
 
 	return &SnapshotsV1Beta3Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -306,6 +360,9 @@ func (c *snapshotsV1Beta3GRPCClient) GetSnapshot(ctx context.Context, req *dataf
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.dataflow.v1beta3.SnapshotsV1Beta3/GetSnapshot")
+	}
 	opts = append((*c.CallOptions).GetSnapshot[0:len((*c.CallOptions).GetSnapshot):len((*c.CallOptions).GetSnapshot)], opts...)
 	var resp *dataflowpb.Snapshot
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -324,6 +381,9 @@ func (c *snapshotsV1Beta3GRPCClient) DeleteSnapshot(ctx context.Context, req *da
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.dataflow.v1beta3.SnapshotsV1Beta3/DeleteSnapshot")
+	}
 	opts = append((*c.CallOptions).DeleteSnapshot[0:len((*c.CallOptions).DeleteSnapshot):len((*c.CallOptions).DeleteSnapshot)], opts...)
 	var resp *dataflowpb.DeleteSnapshotResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -342,6 +402,9 @@ func (c *snapshotsV1Beta3GRPCClient) ListSnapshots(ctx context.Context, req *dat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.dataflow.v1beta3.SnapshotsV1Beta3/ListSnapshots")
+	}
 	opts = append((*c.CallOptions).ListSnapshots[0:len((*c.CallOptions).ListSnapshots):len((*c.CallOptions).ListSnapshots)], opts...)
 	var resp *dataflowpb.ListSnapshotsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -374,6 +437,10 @@ func (c *snapshotsV1Beta3RESTClient) GetSnapshot(ctx context.Context, req *dataf
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.dataflow.v1beta3.SnapshotsV1Beta3/GetSnapshot")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1b3/projects/{project_id}/locations/{location}/snapshots/{snapshot_id}")
+	}
 	opts = append((*c.CallOptions).GetSnapshot[0:len((*c.CallOptions).GetSnapshot):len((*c.CallOptions).GetSnapshot)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataflowpb.Snapshot{}
@@ -424,6 +491,10 @@ func (c *snapshotsV1Beta3RESTClient) DeleteSnapshot(ctx context.Context, req *da
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.dataflow.v1beta3.SnapshotsV1Beta3/DeleteSnapshot")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1b3/projects/{project_id}/locations/{location}/snapshots/{snapshot_id}")
+	}
 	opts = append((*c.CallOptions).DeleteSnapshot[0:len((*c.CallOptions).DeleteSnapshot):len((*c.CallOptions).DeleteSnapshot)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataflowpb.DeleteSnapshotResponse{}
@@ -474,6 +545,10 @@ func (c *snapshotsV1Beta3RESTClient) ListSnapshots(ctx context.Context, req *dat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.dataflow.v1beta3.SnapshotsV1Beta3/ListSnapshots")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1b3/projects/{project_id}/locations/{location}/jobs/{job_id}/snapshots")
+	}
 	opts = append((*c.CallOptions).ListSnapshots[0:len((*c.CallOptions).ListSnapshots):len((*c.CallOptions).ListSnapshots)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataflowpb.ListSnapshotsResponse{}

@@ -28,6 +28,7 @@ import (
 
 	servicedirectorypb "cloud.google.com/go/servicedirectory/apiv1/servicedirectorypb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -192,6 +193,16 @@ type lookupGRPCClient struct {
 // Service Directory API for looking up service data at runtime.
 func NewLookupClient(ctx context.Context, opts ...option.ClientOption) (*LookupClient, error) {
 	clientOpts := defaultLookupGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "servicedirectory",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/servicedirectory/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "servicedirectory.googleapis.com",
+		}))
+	}
 	if newLookupClientHook != nil {
 		hookOpts, err := newLookupClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -214,6 +225,22 @@ func NewLookupClient(ctx context.Context, opts ...option.ClientOption) (*LookupC
 		locationsClient: locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "servicedirectory",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/servicedirectory/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "servicedirectory.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ResolveService = append(client.CallOptions.ResolveService, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -267,6 +294,16 @@ type lookupRESTClient struct {
 // Service Directory API for looking up service data at runtime.
 func NewLookupRESTClient(ctx context.Context, opts ...option.ClientOption) (*LookupClient, error) {
 	clientOpts := append(defaultLookupRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "servicedirectory",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/servicedirectory/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "servicedirectory.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -280,6 +317,23 @@ func NewLookupRESTClient(ctx context.Context, opts ...option.ClientOption) (*Loo
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "servicedirectory",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/servicedirectory/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "servicedirectory.googleapis.com",
+			}),
+		)
+
+		callOpts.ResolveService = append(callOpts.ResolveService, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+	}
 
 	return &LookupClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -326,6 +380,12 @@ func (c *lookupGRPCClient) ResolveService(ctx context.Context, req *servicedirec
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//servicedirectory.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.servicedirectory.v1.LookupService/ResolveService")
+	}
 	opts = append((*c.CallOptions).ResolveService[0:len((*c.CallOptions).ResolveService):len((*c.CallOptions).ResolveService)], opts...)
 	var resp *servicedirectorypb.ResolveServiceResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -344,6 +404,9 @@ func (c *lookupGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetL
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -362,6 +425,9 @@ func (c *lookupGRPCClient) ListLocations(ctx context.Context, req *locationpb.Li
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
@@ -430,6 +496,13 @@ func (c *lookupRESTClient) ResolveService(ctx context.Context, req *servicedirec
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//servicedirectory.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.servicedirectory.v1.LookupService/ResolveService")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/namespaces/*/services/*}:resolve")
+	}
 	opts = append((*c.CallOptions).ResolveService[0:len((*c.CallOptions).ResolveService):len((*c.CallOptions).ResolveService)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &servicedirectorypb.ResolveServiceResponse{}
@@ -480,6 +553,10 @@ func (c *lookupRESTClient) GetLocation(ctx context.Context, req *locationpb.GetL
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}

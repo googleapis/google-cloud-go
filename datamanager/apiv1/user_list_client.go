@@ -27,6 +27,7 @@ import (
 
 	datamanagerpb "cloud.google.com/go/datamanager/apiv1/datamanagerpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -250,6 +251,16 @@ type userListGRPCClient struct {
 // Service for managing UserList resources.
 func NewUserListClient(ctx context.Context, opts ...option.ClientOption) (*UserListClient, error) {
 	clientOpts := defaultUserListGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "datamanager",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/datamanager/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "datamanager.googleapis.com",
+		}))
+	}
 	if newUserListClientHook != nil {
 		hookOpts, err := newUserListClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -271,6 +282,24 @@ func NewUserListClient(ctx context.Context, opts ...option.ClientOption) (*UserL
 		logger:         internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "datamanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datamanager/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "datamanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetUserList = append(client.CallOptions.GetUserList, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListUserLists = append(client.CallOptions.ListUserLists, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateUserList = append(client.CallOptions.CreateUserList, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateUserList = append(client.CallOptions.UpdateUserList, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteUserList = append(client.CallOptions.DeleteUserList, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -324,6 +353,16 @@ type userListRESTClient struct {
 // Service for managing UserList resources.
 func NewUserListRESTClient(ctx context.Context, opts ...option.ClientOption) (*UserListClient, error) {
 	clientOpts := append(defaultUserListRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "datamanager",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/datamanager/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "datamanager.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -337,6 +376,25 @@ func NewUserListRESTClient(ctx context.Context, opts ...option.ClientOption) (*U
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "datamanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datamanager/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "datamanager.googleapis.com",
+			}),
+		)
+
+		callOpts.GetUserList = append(callOpts.GetUserList, gax.WithClientMetrics(metrics))
+		callOpts.ListUserLists = append(callOpts.ListUserLists, gax.WithClientMetrics(metrics))
+		callOpts.CreateUserList = append(callOpts.CreateUserList, gax.WithClientMetrics(metrics))
+		callOpts.UpdateUserList = append(callOpts.UpdateUserList, gax.WithClientMetrics(metrics))
+		callOpts.DeleteUserList = append(callOpts.DeleteUserList, gax.WithClientMetrics(metrics))
+	}
 
 	return &UserListClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -383,6 +441,12 @@ func (c *userListGRPCClient) GetUserList(ctx context.Context, req *datamanagerpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.UserListService/GetUserList")
+	}
 	opts = append((*c.CallOptions).GetUserList[0:len((*c.CallOptions).GetUserList):len((*c.CallOptions).GetUserList)], opts...)
 	var resp *datamanagerpb.UserList
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -401,6 +465,12 @@ func (c *userListGRPCClient) ListUserLists(ctx context.Context, req *datamanager
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.UserListService/ListUserLists")
+	}
 	opts = append((*c.CallOptions).ListUserLists[0:len((*c.CallOptions).ListUserLists):len((*c.CallOptions).ListUserLists)], opts...)
 	it := &UserListIterator{}
 	req = proto.Clone(req).(*datamanagerpb.ListUserListsRequest)
@@ -447,6 +517,12 @@ func (c *userListGRPCClient) CreateUserList(ctx context.Context, req *datamanage
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.UserListService/CreateUserList")
+	}
 	opts = append((*c.CallOptions).CreateUserList[0:len((*c.CallOptions).CreateUserList):len((*c.CallOptions).CreateUserList)], opts...)
 	var resp *datamanagerpb.UserList
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -465,6 +541,9 @@ func (c *userListGRPCClient) UpdateUserList(ctx context.Context, req *datamanage
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.UserListService/UpdateUserList")
+	}
 	opts = append((*c.CallOptions).UpdateUserList[0:len((*c.CallOptions).UpdateUserList):len((*c.CallOptions).UpdateUserList)], opts...)
 	var resp *datamanagerpb.UserList
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -483,6 +562,12 @@ func (c *userListGRPCClient) DeleteUserList(ctx context.Context, req *datamanage
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.UserListService/DeleteUserList")
+	}
 	opts = append((*c.CallOptions).DeleteUserList[0:len((*c.CallOptions).DeleteUserList):len((*c.CallOptions).DeleteUserList)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -525,6 +610,13 @@ func (c *userListRESTClient) GetUserList(ctx context.Context, req *datamanagerpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.UserListService/GetUserList")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=accountTypes/*/accounts/*/userLists/*}")
+	}
 	opts = append((*c.CallOptions).GetUserList[0:len((*c.CallOptions).GetUserList):len((*c.CallOptions).GetUserList)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datamanagerpb.UserList{}
@@ -694,6 +786,13 @@ func (c *userListRESTClient) CreateUserList(ctx context.Context, req *datamanage
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.UserListService/CreateUserList")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=accountTypes/*/accounts/*}/userLists")
+	}
 	opts = append((*c.CallOptions).CreateUserList[0:len((*c.CallOptions).CreateUserList):len((*c.CallOptions).CreateUserList)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datamanagerpb.UserList{}
@@ -775,6 +874,10 @@ func (c *userListRESTClient) UpdateUserList(ctx context.Context, req *datamanage
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.UserListService/UpdateUserList")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{user_list.name=accountTypes/*/accounts/*/userLists/*}")
+	}
 	opts = append((*c.CallOptions).UpdateUserList[0:len((*c.CallOptions).UpdateUserList):len((*c.CallOptions).UpdateUserList)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datamanagerpb.UserList{}
@@ -842,6 +945,13 @@ func (c *userListRESTClient) DeleteUserList(ctx context.Context, req *datamanage
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.UserListService/DeleteUserList")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=accountTypes/*/accounts/*/userLists/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path

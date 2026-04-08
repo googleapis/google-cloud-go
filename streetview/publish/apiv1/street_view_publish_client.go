@@ -31,6 +31,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	publishpb "cloud.google.com/go/streetview/publish/apiv1/publishpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -654,6 +655,16 @@ type streetViewPublishGRPCClient struct {
 // Publishes and connects user-contributed photos on Street View.
 func NewStreetViewPublishClient(ctx context.Context, opts ...option.ClientOption) (*StreetViewPublishClient, error) {
 	clientOpts := defaultStreetViewPublishGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "streetviewpublish",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/streetview/publish/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "streetviewpublish.googleapis.com",
+		}))
+	}
 	if newStreetViewPublishClientHook != nil {
 		hookOpts, err := newStreetViewPublishClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -675,6 +686,33 @@ func NewStreetViewPublishClient(ctx context.Context, opts ...option.ClientOption
 		logger:                  internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "streetviewpublish",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/streetview/publish/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "streetviewpublish.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.StartUpload = append(client.CallOptions.StartUpload, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreatePhoto = append(client.CallOptions.CreatePhoto, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetPhoto = append(client.CallOptions.GetPhoto, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchGetPhotos = append(client.CallOptions.BatchGetPhotos, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListPhotos = append(client.CallOptions.ListPhotos, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdatePhoto = append(client.CallOptions.UpdatePhoto, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchUpdatePhotos = append(client.CallOptions.BatchUpdatePhotos, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeletePhoto = append(client.CallOptions.DeletePhoto, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchDeletePhotos = append(client.CallOptions.BatchDeletePhotos, gax.WithClientMetrics(metrics))
+		client.CallOptions.StartPhotoSequenceUpload = append(client.CallOptions.StartPhotoSequenceUpload, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreatePhotoSequence = append(client.CallOptions.CreatePhotoSequence, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetPhotoSequence = append(client.CallOptions.GetPhotoSequence, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListPhotoSequences = append(client.CallOptions.ListPhotoSequences, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeletePhotoSequence = append(client.CallOptions.DeletePhotoSequence, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -744,6 +782,16 @@ type streetViewPublishRESTClient struct {
 // Publishes and connects user-contributed photos on Street View.
 func NewStreetViewPublishRESTClient(ctx context.Context, opts ...option.ClientOption) (*StreetViewPublishClient, error) {
 	clientOpts := append(defaultStreetViewPublishRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "streetviewpublish",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/streetview/publish/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "streetviewpublish.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -757,6 +805,34 @@ func NewStreetViewPublishRESTClient(ctx context.Context, opts ...option.ClientOp
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "streetviewpublish",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/streetview/publish/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "streetviewpublish.googleapis.com",
+			}),
+		)
+
+		callOpts.StartUpload = append(callOpts.StartUpload, gax.WithClientMetrics(metrics))
+		callOpts.CreatePhoto = append(callOpts.CreatePhoto, gax.WithClientMetrics(metrics))
+		callOpts.GetPhoto = append(callOpts.GetPhoto, gax.WithClientMetrics(metrics))
+		callOpts.BatchGetPhotos = append(callOpts.BatchGetPhotos, gax.WithClientMetrics(metrics))
+		callOpts.ListPhotos = append(callOpts.ListPhotos, gax.WithClientMetrics(metrics))
+		callOpts.UpdatePhoto = append(callOpts.UpdatePhoto, gax.WithClientMetrics(metrics))
+		callOpts.BatchUpdatePhotos = append(callOpts.BatchUpdatePhotos, gax.WithClientMetrics(metrics))
+		callOpts.DeletePhoto = append(callOpts.DeletePhoto, gax.WithClientMetrics(metrics))
+		callOpts.BatchDeletePhotos = append(callOpts.BatchDeletePhotos, gax.WithClientMetrics(metrics))
+		callOpts.StartPhotoSequenceUpload = append(callOpts.StartPhotoSequenceUpload, gax.WithClientMetrics(metrics))
+		callOpts.CreatePhotoSequence = append(callOpts.CreatePhotoSequence, gax.WithClientMetrics(metrics))
+		callOpts.GetPhotoSequence = append(callOpts.GetPhotoSequence, gax.WithClientMetrics(metrics))
+		callOpts.ListPhotoSequences = append(callOpts.ListPhotoSequences, gax.WithClientMetrics(metrics))
+		callOpts.DeletePhotoSequence = append(callOpts.DeletePhotoSequence, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -810,6 +886,9 @@ func (c *streetViewPublishRESTClient) Connection() *grpc.ClientConn {
 }
 func (c *streetViewPublishGRPCClient) StartUpload(ctx context.Context, req *emptypb.Empty, opts ...gax.CallOption) (*publishpb.UploadRef, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.streetview.publish.v1.StreetViewPublishService/StartUpload")
+	}
 	opts = append((*c.CallOptions).StartUpload[0:len((*c.CallOptions).StartUpload):len((*c.CallOptions).StartUpload)], opts...)
 	var resp *publishpb.UploadRef
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -825,6 +904,9 @@ func (c *streetViewPublishGRPCClient) StartUpload(ctx context.Context, req *empt
 
 func (c *streetViewPublishGRPCClient) CreatePhoto(ctx context.Context, req *publishpb.CreatePhotoRequest, opts ...gax.CallOption) (*publishpb.Photo, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.streetview.publish.v1.StreetViewPublishService/CreatePhoto")
+	}
 	opts = append((*c.CallOptions).CreatePhoto[0:len((*c.CallOptions).CreatePhoto):len((*c.CallOptions).CreatePhoto)], opts...)
 	var resp *publishpb.Photo
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -843,6 +925,9 @@ func (c *streetViewPublishGRPCClient) GetPhoto(ctx context.Context, req *publish
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.streetview.publish.v1.StreetViewPublishService/GetPhoto")
+	}
 	opts = append((*c.CallOptions).GetPhoto[0:len((*c.CallOptions).GetPhoto):len((*c.CallOptions).GetPhoto)], opts...)
 	var resp *publishpb.Photo
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -858,6 +943,9 @@ func (c *streetViewPublishGRPCClient) GetPhoto(ctx context.Context, req *publish
 
 func (c *streetViewPublishGRPCClient) BatchGetPhotos(ctx context.Context, req *publishpb.BatchGetPhotosRequest, opts ...gax.CallOption) (*publishpb.BatchGetPhotosResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.streetview.publish.v1.StreetViewPublishService/BatchGetPhotos")
+	}
 	opts = append((*c.CallOptions).BatchGetPhotos[0:len((*c.CallOptions).BatchGetPhotos):len((*c.CallOptions).BatchGetPhotos)], opts...)
 	var resp *publishpb.BatchGetPhotosResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -873,6 +961,9 @@ func (c *streetViewPublishGRPCClient) BatchGetPhotos(ctx context.Context, req *p
 
 func (c *streetViewPublishGRPCClient) ListPhotos(ctx context.Context, req *publishpb.ListPhotosRequest, opts ...gax.CallOption) *PhotoIterator {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.streetview.publish.v1.StreetViewPublishService/ListPhotos")
+	}
 	opts = append((*c.CallOptions).ListPhotos[0:len((*c.CallOptions).ListPhotos):len((*c.CallOptions).ListPhotos)], opts...)
 	it := &PhotoIterator{}
 	req = proto.Clone(req).(*publishpb.ListPhotosRequest)
@@ -919,6 +1010,9 @@ func (c *streetViewPublishGRPCClient) UpdatePhoto(ctx context.Context, req *publ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.streetview.publish.v1.StreetViewPublishService/UpdatePhoto")
+	}
 	opts = append((*c.CallOptions).UpdatePhoto[0:len((*c.CallOptions).UpdatePhoto):len((*c.CallOptions).UpdatePhoto)], opts...)
 	var resp *publishpb.Photo
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -934,6 +1028,9 @@ func (c *streetViewPublishGRPCClient) UpdatePhoto(ctx context.Context, req *publ
 
 func (c *streetViewPublishGRPCClient) BatchUpdatePhotos(ctx context.Context, req *publishpb.BatchUpdatePhotosRequest, opts ...gax.CallOption) (*publishpb.BatchUpdatePhotosResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.streetview.publish.v1.StreetViewPublishService/BatchUpdatePhotos")
+	}
 	opts = append((*c.CallOptions).BatchUpdatePhotos[0:len((*c.CallOptions).BatchUpdatePhotos):len((*c.CallOptions).BatchUpdatePhotos)], opts...)
 	var resp *publishpb.BatchUpdatePhotosResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -952,6 +1049,9 @@ func (c *streetViewPublishGRPCClient) DeletePhoto(ctx context.Context, req *publ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.streetview.publish.v1.StreetViewPublishService/DeletePhoto")
+	}
 	opts = append((*c.CallOptions).DeletePhoto[0:len((*c.CallOptions).DeletePhoto):len((*c.CallOptions).DeletePhoto)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -963,6 +1063,9 @@ func (c *streetViewPublishGRPCClient) DeletePhoto(ctx context.Context, req *publ
 
 func (c *streetViewPublishGRPCClient) BatchDeletePhotos(ctx context.Context, req *publishpb.BatchDeletePhotosRequest, opts ...gax.CallOption) (*publishpb.BatchDeletePhotosResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.streetview.publish.v1.StreetViewPublishService/BatchDeletePhotos")
+	}
 	opts = append((*c.CallOptions).BatchDeletePhotos[0:len((*c.CallOptions).BatchDeletePhotos):len((*c.CallOptions).BatchDeletePhotos)], opts...)
 	var resp *publishpb.BatchDeletePhotosResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -978,6 +1081,9 @@ func (c *streetViewPublishGRPCClient) BatchDeletePhotos(ctx context.Context, req
 
 func (c *streetViewPublishGRPCClient) StartPhotoSequenceUpload(ctx context.Context, req *emptypb.Empty, opts ...gax.CallOption) (*publishpb.UploadRef, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.streetview.publish.v1.StreetViewPublishService/StartPhotoSequenceUpload")
+	}
 	opts = append((*c.CallOptions).StartPhotoSequenceUpload[0:len((*c.CallOptions).StartPhotoSequenceUpload):len((*c.CallOptions).StartPhotoSequenceUpload)], opts...)
 	var resp *publishpb.UploadRef
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -993,6 +1099,9 @@ func (c *streetViewPublishGRPCClient) StartPhotoSequenceUpload(ctx context.Conte
 
 func (c *streetViewPublishGRPCClient) CreatePhotoSequence(ctx context.Context, req *publishpb.CreatePhotoSequenceRequest, opts ...gax.CallOption) (*CreatePhotoSequenceOperation, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.streetview.publish.v1.StreetViewPublishService/CreatePhotoSequence")
+	}
 	opts = append((*c.CallOptions).CreatePhotoSequence[0:len((*c.CallOptions).CreatePhotoSequence):len((*c.CallOptions).CreatePhotoSequence)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1013,6 +1122,9 @@ func (c *streetViewPublishGRPCClient) GetPhotoSequence(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.streetview.publish.v1.StreetViewPublishService/GetPhotoSequence")
+	}
 	opts = append((*c.CallOptions).GetPhotoSequence[0:len((*c.CallOptions).GetPhotoSequence):len((*c.CallOptions).GetPhotoSequence)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1030,6 +1142,9 @@ func (c *streetViewPublishGRPCClient) GetPhotoSequence(ctx context.Context, req 
 
 func (c *streetViewPublishGRPCClient) ListPhotoSequences(ctx context.Context, req *publishpb.ListPhotoSequencesRequest, opts ...gax.CallOption) *OperationIterator {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.streetview.publish.v1.StreetViewPublishService/ListPhotoSequences")
+	}
 	opts = append((*c.CallOptions).ListPhotoSequences[0:len((*c.CallOptions).ListPhotoSequences):len((*c.CallOptions).ListPhotoSequences)], opts...)
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*publishpb.ListPhotoSequencesRequest)
@@ -1076,6 +1191,9 @@ func (c *streetViewPublishGRPCClient) DeletePhotoSequence(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.streetview.publish.v1.StreetViewPublishService/DeletePhotoSequence")
+	}
 	opts = append((*c.CallOptions).DeletePhotoSequence[0:len((*c.CallOptions).DeletePhotoSequence):len((*c.CallOptions).DeletePhotoSequence)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1127,6 +1245,10 @@ func (c *streetViewPublishRESTClient) StartUpload(ctx context.Context, req *empt
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.streetview.publish.v1.StreetViewPublishService/StartUpload")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/photo:startUpload")
+	}
 	opts = append((*c.CallOptions).StartUpload[0:len((*c.CallOptions).StartUpload):len((*c.CallOptions).StartUpload)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &publishpb.UploadRef{}
@@ -1202,6 +1324,10 @@ func (c *streetViewPublishRESTClient) CreatePhoto(ctx context.Context, req *publ
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.streetview.publish.v1.StreetViewPublishService/CreatePhoto")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/photo")
+	}
 	opts = append((*c.CallOptions).CreatePhoto[0:len((*c.CallOptions).CreatePhoto):len((*c.CallOptions).CreatePhoto)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &publishpb.Photo{}
@@ -1270,6 +1396,10 @@ func (c *streetViewPublishRESTClient) GetPhoto(ctx context.Context, req *publish
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.streetview.publish.v1.StreetViewPublishService/GetPhoto")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/photo/{photo_id}")
+	}
 	opts = append((*c.CallOptions).GetPhoto[0:len((*c.CallOptions).GetPhoto):len((*c.CallOptions).GetPhoto)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &publishpb.Photo{}
@@ -1341,6 +1471,10 @@ func (c *streetViewPublishRESTClient) BatchGetPhotos(ctx context.Context, req *p
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.streetview.publish.v1.StreetViewPublishService/BatchGetPhotos")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/photos:batchGet")
+	}
 	opts = append((*c.CallOptions).BatchGetPhotos[0:len((*c.CallOptions).BatchGetPhotos):len((*c.CallOptions).BatchGetPhotos)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &publishpb.BatchGetPhotosResponse{}
@@ -1516,6 +1650,10 @@ func (c *streetViewPublishRESTClient) UpdatePhoto(ctx context.Context, req *publ
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.streetview.publish.v1.StreetViewPublishService/UpdatePhoto")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/photo/{photo.photo_id.id}")
+	}
 	opts = append((*c.CallOptions).UpdatePhoto[0:len((*c.CallOptions).UpdatePhoto):len((*c.CallOptions).UpdatePhoto)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &publishpb.Photo{}
@@ -1601,6 +1739,10 @@ func (c *streetViewPublishRESTClient) BatchUpdatePhotos(ctx context.Context, req
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.streetview.publish.v1.StreetViewPublishService/BatchUpdatePhotos")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/photos:batchUpdate")
+	}
 	opts = append((*c.CallOptions).BatchUpdatePhotos[0:len((*c.CallOptions).BatchUpdatePhotos):len((*c.CallOptions).BatchUpdatePhotos)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &publishpb.BatchUpdatePhotosResponse{}
@@ -1659,6 +1801,10 @@ func (c *streetViewPublishRESTClient) DeletePhoto(ctx context.Context, req *publ
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.streetview.publish.v1.StreetViewPublishService/DeletePhoto")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/photo/{photo_id}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1712,6 +1858,10 @@ func (c *streetViewPublishRESTClient) BatchDeletePhotos(ctx context.Context, req
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.streetview.publish.v1.StreetViewPublishService/BatchDeletePhotos")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/photos:batchDelete")
+	}
 	opts = append((*c.CallOptions).BatchDeletePhotos[0:len((*c.CallOptions).BatchDeletePhotos):len((*c.CallOptions).BatchDeletePhotos)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &publishpb.BatchDeletePhotosResponse{}
@@ -1774,6 +1924,10 @@ func (c *streetViewPublishRESTClient) StartPhotoSequenceUpload(ctx context.Conte
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.streetview.publish.v1.StreetViewPublishService/StartPhotoSequenceUpload")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/photoSequence:startUpload")
+	}
 	opts = append((*c.CallOptions).StartPhotoSequenceUpload[0:len((*c.CallOptions).StartPhotoSequenceUpload):len((*c.CallOptions).StartPhotoSequenceUpload)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &publishpb.UploadRef{}
@@ -1847,6 +2001,10 @@ func (c *streetViewPublishRESTClient) CreatePhotoSequence(ctx context.Context, r
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.streetview.publish.v1.StreetViewPublishService/CreatePhotoSequence")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/photoSequence")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1930,6 +2088,10 @@ func (c *streetViewPublishRESTClient) GetPhotoSequence(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.streetview.publish.v1.StreetViewPublishService/GetPhotoSequence")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/photoSequence/{sequence_id}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2077,6 +2239,10 @@ func (c *streetViewPublishRESTClient) DeletePhotoSequence(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.streetview.publish.v1.StreetViewPublishService/DeletePhotoSequence")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/photoSequence/{sequence_id}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path

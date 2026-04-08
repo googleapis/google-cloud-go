@@ -27,6 +27,7 @@ import (
 
 	csspb "cloud.google.com/go/shopping/css/apiv1/csspb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -206,6 +207,16 @@ type cssProductsGRPCClient struct {
 // internally).
 func NewCssProductsClient(ctx context.Context, opts ...option.ClientOption) (*CssProductsClient, error) {
 	clientOpts := defaultCssProductsGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "css",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/css/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "css.googleapis.com",
+		}))
+	}
 	if newCssProductsClientHook != nil {
 		hookOpts, err := newCssProductsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -227,6 +238,21 @@ func NewCssProductsClient(ctx context.Context, opts ...option.ClientOption) (*Cs
 		logger:            internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "css",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/css/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "css.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetCssProduct = append(client.CallOptions.GetCssProduct, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListCssProducts = append(client.CallOptions.ListCssProducts, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -281,6 +307,16 @@ type cssProductsRESTClient struct {
 // internally).
 func NewCssProductsRESTClient(ctx context.Context, opts ...option.ClientOption) (*CssProductsClient, error) {
 	clientOpts := append(defaultCssProductsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "css",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/css/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "css.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -294,6 +330,22 @@ func NewCssProductsRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "css",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/css/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "css.googleapis.com",
+			}),
+		)
+
+		callOpts.GetCssProduct = append(callOpts.GetCssProduct, gax.WithClientMetrics(metrics))
+		callOpts.ListCssProducts = append(callOpts.ListCssProducts, gax.WithClientMetrics(metrics))
+	}
 
 	return &CssProductsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -340,6 +392,12 @@ func (c *cssProductsGRPCClient) GetCssProduct(ctx context.Context, req *csspb.Ge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//css.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.css.v1.CssProductsService/GetCssProduct")
+	}
 	opts = append((*c.CallOptions).GetCssProduct[0:len((*c.CallOptions).GetCssProduct):len((*c.CallOptions).GetCssProduct)], opts...)
 	var resp *csspb.CssProduct
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -358,6 +416,12 @@ func (c *cssProductsGRPCClient) ListCssProducts(ctx context.Context, req *csspb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//css.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.css.v1.CssProductsService/ListCssProducts")
+	}
 	opts = append((*c.CallOptions).ListCssProducts[0:len((*c.CallOptions).ListCssProducts):len((*c.CallOptions).ListCssProducts)], opts...)
 	it := &CssProductIterator{}
 	req = proto.Clone(req).(*csspb.ListCssProductsRequest)
@@ -420,6 +484,13 @@ func (c *cssProductsRESTClient) GetCssProduct(ctx context.Context, req *csspb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//css.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.css.v1.CssProductsService/GetCssProduct")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=accounts/*/cssProducts/*}")
+	}
 	opts = append((*c.CallOptions).GetCssProduct[0:len((*c.CallOptions).GetCssProduct):len((*c.CallOptions).GetCssProduct)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &csspb.CssProduct{}

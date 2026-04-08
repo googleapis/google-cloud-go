@@ -27,6 +27,7 @@ import (
 
 	accountspb "cloud.google.com/go/shopping/merchant/accounts/apiv1/accountspb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -198,6 +199,16 @@ type termsOfServiceAgreementStateGRPCClient struct {
 // Service to support TermsOfServiceAgreementState API.
 func NewTermsOfServiceAgreementStateClient(ctx context.Context, opts ...option.ClientOption) (*TermsOfServiceAgreementStateClient, error) {
 	clientOpts := defaultTermsOfServiceAgreementStateGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	if newTermsOfServiceAgreementStateClientHook != nil {
 		hookOpts, err := newTermsOfServiceAgreementStateClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -219,6 +230,21 @@ func NewTermsOfServiceAgreementStateClient(ctx context.Context, opts ...option.C
 		logger:                             internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetTermsOfServiceAgreementState = append(client.CallOptions.GetTermsOfServiceAgreementState, gax.WithClientMetrics(metrics))
+		client.CallOptions.RetrieveForApplicationTermsOfServiceAgreementState = append(client.CallOptions.RetrieveForApplicationTermsOfServiceAgreementState, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -272,6 +298,16 @@ type termsOfServiceAgreementStateRESTClient struct {
 // Service to support TermsOfServiceAgreementState API.
 func NewTermsOfServiceAgreementStateRESTClient(ctx context.Context, opts ...option.ClientOption) (*TermsOfServiceAgreementStateClient, error) {
 	clientOpts := append(defaultTermsOfServiceAgreementStateRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -285,6 +321,22 @@ func NewTermsOfServiceAgreementStateRESTClient(ctx context.Context, opts ...opti
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetTermsOfServiceAgreementState = append(callOpts.GetTermsOfServiceAgreementState, gax.WithClientMetrics(metrics))
+		callOpts.RetrieveForApplicationTermsOfServiceAgreementState = append(callOpts.RetrieveForApplicationTermsOfServiceAgreementState, gax.WithClientMetrics(metrics))
+	}
 
 	return &TermsOfServiceAgreementStateClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -331,6 +383,12 @@ func (c *termsOfServiceAgreementStateGRPCClient) GetTermsOfServiceAgreementState
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.TermsOfServiceAgreementStateService/GetTermsOfServiceAgreementState")
+	}
 	opts = append((*c.CallOptions).GetTermsOfServiceAgreementState[0:len((*c.CallOptions).GetTermsOfServiceAgreementState):len((*c.CallOptions).GetTermsOfServiceAgreementState)], opts...)
 	var resp *accountspb.TermsOfServiceAgreementState
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -349,6 +407,12 @@ func (c *termsOfServiceAgreementStateGRPCClient) RetrieveForApplicationTermsOfSe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.TermsOfServiceAgreementStateService/RetrieveForApplicationTermsOfServiceAgreementState")
+	}
 	opts = append((*c.CallOptions).RetrieveForApplicationTermsOfServiceAgreementState[0:len((*c.CallOptions).RetrieveForApplicationTermsOfServiceAgreementState):len((*c.CallOptions).RetrieveForApplicationTermsOfServiceAgreementState)], opts...)
 	var resp *accountspb.TermsOfServiceAgreementState
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -381,6 +445,13 @@ func (c *termsOfServiceAgreementStateRESTClient) GetTermsOfServiceAgreementState
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.TermsOfServiceAgreementStateService/GetTermsOfServiceAgreementState")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1/{name=accounts/*/termsOfServiceAgreementStates/*}")
+	}
 	opts = append((*c.CallOptions).GetTermsOfServiceAgreementState[0:len((*c.CallOptions).GetTermsOfServiceAgreementState):len((*c.CallOptions).GetTermsOfServiceAgreementState)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &accountspb.TermsOfServiceAgreementState{}
@@ -435,6 +506,13 @@ func (c *termsOfServiceAgreementStateRESTClient) RetrieveForApplicationTermsOfSe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.TermsOfServiceAgreementStateService/RetrieveForApplicationTermsOfServiceAgreementState")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1/{parent=accounts/*}/termsOfServiceAgreementStates:retrieveForApplication")
+	}
 	opts = append((*c.CallOptions).RetrieveForApplicationTermsOfServiceAgreementState[0:len((*c.CallOptions).RetrieveForApplicationTermsOfServiceAgreementState):len((*c.CallOptions).RetrieveForApplicationTermsOfServiceAgreementState)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &accountspb.TermsOfServiceAgreementState{}

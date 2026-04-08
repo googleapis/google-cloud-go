@@ -28,6 +28,7 @@ import (
 
 	iampb "cloud.google.com/go/policytroubleshooter/iam/apiv3/iampb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -171,6 +172,16 @@ type policyTroubleshooterGRPCClient struct {
 // This service helps you troubleshoot access issues for Google Cloud resources.
 func NewPolicyTroubleshooterClient(ctx context.Context, opts ...option.ClientOption) (*PolicyTroubleshooterClient, error) {
 	clientOpts := defaultPolicyTroubleshooterGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "policytroubleshooter",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/policytroubleshooter/iam/apiv3",
+			"gcp.client.language": "go",
+			"url.domain":          "policytroubleshooter.googleapis.com",
+		}))
+	}
 	if newPolicyTroubleshooterClientHook != nil {
 		hookOpts, err := newPolicyTroubleshooterClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -192,6 +203,20 @@ func NewPolicyTroubleshooterClient(ctx context.Context, opts ...option.ClientOpt
 		logger:                     internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "policytroubleshooter",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/policytroubleshooter/iam/apiv3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "policytroubleshooter.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.TroubleshootIamPolicy = append(client.CallOptions.TroubleshootIamPolicy, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -247,6 +272,16 @@ type policyTroubleshooterRESTClient struct {
 // This service helps you troubleshoot access issues for Google Cloud resources.
 func NewPolicyTroubleshooterRESTClient(ctx context.Context, opts ...option.ClientOption) (*PolicyTroubleshooterClient, error) {
 	clientOpts := append(defaultPolicyTroubleshooterRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "policytroubleshooter",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/policytroubleshooter/iam/apiv3",
+			"gcp.client.language": "go",
+			"url.domain":          "policytroubleshooter.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -260,6 +295,21 @@ func NewPolicyTroubleshooterRESTClient(ctx context.Context, opts ...option.Clien
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "policytroubleshooter",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/policytroubleshooter/iam/apiv3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "policytroubleshooter.googleapis.com",
+			}),
+		)
+
+		callOpts.TroubleshootIamPolicy = append(callOpts.TroubleshootIamPolicy, gax.WithClientMetrics(metrics))
+	}
 
 	return &PolicyTroubleshooterClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -303,6 +353,9 @@ func (c *policyTroubleshooterRESTClient) Connection() *grpc.ClientConn {
 }
 func (c *policyTroubleshooterGRPCClient) TroubleshootIamPolicy(ctx context.Context, req *iampb.TroubleshootIamPolicyRequest, opts ...gax.CallOption) (*iampb.TroubleshootIamPolicyResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.policytroubleshooter.iam.v3.PolicyTroubleshooter/TroubleshootIamPolicy")
+	}
 	opts = append((*c.CallOptions).TroubleshootIamPolicy[0:len((*c.CallOptions).TroubleshootIamPolicy):len((*c.CallOptions).TroubleshootIamPolicy)], opts...)
 	var resp *iampb.TroubleshootIamPolicyResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -340,6 +393,10 @@ func (c *policyTroubleshooterRESTClient) TroubleshootIamPolicy(ctx context.Conte
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.policytroubleshooter.iam.v3.PolicyTroubleshooter/TroubleshootIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/iam:troubleshoot")
+	}
 	opts = append((*c.CallOptions).TroubleshootIamPolicy[0:len((*c.CallOptions).TroubleshootIamPolicy):len((*c.CallOptions).TroubleshootIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.TroubleshootIamPolicyResponse{}

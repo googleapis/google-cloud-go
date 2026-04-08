@@ -28,6 +28,7 @@ import (
 
 	visionpb "cloud.google.com/go/vision/v2/apiv1p1beta1/visionpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -171,6 +172,16 @@ type imageAnnotatorGRPCClient struct {
 // ImageAnnotator service returns detected entities from the images.
 func NewImageAnnotatorClient(ctx context.Context, opts ...option.ClientOption) (*ImageAnnotatorClient, error) {
 	clientOpts := defaultImageAnnotatorGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "vision",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/vision/v2/apiv1p1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "vision.googleapis.com",
+		}))
+	}
 	if newImageAnnotatorClientHook != nil {
 		hookOpts, err := newImageAnnotatorClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -192,6 +203,20 @@ func NewImageAnnotatorClient(ctx context.Context, opts ...option.ClientOption) (
 		logger:               internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "vision",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/vision/v2/apiv1p1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "vision.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.BatchAnnotateImages = append(client.CallOptions.BatchAnnotateImages, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -247,6 +272,16 @@ type imageAnnotatorRESTClient struct {
 // ImageAnnotator service returns detected entities from the images.
 func NewImageAnnotatorRESTClient(ctx context.Context, opts ...option.ClientOption) (*ImageAnnotatorClient, error) {
 	clientOpts := append(defaultImageAnnotatorRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "vision",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/vision/v2/apiv1p1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "vision.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -260,6 +295,21 @@ func NewImageAnnotatorRESTClient(ctx context.Context, opts ...option.ClientOptio
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "vision",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/vision/v2/apiv1p1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "vision.googleapis.com",
+			}),
+		)
+
+		callOpts.BatchAnnotateImages = append(callOpts.BatchAnnotateImages, gax.WithClientMetrics(metrics))
+	}
 
 	return &ImageAnnotatorClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -303,6 +353,9 @@ func (c *imageAnnotatorRESTClient) Connection() *grpc.ClientConn {
 }
 func (c *imageAnnotatorGRPCClient) BatchAnnotateImages(ctx context.Context, req *visionpb.BatchAnnotateImagesRequest, opts ...gax.CallOption) (*visionpb.BatchAnnotateImagesResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vision.v1p1beta1.ImageAnnotator/BatchAnnotateImages")
+	}
 	opts = append((*c.CallOptions).BatchAnnotateImages[0:len((*c.CallOptions).BatchAnnotateImages):len((*c.CallOptions).BatchAnnotateImages)], opts...)
 	var resp *visionpb.BatchAnnotateImagesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -338,6 +391,10 @@ func (c *imageAnnotatorRESTClient) BatchAnnotateImages(ctx context.Context, req 
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vision.v1p1beta1.ImageAnnotator/BatchAnnotateImages")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1p1beta1/images:annotate")
+	}
 	opts = append((*c.CallOptions).BatchAnnotateImages[0:len((*c.CallOptions).BatchAnnotateImages):len((*c.CallOptions).BatchAnnotateImages)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionpb.BatchAnnotateImagesResponse{}

@@ -28,6 +28,7 @@ import (
 
 	productstudiopb "cloud.google.com/go/shopping/merchant/productstudio/apiv1alpha/productstudiopb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -231,6 +232,16 @@ type imageGRPCClient struct {
 // enhancing product image content.
 func NewImageClient(ctx context.Context, opts ...option.ClientOption) (*ImageClient, error) {
 	clientOpts := defaultImageGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/productstudio/apiv1alpha",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	if newImageClientHook != nil {
 		hookOpts, err := newImageClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -252,6 +263,22 @@ func NewImageClient(ctx context.Context, opts ...option.ClientOption) (*ImageCli
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/productstudio/apiv1alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GenerateProductImageBackground = append(client.CallOptions.GenerateProductImageBackground, gax.WithClientMetrics(metrics))
+		client.CallOptions.RemoveProductImageBackground = append(client.CallOptions.RemoveProductImageBackground, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpscaleProductImage = append(client.CallOptions.UpscaleProductImage, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -306,6 +333,16 @@ type imageRESTClient struct {
 // enhancing product image content.
 func NewImageRESTClient(ctx context.Context, opts ...option.ClientOption) (*ImageClient, error) {
 	clientOpts := append(defaultImageRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/productstudio/apiv1alpha",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -319,6 +356,23 @@ func NewImageRESTClient(ctx context.Context, opts ...option.ClientOption) (*Imag
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/productstudio/apiv1alpha",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GenerateProductImageBackground = append(callOpts.GenerateProductImageBackground, gax.WithClientMetrics(metrics))
+		callOpts.RemoveProductImageBackground = append(callOpts.RemoveProductImageBackground, gax.WithClientMetrics(metrics))
+		callOpts.UpscaleProductImage = append(callOpts.UpscaleProductImage, gax.WithClientMetrics(metrics))
+	}
 
 	return &ImageClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -365,6 +419,9 @@ func (c *imageGRPCClient) GenerateProductImageBackground(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.productstudio.v1alpha.ImageService/GenerateProductImageBackground")
+	}
 	opts = append((*c.CallOptions).GenerateProductImageBackground[0:len((*c.CallOptions).GenerateProductImageBackground):len((*c.CallOptions).GenerateProductImageBackground)], opts...)
 	var resp *productstudiopb.GenerateProductImageBackgroundResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -383,6 +440,9 @@ func (c *imageGRPCClient) RemoveProductImageBackground(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.productstudio.v1alpha.ImageService/RemoveProductImageBackground")
+	}
 	opts = append((*c.CallOptions).RemoveProductImageBackground[0:len((*c.CallOptions).RemoveProductImageBackground):len((*c.CallOptions).RemoveProductImageBackground)], opts...)
 	var resp *productstudiopb.RemoveProductImageBackgroundResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -401,6 +461,9 @@ func (c *imageGRPCClient) UpscaleProductImage(ctx context.Context, req *products
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.productstudio.v1alpha.ImageService/UpscaleProductImage")
+	}
 	opts = append((*c.CallOptions).UpscaleProductImage[0:len((*c.CallOptions).UpscaleProductImage):len((*c.CallOptions).UpscaleProductImage)], opts...)
 	var resp *productstudiopb.UpscaleProductImageResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -441,6 +504,10 @@ func (c *imageRESTClient) GenerateProductImageBackground(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.productstudio.v1alpha.ImageService/GenerateProductImageBackground")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/productstudio/v1alpha/{name=accounts/*}/generatedImages:generateProductImageBackground")
+	}
 	opts = append((*c.CallOptions).GenerateProductImageBackground[0:len((*c.CallOptions).GenerateProductImageBackground):len((*c.CallOptions).GenerateProductImageBackground)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &productstudiopb.GenerateProductImageBackgroundResponse{}
@@ -498,6 +565,10 @@ func (c *imageRESTClient) RemoveProductImageBackground(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.productstudio.v1alpha.ImageService/RemoveProductImageBackground")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/productstudio/v1alpha/{name=accounts/*}/generatedImages:removeProductImageBackground")
+	}
 	opts = append((*c.CallOptions).RemoveProductImageBackground[0:len((*c.CallOptions).RemoveProductImageBackground):len((*c.CallOptions).RemoveProductImageBackground)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &productstudiopb.RemoveProductImageBackgroundResponse{}
@@ -555,6 +626,10 @@ func (c *imageRESTClient) UpscaleProductImage(ctx context.Context, req *products
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.productstudio.v1alpha.ImageService/UpscaleProductImage")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/productstudio/v1alpha/{name=accounts/*}/generatedImages:upscaleProductImage")
+	}
 	opts = append((*c.CallOptions).UpscaleProductImage[0:len((*c.CallOptions).UpscaleProductImage):len((*c.CallOptions).UpscaleProductImage)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &productstudiopb.UpscaleProductImageResponse{}

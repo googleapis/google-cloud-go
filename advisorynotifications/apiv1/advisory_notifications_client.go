@@ -28,6 +28,7 @@ import (
 
 	advisorynotificationspb "cloud.google.com/go/advisorynotifications/apiv1/advisorynotificationspb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -215,6 +216,16 @@ type gRPCClient struct {
 // Service to manage Security and Privacy Notifications.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "advisorynotifications",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/advisorynotifications/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "advisorynotifications.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -236,6 +247,23 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "advisorynotifications",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/advisorynotifications/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "advisorynotifications.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListNotifications = append(client.CallOptions.ListNotifications, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetNotification = append(client.CallOptions.GetNotification, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetSettings = append(client.CallOptions.GetSettings, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateSettings = append(client.CallOptions.UpdateSettings, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -289,6 +317,16 @@ type restClient struct {
 // Service to manage Security and Privacy Notifications.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "advisorynotifications",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/advisorynotifications/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "advisorynotifications.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -302,6 +340,24 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "advisorynotifications",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/advisorynotifications/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "advisorynotifications.googleapis.com",
+			}),
+		)
+
+		callOpts.ListNotifications = append(callOpts.ListNotifications, gax.WithClientMetrics(metrics))
+		callOpts.GetNotification = append(callOpts.GetNotification, gax.WithClientMetrics(metrics))
+		callOpts.GetSettings = append(callOpts.GetSettings, gax.WithClientMetrics(metrics))
+		callOpts.UpdateSettings = append(callOpts.UpdateSettings, gax.WithClientMetrics(metrics))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -348,6 +404,12 @@ func (c *gRPCClient) ListNotifications(ctx context.Context, req *advisorynotific
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//advisorynotifications.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.advisorynotifications.v1.AdvisoryNotificationsService/ListNotifications")
+	}
 	opts = append((*c.CallOptions).ListNotifications[0:len((*c.CallOptions).ListNotifications):len((*c.CallOptions).ListNotifications)], opts...)
 	it := &NotificationIterator{}
 	req = proto.Clone(req).(*advisorynotificationspb.ListNotificationsRequest)
@@ -394,6 +456,12 @@ func (c *gRPCClient) GetNotification(ctx context.Context, req *advisorynotificat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//advisorynotifications.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.advisorynotifications.v1.AdvisoryNotificationsService/GetNotification")
+	}
 	opts = append((*c.CallOptions).GetNotification[0:len((*c.CallOptions).GetNotification):len((*c.CallOptions).GetNotification)], opts...)
 	var resp *advisorynotificationspb.Notification
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -412,6 +480,12 @@ func (c *gRPCClient) GetSettings(ctx context.Context, req *advisorynotifications
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//advisorynotifications.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.advisorynotifications.v1.AdvisoryNotificationsService/GetSettings")
+	}
 	opts = append((*c.CallOptions).GetSettings[0:len((*c.CallOptions).GetSettings):len((*c.CallOptions).GetSettings)], opts...)
 	var resp *advisorynotificationspb.Settings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -430,6 +504,9 @@ func (c *gRPCClient) UpdateSettings(ctx context.Context, req *advisorynotificati
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.advisorynotifications.v1.AdvisoryNotificationsService/UpdateSettings")
+	}
 	opts = append((*c.CallOptions).UpdateSettings[0:len((*c.CallOptions).UpdateSettings):len((*c.CallOptions).UpdateSettings)], opts...)
 	var resp *advisorynotificationspb.Settings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -549,6 +626,13 @@ func (c *restClient) GetNotification(ctx context.Context, req *advisorynotificat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//advisorynotifications.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.advisorynotifications.v1.AdvisoryNotificationsService/GetNotification")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=organizations/*/locations/*/notifications/*}")
+	}
 	opts = append((*c.CallOptions).GetNotification[0:len((*c.CallOptions).GetNotification):len((*c.CallOptions).GetNotification)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &advisorynotificationspb.Notification{}
@@ -599,6 +683,13 @@ func (c *restClient) GetSettings(ctx context.Context, req *advisorynotifications
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//advisorynotifications.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.advisorynotifications.v1.AdvisoryNotificationsService/GetSettings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=organizations/*/locations/*/settings}")
+	}
 	opts = append((*c.CallOptions).GetSettings[0:len((*c.CallOptions).GetSettings):len((*c.CallOptions).GetSettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &advisorynotificationspb.Settings{}
@@ -656,6 +747,10 @@ func (c *restClient) UpdateSettings(ctx context.Context, req *advisorynotificati
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.advisorynotifications.v1.AdvisoryNotificationsService/UpdateSettings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{settings.name=organizations/*/locations/*/settings}")
+	}
 	opts = append((*c.CallOptions).UpdateSettings[0:len((*c.CallOptions).UpdateSettings):len((*c.CallOptions).UpdateSettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &advisorynotificationspb.Settings{}

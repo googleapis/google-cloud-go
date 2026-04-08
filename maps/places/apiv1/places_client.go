@@ -27,6 +27,7 @@ import (
 
 	placespb "cloud.google.com/go/maps/places/apiv1/placespb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -189,6 +190,16 @@ type gRPCClient struct {
 // https://developers.google.com/maps/documentation/places/web-service/choose-fields (at https://developers.google.com/maps/documentation/places/web-service/choose-fields)
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "places",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/maps/places/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "places.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -210,6 +221,24 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "places",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/places/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "places.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.SearchNearby = append(client.CallOptions.SearchNearby, gax.WithClientMetrics(metrics))
+		client.CallOptions.SearchText = append(client.CallOptions.SearchText, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetPhotoMedia = append(client.CallOptions.GetPhotoMedia, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetPlace = append(client.CallOptions.GetPlace, gax.WithClientMetrics(metrics))
+		client.CallOptions.AutocompletePlaces = append(client.CallOptions.AutocompletePlaces, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -268,6 +297,16 @@ type restClient struct {
 // https://developers.google.com/maps/documentation/places/web-service/choose-fields (at https://developers.google.com/maps/documentation/places/web-service/choose-fields)
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "places",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/maps/places/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "places.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -281,6 +320,25 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "places",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/places/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "places.googleapis.com",
+			}),
+		)
+
+		callOpts.SearchNearby = append(callOpts.SearchNearby, gax.WithClientMetrics(metrics))
+		callOpts.SearchText = append(callOpts.SearchText, gax.WithClientMetrics(metrics))
+		callOpts.GetPhotoMedia = append(callOpts.GetPhotoMedia, gax.WithClientMetrics(metrics))
+		callOpts.GetPlace = append(callOpts.GetPlace, gax.WithClientMetrics(metrics))
+		callOpts.AutocompletePlaces = append(callOpts.AutocompletePlaces, gax.WithClientMetrics(metrics))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -324,6 +382,9 @@ func (c *restClient) Connection() *grpc.ClientConn {
 }
 func (c *gRPCClient) SearchNearby(ctx context.Context, req *placespb.SearchNearbyRequest, opts ...gax.CallOption) (*placespb.SearchNearbyResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.places.v1.Places/SearchNearby")
+	}
 	opts = append((*c.CallOptions).SearchNearby[0:len((*c.CallOptions).SearchNearby):len((*c.CallOptions).SearchNearby)], opts...)
 	var resp *placespb.SearchNearbyResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -339,6 +400,9 @@ func (c *gRPCClient) SearchNearby(ctx context.Context, req *placespb.SearchNearb
 
 func (c *gRPCClient) SearchText(ctx context.Context, req *placespb.SearchTextRequest, opts ...gax.CallOption) (*placespb.SearchTextResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.places.v1.Places/SearchText")
+	}
 	opts = append((*c.CallOptions).SearchText[0:len((*c.CallOptions).SearchText):len((*c.CallOptions).SearchText)], opts...)
 	var resp *placespb.SearchTextResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -357,6 +421,12 @@ func (c *gRPCClient) GetPhotoMedia(ctx context.Context, req *placespb.GetPhotoMe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//places.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.places.v1.Places/GetPhotoMedia")
+	}
 	opts = append((*c.CallOptions).GetPhotoMedia[0:len((*c.CallOptions).GetPhotoMedia):len((*c.CallOptions).GetPhotoMedia)], opts...)
 	var resp *placespb.PhotoMedia
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -375,6 +445,12 @@ func (c *gRPCClient) GetPlace(ctx context.Context, req *placespb.GetPlaceRequest
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//places.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.places.v1.Places/GetPlace")
+	}
 	opts = append((*c.CallOptions).GetPlace[0:len((*c.CallOptions).GetPlace):len((*c.CallOptions).GetPlace)], opts...)
 	var resp *placespb.Place
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -390,6 +466,9 @@ func (c *gRPCClient) GetPlace(ctx context.Context, req *placespb.GetPlaceRequest
 
 func (c *gRPCClient) AutocompletePlaces(ctx context.Context, req *placespb.AutocompletePlacesRequest, opts ...gax.CallOption) (*placespb.AutocompletePlacesResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.places.v1.Places/AutocompletePlaces")
+	}
 	opts = append((*c.CallOptions).AutocompletePlaces[0:len((*c.CallOptions).AutocompletePlaces):len((*c.CallOptions).AutocompletePlaces)], opts...)
 	var resp *placespb.AutocompletePlacesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -425,6 +504,10 @@ func (c *restClient) SearchNearby(ctx context.Context, req *placespb.SearchNearb
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.places.v1.Places/SearchNearby")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/places:searchNearby")
+	}
 	opts = append((*c.CallOptions).SearchNearby[0:len((*c.CallOptions).SearchNearby):len((*c.CallOptions).SearchNearby)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &placespb.SearchNearbyResponse{}
@@ -478,6 +561,10 @@ func (c *restClient) SearchText(ctx context.Context, req *placespb.SearchTextReq
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.places.v1.Places/SearchText")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/places:searchText")
+	}
 	opts = append((*c.CallOptions).SearchText[0:len((*c.CallOptions).SearchText):len((*c.CallOptions).SearchText)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &placespb.SearchTextResponse{}
@@ -537,6 +624,13 @@ func (c *restClient) GetPhotoMedia(ctx context.Context, req *placespb.GetPhotoMe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//places.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.places.v1.Places/GetPhotoMedia")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=places/*/photos/*/media}")
+	}
 	opts = append((*c.CallOptions).GetPhotoMedia[0:len((*c.CallOptions).GetPhotoMedia):len((*c.CallOptions).GetPhotoMedia)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &placespb.PhotoMedia{}
@@ -597,6 +691,13 @@ func (c *restClient) GetPlace(ctx context.Context, req *placespb.GetPlaceRequest
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//places.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.places.v1.Places/GetPlace")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=places/*}")
+	}
 	opts = append((*c.CallOptions).GetPlace[0:len((*c.CallOptions).GetPlace):len((*c.CallOptions).GetPlace)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &placespb.Place{}
@@ -650,6 +751,10 @@ func (c *restClient) AutocompletePlaces(ctx context.Context, req *placespb.Autoc
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.places.v1.Places/AutocompletePlaces")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/places:autocomplete")
+	}
 	opts = append((*c.CallOptions).AutocompletePlaces[0:len((*c.CallOptions).AutocompletePlaces):len((*c.CallOptions).AutocompletePlaces)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &placespb.AutocompletePlacesResponse{}

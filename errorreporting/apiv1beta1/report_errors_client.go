@@ -28,6 +28,7 @@ import (
 
 	errorreportingpb "cloud.google.com/go/errorreporting/apiv1beta1/errorreportingpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -169,6 +170,16 @@ type reportErrorsGRPCClient struct {
 // An API for reporting error events.
 func NewReportErrorsClient(ctx context.Context, opts ...option.ClientOption) (*ReportErrorsClient, error) {
 	clientOpts := defaultReportErrorsGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "clouderrorreporting",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/errorreporting/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "clouderrorreporting.googleapis.com",
+		}))
+	}
 	if newReportErrorsClientHook != nil {
 		hookOpts, err := newReportErrorsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -190,6 +201,20 @@ func NewReportErrorsClient(ctx context.Context, opts ...option.ClientOption) (*R
 		logger:             internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "clouderrorreporting",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/errorreporting/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "clouderrorreporting.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ReportErrorEvent = append(client.CallOptions.ReportErrorEvent, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -243,6 +268,16 @@ type reportErrorsRESTClient struct {
 // An API for reporting error events.
 func NewReportErrorsRESTClient(ctx context.Context, opts ...option.ClientOption) (*ReportErrorsClient, error) {
 	clientOpts := append(defaultReportErrorsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "clouderrorreporting",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/errorreporting/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "clouderrorreporting.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -256,6 +291,21 @@ func NewReportErrorsRESTClient(ctx context.Context, opts ...option.ClientOption)
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "clouderrorreporting",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/errorreporting/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "clouderrorreporting.googleapis.com",
+			}),
+		)
+
+		callOpts.ReportErrorEvent = append(callOpts.ReportErrorEvent, gax.WithClientMetrics(metrics))
+	}
 
 	return &ReportErrorsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -302,6 +352,12 @@ func (c *reportErrorsGRPCClient) ReportErrorEvent(ctx context.Context, req *erro
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//clouderrorreporting.googleapis.com/%v", req.GetProjectName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.clouderrorreporting.v1beta1.ReportErrorsService/ReportErrorEvent")
+	}
 	opts = append((*c.CallOptions).ReportErrorEvent[0:len((*c.CallOptions).ReportErrorEvent):len((*c.CallOptions).ReportErrorEvent)], opts...)
 	var resp *errorreportingpb.ReportErrorEventResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -362,6 +418,13 @@ func (c *reportErrorsRESTClient) ReportErrorEvent(ctx context.Context, req *erro
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//clouderrorreporting.googleapis.com/%v", req.GetProjectName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.clouderrorreporting.v1beta1.ReportErrorsService/ReportErrorEvent")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{project_name=projects/*}/events:report")
+	}
 	opts = append((*c.CallOptions).ReportErrorEvent[0:len((*c.CallOptions).ReportErrorEvent):len((*c.CallOptions).ReportErrorEvent)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &errorreportingpb.ReportErrorEventResponse{}

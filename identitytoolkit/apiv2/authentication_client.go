@@ -28,6 +28,7 @@ import (
 
 	identitytoolkitpb "cloud.google.com/go/identitytoolkit/apiv2/identitytoolkitpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -160,6 +161,16 @@ type authenticationGRPCClient struct {
 // Authentication for Identity Toolkit
 func NewAuthenticationClient(ctx context.Context, opts ...option.ClientOption) (*AuthenticationClient, error) {
 	clientOpts := defaultAuthenticationGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "identitytoolkit",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/identitytoolkit/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "identitytoolkit.googleapis.com",
+		}))
+	}
 	if newAuthenticationClientHook != nil {
 		hookOpts, err := newAuthenticationClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -181,6 +192,21 @@ func NewAuthenticationClient(ctx context.Context, opts ...option.ClientOption) (
 		logger:               internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "identitytoolkit",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/identitytoolkit/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "identitytoolkit.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.FinalizeMfaSignIn = append(client.CallOptions.FinalizeMfaSignIn, gax.WithClientMetrics(metrics))
+		client.CallOptions.StartMfaSignIn = append(client.CallOptions.StartMfaSignIn, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -234,6 +260,16 @@ type authenticationRESTClient struct {
 // Authentication for Identity Toolkit
 func NewAuthenticationRESTClient(ctx context.Context, opts ...option.ClientOption) (*AuthenticationClient, error) {
 	clientOpts := append(defaultAuthenticationRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "identitytoolkit",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/identitytoolkit/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "identitytoolkit.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -247,6 +283,22 @@ func NewAuthenticationRESTClient(ctx context.Context, opts ...option.ClientOptio
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "identitytoolkit",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/identitytoolkit/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "identitytoolkit.googleapis.com",
+			}),
+		)
+
+		callOpts.FinalizeMfaSignIn = append(callOpts.FinalizeMfaSignIn, gax.WithClientMetrics(metrics))
+		callOpts.StartMfaSignIn = append(callOpts.StartMfaSignIn, gax.WithClientMetrics(metrics))
+	}
 
 	return &AuthenticationClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -290,6 +342,9 @@ func (c *authenticationRESTClient) Connection() *grpc.ClientConn {
 }
 func (c *authenticationGRPCClient) FinalizeMfaSignIn(ctx context.Context, req *identitytoolkitpb.FinalizeMfaSignInRequest, opts ...gax.CallOption) (*identitytoolkitpb.FinalizeMfaSignInResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.identitytoolkit.v2.AuthenticationService/FinalizeMfaSignIn")
+	}
 	opts = append((*c.CallOptions).FinalizeMfaSignIn[0:len((*c.CallOptions).FinalizeMfaSignIn):len((*c.CallOptions).FinalizeMfaSignIn)], opts...)
 	var resp *identitytoolkitpb.FinalizeMfaSignInResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -305,6 +360,9 @@ func (c *authenticationGRPCClient) FinalizeMfaSignIn(ctx context.Context, req *i
 
 func (c *authenticationGRPCClient) StartMfaSignIn(ctx context.Context, req *identitytoolkitpb.StartMfaSignInRequest, opts ...gax.CallOption) (*identitytoolkitpb.StartMfaSignInResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.identitytoolkit.v2.AuthenticationService/StartMfaSignIn")
+	}
 	opts = append((*c.CallOptions).StartMfaSignIn[0:len((*c.CallOptions).StartMfaSignIn):len((*c.CallOptions).StartMfaSignIn)], opts...)
 	var resp *identitytoolkitpb.StartMfaSignInResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -340,6 +398,10 @@ func (c *authenticationRESTClient) FinalizeMfaSignIn(ctx context.Context, req *i
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.identitytoolkit.v2.AuthenticationService/FinalizeMfaSignIn")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/accounts/mfaSignIn:finalize")
+	}
 	opts = append((*c.CallOptions).FinalizeMfaSignIn[0:len((*c.CallOptions).FinalizeMfaSignIn):len((*c.CallOptions).FinalizeMfaSignIn)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &identitytoolkitpb.FinalizeMfaSignInResponse{}
@@ -393,6 +455,10 @@ func (c *authenticationRESTClient) StartMfaSignIn(ctx context.Context, req *iden
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.identitytoolkit.v2.AuthenticationService/StartMfaSignIn")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/accounts/mfaSignIn:start")
+	}
 	opts = append((*c.CallOptions).StartMfaSignIn[0:len((*c.CallOptions).StartMfaSignIn):len((*c.CallOptions).StartMfaSignIn)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &identitytoolkitpb.StartMfaSignInResponse{}

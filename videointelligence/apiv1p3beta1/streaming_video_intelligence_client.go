@@ -24,6 +24,7 @@ import (
 
 	videointelligencepb "cloud.google.com/go/videointelligence/apiv1p3beta1/videointelligencepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -145,6 +146,16 @@ type streamingVideoIntelligenceGRPCClient struct {
 // Service that implements streaming Video Intelligence API.
 func NewStreamingVideoIntelligenceClient(ctx context.Context, opts ...option.ClientOption) (*StreamingVideoIntelligenceClient, error) {
 	clientOpts := defaultStreamingVideoIntelligenceGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "videointelligence",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/videointelligence/apiv1p3beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "videointelligence.googleapis.com",
+		}))
+	}
 	if newStreamingVideoIntelligenceClientHook != nil {
 		hookOpts, err := newStreamingVideoIntelligenceClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -166,6 +177,20 @@ func NewStreamingVideoIntelligenceClient(ctx context.Context, opts ...option.Cli
 		logger:                           internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "videointelligence",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/videointelligence/apiv1p3beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "videointelligence.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.StreamingAnnotateVideo = append(client.CallOptions.StreamingAnnotateVideo, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -199,6 +224,9 @@ func (c *streamingVideoIntelligenceGRPCClient) Close() error {
 
 func (c *streamingVideoIntelligenceGRPCClient) StreamingAnnotateVideo(ctx context.Context, opts ...gax.CallOption) (videointelligencepb.StreamingVideoIntelligenceService_StreamingAnnotateVideoClient, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.videointelligence.v1p3beta1.StreamingVideoIntelligenceService/StreamingAnnotateVideo")
+	}
 	var resp videointelligencepb.StreamingVideoIntelligenceService_StreamingAnnotateVideoClient
 	opts = append((*c.CallOptions).StreamingAnnotateVideo[0:len((*c.CallOptions).StreamingAnnotateVideo):len((*c.CallOptions).StreamingAnnotateVideo)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

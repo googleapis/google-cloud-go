@@ -28,6 +28,7 @@ import (
 
 	accountspb "cloud.google.com/go/shopping/merchant/accounts/apiv1beta/accountspb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -199,6 +200,16 @@ type automaticImprovementsGRPCClient struct {
 // improve images and shipping.
 func NewAutomaticImprovementsClient(ctx context.Context, opts ...option.ClientOption) (*AutomaticImprovementsClient, error) {
 	clientOpts := defaultAutomaticImprovementsGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	if newAutomaticImprovementsClientHook != nil {
 		hookOpts, err := newAutomaticImprovementsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -220,6 +231,21 @@ func NewAutomaticImprovementsClient(ctx context.Context, opts ...option.ClientOp
 		logger:                      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetAutomaticImprovements = append(client.CallOptions.GetAutomaticImprovements, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateAutomaticImprovements = append(client.CallOptions.UpdateAutomaticImprovements, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -275,6 +301,16 @@ type automaticImprovementsRESTClient struct {
 // improve images and shipping.
 func NewAutomaticImprovementsRESTClient(ctx context.Context, opts ...option.ClientOption) (*AutomaticImprovementsClient, error) {
 	clientOpts := append(defaultAutomaticImprovementsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -288,6 +324,22 @@ func NewAutomaticImprovementsRESTClient(ctx context.Context, opts ...option.Clie
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetAutomaticImprovements = append(callOpts.GetAutomaticImprovements, gax.WithClientMetrics(metrics))
+		callOpts.UpdateAutomaticImprovements = append(callOpts.UpdateAutomaticImprovements, gax.WithClientMetrics(metrics))
+	}
 
 	return &AutomaticImprovementsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -334,6 +386,12 @@ func (c *automaticImprovementsGRPCClient) GetAutomaticImprovements(ctx context.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.AutomaticImprovementsService/GetAutomaticImprovements")
+	}
 	opts = append((*c.CallOptions).GetAutomaticImprovements[0:len((*c.CallOptions).GetAutomaticImprovements):len((*c.CallOptions).GetAutomaticImprovements)], opts...)
 	var resp *accountspb.AutomaticImprovements
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -352,6 +410,9 @@ func (c *automaticImprovementsGRPCClient) UpdateAutomaticImprovements(ctx contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.AutomaticImprovementsService/UpdateAutomaticImprovements")
+	}
 	opts = append((*c.CallOptions).UpdateAutomaticImprovements[0:len((*c.CallOptions).UpdateAutomaticImprovements):len((*c.CallOptions).UpdateAutomaticImprovements)], opts...)
 	var resp *accountspb.AutomaticImprovements
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -384,6 +445,13 @@ func (c *automaticImprovementsRESTClient) GetAutomaticImprovements(ctx context.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.AutomaticImprovementsService/GetAutomaticImprovements")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1beta/{name=accounts/*/automaticImprovements}")
+	}
 	opts = append((*c.CallOptions).GetAutomaticImprovements[0:len((*c.CallOptions).GetAutomaticImprovements):len((*c.CallOptions).GetAutomaticImprovements)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &accountspb.AutomaticImprovements{}
@@ -448,6 +516,10 @@ func (c *automaticImprovementsRESTClient) UpdateAutomaticImprovements(ctx contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.AutomaticImprovementsService/UpdateAutomaticImprovements")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1beta/{automatic_improvements.name=accounts/*/automaticImprovements}")
+	}
 	opts = append((*c.CallOptions).UpdateAutomaticImprovements[0:len((*c.CallOptions).UpdateAutomaticImprovements):len((*c.CallOptions).UpdateAutomaticImprovements)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &accountspb.AutomaticImprovements{}

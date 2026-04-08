@@ -28,6 +28,7 @@ import (
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -982,6 +983,16 @@ type registryGRPCClient struct {
 // The Registry service allows teams to manage descriptions of APIs.
 func NewRegistryClient(ctx context.Context, opts ...option.ClientOption) (*RegistryClient, error) {
 	clientOpts := defaultRegistryGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "apigeeregistry",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/apigeeregistry/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "apigeeregistry.googleapis.com",
+		}))
+	}
 	if newRegistryClientHook != nil {
 		hookOpts, err := newRegistryClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -1006,6 +1017,63 @@ func NewRegistryClient(ctx context.Context, opts ...option.ClientOption) (*Regis
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "apigeeregistry",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apigeeregistry/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "apigeeregistry.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListApis = append(client.CallOptions.ListApis, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetApi = append(client.CallOptions.GetApi, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateApi = append(client.CallOptions.CreateApi, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateApi = append(client.CallOptions.UpdateApi, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteApi = append(client.CallOptions.DeleteApi, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListApiVersions = append(client.CallOptions.ListApiVersions, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetApiVersion = append(client.CallOptions.GetApiVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateApiVersion = append(client.CallOptions.CreateApiVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateApiVersion = append(client.CallOptions.UpdateApiVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteApiVersion = append(client.CallOptions.DeleteApiVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListApiSpecs = append(client.CallOptions.ListApiSpecs, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetApiSpec = append(client.CallOptions.GetApiSpec, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetApiSpecContents = append(client.CallOptions.GetApiSpecContents, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateApiSpec = append(client.CallOptions.CreateApiSpec, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateApiSpec = append(client.CallOptions.UpdateApiSpec, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteApiSpec = append(client.CallOptions.DeleteApiSpec, gax.WithClientMetrics(metrics))
+		client.CallOptions.TagApiSpecRevision = append(client.CallOptions.TagApiSpecRevision, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListApiSpecRevisions = append(client.CallOptions.ListApiSpecRevisions, gax.WithClientMetrics(metrics))
+		client.CallOptions.RollbackApiSpec = append(client.CallOptions.RollbackApiSpec, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteApiSpecRevision = append(client.CallOptions.DeleteApiSpecRevision, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListApiDeployments = append(client.CallOptions.ListApiDeployments, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetApiDeployment = append(client.CallOptions.GetApiDeployment, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateApiDeployment = append(client.CallOptions.CreateApiDeployment, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateApiDeployment = append(client.CallOptions.UpdateApiDeployment, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteApiDeployment = append(client.CallOptions.DeleteApiDeployment, gax.WithClientMetrics(metrics))
+		client.CallOptions.TagApiDeploymentRevision = append(client.CallOptions.TagApiDeploymentRevision, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListApiDeploymentRevisions = append(client.CallOptions.ListApiDeploymentRevisions, gax.WithClientMetrics(metrics))
+		client.CallOptions.RollbackApiDeployment = append(client.CallOptions.RollbackApiDeployment, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteApiDeploymentRevision = append(client.CallOptions.DeleteApiDeploymentRevision, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListArtifacts = append(client.CallOptions.ListArtifacts, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetArtifact = append(client.CallOptions.GetArtifact, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetArtifactContents = append(client.CallOptions.GetArtifactContents, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateArtifact = append(client.CallOptions.CreateArtifact, gax.WithClientMetrics(metrics))
+		client.CallOptions.ReplaceArtifact = append(client.CallOptions.ReplaceArtifact, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteArtifact = append(client.CallOptions.DeleteArtifact, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -1042,6 +1110,12 @@ func (c *registryGRPCClient) ListApis(ctx context.Context, req *apigeeregistrypb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigeeregistry.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigeeregistry.v1.Registry/ListApis")
+	}
 	opts = append((*c.CallOptions).ListApis[0:len((*c.CallOptions).ListApis):len((*c.CallOptions).ListApis)], opts...)
 	it := &ApiIterator{}
 	req = proto.Clone(req).(*apigeeregistrypb.ListApisRequest)
@@ -1088,6 +1162,12 @@ func (c *registryGRPCClient) GetApi(ctx context.Context, req *apigeeregistrypb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigeeregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigeeregistry.v1.Registry/GetApi")
+	}
 	opts = append((*c.CallOptions).GetApi[0:len((*c.CallOptions).GetApi):len((*c.CallOptions).GetApi)], opts...)
 	var resp *apigeeregistrypb.Api
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1106,6 +1186,12 @@ func (c *registryGRPCClient) CreateApi(ctx context.Context, req *apigeeregistryp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigeeregistry.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigeeregistry.v1.Registry/CreateApi")
+	}
 	opts = append((*c.CallOptions).CreateApi[0:len((*c.CallOptions).CreateApi):len((*c.CallOptions).CreateApi)], opts...)
 	var resp *apigeeregistrypb.Api
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1124,6 +1210,9 @@ func (c *registryGRPCClient) UpdateApi(ctx context.Context, req *apigeeregistryp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigeeregistry.v1.Registry/UpdateApi")
+	}
 	opts = append((*c.CallOptions).UpdateApi[0:len((*c.CallOptions).UpdateApi):len((*c.CallOptions).UpdateApi)], opts...)
 	var resp *apigeeregistrypb.Api
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1142,6 +1231,12 @@ func (c *registryGRPCClient) DeleteApi(ctx context.Context, req *apigeeregistryp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigeeregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigeeregistry.v1.Registry/DeleteApi")
+	}
 	opts = append((*c.CallOptions).DeleteApi[0:len((*c.CallOptions).DeleteApi):len((*c.CallOptions).DeleteApi)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1156,6 +1251,12 @@ func (c *registryGRPCClient) ListApiVersions(ctx context.Context, req *apigeereg
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigeeregistry.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigeeregistry.v1.Registry/ListApiVersions")
+	}
 	opts = append((*c.CallOptions).ListApiVersions[0:len((*c.CallOptions).ListApiVersions):len((*c.CallOptions).ListApiVersions)], opts...)
 	it := &ApiVersionIterator{}
 	req = proto.Clone(req).(*apigeeregistrypb.ListApiVersionsRequest)
@@ -1202,6 +1303,12 @@ func (c *registryGRPCClient) GetApiVersion(ctx context.Context, req *apigeeregis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigeeregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigeeregistry.v1.Registry/GetApiVersion")
+	}
 	opts = append((*c.CallOptions).GetApiVersion[0:len((*c.CallOptions).GetApiVersion):len((*c.CallOptions).GetApiVersion)], opts...)
 	var resp *apigeeregistrypb.ApiVersion
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1220,6 +1327,12 @@ func (c *registryGRPCClient) CreateApiVersion(ctx context.Context, req *apigeere
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigeeregistry.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigeeregistry.v1.Registry/CreateApiVersion")
+	}
 	opts = append((*c.CallOptions).CreateApiVersion[0:len((*c.CallOptions).CreateApiVersion):len((*c.CallOptions).CreateApiVersion)], opts...)
 	var resp *apigeeregistrypb.ApiVersion
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1238,6 +1351,9 @@ func (c *registryGRPCClient) UpdateApiVersion(ctx context.Context, req *apigeere
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigeeregistry.v1.Registry/UpdateApiVersion")
+	}
 	opts = append((*c.CallOptions).UpdateApiVersion[0:len((*c.CallOptions).UpdateApiVersion):len((*c.CallOptions).UpdateApiVersion)], opts...)
 	var resp *apigeeregistrypb.ApiVersion
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1256,6 +1372,12 @@ func (c *registryGRPCClient) DeleteApiVersion(ctx context.Context, req *apigeere
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigeeregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigeeregistry.v1.Registry/DeleteApiVersion")
+	}
 	opts = append((*c.CallOptions).DeleteApiVersion[0:len((*c.CallOptions).DeleteApiVersion):len((*c.CallOptions).DeleteApiVersion)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1270,6 +1392,12 @@ func (c *registryGRPCClient) ListApiSpecs(ctx context.Context, req *apigeeregist
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigeeregistry.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigeeregistry.v1.Registry/ListApiSpecs")
+	}
 	opts = append((*c.CallOptions).ListApiSpecs[0:len((*c.CallOptions).ListApiSpecs):len((*c.CallOptions).ListApiSpecs)], opts...)
 	it := &ApiSpecIterator{}
 	req = proto.Clone(req).(*apigeeregistrypb.ListApiSpecsRequest)
@@ -1316,6 +1444,12 @@ func (c *registryGRPCClient) GetApiSpec(ctx context.Context, req *apigeeregistry
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigeeregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigeeregistry.v1.Registry/GetApiSpec")
+	}
 	opts = append((*c.CallOptions).GetApiSpec[0:len((*c.CallOptions).GetApiSpec):len((*c.CallOptions).GetApiSpec)], opts...)
 	var resp *apigeeregistrypb.ApiSpec
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1334,6 +1468,12 @@ func (c *registryGRPCClient) GetApiSpecContents(ctx context.Context, req *apigee
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigeeregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigeeregistry.v1.Registry/GetApiSpecContents")
+	}
 	opts = append((*c.CallOptions).GetApiSpecContents[0:len((*c.CallOptions).GetApiSpecContents):len((*c.CallOptions).GetApiSpecContents)], opts...)
 	var resp *httpbodypb.HttpBody
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1352,6 +1492,12 @@ func (c *registryGRPCClient) CreateApiSpec(ctx context.Context, req *apigeeregis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigeeregistry.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigeeregistry.v1.Registry/CreateApiSpec")
+	}
 	opts = append((*c.CallOptions).CreateApiSpec[0:len((*c.CallOptions).CreateApiSpec):len((*c.CallOptions).CreateApiSpec)], opts...)
 	var resp *apigeeregistrypb.ApiSpec
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1370,6 +1516,9 @@ func (c *registryGRPCClient) UpdateApiSpec(ctx context.Context, req *apigeeregis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigeeregistry.v1.Registry/UpdateApiSpec")
+	}
 	opts = append((*c.CallOptions).UpdateApiSpec[0:len((*c.CallOptions).UpdateApiSpec):len((*c.CallOptions).UpdateApiSpec)], opts...)
 	var resp *apigeeregistrypb.ApiSpec
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1388,6 +1537,12 @@ func (c *registryGRPCClient) DeleteApiSpec(ctx context.Context, req *apigeeregis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigeeregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigeeregistry.v1.Registry/DeleteApiSpec")
+	}
 	opts = append((*c.CallOptions).DeleteApiSpec[0:len((*c.CallOptions).DeleteApiSpec):len((*c.CallOptions).DeleteApiSpec)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1402,6 +1557,12 @@ func (c *registryGRPCClient) TagApiSpecRevision(ctx context.Context, req *apigee
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigeeregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigeeregistry.v1.Registry/TagApiSpecRevision")
+	}
 	opts = append((*c.CallOptions).TagApiSpecRevision[0:len((*c.CallOptions).TagApiSpecRevision):len((*c.CallOptions).TagApiSpecRevision)], opts...)
 	var resp *apigeeregistrypb.ApiSpec
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1420,6 +1581,12 @@ func (c *registryGRPCClient) ListApiSpecRevisions(ctx context.Context, req *apig
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigeeregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigeeregistry.v1.Registry/ListApiSpecRevisions")
+	}
 	opts = append((*c.CallOptions).ListApiSpecRevisions[0:len((*c.CallOptions).ListApiSpecRevisions):len((*c.CallOptions).ListApiSpecRevisions)], opts...)
 	it := &ApiSpecIterator{}
 	req = proto.Clone(req).(*apigeeregistrypb.ListApiSpecRevisionsRequest)
@@ -1466,6 +1633,12 @@ func (c *registryGRPCClient) RollbackApiSpec(ctx context.Context, req *apigeereg
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigeeregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigeeregistry.v1.Registry/RollbackApiSpec")
+	}
 	opts = append((*c.CallOptions).RollbackApiSpec[0:len((*c.CallOptions).RollbackApiSpec):len((*c.CallOptions).RollbackApiSpec)], opts...)
 	var resp *apigeeregistrypb.ApiSpec
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1484,6 +1657,12 @@ func (c *registryGRPCClient) DeleteApiSpecRevision(ctx context.Context, req *api
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigeeregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigeeregistry.v1.Registry/DeleteApiSpecRevision")
+	}
 	opts = append((*c.CallOptions).DeleteApiSpecRevision[0:len((*c.CallOptions).DeleteApiSpecRevision):len((*c.CallOptions).DeleteApiSpecRevision)], opts...)
 	var resp *apigeeregistrypb.ApiSpec
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1502,6 +1681,12 @@ func (c *registryGRPCClient) ListApiDeployments(ctx context.Context, req *apigee
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigeeregistry.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigeeregistry.v1.Registry/ListApiDeployments")
+	}
 	opts = append((*c.CallOptions).ListApiDeployments[0:len((*c.CallOptions).ListApiDeployments):len((*c.CallOptions).ListApiDeployments)], opts...)
 	it := &ApiDeploymentIterator{}
 	req = proto.Clone(req).(*apigeeregistrypb.ListApiDeploymentsRequest)
@@ -1548,6 +1733,12 @@ func (c *registryGRPCClient) GetApiDeployment(ctx context.Context, req *apigeere
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigeeregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigeeregistry.v1.Registry/GetApiDeployment")
+	}
 	opts = append((*c.CallOptions).GetApiDeployment[0:len((*c.CallOptions).GetApiDeployment):len((*c.CallOptions).GetApiDeployment)], opts...)
 	var resp *apigeeregistrypb.ApiDeployment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1566,6 +1757,12 @@ func (c *registryGRPCClient) CreateApiDeployment(ctx context.Context, req *apige
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigeeregistry.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigeeregistry.v1.Registry/CreateApiDeployment")
+	}
 	opts = append((*c.CallOptions).CreateApiDeployment[0:len((*c.CallOptions).CreateApiDeployment):len((*c.CallOptions).CreateApiDeployment)], opts...)
 	var resp *apigeeregistrypb.ApiDeployment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1584,6 +1781,9 @@ func (c *registryGRPCClient) UpdateApiDeployment(ctx context.Context, req *apige
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigeeregistry.v1.Registry/UpdateApiDeployment")
+	}
 	opts = append((*c.CallOptions).UpdateApiDeployment[0:len((*c.CallOptions).UpdateApiDeployment):len((*c.CallOptions).UpdateApiDeployment)], opts...)
 	var resp *apigeeregistrypb.ApiDeployment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1602,6 +1802,12 @@ func (c *registryGRPCClient) DeleteApiDeployment(ctx context.Context, req *apige
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigeeregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigeeregistry.v1.Registry/DeleteApiDeployment")
+	}
 	opts = append((*c.CallOptions).DeleteApiDeployment[0:len((*c.CallOptions).DeleteApiDeployment):len((*c.CallOptions).DeleteApiDeployment)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1616,6 +1822,12 @@ func (c *registryGRPCClient) TagApiDeploymentRevision(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigeeregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigeeregistry.v1.Registry/TagApiDeploymentRevision")
+	}
 	opts = append((*c.CallOptions).TagApiDeploymentRevision[0:len((*c.CallOptions).TagApiDeploymentRevision):len((*c.CallOptions).TagApiDeploymentRevision)], opts...)
 	var resp *apigeeregistrypb.ApiDeployment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1634,6 +1846,12 @@ func (c *registryGRPCClient) ListApiDeploymentRevisions(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigeeregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigeeregistry.v1.Registry/ListApiDeploymentRevisions")
+	}
 	opts = append((*c.CallOptions).ListApiDeploymentRevisions[0:len((*c.CallOptions).ListApiDeploymentRevisions):len((*c.CallOptions).ListApiDeploymentRevisions)], opts...)
 	it := &ApiDeploymentIterator{}
 	req = proto.Clone(req).(*apigeeregistrypb.ListApiDeploymentRevisionsRequest)
@@ -1680,6 +1898,12 @@ func (c *registryGRPCClient) RollbackApiDeployment(ctx context.Context, req *api
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigeeregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigeeregistry.v1.Registry/RollbackApiDeployment")
+	}
 	opts = append((*c.CallOptions).RollbackApiDeployment[0:len((*c.CallOptions).RollbackApiDeployment):len((*c.CallOptions).RollbackApiDeployment)], opts...)
 	var resp *apigeeregistrypb.ApiDeployment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1698,6 +1922,12 @@ func (c *registryGRPCClient) DeleteApiDeploymentRevision(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigeeregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigeeregistry.v1.Registry/DeleteApiDeploymentRevision")
+	}
 	opts = append((*c.CallOptions).DeleteApiDeploymentRevision[0:len((*c.CallOptions).DeleteApiDeploymentRevision):len((*c.CallOptions).DeleteApiDeploymentRevision)], opts...)
 	var resp *apigeeregistrypb.ApiDeployment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1716,6 +1946,12 @@ func (c *registryGRPCClient) ListArtifacts(ctx context.Context, req *apigeeregis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigeeregistry.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigeeregistry.v1.Registry/ListArtifacts")
+	}
 	opts = append((*c.CallOptions).ListArtifacts[0:len((*c.CallOptions).ListArtifacts):len((*c.CallOptions).ListArtifacts)], opts...)
 	it := &ArtifactIterator{}
 	req = proto.Clone(req).(*apigeeregistrypb.ListArtifactsRequest)
@@ -1762,6 +1998,12 @@ func (c *registryGRPCClient) GetArtifact(ctx context.Context, req *apigeeregistr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigeeregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigeeregistry.v1.Registry/GetArtifact")
+	}
 	opts = append((*c.CallOptions).GetArtifact[0:len((*c.CallOptions).GetArtifact):len((*c.CallOptions).GetArtifact)], opts...)
 	var resp *apigeeregistrypb.Artifact
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1780,6 +2022,12 @@ func (c *registryGRPCClient) GetArtifactContents(ctx context.Context, req *apige
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigeeregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigeeregistry.v1.Registry/GetArtifactContents")
+	}
 	opts = append((*c.CallOptions).GetArtifactContents[0:len((*c.CallOptions).GetArtifactContents):len((*c.CallOptions).GetArtifactContents)], opts...)
 	var resp *httpbodypb.HttpBody
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1798,6 +2046,12 @@ func (c *registryGRPCClient) CreateArtifact(ctx context.Context, req *apigeeregi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigeeregistry.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigeeregistry.v1.Registry/CreateArtifact")
+	}
 	opts = append((*c.CallOptions).CreateArtifact[0:len((*c.CallOptions).CreateArtifact):len((*c.CallOptions).CreateArtifact)], opts...)
 	var resp *apigeeregistrypb.Artifact
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1816,6 +2070,9 @@ func (c *registryGRPCClient) ReplaceArtifact(ctx context.Context, req *apigeereg
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigeeregistry.v1.Registry/ReplaceArtifact")
+	}
 	opts = append((*c.CallOptions).ReplaceArtifact[0:len((*c.CallOptions).ReplaceArtifact):len((*c.CallOptions).ReplaceArtifact)], opts...)
 	var resp *apigeeregistrypb.Artifact
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1834,6 +2091,12 @@ func (c *registryGRPCClient) DeleteArtifact(ctx context.Context, req *apigeeregi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigeeregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigeeregistry.v1.Registry/DeleteArtifact")
+	}
 	opts = append((*c.CallOptions).DeleteArtifact[0:len((*c.CallOptions).DeleteArtifact):len((*c.CallOptions).DeleteArtifact)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1848,6 +2111,9 @@ func (c *registryGRPCClient) GetLocation(ctx context.Context, req *locationpb.Ge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1866,6 +2132,9 @@ func (c *registryGRPCClient) ListLocations(ctx context.Context, req *locationpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
@@ -1912,6 +2181,12 @@ func (c *registryGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIam
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1930,6 +2205,12 @@ func (c *registryGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIam
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1948,6 +2229,12 @@ func (c *registryGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1966,6 +2253,9 @@ func (c *registryGRPCClient) CancelOperation(ctx context.Context, req *longrunni
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1980,6 +2270,9 @@ func (c *registryGRPCClient) DeleteOperation(ctx context.Context, req *longrunni
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1994,6 +2287,9 @@ func (c *registryGRPCClient) GetOperation(ctx context.Context, req *longrunningp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2012,6 +2308,9 @@ func (c *registryGRPCClient) ListOperations(ctx context.Context, req *longrunnin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)

@@ -28,6 +28,7 @@ import (
 
 	ordertrackingpb "cloud.google.com/go/shopping/merchant/ordertracking/apiv1beta/ordertrackingpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -165,6 +166,16 @@ type orderTrackingSignalsGRPCClient struct {
 // Service to serve order tracking signals public API.
 func NewOrderTrackingSignalsClient(ctx context.Context, opts ...option.ClientOption) (*OrderTrackingSignalsClient, error) {
 	clientOpts := defaultOrderTrackingSignalsGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/ordertracking/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	if newOrderTrackingSignalsClientHook != nil {
 		hookOpts, err := newOrderTrackingSignalsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -186,6 +197,20 @@ func NewOrderTrackingSignalsClient(ctx context.Context, opts ...option.ClientOpt
 		logger:                     internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/ordertracking/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateOrderTrackingSignal = append(client.CallOptions.CreateOrderTrackingSignal, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -239,6 +264,16 @@ type orderTrackingSignalsRESTClient struct {
 // Service to serve order tracking signals public API.
 func NewOrderTrackingSignalsRESTClient(ctx context.Context, opts ...option.ClientOption) (*OrderTrackingSignalsClient, error) {
 	clientOpts := append(defaultOrderTrackingSignalsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/ordertracking/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -252,6 +287,21 @@ func NewOrderTrackingSignalsRESTClient(ctx context.Context, opts ...option.Clien
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/ordertracking/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateOrderTrackingSignal = append(callOpts.CreateOrderTrackingSignal, gax.WithClientMetrics(metrics))
+	}
 
 	return &OrderTrackingSignalsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -298,6 +348,12 @@ func (c *orderTrackingSignalsGRPCClient) CreateOrderTrackingSignal(ctx context.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.ordertracking.v1beta.OrderTrackingSignalsService/CreateOrderTrackingSignal")
+	}
 	opts = append((*c.CallOptions).CreateOrderTrackingSignal[0:len((*c.CallOptions).CreateOrderTrackingSignal):len((*c.CallOptions).CreateOrderTrackingSignal)], opts...)
 	var resp *ordertrackingpb.OrderTrackingSignal
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -340,6 +396,13 @@ func (c *orderTrackingSignalsRESTClient) CreateOrderTrackingSignal(ctx context.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.ordertracking.v1beta.OrderTrackingSignalsService/CreateOrderTrackingSignal")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/ordertracking/v1beta/{parent=accounts/*}/ordertrackingsignals")
+	}
 	opts = append((*c.CallOptions).CreateOrderTrackingSignal[0:len((*c.CallOptions).CreateOrderTrackingSignal):len((*c.CallOptions).CreateOrderTrackingSignal)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &ordertrackingpb.OrderTrackingSignal{}

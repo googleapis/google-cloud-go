@@ -29,6 +29,7 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -619,6 +620,16 @@ type azureClustersGRPCClient struct {
 // Deprecated: AzureClusters may be removed in a future version.
 func NewAzureClustersClient(ctx context.Context, opts ...option.ClientOption) (*AzureClustersClient, error) {
 	clientOpts := defaultAzureClustersGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "gkemulticloud",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/gkemulticloud/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "gkemulticloud.googleapis.com",
+		}))
+	}
 	if newAzureClustersClientHook != nil {
 		hookOpts, err := newAzureClustersClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -641,6 +652,42 @@ func NewAzureClustersClient(ctx context.Context, opts ...option.ClientOption) (*
 		operationsClient:    longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "gkemulticloud",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/gkemulticloud/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "gkemulticloud.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateAzureClient = append(client.CallOptions.CreateAzureClient, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAzureClient = append(client.CallOptions.GetAzureClient, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAzureClients = append(client.CallOptions.ListAzureClients, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteAzureClient = append(client.CallOptions.DeleteAzureClient, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateAzureCluster = append(client.CallOptions.CreateAzureCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateAzureCluster = append(client.CallOptions.UpdateAzureCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAzureCluster = append(client.CallOptions.GetAzureCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAzureClusters = append(client.CallOptions.ListAzureClusters, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteAzureCluster = append(client.CallOptions.DeleteAzureCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.GenerateAzureClusterAgentToken = append(client.CallOptions.GenerateAzureClusterAgentToken, gax.WithClientMetrics(metrics))
+		client.CallOptions.GenerateAzureAccessToken = append(client.CallOptions.GenerateAzureAccessToken, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateAzureNodePool = append(client.CallOptions.CreateAzureNodePool, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateAzureNodePool = append(client.CallOptions.UpdateAzureNodePool, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAzureNodePool = append(client.CallOptions.GetAzureNodePool, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAzureNodePools = append(client.CallOptions.ListAzureNodePools, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteAzureNodePool = append(client.CallOptions.DeleteAzureNodePool, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAzureOpenIdConfig = append(client.CallOptions.GetAzureOpenIdConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAzureJsonWebKeys = append(client.CallOptions.GetAzureJsonWebKeys, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAzureServerConfig = append(client.CallOptions.GetAzureServerConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -688,6 +735,12 @@ func (c *azureClustersGRPCClient) CreateAzureClient(ctx context.Context, req *gk
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AzureClusters/CreateAzureClient")
+	}
 	opts = append((*c.CallOptions).CreateAzureClient[0:len((*c.CallOptions).CreateAzureClient):len((*c.CallOptions).CreateAzureClient)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -708,6 +761,12 @@ func (c *azureClustersGRPCClient) GetAzureClient(ctx context.Context, req *gkemu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AzureClusters/GetAzureClient")
+	}
 	opts = append((*c.CallOptions).GetAzureClient[0:len((*c.CallOptions).GetAzureClient):len((*c.CallOptions).GetAzureClient)], opts...)
 	var resp *gkemulticloudpb.AzureClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -726,6 +785,12 @@ func (c *azureClustersGRPCClient) ListAzureClients(ctx context.Context, req *gke
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AzureClusters/ListAzureClients")
+	}
 	opts = append((*c.CallOptions).ListAzureClients[0:len((*c.CallOptions).ListAzureClients):len((*c.CallOptions).ListAzureClients)], opts...)
 	it := &AzureClientIterator{}
 	req = proto.Clone(req).(*gkemulticloudpb.ListAzureClientsRequest)
@@ -772,6 +837,12 @@ func (c *azureClustersGRPCClient) DeleteAzureClient(ctx context.Context, req *gk
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AzureClusters/DeleteAzureClient")
+	}
 	opts = append((*c.CallOptions).DeleteAzureClient[0:len((*c.CallOptions).DeleteAzureClient):len((*c.CallOptions).DeleteAzureClient)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -792,6 +863,12 @@ func (c *azureClustersGRPCClient) CreateAzureCluster(ctx context.Context, req *g
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AzureClusters/CreateAzureCluster")
+	}
 	opts = append((*c.CallOptions).CreateAzureCluster[0:len((*c.CallOptions).CreateAzureCluster):len((*c.CallOptions).CreateAzureCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -812,6 +889,9 @@ func (c *azureClustersGRPCClient) UpdateAzureCluster(ctx context.Context, req *g
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AzureClusters/UpdateAzureCluster")
+	}
 	opts = append((*c.CallOptions).UpdateAzureCluster[0:len((*c.CallOptions).UpdateAzureCluster):len((*c.CallOptions).UpdateAzureCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -832,6 +912,12 @@ func (c *azureClustersGRPCClient) GetAzureCluster(ctx context.Context, req *gkem
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AzureClusters/GetAzureCluster")
+	}
 	opts = append((*c.CallOptions).GetAzureCluster[0:len((*c.CallOptions).GetAzureCluster):len((*c.CallOptions).GetAzureCluster)], opts...)
 	var resp *gkemulticloudpb.AzureCluster
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -850,6 +936,12 @@ func (c *azureClustersGRPCClient) ListAzureClusters(ctx context.Context, req *gk
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AzureClusters/ListAzureClusters")
+	}
 	opts = append((*c.CallOptions).ListAzureClusters[0:len((*c.CallOptions).ListAzureClusters):len((*c.CallOptions).ListAzureClusters)], opts...)
 	it := &AzureClusterIterator{}
 	req = proto.Clone(req).(*gkemulticloudpb.ListAzureClustersRequest)
@@ -896,6 +988,12 @@ func (c *azureClustersGRPCClient) DeleteAzureCluster(ctx context.Context, req *g
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AzureClusters/DeleteAzureCluster")
+	}
 	opts = append((*c.CallOptions).DeleteAzureCluster[0:len((*c.CallOptions).DeleteAzureCluster):len((*c.CallOptions).DeleteAzureCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -916,6 +1014,12 @@ func (c *azureClustersGRPCClient) GenerateAzureClusterAgentToken(ctx context.Con
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetAzureCluster()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AzureClusters/GenerateAzureClusterAgentToken")
+	}
 	opts = append((*c.CallOptions).GenerateAzureClusterAgentToken[0:len((*c.CallOptions).GenerateAzureClusterAgentToken):len((*c.CallOptions).GenerateAzureClusterAgentToken)], opts...)
 	var resp *gkemulticloudpb.GenerateAzureClusterAgentTokenResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -934,6 +1038,12 @@ func (c *azureClustersGRPCClient) GenerateAzureAccessToken(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetAzureCluster()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AzureClusters/GenerateAzureAccessToken")
+	}
 	opts = append((*c.CallOptions).GenerateAzureAccessToken[0:len((*c.CallOptions).GenerateAzureAccessToken):len((*c.CallOptions).GenerateAzureAccessToken)], opts...)
 	var resp *gkemulticloudpb.GenerateAzureAccessTokenResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -952,6 +1062,12 @@ func (c *azureClustersGRPCClient) CreateAzureNodePool(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AzureClusters/CreateAzureNodePool")
+	}
 	opts = append((*c.CallOptions).CreateAzureNodePool[0:len((*c.CallOptions).CreateAzureNodePool):len((*c.CallOptions).CreateAzureNodePool)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -972,6 +1088,9 @@ func (c *azureClustersGRPCClient) UpdateAzureNodePool(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AzureClusters/UpdateAzureNodePool")
+	}
 	opts = append((*c.CallOptions).UpdateAzureNodePool[0:len((*c.CallOptions).UpdateAzureNodePool):len((*c.CallOptions).UpdateAzureNodePool)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -992,6 +1111,12 @@ func (c *azureClustersGRPCClient) GetAzureNodePool(ctx context.Context, req *gke
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AzureClusters/GetAzureNodePool")
+	}
 	opts = append((*c.CallOptions).GetAzureNodePool[0:len((*c.CallOptions).GetAzureNodePool):len((*c.CallOptions).GetAzureNodePool)], opts...)
 	var resp *gkemulticloudpb.AzureNodePool
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1010,6 +1135,12 @@ func (c *azureClustersGRPCClient) ListAzureNodePools(ctx context.Context, req *g
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AzureClusters/ListAzureNodePools")
+	}
 	opts = append((*c.CallOptions).ListAzureNodePools[0:len((*c.CallOptions).ListAzureNodePools):len((*c.CallOptions).ListAzureNodePools)], opts...)
 	it := &AzureNodePoolIterator{}
 	req = proto.Clone(req).(*gkemulticloudpb.ListAzureNodePoolsRequest)
@@ -1056,6 +1187,12 @@ func (c *azureClustersGRPCClient) DeleteAzureNodePool(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AzureClusters/DeleteAzureNodePool")
+	}
 	opts = append((*c.CallOptions).DeleteAzureNodePool[0:len((*c.CallOptions).DeleteAzureNodePool):len((*c.CallOptions).DeleteAzureNodePool)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1076,6 +1213,12 @@ func (c *azureClustersGRPCClient) GetAzureOpenIdConfig(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetAzureCluster()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AzureClusters/GetAzureOpenIdConfig")
+	}
 	opts = append((*c.CallOptions).GetAzureOpenIdConfig[0:len((*c.CallOptions).GetAzureOpenIdConfig):len((*c.CallOptions).GetAzureOpenIdConfig)], opts...)
 	var resp *gkemulticloudpb.AzureOpenIdConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1094,6 +1237,12 @@ func (c *azureClustersGRPCClient) GetAzureJsonWebKeys(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetAzureCluster()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AzureClusters/GetAzureJsonWebKeys")
+	}
 	opts = append((*c.CallOptions).GetAzureJsonWebKeys[0:len((*c.CallOptions).GetAzureJsonWebKeys):len((*c.CallOptions).GetAzureJsonWebKeys)], opts...)
 	var resp *gkemulticloudpb.AzureJsonWebKeys
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1112,6 +1261,12 @@ func (c *azureClustersGRPCClient) GetAzureServerConfig(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AzureClusters/GetAzureServerConfig")
+	}
 	opts = append((*c.CallOptions).GetAzureServerConfig[0:len((*c.CallOptions).GetAzureServerConfig):len((*c.CallOptions).GetAzureServerConfig)], opts...)
 	var resp *gkemulticloudpb.AzureServerConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1130,6 +1285,9 @@ func (c *azureClustersGRPCClient) CancelOperation(ctx context.Context, req *long
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1144,6 +1302,9 @@ func (c *azureClustersGRPCClient) DeleteOperation(ctx context.Context, req *long
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1158,6 +1319,9 @@ func (c *azureClustersGRPCClient) GetOperation(ctx context.Context, req *longrun
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1176,6 +1340,9 @@ func (c *azureClustersGRPCClient) ListOperations(ctx context.Context, req *longr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)

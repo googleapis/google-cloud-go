@@ -27,6 +27,7 @@ import (
 
 	dataflowpb "cloud.google.com/go/dataflow/apiv1beta3/dataflowpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -155,6 +156,16 @@ type messagesV1Beta3GRPCClient struct {
 // The Dataflow Messages API is used to monitor the progress of Dataflow jobs.
 func NewMessagesV1Beta3Client(ctx context.Context, opts ...option.ClientOption) (*MessagesV1Beta3Client, error) {
 	clientOpts := defaultMessagesV1Beta3GRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "dataflow",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/dataflow/apiv1beta3",
+			"gcp.client.language": "go",
+			"url.domain":          "dataflow.googleapis.com",
+		}))
+	}
 	if newMessagesV1Beta3ClientHook != nil {
 		hookOpts, err := newMessagesV1Beta3ClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -176,6 +187,20 @@ func NewMessagesV1Beta3Client(ctx context.Context, opts ...option.ClientOption) 
 		logger:                internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "dataflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataflow/apiv1beta3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dataflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListJobMessages = append(client.CallOptions.ListJobMessages, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -229,6 +254,16 @@ type messagesV1Beta3RESTClient struct {
 // The Dataflow Messages API is used to monitor the progress of Dataflow jobs.
 func NewMessagesV1Beta3RESTClient(ctx context.Context, opts ...option.ClientOption) (*MessagesV1Beta3Client, error) {
 	clientOpts := append(defaultMessagesV1Beta3RESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "dataflow",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/dataflow/apiv1beta3",
+			"gcp.client.language": "go",
+			"url.domain":          "dataflow.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -242,6 +277,21 @@ func NewMessagesV1Beta3RESTClient(ctx context.Context, opts ...option.ClientOpti
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "dataflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataflow/apiv1beta3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dataflow.googleapis.com",
+			}),
+		)
+
+		callOpts.ListJobMessages = append(callOpts.ListJobMessages, gax.WithClientMetrics(metrics))
+	}
 
 	return &MessagesV1Beta3Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -288,6 +338,9 @@ func (c *messagesV1Beta3GRPCClient) ListJobMessages(ctx context.Context, req *da
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.dataflow.v1beta3.MessagesV1Beta3/ListJobMessages")
+	}
 	opts = append((*c.CallOptions).ListJobMessages[0:len((*c.CallOptions).ListJobMessages):len((*c.CallOptions).ListJobMessages)], opts...)
 	it := &JobMessageIterator{}
 	req = proto.Clone(req).(*dataflowpb.ListJobMessagesRequest)

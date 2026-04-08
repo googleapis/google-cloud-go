@@ -28,6 +28,7 @@ import (
 
 	accountspb "cloud.google.com/go/shopping/merchant/accounts/apiv1/accountspb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -291,6 +292,16 @@ type omnichannelSettingsGRPCClient struct {
 // This API defines the following resource model:OmnichannelSetting
 func NewOmnichannelSettingsClient(ctx context.Context, opts ...option.ClientOption) (*OmnichannelSettingsClient, error) {
 	clientOpts := defaultOmnichannelSettingsGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	if newOmnichannelSettingsClientHook != nil {
 		hookOpts, err := newOmnichannelSettingsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -312,6 +323,24 @@ func NewOmnichannelSettingsClient(ctx context.Context, opts ...option.ClientOpti
 		logger:                    internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetOmnichannelSetting = append(client.CallOptions.GetOmnichannelSetting, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOmnichannelSettings = append(client.CallOptions.ListOmnichannelSettings, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateOmnichannelSetting = append(client.CallOptions.CreateOmnichannelSetting, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateOmnichannelSetting = append(client.CallOptions.UpdateOmnichannelSetting, gax.WithClientMetrics(metrics))
+		client.CallOptions.RequestInventoryVerification = append(client.CallOptions.RequestInventoryVerification, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -367,6 +396,16 @@ type omnichannelSettingsRESTClient struct {
 // This API defines the following resource model:OmnichannelSetting
 func NewOmnichannelSettingsRESTClient(ctx context.Context, opts ...option.ClientOption) (*OmnichannelSettingsClient, error) {
 	clientOpts := append(defaultOmnichannelSettingsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -380,6 +419,25 @@ func NewOmnichannelSettingsRESTClient(ctx context.Context, opts ...option.Client
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetOmnichannelSetting = append(callOpts.GetOmnichannelSetting, gax.WithClientMetrics(metrics))
+		callOpts.ListOmnichannelSettings = append(callOpts.ListOmnichannelSettings, gax.WithClientMetrics(metrics))
+		callOpts.CreateOmnichannelSetting = append(callOpts.CreateOmnichannelSetting, gax.WithClientMetrics(metrics))
+		callOpts.UpdateOmnichannelSetting = append(callOpts.UpdateOmnichannelSetting, gax.WithClientMetrics(metrics))
+		callOpts.RequestInventoryVerification = append(callOpts.RequestInventoryVerification, gax.WithClientMetrics(metrics))
+	}
 
 	return &OmnichannelSettingsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -426,6 +484,12 @@ func (c *omnichannelSettingsGRPCClient) GetOmnichannelSetting(ctx context.Contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.OmnichannelSettingsService/GetOmnichannelSetting")
+	}
 	opts = append((*c.CallOptions).GetOmnichannelSetting[0:len((*c.CallOptions).GetOmnichannelSetting):len((*c.CallOptions).GetOmnichannelSetting)], opts...)
 	var resp *accountspb.OmnichannelSetting
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -444,6 +508,12 @@ func (c *omnichannelSettingsGRPCClient) ListOmnichannelSettings(ctx context.Cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.OmnichannelSettingsService/ListOmnichannelSettings")
+	}
 	opts = append((*c.CallOptions).ListOmnichannelSettings[0:len((*c.CallOptions).ListOmnichannelSettings):len((*c.CallOptions).ListOmnichannelSettings)], opts...)
 	it := &OmnichannelSettingIterator{}
 	req = proto.Clone(req).(*accountspb.ListOmnichannelSettingsRequest)
@@ -490,6 +560,12 @@ func (c *omnichannelSettingsGRPCClient) CreateOmnichannelSetting(ctx context.Con
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.OmnichannelSettingsService/CreateOmnichannelSetting")
+	}
 	opts = append((*c.CallOptions).CreateOmnichannelSetting[0:len((*c.CallOptions).CreateOmnichannelSetting):len((*c.CallOptions).CreateOmnichannelSetting)], opts...)
 	var resp *accountspb.OmnichannelSetting
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -508,6 +584,9 @@ func (c *omnichannelSettingsGRPCClient) UpdateOmnichannelSetting(ctx context.Con
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.OmnichannelSettingsService/UpdateOmnichannelSetting")
+	}
 	opts = append((*c.CallOptions).UpdateOmnichannelSetting[0:len((*c.CallOptions).UpdateOmnichannelSetting):len((*c.CallOptions).UpdateOmnichannelSetting)], opts...)
 	var resp *accountspb.OmnichannelSetting
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -526,6 +605,12 @@ func (c *omnichannelSettingsGRPCClient) RequestInventoryVerification(ctx context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.OmnichannelSettingsService/RequestInventoryVerification")
+	}
 	opts = append((*c.CallOptions).RequestInventoryVerification[0:len((*c.CallOptions).RequestInventoryVerification):len((*c.CallOptions).RequestInventoryVerification)], opts...)
 	var resp *accountspb.RequestInventoryVerificationResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -558,6 +643,13 @@ func (c *omnichannelSettingsRESTClient) GetOmnichannelSetting(ctx context.Contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.OmnichannelSettingsService/GetOmnichannelSetting")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1/{name=accounts/*/omnichannelSettings/*}")
+	}
 	opts = append((*c.CallOptions).GetOmnichannelSetting[0:len((*c.CallOptions).GetOmnichannelSetting):len((*c.CallOptions).GetOmnichannelSetting)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &accountspb.OmnichannelSetting{}
@@ -693,6 +785,13 @@ func (c *omnichannelSettingsRESTClient) CreateOmnichannelSetting(ctx context.Con
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.OmnichannelSettingsService/CreateOmnichannelSetting")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1/{parent=accounts/*}/omnichannelSettings")
+	}
 	opts = append((*c.CallOptions).CreateOmnichannelSetting[0:len((*c.CallOptions).CreateOmnichannelSetting):len((*c.CallOptions).CreateOmnichannelSetting)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &accountspb.OmnichannelSetting{}
@@ -757,6 +856,10 @@ func (c *omnichannelSettingsRESTClient) UpdateOmnichannelSetting(ctx context.Con
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.OmnichannelSettingsService/UpdateOmnichannelSetting")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1/{omnichannel_setting.name=accounts/*/omnichannelSettings/*}")
+	}
 	opts = append((*c.CallOptions).UpdateOmnichannelSetting[0:len((*c.CallOptions).UpdateOmnichannelSetting):len((*c.CallOptions).UpdateOmnichannelSetting)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &accountspb.OmnichannelSetting{}
@@ -813,6 +916,13 @@ func (c *omnichannelSettingsRESTClient) RequestInventoryVerification(ctx context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.OmnichannelSettingsService/RequestInventoryVerification")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1/{name=accounts/*/omnichannelSettings/*}:requestInventoryVerification")
+	}
 	opts = append((*c.CallOptions).RequestInventoryVerification[0:len((*c.CallOptions).RequestInventoryVerification):len((*c.CallOptions).RequestInventoryVerification)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &accountspb.RequestInventoryVerificationResponse{}

@@ -31,6 +31,7 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -302,6 +303,16 @@ type consumerProcurementGRPCClient struct {
 // for charging for the procured item.
 func NewConsumerProcurementClient(ctx context.Context, opts ...option.ClientOption) (*ConsumerProcurementClient, error) {
 	clientOpts := defaultConsumerProcurementGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudcommerceconsumerprocurement",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/commerce/consumer/procurement/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudcommerceconsumerprocurement.googleapis.com",
+		}))
+	}
 	if newConsumerProcurementClientHook != nil {
 		hookOpts, err := newConsumerProcurementClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -324,6 +335,25 @@ func NewConsumerProcurementClient(ctx context.Context, opts ...option.ClientOpti
 		operationsClient:          longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudcommerceconsumerprocurement",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/commerce/consumer/procurement/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudcommerceconsumerprocurement.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.PlaceOrder = append(client.CallOptions.PlaceOrder, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOrder = append(client.CallOptions.GetOrder, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOrders = append(client.CallOptions.ListOrders, gax.WithClientMetrics(metrics))
+		client.CallOptions.ModifyOrder = append(client.CallOptions.ModifyOrder, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOrder = append(client.CallOptions.CancelOrder, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -400,6 +430,16 @@ type consumerProcurementRESTClient struct {
 // for charging for the procured item.
 func NewConsumerProcurementRESTClient(ctx context.Context, opts ...option.ClientOption) (*ConsumerProcurementClient, error) {
 	clientOpts := append(defaultConsumerProcurementRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudcommerceconsumerprocurement",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/commerce/consumer/procurement/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudcommerceconsumerprocurement.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -413,6 +453,26 @@ func NewConsumerProcurementRESTClient(ctx context.Context, opts ...option.Client
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudcommerceconsumerprocurement",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/commerce/consumer/procurement/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudcommerceconsumerprocurement.googleapis.com",
+			}),
+		)
+
+		callOpts.PlaceOrder = append(callOpts.PlaceOrder, gax.WithClientMetrics(metrics))
+		callOpts.GetOrder = append(callOpts.GetOrder, gax.WithClientMetrics(metrics))
+		callOpts.ListOrders = append(callOpts.ListOrders, gax.WithClientMetrics(metrics))
+		callOpts.ModifyOrder = append(callOpts.ModifyOrder, gax.WithClientMetrics(metrics))
+		callOpts.CancelOrder = append(callOpts.CancelOrder, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -469,6 +529,12 @@ func (c *consumerProcurementGRPCClient) PlaceOrder(ctx context.Context, req *pro
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudcommerceconsumerprocurement.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerce.consumer.procurement.v1.ConsumerProcurementService/PlaceOrder")
+	}
 	opts = append((*c.CallOptions).PlaceOrder[0:len((*c.CallOptions).PlaceOrder):len((*c.CallOptions).PlaceOrder)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -489,6 +555,9 @@ func (c *consumerProcurementGRPCClient) GetOrder(ctx context.Context, req *procu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerce.consumer.procurement.v1.ConsumerProcurementService/GetOrder")
+	}
 	opts = append((*c.CallOptions).GetOrder[0:len((*c.CallOptions).GetOrder):len((*c.CallOptions).GetOrder)], opts...)
 	var resp *procurementpb.Order
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -507,6 +576,9 @@ func (c *consumerProcurementGRPCClient) ListOrders(ctx context.Context, req *pro
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerce.consumer.procurement.v1.ConsumerProcurementService/ListOrders")
+	}
 	opts = append((*c.CallOptions).ListOrders[0:len((*c.CallOptions).ListOrders):len((*c.CallOptions).ListOrders)], opts...)
 	it := &OrderIterator{}
 	req = proto.Clone(req).(*procurementpb.ListOrdersRequest)
@@ -553,6 +625,9 @@ func (c *consumerProcurementGRPCClient) ModifyOrder(ctx context.Context, req *pr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerce.consumer.procurement.v1.ConsumerProcurementService/ModifyOrder")
+	}
 	opts = append((*c.CallOptions).ModifyOrder[0:len((*c.CallOptions).ModifyOrder):len((*c.CallOptions).ModifyOrder)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -573,6 +648,9 @@ func (c *consumerProcurementGRPCClient) CancelOrder(ctx context.Context, req *pr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerce.consumer.procurement.v1.ConsumerProcurementService/CancelOrder")
+	}
 	opts = append((*c.CallOptions).CancelOrder[0:len((*c.CallOptions).CancelOrder):len((*c.CallOptions).CancelOrder)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -593,6 +671,9 @@ func (c *consumerProcurementGRPCClient) GetOperation(ctx context.Context, req *l
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -640,6 +721,13 @@ func (c *consumerProcurementRESTClient) PlaceOrder(ctx context.Context, req *pro
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudcommerceconsumerprocurement.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerce.consumer.procurement.v1.ConsumerProcurementService/PlaceOrder")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=billingAccounts/*}/orders:place")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -694,6 +782,10 @@ func (c *consumerProcurementRESTClient) GetOrder(ctx context.Context, req *procu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerce.consumer.procurement.v1.ConsumerProcurementService/GetOrder")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=billingAccounts/*/orders/*}")
+	}
 	opts = append((*c.CallOptions).GetOrder[0:len((*c.CallOptions).GetOrder):len((*c.CallOptions).GetOrder)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &procurementpb.Order{}
@@ -834,6 +926,10 @@ func (c *consumerProcurementRESTClient) ModifyOrder(ctx context.Context, req *pr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerce.consumer.procurement.v1.ConsumerProcurementService/ModifyOrder")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=billingAccounts/*/orders/*}:modify")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -895,6 +991,10 @@ func (c *consumerProcurementRESTClient) CancelOrder(ctx context.Context, req *pr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerce.consumer.procurement.v1.ConsumerProcurementService/CancelOrder")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=billingAccounts/*/orders/*}:cancel")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -948,6 +1048,10 @@ func (c *consumerProcurementRESTClient) GetOperation(ctx context.Context, req *l
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=billingAccounts/*/orders/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}

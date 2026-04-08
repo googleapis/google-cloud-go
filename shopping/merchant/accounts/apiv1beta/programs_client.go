@@ -28,6 +28,7 @@ import (
 
 	accountspb "cloud.google.com/go/shopping/merchant/accounts/apiv1beta/accountspb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -279,6 +280,16 @@ type programsGRPCClient struct {
 // explicitly enabling or disabling participation in each program.
 func NewProgramsClient(ctx context.Context, opts ...option.ClientOption) (*ProgramsClient, error) {
 	clientOpts := defaultProgramsGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	if newProgramsClientHook != nil {
 		hookOpts, err := newProgramsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -300,6 +311,23 @@ func NewProgramsClient(ctx context.Context, opts ...option.ClientOption) (*Progr
 		logger:         internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetProgram = append(client.CallOptions.GetProgram, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListPrograms = append(client.CallOptions.ListPrograms, gax.WithClientMetrics(metrics))
+		client.CallOptions.EnableProgram = append(client.CallOptions.EnableProgram, gax.WithClientMetrics(metrics))
+		client.CallOptions.DisableProgram = append(client.CallOptions.DisableProgram, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -363,6 +391,16 @@ type programsRESTClient struct {
 // explicitly enabling or disabling participation in each program.
 func NewProgramsRESTClient(ctx context.Context, opts ...option.ClientOption) (*ProgramsClient, error) {
 	clientOpts := append(defaultProgramsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -376,6 +414,24 @@ func NewProgramsRESTClient(ctx context.Context, opts ...option.ClientOption) (*P
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetProgram = append(callOpts.GetProgram, gax.WithClientMetrics(metrics))
+		callOpts.ListPrograms = append(callOpts.ListPrograms, gax.WithClientMetrics(metrics))
+		callOpts.EnableProgram = append(callOpts.EnableProgram, gax.WithClientMetrics(metrics))
+		callOpts.DisableProgram = append(callOpts.DisableProgram, gax.WithClientMetrics(metrics))
+	}
 
 	return &ProgramsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -422,6 +478,12 @@ func (c *programsGRPCClient) GetProgram(ctx context.Context, req *accountspb.Get
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.ProgramsService/GetProgram")
+	}
 	opts = append((*c.CallOptions).GetProgram[0:len((*c.CallOptions).GetProgram):len((*c.CallOptions).GetProgram)], opts...)
 	var resp *accountspb.Program
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -440,6 +502,12 @@ func (c *programsGRPCClient) ListPrograms(ctx context.Context, req *accountspb.L
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.ProgramsService/ListPrograms")
+	}
 	opts = append((*c.CallOptions).ListPrograms[0:len((*c.CallOptions).ListPrograms):len((*c.CallOptions).ListPrograms)], opts...)
 	it := &ProgramIterator{}
 	req = proto.Clone(req).(*accountspb.ListProgramsRequest)
@@ -486,6 +554,12 @@ func (c *programsGRPCClient) EnableProgram(ctx context.Context, req *accountspb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.ProgramsService/EnableProgram")
+	}
 	opts = append((*c.CallOptions).EnableProgram[0:len((*c.CallOptions).EnableProgram):len((*c.CallOptions).EnableProgram)], opts...)
 	var resp *accountspb.Program
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -504,6 +578,12 @@ func (c *programsGRPCClient) DisableProgram(ctx context.Context, req *accountspb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.ProgramsService/DisableProgram")
+	}
 	opts = append((*c.CallOptions).DisableProgram[0:len((*c.CallOptions).DisableProgram):len((*c.CallOptions).DisableProgram)], opts...)
 	var resp *accountspb.Program
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -536,6 +616,13 @@ func (c *programsRESTClient) GetProgram(ctx context.Context, req *accountspb.Get
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.ProgramsService/GetProgram")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1beta/{name=accounts/*/programs/*}")
+	}
 	opts = append((*c.CallOptions).GetProgram[0:len((*c.CallOptions).GetProgram):len((*c.CallOptions).GetProgram)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &accountspb.Program{}
@@ -671,6 +758,13 @@ func (c *programsRESTClient) EnableProgram(ctx context.Context, req *accountspb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.ProgramsService/EnableProgram")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1beta/{name=accounts/*/programs/*}:enable")
+	}
 	opts = append((*c.CallOptions).EnableProgram[0:len((*c.CallOptions).EnableProgram):len((*c.CallOptions).EnableProgram)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &accountspb.Program{}
@@ -728,6 +822,13 @@ func (c *programsRESTClient) DisableProgram(ctx context.Context, req *accountspb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.ProgramsService/DisableProgram")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1beta/{name=accounts/*/programs/*}:disable")
+	}
 	opts = append((*c.CallOptions).DisableProgram[0:len((*c.CallOptions).DisableProgram):len((*c.CallOptions).DisableProgram)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &accountspb.Program{}

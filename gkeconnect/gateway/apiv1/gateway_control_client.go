@@ -26,6 +26,7 @@ import (
 
 	gatewaypb "cloud.google.com/go/gkeconnect/gateway/apiv1/gatewaypb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	httptransport "google.golang.org/api/transport/http"
@@ -127,6 +128,16 @@ type gatewayControlRESTClient struct {
 // GatewayControl is the control plane API for Connect Gateway.
 func NewGatewayControlRESTClient(ctx context.Context, opts ...option.ClientOption) (*GatewayControlClient, error) {
 	clientOpts := append(defaultGatewayControlRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "connectgateway",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/gkeconnect/gateway/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "connectgateway.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -140,6 +151,21 @@ func NewGatewayControlRESTClient(ctx context.Context, opts ...option.ClientOptio
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "connectgateway",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/gkeconnect/gateway/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "connectgateway.googleapis.com",
+			}),
+		)
+
+		callOpts.GenerateCredentials = append(callOpts.GenerateCredentials, gax.WithClientMetrics(metrics))
+	}
 
 	return &GatewayControlClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -214,6 +240,10 @@ func (c *gatewayControlRESTClient) GenerateCredentials(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkeconnect.gateway.v1.GatewayControl/GenerateCredentials")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/memberships/*}:generateCredentials")
+	}
 	opts = append((*c.CallOptions).GenerateCredentials[0:len((*c.CallOptions).GenerateCredentials):len((*c.CallOptions).GenerateCredentials)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &gatewaypb.GenerateCredentialsResponse{}

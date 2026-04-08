@@ -29,6 +29,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	retailpb "cloud.google.com/go/retail/apiv2alpha/retailpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -228,6 +229,16 @@ type generativeQuestionGRPCClient struct {
 // Service for managing LLM generated questions in search serving.
 func NewGenerativeQuestionClient(ctx context.Context, opts ...option.ClientOption) (*GenerativeQuestionClient, error) {
 	clientOpts := defaultGenerativeQuestionGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "retail",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/retail/apiv2alpha",
+			"gcp.client.language": "go",
+			"url.domain":          "retail.googleapis.com",
+		}))
+	}
 	if newGenerativeQuestionClientHook != nil {
 		hookOpts, err := newGenerativeQuestionClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -250,6 +261,26 @@ func NewGenerativeQuestionClient(ctx context.Context, opts ...option.ClientOptio
 		operationsClient:         longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "retail",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/retail/apiv2alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "retail.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.UpdateGenerativeQuestionsFeatureConfig = append(client.CallOptions.UpdateGenerativeQuestionsFeatureConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetGenerativeQuestionsFeatureConfig = append(client.CallOptions.GetGenerativeQuestionsFeatureConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListGenerativeQuestionConfigs = append(client.CallOptions.ListGenerativeQuestionConfigs, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateGenerativeQuestionConfig = append(client.CallOptions.UpdateGenerativeQuestionConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchUpdateGenerativeQuestionConfigs = append(client.CallOptions.BatchUpdateGenerativeQuestionConfigs, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -303,6 +334,16 @@ type generativeQuestionRESTClient struct {
 // Service for managing LLM generated questions in search serving.
 func NewGenerativeQuestionRESTClient(ctx context.Context, opts ...option.ClientOption) (*GenerativeQuestionClient, error) {
 	clientOpts := append(defaultGenerativeQuestionRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "retail",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/retail/apiv2alpha",
+			"gcp.client.language": "go",
+			"url.domain":          "retail.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -316,6 +357,27 @@ func NewGenerativeQuestionRESTClient(ctx context.Context, opts ...option.ClientO
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "retail",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/retail/apiv2alpha",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "retail.googleapis.com",
+			}),
+		)
+
+		callOpts.UpdateGenerativeQuestionsFeatureConfig = append(callOpts.UpdateGenerativeQuestionsFeatureConfig, gax.WithClientMetrics(metrics))
+		callOpts.GetGenerativeQuestionsFeatureConfig = append(callOpts.GetGenerativeQuestionsFeatureConfig, gax.WithClientMetrics(metrics))
+		callOpts.ListGenerativeQuestionConfigs = append(callOpts.ListGenerativeQuestionConfigs, gax.WithClientMetrics(metrics))
+		callOpts.UpdateGenerativeQuestionConfig = append(callOpts.UpdateGenerativeQuestionConfig, gax.WithClientMetrics(metrics))
+		callOpts.BatchUpdateGenerativeQuestionConfigs = append(callOpts.BatchUpdateGenerativeQuestionConfigs, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	return &GenerativeQuestionClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -362,6 +424,9 @@ func (c *generativeQuestionGRPCClient) UpdateGenerativeQuestionsFeatureConfig(ct
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.GenerativeQuestionService/UpdateGenerativeQuestionsFeatureConfig")
+	}
 	opts = append((*c.CallOptions).UpdateGenerativeQuestionsFeatureConfig[0:len((*c.CallOptions).UpdateGenerativeQuestionsFeatureConfig):len((*c.CallOptions).UpdateGenerativeQuestionsFeatureConfig)], opts...)
 	var resp *retailpb.GenerativeQuestionsFeatureConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -380,6 +445,12 @@ func (c *generativeQuestionGRPCClient) GetGenerativeQuestionsFeatureConfig(ctx c
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetCatalog()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.GenerativeQuestionService/GetGenerativeQuestionsFeatureConfig")
+	}
 	opts = append((*c.CallOptions).GetGenerativeQuestionsFeatureConfig[0:len((*c.CallOptions).GetGenerativeQuestionsFeatureConfig):len((*c.CallOptions).GetGenerativeQuestionsFeatureConfig)], opts...)
 	var resp *retailpb.GenerativeQuestionsFeatureConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -398,6 +469,12 @@ func (c *generativeQuestionGRPCClient) ListGenerativeQuestionConfigs(ctx context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.GenerativeQuestionService/ListGenerativeQuestionConfigs")
+	}
 	opts = append((*c.CallOptions).ListGenerativeQuestionConfigs[0:len((*c.CallOptions).ListGenerativeQuestionConfigs):len((*c.CallOptions).ListGenerativeQuestionConfigs)], opts...)
 	var resp *retailpb.ListGenerativeQuestionConfigsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -416,6 +493,9 @@ func (c *generativeQuestionGRPCClient) UpdateGenerativeQuestionConfig(ctx contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.GenerativeQuestionService/UpdateGenerativeQuestionConfig")
+	}
 	opts = append((*c.CallOptions).UpdateGenerativeQuestionConfig[0:len((*c.CallOptions).UpdateGenerativeQuestionConfig):len((*c.CallOptions).UpdateGenerativeQuestionConfig)], opts...)
 	var resp *retailpb.GenerativeQuestionConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -434,6 +514,12 @@ func (c *generativeQuestionGRPCClient) BatchUpdateGenerativeQuestionConfigs(ctx 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.GenerativeQuestionService/BatchUpdateGenerativeQuestionConfigs")
+	}
 	opts = append((*c.CallOptions).BatchUpdateGenerativeQuestionConfigs[0:len((*c.CallOptions).BatchUpdateGenerativeQuestionConfigs):len((*c.CallOptions).BatchUpdateGenerativeQuestionConfigs)], opts...)
 	var resp *retailpb.BatchUpdateGenerativeQuestionConfigsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -452,6 +538,9 @@ func (c *generativeQuestionGRPCClient) GetOperation(ctx context.Context, req *lo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -470,6 +559,9 @@ func (c *generativeQuestionGRPCClient) ListOperations(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
@@ -545,6 +637,10 @@ func (c *generativeQuestionRESTClient) UpdateGenerativeQuestionsFeatureConfig(ct
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.GenerativeQuestionService/UpdateGenerativeQuestionsFeatureConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2alpha/{generative_questions_feature_config.catalog=projects/*/locations/*/catalogs/*}/generativeQuestionFeature")
+	}
 	opts = append((*c.CallOptions).UpdateGenerativeQuestionsFeatureConfig[0:len((*c.CallOptions).UpdateGenerativeQuestionsFeatureConfig):len((*c.CallOptions).UpdateGenerativeQuestionsFeatureConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &retailpb.GenerativeQuestionsFeatureConfig{}
@@ -596,6 +692,13 @@ func (c *generativeQuestionRESTClient) GetGenerativeQuestionsFeatureConfig(ctx c
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetCatalog()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.GenerativeQuestionService/GetGenerativeQuestionsFeatureConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2alpha/{catalog=projects/*/locations/*/catalogs/*}/generativeQuestionFeature")
+	}
 	opts = append((*c.CallOptions).GetGenerativeQuestionsFeatureConfig[0:len((*c.CallOptions).GetGenerativeQuestionsFeatureConfig):len((*c.CallOptions).GetGenerativeQuestionsFeatureConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &retailpb.GenerativeQuestionsFeatureConfig{}
@@ -646,6 +749,13 @@ func (c *generativeQuestionRESTClient) ListGenerativeQuestionConfigs(ctx context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.GenerativeQuestionService/ListGenerativeQuestionConfigs")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2alpha/{parent=projects/*/locations/*/catalogs/*}/generativeQuestions")
+	}
 	opts = append((*c.CallOptions).ListGenerativeQuestionConfigs[0:len((*c.CallOptions).ListGenerativeQuestionConfigs):len((*c.CallOptions).ListGenerativeQuestionConfigs)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &retailpb.ListGenerativeQuestionConfigsResponse{}
@@ -710,6 +820,10 @@ func (c *generativeQuestionRESTClient) UpdateGenerativeQuestionConfig(ctx contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.GenerativeQuestionService/UpdateGenerativeQuestionConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2alpha/{generative_question_config.catalog=projects/*/locations/*/catalogs/*}/generativeQuestion")
+	}
 	opts = append((*c.CallOptions).UpdateGenerativeQuestionConfig[0:len((*c.CallOptions).UpdateGenerativeQuestionConfig):len((*c.CallOptions).UpdateGenerativeQuestionConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &retailpb.GenerativeQuestionConfig{}
@@ -766,6 +880,13 @@ func (c *generativeQuestionRESTClient) BatchUpdateGenerativeQuestionConfigs(ctx 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.GenerativeQuestionService/BatchUpdateGenerativeQuestionConfigs")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2alpha/{parent=projects/*/locations/*/catalogs/*}/generativeQuestion:batchUpdate")
+	}
 	opts = append((*c.CallOptions).BatchUpdateGenerativeQuestionConfigs[0:len((*c.CallOptions).BatchUpdateGenerativeQuestionConfigs):len((*c.CallOptions).BatchUpdateGenerativeQuestionConfigs)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &retailpb.BatchUpdateGenerativeQuestionConfigsResponse{}
@@ -816,6 +937,10 @@ func (c *generativeQuestionRESTClient) GetOperation(ctx context.Context, req *lo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2alpha/{name=projects/*/locations/*/catalogs/*/branches/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}

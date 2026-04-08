@@ -31,6 +31,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	retailpb "cloud.google.com/go/retail/apiv2alpha/retailpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -472,6 +473,16 @@ type projectGRPCClient struct {
 // Service for settings at Project level.
 func NewProjectClient(ctx context.Context, opts ...option.ClientOption) (*ProjectClient, error) {
 	clientOpts := defaultProjectGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "retail",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/retail/apiv2alpha",
+			"gcp.client.language": "go",
+			"url.domain":          "retail.googleapis.com",
+		}))
+	}
 	if newProjectClientHook != nil {
 		hookOpts, err := newProjectClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -494,6 +505,29 @@ func NewProjectClient(ctx context.Context, opts ...option.ClientOption) (*Projec
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "retail",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/retail/apiv2alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "retail.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetProject = append(client.CallOptions.GetProject, gax.WithClientMetrics(metrics))
+		client.CallOptions.AcceptTerms = append(client.CallOptions.AcceptTerms, gax.WithClientMetrics(metrics))
+		client.CallOptions.EnrollSolution = append(client.CallOptions.EnrollSolution, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListEnrolledSolutions = append(client.CallOptions.ListEnrolledSolutions, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLoggingConfig = append(client.CallOptions.GetLoggingConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateLoggingConfig = append(client.CallOptions.UpdateLoggingConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAlertConfig = append(client.CallOptions.GetAlertConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateAlertConfig = append(client.CallOptions.UpdateAlertConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -563,6 +597,16 @@ type projectRESTClient struct {
 // Service for settings at Project level.
 func NewProjectRESTClient(ctx context.Context, opts ...option.ClientOption) (*ProjectClient, error) {
 	clientOpts := append(defaultProjectRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "retail",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/retail/apiv2alpha",
+			"gcp.client.language": "go",
+			"url.domain":          "retail.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -576,6 +620,30 @@ func NewProjectRESTClient(ctx context.Context, opts ...option.ClientOption) (*Pr
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "retail",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/retail/apiv2alpha",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "retail.googleapis.com",
+			}),
+		)
+
+		callOpts.GetProject = append(callOpts.GetProject, gax.WithClientMetrics(metrics))
+		callOpts.AcceptTerms = append(callOpts.AcceptTerms, gax.WithClientMetrics(metrics))
+		callOpts.EnrollSolution = append(callOpts.EnrollSolution, gax.WithClientMetrics(metrics))
+		callOpts.ListEnrolledSolutions = append(callOpts.ListEnrolledSolutions, gax.WithClientMetrics(metrics))
+		callOpts.GetLoggingConfig = append(callOpts.GetLoggingConfig, gax.WithClientMetrics(metrics))
+		callOpts.UpdateLoggingConfig = append(callOpts.UpdateLoggingConfig, gax.WithClientMetrics(metrics))
+		callOpts.GetAlertConfig = append(callOpts.GetAlertConfig, gax.WithClientMetrics(metrics))
+		callOpts.UpdateAlertConfig = append(callOpts.UpdateAlertConfig, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -632,6 +700,12 @@ func (c *projectGRPCClient) GetProject(ctx context.Context, req *retailpb.GetPro
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProjectService/GetProject")
+	}
 	opts = append((*c.CallOptions).GetProject[0:len((*c.CallOptions).GetProject):len((*c.CallOptions).GetProject)], opts...)
 	var resp *retailpb.Project
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -650,6 +724,12 @@ func (c *projectGRPCClient) AcceptTerms(ctx context.Context, req *retailpb.Accep
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetProject()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProjectService/AcceptTerms")
+	}
 	opts = append((*c.CallOptions).AcceptTerms[0:len((*c.CallOptions).AcceptTerms):len((*c.CallOptions).AcceptTerms)], opts...)
 	var resp *retailpb.Project
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -668,6 +748,12 @@ func (c *projectGRPCClient) EnrollSolution(ctx context.Context, req *retailpb.En
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetProject()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProjectService/EnrollSolution")
+	}
 	opts = append((*c.CallOptions).EnrollSolution[0:len((*c.CallOptions).EnrollSolution):len((*c.CallOptions).EnrollSolution)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -688,6 +774,12 @@ func (c *projectGRPCClient) ListEnrolledSolutions(ctx context.Context, req *reta
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProjectService/ListEnrolledSolutions")
+	}
 	opts = append((*c.CallOptions).ListEnrolledSolutions[0:len((*c.CallOptions).ListEnrolledSolutions):len((*c.CallOptions).ListEnrolledSolutions)], opts...)
 	var resp *retailpb.ListEnrolledSolutionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -706,6 +798,12 @@ func (c *projectGRPCClient) GetLoggingConfig(ctx context.Context, req *retailpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProjectService/GetLoggingConfig")
+	}
 	opts = append((*c.CallOptions).GetLoggingConfig[0:len((*c.CallOptions).GetLoggingConfig):len((*c.CallOptions).GetLoggingConfig)], opts...)
 	var resp *retailpb.LoggingConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -724,6 +822,9 @@ func (c *projectGRPCClient) UpdateLoggingConfig(ctx context.Context, req *retail
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProjectService/UpdateLoggingConfig")
+	}
 	opts = append((*c.CallOptions).UpdateLoggingConfig[0:len((*c.CallOptions).UpdateLoggingConfig):len((*c.CallOptions).UpdateLoggingConfig)], opts...)
 	var resp *retailpb.LoggingConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -742,6 +843,12 @@ func (c *projectGRPCClient) GetAlertConfig(ctx context.Context, req *retailpb.Ge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProjectService/GetAlertConfig")
+	}
 	opts = append((*c.CallOptions).GetAlertConfig[0:len((*c.CallOptions).GetAlertConfig):len((*c.CallOptions).GetAlertConfig)], opts...)
 	var resp *retailpb.AlertConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -760,6 +867,9 @@ func (c *projectGRPCClient) UpdateAlertConfig(ctx context.Context, req *retailpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProjectService/UpdateAlertConfig")
+	}
 	opts = append((*c.CallOptions).UpdateAlertConfig[0:len((*c.CallOptions).UpdateAlertConfig):len((*c.CallOptions).UpdateAlertConfig)], opts...)
 	var resp *retailpb.AlertConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -778,6 +888,9 @@ func (c *projectGRPCClient) GetOperation(ctx context.Context, req *longrunningpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -796,6 +909,9 @@ func (c *projectGRPCClient) ListOperations(ctx context.Context, req *longrunning
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
@@ -859,6 +975,13 @@ func (c *projectRESTClient) GetProject(ctx context.Context, req *retailpb.GetPro
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProjectService/GetProject")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2alpha/{name=projects/*/retailProject}")
+	}
 	opts = append((*c.CallOptions).GetProject[0:len((*c.CallOptions).GetProject):len((*c.CallOptions).GetProject)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &retailpb.Project{}
@@ -918,6 +1041,13 @@ func (c *projectRESTClient) AcceptTerms(ctx context.Context, req *retailpb.Accep
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetProject()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProjectService/AcceptTerms")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2alpha/{project=projects/*/retailProject}:acceptTerms")
+	}
 	opts = append((*c.CallOptions).AcceptTerms[0:len((*c.CallOptions).AcceptTerms):len((*c.CallOptions).AcceptTerms)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &retailpb.Project{}
@@ -981,6 +1111,13 @@ func (c *projectRESTClient) EnrollSolution(ctx context.Context, req *retailpb.En
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetProject()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProjectService/EnrollSolution")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2alpha/{project=projects/*}:enrollSolution")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1034,6 +1171,13 @@ func (c *projectRESTClient) ListEnrolledSolutions(ctx context.Context, req *reta
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProjectService/ListEnrolledSolutions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2alpha/{parent=projects/*}:enrolledSolutions")
+	}
 	opts = append((*c.CallOptions).ListEnrolledSolutions[0:len((*c.CallOptions).ListEnrolledSolutions):len((*c.CallOptions).ListEnrolledSolutions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &retailpb.ListEnrolledSolutionsResponse{}
@@ -1085,6 +1229,13 @@ func (c *projectRESTClient) GetLoggingConfig(ctx context.Context, req *retailpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProjectService/GetLoggingConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2alpha/{name=projects/*/loggingConfig}")
+	}
 	opts = append((*c.CallOptions).GetLoggingConfig[0:len((*c.CallOptions).GetLoggingConfig):len((*c.CallOptions).GetLoggingConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &retailpb.LoggingConfig{}
@@ -1150,6 +1301,10 @@ func (c *projectRESTClient) UpdateLoggingConfig(ctx context.Context, req *retail
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProjectService/UpdateLoggingConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2alpha/{logging_config.name=projects/*/loggingConfig}")
+	}
 	opts = append((*c.CallOptions).UpdateLoggingConfig[0:len((*c.CallOptions).UpdateLoggingConfig):len((*c.CallOptions).UpdateLoggingConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &retailpb.LoggingConfig{}
@@ -1201,6 +1356,13 @@ func (c *projectRESTClient) GetAlertConfig(ctx context.Context, req *retailpb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProjectService/GetAlertConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2alpha/{name=projects/*/alertConfig}")
+	}
 	opts = append((*c.CallOptions).GetAlertConfig[0:len((*c.CallOptions).GetAlertConfig):len((*c.CallOptions).GetAlertConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &retailpb.AlertConfig{}
@@ -1265,6 +1427,10 @@ func (c *projectRESTClient) UpdateAlertConfig(ctx context.Context, req *retailpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProjectService/UpdateAlertConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2alpha/{alert_config.name=projects/*/alertConfig}")
+	}
 	opts = append((*c.CallOptions).UpdateAlertConfig[0:len((*c.CallOptions).UpdateAlertConfig):len((*c.CallOptions).UpdateAlertConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &retailpb.AlertConfig{}
@@ -1315,6 +1481,10 @@ func (c *projectRESTClient) GetOperation(ctx context.Context, req *longrunningpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2alpha/{name=projects/*/locations/*/catalogs/*/branches/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}

@@ -23,6 +23,7 @@ import (
 
 	executorpb "cloud.google.com/go/spanner/executor/apiv1/executorpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -138,6 +139,16 @@ type spannerExecutorProxyGRPCClient struct {
 // Service that executes SpannerActions asynchronously.
 func NewSpannerExecutorProxyClient(ctx context.Context, opts ...option.ClientOption) (*SpannerExecutorProxyClient, error) {
 	clientOpts := defaultSpannerExecutorProxyGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "spanner-cloud-executor",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/spanner/executor/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "spanner-cloud-executor.googleapis.com",
+		}))
+	}
 	if newSpannerExecutorProxyClientHook != nil {
 		hookOpts, err := newSpannerExecutorProxyClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -159,6 +170,20 @@ func NewSpannerExecutorProxyClient(ctx context.Context, opts ...option.ClientOpt
 		logger:                     internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "spanner-cloud-executor",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/spanner/executor/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "spanner-cloud-executor.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ExecuteActionAsync = append(client.CallOptions.ExecuteActionAsync, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -192,6 +217,9 @@ func (c *spannerExecutorProxyGRPCClient) Close() error {
 
 func (c *spannerExecutorProxyGRPCClient) ExecuteActionAsync(ctx context.Context, opts ...gax.CallOption) (executorpb.SpannerExecutorProxy_ExecuteActionAsyncClient, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.executor.v1.SpannerExecutorProxy/ExecuteActionAsync")
+	}
 	var resp executorpb.SpannerExecutorProxy_ExecuteActionAsyncClient
 	opts = append((*c.CallOptions).ExecuteActionAsync[0:len((*c.CallOptions).ExecuteActionAsync):len((*c.CallOptions).ExecuteActionAsync)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

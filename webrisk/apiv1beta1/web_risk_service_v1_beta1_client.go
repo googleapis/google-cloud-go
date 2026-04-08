@@ -27,6 +27,7 @@ import (
 
 	webriskpb "cloud.google.com/go/webrisk/apiv1beta1/webriskpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -236,6 +237,16 @@ type webRiskServiceV1Beta1GRPCClient struct {
 // website and in client applications.
 func NewWebRiskServiceV1Beta1Client(ctx context.Context, opts ...option.ClientOption) (*WebRiskServiceV1Beta1Client, error) {
 	clientOpts := defaultWebRiskServiceV1Beta1GRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "webrisk",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/webrisk/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "webrisk.googleapis.com",
+		}))
+	}
 	if newWebRiskServiceV1Beta1ClientHook != nil {
 		hookOpts, err := newWebRiskServiceV1Beta1ClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -257,6 +268,22 @@ func NewWebRiskServiceV1Beta1Client(ctx context.Context, opts ...option.ClientOp
 		logger:                      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "webrisk",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/webrisk/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "webrisk.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ComputeThreatListDiff = append(client.CallOptions.ComputeThreatListDiff, gax.WithClientMetrics(metrics))
+		client.CallOptions.SearchUris = append(client.CallOptions.SearchUris, gax.WithClientMetrics(metrics))
+		client.CallOptions.SearchHashes = append(client.CallOptions.SearchHashes, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -311,6 +338,16 @@ type webRiskServiceV1Beta1RESTClient struct {
 // website and in client applications.
 func NewWebRiskServiceV1Beta1RESTClient(ctx context.Context, opts ...option.ClientOption) (*WebRiskServiceV1Beta1Client, error) {
 	clientOpts := append(defaultWebRiskServiceV1Beta1RESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "webrisk",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/webrisk/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "webrisk.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -324,6 +361,23 @@ func NewWebRiskServiceV1Beta1RESTClient(ctx context.Context, opts ...option.Clie
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "webrisk",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/webrisk/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "webrisk.googleapis.com",
+			}),
+		)
+
+		callOpts.ComputeThreatListDiff = append(callOpts.ComputeThreatListDiff, gax.WithClientMetrics(metrics))
+		callOpts.SearchUris = append(callOpts.SearchUris, gax.WithClientMetrics(metrics))
+		callOpts.SearchHashes = append(callOpts.SearchHashes, gax.WithClientMetrics(metrics))
+	}
 
 	return &WebRiskServiceV1Beta1Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -367,6 +421,9 @@ func (c *webRiskServiceV1Beta1RESTClient) Connection() *grpc.ClientConn {
 }
 func (c *webRiskServiceV1Beta1GRPCClient) ComputeThreatListDiff(ctx context.Context, req *webriskpb.ComputeThreatListDiffRequest, opts ...gax.CallOption) (*webriskpb.ComputeThreatListDiffResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.webrisk.v1beta1.WebRiskServiceV1Beta1/ComputeThreatListDiff")
+	}
 	opts = append((*c.CallOptions).ComputeThreatListDiff[0:len((*c.CallOptions).ComputeThreatListDiff):len((*c.CallOptions).ComputeThreatListDiff)], opts...)
 	var resp *webriskpb.ComputeThreatListDiffResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -382,6 +439,9 @@ func (c *webRiskServiceV1Beta1GRPCClient) ComputeThreatListDiff(ctx context.Cont
 
 func (c *webRiskServiceV1Beta1GRPCClient) SearchUris(ctx context.Context, req *webriskpb.SearchUrisRequest, opts ...gax.CallOption) (*webriskpb.SearchUrisResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.webrisk.v1beta1.WebRiskServiceV1Beta1/SearchUris")
+	}
 	opts = append((*c.CallOptions).SearchUris[0:len((*c.CallOptions).SearchUris):len((*c.CallOptions).SearchUris)], opts...)
 	var resp *webriskpb.SearchUrisResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -397,6 +457,9 @@ func (c *webRiskServiceV1Beta1GRPCClient) SearchUris(ctx context.Context, req *w
 
 func (c *webRiskServiceV1Beta1GRPCClient) SearchHashes(ctx context.Context, req *webriskpb.SearchHashesRequest, opts ...gax.CallOption) (*webriskpb.SearchHashesResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.webrisk.v1beta1.WebRiskServiceV1Beta1/SearchHashes")
+	}
 	opts = append((*c.CallOptions).SearchHashes[0:len((*c.CallOptions).SearchHashes):len((*c.CallOptions).SearchHashes)], opts...)
 	var resp *webriskpb.SearchHashesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -441,6 +504,10 @@ func (c *webRiskServiceV1Beta1RESTClient) ComputeThreatListDiff(ctx context.Cont
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.webrisk.v1beta1.WebRiskServiceV1Beta1/ComputeThreatListDiff")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/threatLists:computeDiff")
+	}
 	opts = append((*c.CallOptions).ComputeThreatListDiff[0:len((*c.CallOptions).ComputeThreatListDiff):len((*c.CallOptions).ComputeThreatListDiff)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &webriskpb.ComputeThreatListDiffResponse{}
@@ -494,6 +561,10 @@ func (c *webRiskServiceV1Beta1RESTClient) SearchUris(ctx context.Context, req *w
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.webrisk.v1beta1.WebRiskServiceV1Beta1/SearchUris")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/uris:search")
+	}
 	opts = append((*c.CallOptions).SearchUris[0:len((*c.CallOptions).SearchUris):len((*c.CallOptions).SearchUris)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &webriskpb.SearchUrisResponse{}
@@ -553,6 +624,10 @@ func (c *webRiskServiceV1Beta1RESTClient) SearchHashes(ctx context.Context, req 
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.webrisk.v1beta1.WebRiskServiceV1Beta1/SearchHashes")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/hashes:search")
+	}
 	opts = append((*c.CallOptions).SearchHashes[0:len((*c.CallOptions).SearchHashes):len((*c.CallOptions).SearchHashes)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &webriskpb.SearchHashesResponse{}

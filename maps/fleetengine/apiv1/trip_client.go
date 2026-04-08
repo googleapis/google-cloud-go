@@ -28,6 +28,7 @@ import (
 
 	fleetenginepb "cloud.google.com/go/maps/fleetengine/apiv1/fleetenginepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -225,6 +226,16 @@ type tripGRPCClient struct {
 // Trip management service.
 func NewTripClient(ctx context.Context, opts ...option.ClientOption) (*TripClient, error) {
 	clientOpts := defaultTripGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "fleetengine",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/maps/fleetengine/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "fleetengine.googleapis.com",
+		}))
+	}
 	if newTripClientHook != nil {
 		hookOpts, err := newTripClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -246,6 +257,25 @@ func NewTripClient(ctx context.Context, opts ...option.ClientOption) (*TripClien
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "fleetengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/fleetengine/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "fleetengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateTrip = append(client.CallOptions.CreateTrip, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetTrip = append(client.CallOptions.GetTrip, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteTrip = append(client.CallOptions.DeleteTrip, gax.WithClientMetrics(metrics))
+		client.CallOptions.ReportBillableTrip = append(client.CallOptions.ReportBillableTrip, gax.WithClientMetrics(metrics))
+		client.CallOptions.SearchTrips = append(client.CallOptions.SearchTrips, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateTrip = append(client.CallOptions.UpdateTrip, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -291,6 +321,12 @@ func (c *tripGRPCClient) CreateTrip(ctx context.Context, req *fleetenginepb.Crea
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//fleetengine.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "maps.fleetengine.v1.TripService/CreateTrip")
+	}
 	opts = append((*c.CallOptions).CreateTrip[0:len((*c.CallOptions).CreateTrip):len((*c.CallOptions).CreateTrip)], opts...)
 	var resp *fleetenginepb.Trip
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -318,6 +354,12 @@ func (c *tripGRPCClient) GetTrip(ctx context.Context, req *fleetenginepb.GetTrip
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//fleetengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "maps.fleetengine.v1.TripService/GetTrip")
+	}
 	opts = append((*c.CallOptions).GetTrip[0:len((*c.CallOptions).GetTrip):len((*c.CallOptions).GetTrip)], opts...)
 	var resp *fleetenginepb.Trip
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -345,6 +387,12 @@ func (c *tripGRPCClient) DeleteTrip(ctx context.Context, req *fleetenginepb.Dele
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//fleetengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "maps.fleetengine.v1.TripService/DeleteTrip")
+	}
 	opts = append((*c.CallOptions).DeleteTrip[0:len((*c.CallOptions).DeleteTrip):len((*c.CallOptions).DeleteTrip)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -368,6 +416,9 @@ func (c *tripGRPCClient) ReportBillableTrip(ctx context.Context, req *fleetengin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "maps.fleetengine.v1.TripService/ReportBillableTrip")
+	}
 	opts = append((*c.CallOptions).ReportBillableTrip[0:len((*c.CallOptions).ReportBillableTrip):len((*c.CallOptions).ReportBillableTrip)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -391,6 +442,9 @@ func (c *tripGRPCClient) SearchTrips(ctx context.Context, req *fleetenginepb.Sea
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "maps.fleetengine.v1.TripService/SearchTrips")
+	}
 	opts = append((*c.CallOptions).SearchTrips[0:len((*c.CallOptions).SearchTrips):len((*c.CallOptions).SearchTrips)], opts...)
 	it := &TripIterator{}
 	req = proto.Clone(req).(*fleetenginepb.SearchTripsRequest)
@@ -446,6 +500,9 @@ func (c *tripGRPCClient) UpdateTrip(ctx context.Context, req *fleetenginepb.Upda
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "maps.fleetengine.v1.TripService/UpdateTrip")
+	}
 	opts = append((*c.CallOptions).UpdateTrip[0:len((*c.CallOptions).UpdateTrip):len((*c.CallOptions).UpdateTrip)], opts...)
 	var resp *fleetenginepb.Trip
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
