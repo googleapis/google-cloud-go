@@ -1146,6 +1146,9 @@ func (d *database) evalSelectFromTVF(qc *queryContext, ec evalContext, sf spansq
 	if !ok {
 		return ec, nil, fmt.Errorf("TVF start_timestamp is required and must be a TIMESTAMP")
 	}
+	if time.Now().Add(10 * time.Minute).Before(startTS) {
+		return ec, nil, status.Errorf(codes.InvalidArgument, "start_timestamp must not be more than 10 minutes in the future")
+	}
 	var endTS time.Time
 	var hasEndTS bool
 	if v, ok := args["end_timestamp"]; ok && v != nil {
@@ -1153,6 +1156,22 @@ func (d *database) evalSelectFromTVF(qc *queryContext, ec evalContext, sf spansq
 			endTS = ts
 			hasEndTS = true
 		}
+	}
+	if hasEndTS && endTS.Before(startTS) {
+		return ec, nil, status.Errorf(codes.InvalidArgument, "end_timestamp must not be earlier than start_timestamp")
+	}
+
+	// heartbeat_milliseconds: required and non-null, must be in [100, 300000].
+	if hbVal, ok := args["heartbeat_milliseconds"]; ok {
+		hbMs, ok := hbVal.(int64)
+		if !ok || hbMs < 100 || hbMs > 300000 {
+			return ec, nil, status.Errorf(codes.InvalidArgument, "heartbeat_milliseconds must be between 100 and 300000")
+		}
+	}
+
+	// read_options must be NULL if provided.
+	if roVal, ok := args["read_options"]; ok && roVal != nil {
+		return ec, nil, status.Errorf(codes.InvalidArgument, "read_options is not supported; it must be NULL")
 	}
 
 	ri := &changeStreamIter{
@@ -1272,16 +1291,29 @@ func (ci *changeStreamIter) Next() (row, error) {
 		ci.pos++
 	}
 
-	// Group entries by (TableName, ModType), preserving encounter order.
-	// Real Spanner emits one DataChangeRecord per (table, mod_type) group.
+	// Group entries by (TableName, ModType, explicit non-PK column set), preserving
+	// encounter order. Real Spanner emits one DataChangeRecord per such group:
+	// UPDATEs touching different column sets form separate records.
 	type groupKey struct {
-		table   spansql.ID
-		modType string
+		table     spansql.ID
+		modType   string
+		columnSet string // sorted, NUL-joined non-PK col names for UPDATE; "" otherwise
+	}
+	columnSetKey := func(e changeLogEntry) string {
+		if e.ModType != "UPDATE" || e.ExplicitColNames == nil {
+			return ""
+		}
+		names := make([]string, 0, len(e.ExplicitColNames))
+		for n := range e.ExplicitColNames {
+			names = append(names, string(n))
+		}
+		sort.Strings(names)
+		return strings.Join(names, "\x00")
 	}
 	var groupOrder []groupKey
 	groups := make(map[groupKey][]changeLogEntry)
 	for _, e := range txEntries {
-		k := groupKey{e.TableName, e.ModType}
+		k := groupKey{e.TableName, e.ModType, columnSetKey(e)}
 		if _, exists := groups[k]; !exists {
 			groupOrder = append(groupOrder, k)
 		}
@@ -1398,10 +1430,18 @@ func buildModRecord(keys, newVals map[string]interface{}) modRecord {
 func buildDataChangeRecord(entries []changeLogEntry, recordIndex, numRecordsInTx int) dataChangeRecord {
 	e0 := entries[0] // all entries share the same table, mod_type, schema, and tx metadata
 
-	// column_types from the first entry (all entries in the group share the same table schema).
-	colTypes := make([]columnTypeRecord, len(e0.ColNames))
+	// column_types from the first entry (all entries in the group share the same
+	// table schema). For UPDATE, only include PK columns and the explicitly
+	// modified non-PK columns; ordinal_position counts only included columns.
+	var colTypes []columnTypeRecord
+	ordinal := 0
 	for i, name := range e0.ColNames {
-		colTypes[i] = buildColumnTypeRecord(string(name), e0.ColTypes[i], i < e0.PKCols, i+1)
+		isPK := i < e0.PKCols
+		if !isPK && e0.ExplicitColNames != nil && !e0.ExplicitColNames[name] {
+			continue // UPDATE: omit columns not explicitly written
+		}
+		ordinal++
+		colTypes = append(colTypes, buildColumnTypeRecord(string(name), e0.ColTypes[i], isPK, ordinal))
 	}
 
 	// One mod per entry in the group.
@@ -1414,7 +1454,10 @@ func buildDataChangeRecord(entries []changeLogEntry, recordIndex, numRecordsInTx
 			if i < e.PKCols {
 				keys[string(name)] = v
 			} else if e.ModType != "DELETE" {
-				newVals[string(name)] = v
+				// For UPDATE, only include explicitly modified columns in new_values.
+				if e.ExplicitColNames == nil || e.ExplicitColNames[name] {
+					newVals[string(name)] = v
+				}
 			}
 		}
 		mods[j] = buildModRecord(keys, newVals)

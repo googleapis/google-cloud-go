@@ -1926,7 +1926,8 @@ func TestIntegration_ChangeStream(t *testing.T) {
 	}
 
 	// Validate UPDATE record.
-	// A partial-column update must still report the full post-update row state.
+	// In NEW_VALUES mode, only explicitly modified columns appear in new_values;
+	// unchanged columns (FirstName) must be absent.
 	upd := findDCR("UPDATE")
 	if upd == nil {
 		t.Fatal("No UPDATE data_change_record found")
@@ -1938,8 +1939,8 @@ func TestIntegration_ChangeStream(t *testing.T) {
 	if got := csNewVal(updMod, "LastName"); got != "Jones" {
 		t.Errorf("UPDATE LastName (updated column): got %v, want \"Jones\"", got)
 	}
-	if got := csNewVal(updMod, "FirstName"); got != "Alice" {
-		t.Errorf("UPDATE FirstName (unchanged column): got %v, want \"Alice\"", got)
+	if got := csNewVal(updMod, "FirstName"); got != nil {
+		t.Errorf("UPDATE FirstName (unchanged column): got %v, want nil (not in new_values for NEW_VALUES mode)", got)
 	}
 
 	// Validate DELETE record — keys present, new_values empty.

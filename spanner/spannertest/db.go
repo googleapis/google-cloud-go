@@ -106,6 +106,13 @@ type changeLogEntry struct {
 	ColTypes        []spansql.Type
 	PKCols          int
 	NewRow          row
+
+	// ExplicitColNames is the set of non-PK column names explicitly written in
+	// this mutation. nil means "all non-PK columns" (INSERT, DELETE, DML).
+	// For Mutation API UPDATE operations, only the explicitly touched columns.
+	// Used by the change stream to trim column_types/new_values and to group
+	// UPDATE records that touch the same column set.
+	ExplicitColNames map[spansql.ID]bool
 }
 
 // watchesTable reports whether this change stream watches the given table.
@@ -161,8 +168,25 @@ func (cs *changeStreamInfo) filterEntry(e changeLogEntry) changeLogEntry {
 	return filtered
 }
 
+// nonPKColSet builds a set of non-PK column names from a list of column
+// indexes into t.cols. Used to populate ExplicitColNames for UPDATE mutations.
+func nonPKColSet(t *table, colIndexes []int) map[spansql.ID]bool {
+	m := make(map[spansql.ID]bool)
+	for _, i := range colIndexes {
+		if i >= t.pkCols {
+			m[t.cols[i].Name] = true
+		}
+	}
+	if len(m) == 0 {
+		return nil
+	}
+	return m
+}
+
 // tableChangeLogEntry constructs a changeLogEntry from a table row.
-func tableChangeLogEntry(tbl spansql.ID, modType string, t *table, r row) changeLogEntry {
+// explicitColNames is the set of non-PK column names explicitly written;
+// nil means "all non-PK columns" (INSERT, DELETE, DML).
+func tableChangeLogEntry(tbl spansql.ID, modType string, t *table, r row, explicitColNames map[spansql.ID]bool) changeLogEntry {
 	colNames := make([]spansql.ID, len(t.cols))
 	colTypes := make([]spansql.Type, len(t.cols))
 	for i, c := range t.cols {
@@ -170,12 +194,13 @@ func tableChangeLogEntry(tbl spansql.ID, modType string, t *table, r row) change
 		colTypes[i] = c.Type
 	}
 	return changeLogEntry{
-		TableName: tbl,
-		ModType:   modType,
-		ColNames:  colNames,
-		ColTypes:  colTypes,
-		PKCols:    t.pkCols,
-		NewRow:    r.copyAllData(),
+		TableName:        tbl,
+		ModType:          modType,
+		ColNames:         colNames,
+		ColTypes:         colTypes,
+		PKCols:           t.pkCols,
+		NewRow:           r.copyAllData(),
+		ExplicitColNames: explicitColNames,
 	}
 }
 
@@ -681,7 +706,7 @@ func (d *database) Insert(tx *transaction, tbl spansql.ID, cols []spansql.ID, va
 			return status.Errorf(codes.AlreadyExists, "row already in table")
 		}
 		t.insertRow(rowNum, r)
-		tx.pendingChanges = append(tx.pendingChanges, tableChangeLogEntry(tbl, "INSERT", t, r))
+		tx.pendingChanges = append(tx.pendingChanges, tableChangeLogEntry(tbl, "INSERT", t, r, nil))
 		return nil
 	})
 }
@@ -701,7 +726,7 @@ func (d *database) Update(tx *transaction, tbl spansql.ID, cols []spansql.ID, va
 		for _, i := range colIndexes {
 			t.rows[rowNum][i] = r[i]
 		}
-		tx.pendingChanges = append(tx.pendingChanges, tableChangeLogEntry(tbl, "UPDATE", t, t.rows[rowNum]))
+		tx.pendingChanges = append(tx.pendingChanges, tableChangeLogEntry(tbl, "UPDATE", t, t.rows[rowNum], nonPKColSet(t, colIndexes)))
 		return nil
 	})
 }
@@ -711,6 +736,7 @@ func (d *database) InsertOrUpdate(tx *transaction, tbl spansql.ID, cols []spansq
 		pk := r[:t.pkCols]
 		rowNum, found := t.rowForPK(pk)
 		modType := "INSERT"
+		var explicitCols map[spansql.ID]bool
 		if !found {
 			// New row; do an insert.
 			t.insertRow(rowNum, r)
@@ -720,8 +746,9 @@ func (d *database) InsertOrUpdate(tx *transaction, tbl spansql.ID, cols []spansq
 			for _, i := range colIndexes {
 				t.rows[rowNum][i] = r[i]
 			}
+			explicitCols = nonPKColSet(t, colIndexes)
 		}
-		tx.pendingChanges = append(tx.pendingChanges, tableChangeLogEntry(tbl, modType, t, t.rows[rowNum]))
+		tx.pendingChanges = append(tx.pendingChanges, tableChangeLogEntry(tbl, modType, t, t.rows[rowNum], explicitCols))
 		return nil
 	})
 }
@@ -738,7 +765,7 @@ func (d *database) Replace(tx *transaction, tbl spansql.ID, cols []spansql.ID, v
 			rowNum, _ = t.rowForPK(pk)
 		}
 		t.insertRow(rowNum, r)
-		tx.pendingChanges = append(tx.pendingChanges, tableChangeLogEntry(tbl, "INSERT", t, t.rows[rowNum]))
+		tx.pendingChanges = append(tx.pendingChanges, tableChangeLogEntry(tbl, "INSERT", t, t.rows[rowNum], nil))
 		return nil
 	})
 }
@@ -758,7 +785,7 @@ func (d *database) Delete(tx *transaction, table spansql.ID, keys []*structpb.Li
 
 	if all {
 		for _, r := range t.rows {
-			tx.pendingChanges = append(tx.pendingChanges, tableChangeLogEntry(table, "DELETE", t, r))
+			tx.pendingChanges = append(tx.pendingChanges, tableChangeLogEntry(table, "DELETE", t, r, nil))
 		}
 		t.rows = nil
 		return nil
@@ -772,7 +799,7 @@ func (d *database) Delete(tx *transaction, table spansql.ID, keys []*structpb.Li
 		// Not an error if the key does not exist.
 		rowNum, found := t.rowForPK(pk)
 		if found {
-			tx.pendingChanges = append(tx.pendingChanges, tableChangeLogEntry(table, "DELETE", t, t.rows[rowNum]))
+			tx.pendingChanges = append(tx.pendingChanges, tableChangeLogEntry(table, "DELETE", t, t.rows[rowNum], nil))
 			copy(t.rows[rowNum:], t.rows[rowNum+1:])
 			t.rows = t.rows[:len(t.rows)-1]
 		}
@@ -789,7 +816,7 @@ func (d *database) Delete(tx *transaction, table spansql.ID, keys []*structpb.Li
 		}
 		startRow, endRow := t.findRange(r)
 		for i := startRow; i < endRow; i++ {
-			tx.pendingChanges = append(tx.pendingChanges, tableChangeLogEntry(table, "DELETE", t, t.rows[i]))
+			tx.pendingChanges = append(tx.pendingChanges, tableChangeLogEntry(table, "DELETE", t, t.rows[i], nil))
 		}
 		if n := endRow - startRow; n > 0 {
 			copy(t.rows[startRow:], t.rows[endRow:])
@@ -1384,7 +1411,7 @@ func (d *database) Execute(tx *transaction, stmt spansql.DMLStmt, params queryPa
 			}
 			if b != nil && *b {
 				if tx != nil {
-					tx.pendingChanges = append(tx.pendingChanges, tableChangeLogEntry(stmt.Table, "DELETE", t, t.rows[i]))
+					tx.pendingChanges = append(tx.pendingChanges, tableChangeLogEntry(stmt.Table, "DELETE", t, t.rows[i], nil))
 				}
 				copy(t.rows[i:], t.rows[i+1:])
 				t.rows = t.rows[:len(t.rows)-1]
@@ -1450,7 +1477,7 @@ func (d *database) Execute(tx *transaction, stmt spansql.DMLStmt, params queryPa
 					t.rows[i][dstIndex[j]] = v
 				}
 				if tx != nil {
-					tx.pendingChanges = append(tx.pendingChanges, tableChangeLogEntry(stmt.Table, "UPDATE", t, t.rows[i]))
+					tx.pendingChanges = append(tx.pendingChanges, tableChangeLogEntry(stmt.Table, "UPDATE", t, t.rows[i], nonPKColSet(t, dstIndex)))
 				}
 				n++
 			}
@@ -1513,7 +1540,7 @@ func (d *database) Execute(tx *transaction, stmt spansql.DMLStmt, params queryPa
 		}
 		t.insertRow(rowNum, values)
 		if tx != nil {
-			tx.pendingChanges = append(tx.pendingChanges, tableChangeLogEntry(stmt.Table, "INSERT", t, t.rows[rowNum]))
+			tx.pendingChanges = append(tx.pendingChanges, tableChangeLogEntry(stmt.Table, "INSERT", t, t.rows[rowNum], nil))
 		}
 
 		return 1, nil
