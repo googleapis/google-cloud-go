@@ -1163,7 +1163,7 @@ func Rand() Expression {
 // Example:
 //
 //	client.Pipeline().Collection("restaurants").
-//		Search(DocumentMatches("waffles OR pancakes"))
+//		Search(WithSearchQuery(DocumentMatches("waffles OR pancakes")))
 //
 // - query: Define the search query using the search domain-specific language (DSL).
 //
@@ -1180,7 +1180,7 @@ func DocumentMatches(query string) BooleanExpression {
 // Example:
 //
 //	client.Pipeline().Collection("restaurants").
-//		Search(Matches("menu", "waffles"))
+//		Search(WithSearchQuery(Matches("menu", "waffles")))
 //
 // - field: Perform search on this field. The field path string, [FieldPath] or [Expression] to search.
 // - query: Define the search query using the search domain-specific language (DSL).
@@ -1199,7 +1199,7 @@ func Matches(field any, query string) BooleanExpression {
 //
 //	client.Pipeline().Collection("restaurants").
 //		Search(
-//			"waffles",
+//			WithSearchQuery("waffles"),
 //			WithSearchSort(Ascending(GeoDistance("location", &latlng.LatLng{Latitude: 37.0, Longitude: -122.0}))),
 //		)
 //
@@ -1220,7 +1220,7 @@ func GeoDistance(field any, location *latlng.LatLng) Expression {
 // Example:
 //
 //	client.Pipeline().Collection("restaurants").
-//		Search("waffles", WithSearchSort(Descending(Score())))
+//		Search(WithSearchQuery("waffles"), WithSearchSort(Descending(Score())))
 //
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
@@ -1237,7 +1237,7 @@ func Score() Expression {
 //
 //	client.Pipeline().Collection("restaurants").
 //		Search(
-//			"waffles",
+//			WithSearchQuery("waffles"),
 //			WithSearchAddFields(Snippet("menu", "waffles").As("snippet")),
 //		)
 //

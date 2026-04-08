@@ -1155,6 +1155,12 @@ func newFuncSearchOption(f func(map[string]any)) *funcSearchOption {
 // WithSearchQuery specifies the search query that will be used to query and score documents by the search stage.
 // It can be a string (automatically wrapped in DocumentMatches) or a BooleanExpression.
 //
+// Example:
+//
+//	client.Pipeline().Collection("restaurants").Search(
+//		WithSearchQuery("waffles"),
+//	)
+//
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
 func WithSearchQuery(query any) SearchOption {

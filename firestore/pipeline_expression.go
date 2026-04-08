@@ -513,6 +513,14 @@ type Expression interface {
 	//
 	// The parameter 'location' is the query location.
 	//
+	// Example:
+	//
+	//	client.Pipeline().Collection("restaurants").
+	//		Search(
+	//			WithSearchQuery("waffles"),
+	//			WithSearchSort(Ascending(FieldOf("location").GeoDistance(&latlng.LatLng{Latitude: 37.0, Longitude: -122.0}))),
+	//		)
+	//
 	// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 	// regardless of any other documented package stability guarantees.
 	GeoDistance(location *latlng.LatLng) Expression
@@ -521,6 +529,11 @@ type Expression interface {
 	//
 	// The parameter 'query' is the search query.
 	//
+	// Example:
+	//
+	//	client.Pipeline().Collection("restaurants").
+	//		Search(WithSearchQuery(FieldOf("menu").Matches("waffles")))
+	//
 	// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 	// regardless of any other documented package stability guarantees.
 	Matches(query string) BooleanExpression
@@ -528,6 +541,14 @@ type Expression interface {
 	// Snippet creates an expression that evaluates to an HTML-formatted text snippet that highlights terms matching the search query.
 	//
 	// The parameter 'query' is the search query using the search domain-specific language (DSL).
+	//
+	// Example:
+	//
+	//	client.Pipeline().Collection("restaurants").
+	//		Search(
+	//			WithSearchQuery("waffles"),
+	//			WithSearchAddFields(FieldOf("menu").Snippet("waffles").As("snippet")),
+	//		)
 	//
 	// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 	// regardless of any other documented package stability guarantees.
