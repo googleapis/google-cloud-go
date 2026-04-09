@@ -113,7 +113,7 @@ func TestExternalDataConfig(t *testing.T) {
 		},
 		{
 			SourceFormat: JSON,
-			Options: &JsonOptions{
+			Options: &JSONOptions{
 				Encoding: UTF_8,
 			},
 		},
