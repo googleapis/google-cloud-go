@@ -97,7 +97,7 @@ func (dc *datastoreClient) BeginTransaction(ctx context.Context, in *pb.BeginTra
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.datastoreClient.BeginTransaction")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	err = dc.invoke(ctx, true, func(ctx context.Context) error {
+	err = dc.invoke(ctx, false, func(ctx context.Context) error {
 		res, err = dc.c.BeginTransaction(ctx, in, opts...)
 		return err
 	})
