@@ -252,7 +252,7 @@ libraries:
           import_path: bigquery/v2/apiv2
           path: google/cloud/bigquery/v2
   - name: bigtable
-    version: 1.45.0
+    version: 1.46.0
     apis:
       - path: google/bigtable/v2
       - path: google/bigtable/admin/v2
