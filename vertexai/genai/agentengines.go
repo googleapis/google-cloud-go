@@ -857,3 +857,44 @@ func (m AgentEngines) update(ctx context.Context, name string, config *types.Upd
 
 	return response, nil
 }
+
+// Create creates an agent engine based on the provided configuration and returns the operation
+// object representing the creation process.
+func (m AgentEngines) Create(ctx context.Context, config *types.CreateAgentEngineConfig) (*types.AgentEngineOperation, error) {
+	return m.create(ctx, config)
+}
+
+// Delete deletes the agent engine with the specified name and returns the operation object
+// representing the deletion process.
+func (m AgentEngines) Delete(ctx context.Context, name string, force *bool, config *types.DeleteAgentEngineConfig) (*types.DeleteAgentEngineOperation, error) {
+	return m.delete(ctx, name, force, config)
+}
+
+// Get returns the agent engine with the specified name and returns the agent engine object
+// representing the get agent engine process.
+func (m AgentEngines) Get(ctx context.Context, name string, config *types.GetAgentEngineConfig) (*types.ReasoningEngine, error) {
+	return m.get(ctx, name, config)
+}
+
+// GetAgentOperation returns the operation object representing the get agent operation process.
+func (m AgentEngines) GetAgentOperation(ctx context.Context, operationName string, config *types.GetAgentEngineOperationConfig) (*types.AgentEngineOperation, error) {
+	return m.getAgentOperation(ctx, operationName, config)
+}
+
+// List lists the agent engines that match the provided configuration and returns the list of
+// agent engines and the operation object representing the listing process.
+func (m AgentEngines) List(ctx context.Context, config *types.ListAgentEngineConfig) (*types.ListReasoningEnginesResponse, error) {
+	return m.list(ctx, config)
+}
+
+// Query queries the agent engine with the specified name and returns the response object
+// representing the query agent engine process.
+func (m AgentEngines) Query(ctx context.Context, name string, config *types.QueryAgentEngineConfig) (*types.QueryReasoningEngineResponse, error) {
+	return m.query(ctx, name, config)
+}
+
+// Update updates the agent engine with the specified name and returns the operation object
+// representing the update process.
+func (m AgentEngines) Update(ctx context.Context, name string, config *types.UpdateAgentEngineConfig) (*types.AgentEngineOperation, error) {
+	return m.update(ctx, name, config)
+}

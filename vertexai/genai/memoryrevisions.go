@@ -232,3 +232,8 @@ func (m MemoryRevisions) list(ctx context.Context, name string, config *types.Li
 
 	return response, nil
 }
+
+// List lists the memory revisions for the given name and config, and returns the response.
+func (m MemoryRevisions) List(ctx context.Context, name string, config *types.ListAgentEngineMemoryRevisionsConfig) (*types.ListAgentEngineMemoryRevisionsResponse, error) {
+	return m.list(ctx, name, config)
+}

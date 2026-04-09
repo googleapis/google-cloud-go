@@ -1302,3 +1302,54 @@ func (m Memories) purge(ctx context.Context, name string, filter *string, filter
 
 	return response, nil
 }
+
+// Create creates a new memory for the given name, fact, scope, and config.
+func (m Memories) Create(ctx context.Context, name string, fact string, scope map[string]string, config *types.AgentEngineMemoryConfig) (*types.AgentEngineMemoryOperation, error) {
+	return m.create(ctx, name, fact, scope, config)
+}
+
+// Generate generates the memories for the given name, vertex session source, direct contents
+// source, direct memories source, scope, and config, and returns the operation.
+func (m Memories) Generate(ctx context.Context, name string, vertexSessionSource *types.GenerateMemoriesRequestVertexSessionSource, directContentsSource *types.GenerateMemoriesRequestDirectContentsSource, directMemoriesSource *types.GenerateMemoriesRequestDirectMemoriesSource, scope *map[string]string, config *types.GenerateAgentEngineMemoriesConfig) (*types.AgentEngineGenerateMemoriesOperation, error) {
+	return m.generate(ctx, name, vertexSessionSource, directContentsSource, directMemoriesSource, scope, config)
+}
+
+// List lists the memories for the given name and config, and returns the response.
+func (m Memories) List(ctx context.Context, name string, config *types.ListAgentEngineMemoryConfig) (*types.ListReasoningEnginesMemoriesResponse, error) {
+	return m.list(ctx, name, config)
+}
+
+// GetMemoryOperation returns the memory operation for the given operation name and config.
+func (m Memories) GetMemoryOperation(ctx context.Context, operationName string, config *types.GetAgentEngineOperationConfig) (*types.AgentEngineMemoryOperation, error) {
+	return m.getMemoryOperation(ctx, operationName, config)
+}
+
+// GetGenerateMemoriesOperation returns the generate memories operation for the given operation
+// name, vertex session source, direct contents source, direct memories source, scope, and config.
+func (m Memories) GetGenerateMemoriesOperation(ctx context.Context, operationName string, config *types.GetAgentEngineOperationConfig) (*types.AgentEngineGenerateMemoriesOperation, error) {
+	return m.getGenerateMemoriesOperation(ctx, operationName, config)
+}
+
+// Retrieve retrieves the memories for the given name, scope, similarity search params, simple
+// retrieval params, and config, and returns the response.
+func (m Memories) Retrieve(ctx context.Context, name string, scope map[string]string, similaritySearchParams *types.RetrieveMemoriesRequestSimilaritySearchParams, simpleRetrievalParams *types.RetrieveMemoriesRequestSimpleRetrievalParams, config *types.RetrieveAgentEngineMemoriesConfig) (*types.RetrieveMemoriesResponse, error) {
+	return m.retrieve(ctx, name, scope, similaritySearchParams, simpleRetrievalParams, config)
+}
+
+// Rollback rolls back the memory to the given target revision id and returns the rollback memory
+// operation.
+func (m Memories) Rollback(ctx context.Context, name string, targetRevisionId string, config *types.RollbackAgentEngineMemoryConfig) (*types.AgentEngineRollbackMemoryOperation, error) {
+	return m.rollback(ctx, name, targetRevisionId, config)
+}
+
+// Update updates the memory for the given name, fact, scope, and config, and returns the memory
+// operation.
+func (m Memories) Update(ctx context.Context, name string, fact *string, scope *map[string]string, config *types.UpdateAgentEngineMemoryConfig) (*types.AgentEngineMemoryOperation, error) {
+	return m.update(ctx, name, fact, scope, config)
+}
+
+// Purge purges the memory for the given name, filter, filter groups, force, and config, and returns
+// the purge memory operation.
+func (m Memories) Purge(ctx context.Context, name string, filter *string, filterGroups []*types.MemoryConjunctionFilter, force *bool, config *types.PurgeAgentEngineMemoriesConfig) (*types.AgentEnginePurgeMemoriesOperation, error) {
+	return m.purge(ctx, name, filter, filterGroups, force, config)
+}

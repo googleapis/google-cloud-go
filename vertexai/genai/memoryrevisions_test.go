@@ -47,9 +47,9 @@ func TestAgentEngineMemoryRevisions(t *testing.T) {
 			},
 		}
 		response := createAgentEngineMemoryAndWait(tt, client, re, want)
-		got, err := client.AgentEngines.Memories.Revisions.list(tt.Context(), response.Name, nil)
+		got, err := client.AgentEngines.Memories.Revisions.List(tt.Context(), response.Name, nil)
 		if err != nil {
-			tt.Fatalf("get() failed unexpectedly: %v", err)
+			tt.Fatalf("list() failed unexpectedly: %v", err)
 		}
 		if len(got.MemoryRevisions) == 0 {
 			tt.Errorf("list(), want !0 but got %v", len(got.MemoryRevisions))
