@@ -64,7 +64,7 @@ func (dc *datastoreClient) Lookup(ctx context.Context, in *pb.LookupRequest, opt
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.datastoreClient.Lookup")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	err = dc.invoke(ctx, func(ctx context.Context) error {
+	err = dc.invoke(ctx, true, func(ctx context.Context) error {
 		res, err = dc.c.Lookup(ctx, in, opts...)
 		return err
 	})
@@ -75,7 +75,7 @@ func (dc *datastoreClient) RunQuery(ctx context.Context, in *pb.RunQueryRequest,
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.datastoreClient.RunQuery")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	err = dc.invoke(ctx, func(ctx context.Context) error {
+	err = dc.invoke(ctx, true, func(ctx context.Context) error {
 		res, err = dc.c.RunQuery(ctx, in, opts...)
 		return err
 	})
@@ -86,7 +86,7 @@ func (dc *datastoreClient) RunAggregationQuery(ctx context.Context, in *pb.RunAg
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.datastoreClient.RunAggregationQuery")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	err = dc.invoke(ctx, func(ctx context.Context) error {
+	err = dc.invoke(ctx, true, func(ctx context.Context) error {
 		res, err = dc.c.RunAggregationQuery(ctx, in, opts...)
 		return err
 	})
@@ -97,7 +97,7 @@ func (dc *datastoreClient) BeginTransaction(ctx context.Context, in *pb.BeginTra
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.datastoreClient.BeginTransaction")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	err = dc.invoke(ctx, func(ctx context.Context) error {
+	err = dc.invoke(ctx, true, func(ctx context.Context) error {
 		res, err = dc.c.BeginTransaction(ctx, in, opts...)
 		return err
 	})
@@ -108,7 +108,7 @@ func (dc *datastoreClient) Commit(ctx context.Context, in *pb.CommitRequest, opt
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.datastoreClient.Commit")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	err = dc.invoke(ctx, func(ctx context.Context) error {
+	err = dc.invoke(ctx, false, func(ctx context.Context) error {
 		res, err = dc.c.Commit(ctx, in, opts...)
 		return err
 	})
@@ -119,7 +119,7 @@ func (dc *datastoreClient) Rollback(ctx context.Context, in *pb.RollbackRequest,
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.datastoreClient.Rollback")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	err = dc.invoke(ctx, func(ctx context.Context) error {
+	err = dc.invoke(ctx, true, func(ctx context.Context) error {
 		res, err = dc.c.Rollback(ctx, in, opts...)
 		return err
 	})
@@ -130,7 +130,7 @@ func (dc *datastoreClient) AllocateIds(ctx context.Context, in *pb.AllocateIdsRe
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.datastoreClient.AllocateIds")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	err = dc.invoke(ctx, func(ctx context.Context) error {
+	err = dc.invoke(ctx, false, func(ctx context.Context) error {
 		res, err = dc.c.AllocateIds(ctx, in, opts...)
 		return err
 	})
@@ -141,22 +141,22 @@ func (dc *datastoreClient) ReserveIds(ctx context.Context, in *pb.ReserveIdsRequ
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.datastoreClient.ReserveIds")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	err = dc.invoke(ctx, func(ctx context.Context) error {
+	err = dc.invoke(ctx, true, func(ctx context.Context) error {
 		res, err = dc.c.ReserveIds(ctx, in, opts...)
 		return err
 	})
 	return res, err
 }
 
-func (dc *datastoreClient) invoke(ctx context.Context, f func(ctx context.Context) error) error {
+func (dc *datastoreClient) invoke(ctx context.Context, isIdempotent bool, f func(ctx context.Context) error) error {
 	ctx = metadata.NewOutgoingContext(ctx, dc.md)
 	return cloudinternal.Retry(ctx, gax.Backoff{Initial: 100 * time.Millisecond}, func() (stop bool, err error) {
 		err = f(ctx)
-		return !shouldRetry(err), err
+		return !shouldRetry(err, isIdempotent), err
 	})
 }
 
-func shouldRetry(err error) bool {
+func shouldRetry(err error, isIdempotent bool) bool {
 	if err == nil {
 		return false
 	}
@@ -164,8 +164,12 @@ func shouldRetry(err error) bool {
 	if !ok {
 		return false
 	}
-	// Only retry on UNAVAILABLE as per https://aip.dev/194. Other errors from
-	// https://cloud.google.com/datastore/docs/concepts/errors may be retried
-	// by the user if desired, but are not retried by the clientg.
-	return s.Code() == codes.Unavailable
+	code := s.Code()
+	if code == codes.Unavailable {
+		return true
+	}
+	if isIdempotent && (code == codes.DeadlineExceeded || code == codes.Internal || code == codes.ResourceExhausted) {
+		return true
+	}
+	return false
 }

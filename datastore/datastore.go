@@ -32,6 +32,7 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/keepalive"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -128,6 +129,11 @@ func NewClientWithDatabase(ctx context.Context, projectID, databaseID string, op
 			internaloption.EnableNewAuthLibrary(),
 			option.WithScopes(ScopeDatastore),
 			option.WithUserAgent(userAgent),
+			option.WithGRPCDialOption(grpc.WithKeepaliveParams(keepalive.ClientParameters{
+				Time:                1 * time.Minute,
+				Timeout:             20 * time.Second,
+				PermitWithoutStream: true,
+			})),
 		}
 	}
 	// Warn if we see the legacy emulator environment variables.
