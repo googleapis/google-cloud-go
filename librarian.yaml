@@ -212,7 +212,7 @@ libraries:
       - path: google/cloud/biglake/hive/v1beta
     copyright_year: "2026"
   - name: bigquery
-    version: 1.75.0
+    version: 1.76.0
     apis:
       - path: google/cloud/bigquery/migration/v2
       - path: google/cloud/bigquery/datapolicies/v2

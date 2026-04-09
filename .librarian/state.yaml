@@ -470,7 +470,7 @@ libraries:
       - internal/generated/snippets/biglake/
     tag_format: '{id}/v{version}'
   - id: bigquery
-    version: 1.75.0
+    version: 1.76.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/bigquery/analyticshub/v1
