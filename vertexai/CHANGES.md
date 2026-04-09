@@ -1,5 +1,13 @@
 # Changes
 
+## [0.19.0](https://github.com/googleapis/google-cloud-go/releases/tag/vertexai%2Fv0.19.0) (2026-04-09)
+
+### Features
+
+* Add AgentEngine Memories Revisions module ([124ffd3](https://github.com/googleapis/google-cloud-go/commit/124ffd3b68a2bcc9f3dc067a36d30fe577e7c87c))
+* In run_query_job, rename gcs_bucket to gcs_uri and allow the case that user sets the filename for the output. ([f28b14d](https://github.com/googleapis/google-cloud-go/commit/f28b14d730e872e027b7dbf914e0904aebdb8aa6))
+* Make AgentEngine APIs public ([18a3318](https://github.com/googleapis/google-cloud-go/commit/18a3318e010ed0dc5ee4a5c4a95b55955e64f101))
+
 ## [0.18.0](https://github.com/googleapis/google-cloud-go/releases/tag/vertexai%2Fv0.18.0) (2026-04-02)
 
 ## [0.17.0](https://github.com/googleapis/google-cloud-go/releases/tag/vertexai%2Fv0.17.0) (2026-03-17)
