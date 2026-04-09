@@ -525,35 +525,6 @@ type Expression interface {
 	// regardless of any other documented package stability guarantees.
 	GeoDistance(location *latlng.LatLng) Expression
 
-	// Matches creates a boolean expression that performs a full-text search on this expression.
-	//
-	// The parameter 'query' is the search query.
-	//
-	// Example:
-	//
-	//	client.Pipeline().Collection("restaurants").
-	//		Search(WithSearchQuery(FieldOf("menu").Matches("waffles")))
-	//
-	// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-	// regardless of any other documented package stability guarantees.
-	Matches(query string) BooleanExpression
-
-	// Snippet creates an expression that evaluates to an HTML-formatted text snippet that highlights terms matching the search query.
-	//
-	// The parameter 'query' is the search query using the search domain-specific language (DSL).
-	//
-	// Example:
-	//
-	//	client.Pipeline().Collection("restaurants").
-	//		Search(
-	//			WithSearchQuery("waffles"),
-	//			WithSearchAddFields(FieldOf("menu").Snippet("waffles").As("snippet")),
-	//		)
-	//
-	// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-	// regardless of any other documented package stability guarantees.
-	Snippet(query string) Expression
-
 	// As assigns an alias to an expression.
 	// Aliases are useful for renaming fields in the output of a stage.
 	As(alias string) *AliasedExpression
@@ -808,14 +779,6 @@ func (b *baseExpression) Descending() Ordering { return Descending(b) }
 
 func (b *baseExpression) GeoDistance(location *latlng.LatLng) Expression {
 	return GeoDistance(b, location)
-}
-
-func (b *baseExpression) Matches(query string) BooleanExpression {
-	return Matches(b, query)
-}
-
-func (b *baseExpression) Snippet(query string) Expression {
-	return Snippet(b, query)
 }
 
 func (b *baseExpression) As(alias string) *AliasedExpression {
