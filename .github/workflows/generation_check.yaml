@@ -20,7 +20,7 @@ jobs:
       - name: Install Protoc
         uses: arduino/setup-protoc@v3
         with:
-          version: "25.7"
+          version: "31.0"
       - name: Install tools
         run: |
           version=$(sed -n 's/^version: *//p' librarian.yaml)
