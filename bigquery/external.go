@@ -66,14 +66,14 @@ const (
 	FileSetSpecTypeNewLineDelimitedManifest FileSetSpecType = "FILE_SET_SPEC_TYPE_NEW_LINE_DELIMITED_MANIFEST"
 )
 
-// JsonExtension describes the JSON extension for external data.
-type JsonExtension string
+// JSONExtension describes the JSON extension for external data.
+type JSONExtension string
 
 const (
-	// JsonExtensionUnspecified is the default.
-	JsonExtensionUnspecified JsonExtension = "JSON_EXTENSION_UNSPECIFIED"
-	// JsonExtensionGeoJson indicates GeoJSON data.
-	JsonExtensionGeoJson JsonExtension = "GEOJSON"
+	// JSONExtensionUnspecified is the default.
+	JSONExtensionUnspecified JSONExtension = "JSON_EXTENSION_UNSPECIFIED"
+	// JSONExtensionGeoJSON indicates GeoJSON data.
+	JSONExtensionGeoJSON JSONExtension = "GEOJSON"
 )
 
 // ObjectMetadata describes the object metadata for external data.
@@ -190,8 +190,8 @@ type ExternalDataConfig struct {
 	// FileSetSpecType specifies the file set specification type.
 	FileSetSpecType FileSetSpecType
 
-	// JsonExtension specifies the JSON extension.
-	JsonExtension JsonExtension
+	// JSONExtension specifies the JSON extension.
+	JSONExtension JSONExtension
 
 	// ObjectMetadata specifies the object metadata.
 	ObjectMetadata ObjectMetadata
@@ -218,7 +218,7 @@ func (e *ExternalDataConfig) toBQ() bq.ExternalDataConfiguration {
 		TimeFormat:               e.TimeFormat,
 		TimestampFormat:          e.TimestampFormat,
 		FileSetSpecType:          string(e.FileSetSpecType),
-		JsonExtension:            string(e.JsonExtension),
+		JsonExtension:            string(e.JSONExtension),
 		ObjectMetadata:           string(e.ObjectMetadata),
 		TimestampTargetPrecision: e.TimestampTargetPrecision,
 	}
@@ -253,7 +253,7 @@ func bqToExternalDataConfig(q *bq.ExternalDataConfiguration) (*ExternalDataConfi
 		DateFormat:               q.DateFormat,
 		DatetimeFormat:           q.DatetimeFormat,
 		FileSetSpecType:          FileSetSpecType(q.FileSetSpecType),
-		JsonExtension:            JsonExtension(q.JsonExtension),
+		JSONExtension:            JSONExtension(q.JsonExtension),
 		ObjectMetadata:           ObjectMetadata(q.ObjectMetadata),
 		TimestampTargetPrecision: q.TimestampTargetPrecision,
 	}
@@ -266,7 +266,7 @@ func bqToExternalDataConfig(q *bq.ExternalDataConfiguration) (*ExternalDataConfi
 	case q.CsvOptions != nil:
 		e.Options = bqToCSVOptions(q.CsvOptions)
 	case q.JsonOptions != nil:
-		e.Options = bqToJsonOptions(q.JsonOptions)
+		e.Options = bqToJSONOptions(q.JsonOptions)
 	case q.GoogleSheetsOptions != nil:
 		e.Options = bqToGoogleSheetsOptions(q.GoogleSheetsOptions)
 	case q.BigtableOptions != nil:
@@ -416,23 +416,23 @@ func bqToCSVOptions(q *bq.CsvOptions) *CSVOptions {
 	return o
 }
 
-// JsonOptions are additional options for JSON external data sources.
-type JsonOptions struct {
+// JSONOptions are additional options for JSON external data sources.
+type JSONOptions struct {
 	// Encoding is the character encoding of data to be read.
 	Encoding Encoding
 }
 
-func (o *JsonOptions) populateExternalDataConfig(c *bq.ExternalDataConfiguration) {
+func (o *JSONOptions) populateExternalDataConfig(c *bq.ExternalDataConfiguration) {
 	c.JsonOptions = &bq.JsonOptions{
 		Encoding: string(o.Encoding),
 	}
 }
 
-func bqToJsonOptions(q *bq.JsonOptions) *JsonOptions {
+func bqToJSONOptions(q *bq.JsonOptions) *JSONOptions {
 	if q == nil {
 		return nil
 	}
-	return &JsonOptions{
+	return &JSONOptions{
 		Encoding: Encoding(q.Encoding),
 	}
 }

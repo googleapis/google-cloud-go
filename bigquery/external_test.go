@@ -120,7 +120,7 @@ func TestExternalDataConfig(t *testing.T) {
 		{
 			SourceFormat:             CSV,
 			FileSetSpecType:          FileSetSpecTypeFileSystemMatch,
-			JsonExtension:            JsonExtensionGeoJson,
+			JSONExtension:            JSONExtensionGeoJSON,
 			ObjectMetadata:           ObjectMetadataSimple,
 			TimestampTargetPrecision: []int64{6, 12},
 		},
