@@ -58,3 +58,47 @@ func TestLogicalRequestEndpointExclusionCache_ExpiresEntries(t *testing.T) {
 		t.Fatal("did not expect expired exclusion to be returned")
 	}
 }
+
+func TestLogicalRequestEndpointExclusionCache_RefreshKeepsEntryAlive(t *testing.T) {
+	now := time.Unix(100, 0)
+	cache := newLogicalRequestEndpointExclusionCacheWithOptions(
+		10,
+		time.Minute,
+		func() time.Time { return now },
+	)
+
+	cache.record("logical-3", "replica-a:443")
+	now = now.Add(30 * time.Second)
+	cache.record("logical-3", "replica-b:443")
+	now = now.Add(40 * time.Second)
+
+	excluded := cache.consume("logical-3")
+	if !excluded("replica-a:443") || !excluded("replica-b:443") {
+		t.Fatal("expected refreshed logical request entry to remain active")
+	}
+}
+
+func TestLogicalRequestEndpointExclusionCache_PrunesOldestOnOverflow(t *testing.T) {
+	now := time.Unix(100, 0)
+	cache := newLogicalRequestEndpointExclusionCacheWithOptions(
+		2,
+		time.Minute,
+		func() time.Time { return now },
+	)
+
+	cache.record("logical-1", "replica-a:443")
+	now = now.Add(time.Second)
+	cache.record("logical-2", "replica-b:443")
+	now = now.Add(time.Second)
+	cache.record("logical-3", "replica-c:443")
+
+	if cache.consume("logical-1")("replica-a:443") {
+		t.Fatal("expected oldest logical request to be evicted on overflow")
+	}
+	if !cache.consume("logical-2")("replica-b:443") {
+		t.Fatal("expected second logical request to remain present")
+	}
+	if !cache.consume("logical-3")("replica-c:443") {
+		t.Fatal("expected newest logical request to remain present")
+	}
+}

@@ -59,10 +59,10 @@ type lifecycleTestCache struct {
 	endpoints       map[string]channelEndpoint
 	getCalls        map[string]int
 	evicted         map[string]int
-	factory         func(address string) channelEndpoint
+	factory         func(ctx context.Context, address string) channelEndpoint
 }
 
-func newLifecycleTestCache(defaultAddress string, factory func(address string) channelEndpoint) *lifecycleTestCache {
+func newLifecycleTestCache(defaultAddress string, factory func(ctx context.Context, address string) channelEndpoint) *lifecycleTestCache {
 	return &lifecycleTestCache{
 		defaultEndpoint: &passthroughChannelEndpoint{address: defaultAddress},
 		endpoints:       make(map[string]channelEndpoint),
@@ -72,7 +72,7 @@ func newLifecycleTestCache(defaultAddress string, factory func(address string) c
 	}
 }
 
-func (c *lifecycleTestCache) Get(_ context.Context, address string) channelEndpoint {
+func (c *lifecycleTestCache) Get(ctx context.Context, address string) channelEndpoint {
 	if address == c.defaultEndpoint.Address() {
 		return c.defaultEndpoint
 	}
@@ -87,7 +87,7 @@ func (c *lifecycleTestCache) Get(_ context.Context, address string) channelEndpo
 	if c.factory == nil {
 		return nil
 	}
-	endpoint := c.factory(address)
+	endpoint := c.factory(ctx, address)
 	if endpoint != nil {
 		c.endpoints[address] = endpoint
 	}
@@ -174,7 +174,7 @@ func TestEndpointLifecycleManager_RecordRealTrafficCreatesManagedEndpoint(t *tes
 	conn, cleanup := newReadyTestConn(t)
 	defer cleanup()
 
-	cache := newLifecycleTestCache("default:443", func(address string) channelEndpoint {
+	cache := newLifecycleTestCache("default:443", func(_ context.Context, address string) channelEndpoint {
 		return &lifecycleTestEndpoint{address: address, conn: conn}
 	})
 	manager := newEndpointLifecycleManagerWithOptions(
@@ -221,7 +221,7 @@ func TestEndpointLifecycleManager_RequestEndpointRecreationCreatesEndpoint(t *te
 	conn, cleanup := newReadyTestConn(t)
 	defer cleanup()
 
-	cache := newLifecycleTestCache("default:443", func(address string) channelEndpoint {
+	cache := newLifecycleTestCache("default:443", func(_ context.Context, address string) channelEndpoint {
 		return &lifecycleTestEndpoint{address: address, conn: conn}
 	})
 	manager := newEndpointLifecycleManagerWithOptions(
@@ -245,7 +245,7 @@ func TestEndpointLifecycleManager_ProbeEvictsTransientFailureEndpoint(t *testing
 	conn, cleanup := newTransientFailureTestConn(t)
 	defer cleanup()
 
-	cache := newLifecycleTestCache("default:443", func(address string) channelEndpoint {
+	cache := newLifecycleTestCache("default:443", func(_ context.Context, address string) channelEndpoint {
 		return &lifecycleTestEndpoint{address: address, conn: conn}
 	})
 	manager := newEndpointLifecycleManagerWithOptions(
@@ -274,7 +274,7 @@ func TestEndpointLifecycleManager_CheckIdleEviction(t *testing.T) {
 	defer cleanup()
 
 	clock := newLifecycleTestClock(time.Unix(100, 0))
-	cache := newLifecycleTestCache("default:443", func(address string) channelEndpoint {
+	cache := newLifecycleTestCache("default:443", func(_ context.Context, address string) channelEndpoint {
 		return &lifecycleTestEndpoint{address: address, conn: conn}
 	})
 	manager := newEndpointLifecycleManagerWithOptions(
@@ -312,4 +312,39 @@ func TestEndpointLifecycleManager_ShutdownIsIdempotent(t *testing.T) {
 
 	manager.shutdown()
 	manager.shutdown()
+}
+
+func TestEndpointLifecycleManager_ShutdownCancelsPendingCreation(t *testing.T) {
+	started := make(chan struct{})
+	cache := newLifecycleTestCache("default:443", func(ctx context.Context, address string) channelEndpoint {
+		close(started)
+		<-ctx.Done()
+		return nil
+	})
+	manager := newEndpointLifecycleManagerWithOptions(
+		cache,
+		time.Hour,
+		time.Hour,
+		time.Now,
+	)
+
+	manager.requestEndpointRecreation("replica-5:443")
+
+	select {
+	case <-started:
+	case <-time.After(time.Second):
+		t.Fatal("timed out waiting for endpoint creation to start")
+	}
+
+	done := make(chan struct{})
+	go func() {
+		manager.shutdown()
+		close(done)
+	}()
+
+	select {
+	case <-done:
+	case <-time.After(time.Second):
+		t.Fatal("expected shutdown to cancel pending endpoint creation")
+	}
 }

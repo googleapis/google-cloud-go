@@ -17,6 +17,7 @@ limitations under the License.
 package spanner
 
 import (
+	"container/heap"
 	"sync"
 	"time"
 )
@@ -31,14 +32,49 @@ type endpointExcluder func(string) bool
 type logicalRequestEndpointExclusion struct {
 	addresses map[string]struct{}
 	expiresAt time.Time
+	version   uint64
+}
+
+type logicalRequestEndpointExclusionExpiry struct {
+	logicalRequestKey string
+	expiresAt         time.Time
+	version           uint64
+}
+
+type logicalRequestEndpointExclusionExpiryHeap []logicalRequestEndpointExclusionExpiry
+
+func (h logicalRequestEndpointExclusionExpiryHeap) Len() int {
+	return len(h)
+}
+
+func (h logicalRequestEndpointExclusionExpiryHeap) Less(i, j int) bool {
+	return h[i].expiresAt.Before(h[j].expiresAt)
+}
+
+func (h logicalRequestEndpointExclusionExpiryHeap) Swap(i, j int) {
+	h[i], h[j] = h[j], h[i]
+}
+
+func (h *logicalRequestEndpointExclusionExpiryHeap) Push(x any) {
+	*h = append(*h, x.(logicalRequestEndpointExclusionExpiry))
+}
+
+func (h *logicalRequestEndpointExclusionExpiryHeap) Pop() any {
+	old := *h
+	n := len(old)
+	item := old[n-1]
+	*h = old[:n-1]
+	return item
 }
 
 type logicalRequestEndpointExclusionCache struct {
 	mu         sync.Mutex
 	entries    map[string]logicalRequestEndpointExclusion
+	expiries   logicalRequestEndpointExclusionExpiryHeap
 	maxEntries int
 	ttl        time.Duration
 	now        func() time.Time
+	nextVer    uint64
 }
 
 func noExcludedEndpoints(string) bool {
@@ -97,7 +133,13 @@ func (c *logicalRequestEndpointExclusionCache) record(logicalRequestKey, address
 	}
 	entry.addresses[address] = struct{}{}
 	entry.expiresAt = now.Add(c.ttl)
+	entry.version = c.nextVersionLocked()
 	c.entries[logicalRequestKey] = entry
+	heap.Push(&c.expiries, logicalRequestEndpointExclusionExpiry{
+		logicalRequestKey: logicalRequestKey,
+		expiresAt:         entry.expiresAt,
+		version:           entry.version,
+	})
 
 	c.pruneOverflowLocked()
 }
@@ -131,32 +173,44 @@ func (c *logicalRequestEndpointExclusionCache) consume(logicalRequestKey string)
 }
 
 func (c *logicalRequestEndpointExclusionCache) pruneExpiredLocked(now time.Time) {
-	for logicalRequestKey, entry := range c.entries {
-		if now.After(entry.expiresAt) {
-			delete(c.entries, logicalRequestKey)
+	for c.expiries.Len() > 0 {
+		next := c.expiries[0]
+		if next.expiresAt.After(now) {
+			return
 		}
+		heap.Pop(&c.expiries)
+		entry, ok := c.entries[next.logicalRequestKey]
+		if !ok || entry.version != next.version {
+			continue
+		}
+		delete(c.entries, next.logicalRequestKey)
 	}
 }
 
 func (c *logicalRequestEndpointExclusionCache) pruneOverflowLocked() {
 	for len(c.entries) > c.maxEntries {
-		var (
-			oldestKey string
-			oldestAt  time.Time
-			found     bool
-		)
-		for logicalRequestKey, entry := range c.entries {
-			if !found || entry.expiresAt.Before(oldestAt) {
-				oldestKey = logicalRequestKey
-				oldestAt = entry.expiresAt
-				found = true
+		for c.expiries.Len() > 0 {
+			next := heap.Pop(&c.expiries).(logicalRequestEndpointExclusionExpiry)
+			entry, ok := c.entries[next.logicalRequestKey]
+			if !ok || entry.version != next.version {
+				continue
 			}
+			delete(c.entries, next.logicalRequestKey)
+			break
 		}
-		if !found {
+		if len(c.entries) <= c.maxEntries {
 			return
 		}
-		delete(c.entries, oldestKey)
+		for logicalRequestKey := range c.entries {
+			delete(c.entries, logicalRequestKey)
+			break
+		}
 	}
+}
+
+func (c *logicalRequestEndpointExclusionCache) nextVersionLocked() uint64 {
+	c.nextVer++
+	return c.nextVer
 }
 
 func (c *logicalRequestEndpointExclusionCache) size() int {

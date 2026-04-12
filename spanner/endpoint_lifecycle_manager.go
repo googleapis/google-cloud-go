@@ -29,6 +29,7 @@ const (
 	defaultIdleEvictionDuration    = 30 * time.Minute
 	lifecycleEvictionCheckInterval = 5 * time.Minute
 	maxTransientFailureProbeCount  = 3
+	defaultLifecycleCreateTimeout  = 30 * time.Second
 )
 
 type lifecycleEvictionReason int
@@ -65,6 +66,11 @@ type endpointLifecycleManager struct {
 	workCh chan struct{}
 	stopCh chan struct{}
 	doneCh chan struct{}
+
+	createCtx    context.Context
+	cancelCreate context.CancelFunc
+	createWakeCh chan struct{}
+	createDoneCh chan struct{}
 }
 
 func newEndpointLifecycleManager(endpointCache channelEndpointCache) *endpointLifecycleManager {
@@ -106,8 +112,12 @@ func newEndpointLifecycleManagerWithOptions(
 		workCh:                           make(chan struct{}, 1),
 		stopCh:                           make(chan struct{}),
 		doneCh:                           make(chan struct{}),
+		createWakeCh:                     make(chan struct{}, 1),
+		createDoneCh:                     make(chan struct{}),
 	}
+	manager.createCtx, manager.cancelCreate = context.WithCancel(context.Background())
 	go manager.run()
+	go manager.runCreator()
 	return manager
 }
 
@@ -123,9 +133,9 @@ func (m *endpointLifecycleManager) run() {
 	for {
 		select {
 		case <-m.workCh:
-			m.processPendingCreations()
+			m.signalCreator()
 		case <-probeTicker.C:
-			m.processPendingCreations()
+			m.signalCreator()
 			m.probeManagedEndpoints()
 		case <-evictionTicker.C:
 			m.checkIdleEviction()
@@ -205,30 +215,75 @@ func (m *endpointLifecycleManager) requestEndpointRecreation(address string) {
 	m.signalWork()
 }
 
-func (m *endpointLifecycleManager) processPendingCreations() {
+func (m *endpointLifecycleManager) runCreator() {
+	defer close(m.createDoneCh)
+
+	for {
+		select {
+		case <-m.createWakeCh:
+		case <-m.stopCh:
+			return
+		}
+
+		for {
+			addresses := m.pendingCreationAddresses()
+			if len(addresses) == 0 {
+				break
+			}
+			for _, address := range addresses {
+				if !m.createEndpoint(address) {
+					select {
+					case <-m.stopCh:
+						return
+					default:
+					}
+				}
+			}
+		}
+	}
+}
+
+func (m *endpointLifecycleManager) signalCreator() {
 	if m == nil {
 		return
 	}
-
-	addresses := m.pendingCreationAddresses()
-	for _, address := range addresses {
-		endpoint := m.endpointCache.Get(context.Background(), address)
-		if endpoint == nil {
-			m.mu.Lock()
-			if state := m.endpoints[address]; state != nil && !m.stopped {
-				state.needsCreate = true
-			}
-			m.mu.Unlock()
-			continue
-		}
-
-		m.mu.Lock()
-		_, stillManaged := m.endpoints[address]
-		m.mu.Unlock()
-		if !stillManaged {
-			m.endpointCache.Evict(address)
-		}
+	select {
+	case m.createWakeCh <- struct{}{}:
+	default:
 	}
+}
+
+func (m *endpointLifecycleManager) createEndpoint(address string) bool {
+	if m == nil || address == "" {
+		return true
+	}
+
+	ctx, cancel := context.WithTimeout(m.createCtx, defaultLifecycleCreateTimeout)
+	defer cancel()
+
+	endpoint := m.endpointCache.Get(ctx, address)
+	select {
+	case <-m.createCtx.Done():
+		return false
+	default:
+	}
+	if endpoint == nil {
+		m.mu.Lock()
+		if state := m.endpoints[address]; state != nil && !m.stopped {
+			state.needsCreate = true
+		}
+		m.mu.Unlock()
+		return true
+	}
+
+	m.mu.Lock()
+	_, stillManaged := m.endpoints[address]
+	stopped := m.stopped
+	m.mu.Unlock()
+	if stopped || !stillManaged {
+		m.endpointCache.Evict(address)
+	}
+	return true
 }
 
 func (m *endpointLifecycleManager) pendingCreationAddresses() []string {
@@ -423,11 +478,16 @@ func (m *endpointLifecycleManager) shutdown() {
 	m.shutdownOnce.Do(func() {
 		m.mu.Lock()
 		m.stopped = true
+		m.mu.Unlock()
+
+		m.cancelCreate()
+		close(m.stopCh)
+		<-m.doneCh
+		<-m.createDoneCh
+
+		m.mu.Lock()
 		m.endpoints = make(map[string]*endpointLifecycleState)
 		m.transientFailureEvictedAddresses = make(map[string]struct{})
 		m.mu.Unlock()
-
-		close(m.stopCh)
-		<-m.doneCh
 	})
 }
