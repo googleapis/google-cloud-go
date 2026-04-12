@@ -1823,11 +1823,19 @@ type AggregationResponse struct {
 }
 
 func (q *Query) toPipeline() *Pipeline {
+	// Create a copy of the query to avoid modifying the original.
+	qCopy := *q
+	q = &qCopy
+
 	var p *Pipeline
 	if q.allDescendants {
 		p = q.c.Pipeline().CollectionGroup(q.collectionID)
 	} else {
-		p = q.c.Pipeline().Collection(q.collectionID)
+		// q.path is the full resource path: projects/P/databases/D/documents/C1/D1/C2...
+		// We need the relative path starting from after "/documents/".
+		prefix := q.c.path() + "/documents/"
+		relPath := strings.TrimPrefix(q.path, prefix)
+		p = q.c.Pipeline().Collection(relPath)
 	}
 
 	if q.err != nil {
@@ -1835,75 +1843,31 @@ func (q *Query) toPipeline() *Pipeline {
 		return p
 	}
 
-	var allFilters []BooleanExpression
-
 	// Original filters
 	for _, f := range q.filters {
-		var filterExpr BooleanExpression
-		var err error
-		if fieldFilter := f.GetFieldFilter(); fieldFilter != nil {
-			filterExpr, err = newQueryFilter(q, fieldFilter)
-			if err != nil {
-				p.err = err
-				return p
-			}
-		} else if unaryFilter := f.GetUnaryFilter(); unaryFilter != nil {
-			filterExpr, err = newQueryUnaryFilter(unaryFilter)
-			if err != nil {
-				p.err = err
-				return p
-			}
-		}
-		allFilters = append(allFilters, filterExpr)
-	}
-
-	// Start at
-	if q.startCursorSpecified() {
-		var startFilter BooleanExpression
-		var err error
-		if q.startDoc != nil {
-			startFilter, err = newCursorFilter(q.orders, q.startDoc, q.startBefore, true)
-		} else {
-			startFilter, err = newCursorFilterWithValues(q.orders, q.startVals, q.startBefore, true)
-		}
+		filterExpr, err := filterToExpression(q, f)
 		if err != nil {
 			p.err = err
 			return p
 		}
-		allFilters = append(allFilters, startFilter)
+		if filterExpr != nil {
+			p = p.Where(filterExpr)
+		}
 	}
 
-	// End at
-	if q.endCursorSpecified() {
-		var endFilter BooleanExpression
-		var err error
-		if q.endDoc != nil {
-			endFilter, err = newCursorFilter(q.orders, q.endDoc, q.endBefore, false)
-		} else {
-			endFilter, err = newCursorFilterWithValues(q.orders, q.endVals, q.endBefore, false)
+	// Existence filters for explicitly ordered fields (to match Query semantics)
+	for _, o := range q.orders {
+		if !o.isDocumentID() {
+			p = p.Where(FieldOf(o.fieldPath).FieldExists())
 		}
-		if err != nil {
-			p.err = err
-			return p
-		}
-		allFilters = append(allFilters, endFilter)
 	}
 
-	// Order by
+	// Prepare orders for Sort stage and cursors.
+	// We use adjustOrders() to get the tie-breaker.
+	adjustedOrders := q.adjustOrders()
 	var orders []Ordering
-	for _, o := range q.adjustOrders() {
-		var fp FieldPath
-		if o.fieldReference != nil {
-			var err error
-			fp, err = fieldPathFromFieldRef(o.fieldReference)
-			if err != nil {
-				p.err = err
-				return p
-			}
-		} else {
-			fp = o.fieldPath
-		}
-		field := FieldOf(fp)
+	for _, o := range adjustedOrders {
+		field := FieldOf(o.fieldPath)
 		var direction OrderingDirection
 		if o.dir == Asc {
 			direction = OrderingAsc
@@ -1912,22 +1876,62 @@ func (q *Query) toPipeline() *Pipeline {
 		}
 		orders = append(orders, Ordering{Expr: field, Direction: direction})
 	}
-	p = p.Sort(orders)
-	// Combine all filters
-	if len(allFilters) == 1 {
-		p = p.Where(allFilters[0])
-	} else if len(allFilters) > 1 {
-		p = p.Where(And(allFilters[0], allFilters[1:]...))
+
+	// Start at
+	if q.startCursorSpecified() {
+		var startFilter BooleanExpression
+		var err error
+		if q.startDoc != nil {
+			startFilter, err = newCursorFilter(q, adjustedOrders, q.startDoc, q.startBefore, true)
+		} else {
+			startFilter, err = newCursorFilterWithValues(q, adjustedOrders, q.startVals, q.startBefore, true)
+		}
+		if err != nil {
+			p.err = err
+			return p
+		}
+		p = p.Where(startFilter)
+	}
+
+	// End at
+	if q.endCursorSpecified() {
+		var endFilter BooleanExpression
+		var err error
+		if q.endDoc != nil {
+			endFilter, err = newCursorFilter(q, adjustedOrders, q.endDoc, q.endBefore, false)
+		} else {
+			endFilter, err = newCursorFilterWithValues(q, adjustedOrders, q.endVals, q.endBefore, false)
+		}
+		if err != nil {
+			p.err = err
+			return p
+		}
+		p = p.Where(endFilter)
+	}
+
+	// Limit and Sort
+	if q.limit != nil {
+		if !q.limitToLast {
+			p = p.Sort(orders).Limit(int(q.limit.Value))
+		} else {
+			// LimitToLast behavior: Sort reversed, Limit, then Sort original.
+			var reversedOrders []Ordering
+			for _, o := range orders {
+				dir := OrderingAsc
+				if o.Direction == OrderingAsc {
+					dir = OrderingDesc
+				}
+				reversedOrders = append(reversedOrders, Ordering{Expr: o.Expr, Direction: dir})
+			}
+			p = p.Sort(reversedOrders).Limit(int(q.limit.Value)).Sort(orders)
+		}
+	} else {
+		p = p.Sort(orders)
 	}
 
 	// Offset
 	if q.offset > 0 {
 		p = p.Offset(int(q.offset))
-	}
-
-	// Limit
-	if q.limit != nil {
-		p = p.Limit(int(q.limit.Value))
 	}
 
 	// Select
@@ -1948,16 +1952,6 @@ func (q *Query) toPipeline() *Pipeline {
 
 	// FindNearest
 	if q.findNearest != nil {
-		var measure PipelineDistanceMeasure
-		switch q.findNearest.DistanceMeasure {
-		case pb.StructuredQuery_FindNearest_EUCLIDEAN:
-			measure = PipelineDistanceMeasureEuclidean
-		case pb.StructuredQuery_FindNearest_COSINE:
-			measure = PipelineDistanceMeasureCosine
-		case pb.StructuredQuery_FindNearest_DOT_PRODUCT:
-			measure = PipelineDistanceMeasureDotProduct
-		}
-
 		vectorField, err := fieldPathFromFieldRef(q.findNearest.VectorField)
 		if err != nil {
 			p.err = err
@@ -1969,6 +1963,20 @@ func (q *Query) toPipeline() *Pipeline {
 			p.err = err
 			return p
 		}
+
+		var measure PipelineDistanceMeasure
+		switch q.findNearest.DistanceMeasure {
+		case pb.StructuredQuery_FindNearest_EUCLIDEAN:
+			measure = PipelineDistanceMeasureEuclidean
+		case pb.StructuredQuery_FindNearest_COSINE:
+			measure = PipelineDistanceMeasureCosine
+		case pb.StructuredQuery_FindNearest_DOT_PRODUCT:
+			measure = PipelineDistanceMeasureDotProduct
+		default:
+			p.err = fmt.Errorf("firestore: unknown distance measure: %v", q.findNearest.DistanceMeasure)
+			return p
+		}
+
 		var opts []FindNearestOption
 		if q.findNearest.Limit != nil {
 			val := int(q.findNearest.Limit.Value)
@@ -1987,6 +1995,46 @@ func (q *Query) toPipeline() *Pipeline {
 
 func fieldPathFromFieldRef(ref *pb.StructuredQuery_FieldReference) (FieldPath, error) {
 	return parseDotSeparatedString(ref.FieldPath)
+}
+
+func filterToExpression(q *Query, f *pb.StructuredQuery_Filter) (BooleanExpression, error) {
+	if ff := f.GetFieldFilter(); ff != nil {
+		return newQueryFilter(q, ff)
+	}
+	if uf := f.GetUnaryFilter(); uf != nil {
+		return newQueryUnaryFilter(uf)
+	}
+	if cf := f.GetCompositeFilter(); cf != nil {
+		var exprs []BooleanExpression
+		for _, sub := range cf.Filters {
+			e, err := filterToExpression(q, sub)
+			if err != nil {
+				return nil, err
+			}
+			if e != nil {
+				exprs = append(exprs, e)
+			}
+		}
+		if cf.Op == pb.StructuredQuery_CompositeFilter_AND {
+			if len(exprs) == 0 {
+				return nil, nil
+			}
+			if len(exprs) == 1 {
+				return exprs[0], nil
+			}
+			return And(exprs[0], exprs[1:]...), nil
+		}
+		if cf.Op == pb.StructuredQuery_CompositeFilter_OR {
+			if len(exprs) == 0 {
+				return nil, nil
+			}
+			if len(exprs) == 1 {
+				return exprs[0], nil
+			}
+			return Or(exprs[0], exprs[1:]...), nil
+		}
+	}
+	return nil, fmt.Errorf("firestore: unknown filter type: %v", f)
 }
 
 func newQueryFilter(q *Query, f *pb.StructuredQuery_FieldFilter) (BooleanExpression, error) {
@@ -2045,12 +2093,12 @@ func newQueryUnaryFilter(f *pb.StructuredQuery_UnaryFilter) (BooleanExpression, 
 }
 
 // newCursorFilter creates a pipeline filter expression from a document snapshot cursor.
-func newCursorFilter(orders []order, doc *DocumentSnapshot, before, isStart bool) (BooleanExpression, error) {
+func newCursorFilter(q *Query, orders []order, doc *DocumentSnapshot, before, isStart bool) (BooleanExpression, error) {
 	values := make([]interface{}, len(orders))
 	for i, o := range orders {
 		var err error
 		if o.isDocumentID() {
-			values[i] = doc.Ref.ID
+			values[i] = doc.Ref
 		} else {
 			values[i], err = doc.DataAt(o.fieldPath.toServiceFieldPath())
 			if err != nil {
@@ -2058,17 +2106,17 @@ func newCursorFilter(orders []order, doc *DocumentSnapshot, before, isStart bool
 			}
 		}
 	}
-	return newCursorFilterWithValues(orders, values, before, isStart)
+	return newCursorFilterWithValues(q, orders, values, before, isStart)
 }
 
 // newCursorFilterWithValues creates a pipeline filter expression from a list of values.
-func newCursorFilterWithValues(orders []order, values []interface{}, before, isStart bool) (BooleanExpression, error) {
-	if len(orders) != len(values) {
-		return nil, errors.New("firestore: number of cursor values does not match number of OrderBy fields")
+func newCursorFilterWithValues(q *Query, orders []order, values []interface{}, before, isStart bool) (BooleanExpression, error) {
+	if len(values) > len(orders) {
+		return nil, errors.New("firestore: too many cursor values for OrderBy fields")
 	}
 
 	var orTerms []BooleanExpression
-	for i := 1; i <= len(orders); i++ {
+	for i := 1; i <= len(values); i++ {
 		prefixOrders := orders[:i]
 		prefixValues := values[:i]
 		var andTerms []BooleanExpression
@@ -2076,36 +2124,63 @@ func newCursorFilterWithValues(orders []order, values []interface{}, before, isS
 			fp := o.fieldPath
 			val := prefixValues[j]
 
+			if o.isDocumentID() {
+				if s, ok := val.(string); ok {
+					prefix := q.c.path() + "/documents/"
+					relPath := strings.TrimPrefix(q.path, prefix)
+					val = q.c.Doc(relPath + "/" + s)
+				}
+			}
+
 			var op string
 			if j < len(prefixOrders)-1 {
 				op = "=="
 			} else {
-				if isStart {
-					if before { // StartAt
-						if o.dir == Asc {
-							op = ">="
-						} else {
-							op = "<="
-						}
-					} else { // StartAfter
+				// For the last element of this prefix term.
+				if i < len(values) {
+					// Intermediate terms are always exclusive.
+					if isStart {
 						if o.dir == Asc {
 							op = ">"
 						} else {
 							op = "<"
+						}
+					} else { // End
+						if o.dir == Asc {
+							op = "<"
+						} else {
+							op = ">"
 						}
 					}
-				} else { // End
-					if before { // EndBefore
-						if o.dir == Asc {
-							op = "<"
-						} else {
-							op = ">"
+				} else {
+					// The very last term uses the cursor's inclusive/exclusive setting.
+					if isStart {
+						if before { // StartAt
+							if o.dir == Asc {
+								op = ">="
+							} else {
+								op = "<="
+							}
+						} else { // StartAfter
+							if o.dir == Asc {
+								op = ">"
+							} else {
+								op = "<"
+							}
 						}
-					} else { // EndAt
-						if o.dir == Asc {
-							op = "<="
-						} else {
-							op = ">="
+					} else { // End
+						if before { // EndBefore
+							if o.dir == Asc {
+								op = "<"
+							} else {
+								op = ">"
+							}
+						} else { // EndAt
+							if o.dir == Asc {
+								op = "<="
+							} else {
+								op = ">="
+							}
 						}
 					}
 				}
@@ -2131,6 +2206,9 @@ func newCursorFilterWithValues(orders []order, values []interface{}, before, isS
 		}
 	}
 
+	if len(orTerms) == 0 {
+		return nil, nil
+	}
 	if len(orTerms) == 1 {
 		return orTerms[0], nil
 	}
