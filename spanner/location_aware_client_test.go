@@ -19,6 +19,7 @@ package spanner
 import (
 	"context"
 	"io"
+	"sync"
 	"testing"
 	"time"
 
@@ -200,6 +201,7 @@ func (e *mockEndpoint) GetConn() *grpc.ClientConn {
 
 // mockEndpointCache implements channelEndpointCache for testing.
 type mockEndpointCache struct {
+	mu              sync.Mutex
 	clients         map[string]spannerClient
 	seen            map[string]channelEndpoint
 	defaultEndpoint channelEndpoint
@@ -214,6 +216,9 @@ func newMockEndpointCache() *mockEndpointCache {
 }
 
 func (c *mockEndpointCache) Get(_ context.Context, address string) channelEndpoint {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
 	if address == c.defaultEndpoint.Address() {
 		return c.defaultEndpoint
 	}
@@ -233,6 +238,9 @@ func (c *mockEndpointCache) Get(_ context.Context, address string) channelEndpoi
 }
 
 func (c *mockEndpointCache) GetIfPresent(address string) channelEndpoint {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
 	if address == c.defaultEndpoint.Address() {
 		return c.defaultEndpoint
 	}
@@ -244,6 +252,9 @@ func (c *mockEndpointCache) GetIfPresent(address string) channelEndpoint {
 }
 
 func (c *mockEndpointCache) Evict(address string) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
 	if address == c.defaultEndpoint.Address() {
 		return
 	}
@@ -254,6 +265,9 @@ func (c *mockEndpointCache) Evict(address string) {
 func (c *mockEndpointCache) DefaultChannel() channelEndpoint { return c.defaultEndpoint }
 
 func (c *mockEndpointCache) ClientFor(ep channelEndpoint) spannerClient {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
 	if ep == nil {
 		return nil
 	}
@@ -263,6 +277,8 @@ func (c *mockEndpointCache) ClientFor(ep channelEndpoint) spannerClient {
 func (c *mockEndpointCache) Close() error { return nil }
 
 func (c *mockEndpointCache) addEndpoint(address string, client spannerClient) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
 	c.clients[address] = client
 }
 
