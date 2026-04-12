@@ -22,6 +22,7 @@ import (
 	"io"
 	"math"
 	"math/big"
+	"strings"
 	"sync/atomic"
 	"time"
 
@@ -86,6 +87,15 @@ func (g *grpcSpannerClient) appendRequestIDToGRPCOptions(priors []grpc.CallOptio
 
 type requestID string
 
+func (r requestID) logicalRequestKey() string {
+	requestIDValue := string(r)
+	lastSeparator := strings.LastIndexByte(requestIDValue, '.')
+	if lastSeparator < 0 {
+		return requestIDValue
+	}
+	return requestIDValue[:lastSeparator]
+}
+
 // augmentErrorWithRequestID introspects error converting it to an *.Error and
 // attaching the subject requestID, unless it is one of the following:
 // * nil
@@ -136,6 +146,26 @@ func gRPCCallOptionsToRequestID(opts []grpc.CallOption) (md metadata.MD, reqID r
 		}
 	}
 	return
+}
+
+func logicalRequestKeyFromCallOptions(opts []gax.CallOption) string {
+	if len(opts) == 0 {
+		return ""
+	}
+
+	var settings gax.CallSettings
+	for _, opt := range opts {
+		if opt == nil {
+			continue
+		}
+		opt.Resolve(&settings)
+	}
+
+	_, reqID, found := gRPCCallOptionsToRequestID(settings.GRPC)
+	if !found {
+		return ""
+	}
+	return reqID.logicalRequestKey()
 }
 
 func (wr *requestIDHeaderInjector) interceptUnary(ctx context.Context, method string, req, reply any, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {

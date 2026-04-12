@@ -654,13 +654,17 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	sc.mu.Unlock()
 
 	var locationRouter *locationRouter
-	if isExperimentalLocationAPIEnabled() {
+	if isExperimentalLocationAPIEnabledForConfig(config) {
 		sc.baseClientOpts = endpointClientOpts
+		defaultEndpointAddress := ""
 		if conn := pool.Conn(); conn != nil {
 			sc.endpointAuthority = normalizeAuthorityTarget(conn.Target())
+			defaultEndpointAddress = sc.endpointAuthority
 		}
-		epCache := newEndpointClientCache(sc.createEndpointClient)
+		epCache := newEndpointClientCacheWithDefaultAddress(sc.createEndpointClient, defaultEndpointAddress)
 		locationRouter = newLocationRouter(epCache)
+		locationRouter.lifecycleManager = newEndpointLifecycleManager(epCache)
+		locationRouter.finder.setLifecycleManager(locationRouter.lifecycleManager)
 	}
 
 	// Create a session manager.

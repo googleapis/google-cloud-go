@@ -7283,10 +7283,6 @@ test_case {
         tablet_uid: 195035137
         incarnation: "\001\331"
       }
-      skipped_tablet_uid {
-        tablet_uid: 195035137
-        incarnation: "\001\331"
-      }
     }
   }
   event {
@@ -8368,10 +8364,6 @@ test_case {
       limit_key: "A\206\311"
       group_uid: 72351745
       split_id: 14079378335067013120
-      skipped_tablet_uid {
-        tablet_uid: 72351745
-        incarnation: "\001H"
-      }
       skipped_tablet_uid {
         tablet_uid: 72351745
         incarnation: "\001H"

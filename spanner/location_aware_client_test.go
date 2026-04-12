@@ -20,12 +20,15 @@ import (
 	"context"
 	"io"
 	"testing"
+	"time"
 
 	vkit "cloud.google.com/go/spanner/apiv1"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 )
@@ -56,6 +59,13 @@ type mockSpannerClient struct {
 	executeSQLResp *sppb.ResultSet
 	commitResp     *sppb.CommitResponse
 	streamResp     *mockStreamingClient
+	conn           *grpc.ClientConn
+	beginTxErr     error
+	executeSQLErr  error
+	commitErr      error
+	rollbackErr    error
+	streamReadErr  error
+	streamSQLErr   error
 }
 
 func (m *mockSpannerClient) CallOptions() *vkit.CallOptions { return nil }
@@ -63,7 +73,7 @@ func (m *mockSpannerClient) Close() error {
 	m.closeCount++
 	return nil
 }
-func (m *mockSpannerClient) Connection() *grpc.ClientConn { return nil }
+func (m *mockSpannerClient) Connection() *grpc.ClientConn { return m.conn }
 func (m *mockSpannerClient) CreateSession(ctx context.Context, req *sppb.CreateSessionRequest, opts ...gax.CallOption) (*sppb.Session, error) {
 	return nil, nil
 }
@@ -95,7 +105,7 @@ func (m *mockSpannerClient) BatchWrite(ctx context.Context, req *sppb.BatchWrite
 func (m *mockSpannerClient) StreamingRead(ctx context.Context, req *sppb.ReadRequest, opts ...gax.CallOption) (sppb.Spanner_StreamingReadClient, error) {
 	m.streamingReadCalled = true
 	m.streamingReadCount++
-	return m.streamResp, nil
+	return m.streamResp, m.streamReadErr
 }
 
 func (m *mockSpannerClient) Read(ctx context.Context, req *sppb.ReadRequest, opts ...gax.CallOption) (*sppb.ResultSet, error) {
@@ -105,13 +115,13 @@ func (m *mockSpannerClient) Read(ctx context.Context, req *sppb.ReadRequest, opt
 func (m *mockSpannerClient) ExecuteStreamingSql(ctx context.Context, req *sppb.ExecuteSqlRequest, opts ...gax.CallOption) (sppb.Spanner_ExecuteStreamingSqlClient, error) {
 	m.executeStreamSQLCalled = true
 	m.executeStreamSQLCount++
-	return m.streamResp, nil
+	return m.streamResp, m.streamSQLErr
 }
 
 func (m *mockSpannerClient) ExecuteSql(ctx context.Context, req *sppb.ExecuteSqlRequest, opts ...gax.CallOption) (*sppb.ResultSet, error) {
 	m.executeSQLCalled = true
 	m.executeSQLCount++
-	return m.executeSQLResp, nil
+	return m.executeSQLResp, m.executeSQLErr
 }
 
 func (m *mockSpannerClient) BeginTransaction(ctx context.Context, req *sppb.BeginTransactionRequest, opts ...gax.CallOption) (*sppb.Transaction, error) {
@@ -120,7 +130,7 @@ func (m *mockSpannerClient) BeginTransaction(ctx context.Context, req *sppb.Begi
 	if req != nil {
 		m.lastBeginTxReq = proto.Clone(req).(*sppb.BeginTransactionRequest)
 	}
-	return m.beginTxResp, nil
+	return m.beginTxResp, m.beginTxErr
 }
 
 func (m *mockSpannerClient) Commit(ctx context.Context, req *sppb.CommitRequest, opts ...gax.CallOption) (*sppb.CommitResponse, error) {
@@ -129,13 +139,13 @@ func (m *mockSpannerClient) Commit(ctx context.Context, req *sppb.CommitRequest,
 	if req != nil {
 		m.lastCommitReq = proto.Clone(req).(*sppb.CommitRequest)
 	}
-	return m.commitResp, nil
+	return m.commitResp, m.commitErr
 }
 
 func (m *mockSpannerClient) Rollback(ctx context.Context, req *sppb.RollbackRequest, opts ...gax.CallOption) error {
 	m.rollbackCalled = true
 	m.rollbackCount++
-	return nil
+	return m.rollbackErr
 }
 
 // mockStreamingClient implements both Spanner_StreamingReadClient and
@@ -144,10 +154,14 @@ type mockStreamingClient struct {
 	grpc.ClientStream
 	results []*sppb.PartialResultSet
 	index   int
+	err     error
 }
 
 func (m *mockStreamingClient) Recv() (*sppb.PartialResultSet, error) {
 	if m.index >= len(m.results) {
+		if m.err != nil {
+			return nil, m.err
+		}
 		return nil, io.EOF
 	}
 	prs := m.results[m.index]
@@ -162,31 +176,82 @@ func (m *mockStreamingClient) Context() context.Context     { return context.Bac
 func (m *mockStreamingClient) SendMsg(interface{}) error    { return nil }
 func (m *mockStreamingClient) RecvMsg(interface{}) error    { return nil }
 
+type mockEndpoint struct {
+	address string
+	healthy bool
+	conn    *grpc.ClientConn
+}
+
+func (e *mockEndpoint) Address() string {
+	return e.address
+}
+
+func (e *mockEndpoint) IsHealthy() bool {
+	return e.healthy
+}
+
+func (*mockEndpoint) IsTransientFailure() bool {
+	return false
+}
+
+func (e *mockEndpoint) GetConn() *grpc.ClientConn {
+	return e.conn
+}
+
 // mockEndpointCache implements channelEndpointCache for testing.
 type mockEndpointCache struct {
-	clients map[string]spannerClient
-	seen    map[string]*grpcChannelEndpoint
+	clients         map[string]spannerClient
+	seen            map[string]channelEndpoint
+	defaultEndpoint channelEndpoint
 }
 
 func newMockEndpointCache() *mockEndpointCache {
 	return &mockEndpointCache{
-		clients: make(map[string]spannerClient),
-		seen:    make(map[string]*grpcChannelEndpoint),
+		clients:         make(map[string]spannerClient),
+		seen:            make(map[string]channelEndpoint),
+		defaultEndpoint: &passthroughChannelEndpoint{address: ""},
 	}
 }
 
 func (c *mockEndpointCache) Get(_ context.Context, address string) channelEndpoint {
+	if address == c.defaultEndpoint.Address() {
+		return c.defaultEndpoint
+	}
 	if _, ok := c.clients[address]; ok {
 		if ep, ok := c.seen[address]; ok {
 			return ep
 		}
-		ep := &grpcChannelEndpoint{address: address}
-		ep.healthy.Store(true)
+		ep := &mockEndpoint{
+			address: address,
+			conn:    c.clients[address].Connection(),
+			healthy: true,
+		}
 		c.seen[address] = ep
 		return ep
 	}
 	return nil
 }
+
+func (c *mockEndpointCache) GetIfPresent(address string) channelEndpoint {
+	if address == c.defaultEndpoint.Address() {
+		return c.defaultEndpoint
+	}
+	endpoint, ok := c.seen[address]
+	if !ok {
+		return nil
+	}
+	return endpoint
+}
+
+func (c *mockEndpointCache) Evict(address string) {
+	if address == c.defaultEndpoint.Address() {
+		return
+	}
+	delete(c.seen, address)
+	delete(c.clients, address)
+}
+
+func (c *mockEndpointCache) DefaultChannel() channelEndpoint { return c.defaultEndpoint }
 
 func (c *mockEndpointCache) ClientFor(ep channelEndpoint) spannerClient {
 	if ep == nil {
@@ -253,13 +318,196 @@ func TestLocationAwareSpannerClient_FallsBackToDefault(t *testing.T) {
 	}
 }
 
+func TestLocationAwareSpannerClient_UsesCacheDefaultChannelForAffinityFallback(t *testing.T) {
+	defaultClient := &mockSpannerClient{}
+	epCache := newMockEndpointCache()
+	epCache.defaultEndpoint = &passthroughChannelEndpoint{address: "spanner.googleapis.com:443"}
+	router := newLocationRouter(epCache)
+
+	lac := newLocationAwareSpannerClient(defaultClient, router, epCache)
+	if lac.defaultAffinityEndpoint != epCache.DefaultChannel() {
+		t.Fatal("expected location-aware client to reuse endpoint cache default channel")
+	}
+	if lac.defaultEndpointAddress != "spanner.googleapis.com:443" {
+		t.Fatalf("defaultEndpointAddress = %q, want %q", lac.defaultEndpointAddress, "spanner.googleapis.com:443")
+	}
+}
+
+func TestLocationAwareSpannerClient_ExecuteSQLRetriesAvoidExcludedEndpoint(t *testing.T) {
+	defaultClient := &mockSpannerClient{
+		executeSQLResp: &sppb.ResultSet{},
+	}
+	endpointClient := &mockSpannerClient{
+		executeSQLErr: status.Error(codes.ResourceExhausted, "busy"),
+	}
+
+	epCache := newMockEndpointCache()
+	epCache.defaultEndpoint = &passthroughChannelEndpoint{address: "default:443"}
+	epCache.addEndpoint("server-a:443", endpointClient)
+	router := newLocationRouter(epCache)
+	router.observeResultSet(&sppb.ResultSet{CacheUpdate: createRangeCacheUpdateForHint(&sppb.RoutingHint{Key: []byte("b")})})
+
+	lac := newLocationAwareSpannerClient(defaultClient, router, epCache)
+
+	_, err := lac.ExecuteSql(
+		context.Background(),
+		executeSQLWithKeyAndSelector("b", nil),
+		testCallOptionsWithRequestID("1.proc.1.1.77.1")...,
+	)
+	if status.Code(err) != codes.ResourceExhausted {
+		t.Fatalf("expected RESOURCE_EXHAUSTED, got %v", err)
+	}
+
+	_, err = lac.ExecuteSql(
+		context.Background(),
+		executeSQLWithKeyAndSelector("b", nil),
+		testCallOptionsWithRequestID("1.proc.1.1.77.2")...,
+	)
+	if err != nil {
+		t.Fatalf("unexpected retry error: %v", err)
+	}
+	if endpointClient.executeSQLCount != 1 {
+		t.Fatalf("expected first attempt to hit routed endpoint once, got %d", endpointClient.executeSQLCount)
+	}
+	if defaultClient.executeSQLCount != 1 {
+		t.Fatalf("expected retry attempt to fall back to default endpoint once, got %d", defaultClient.executeSQLCount)
+	}
+}
+
+func TestLocationAwareSpannerClient_ExecuteStreamingSQLRetriesAvoidExcludedEndpoint(t *testing.T) {
+	defaultClient := &mockSpannerClient{
+		streamResp: &mockStreamingClient{
+			results: []*sppb.PartialResultSet{{}},
+		},
+	}
+	endpointClient := &mockSpannerClient{
+		streamResp: &mockStreamingClient{
+			err: status.Error(codes.ResourceExhausted, "busy"),
+		},
+	}
+
+	epCache := newMockEndpointCache()
+	epCache.defaultEndpoint = &passthroughChannelEndpoint{address: "default:443"}
+	epCache.addEndpoint("server-a:443", endpointClient)
+	router := newLocationRouter(epCache)
+	router.observeResultSet(&sppb.ResultSet{CacheUpdate: createRangeCacheUpdateForHint(&sppb.RoutingHint{Key: []byte("b")})})
+
+	lac := newLocationAwareSpannerClient(defaultClient, router, epCache)
+
+	stream, err := lac.ExecuteStreamingSql(
+		context.Background(),
+		executeSQLWithKeyAndSelector("b", nil),
+		testCallOptionsWithRequestID("1.proc.1.1.88.1")...,
+	)
+	if err != nil {
+		t.Fatalf("unexpected stream creation error: %v", err)
+	}
+	_, err = stream.Recv()
+	if status.Code(err) != codes.ResourceExhausted {
+		t.Fatalf("expected RESOURCE_EXHAUSTED from routed stream, got %v", err)
+	}
+
+	stream, err = lac.ExecuteStreamingSql(
+		context.Background(),
+		executeSQLWithKeyAndSelector("b", nil),
+		testCallOptionsWithRequestID("1.proc.1.1.88.2")...,
+	)
+	if err != nil {
+		t.Fatalf("unexpected retry stream creation error: %v", err)
+	}
+	_, err = stream.Recv()
+	if err != nil {
+		t.Fatalf("unexpected retry stream recv error: %v", err)
+	}
+	if endpointClient.executeStreamSQLCount != 1 {
+		t.Fatalf("expected first attempt to hit routed endpoint once, got %d", endpointClient.executeStreamSQLCount)
+	}
+	if defaultClient.executeStreamSQLCount != 1 {
+		t.Fatalf("expected retry attempt to fall back to default endpoint once, got %d", defaultClient.executeStreamSQLCount)
+	}
+}
+
+func TestLocationAwareSpannerClient_ClientForEndpointRecordsLifecycleTraffic(t *testing.T) {
+	conn, cleanup := newReadyTestConn(t)
+	defer cleanup()
+
+	defaultClient := &mockSpannerClient{}
+	endpointClient := &mockSpannerClient{conn: conn}
+
+	epCache := newMockEndpointCache()
+	epCache.defaultEndpoint = &passthroughChannelEndpoint{address: "default:443"}
+	epCache.addEndpoint("replica-1:443", endpointClient)
+
+	router := newLocationRouter(epCache)
+	router.lifecycleManager = newEndpointLifecycleManagerWithOptions(
+		epCache,
+		time.Hour,
+		time.Hour,
+		time.Now,
+	)
+	defer router.lifecycleManager.shutdown()
+
+	lac := newLocationAwareSpannerClient(defaultClient, router, epCache)
+	ep := epCache.Get(context.Background(), "replica-1:443")
+	if ep == nil {
+		t.Fatal("expected routed endpoint")
+	}
+
+	client := lac.clientForEndpoint(ep)
+	if client != endpointClient {
+		t.Fatal("expected routed endpoint client")
+	}
+
+	waitForCondition(t, time.Second, func() bool {
+		return router.lifecycleManager.isManaged("replica-1:443")
+	})
+}
+
+func TestLocationAwareSpannerClient_AffinityClientRequestsLifecycleRecreationForUnhealthyEndpoint(t *testing.T) {
+	conn, cleanup := newReadyTestConn(t)
+	defer cleanup()
+
+	defaultClient := &mockSpannerClient{}
+	epCache := newMockEndpointCache()
+	epCache.defaultEndpoint = &passthroughChannelEndpoint{address: "default:443"}
+	epCache.addEndpoint("replica-2:443", &mockSpannerClient{conn: conn})
+
+	router := newLocationRouter(epCache)
+	router.lifecycleManager = newEndpointLifecycleManagerWithOptions(
+		epCache,
+		time.Hour,
+		time.Hour,
+		time.Now,
+	)
+	defer router.lifecycleManager.shutdown()
+
+	unhealthyEndpoint := &mockEndpoint{address: "replica-2:443", healthy: false}
+	router.setTransactionAffinity("tx-unhealthy", unhealthyEndpoint)
+
+	lac := newLocationAwareSpannerClient(defaultClient, router, epCache)
+
+	client := lac.affinityClient([]byte("tx-unhealthy"))
+	if client != defaultClient {
+		t.Fatal("expected unhealthy affinity endpoint to fall back to default client")
+	}
+
+	waitForCondition(t, time.Second, func() bool {
+		return router.lifecycleManager.isManaged("replica-2:443") &&
+			epCache.GetIfPresent("replica-2:443") != nil
+	})
+}
+
 func TestLocationAwareSpannerClient_TransactionAffinity_BeginTransaction(t *testing.T) {
+	conn, cleanup := newReadyTestConn(t)
+	defer cleanup()
+
 	defaultClient := &mockSpannerClient{
 		beginTxResp: &sppb.Transaction{Id: []byte("tx-123")},
 		commitResp:  &sppb.CommitResponse{},
 	}
 	endpointClient := &mockSpannerClient{
 		commitResp: &sppb.CommitResponse{},
+		conn:       conn,
 	}
 
 	epCache := newMockEndpointCache()
@@ -269,8 +517,7 @@ func TestLocationAwareSpannerClient_TransactionAffinity_BeginTransaction(t *test
 	lac := newLocationAwareSpannerClient(defaultClient, router, epCache)
 
 	// Simulate that BeginTransaction was routed to a specific endpoint.
-	ep := &grpcChannelEndpoint{address: "server1:443"}
-	ep.healthy.Store(true)
+	ep := epCache.Get(context.Background(), "server1:443")
 	router.setTransactionAffinity("tx-123", ep)
 
 	// Commit should route to the same endpoint.
@@ -565,8 +812,11 @@ func TestLocationAwareSpannerClient_CommitResponseCacheUpdateEnablesSubsequentBe
 }
 
 func TestLocationAwareSpannerClient_TransactionAffinity_Rollback(t *testing.T) {
+	conn, cleanup := newReadyTestConn(t)
+	defer cleanup()
+
 	defaultClient := &mockSpannerClient{}
-	endpointClient := &mockSpannerClient{}
+	endpointClient := &mockSpannerClient{conn: conn}
 
 	epCache := newMockEndpointCache()
 	epCache.addEndpoint("server2:443", endpointClient)
@@ -574,8 +824,7 @@ func TestLocationAwareSpannerClient_TransactionAffinity_Rollback(t *testing.T) {
 	router := newLocationRouter(epCache)
 	lac := newLocationAwareSpannerClient(defaultClient, router, epCache)
 
-	ep := &grpcChannelEndpoint{address: "server2:443"}
-	ep.healthy.Store(true)
+	ep := epCache.Get(context.Background(), "server2:443")
 	router.setTransactionAffinity("tx-456", ep)
 
 	err := lac.Rollback(context.Background(), &sppb.RollbackRequest{
@@ -984,12 +1233,23 @@ func TestLocationRouter_Close(t *testing.T) {
 	closed := false
 	epCache := &mockCloseCache{closeFn: func() error { closed = true; return nil }}
 	router := newLocationRouter(epCache)
+	router.lifecycleManager = newEndpointLifecycleManagerWithOptions(
+		epCache,
+		time.Hour,
+		time.Hour,
+		time.Now,
+	)
 
 	if err := router.Close(); err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 	if !closed {
 		t.Fatal("expected endpoint cache to be closed")
+	}
+	select {
+	case <-router.lifecycleManager.doneCh:
+	default:
+		t.Fatal("expected lifecycle manager to stop during Close")
 	}
 
 	// Nil safety.
@@ -1004,8 +1264,13 @@ type mockCloseCache struct {
 }
 
 func (c *mockCloseCache) Get(context.Context, string) channelEndpoint { return nil }
-func (c *mockCloseCache) ClientFor(_ channelEndpoint) spannerClient   { return nil }
-func (c *mockCloseCache) Close() error                                { return c.closeFn() }
+func (c *mockCloseCache) GetIfPresent(string) channelEndpoint         { return nil }
+func (c *mockCloseCache) Evict(string)                                {}
+func (c *mockCloseCache) DefaultChannel() channelEndpoint {
+	return &passthroughChannelEndpoint{address: ""}
+}
+func (c *mockCloseCache) ClientFor(_ channelEndpoint) spannerClient { return nil }
+func (c *mockCloseCache) Close() error                              { return c.closeFn() }
 
 func seedTwoRangeRoutingCache(router *locationRouter) {
 	router.observeResultSet(&sppb.ResultSet{
@@ -1165,4 +1430,9 @@ func executeSQLWithKeyAndSelector(key string, selector *sppb.TransactionSelector
 		},
 		Params: &structpb.Struct{},
 	}
+}
+
+func testCallOptionsWithRequestID(requestIDValue string) []gax.CallOption {
+	md := metadata.MD{xSpannerRequestIDHeader: []string{requestIDValue}}
+	return []gax.CallOption{gax.WithGRPCOptions(grpc.Header(&md))}
 }

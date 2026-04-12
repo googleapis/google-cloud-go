@@ -30,11 +30,13 @@ import (
 
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"github.com/google/go-cmp/cmp"
+	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -113,6 +115,22 @@ func validateRequestIDSegments(recv *requestIDSegments) error {
 		return status.Errorf(codes.InvalidArgument, "rpcID must be >= 1, got=%d", g)
 	}
 	return nil
+}
+
+func TestRequestIDLogicalRequestKey(t *testing.T) {
+	reqID := requestID("1.proc.7.3.19.4")
+	if got, want := reqID.logicalRequestKey(), "1.proc.7.3.19"; got != want {
+		t.Fatalf("logicalRequestKey() = %q, want %q", got, want)
+	}
+}
+
+func TestLogicalRequestKeyFromCallOptions(t *testing.T) {
+	md := metadata.MD{xSpannerRequestIDHeader: []string{"1.proc.9.2.44.3"}}
+	opts := []gax.CallOption{gax.WithGRPCOptions(grpc.Header(&md))}
+
+	if got, want := logicalRequestKeyFromCallOptions(opts), "1.proc.9.2.44"; got != want {
+		t.Fatalf("logicalRequestKeyFromCallOptions() = %q, want %q", got, want)
+	}
 }
 
 func TestRequestIDHeader_sentOnEveryClientCall(t *testing.T) {

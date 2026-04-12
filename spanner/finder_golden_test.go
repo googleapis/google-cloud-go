@@ -28,6 +28,7 @@ import (
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	locationpb "cloud.google.com/go/spanner/test/proto/locationpb"
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/grpc"
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/testing/protocmp"
@@ -63,6 +64,16 @@ func (e *finderGoldenEndpoint) IsHealthy() bool {
 	return !e.cache.unhealthy[e.address]
 }
 
+func (e *finderGoldenEndpoint) IsTransientFailure() bool {
+	e.cache.mu.Lock()
+	defer e.cache.mu.Unlock()
+	return e.cache.unhealthy[e.address]
+}
+
+func (*finderGoldenEndpoint) GetConn() *grpc.ClientConn {
+	return nil
+}
+
 type finderGoldenEndpointCache struct {
 	mu        sync.Mutex
 	endpoints map[string]*finderGoldenEndpoint
@@ -78,6 +89,9 @@ func newFinderGoldenEndpointCache() *finderGoldenEndpointCache {
 
 func (c *finderGoldenEndpointCache) ClientFor(_ channelEndpoint) spannerClient { return nil }
 func (c *finderGoldenEndpointCache) Close() error                              { return nil }
+func (c *finderGoldenEndpointCache) DefaultChannel() channelEndpoint {
+	return &finderGoldenEndpoint{address: "", cache: c}
+}
 
 func (c *finderGoldenEndpointCache) Get(_ context.Context, address string) channelEndpoint {
 	c.mu.Lock()
@@ -88,6 +102,22 @@ func (c *finderGoldenEndpointCache) Get(_ context.Context, address string) chann
 	endpoint := &finderGoldenEndpoint{address: address, cache: c}
 	c.endpoints[address] = endpoint
 	return endpoint
+}
+
+func (c *finderGoldenEndpointCache) GetIfPresent(address string) channelEndpoint {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	endpoint, ok := c.endpoints[address]
+	if !ok {
+		return nil
+	}
+	return endpoint
+}
+
+func (c *finderGoldenEndpointCache) Evict(address string) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	delete(c.endpoints, address)
 }
 
 func (c *finderGoldenEndpointCache) setUnhealthyServers(addresses []string) {

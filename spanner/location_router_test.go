@@ -25,6 +25,71 @@ import (
 	structpb "google.golang.org/protobuf/types/known/structpb"
 )
 
+func TestChannelFinder_IsMaterialUpdate(t *testing.T) {
+	finder := newChannelFinder(nil)
+
+	for _, tc := range []struct {
+		name   string
+		update *sppb.CacheUpdate
+		want   bool
+	}{
+		{name: "nil", update: nil, want: false},
+		{name: "empty", update: &sppb.CacheUpdate{}, want: false},
+		{name: "database only", update: &sppb.CacheUpdate{DatabaseId: 1}, want: false},
+		{
+			name:   "group",
+			update: &sppb.CacheUpdate{Group: []*sppb.Group{{GroupUid: 1}}},
+			want:   true,
+		},
+		{
+			name:   "range",
+			update: &sppb.CacheUpdate{Range: []*sppb.Range{{GroupUid: 1}}},
+			want:   true,
+		},
+		{
+			name:   "recipes",
+			update: &sppb.CacheUpdate{KeyRecipes: &sppb.RecipeList{Recipe: []*sppb.KeyRecipe{{}}}},
+			want:   true,
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := finder.isMaterialUpdate(tc.update); got != tc.want {
+				t.Fatalf("isMaterialUpdate() = %v, want %v", got, tc.want)
+			}
+		})
+	}
+}
+
+func TestChannelFinder_ShouldProcessUpdate(t *testing.T) {
+	finder := newChannelFinder(nil)
+	finder.databaseID.Store(7)
+
+	for _, tc := range []struct {
+		name   string
+		update *sppb.CacheUpdate
+		want   bool
+	}{
+		{name: "nil", update: nil, want: false},
+		{name: "empty", update: &sppb.CacheUpdate{}, want: false},
+		{name: "same database only", update: &sppb.CacheUpdate{DatabaseId: 7}, want: false},
+		{name: "different database only", update: &sppb.CacheUpdate{DatabaseId: 8}, want: true},
+		{
+			name: "material same database",
+			update: &sppb.CacheUpdate{
+				DatabaseId: 7,
+				Group:      []*sppb.Group{{GroupUid: 1}},
+			},
+			want: true,
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := finder.shouldProcessUpdate(tc.update); got != tc.want {
+				t.Fatalf("shouldProcessUpdate() = %v, want %v", got, tc.want)
+			}
+		})
+	}
+}
+
 func TestIsExperimentalLocationAPIEnabled(t *testing.T) {
 	t.Setenv(experimentalLocationAPIEnvVar, "true")
 	if !isExperimentalLocationAPIEnabled() {
@@ -40,6 +105,28 @@ func TestIsExperimentalLocationAPIEnabled(t *testing.T) {
 	if isExperimentalLocationAPIEnabled() {
 		t.Fatal("expected invalid boolean env var to be treated as disabled")
 	}
+}
+
+func TestIsExperimentalLocationAPIEnabledForConfig(t *testing.T) {
+	t.Run("experimental host enables location API by default", func(t *testing.T) {
+		if !isExperimentalLocationAPIEnabledForConfig(ClientConfig{IsExperimentalHost: true}) {
+			t.Fatal("expected experimental host to enable location API")
+		}
+	})
+
+	t.Run("env var false overrides experimental host", func(t *testing.T) {
+		t.Setenv(experimentalLocationAPIEnvVar, "false")
+		if isExperimentalLocationAPIEnabledForConfig(ClientConfig{IsExperimentalHost: true}) {
+			t.Fatal("expected env var false to disable location API even with experimental host")
+		}
+	})
+
+	t.Run("env var true enables regardless of config", func(t *testing.T) {
+		t.Setenv(experimentalLocationAPIEnvVar, "true")
+		if !isExperimentalLocationAPIEnabledForConfig(ClientConfig{}) {
+			t.Fatal("expected env var true to enable location API")
+		}
+	})
 }
 
 func TestLocationRouter_PrepareReadRequest_FromObservedResultSetUpdate(t *testing.T) {
@@ -97,6 +184,31 @@ func TestLocationRouter_PrepareReadRequest_FromObservedResultSetUpdate(t *testin
 	}
 	if hint.GetDatabaseId() != 1 {
 		t.Fatalf("expected database id 1, got %d", hint.GetDatabaseId())
+	}
+}
+
+func TestLocationRouter_ObserveResultSet_ProcessesDatabaseIDChangeWithoutMaterialUpdate(t *testing.T) {
+	router := newLocationRouter(nil)
+	router.finder.databaseID.Store(3)
+
+	router.observeResultSet(&sppb.ResultSet{
+		CacheUpdate: &sppb.CacheUpdate{DatabaseId: 9},
+	})
+
+	if got := router.finder.databaseID.Load(); got != 9 {
+		t.Fatalf("databaseID after observeResultSet = %d, want 9", got)
+	}
+}
+
+func TestNewClient_EnablesLocationRouterForExperimentalHost(t *testing.T) {
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
+		IsExperimentalHost:   true,
+	})
+	defer teardown()
+
+	if client.locationRouter == nil {
+		t.Fatal("expected location router to be enabled for experimental host")
 	}
 }
 
