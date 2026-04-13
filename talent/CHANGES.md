@@ -1,6 +1,8 @@
 # Changes
 
 
+## [1.10.0](https://github.com/googleapis/google-cloud-go/releases/tag/talent%2Fv1.10.0) (2026-04-09)
+
 ## [1.9.0](https://github.com/googleapis/google-cloud-go/releases/tag/talent%2Fv1.9.0) (2026-04-02)
 
 ## [1.8.4](https://github.com/googleapis/google-cloud-go/compare/talent/v1.8.3...talent/v1.8.4) (2025-09-22)

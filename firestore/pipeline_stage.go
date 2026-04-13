@@ -42,6 +42,7 @@ const (
 	stageNameRemoveFields    = "remove_fields"
 	stageNameReplaceWith     = "replace_with"
 	stageNameSample          = "sample"
+	stageNameSearch          = "search"
 	stageNameSelect          = "select"
 	stageNameSort            = "sort"
 	stageNameUnion           = "union"
@@ -576,6 +577,113 @@ func (s *sampleStage) toProto() (*pb.Pipeline_Stage, error) {
 	return &pb.Pipeline_Stage{
 		Name:    s.name(),
 		Args:    []*pb.Value{sizePb, modePb},
+		Options: optionsPb,
+	}, nil
+}
+
+type searchStage struct {
+	options map[string]any
+}
+
+func newSearchStage(options map[string]any) (*searchStage, error) {
+	return &searchStage{options: options}, nil
+}
+func (s *searchStage) name() string { return stageNameSearch }
+func (s *searchStage) toProto() (*pb.Pipeline_Stage, error) {
+	if len(s.options) == 0 {
+		return &pb.Pipeline_Stage{
+			Name: s.name(),
+			Args: []*pb.Value{},
+		}, nil
+	}
+
+	optionsPb := make(map[string]*pb.Value)
+
+	for k, v := range s.options {
+		switch k {
+		case "query":
+			var queryExpr Expression
+			switch qv := v.(type) {
+			case string:
+				queryExpr = DocumentMatches(qv)
+			case BooleanExpression:
+				queryExpr = qv
+			default:
+				return nil, errInvalidArg("Search", v, "string", "BooleanExpression")
+			}
+			queryPb, err := queryExpr.toProto()
+			if err != nil {
+				return nil, err
+			}
+			optionsPb[k] = queryPb
+
+		case "add_fields":
+			fields, ok := v.([]Selectable)
+			if !ok {
+				return nil, fmt.Errorf("firestore: invalid type for Search add_fields: %T", v)
+			}
+			mapVal, err := projectionsToMapValue(fields)
+			if err != nil {
+				return nil, err
+			}
+			optionsPb[k] = mapVal
+
+		case "sort":
+			orders, ok := v.([]Ordering)
+			if !ok {
+				return nil, fmt.Errorf("firestore: invalid type for Search sort: %T", v)
+			}
+			sortVals := make([]*pb.Value, len(orders))
+			for i, so := range orders {
+				fieldPb, err := so.Expr.toProto()
+				if err != nil {
+					return nil, err
+				}
+				sortVals[i] = &pb.Value{
+					ValueType: &pb.Value_MapValue{
+						MapValue: &pb.MapValue{
+							Fields: map[string]*pb.Value{
+								"direction": {
+									ValueType: &pb.Value_StringValue{
+										StringValue: string(so.Direction),
+									},
+								},
+								"expression": fieldPb,
+							},
+						},
+					},
+				}
+			}
+			optionsPb[k] = &pb.Value{
+				ValueType: &pb.Value_ArrayValue{
+					ArrayValue: &pb.ArrayValue{
+						Values: sortVals,
+					},
+				},
+			}
+
+		case "retrieval_depth":
+			switch depth := v.(type) {
+			case int64:
+				optionsPb[k] = &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: depth}}
+			case int:
+				optionsPb[k] = &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(depth)}}
+			default:
+				return nil, fmt.Errorf("firestore: invalid type for Search retrieval_depth: %T", v)
+			}
+
+		default:
+			valPb, _, err := toProtoValue(reflect.ValueOf(v))
+			if err != nil {
+				return nil, fmt.Errorf("firestore: error converting stage option %q: %w", k, err)
+			}
+			optionsPb[k] = valPb
+		}
+	}
+
+	return &pb.Pipeline_Stage{
+		Name:    s.name(),
+		Args:    []*pb.Value{},
 		Options: optionsPb,
 	}, nil
 }

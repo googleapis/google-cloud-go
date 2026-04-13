@@ -1,5 +1,7 @@
 # Changes
 
+## [1.9.0](https://github.com/googleapis/google-cloud-go/releases/tag/managedidentities%2Fv1.9.0) (2026-04-09)
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/releases/tag/managedidentities%2Fv1.8.0) (2026-04-02)
 
 ## [1.7.7](https://github.com/googleapis/google-cloud-go/compare/managedidentities/v1.7.6...managedidentities/v1.7.7) (2025-09-18)

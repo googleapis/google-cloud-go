@@ -2,6 +2,8 @@
 
 
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/releases/tag/telcoautomation%2Fv1.3.0) (2026-04-09)
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/releases/tag/telcoautomation%2Fv1.2.0) (2026-04-02)
 
 ## [1.1.6](https://github.com/googleapis/google-cloud-go/compare/telcoautomation/v1.1.5...telcoautomation/v1.1.6) (2025-09-22)

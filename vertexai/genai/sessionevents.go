@@ -292,3 +292,8 @@ func (m SessionEvents) list(ctx context.Context, name string, config *types.List
 
 	return response, nil
 }
+
+// List lists the session events for the given name and config, and returns the response.
+func (m SessionEvents) List(ctx context.Context, name string, config *types.ListAgentEngineSessionEventsConfig) (*types.ListAgentEngineSessionEventsResponse, error) {
+	return m.list(ctx, name, config)
+}

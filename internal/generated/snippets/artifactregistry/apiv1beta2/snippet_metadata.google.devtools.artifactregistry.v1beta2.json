@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/artifactregistry/apiv1beta2",
-    "version": "1.21.0"
+    "version": "1.22.0"
   },
   "snippets": [
     {

@@ -1,6 +1,8 @@
 # Changes
 
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/releases/tag/vmwareengine%2Fv1.5.0) (2026-04-09)
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/releases/tag/vmwareengine%2Fv1.4.0) (2026-04-02)
 
 ## [1.3.6](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v1.3.5...vmwareengine/v1.3.6) (2025-09-22)

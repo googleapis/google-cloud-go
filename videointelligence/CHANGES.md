@@ -1,5 +1,7 @@
 # Changes
 
+## [1.14.0](https://github.com/googleapis/google-cloud-go/releases/tag/videointelligence%2Fv1.14.0) (2026-04-09)
+
 ## [1.13.0](https://github.com/googleapis/google-cloud-go/releases/tag/videointelligence%2Fv1.13.0) (2026-04-02)
 
 ## [1.12.7](https://github.com/googleapis/google-cloud-go/compare/videointelligence/v1.12.6...videointelligence/v1.12.7) (2025-09-22)

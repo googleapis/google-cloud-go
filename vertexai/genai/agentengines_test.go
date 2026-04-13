@@ -90,15 +90,15 @@ func TestAgentEngines(t *testing.T) {
 		ctx := tt.Context()
 		client := newTestClient(t)
 		re := createAgentEngineAndWait(t, tt, client, nil)
-		deleteOp, err := client.AgentEngines.delete(t.Context(), re.Name, nil, nil)
+		deleteOp, err := client.AgentEngines.Delete(t.Context(), re.Name, nil, nil)
 		if err != nil {
 			tt.Fatalf("delete() failed unexpectedly: %v", err)
 		}
 		operation := func() (*types.AgentEngineOperation, error) {
-			return client.AgentEngines.getAgentOperation(tt.Context(), deleteOp.Name, nil)
+			return client.AgentEngines.GetAgentOperation(tt.Context(), deleteOp.Name, nil)
 		}
 		waitForOperation(t, operation)
-		got, err := client.AgentEngines.get(ctx, re.Name, nil)
+		got, err := client.AgentEngines.Get(ctx, re.Name, nil)
 		if err == nil {
 			t.Errorf("delete() didn't remove the reasoning engine, want error(NOT_FOUND), got: %v", got)
 		}
@@ -116,7 +116,7 @@ func TestAgentEngines(t *testing.T) {
 			Description: want.Description,
 		}
 		re := createAgentEngineAndWait(t, tt, client, config)
-		got, err := client.AgentEngines.get(ctx, re.Name, nil)
+		got, err := client.AgentEngines.Get(ctx, re.Name, nil)
 		if err != nil {
 			tt.Errorf("get() failed unexpectedly: %v", err)
 		}
@@ -130,7 +130,7 @@ func TestAgentEngines(t *testing.T) {
 		ctx := tt.Context()
 		client := newTestClient(tt)
 		createAgentEngineAndWait(t, tt, client, nil)
-		list, err := client.AgentEngines.list(ctx, &types.ListAgentEngineConfig{PageSize: 2})
+		list, err := client.AgentEngines.List(ctx, &types.ListAgentEngineConfig{PageSize: 2})
 		if err != nil {
 			tt.Fatalf("list() failed unexpectedly: %v", err)
 		}
@@ -144,14 +144,14 @@ func TestAgentEngines(t *testing.T) {
 		client := newTestClient(tt)
 		re := createAgentEngineAndWait(t, tt, client, nil)
 		want := fmt.Sprintf("Updated(%s)", re.DisplayName)
-		op, err := client.AgentEngines.update(ctx, re.Name, &types.UpdateAgentEngineConfig{
+		op, err := client.AgentEngines.Update(ctx, re.Name, &types.UpdateAgentEngineConfig{
 			DisplayName: want,
 		})
 		if err != nil {
 			tt.Fatalf("update() failed unexpectedly: %v", err)
 		}
 		operation := func() (*types.AgentEngineOperation, error) {
-			return client.AgentEngines.getAgentOperation(tt.Context(), op.Name, nil)
+			return client.AgentEngines.GetAgentOperation(tt.Context(), op.Name, nil)
 		}
 		updated := waitForOperation(tt, operation).Response
 		if got := updated.DisplayName; got != want {

@@ -1,5 +1,7 @@
 # Changes
 
+## [1.18.0](https://github.com/googleapis/google-cloud-go/releases/tag/texttospeech%2Fv1.18.0) (2026-04-09)
+
 ## [1.17.0](https://github.com/googleapis/google-cloud-go/releases/tag/texttospeech%2Fv1.17.0) (2026-04-02)
 
 ## [1.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/texttospeech%2Fv1.16.0) (2025-10-22)

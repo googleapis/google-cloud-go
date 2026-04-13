@@ -1,5 +1,7 @@
 # Changes
 
+## [0.4.0](https://github.com/googleapis/google-cloud-go/releases/tag/streetview%2Fv0.4.0) (2026-04-09)
+
 ## [0.3.0](https://github.com/googleapis/google-cloud-go/releases/tag/streetview%2Fv0.3.0) (2026-04-02)
 
 ## [0.2.6](https://github.com/googleapis/google-cloud-go/compare/streetview/v0.2.5...streetview/v0.2.6) (2025-10-09)

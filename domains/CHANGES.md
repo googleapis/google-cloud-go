@@ -1,5 +1,7 @@
 # Changes
 
+## [0.12.0](https://github.com/googleapis/google-cloud-go/releases/tag/domains%2Fv0.12.0) (2026-04-09)
+
 ## [0.11.0](https://github.com/googleapis/google-cloud-go/releases/tag/domains%2Fv0.11.0) (2026-04-02)
 
 ## [0.10.7](https://github.com/googleapis/google-cloud-go/compare/domains/v0.10.6...domains/v0.10.7) (2025-09-16)

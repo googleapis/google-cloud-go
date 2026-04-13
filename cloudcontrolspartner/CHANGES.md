@@ -3,6 +3,8 @@
 
 
 
+## [1.7.0](https://github.com/googleapis/google-cloud-go/releases/tag/cloudcontrolspartner%2Fv1.7.0) (2026-04-09)
+
 ## [1.6.0](https://github.com/googleapis/google-cloud-go/releases/tag/cloudcontrolspartner%2Fv1.6.0) (2026-04-02)
 
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/releases/tag/cloudcontrolspartner%2Fv1.5.0) (2025-10-10)

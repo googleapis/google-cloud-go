@@ -184,6 +184,8 @@ func (RawOptions) isLiteralsOption() {}
 
 func (RawOptions) isDefineOption() {}
 
+func (RawOptions) isSearchOption() {}
+
 func (r RawOptions) apply(eo *executeSettings) {
 	if eo.RawOptions == nil {
 		eo.RawOptions = make(map[string]any)
@@ -1118,6 +1120,120 @@ func (p *Pipeline) FindNearest(vectorField any, queryVector any, measure Pipelin
 		}
 	}
 	stage, err := newFindNearestStage(vectorField, queryVector, measure, options)
+	if err != nil {
+		p.err = err
+		return p
+	}
+	return p.append(stage)
+}
+
+// SearchOption is an option for a Search pipeline stage.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+type SearchOption interface {
+	StageOption
+	isSearchOption()
+}
+
+type funcSearchOption struct {
+	f func(map[string]any)
+}
+
+func (fso *funcSearchOption) applyStage(so map[string]any) {
+	fso.f(so)
+}
+
+func (*funcSearchOption) isSearchOption() {}
+
+func newFuncSearchOption(f func(map[string]any)) *funcSearchOption {
+	return &funcSearchOption{
+		f: f,
+	}
+}
+
+// WithSearchQuery specifies the search query that will be used to query and score documents by the search stage.
+// It can be a string (automatically wrapped in DocumentMatches) or a BooleanExpression.
+//
+// Example:
+//
+//	client.Pipeline().Collection("restaurants").Search(
+//		WithSearchQuery("waffles"),
+//	)
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func WithSearchQuery(query any) SearchOption {
+	return newFuncSearchOption(func(so map[string]any) {
+		so["query"] = query
+	})
+}
+
+// WithSearchSort specifies how the returned documents are sorted. One or more ordering are required.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func WithSearchSort(orders ...Ordering) SearchOption {
+	return newFuncSearchOption(func(so map[string]any) {
+		t, ok := so["sort"].([]Ordering)
+		if !ok {
+			t = []Ordering{}
+		}
+		so["sort"] = append(t, orders...)
+	})
+}
+
+// WithSearchAddFields specifies the fields to add to each document.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func WithSearchAddFields(fields ...Selectable) SearchOption {
+	return newFuncSearchOption(func(so map[string]any) {
+		t, ok := so["add_fields"].([]Selectable)
+		if !ok {
+			t = []Selectable{}
+		}
+		so["add_fields"] = append(t, fields...)
+	})
+}
+
+// WithSearchRetrievalDepth specifies the maximum number of documents to retrieve. Documents will be retrieved in the
+// pre-sort order specified by the search index.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func WithSearchRetrievalDepth(depth int64) SearchOption {
+	return newFuncSearchOption(func(so map[string]any) {
+		so["retrieval_depth"] = depth
+	})
+}
+
+// Search adds a search stage to the Pipeline.
+// This must be the first stage of the pipeline.
+// A limited set of expressions are supported in the search stage.
+// Use [WithSearchQuery] to specify the search query.
+//
+// Example:
+//
+//	client.Pipeline().Collection("restaurants").Search(
+//		WithSearchQuery(DocumentMatches("waffles OR pancakes")),
+//		WithSearchSort(Descending(Score())),
+//		WithSearchRetrievalDepth(10),
+//	)
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func (p *Pipeline) Search(opts ...SearchOption) *Pipeline {
+	if p.err != nil {
+		return p
+	}
+	options := make(map[string]any)
+	for _, opt := range opts {
+		if opt != nil {
+			opt.applyStage(options)
+		}
+	}
+	stage, err := newSearchStage(options)
 	if err != nil {
 		p.err = err
 		return p

@@ -1,6 +1,8 @@
 # Changes
 
 
+## [1.31.0](https://github.com/googleapis/google-cloud-go/releases/tag/dataplex%2Fv1.31.0) (2026-04-09)
+
 ## [1.30.0](https://github.com/googleapis/google-cloud-go/releases/tag/dataplex%2Fv1.30.0) (2026-04-02)
 
 ## [1.29.0](https://github.com/googleapis/google-cloud-go/releases/tag/dataplex%2Fv1.29.0) (2026-03-23)

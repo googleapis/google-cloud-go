@@ -77,6 +77,78 @@ func newTestClient() *Client {
 	}
 }
 
+func TestPipeline_Search(t *testing.T) {
+	client := newTestClient()
+	ps := &PipelineSource{client: client}
+	p := ps.Collection("items").Search(
+		WithSearchQuery("waffles"),
+		WithSearchSort(Descending(Score())),
+		WithSearchRetrievalDepth(10),
+	)
+
+	proto, err := p.toProto()
+	if err != nil {
+		t.Fatalf("toProto: %v", err)
+	}
+
+	stages := proto.GetStages()
+	if len(stages) != 2 {
+		t.Fatalf("expected 2 stages, got %d", len(stages))
+	}
+
+	if stages[0].Name != "collection" {
+		t.Errorf("expected stage 0 to be collection, got %s", stages[0].Name)
+	}
+
+	searchStage := stages[1]
+	if searchStage.Name != "search" {
+		t.Errorf("expected stage 1 to be search, got %s", searchStage.Name)
+	}
+
+	queryExpr, err := DocumentMatches("waffles").toProto()
+	if err != nil {
+		t.Fatalf("failed to proto document matches: %v", err)
+	}
+
+	scoreExpr, err := Score().toProto()
+	if err != nil {
+		t.Fatalf("failed to proto score: %v", err)
+	}
+
+	wantSearchStage := &pb.Pipeline_Stage{
+		Name: "search",
+		Args: []*pb.Value{},
+		Options: map[string]*pb.Value{
+			"query":           queryExpr,
+			"retrieval_depth": {ValueType: &pb.Value_IntegerValue{IntegerValue: 10}},
+			"sort": {
+				ValueType: &pb.Value_ArrayValue{
+					ArrayValue: &pb.ArrayValue{
+						Values: []*pb.Value{
+							{
+								ValueType: &pb.Value_MapValue{
+									MapValue: &pb.MapValue{
+										Fields: map[string]*pb.Value{
+											"direction": {
+												ValueType: &pb.Value_StringValue{StringValue: "descending"},
+											},
+											"expression": scoreExpr,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	if diff := cmp.Diff(wantSearchStage, searchStage, protocmp.Transform()); diff != "" {
+		t.Errorf("toProto() mismatch for search stage (-want +got):\n%s", diff)
+	}
+}
+
 func TestPipeline_Limit(t *testing.T) {
 	client := newTestClient()
 	ps := &PipelineSource{client: client}

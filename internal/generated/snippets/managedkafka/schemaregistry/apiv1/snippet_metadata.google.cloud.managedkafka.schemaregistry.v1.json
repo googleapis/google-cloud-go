@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/managedkafka/schemaregistry/apiv1",
-    "version": "0.9.0"
+    "version": "0.10.0"
   },
   "snippets": [
     {

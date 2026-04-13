@@ -619,3 +619,36 @@ func (m Sandboxes) getSandboxOperation(ctx context.Context, operationName string
 
 	return response, nil
 }
+
+// Create creates a sandbox for the given name, spec, and config, and returns the sandbox operation.
+func (m Sandboxes) Create(ctx context.Context, name string, spec *types.SandboxEnvironmentSpec, config *types.CreateAgentEngineSandboxConfig) (*types.AgentEngineSandboxOperation, error) {
+	return m.create(ctx, name, spec, config)
+}
+
+// Delete deletes the sandbox with the specified name and returns the sandbox operation representing
+// the deletion process.
+func (m Sandboxes) Delete(ctx context.Context, name string, config *types.DeleteAgentEngineSandboxConfig) (*types.DeleteAgentEngineSandboxOperation, error) {
+	return m.delete(ctx, name, config)
+}
+
+// ExecuteCode executes the code for the given name, inputs, and config, and returns the response.
+func (m Sandboxes) ExecuteCode(ctx context.Context, name string, inputs []*types.Chunk, config *types.ExecuteCodeAgentEngineSandboxConfig) (*types.ExecuteSandboxEnvironmentResponse, error) {
+	return m.executeCode(ctx, name, inputs, config)
+}
+
+// Get returns the sandbox with the specified name and returns the sandbox object representing the
+// get sandbox process.
+func (m Sandboxes) Get(ctx context.Context, name string, config *types.GetAgentEngineSandboxConfig) (*types.SandboxEnvironment, error) {
+	return m.get(ctx, name, config)
+}
+
+// List lists the sandboxes for the given name and config, and returns the response.
+func (m Sandboxes) List(ctx context.Context, name string, config *types.ListAgentEngineSandboxesConfig) (*types.ListAgentEngineSandboxesResponse, error) {
+	return m.list(ctx, name, config)
+}
+
+// GetSandboxOperation returns the sandbox operation for the given operation name and config, and
+// returns the sandbox operation.
+func (m Sandboxes) GetSandboxOperation(ctx context.Context, operationName string, config *types.GetAgentEngineOperationConfig) (*types.AgentEngineSandboxOperation, error) {
+	return m.getSandboxOperation(ctx, operationName, config)
+}

@@ -1,6 +1,8 @@
 # Changes
 
 
+## [0.18.0](https://github.com/googleapis/google-cloud-go/releases/tag/gkehub%2Fv0.18.0) (2026-04-09)
+
 ## [0.17.0](https://github.com/googleapis/google-cloud-go/releases/tag/gkehub%2Fv0.17.0) (2026-04-02)
 
 ## [0.16.0](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.15.6...gkehub/v0.16.0) (2025-09-12)

@@ -1,5 +1,7 @@
 # Changes
 
+## [1.15.0](https://github.com/googleapis/google-cloud-go/releases/tag/cloudtasks%2Fv1.15.0) (2026-04-09)
+
 ## [1.14.0](https://github.com/googleapis/google-cloud-go/releases/tag/cloudtasks%2Fv1.14.0) (2026-04-02)
 
 ## [1.13.7](https://github.com/googleapis/google-cloud-go/compare/cloudtasks/v1.13.6...cloudtasks/v1.13.7) (2025-09-22)

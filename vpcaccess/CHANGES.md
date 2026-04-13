@@ -1,5 +1,7 @@
 # Changes
 
+## [1.10.0](https://github.com/googleapis/google-cloud-go/releases/tag/vpcaccess%2Fv1.10.0) (2026-04-09)
+
 ## [1.9.0](https://github.com/googleapis/google-cloud-go/releases/tag/vpcaccess%2Fv1.9.0) (2026-04-02)
 
 ## [1.8.7](https://github.com/googleapis/google-cloud-go/compare/vpcaccess/v1.8.6...vpcaccess/v1.8.7) (2025-09-22)

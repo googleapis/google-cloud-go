@@ -619,6 +619,7 @@ func TestRetryReverseReadRows(t *testing.T) {
 }
 
 func TestRetryOptionSelection(t *testing.T) {
+	t.Setenv("CBT_BIGTABLE_CONN_POOL", "false")
 	ctx := context.Background()
 	project := "test-project"
 	instance := "test-instance"

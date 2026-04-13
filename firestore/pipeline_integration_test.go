@@ -856,7 +856,6 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		}
 	})
 	t.Run("Update", func(t *testing.T) {
-		t.Skip("Skipping test until feature is available in PROD")
 		updateIter := client.Pipeline().Collection(coll.ID).
 			Where(Equal(FieldOf("author.country"), "UK")).
 			Update(WithUpdateTransformations(ConstantOf("Active").As("status"))).
@@ -878,7 +877,6 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		}
 	})
 	t.Run("Delete", func(t *testing.T) {
-		t.Skip("Skipping test until feature is available in PROD")
 		deleteIter := client.Pipeline().Collection(coll.ID).Where(Equal(FieldOf("title"), "The Great Gatsby")).Delete().Execute(ctx).Results()
 		defer deleteIter.Stop()
 		_, err := deleteIter.GetAll()
@@ -903,7 +901,6 @@ func TestIntegration_PipelineFunctions(t *testing.T) {
 	t.Run("arrayFuncs", arrayFuncs)
 	t.Run("stringFuncs", stringFuncs)
 	t.Run("vectorFuncs", vectorFuncs)
-
 	t.Run("timestampFuncs", timestampFuncs)
 	t.Run("arithmeticFuncs", arithmeticFuncs)
 	t.Run("aggregateFuncs", aggregateFuncs)
@@ -945,6 +942,8 @@ func aggregationFuncs(t *testing.T) {
 		Aggregate(Accumulators(
 			First("val").As("first_val"),
 			Last("val").As("last_val"),
+			Maximum("val").As("max_val"),
+			Minimum("val").As("min_val"),
 			ArrayAgg("val").As("all_vals"),
 			ArrayAggDistinct("val").As("distinct_vals"),
 			CountDistinct("val").As("distinct_count_val"),
@@ -960,6 +959,13 @@ func aggregationFuncs(t *testing.T) {
 	}
 
 	data := res.Data()
+
+	if data["max_val"] != int64(2) {
+		t.Errorf("got max_val %v, want 2", data["max_val"])
+	}
+	if data["min_val"] != int64(1) {
+		t.Errorf("got min_val %v, want 1", data["min_val"])
+	}
 
 	// Check ArrayAgg "all_vals" -> [1, 2, 1] (order irrelevant)
 	allValsRaw, ok := data["all_vals"].([]interface{})
@@ -1324,6 +1330,11 @@ func objectFuncs(t *testing.T) {
 		{
 			name:     "MapGet",
 			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(MapGet("m1", "a").As("value"))),
+			want:     map[string]interface{}{"value": int64(1)},
+		},
+		{
+			name:     "GetField",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(GetField("m1", "a").As("value"))),
 			want:     map[string]interface{}{"value": int64(1)},
 		},
 		{
@@ -2426,6 +2437,13 @@ func comparisonFuncs(t *testing.T) {
 				Collection(coll.ID).
 				Where(NotEqual("a", 2)),
 			want: []map[string]interface{}{doc1want},
+		},
+		{
+			name: "GreaterThan",
+			pipeline: client.Pipeline().
+				Collection(coll.ID).
+				Where(GreaterThan("a", 1)),
+			want: []map[string]interface{}{{"a": int64(2), "b": int64(2), "c": int64(-3), "d": float64(4.5), "e": float64(-5.5), "timestamp": now.Truncate(time.Microsecond)}},
 		},
 		{
 			name: "LessThan",

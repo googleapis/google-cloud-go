@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/policytroubleshooter/iam/apiv3",
-    "version": "1.12.0"
+    "version": "1.13.0"
   },
   "snippets": [
     {

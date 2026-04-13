@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/redis/apiv1beta1",
-    "version": "1.19.0"
+    "version": "1.20.0"
   },
   "snippets": [
     {

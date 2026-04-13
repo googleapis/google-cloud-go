@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/vectorsearch/apiv1beta",
-    "version": "0.7.0"
+    "version": "0.8.0"
   },
   "snippets": [
     {

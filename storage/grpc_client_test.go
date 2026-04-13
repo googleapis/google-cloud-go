@@ -496,3 +496,73 @@ func TestPrepareDirectPathMetadata(t *testing.T) {
 		})
 	}
 }
+
+func TestPrepareDirectPathMetadata_FeatureTracking(t *testing.T) {
+	tests := []struct {
+		desc            string
+		configFeatures  uint32
+		contextFeatures []trackedFeature
+		wantFeatures    uint32
+	}{
+		{
+			desc:         "no features",
+			wantFeatures: 0,
+		},
+		{
+			desc:           "config features only",
+			configFeatures: uint32(1 << featurePCU),
+			wantFeatures:   uint32(1 << featurePCU),
+		},
+		{
+			desc:            "merged features",
+			configFeatures:  uint32(1 << featurePCU),
+			contextFeatures: []trackedFeature{featureMultistreamInMRD},
+			wantFeatures:    uint32(1<<featurePCU) | uint32(1<<featureMultistreamInMRD),
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.desc, func(t *testing.T) {
+			c := &grpcStorageClient{
+				config:                  &storageConfig{},
+				configFeatureAttributes: tc.configFeatures,
+			}
+
+			ctx := context.Background()
+			if len(tc.contextFeatures) > 0 {
+				ctx = addFeatureAttributes(ctx, tc.contextFeatures...)
+			}
+
+			newCtx, err := c.prepareDirectPathMetadata(ctx, directPathEndpointPrefix)
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+
+			md, ok := metadata.FromOutgoingContext(newCtx)
+			if !ok {
+				t.Fatal("metadata not found in context")
+			}
+
+			got := md.Get(featureTrackerHeaderName)
+			if tc.wantFeatures == 0 {
+				if len(got) > 0 {
+					t.Errorf("got features %q, want none", got[0])
+				}
+				return
+			}
+
+			if len(got) == 0 {
+				t.Fatalf("features header missing, want %d", tc.wantFeatures)
+			}
+
+			decoded, err := decodeUint32(got[0])
+			if err != nil {
+				t.Fatalf("failed to decode features: %v", err)
+			}
+
+			if decoded != tc.wantFeatures {
+				t.Errorf("got features %d, want %d", decoded, tc.wantFeatures)
+			}
+		})
+	}
+}

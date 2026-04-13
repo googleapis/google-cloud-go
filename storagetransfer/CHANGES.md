@@ -1,5 +1,7 @@
 # Changes
 
+## [1.15.0](https://github.com/googleapis/google-cloud-go/releases/tag/storagetransfer%2Fv1.15.0) (2026-04-09)
+
 ## [1.14.0](https://github.com/googleapis/google-cloud-go/releases/tag/storagetransfer%2Fv1.14.0) (2026-04-02)
 
 ## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.13.0...storagetransfer/v1.13.1) (2025-10-09)

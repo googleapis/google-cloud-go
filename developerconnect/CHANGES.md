@@ -1,5 +1,7 @@
 # Changes
 
+## [0.7.0](https://github.com/googleapis/google-cloud-go/releases/tag/developerconnect%2Fv0.7.0) (2026-04-09)
+
 ## [0.6.0](https://github.com/googleapis/google-cloud-go/releases/tag/developerconnect%2Fv0.6.0) (2026-04-02)
 
 ## [0.5.0](https://github.com/googleapis/google-cloud-go/releases/tag/developerconnect%2Fv0.5.0) (2026-02-26)

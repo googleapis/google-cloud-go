@@ -19,6 +19,7 @@ import (
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/testutil"
+	"google.golang.org/genproto/googleapis/type/latlng"
 )
 
 func TestTruncFunctions(t *testing.T) {
@@ -1116,5 +1117,78 @@ func TestGetFieldVariations(t *testing.T) {
 	expr6 := GetField(Variable("doc"), "title")
 	if expr6 == nil {
 		t.Fatal("expected expr6 not to be nil")
+	}
+}
+
+func TestSearchFunctions(t *testing.T) {
+	// 1. DocumentMatches
+	// 2. GeoDistance
+	// 3. Score
+	// 4. GeoDistance method
+	// 8. Matches method
+	testcases := []struct {
+		desc string
+		expr Expression
+		want *pb.Value
+	}{
+		{
+			desc: "DocumentMatches",
+			expr: DocumentMatches("waffles"),
+			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
+				FunctionValue: &pb.Function{
+					Name: "document_matches",
+					Args: []*pb.Value{
+						{ValueType: &pb.Value_StringValue{StringValue: "waffles"}},
+					},
+				},
+			}},
+		},
+		{
+			desc: "GeoDistance",
+			expr: GeoDistance("location", &latlng.LatLng{Latitude: 37.0, Longitude: -122.0}),
+			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
+				FunctionValue: &pb.Function{
+					Name: "geo_distance",
+					Args: []*pb.Value{
+						{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "location"}},
+						{ValueType: &pb.Value_GeoPointValue{GeoPointValue: &latlng.LatLng{Latitude: 37.0, Longitude: -122.0}}},
+					},
+				},
+			}},
+		},
+		{
+			desc: "Score",
+			expr: Score(),
+			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
+				FunctionValue: &pb.Function{
+					Name: "score",
+				},
+			}},
+		},
+		{
+			desc: "GeoDistance method",
+			expr: FieldOf("location").GeoDistance(&latlng.LatLng{Latitude: 37.0, Longitude: -122.0}),
+			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
+				FunctionValue: &pb.Function{
+					Name: "geo_distance",
+					Args: []*pb.Value{
+						{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "location"}},
+						{ValueType: &pb.Value_GeoPointValue{GeoPointValue: &latlng.LatLng{Latitude: 37.0, Longitude: -122.0}}},
+					},
+				},
+			}},
+		},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.desc, func(t *testing.T) {
+			got, err := tc.expr.toProto()
+			if err != nil {
+				t.Fatalf("toProto() failed: %v", err)
+			}
+			if diff := testutil.Diff(got, tc.want); diff != "" {
+				t.Errorf("toProto() returned diff (-got +want): %s", diff)
+			}
+		})
 	}
 }

@@ -1,5 +1,7 @@
 # Changes
 
+## [1.9.0](https://github.com/googleapis/google-cloud-go/releases/tag/gsuiteaddons%2Fv1.9.0) (2026-04-09)
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/releases/tag/gsuiteaddons%2Fv1.8.0) (2026-04-02)
 
 ## [1.7.8](https://github.com/googleapis/google-cloud-go/compare/gsuiteaddons/v1.7.7...gsuiteaddons/v1.7.8) (2025-09-18)

@@ -1,5 +1,7 @@
 # Changes
 
+## [0.13.0](https://github.com/googleapis/google-cloud-go/releases/tag/dataflow%2Fv0.13.0) (2026-04-09)
+
 ## [0.12.0](https://github.com/googleapis/google-cloud-go/releases/tag/dataflow%2Fv0.12.0) (2026-04-02)
 
 ## [0.11.1](https://github.com/googleapis/google-cloud-go/compare/dataflow/v0.11.0...dataflow/v0.11.1) (2025-10-07)

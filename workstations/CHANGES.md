@@ -3,6 +3,8 @@
 
 
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/releases/tag/workstations%2Fv1.3.0) (2026-04-09)
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/releases/tag/workstations%2Fv1.2.0) (2026-04-02)
 
 ## [1.1.6](https://github.com/googleapis/google-cloud-go/compare/workstations/v1.1.5...workstations/v1.1.6) (2025-09-22)

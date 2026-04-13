@@ -1,5 +1,7 @@
 # Changes
 
+## [0.11.0](https://github.com/googleapis/google-cloud-go/releases/tag/recommendationengine%2Fv0.11.0) (2026-04-09)
+
 ## [0.10.0](https://github.com/googleapis/google-cloud-go/releases/tag/recommendationengine%2Fv0.10.0) (2026-04-02)
 
 ## [0.9.7](https://github.com/googleapis/google-cloud-go/compare/recommendationengine/v0.9.6...recommendationengine/v0.9.7) (2025-09-22)

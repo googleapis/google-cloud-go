@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/bigquery/dataexchange/apiv1beta1",
-    "version": "1.75.0"
+    "version": "1.76.0"
   },
   "snippets": [
     {
