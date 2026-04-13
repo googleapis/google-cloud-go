@@ -28,6 +28,7 @@ import (
 
 	accountspb "cloud.google.com/go/shopping/merchant/accounts/apiv1/accountspb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -228,6 +229,16 @@ type accountRelationshipsGRPCClient struct {
 // Service to support AccountRelationship API.
 func NewAccountRelationshipsClient(ctx context.Context, opts ...option.ClientOption) (*AccountRelationshipsClient, error) {
 	clientOpts := defaultAccountRelationshipsGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	if newAccountRelationshipsClientHook != nil {
 		hookOpts, err := newAccountRelationshipsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -249,6 +260,22 @@ func NewAccountRelationshipsClient(ctx context.Context, opts ...option.ClientOpt
 		logger:                     internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetAccountRelationship = append(client.CallOptions.GetAccountRelationship, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateAccountRelationship = append(client.CallOptions.UpdateAccountRelationship, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAccountRelationships = append(client.CallOptions.ListAccountRelationships, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -302,6 +329,16 @@ type accountRelationshipsRESTClient struct {
 // Service to support AccountRelationship API.
 func NewAccountRelationshipsRESTClient(ctx context.Context, opts ...option.ClientOption) (*AccountRelationshipsClient, error) {
 	clientOpts := append(defaultAccountRelationshipsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -315,6 +352,23 @@ func NewAccountRelationshipsRESTClient(ctx context.Context, opts ...option.Clien
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetAccountRelationship = append(callOpts.GetAccountRelationship, gax.WithClientMetrics(metrics))
+		callOpts.UpdateAccountRelationship = append(callOpts.UpdateAccountRelationship, gax.WithClientMetrics(metrics))
+		callOpts.ListAccountRelationships = append(callOpts.ListAccountRelationships, gax.WithClientMetrics(metrics))
+	}
 
 	return &AccountRelationshipsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -361,6 +415,12 @@ func (c *accountRelationshipsGRPCClient) GetAccountRelationship(ctx context.Cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.AccountRelationshipsService/GetAccountRelationship")
+	}
 	opts = append((*c.CallOptions).GetAccountRelationship[0:len((*c.CallOptions).GetAccountRelationship):len((*c.CallOptions).GetAccountRelationship)], opts...)
 	var resp *accountspb.AccountRelationship
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -379,6 +439,9 @@ func (c *accountRelationshipsGRPCClient) UpdateAccountRelationship(ctx context.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.AccountRelationshipsService/UpdateAccountRelationship")
+	}
 	opts = append((*c.CallOptions).UpdateAccountRelationship[0:len((*c.CallOptions).UpdateAccountRelationship):len((*c.CallOptions).UpdateAccountRelationship)], opts...)
 	var resp *accountspb.AccountRelationship
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -397,6 +460,12 @@ func (c *accountRelationshipsGRPCClient) ListAccountRelationships(ctx context.Co
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.AccountRelationshipsService/ListAccountRelationships")
+	}
 	opts = append((*c.CallOptions).ListAccountRelationships[0:len((*c.CallOptions).ListAccountRelationships):len((*c.CallOptions).ListAccountRelationships)], opts...)
 	it := &AccountRelationshipIterator{}
 	req = proto.Clone(req).(*accountspb.ListAccountRelationshipsRequest)
@@ -457,6 +526,13 @@ func (c *accountRelationshipsRESTClient) GetAccountRelationship(ctx context.Cont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.AccountRelationshipsService/GetAccountRelationship")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1/{name=accounts/*/relationships/*}")
+	}
 	opts = append((*c.CallOptions).GetAccountRelationship[0:len((*c.CallOptions).GetAccountRelationship):len((*c.CallOptions).GetAccountRelationship)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &accountspb.AccountRelationship{}
@@ -522,6 +598,10 @@ func (c *accountRelationshipsRESTClient) UpdateAccountRelationship(ctx context.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.AccountRelationshipsService/UpdateAccountRelationship")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1/{account_relationship.name=accounts/*/relationships/*}")
+	}
 	opts = append((*c.CallOptions).UpdateAccountRelationship[0:len((*c.CallOptions).UpdateAccountRelationship):len((*c.CallOptions).UpdateAccountRelationship)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &accountspb.AccountRelationship{}

@@ -30,6 +30,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	servicepb "cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -485,6 +486,16 @@ type environmentsGRPCClient struct {
 // Managed Apache Airflow Environments.
 func NewEnvironmentsClient(ctx context.Context, opts ...option.ClientOption) (*EnvironmentsClient, error) {
 	clientOpts := defaultEnvironmentsGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "composer",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/orchestration/airflow/service/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "composer.googleapis.com",
+		}))
+	}
 	if newEnvironmentsClientHook != nil {
 		hookOpts, err := newEnvironmentsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -507,6 +518,46 @@ func NewEnvironmentsClient(ctx context.Context, opts ...option.ClientOption) (*E
 		operationsClient:   longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "composer",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/orchestration/airflow/service/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "composer.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateEnvironment = append(client.CallOptions.CreateEnvironment, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetEnvironment = append(client.CallOptions.GetEnvironment, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListEnvironments = append(client.CallOptions.ListEnvironments, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateEnvironment = append(client.CallOptions.UpdateEnvironment, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteEnvironment = append(client.CallOptions.DeleteEnvironment, gax.WithClientMetrics(metrics))
+		client.CallOptions.ExecuteAirflowCommand = append(client.CallOptions.ExecuteAirflowCommand, gax.WithClientMetrics(metrics))
+		client.CallOptions.StopAirflowCommand = append(client.CallOptions.StopAirflowCommand, gax.WithClientMetrics(metrics))
+		client.CallOptions.PollAirflowCommand = append(client.CallOptions.PollAirflowCommand, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListWorkloads = append(client.CallOptions.ListWorkloads, gax.WithClientMetrics(metrics))
+		client.CallOptions.CheckUpgrade = append(client.CallOptions.CheckUpgrade, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateUserWorkloadsSecret = append(client.CallOptions.CreateUserWorkloadsSecret, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetUserWorkloadsSecret = append(client.CallOptions.GetUserWorkloadsSecret, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListUserWorkloadsSecrets = append(client.CallOptions.ListUserWorkloadsSecrets, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateUserWorkloadsSecret = append(client.CallOptions.UpdateUserWorkloadsSecret, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteUserWorkloadsSecret = append(client.CallOptions.DeleteUserWorkloadsSecret, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateUserWorkloadsConfigMap = append(client.CallOptions.CreateUserWorkloadsConfigMap, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetUserWorkloadsConfigMap = append(client.CallOptions.GetUserWorkloadsConfigMap, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListUserWorkloadsConfigMaps = append(client.CallOptions.ListUserWorkloadsConfigMaps, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateUserWorkloadsConfigMap = append(client.CallOptions.UpdateUserWorkloadsConfigMap, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteUserWorkloadsConfigMap = append(client.CallOptions.DeleteUserWorkloadsConfigMap, gax.WithClientMetrics(metrics))
+		client.CallOptions.SaveSnapshot = append(client.CallOptions.SaveSnapshot, gax.WithClientMetrics(metrics))
+		client.CallOptions.LoadSnapshot = append(client.CallOptions.LoadSnapshot, gax.WithClientMetrics(metrics))
+		client.CallOptions.DatabaseFailover = append(client.CallOptions.DatabaseFailover, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchDatabaseProperties = append(client.CallOptions.FetchDatabaseProperties, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -576,6 +627,16 @@ type environmentsRESTClient struct {
 // Managed Apache Airflow Environments.
 func NewEnvironmentsRESTClient(ctx context.Context, opts ...option.ClientOption) (*EnvironmentsClient, error) {
 	clientOpts := append(defaultEnvironmentsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "composer",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/orchestration/airflow/service/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "composer.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -589,6 +650,47 @@ func NewEnvironmentsRESTClient(ctx context.Context, opts ...option.ClientOption)
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "composer",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/orchestration/airflow/service/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "composer.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateEnvironment = append(callOpts.CreateEnvironment, gax.WithClientMetrics(metrics))
+		callOpts.GetEnvironment = append(callOpts.GetEnvironment, gax.WithClientMetrics(metrics))
+		callOpts.ListEnvironments = append(callOpts.ListEnvironments, gax.WithClientMetrics(metrics))
+		callOpts.UpdateEnvironment = append(callOpts.UpdateEnvironment, gax.WithClientMetrics(metrics))
+		callOpts.DeleteEnvironment = append(callOpts.DeleteEnvironment, gax.WithClientMetrics(metrics))
+		callOpts.ExecuteAirflowCommand = append(callOpts.ExecuteAirflowCommand, gax.WithClientMetrics(metrics))
+		callOpts.StopAirflowCommand = append(callOpts.StopAirflowCommand, gax.WithClientMetrics(metrics))
+		callOpts.PollAirflowCommand = append(callOpts.PollAirflowCommand, gax.WithClientMetrics(metrics))
+		callOpts.ListWorkloads = append(callOpts.ListWorkloads, gax.WithClientMetrics(metrics))
+		callOpts.CheckUpgrade = append(callOpts.CheckUpgrade, gax.WithClientMetrics(metrics))
+		callOpts.CreateUserWorkloadsSecret = append(callOpts.CreateUserWorkloadsSecret, gax.WithClientMetrics(metrics))
+		callOpts.GetUserWorkloadsSecret = append(callOpts.GetUserWorkloadsSecret, gax.WithClientMetrics(metrics))
+		callOpts.ListUserWorkloadsSecrets = append(callOpts.ListUserWorkloadsSecrets, gax.WithClientMetrics(metrics))
+		callOpts.UpdateUserWorkloadsSecret = append(callOpts.UpdateUserWorkloadsSecret, gax.WithClientMetrics(metrics))
+		callOpts.DeleteUserWorkloadsSecret = append(callOpts.DeleteUserWorkloadsSecret, gax.WithClientMetrics(metrics))
+		callOpts.CreateUserWorkloadsConfigMap = append(callOpts.CreateUserWorkloadsConfigMap, gax.WithClientMetrics(metrics))
+		callOpts.GetUserWorkloadsConfigMap = append(callOpts.GetUserWorkloadsConfigMap, gax.WithClientMetrics(metrics))
+		callOpts.ListUserWorkloadsConfigMaps = append(callOpts.ListUserWorkloadsConfigMaps, gax.WithClientMetrics(metrics))
+		callOpts.UpdateUserWorkloadsConfigMap = append(callOpts.UpdateUserWorkloadsConfigMap, gax.WithClientMetrics(metrics))
+		callOpts.DeleteUserWorkloadsConfigMap = append(callOpts.DeleteUserWorkloadsConfigMap, gax.WithClientMetrics(metrics))
+		callOpts.SaveSnapshot = append(callOpts.SaveSnapshot, gax.WithClientMetrics(metrics))
+		callOpts.LoadSnapshot = append(callOpts.LoadSnapshot, gax.WithClientMetrics(metrics))
+		callOpts.DatabaseFailover = append(callOpts.DatabaseFailover, gax.WithClientMetrics(metrics))
+		callOpts.FetchDatabaseProperties = append(callOpts.FetchDatabaseProperties, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -645,6 +747,9 @@ func (c *environmentsGRPCClient) CreateEnvironment(ctx context.Context, req *ser
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/CreateEnvironment")
+	}
 	opts = append((*c.CallOptions).CreateEnvironment[0:len((*c.CallOptions).CreateEnvironment):len((*c.CallOptions).CreateEnvironment)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -665,6 +770,9 @@ func (c *environmentsGRPCClient) GetEnvironment(ctx context.Context, req *servic
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/GetEnvironment")
+	}
 	opts = append((*c.CallOptions).GetEnvironment[0:len((*c.CallOptions).GetEnvironment):len((*c.CallOptions).GetEnvironment)], opts...)
 	var resp *servicepb.Environment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -683,6 +791,9 @@ func (c *environmentsGRPCClient) ListEnvironments(ctx context.Context, req *serv
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/ListEnvironments")
+	}
 	opts = append((*c.CallOptions).ListEnvironments[0:len((*c.CallOptions).ListEnvironments):len((*c.CallOptions).ListEnvironments)], opts...)
 	it := &EnvironmentIterator{}
 	req = proto.Clone(req).(*servicepb.ListEnvironmentsRequest)
@@ -729,6 +840,9 @@ func (c *environmentsGRPCClient) UpdateEnvironment(ctx context.Context, req *ser
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/UpdateEnvironment")
+	}
 	opts = append((*c.CallOptions).UpdateEnvironment[0:len((*c.CallOptions).UpdateEnvironment):len((*c.CallOptions).UpdateEnvironment)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -749,6 +863,9 @@ func (c *environmentsGRPCClient) DeleteEnvironment(ctx context.Context, req *ser
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/DeleteEnvironment")
+	}
 	opts = append((*c.CallOptions).DeleteEnvironment[0:len((*c.CallOptions).DeleteEnvironment):len((*c.CallOptions).DeleteEnvironment)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -769,6 +886,9 @@ func (c *environmentsGRPCClient) ExecuteAirflowCommand(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/ExecuteAirflowCommand")
+	}
 	opts = append((*c.CallOptions).ExecuteAirflowCommand[0:len((*c.CallOptions).ExecuteAirflowCommand):len((*c.CallOptions).ExecuteAirflowCommand)], opts...)
 	var resp *servicepb.ExecuteAirflowCommandResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -787,6 +907,9 @@ func (c *environmentsGRPCClient) StopAirflowCommand(ctx context.Context, req *se
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/StopAirflowCommand")
+	}
 	opts = append((*c.CallOptions).StopAirflowCommand[0:len((*c.CallOptions).StopAirflowCommand):len((*c.CallOptions).StopAirflowCommand)], opts...)
 	var resp *servicepb.StopAirflowCommandResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -805,6 +928,9 @@ func (c *environmentsGRPCClient) PollAirflowCommand(ctx context.Context, req *se
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/PollAirflowCommand")
+	}
 	opts = append((*c.CallOptions).PollAirflowCommand[0:len((*c.CallOptions).PollAirflowCommand):len((*c.CallOptions).PollAirflowCommand)], opts...)
 	var resp *servicepb.PollAirflowCommandResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -823,6 +949,12 @@ func (c *environmentsGRPCClient) ListWorkloads(ctx context.Context, req *service
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//composer.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/ListWorkloads")
+	}
 	opts = append((*c.CallOptions).ListWorkloads[0:len((*c.CallOptions).ListWorkloads):len((*c.CallOptions).ListWorkloads)], opts...)
 	it := &ListWorkloadsResponse_ComposerWorkloadIterator{}
 	req = proto.Clone(req).(*servicepb.ListWorkloadsRequest)
@@ -869,6 +1001,9 @@ func (c *environmentsGRPCClient) CheckUpgrade(ctx context.Context, req *servicep
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/CheckUpgrade")
+	}
 	opts = append((*c.CallOptions).CheckUpgrade[0:len((*c.CallOptions).CheckUpgrade):len((*c.CallOptions).CheckUpgrade)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -889,6 +1024,12 @@ func (c *environmentsGRPCClient) CreateUserWorkloadsSecret(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//composer.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/CreateUserWorkloadsSecret")
+	}
 	opts = append((*c.CallOptions).CreateUserWorkloadsSecret[0:len((*c.CallOptions).CreateUserWorkloadsSecret):len((*c.CallOptions).CreateUserWorkloadsSecret)], opts...)
 	var resp *servicepb.UserWorkloadsSecret
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -907,6 +1048,12 @@ func (c *environmentsGRPCClient) GetUserWorkloadsSecret(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//composer.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/GetUserWorkloadsSecret")
+	}
 	opts = append((*c.CallOptions).GetUserWorkloadsSecret[0:len((*c.CallOptions).GetUserWorkloadsSecret):len((*c.CallOptions).GetUserWorkloadsSecret)], opts...)
 	var resp *servicepb.UserWorkloadsSecret
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -925,6 +1072,12 @@ func (c *environmentsGRPCClient) ListUserWorkloadsSecrets(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//composer.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/ListUserWorkloadsSecrets")
+	}
 	opts = append((*c.CallOptions).ListUserWorkloadsSecrets[0:len((*c.CallOptions).ListUserWorkloadsSecrets):len((*c.CallOptions).ListUserWorkloadsSecrets)], opts...)
 	it := &UserWorkloadsSecretIterator{}
 	req = proto.Clone(req).(*servicepb.ListUserWorkloadsSecretsRequest)
@@ -971,6 +1124,9 @@ func (c *environmentsGRPCClient) UpdateUserWorkloadsSecret(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/UpdateUserWorkloadsSecret")
+	}
 	opts = append((*c.CallOptions).UpdateUserWorkloadsSecret[0:len((*c.CallOptions).UpdateUserWorkloadsSecret):len((*c.CallOptions).UpdateUserWorkloadsSecret)], opts...)
 	var resp *servicepb.UserWorkloadsSecret
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -989,6 +1145,12 @@ func (c *environmentsGRPCClient) DeleteUserWorkloadsSecret(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//composer.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/DeleteUserWorkloadsSecret")
+	}
 	opts = append((*c.CallOptions).DeleteUserWorkloadsSecret[0:len((*c.CallOptions).DeleteUserWorkloadsSecret):len((*c.CallOptions).DeleteUserWorkloadsSecret)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1003,6 +1165,12 @@ func (c *environmentsGRPCClient) CreateUserWorkloadsConfigMap(ctx context.Contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//composer.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/CreateUserWorkloadsConfigMap")
+	}
 	opts = append((*c.CallOptions).CreateUserWorkloadsConfigMap[0:len((*c.CallOptions).CreateUserWorkloadsConfigMap):len((*c.CallOptions).CreateUserWorkloadsConfigMap)], opts...)
 	var resp *servicepb.UserWorkloadsConfigMap
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1021,6 +1189,12 @@ func (c *environmentsGRPCClient) GetUserWorkloadsConfigMap(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//composer.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/GetUserWorkloadsConfigMap")
+	}
 	opts = append((*c.CallOptions).GetUserWorkloadsConfigMap[0:len((*c.CallOptions).GetUserWorkloadsConfigMap):len((*c.CallOptions).GetUserWorkloadsConfigMap)], opts...)
 	var resp *servicepb.UserWorkloadsConfigMap
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1039,6 +1213,12 @@ func (c *environmentsGRPCClient) ListUserWorkloadsConfigMaps(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//composer.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/ListUserWorkloadsConfigMaps")
+	}
 	opts = append((*c.CallOptions).ListUserWorkloadsConfigMaps[0:len((*c.CallOptions).ListUserWorkloadsConfigMaps):len((*c.CallOptions).ListUserWorkloadsConfigMaps)], opts...)
 	it := &UserWorkloadsConfigMapIterator{}
 	req = proto.Clone(req).(*servicepb.ListUserWorkloadsConfigMapsRequest)
@@ -1085,6 +1265,9 @@ func (c *environmentsGRPCClient) UpdateUserWorkloadsConfigMap(ctx context.Contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/UpdateUserWorkloadsConfigMap")
+	}
 	opts = append((*c.CallOptions).UpdateUserWorkloadsConfigMap[0:len((*c.CallOptions).UpdateUserWorkloadsConfigMap):len((*c.CallOptions).UpdateUserWorkloadsConfigMap)], opts...)
 	var resp *servicepb.UserWorkloadsConfigMap
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1103,6 +1286,12 @@ func (c *environmentsGRPCClient) DeleteUserWorkloadsConfigMap(ctx context.Contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//composer.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/DeleteUserWorkloadsConfigMap")
+	}
 	opts = append((*c.CallOptions).DeleteUserWorkloadsConfigMap[0:len((*c.CallOptions).DeleteUserWorkloadsConfigMap):len((*c.CallOptions).DeleteUserWorkloadsConfigMap)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1117,6 +1306,9 @@ func (c *environmentsGRPCClient) SaveSnapshot(ctx context.Context, req *servicep
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/SaveSnapshot")
+	}
 	opts = append((*c.CallOptions).SaveSnapshot[0:len((*c.CallOptions).SaveSnapshot):len((*c.CallOptions).SaveSnapshot)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1137,6 +1329,9 @@ func (c *environmentsGRPCClient) LoadSnapshot(ctx context.Context, req *servicep
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/LoadSnapshot")
+	}
 	opts = append((*c.CallOptions).LoadSnapshot[0:len((*c.CallOptions).LoadSnapshot):len((*c.CallOptions).LoadSnapshot)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1157,6 +1352,9 @@ func (c *environmentsGRPCClient) DatabaseFailover(ctx context.Context, req *serv
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/DatabaseFailover")
+	}
 	opts = append((*c.CallOptions).DatabaseFailover[0:len((*c.CallOptions).DatabaseFailover):len((*c.CallOptions).DatabaseFailover)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1177,6 +1375,12 @@ func (c *environmentsGRPCClient) FetchDatabaseProperties(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//composer.googleapis.com/%v", req.GetEnvironment()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/FetchDatabaseProperties")
+	}
 	opts = append((*c.CallOptions).FetchDatabaseProperties[0:len((*c.CallOptions).FetchDatabaseProperties):len((*c.CallOptions).FetchDatabaseProperties)], opts...)
 	var resp *servicepb.FetchDatabasePropertiesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1195,6 +1399,9 @@ func (c *environmentsGRPCClient) DeleteOperation(ctx context.Context, req *longr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1209,6 +1416,9 @@ func (c *environmentsGRPCClient) GetOperation(ctx context.Context, req *longrunn
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1227,6 +1437,9 @@ func (c *environmentsGRPCClient) ListOperations(ctx context.Context, req *longru
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
@@ -1294,6 +1507,10 @@ func (c *environmentsRESTClient) CreateEnvironment(ctx context.Context, req *ser
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/CreateEnvironment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/environments")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1347,6 +1564,10 @@ func (c *environmentsRESTClient) GetEnvironment(ctx context.Context, req *servic
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/GetEnvironment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/environments/*}")
+	}
 	opts = append((*c.CallOptions).GetEnvironment[0:len((*c.CallOptions).GetEnvironment):len((*c.CallOptions).GetEnvironment)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &servicepb.Environment{}
@@ -1489,6 +1710,10 @@ func (c *environmentsRESTClient) UpdateEnvironment(ctx context.Context, req *ser
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/UpdateEnvironment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/environments/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1542,6 +1767,10 @@ func (c *environmentsRESTClient) DeleteEnvironment(ctx context.Context, req *ser
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/DeleteEnvironment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/environments/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1601,6 +1830,10 @@ func (c *environmentsRESTClient) ExecuteAirflowCommand(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/ExecuteAirflowCommand")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{environment=projects/*/locations/*/environments/*}:executeAirflowCommand")
+	}
 	opts = append((*c.CallOptions).ExecuteAirflowCommand[0:len((*c.CallOptions).ExecuteAirflowCommand):len((*c.CallOptions).ExecuteAirflowCommand)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &servicepb.ExecuteAirflowCommandResponse{}
@@ -1657,6 +1890,10 @@ func (c *environmentsRESTClient) StopAirflowCommand(ctx context.Context, req *se
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/StopAirflowCommand")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{environment=projects/*/locations/*/environments/*}:stopAirflowCommand")
+	}
 	opts = append((*c.CallOptions).StopAirflowCommand[0:len((*c.CallOptions).StopAirflowCommand):len((*c.CallOptions).StopAirflowCommand)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &servicepb.StopAirflowCommandResponse{}
@@ -1713,6 +1950,10 @@ func (c *environmentsRESTClient) PollAirflowCommand(ctx context.Context, req *se
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/PollAirflowCommand")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{environment=projects/*/locations/*/environments/*}:pollAirflowCommand")
+	}
 	opts = append((*c.CallOptions).PollAirflowCommand[0:len((*c.CallOptions).PollAirflowCommand):len((*c.CallOptions).PollAirflowCommand)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &servicepb.PollAirflowCommandResponse{}
@@ -1856,6 +2097,10 @@ func (c *environmentsRESTClient) CheckUpgrade(ctx context.Context, req *servicep
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/CheckUpgrade")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{environment=projects/*/locations/*/environments/*}:checkUpgrade")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1919,6 +2164,13 @@ func (c *environmentsRESTClient) CreateUserWorkloadsSecret(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//composer.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/CreateUserWorkloadsSecret")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/environments/*}/userWorkloadsSecrets")
+	}
 	opts = append((*c.CallOptions).CreateUserWorkloadsSecret[0:len((*c.CallOptions).CreateUserWorkloadsSecret):len((*c.CallOptions).CreateUserWorkloadsSecret)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &servicepb.UserWorkloadsSecret{}
@@ -1973,6 +2225,13 @@ func (c *environmentsRESTClient) GetUserWorkloadsSecret(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//composer.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/GetUserWorkloadsSecret")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/environments/*/userWorkloadsSecrets/*}")
+	}
 	opts = append((*c.CallOptions).GetUserWorkloadsSecret[0:len((*c.CallOptions).GetUserWorkloadsSecret):len((*c.CallOptions).GetUserWorkloadsSecret)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &servicepb.UserWorkloadsSecret{}
@@ -2114,6 +2373,10 @@ func (c *environmentsRESTClient) UpdateUserWorkloadsSecret(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/UpdateUserWorkloadsSecret")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{user_workloads_secret.name=projects/*/locations/*/environments/*/userWorkloadsSecrets/*}")
+	}
 	opts = append((*c.CallOptions).UpdateUserWorkloadsSecret[0:len((*c.CallOptions).UpdateUserWorkloadsSecret):len((*c.CallOptions).UpdateUserWorkloadsSecret)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &servicepb.UserWorkloadsSecret{}
@@ -2167,6 +2430,13 @@ func (c *environmentsRESTClient) DeleteUserWorkloadsSecret(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//composer.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/DeleteUserWorkloadsSecret")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/environments/*/userWorkloadsSecrets/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2212,6 +2482,13 @@ func (c *environmentsRESTClient) CreateUserWorkloadsConfigMap(ctx context.Contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//composer.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/CreateUserWorkloadsConfigMap")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/environments/*}/userWorkloadsConfigMaps")
+	}
 	opts = append((*c.CallOptions).CreateUserWorkloadsConfigMap[0:len((*c.CallOptions).CreateUserWorkloadsConfigMap):len((*c.CallOptions).CreateUserWorkloadsConfigMap)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &servicepb.UserWorkloadsConfigMap{}
@@ -2265,6 +2542,13 @@ func (c *environmentsRESTClient) GetUserWorkloadsConfigMap(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//composer.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/GetUserWorkloadsConfigMap")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/environments/*/userWorkloadsConfigMaps/*}")
+	}
 	opts = append((*c.CallOptions).GetUserWorkloadsConfigMap[0:len((*c.CallOptions).GetUserWorkloadsConfigMap):len((*c.CallOptions).GetUserWorkloadsConfigMap)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &servicepb.UserWorkloadsConfigMap{}
@@ -2406,6 +2690,10 @@ func (c *environmentsRESTClient) UpdateUserWorkloadsConfigMap(ctx context.Contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/UpdateUserWorkloadsConfigMap")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{user_workloads_config_map.name=projects/*/locations/*/environments/*/userWorkloadsConfigMaps/*}")
+	}
 	opts = append((*c.CallOptions).UpdateUserWorkloadsConfigMap[0:len((*c.CallOptions).UpdateUserWorkloadsConfigMap):len((*c.CallOptions).UpdateUserWorkloadsConfigMap)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &servicepb.UserWorkloadsConfigMap{}
@@ -2459,6 +2747,13 @@ func (c *environmentsRESTClient) DeleteUserWorkloadsConfigMap(ctx context.Contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//composer.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/DeleteUserWorkloadsConfigMap")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/environments/*/userWorkloadsConfigMaps/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2503,6 +2798,10 @@ func (c *environmentsRESTClient) SaveSnapshot(ctx context.Context, req *servicep
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/SaveSnapshot")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{environment=projects/*/locations/*/environments/*}:saveSnapshot")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2565,6 +2864,10 @@ func (c *environmentsRESTClient) LoadSnapshot(ctx context.Context, req *servicep
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/LoadSnapshot")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{environment=projects/*/locations/*/environments/*}:loadSnapshot")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2624,6 +2927,10 @@ func (c *environmentsRESTClient) DatabaseFailover(ctx context.Context, req *serv
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/DatabaseFailover")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{environment=projects/*/locations/*/environments/*}:databaseFailover")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2677,6 +2984,13 @@ func (c *environmentsRESTClient) FetchDatabaseProperties(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//composer.googleapis.com/%v", req.GetEnvironment()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/FetchDatabaseProperties")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{environment=projects/*/locations/*/environments/*}:fetchDatabaseProperties")
+	}
 	opts = append((*c.CallOptions).FetchDatabaseProperties[0:len((*c.CallOptions).FetchDatabaseProperties):len((*c.CallOptions).FetchDatabaseProperties)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &servicepb.FetchDatabasePropertiesResponse{}
@@ -2727,6 +3041,10 @@ func (c *environmentsRESTClient) DeleteOperation(ctx context.Context, req *longr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2762,6 +3080,10 @@ func (c *environmentsRESTClient) GetOperation(ctx context.Context, req *longrunn
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}

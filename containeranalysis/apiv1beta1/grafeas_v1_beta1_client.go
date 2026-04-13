@@ -27,6 +27,7 @@ import (
 	"time"
 
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -534,6 +535,16 @@ type grafeasV1Beta1GRPCClient struct {
 // image with the vulnerability referring to that note.
 func NewGrafeasV1Beta1Client(ctx context.Context, opts ...option.ClientOption) (*GrafeasV1Beta1Client, error) {
 	clientOpts := defaultGrafeasV1Beta1GRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "containeranalysis",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/containeranalysis/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "containeranalysis.googleapis.com",
+		}))
+	}
 	if newGrafeasV1Beta1ClientHook != nil {
 		hookOpts, err := newGrafeasV1Beta1ClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -555,6 +566,34 @@ func NewGrafeasV1Beta1Client(ctx context.Context, opts ...option.ClientOption) (
 		logger:               internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "containeranalysis",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/containeranalysis/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "containeranalysis.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetOccurrence = append(client.CallOptions.GetOccurrence, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOccurrences = append(client.CallOptions.ListOccurrences, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOccurrence = append(client.CallOptions.DeleteOccurrence, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateOccurrence = append(client.CallOptions.CreateOccurrence, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchCreateOccurrences = append(client.CallOptions.BatchCreateOccurrences, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateOccurrence = append(client.CallOptions.UpdateOccurrence, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOccurrenceNote = append(client.CallOptions.GetOccurrenceNote, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetNote = append(client.CallOptions.GetNote, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListNotes = append(client.CallOptions.ListNotes, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteNote = append(client.CallOptions.DeleteNote, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateNote = append(client.CallOptions.CreateNote, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchCreateNotes = append(client.CallOptions.BatchCreateNotes, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateNote = append(client.CallOptions.UpdateNote, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListNoteOccurrences = append(client.CallOptions.ListNoteOccurrences, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetVulnerabilityOccurrencesSummary = append(client.CallOptions.GetVulnerabilityOccurrencesSummary, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -621,6 +660,16 @@ type grafeasV1Beta1RESTClient struct {
 // image with the vulnerability referring to that note.
 func NewGrafeasV1Beta1RESTClient(ctx context.Context, opts ...option.ClientOption) (*GrafeasV1Beta1Client, error) {
 	clientOpts := append(defaultGrafeasV1Beta1RESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "containeranalysis",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/containeranalysis/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "containeranalysis.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -634,6 +683,35 @@ func NewGrafeasV1Beta1RESTClient(ctx context.Context, opts ...option.ClientOptio
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "containeranalysis",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/containeranalysis/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "containeranalysis.googleapis.com",
+			}),
+		)
+
+		callOpts.GetOccurrence = append(callOpts.GetOccurrence, gax.WithClientMetrics(metrics))
+		callOpts.ListOccurrences = append(callOpts.ListOccurrences, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOccurrence = append(callOpts.DeleteOccurrence, gax.WithClientMetrics(metrics))
+		callOpts.CreateOccurrence = append(callOpts.CreateOccurrence, gax.WithClientMetrics(metrics))
+		callOpts.BatchCreateOccurrences = append(callOpts.BatchCreateOccurrences, gax.WithClientMetrics(metrics))
+		callOpts.UpdateOccurrence = append(callOpts.UpdateOccurrence, gax.WithClientMetrics(metrics))
+		callOpts.GetOccurrenceNote = append(callOpts.GetOccurrenceNote, gax.WithClientMetrics(metrics))
+		callOpts.GetNote = append(callOpts.GetNote, gax.WithClientMetrics(metrics))
+		callOpts.ListNotes = append(callOpts.ListNotes, gax.WithClientMetrics(metrics))
+		callOpts.DeleteNote = append(callOpts.DeleteNote, gax.WithClientMetrics(metrics))
+		callOpts.CreateNote = append(callOpts.CreateNote, gax.WithClientMetrics(metrics))
+		callOpts.BatchCreateNotes = append(callOpts.BatchCreateNotes, gax.WithClientMetrics(metrics))
+		callOpts.UpdateNote = append(callOpts.UpdateNote, gax.WithClientMetrics(metrics))
+		callOpts.ListNoteOccurrences = append(callOpts.ListNoteOccurrences, gax.WithClientMetrics(metrics))
+		callOpts.GetVulnerabilityOccurrencesSummary = append(callOpts.GetVulnerabilityOccurrencesSummary, gax.WithClientMetrics(metrics))
+	}
 
 	return &GrafeasV1Beta1Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -680,6 +758,9 @@ func (c *grafeasV1Beta1GRPCClient) GetOccurrence(ctx context.Context, req *grafe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "grafeas.v1beta1.GrafeasV1Beta1/GetOccurrence")
+	}
 	opts = append((*c.CallOptions).GetOccurrence[0:len((*c.CallOptions).GetOccurrence):len((*c.CallOptions).GetOccurrence)], opts...)
 	var resp *grafeaspb.Occurrence
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -698,6 +779,9 @@ func (c *grafeasV1Beta1GRPCClient) ListOccurrences(ctx context.Context, req *gra
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "grafeas.v1beta1.GrafeasV1Beta1/ListOccurrences")
+	}
 	opts = append((*c.CallOptions).ListOccurrences[0:len((*c.CallOptions).ListOccurrences):len((*c.CallOptions).ListOccurrences)], opts...)
 	it := &OccurrenceIterator{}
 	req = proto.Clone(req).(*grafeaspb.ListOccurrencesRequest)
@@ -744,6 +828,9 @@ func (c *grafeasV1Beta1GRPCClient) DeleteOccurrence(ctx context.Context, req *gr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "grafeas.v1beta1.GrafeasV1Beta1/DeleteOccurrence")
+	}
 	opts = append((*c.CallOptions).DeleteOccurrence[0:len((*c.CallOptions).DeleteOccurrence):len((*c.CallOptions).DeleteOccurrence)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -758,6 +845,9 @@ func (c *grafeasV1Beta1GRPCClient) CreateOccurrence(ctx context.Context, req *gr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "grafeas.v1beta1.GrafeasV1Beta1/CreateOccurrence")
+	}
 	opts = append((*c.CallOptions).CreateOccurrence[0:len((*c.CallOptions).CreateOccurrence):len((*c.CallOptions).CreateOccurrence)], opts...)
 	var resp *grafeaspb.Occurrence
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -776,6 +866,9 @@ func (c *grafeasV1Beta1GRPCClient) BatchCreateOccurrences(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "grafeas.v1beta1.GrafeasV1Beta1/BatchCreateOccurrences")
+	}
 	opts = append((*c.CallOptions).BatchCreateOccurrences[0:len((*c.CallOptions).BatchCreateOccurrences):len((*c.CallOptions).BatchCreateOccurrences)], opts...)
 	var resp *grafeaspb.BatchCreateOccurrencesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -794,6 +887,9 @@ func (c *grafeasV1Beta1GRPCClient) UpdateOccurrence(ctx context.Context, req *gr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "grafeas.v1beta1.GrafeasV1Beta1/UpdateOccurrence")
+	}
 	opts = append((*c.CallOptions).UpdateOccurrence[0:len((*c.CallOptions).UpdateOccurrence):len((*c.CallOptions).UpdateOccurrence)], opts...)
 	var resp *grafeaspb.Occurrence
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -812,6 +908,9 @@ func (c *grafeasV1Beta1GRPCClient) GetOccurrenceNote(ctx context.Context, req *g
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "grafeas.v1beta1.GrafeasV1Beta1/GetOccurrenceNote")
+	}
 	opts = append((*c.CallOptions).GetOccurrenceNote[0:len((*c.CallOptions).GetOccurrenceNote):len((*c.CallOptions).GetOccurrenceNote)], opts...)
 	var resp *grafeaspb.Note
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -830,6 +929,9 @@ func (c *grafeasV1Beta1GRPCClient) GetNote(ctx context.Context, req *grafeaspb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "grafeas.v1beta1.GrafeasV1Beta1/GetNote")
+	}
 	opts = append((*c.CallOptions).GetNote[0:len((*c.CallOptions).GetNote):len((*c.CallOptions).GetNote)], opts...)
 	var resp *grafeaspb.Note
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -848,6 +950,9 @@ func (c *grafeasV1Beta1GRPCClient) ListNotes(ctx context.Context, req *grafeaspb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "grafeas.v1beta1.GrafeasV1Beta1/ListNotes")
+	}
 	opts = append((*c.CallOptions).ListNotes[0:len((*c.CallOptions).ListNotes):len((*c.CallOptions).ListNotes)], opts...)
 	it := &NoteIterator{}
 	req = proto.Clone(req).(*grafeaspb.ListNotesRequest)
@@ -894,6 +999,9 @@ func (c *grafeasV1Beta1GRPCClient) DeleteNote(ctx context.Context, req *grafeasp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "grafeas.v1beta1.GrafeasV1Beta1/DeleteNote")
+	}
 	opts = append((*c.CallOptions).DeleteNote[0:len((*c.CallOptions).DeleteNote):len((*c.CallOptions).DeleteNote)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -908,6 +1016,9 @@ func (c *grafeasV1Beta1GRPCClient) CreateNote(ctx context.Context, req *grafeasp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "grafeas.v1beta1.GrafeasV1Beta1/CreateNote")
+	}
 	opts = append((*c.CallOptions).CreateNote[0:len((*c.CallOptions).CreateNote):len((*c.CallOptions).CreateNote)], opts...)
 	var resp *grafeaspb.Note
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -926,6 +1037,9 @@ func (c *grafeasV1Beta1GRPCClient) BatchCreateNotes(ctx context.Context, req *gr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "grafeas.v1beta1.GrafeasV1Beta1/BatchCreateNotes")
+	}
 	opts = append((*c.CallOptions).BatchCreateNotes[0:len((*c.CallOptions).BatchCreateNotes):len((*c.CallOptions).BatchCreateNotes)], opts...)
 	var resp *grafeaspb.BatchCreateNotesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -944,6 +1058,9 @@ func (c *grafeasV1Beta1GRPCClient) UpdateNote(ctx context.Context, req *grafeasp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "grafeas.v1beta1.GrafeasV1Beta1/UpdateNote")
+	}
 	opts = append((*c.CallOptions).UpdateNote[0:len((*c.CallOptions).UpdateNote):len((*c.CallOptions).UpdateNote)], opts...)
 	var resp *grafeaspb.Note
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -962,6 +1079,9 @@ func (c *grafeasV1Beta1GRPCClient) ListNoteOccurrences(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "grafeas.v1beta1.GrafeasV1Beta1/ListNoteOccurrences")
+	}
 	opts = append((*c.CallOptions).ListNoteOccurrences[0:len((*c.CallOptions).ListNoteOccurrences):len((*c.CallOptions).ListNoteOccurrences)], opts...)
 	it := &OccurrenceIterator{}
 	req = proto.Clone(req).(*grafeaspb.ListNoteOccurrencesRequest)
@@ -1008,6 +1128,9 @@ func (c *grafeasV1Beta1GRPCClient) GetVulnerabilityOccurrencesSummary(ctx contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "grafeas.v1beta1.GrafeasV1Beta1/GetVulnerabilityOccurrencesSummary")
+	}
 	opts = append((*c.CallOptions).GetVulnerabilityOccurrencesSummary[0:len((*c.CallOptions).GetVulnerabilityOccurrencesSummary):len((*c.CallOptions).GetVulnerabilityOccurrencesSummary)], opts...)
 	var resp *grafeaspb.VulnerabilityOccurrencesSummary
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1040,6 +1163,10 @@ func (c *grafeasV1Beta1RESTClient) GetOccurrence(ctx context.Context, req *grafe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "grafeas.v1beta1.GrafeasV1Beta1/GetOccurrence")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/occurrences/*}")
+	}
 	opts = append((*c.CallOptions).GetOccurrence[0:len((*c.CallOptions).GetOccurrence):len((*c.CallOptions).GetOccurrence)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &grafeaspb.Occurrence{}
@@ -1173,6 +1300,10 @@ func (c *grafeasV1Beta1RESTClient) DeleteOccurrence(ctx context.Context, req *gr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "grafeas.v1beta1.GrafeasV1Beta1/DeleteOccurrence")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/occurrences/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1215,6 +1346,10 @@ func (c *grafeasV1Beta1RESTClient) CreateOccurrence(ctx context.Context, req *gr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "grafeas.v1beta1.GrafeasV1Beta1/CreateOccurrence")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*}/occurrences")
+	}
 	opts = append((*c.CallOptions).CreateOccurrence[0:len((*c.CallOptions).CreateOccurrence):len((*c.CallOptions).CreateOccurrence)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &grafeaspb.Occurrence{}
@@ -1271,6 +1406,10 @@ func (c *grafeasV1Beta1RESTClient) BatchCreateOccurrences(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "grafeas.v1beta1.GrafeasV1Beta1/BatchCreateOccurrences")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*}/occurrences:batchCreate")
+	}
 	opts = append((*c.CallOptions).BatchCreateOccurrences[0:len((*c.CallOptions).BatchCreateOccurrences):len((*c.CallOptions).BatchCreateOccurrences)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &grafeaspb.BatchCreateOccurrencesResponse{}
@@ -1335,6 +1474,10 @@ func (c *grafeasV1Beta1RESTClient) UpdateOccurrence(ctx context.Context, req *gr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "grafeas.v1beta1.GrafeasV1Beta1/UpdateOccurrence")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/occurrences/*}")
+	}
 	opts = append((*c.CallOptions).UpdateOccurrence[0:len((*c.CallOptions).UpdateOccurrence):len((*c.CallOptions).UpdateOccurrence)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &grafeaspb.Occurrence{}
@@ -1386,6 +1529,10 @@ func (c *grafeasV1Beta1RESTClient) GetOccurrenceNote(ctx context.Context, req *g
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "grafeas.v1beta1.GrafeasV1Beta1/GetOccurrenceNote")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/occurrences/*}/notes")
+	}
 	opts = append((*c.CallOptions).GetOccurrenceNote[0:len((*c.CallOptions).GetOccurrenceNote):len((*c.CallOptions).GetOccurrenceNote)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &grafeaspb.Note{}
@@ -1436,6 +1583,10 @@ func (c *grafeasV1Beta1RESTClient) GetNote(ctx context.Context, req *grafeaspb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "grafeas.v1beta1.GrafeasV1Beta1/GetNote")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/notes/*}")
+	}
 	opts = append((*c.CallOptions).GetNote[0:len((*c.CallOptions).GetNote):len((*c.CallOptions).GetNote)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &grafeaspb.Note{}
@@ -1567,6 +1718,10 @@ func (c *grafeasV1Beta1RESTClient) DeleteNote(ctx context.Context, req *grafeasp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "grafeas.v1beta1.GrafeasV1Beta1/DeleteNote")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/notes/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1612,6 +1767,10 @@ func (c *grafeasV1Beta1RESTClient) CreateNote(ctx context.Context, req *grafeasp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "grafeas.v1beta1.GrafeasV1Beta1/CreateNote")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*}/notes")
+	}
 	opts = append((*c.CallOptions).CreateNote[0:len((*c.CallOptions).CreateNote):len((*c.CallOptions).CreateNote)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &grafeaspb.Note{}
@@ -1668,6 +1827,10 @@ func (c *grafeasV1Beta1RESTClient) BatchCreateNotes(ctx context.Context, req *gr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "grafeas.v1beta1.GrafeasV1Beta1/BatchCreateNotes")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*}/notes:batchCreate")
+	}
 	opts = append((*c.CallOptions).BatchCreateNotes[0:len((*c.CallOptions).BatchCreateNotes):len((*c.CallOptions).BatchCreateNotes)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &grafeaspb.BatchCreateNotesResponse{}
@@ -1732,6 +1895,10 @@ func (c *grafeasV1Beta1RESTClient) UpdateNote(ctx context.Context, req *grafeasp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "grafeas.v1beta1.GrafeasV1Beta1/UpdateNote")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/notes/*}")
+	}
 	opts = append((*c.CallOptions).UpdateNote[0:len((*c.CallOptions).UpdateNote):len((*c.CallOptions).UpdateNote)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &grafeaspb.Note{}
@@ -1868,6 +2035,10 @@ func (c *grafeasV1Beta1RESTClient) GetVulnerabilityOccurrencesSummary(ctx contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "grafeas.v1beta1.GrafeasV1Beta1/GetVulnerabilityOccurrencesSummary")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*}/occurrences:vulnerabilitySummary")
+	}
 	opts = append((*c.CallOptions).GetVulnerabilityOccurrencesSummary[0:len((*c.CallOptions).GetVulnerabilityOccurrencesSummary):len((*c.CallOptions).GetVulnerabilityOccurrencesSummary)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &grafeaspb.VulnerabilityOccurrencesSummary{}

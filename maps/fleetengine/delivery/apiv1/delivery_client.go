@@ -30,6 +30,7 @@ import (
 
 	deliverypb "cloud.google.com/go/maps/fleetengine/delivery/apiv1/deliverypb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -469,6 +470,16 @@ type gRPCClient struct {
 // The Last Mile Delivery service.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "fleetengine",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/maps/fleetengine/delivery/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "fleetengine.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -490,6 +501,31 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "fleetengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/fleetengine/delivery/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "fleetengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateDeliveryVehicle = append(client.CallOptions.CreateDeliveryVehicle, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetDeliveryVehicle = append(client.CallOptions.GetDeliveryVehicle, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteDeliveryVehicle = append(client.CallOptions.DeleteDeliveryVehicle, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateDeliveryVehicle = append(client.CallOptions.UpdateDeliveryVehicle, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchCreateTasks = append(client.CallOptions.BatchCreateTasks, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateTask = append(client.CallOptions.CreateTask, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetTask = append(client.CallOptions.GetTask, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteTask = append(client.CallOptions.DeleteTask, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateTask = append(client.CallOptions.UpdateTask, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListTasks = append(client.CallOptions.ListTasks, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetTaskTrackingInfo = append(client.CallOptions.GetTaskTrackingInfo, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListDeliveryVehicles = append(client.CallOptions.ListDeliveryVehicles, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -543,6 +579,16 @@ type restClient struct {
 // The Last Mile Delivery service.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "fleetengine",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/maps/fleetengine/delivery/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "fleetengine.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -556,6 +602,32 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "fleetengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/fleetengine/delivery/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "fleetengine.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateDeliveryVehicle = append(callOpts.CreateDeliveryVehicle, gax.WithClientMetrics(metrics))
+		callOpts.GetDeliveryVehicle = append(callOpts.GetDeliveryVehicle, gax.WithClientMetrics(metrics))
+		callOpts.DeleteDeliveryVehicle = append(callOpts.DeleteDeliveryVehicle, gax.WithClientMetrics(metrics))
+		callOpts.UpdateDeliveryVehicle = append(callOpts.UpdateDeliveryVehicle, gax.WithClientMetrics(metrics))
+		callOpts.BatchCreateTasks = append(callOpts.BatchCreateTasks, gax.WithClientMetrics(metrics))
+		callOpts.CreateTask = append(callOpts.CreateTask, gax.WithClientMetrics(metrics))
+		callOpts.GetTask = append(callOpts.GetTask, gax.WithClientMetrics(metrics))
+		callOpts.DeleteTask = append(callOpts.DeleteTask, gax.WithClientMetrics(metrics))
+		callOpts.UpdateTask = append(callOpts.UpdateTask, gax.WithClientMetrics(metrics))
+		callOpts.ListTasks = append(callOpts.ListTasks, gax.WithClientMetrics(metrics))
+		callOpts.GetTaskTrackingInfo = append(callOpts.GetTaskTrackingInfo, gax.WithClientMetrics(metrics))
+		callOpts.ListDeliveryVehicles = append(callOpts.ListDeliveryVehicles, gax.WithClientMetrics(metrics))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -611,6 +683,9 @@ func (c *gRPCClient) CreateDeliveryVehicle(ctx context.Context, req *deliverypb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "maps.fleetengine.delivery.v1.DeliveryService/CreateDeliveryVehicle")
+	}
 	opts = append((*c.CallOptions).CreateDeliveryVehicle[0:len((*c.CallOptions).CreateDeliveryVehicle):len((*c.CallOptions).CreateDeliveryVehicle)], opts...)
 	var resp *deliverypb.DeliveryVehicle
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -638,6 +713,12 @@ func (c *gRPCClient) GetDeliveryVehicle(ctx context.Context, req *deliverypb.Get
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//fleetengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "maps.fleetengine.delivery.v1.DeliveryService/GetDeliveryVehicle")
+	}
 	opts = append((*c.CallOptions).GetDeliveryVehicle[0:len((*c.CallOptions).GetDeliveryVehicle):len((*c.CallOptions).GetDeliveryVehicle)], opts...)
 	var resp *deliverypb.DeliveryVehicle
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -665,6 +746,12 @@ func (c *gRPCClient) DeleteDeliveryVehicle(ctx context.Context, req *deliverypb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//fleetengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "maps.fleetengine.delivery.v1.DeliveryService/DeleteDeliveryVehicle")
+	}
 	opts = append((*c.CallOptions).DeleteDeliveryVehicle[0:len((*c.CallOptions).DeleteDeliveryVehicle):len((*c.CallOptions).DeleteDeliveryVehicle)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -688,6 +775,9 @@ func (c *gRPCClient) UpdateDeliveryVehicle(ctx context.Context, req *deliverypb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "maps.fleetengine.delivery.v1.DeliveryService/UpdateDeliveryVehicle")
+	}
 	opts = append((*c.CallOptions).UpdateDeliveryVehicle[0:len((*c.CallOptions).UpdateDeliveryVehicle):len((*c.CallOptions).UpdateDeliveryVehicle)], opts...)
 	var resp *deliverypb.DeliveryVehicle
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -715,6 +805,12 @@ func (c *gRPCClient) BatchCreateTasks(ctx context.Context, req *deliverypb.Batch
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//fleetengine.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "maps.fleetengine.delivery.v1.DeliveryService/BatchCreateTasks")
+	}
 	opts = append((*c.CallOptions).BatchCreateTasks[0:len((*c.CallOptions).BatchCreateTasks):len((*c.CallOptions).BatchCreateTasks)], opts...)
 	var resp *deliverypb.BatchCreateTasksResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -742,6 +838,9 @@ func (c *gRPCClient) CreateTask(ctx context.Context, req *deliverypb.CreateTaskR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "maps.fleetengine.delivery.v1.DeliveryService/CreateTask")
+	}
 	opts = append((*c.CallOptions).CreateTask[0:len((*c.CallOptions).CreateTask):len((*c.CallOptions).CreateTask)], opts...)
 	var resp *deliverypb.Task
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -769,6 +868,12 @@ func (c *gRPCClient) GetTask(ctx context.Context, req *deliverypb.GetTaskRequest
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//fleetengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "maps.fleetengine.delivery.v1.DeliveryService/GetTask")
+	}
 	opts = append((*c.CallOptions).GetTask[0:len((*c.CallOptions).GetTask):len((*c.CallOptions).GetTask)], opts...)
 	var resp *deliverypb.Task
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -796,6 +901,12 @@ func (c *gRPCClient) DeleteTask(ctx context.Context, req *deliverypb.DeleteTaskR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//fleetengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "maps.fleetengine.delivery.v1.DeliveryService/DeleteTask")
+	}
 	opts = append((*c.CallOptions).DeleteTask[0:len((*c.CallOptions).DeleteTask):len((*c.CallOptions).DeleteTask)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -819,6 +930,9 @@ func (c *gRPCClient) UpdateTask(ctx context.Context, req *deliverypb.UpdateTaskR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "maps.fleetengine.delivery.v1.DeliveryService/UpdateTask")
+	}
 	opts = append((*c.CallOptions).UpdateTask[0:len((*c.CallOptions).UpdateTask):len((*c.CallOptions).UpdateTask)], opts...)
 	var resp *deliverypb.Task
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -846,6 +960,12 @@ func (c *gRPCClient) ListTasks(ctx context.Context, req *deliverypb.ListTasksReq
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//fleetengine.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "maps.fleetengine.delivery.v1.DeliveryService/ListTasks")
+	}
 	opts = append((*c.CallOptions).ListTasks[0:len((*c.CallOptions).ListTasks):len((*c.CallOptions).ListTasks)], opts...)
 	it := &TaskIterator{}
 	req = proto.Clone(req).(*deliverypb.ListTasksRequest)
@@ -901,6 +1021,12 @@ func (c *gRPCClient) GetTaskTrackingInfo(ctx context.Context, req *deliverypb.Ge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//fleetengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "maps.fleetengine.delivery.v1.DeliveryService/GetTaskTrackingInfo")
+	}
 	opts = append((*c.CallOptions).GetTaskTrackingInfo[0:len((*c.CallOptions).GetTaskTrackingInfo):len((*c.CallOptions).GetTaskTrackingInfo)], opts...)
 	var resp *deliverypb.TaskTrackingInfo
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -928,6 +1054,12 @@ func (c *gRPCClient) ListDeliveryVehicles(ctx context.Context, req *deliverypb.L
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//fleetengine.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "maps.fleetengine.delivery.v1.DeliveryService/ListDeliveryVehicles")
+	}
 	opts = append((*c.CallOptions).ListDeliveryVehicles[0:len((*c.CallOptions).ListDeliveryVehicles):len((*c.CallOptions).ListDeliveryVehicles)], opts...)
 	it := &DeliveryVehicleIterator{}
 	req = proto.Clone(req).(*deliverypb.ListDeliveryVehiclesRequest)
@@ -1039,6 +1171,10 @@ func (c *restClient) CreateDeliveryVehicle(ctx context.Context, req *deliverypb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "maps.fleetengine.delivery.v1.DeliveryService/CreateDeliveryVehicle")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=providers/*}/deliveryVehicles")
+	}
 	opts = append((*c.CallOptions).CreateDeliveryVehicle[0:len((*c.CallOptions).CreateDeliveryVehicle):len((*c.CallOptions).CreateDeliveryVehicle)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &deliverypb.DeliveryVehicle{}
@@ -1132,6 +1268,13 @@ func (c *restClient) GetDeliveryVehicle(ctx context.Context, req *deliverypb.Get
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//fleetengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "maps.fleetengine.delivery.v1.DeliveryService/GetDeliveryVehicle")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=providers/*/deliveryVehicles/*}")
+	}
 	opts = append((*c.CallOptions).GetDeliveryVehicle[0:len((*c.CallOptions).GetDeliveryVehicle):len((*c.CallOptions).GetDeliveryVehicle)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &deliverypb.DeliveryVehicle{}
@@ -1228,6 +1371,13 @@ func (c *restClient) DeleteDeliveryVehicle(ctx context.Context, req *deliverypb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//fleetengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "maps.fleetengine.delivery.v1.DeliveryService/DeleteDeliveryVehicle")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=providers/*/deliveryVehicles/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1326,6 +1476,10 @@ func (c *restClient) UpdateDeliveryVehicle(ctx context.Context, req *deliverypb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "maps.fleetengine.delivery.v1.DeliveryService/UpdateDeliveryVehicle")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{delivery_vehicle.name=providers/*/deliveryVehicles/*}")
+	}
 	opts = append((*c.CallOptions).UpdateDeliveryVehicle[0:len((*c.CallOptions).UpdateDeliveryVehicle):len((*c.CallOptions).UpdateDeliveryVehicle)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &deliverypb.DeliveryVehicle{}
@@ -1391,6 +1545,13 @@ func (c *restClient) BatchCreateTasks(ctx context.Context, req *deliverypb.Batch
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//fleetengine.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "maps.fleetengine.delivery.v1.DeliveryService/BatchCreateTasks")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=providers/*}/tasks:batchCreate")
+	}
 	opts = append((*c.CallOptions).BatchCreateTasks[0:len((*c.CallOptions).BatchCreateTasks):len((*c.CallOptions).BatchCreateTasks)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &deliverypb.BatchCreateTasksResponse{}
@@ -1492,6 +1653,10 @@ func (c *restClient) CreateTask(ctx context.Context, req *deliverypb.CreateTaskR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "maps.fleetengine.delivery.v1.DeliveryService/CreateTask")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=providers/*}/tasks")
+	}
 	opts = append((*c.CallOptions).CreateTask[0:len((*c.CallOptions).CreateTask):len((*c.CallOptions).CreateTask)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &deliverypb.Task{}
@@ -1585,6 +1750,13 @@ func (c *restClient) GetTask(ctx context.Context, req *deliverypb.GetTaskRequest
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//fleetengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "maps.fleetengine.delivery.v1.DeliveryService/GetTask")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=providers/*/tasks/*}")
+	}
 	opts = append((*c.CallOptions).GetTask[0:len((*c.CallOptions).GetTask):len((*c.CallOptions).GetTask)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &deliverypb.Task{}
@@ -1681,6 +1853,13 @@ func (c *restClient) DeleteTask(ctx context.Context, req *deliverypb.DeleteTaskR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//fleetengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "maps.fleetengine.delivery.v1.DeliveryService/DeleteTask")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=providers/*/tasks/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1773,6 +1952,10 @@ func (c *restClient) UpdateTask(ctx context.Context, req *deliverypb.UpdateTaskR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "maps.fleetengine.delivery.v1.DeliveryService/UpdateTask")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{task.name=providers/*/tasks/*}")
+	}
 	opts = append((*c.CallOptions).UpdateTask[0:len((*c.CallOptions).UpdateTask):len((*c.CallOptions).UpdateTask)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &deliverypb.Task{}
@@ -1981,6 +2164,13 @@ func (c *restClient) GetTaskTrackingInfo(ctx context.Context, req *deliverypb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//fleetengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "maps.fleetengine.delivery.v1.DeliveryService/GetTaskTrackingInfo")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=providers/*/taskTrackingInfo/*}")
+	}
 	opts = append((*c.CallOptions).GetTaskTrackingInfo[0:len((*c.CallOptions).GetTaskTrackingInfo):len((*c.CallOptions).GetTaskTrackingInfo)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &deliverypb.TaskTrackingInfo{}

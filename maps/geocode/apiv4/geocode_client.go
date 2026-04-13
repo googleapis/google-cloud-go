@@ -27,6 +27,7 @@ import (
 
 	geocodepb "cloud.google.com/go/maps/geocode/apiv4/geocodepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -226,6 +227,16 @@ type gRPCClient struct {
 // A service for performing geocoding.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "geocoding-backend",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/maps/geocode/apiv4",
+			"gcp.client.language": "go",
+			"url.domain":          "geocoding-backend.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -247,6 +258,22 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "geocoding-backend",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/geocode/apiv4",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "geocoding-backend.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GeocodeAddress = append(client.CallOptions.GeocodeAddress, gax.WithClientMetrics(metrics))
+		client.CallOptions.GeocodeLocation = append(client.CallOptions.GeocodeLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GeocodePlace = append(client.CallOptions.GeocodePlace, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -300,6 +327,16 @@ type restClient struct {
 // A service for performing geocoding.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "geocoding-backend",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/maps/geocode/apiv4",
+			"gcp.client.language": "go",
+			"url.domain":          "geocoding-backend.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -313,6 +350,23 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "geocoding-backend",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/geocode/apiv4",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "geocoding-backend.googleapis.com",
+			}),
+		)
+
+		callOpts.GeocodeAddress = append(callOpts.GeocodeAddress, gax.WithClientMetrics(metrics))
+		callOpts.GeocodeLocation = append(callOpts.GeocodeLocation, gax.WithClientMetrics(metrics))
+		callOpts.GeocodePlace = append(callOpts.GeocodePlace, gax.WithClientMetrics(metrics))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -359,6 +413,9 @@ func (c *gRPCClient) GeocodeAddress(ctx context.Context, req *geocodepb.GeocodeA
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.geocode.v4.GeocodeService/GeocodeAddress")
+	}
 	opts = append((*c.CallOptions).GeocodeAddress[0:len((*c.CallOptions).GeocodeAddress):len((*c.CallOptions).GeocodeAddress)], opts...)
 	var resp *geocodepb.GeocodeAddressResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -377,6 +434,9 @@ func (c *gRPCClient) GeocodeLocation(ctx context.Context, req *geocodepb.Geocode
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.geocode.v4.GeocodeService/GeocodeLocation")
+	}
 	opts = append((*c.CallOptions).GeocodeLocation[0:len((*c.CallOptions).GeocodeLocation):len((*c.CallOptions).GeocodeLocation)], opts...)
 	var resp *geocodepb.GeocodeLocationResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -395,6 +455,9 @@ func (c *gRPCClient) GeocodePlace(ctx context.Context, req *geocodepb.GeocodePla
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.geocode.v4.GeocodeService/GeocodePlace")
+	}
 	opts = append((*c.CallOptions).GeocodePlace[0:len((*c.CallOptions).GeocodePlace):len((*c.CallOptions).GeocodePlace)], opts...)
 	var resp *geocodepb.GeocodeResult
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -486,6 +549,10 @@ func (c *restClient) GeocodeAddress(ctx context.Context, req *geocodepb.GeocodeA
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.geocode.v4.GeocodeService/GeocodeAddress")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v4/geocode/address")
+	}
 	opts = append((*c.CallOptions).GeocodeAddress[0:len((*c.CallOptions).GeocodeAddress):len((*c.CallOptions).GeocodeAddress)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &geocodepb.GeocodeAddressResponse{}
@@ -562,6 +629,10 @@ func (c *restClient) GeocodeLocation(ctx context.Context, req *geocodepb.Geocode
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.geocode.v4.GeocodeService/GeocodeLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v4/geocode/location")
+	}
 	opts = append((*c.CallOptions).GeocodeLocation[0:len((*c.CallOptions).GeocodeLocation):len((*c.CallOptions).GeocodeLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &geocodepb.GeocodeLocationResponse{}
@@ -618,6 +689,10 @@ func (c *restClient) GeocodePlace(ctx context.Context, req *geocodepb.GeocodePla
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.geocode.v4.GeocodeService/GeocodePlace")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v4/geocode/{place=places/*}")
+	}
 	opts = append((*c.CallOptions).GeocodePlace[0:len((*c.CallOptions).GeocodePlace):len((*c.CallOptions).GeocodePlace)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &geocodepb.GeocodeResult{}

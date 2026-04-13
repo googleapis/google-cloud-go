@@ -28,6 +28,7 @@ import (
 
 	chatpb "cloud.google.com/go/chat/apiv1/chatpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -2413,6 +2414,16 @@ type gRPCClient struct {
 // integrations on Google Chat Platform.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "chat",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/chat/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "chat.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -2434,6 +2445,61 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "chat",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/chat/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "chat.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateMessage = append(client.CallOptions.CreateMessage, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListMessages = append(client.CallOptions.ListMessages, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListMemberships = append(client.CallOptions.ListMemberships, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetMembership = append(client.CallOptions.GetMembership, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetMessage = append(client.CallOptions.GetMessage, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateMessage = append(client.CallOptions.UpdateMessage, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteMessage = append(client.CallOptions.DeleteMessage, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAttachment = append(client.CallOptions.GetAttachment, gax.WithClientMetrics(metrics))
+		client.CallOptions.UploadAttachment = append(client.CallOptions.UploadAttachment, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListSpaces = append(client.CallOptions.ListSpaces, gax.WithClientMetrics(metrics))
+		client.CallOptions.SearchSpaces = append(client.CallOptions.SearchSpaces, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetSpace = append(client.CallOptions.GetSpace, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateSpace = append(client.CallOptions.CreateSpace, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetUpSpace = append(client.CallOptions.SetUpSpace, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateSpace = append(client.CallOptions.UpdateSpace, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteSpace = append(client.CallOptions.DeleteSpace, gax.WithClientMetrics(metrics))
+		client.CallOptions.CompleteImportSpace = append(client.CallOptions.CompleteImportSpace, gax.WithClientMetrics(metrics))
+		client.CallOptions.FindDirectMessage = append(client.CallOptions.FindDirectMessage, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateMembership = append(client.CallOptions.CreateMembership, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateMembership = append(client.CallOptions.UpdateMembership, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteMembership = append(client.CallOptions.DeleteMembership, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateReaction = append(client.CallOptions.CreateReaction, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListReactions = append(client.CallOptions.ListReactions, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteReaction = append(client.CallOptions.DeleteReaction, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateCustomEmoji = append(client.CallOptions.CreateCustomEmoji, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetCustomEmoji = append(client.CallOptions.GetCustomEmoji, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListCustomEmojis = append(client.CallOptions.ListCustomEmojis, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteCustomEmoji = append(client.CallOptions.DeleteCustomEmoji, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetSpaceReadState = append(client.CallOptions.GetSpaceReadState, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateSpaceReadState = append(client.CallOptions.UpdateSpaceReadState, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetThreadReadState = append(client.CallOptions.GetThreadReadState, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetSpaceEvent = append(client.CallOptions.GetSpaceEvent, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListSpaceEvents = append(client.CallOptions.ListSpaceEvents, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetSpaceNotificationSetting = append(client.CallOptions.GetSpaceNotificationSetting, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateSpaceNotificationSetting = append(client.CallOptions.UpdateSpaceNotificationSetting, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateSection = append(client.CallOptions.CreateSection, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteSection = append(client.CallOptions.DeleteSection, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateSection = append(client.CallOptions.UpdateSection, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListSections = append(client.CallOptions.ListSections, gax.WithClientMetrics(metrics))
+		client.CallOptions.PositionSection = append(client.CallOptions.PositionSection, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListSectionItems = append(client.CallOptions.ListSectionItems, gax.WithClientMetrics(metrics))
+		client.CallOptions.MoveSectionItem = append(client.CallOptions.MoveSectionItem, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -2488,6 +2554,16 @@ type restClient struct {
 // integrations on Google Chat Platform.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "chat",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/chat/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "chat.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -2501,6 +2577,62 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "chat",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/chat/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "chat.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateMessage = append(callOpts.CreateMessage, gax.WithClientMetrics(metrics))
+		callOpts.ListMessages = append(callOpts.ListMessages, gax.WithClientMetrics(metrics))
+		callOpts.ListMemberships = append(callOpts.ListMemberships, gax.WithClientMetrics(metrics))
+		callOpts.GetMembership = append(callOpts.GetMembership, gax.WithClientMetrics(metrics))
+		callOpts.GetMessage = append(callOpts.GetMessage, gax.WithClientMetrics(metrics))
+		callOpts.UpdateMessage = append(callOpts.UpdateMessage, gax.WithClientMetrics(metrics))
+		callOpts.DeleteMessage = append(callOpts.DeleteMessage, gax.WithClientMetrics(metrics))
+		callOpts.GetAttachment = append(callOpts.GetAttachment, gax.WithClientMetrics(metrics))
+		callOpts.UploadAttachment = append(callOpts.UploadAttachment, gax.WithClientMetrics(metrics))
+		callOpts.ListSpaces = append(callOpts.ListSpaces, gax.WithClientMetrics(metrics))
+		callOpts.SearchSpaces = append(callOpts.SearchSpaces, gax.WithClientMetrics(metrics))
+		callOpts.GetSpace = append(callOpts.GetSpace, gax.WithClientMetrics(metrics))
+		callOpts.CreateSpace = append(callOpts.CreateSpace, gax.WithClientMetrics(metrics))
+		callOpts.SetUpSpace = append(callOpts.SetUpSpace, gax.WithClientMetrics(metrics))
+		callOpts.UpdateSpace = append(callOpts.UpdateSpace, gax.WithClientMetrics(metrics))
+		callOpts.DeleteSpace = append(callOpts.DeleteSpace, gax.WithClientMetrics(metrics))
+		callOpts.CompleteImportSpace = append(callOpts.CompleteImportSpace, gax.WithClientMetrics(metrics))
+		callOpts.FindDirectMessage = append(callOpts.FindDirectMessage, gax.WithClientMetrics(metrics))
+		callOpts.CreateMembership = append(callOpts.CreateMembership, gax.WithClientMetrics(metrics))
+		callOpts.UpdateMembership = append(callOpts.UpdateMembership, gax.WithClientMetrics(metrics))
+		callOpts.DeleteMembership = append(callOpts.DeleteMembership, gax.WithClientMetrics(metrics))
+		callOpts.CreateReaction = append(callOpts.CreateReaction, gax.WithClientMetrics(metrics))
+		callOpts.ListReactions = append(callOpts.ListReactions, gax.WithClientMetrics(metrics))
+		callOpts.DeleteReaction = append(callOpts.DeleteReaction, gax.WithClientMetrics(metrics))
+		callOpts.CreateCustomEmoji = append(callOpts.CreateCustomEmoji, gax.WithClientMetrics(metrics))
+		callOpts.GetCustomEmoji = append(callOpts.GetCustomEmoji, gax.WithClientMetrics(metrics))
+		callOpts.ListCustomEmojis = append(callOpts.ListCustomEmojis, gax.WithClientMetrics(metrics))
+		callOpts.DeleteCustomEmoji = append(callOpts.DeleteCustomEmoji, gax.WithClientMetrics(metrics))
+		callOpts.GetSpaceReadState = append(callOpts.GetSpaceReadState, gax.WithClientMetrics(metrics))
+		callOpts.UpdateSpaceReadState = append(callOpts.UpdateSpaceReadState, gax.WithClientMetrics(metrics))
+		callOpts.GetThreadReadState = append(callOpts.GetThreadReadState, gax.WithClientMetrics(metrics))
+		callOpts.GetSpaceEvent = append(callOpts.GetSpaceEvent, gax.WithClientMetrics(metrics))
+		callOpts.ListSpaceEvents = append(callOpts.ListSpaceEvents, gax.WithClientMetrics(metrics))
+		callOpts.GetSpaceNotificationSetting = append(callOpts.GetSpaceNotificationSetting, gax.WithClientMetrics(metrics))
+		callOpts.UpdateSpaceNotificationSetting = append(callOpts.UpdateSpaceNotificationSetting, gax.WithClientMetrics(metrics))
+		callOpts.CreateSection = append(callOpts.CreateSection, gax.WithClientMetrics(metrics))
+		callOpts.DeleteSection = append(callOpts.DeleteSection, gax.WithClientMetrics(metrics))
+		callOpts.UpdateSection = append(callOpts.UpdateSection, gax.WithClientMetrics(metrics))
+		callOpts.ListSections = append(callOpts.ListSections, gax.WithClientMetrics(metrics))
+		callOpts.PositionSection = append(callOpts.PositionSection, gax.WithClientMetrics(metrics))
+		callOpts.ListSectionItems = append(callOpts.ListSectionItems, gax.WithClientMetrics(metrics))
+		callOpts.MoveSectionItem = append(callOpts.MoveSectionItem, gax.WithClientMetrics(metrics))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -2547,6 +2679,12 @@ func (c *gRPCClient) CreateMessage(ctx context.Context, req *chatpb.CreateMessag
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/CreateMessage")
+	}
 	opts = append((*c.CallOptions).CreateMessage[0:len((*c.CallOptions).CreateMessage):len((*c.CallOptions).CreateMessage)], opts...)
 	var resp *chatpb.Message
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2565,6 +2703,12 @@ func (c *gRPCClient) ListMessages(ctx context.Context, req *chatpb.ListMessagesR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/ListMessages")
+	}
 	opts = append((*c.CallOptions).ListMessages[0:len((*c.CallOptions).ListMessages):len((*c.CallOptions).ListMessages)], opts...)
 	it := &MessageIterator{}
 	req = proto.Clone(req).(*chatpb.ListMessagesRequest)
@@ -2611,6 +2755,12 @@ func (c *gRPCClient) ListMemberships(ctx context.Context, req *chatpb.ListMember
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/ListMemberships")
+	}
 	opts = append((*c.CallOptions).ListMemberships[0:len((*c.CallOptions).ListMemberships):len((*c.CallOptions).ListMemberships)], opts...)
 	it := &MembershipIterator{}
 	req = proto.Clone(req).(*chatpb.ListMembershipsRequest)
@@ -2657,6 +2807,12 @@ func (c *gRPCClient) GetMembership(ctx context.Context, req *chatpb.GetMembershi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/GetMembership")
+	}
 	opts = append((*c.CallOptions).GetMembership[0:len((*c.CallOptions).GetMembership):len((*c.CallOptions).GetMembership)], opts...)
 	var resp *chatpb.Membership
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2675,6 +2831,12 @@ func (c *gRPCClient) GetMessage(ctx context.Context, req *chatpb.GetMessageReque
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/GetMessage")
+	}
 	opts = append((*c.CallOptions).GetMessage[0:len((*c.CallOptions).GetMessage):len((*c.CallOptions).GetMessage)], opts...)
 	var resp *chatpb.Message
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2693,6 +2855,9 @@ func (c *gRPCClient) UpdateMessage(ctx context.Context, req *chatpb.UpdateMessag
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/UpdateMessage")
+	}
 	opts = append((*c.CallOptions).UpdateMessage[0:len((*c.CallOptions).UpdateMessage):len((*c.CallOptions).UpdateMessage)], opts...)
 	var resp *chatpb.Message
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2711,6 +2876,12 @@ func (c *gRPCClient) DeleteMessage(ctx context.Context, req *chatpb.DeleteMessag
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/DeleteMessage")
+	}
 	opts = append((*c.CallOptions).DeleteMessage[0:len((*c.CallOptions).DeleteMessage):len((*c.CallOptions).DeleteMessage)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2725,6 +2896,12 @@ func (c *gRPCClient) GetAttachment(ctx context.Context, req *chatpb.GetAttachmen
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/GetAttachment")
+	}
 	opts = append((*c.CallOptions).GetAttachment[0:len((*c.CallOptions).GetAttachment):len((*c.CallOptions).GetAttachment)], opts...)
 	var resp *chatpb.Attachment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2743,6 +2920,12 @@ func (c *gRPCClient) UploadAttachment(ctx context.Context, req *chatpb.UploadAtt
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/UploadAttachment")
+	}
 	opts = append((*c.CallOptions).UploadAttachment[0:len((*c.CallOptions).UploadAttachment):len((*c.CallOptions).UploadAttachment)], opts...)
 	var resp *chatpb.UploadAttachmentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2758,6 +2941,9 @@ func (c *gRPCClient) UploadAttachment(ctx context.Context, req *chatpb.UploadAtt
 
 func (c *gRPCClient) ListSpaces(ctx context.Context, req *chatpb.ListSpacesRequest, opts ...gax.CallOption) *SpaceIterator {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/ListSpaces")
+	}
 	opts = append((*c.CallOptions).ListSpaces[0:len((*c.CallOptions).ListSpaces):len((*c.CallOptions).ListSpaces)], opts...)
 	it := &SpaceIterator{}
 	req = proto.Clone(req).(*chatpb.ListSpacesRequest)
@@ -2801,6 +2987,9 @@ func (c *gRPCClient) ListSpaces(ctx context.Context, req *chatpb.ListSpacesReque
 
 func (c *gRPCClient) SearchSpaces(ctx context.Context, req *chatpb.SearchSpacesRequest, opts ...gax.CallOption) *SpaceIterator {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/SearchSpaces")
+	}
 	opts = append((*c.CallOptions).SearchSpaces[0:len((*c.CallOptions).SearchSpaces):len((*c.CallOptions).SearchSpaces)], opts...)
 	it := &SpaceIterator{}
 	req = proto.Clone(req).(*chatpb.SearchSpacesRequest)
@@ -2847,6 +3036,12 @@ func (c *gRPCClient) GetSpace(ctx context.Context, req *chatpb.GetSpaceRequest, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/GetSpace")
+	}
 	opts = append((*c.CallOptions).GetSpace[0:len((*c.CallOptions).GetSpace):len((*c.CallOptions).GetSpace)], opts...)
 	var resp *chatpb.Space
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2862,6 +3057,9 @@ func (c *gRPCClient) GetSpace(ctx context.Context, req *chatpb.GetSpaceRequest, 
 
 func (c *gRPCClient) CreateSpace(ctx context.Context, req *chatpb.CreateSpaceRequest, opts ...gax.CallOption) (*chatpb.Space, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/CreateSpace")
+	}
 	opts = append((*c.CallOptions).CreateSpace[0:len((*c.CallOptions).CreateSpace):len((*c.CallOptions).CreateSpace)], opts...)
 	var resp *chatpb.Space
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2877,6 +3075,9 @@ func (c *gRPCClient) CreateSpace(ctx context.Context, req *chatpb.CreateSpaceReq
 
 func (c *gRPCClient) SetUpSpace(ctx context.Context, req *chatpb.SetUpSpaceRequest, opts ...gax.CallOption) (*chatpb.Space, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/SetUpSpace")
+	}
 	opts = append((*c.CallOptions).SetUpSpace[0:len((*c.CallOptions).SetUpSpace):len((*c.CallOptions).SetUpSpace)], opts...)
 	var resp *chatpb.Space
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2895,6 +3096,9 @@ func (c *gRPCClient) UpdateSpace(ctx context.Context, req *chatpb.UpdateSpaceReq
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/UpdateSpace")
+	}
 	opts = append((*c.CallOptions).UpdateSpace[0:len((*c.CallOptions).UpdateSpace):len((*c.CallOptions).UpdateSpace)], opts...)
 	var resp *chatpb.Space
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2913,6 +3117,12 @@ func (c *gRPCClient) DeleteSpace(ctx context.Context, req *chatpb.DeleteSpaceReq
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/DeleteSpace")
+	}
 	opts = append((*c.CallOptions).DeleteSpace[0:len((*c.CallOptions).DeleteSpace):len((*c.CallOptions).DeleteSpace)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2927,6 +3137,12 @@ func (c *gRPCClient) CompleteImportSpace(ctx context.Context, req *chatpb.Comple
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/CompleteImportSpace")
+	}
 	opts = append((*c.CallOptions).CompleteImportSpace[0:len((*c.CallOptions).CompleteImportSpace):len((*c.CallOptions).CompleteImportSpace)], opts...)
 	var resp *chatpb.CompleteImportSpaceResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2942,6 +3158,9 @@ func (c *gRPCClient) CompleteImportSpace(ctx context.Context, req *chatpb.Comple
 
 func (c *gRPCClient) FindDirectMessage(ctx context.Context, req *chatpb.FindDirectMessageRequest, opts ...gax.CallOption) (*chatpb.Space, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/FindDirectMessage")
+	}
 	opts = append((*c.CallOptions).FindDirectMessage[0:len((*c.CallOptions).FindDirectMessage):len((*c.CallOptions).FindDirectMessage)], opts...)
 	var resp *chatpb.Space
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2960,6 +3179,12 @@ func (c *gRPCClient) CreateMembership(ctx context.Context, req *chatpb.CreateMem
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/CreateMembership")
+	}
 	opts = append((*c.CallOptions).CreateMembership[0:len((*c.CallOptions).CreateMembership):len((*c.CallOptions).CreateMembership)], opts...)
 	var resp *chatpb.Membership
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2978,6 +3203,9 @@ func (c *gRPCClient) UpdateMembership(ctx context.Context, req *chatpb.UpdateMem
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/UpdateMembership")
+	}
 	opts = append((*c.CallOptions).UpdateMembership[0:len((*c.CallOptions).UpdateMembership):len((*c.CallOptions).UpdateMembership)], opts...)
 	var resp *chatpb.Membership
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2996,6 +3224,12 @@ func (c *gRPCClient) DeleteMembership(ctx context.Context, req *chatpb.DeleteMem
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/DeleteMembership")
+	}
 	opts = append((*c.CallOptions).DeleteMembership[0:len((*c.CallOptions).DeleteMembership):len((*c.CallOptions).DeleteMembership)], opts...)
 	var resp *chatpb.Membership
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3014,6 +3248,12 @@ func (c *gRPCClient) CreateReaction(ctx context.Context, req *chatpb.CreateReact
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/CreateReaction")
+	}
 	opts = append((*c.CallOptions).CreateReaction[0:len((*c.CallOptions).CreateReaction):len((*c.CallOptions).CreateReaction)], opts...)
 	var resp *chatpb.Reaction
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3032,6 +3272,12 @@ func (c *gRPCClient) ListReactions(ctx context.Context, req *chatpb.ListReaction
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/ListReactions")
+	}
 	opts = append((*c.CallOptions).ListReactions[0:len((*c.CallOptions).ListReactions):len((*c.CallOptions).ListReactions)], opts...)
 	it := &ReactionIterator{}
 	req = proto.Clone(req).(*chatpb.ListReactionsRequest)
@@ -3078,6 +3324,12 @@ func (c *gRPCClient) DeleteReaction(ctx context.Context, req *chatpb.DeleteReact
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/DeleteReaction")
+	}
 	opts = append((*c.CallOptions).DeleteReaction[0:len((*c.CallOptions).DeleteReaction):len((*c.CallOptions).DeleteReaction)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -3089,6 +3341,9 @@ func (c *gRPCClient) DeleteReaction(ctx context.Context, req *chatpb.DeleteReact
 
 func (c *gRPCClient) CreateCustomEmoji(ctx context.Context, req *chatpb.CreateCustomEmojiRequest, opts ...gax.CallOption) (*chatpb.CustomEmoji, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/CreateCustomEmoji")
+	}
 	opts = append((*c.CallOptions).CreateCustomEmoji[0:len((*c.CallOptions).CreateCustomEmoji):len((*c.CallOptions).CreateCustomEmoji)], opts...)
 	var resp *chatpb.CustomEmoji
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3107,6 +3362,12 @@ func (c *gRPCClient) GetCustomEmoji(ctx context.Context, req *chatpb.GetCustomEm
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/GetCustomEmoji")
+	}
 	opts = append((*c.CallOptions).GetCustomEmoji[0:len((*c.CallOptions).GetCustomEmoji):len((*c.CallOptions).GetCustomEmoji)], opts...)
 	var resp *chatpb.CustomEmoji
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3122,6 +3383,9 @@ func (c *gRPCClient) GetCustomEmoji(ctx context.Context, req *chatpb.GetCustomEm
 
 func (c *gRPCClient) ListCustomEmojis(ctx context.Context, req *chatpb.ListCustomEmojisRequest, opts ...gax.CallOption) *CustomEmojiIterator {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/ListCustomEmojis")
+	}
 	opts = append((*c.CallOptions).ListCustomEmojis[0:len((*c.CallOptions).ListCustomEmojis):len((*c.CallOptions).ListCustomEmojis)], opts...)
 	it := &CustomEmojiIterator{}
 	req = proto.Clone(req).(*chatpb.ListCustomEmojisRequest)
@@ -3168,6 +3432,12 @@ func (c *gRPCClient) DeleteCustomEmoji(ctx context.Context, req *chatpb.DeleteCu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/DeleteCustomEmoji")
+	}
 	opts = append((*c.CallOptions).DeleteCustomEmoji[0:len((*c.CallOptions).DeleteCustomEmoji):len((*c.CallOptions).DeleteCustomEmoji)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -3182,6 +3452,12 @@ func (c *gRPCClient) GetSpaceReadState(ctx context.Context, req *chatpb.GetSpace
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/GetSpaceReadState")
+	}
 	opts = append((*c.CallOptions).GetSpaceReadState[0:len((*c.CallOptions).GetSpaceReadState):len((*c.CallOptions).GetSpaceReadState)], opts...)
 	var resp *chatpb.SpaceReadState
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3200,6 +3476,9 @@ func (c *gRPCClient) UpdateSpaceReadState(ctx context.Context, req *chatpb.Updat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/UpdateSpaceReadState")
+	}
 	opts = append((*c.CallOptions).UpdateSpaceReadState[0:len((*c.CallOptions).UpdateSpaceReadState):len((*c.CallOptions).UpdateSpaceReadState)], opts...)
 	var resp *chatpb.SpaceReadState
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3218,6 +3497,12 @@ func (c *gRPCClient) GetThreadReadState(ctx context.Context, req *chatpb.GetThre
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/GetThreadReadState")
+	}
 	opts = append((*c.CallOptions).GetThreadReadState[0:len((*c.CallOptions).GetThreadReadState):len((*c.CallOptions).GetThreadReadState)], opts...)
 	var resp *chatpb.ThreadReadState
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3236,6 +3521,12 @@ func (c *gRPCClient) GetSpaceEvent(ctx context.Context, req *chatpb.GetSpaceEven
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/GetSpaceEvent")
+	}
 	opts = append((*c.CallOptions).GetSpaceEvent[0:len((*c.CallOptions).GetSpaceEvent):len((*c.CallOptions).GetSpaceEvent)], opts...)
 	var resp *chatpb.SpaceEvent
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3254,6 +3545,12 @@ func (c *gRPCClient) ListSpaceEvents(ctx context.Context, req *chatpb.ListSpaceE
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/ListSpaceEvents")
+	}
 	opts = append((*c.CallOptions).ListSpaceEvents[0:len((*c.CallOptions).ListSpaceEvents):len((*c.CallOptions).ListSpaceEvents)], opts...)
 	it := &SpaceEventIterator{}
 	req = proto.Clone(req).(*chatpb.ListSpaceEventsRequest)
@@ -3300,6 +3597,12 @@ func (c *gRPCClient) GetSpaceNotificationSetting(ctx context.Context, req *chatp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/GetSpaceNotificationSetting")
+	}
 	opts = append((*c.CallOptions).GetSpaceNotificationSetting[0:len((*c.CallOptions).GetSpaceNotificationSetting):len((*c.CallOptions).GetSpaceNotificationSetting)], opts...)
 	var resp *chatpb.SpaceNotificationSetting
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3318,6 +3621,9 @@ func (c *gRPCClient) UpdateSpaceNotificationSetting(ctx context.Context, req *ch
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/UpdateSpaceNotificationSetting")
+	}
 	opts = append((*c.CallOptions).UpdateSpaceNotificationSetting[0:len((*c.CallOptions).UpdateSpaceNotificationSetting):len((*c.CallOptions).UpdateSpaceNotificationSetting)], opts...)
 	var resp *chatpb.SpaceNotificationSetting
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3336,6 +3642,12 @@ func (c *gRPCClient) CreateSection(ctx context.Context, req *chatpb.CreateSectio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/CreateSection")
+	}
 	opts = append((*c.CallOptions).CreateSection[0:len((*c.CallOptions).CreateSection):len((*c.CallOptions).CreateSection)], opts...)
 	var resp *chatpb.Section
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3354,6 +3666,12 @@ func (c *gRPCClient) DeleteSection(ctx context.Context, req *chatpb.DeleteSectio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/DeleteSection")
+	}
 	opts = append((*c.CallOptions).DeleteSection[0:len((*c.CallOptions).DeleteSection):len((*c.CallOptions).DeleteSection)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -3368,6 +3686,9 @@ func (c *gRPCClient) UpdateSection(ctx context.Context, req *chatpb.UpdateSectio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/UpdateSection")
+	}
 	opts = append((*c.CallOptions).UpdateSection[0:len((*c.CallOptions).UpdateSection):len((*c.CallOptions).UpdateSection)], opts...)
 	var resp *chatpb.Section
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3386,6 +3707,12 @@ func (c *gRPCClient) ListSections(ctx context.Context, req *chatpb.ListSectionsR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/ListSections")
+	}
 	opts = append((*c.CallOptions).ListSections[0:len((*c.CallOptions).ListSections):len((*c.CallOptions).ListSections)], opts...)
 	it := &SectionIterator{}
 	req = proto.Clone(req).(*chatpb.ListSectionsRequest)
@@ -3432,6 +3759,12 @@ func (c *gRPCClient) PositionSection(ctx context.Context, req *chatpb.PositionSe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/PositionSection")
+	}
 	opts = append((*c.CallOptions).PositionSection[0:len((*c.CallOptions).PositionSection):len((*c.CallOptions).PositionSection)], opts...)
 	var resp *chatpb.PositionSectionResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3450,6 +3783,12 @@ func (c *gRPCClient) ListSectionItems(ctx context.Context, req *chatpb.ListSecti
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/ListSectionItems")
+	}
 	opts = append((*c.CallOptions).ListSectionItems[0:len((*c.CallOptions).ListSectionItems):len((*c.CallOptions).ListSectionItems)], opts...)
 	it := &SectionItemIterator{}
 	req = proto.Clone(req).(*chatpb.ListSectionItemsRequest)
@@ -3496,6 +3835,12 @@ func (c *gRPCClient) MoveSectionItem(ctx context.Context, req *chatpb.MoveSectio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/MoveSectionItem")
+	}
 	opts = append((*c.CallOptions).MoveSectionItem[0:len((*c.CallOptions).MoveSectionItem):len((*c.CallOptions).MoveSectionItem)], opts...)
 	var resp *chatpb.MoveSectionItemResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3589,6 +3934,13 @@ func (c *restClient) CreateMessage(ctx context.Context, req *chatpb.CreateMessag
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/CreateMessage")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=spaces/*}/messages")
+	}
 	opts = append((*c.CallOptions).CreateMessage[0:len((*c.CallOptions).CreateMessage):len((*c.CallOptions).CreateMessage)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &chatpb.Message{}
@@ -3921,6 +4273,13 @@ func (c *restClient) GetMembership(ctx context.Context, req *chatpb.GetMembershi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/GetMembership")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=spaces/*/members/*}")
+	}
 	opts = append((*c.CallOptions).GetMembership[0:len((*c.CallOptions).GetMembership):len((*c.CallOptions).GetMembership)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &chatpb.Membership{}
@@ -4002,6 +4361,13 @@ func (c *restClient) GetMessage(ctx context.Context, req *chatpb.GetMessageReque
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/GetMessage")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=spaces/*/messages/*}")
+	}
 	opts = append((*c.CallOptions).GetMessage[0:len((*c.CallOptions).GetMessage):len((*c.CallOptions).GetMessage)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &chatpb.Message{}
@@ -4095,6 +4461,10 @@ func (c *restClient) UpdateMessage(ctx context.Context, req *chatpb.UpdateMessag
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/UpdateMessage")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{message.name=spaces/*/messages/*}")
+	}
 	opts = append((*c.CallOptions).UpdateMessage[0:len((*c.CallOptions).UpdateMessage):len((*c.CallOptions).UpdateMessage)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &chatpb.Message{}
@@ -4171,6 +4541,13 @@ func (c *restClient) DeleteMessage(ctx context.Context, req *chatpb.DeleteMessag
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/DeleteMessage")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=spaces/*/messages/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -4218,6 +4595,13 @@ func (c *restClient) GetAttachment(ctx context.Context, req *chatpb.GetAttachmen
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/GetAttachment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=spaces/*/messages/*/attachments/*}")
+	}
 	opts = append((*c.CallOptions).GetAttachment[0:len((*c.CallOptions).GetAttachment):len((*c.CallOptions).GetAttachment)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &chatpb.Attachment{}
@@ -4291,6 +4675,13 @@ func (c *restClient) UploadAttachment(ctx context.Context, req *chatpb.UploadAtt
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/UploadAttachment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=spaces/*}/attachments:upload")
+	}
 	opts = append((*c.CallOptions).UploadAttachment[0:len((*c.CallOptions).UploadAttachment):len((*c.CallOptions).UploadAttachment)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &chatpb.UploadAttachmentResponse{}
@@ -4586,6 +4977,13 @@ func (c *restClient) GetSpace(ctx context.Context, req *chatpb.GetSpaceRequest, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/GetSpace")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=spaces/*}")
+	}
 	opts = append((*c.CallOptions).GetSpace[0:len((*c.CallOptions).GetSpace):len((*c.CallOptions).GetSpace)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &chatpb.Space{}
@@ -4692,6 +5090,10 @@ func (c *restClient) CreateSpace(ctx context.Context, req *chatpb.CreateSpaceReq
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/CreateSpace")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/spaces")
+	}
 	opts = append((*c.CallOptions).CreateSpace[0:len((*c.CallOptions).CreateSpace):len((*c.CallOptions).CreateSpace)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &chatpb.Space{}
@@ -4802,6 +5204,10 @@ func (c *restClient) SetUpSpace(ctx context.Context, req *chatpb.SetUpSpaceReque
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/SetUpSpace")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/spaces:setup")
+	}
 	opts = append((*c.CallOptions).SetUpSpace[0:len((*c.CallOptions).SetUpSpace):len((*c.CallOptions).SetUpSpace)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &chatpb.Space{}
@@ -4908,6 +5314,10 @@ func (c *restClient) UpdateSpace(ctx context.Context, req *chatpb.UpdateSpaceReq
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/UpdateSpace")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{space.name=spaces/*}")
+	}
 	opts = append((*c.CallOptions).UpdateSpace[0:len((*c.CallOptions).UpdateSpace):len((*c.CallOptions).UpdateSpace)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &chatpb.Space{}
@@ -4992,6 +5402,13 @@ func (c *restClient) DeleteSpace(ctx context.Context, req *chatpb.DeleteSpaceReq
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/DeleteSpace")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=spaces/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -5046,6 +5463,13 @@ func (c *restClient) CompleteImportSpace(ctx context.Context, req *chatpb.Comple
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/CompleteImportSpace")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=spaces/*}:completeImport")
+	}
 	opts = append((*c.CallOptions).CompleteImportSpace[0:len((*c.CallOptions).CompleteImportSpace):len((*c.CallOptions).CompleteImportSpace)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &chatpb.CompleteImportSpaceResponse{}
@@ -5124,6 +5548,10 @@ func (c *restClient) FindDirectMessage(ctx context.Context, req *chatpb.FindDire
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/FindDirectMessage")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/spaces:findDirectMessage")
+	}
 	opts = append((*c.CallOptions).FindDirectMessage[0:len((*c.CallOptions).FindDirectMessage):len((*c.CallOptions).FindDirectMessage)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &chatpb.Space{}
@@ -5237,6 +5665,13 @@ func (c *restClient) CreateMembership(ctx context.Context, req *chatpb.CreateMem
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/CreateMembership")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=spaces/*}/members")
+	}
 	opts = append((*c.CallOptions).CreateMembership[0:len((*c.CallOptions).CreateMembership):len((*c.CallOptions).CreateMembership)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &chatpb.Membership{}
@@ -5332,6 +5767,10 @@ func (c *restClient) UpdateMembership(ctx context.Context, req *chatpb.UpdateMem
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/UpdateMembership")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{membership.name=spaces/*/members/*}")
+	}
 	opts = append((*c.CallOptions).UpdateMembership[0:len((*c.CallOptions).UpdateMembership):len((*c.CallOptions).UpdateMembership)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &chatpb.Membership{}
@@ -5426,6 +5865,13 @@ func (c *restClient) DeleteMembership(ctx context.Context, req *chatpb.DeleteMem
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/DeleteMembership")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=spaces/*/members/*}")
+	}
 	opts = append((*c.CallOptions).DeleteMembership[0:len((*c.CallOptions).DeleteMembership):len((*c.CallOptions).DeleteMembership)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &chatpb.Membership{}
@@ -5498,6 +5944,13 @@ func (c *restClient) CreateReaction(ctx context.Context, req *chatpb.CreateReact
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/CreateReaction")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=spaces/*/messages/*}/reactions")
+	}
 	opts = append((*c.CallOptions).CreateReaction[0:len((*c.CallOptions).CreateReaction):len((*c.CallOptions).CreateReaction)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &chatpb.Reaction{}
@@ -5657,6 +6110,13 @@ func (c *restClient) DeleteReaction(ctx context.Context, req *chatpb.DeleteReact
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/DeleteReaction")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=spaces/*/messages/*/reactions/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -5710,6 +6170,10 @@ func (c *restClient) CreateCustomEmoji(ctx context.Context, req *chatpb.CreateCu
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/CreateCustomEmoji")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/customEmojis")
+	}
 	opts = append((*c.CallOptions).CreateCustomEmoji[0:len((*c.CallOptions).CreateCustomEmoji):len((*c.CallOptions).CreateCustomEmoji)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &chatpb.CustomEmoji{}
@@ -5776,6 +6240,13 @@ func (c *restClient) GetCustomEmoji(ctx context.Context, req *chatpb.GetCustomEm
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/GetCustomEmoji")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=customEmojis/*}")
+	}
 	opts = append((*c.CallOptions).GetCustomEmoji[0:len((*c.CallOptions).GetCustomEmoji):len((*c.CallOptions).GetCustomEmoji)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &chatpb.CustomEmoji{}
@@ -5941,6 +6412,13 @@ func (c *restClient) DeleteCustomEmoji(ctx context.Context, req *chatpb.DeleteCu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/DeleteCustomEmoji")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=customEmojis/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -5988,6 +6466,13 @@ func (c *restClient) GetSpaceReadState(ctx context.Context, req *chatpb.GetSpace
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/GetSpaceReadState")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=users/*/spaces/*/spaceReadState}")
+	}
 	opts = append((*c.CallOptions).GetSpaceReadState[0:len((*c.CallOptions).GetSpaceReadState):len((*c.CallOptions).GetSpaceReadState)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &chatpb.SpaceReadState{}
@@ -6061,6 +6546,10 @@ func (c *restClient) UpdateSpaceReadState(ctx context.Context, req *chatpb.Updat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/UpdateSpaceReadState")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{space_read_state.name=users/*/spaces/*/spaceReadState}")
+	}
 	opts = append((*c.CallOptions).UpdateSpaceReadState[0:len((*c.CallOptions).UpdateSpaceReadState):len((*c.CallOptions).UpdateSpaceReadState)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &chatpb.SpaceReadState{}
@@ -6123,6 +6612,13 @@ func (c *restClient) GetThreadReadState(ctx context.Context, req *chatpb.GetThre
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/GetThreadReadState")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=users/*/spaces/*/threads/*/threadReadState}")
+	}
 	opts = append((*c.CallOptions).GetThreadReadState[0:len((*c.CallOptions).GetThreadReadState):len((*c.CallOptions).GetThreadReadState)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &chatpb.ThreadReadState{}
@@ -6230,6 +6726,13 @@ func (c *restClient) GetSpaceEvent(ctx context.Context, req *chatpb.GetSpaceEven
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/GetSpaceEvent")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=spaces/*/spaceEvents/*}")
+	}
 	opts = append((*c.CallOptions).GetSpaceEvent[0:len((*c.CallOptions).GetSpaceEvent):len((*c.CallOptions).GetSpaceEvent)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &chatpb.SpaceEvent{}
@@ -6422,6 +6925,13 @@ func (c *restClient) GetSpaceNotificationSetting(ctx context.Context, req *chatp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/GetSpaceNotificationSetting")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=users/*/spaces/*/spaceNotificationSetting}")
+	}
 	opts = append((*c.CallOptions).GetSpaceNotificationSetting[0:len((*c.CallOptions).GetSpaceNotificationSetting):len((*c.CallOptions).GetSpaceNotificationSetting)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &chatpb.SpaceNotificationSetting{}
@@ -6495,6 +7005,10 @@ func (c *restClient) UpdateSpaceNotificationSetting(ctx context.Context, req *ch
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/UpdateSpaceNotificationSetting")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{space_notification_setting.name=users/*/spaces/*/spaceNotificationSetting}")
+	}
 	opts = append((*c.CallOptions).UpdateSpaceNotificationSetting[0:len((*c.CallOptions).UpdateSpaceNotificationSetting):len((*c.CallOptions).UpdateSpaceNotificationSetting)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &chatpb.SpaceNotificationSetting{}
@@ -6563,6 +7077,13 @@ func (c *restClient) CreateSection(ctx context.Context, req *chatpb.CreateSectio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/CreateSection")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=users/*}/sections")
+	}
 	opts = append((*c.CallOptions).CreateSection[0:len((*c.CallOptions).CreateSection):len((*c.CallOptions).CreateSection)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &chatpb.Section{}
@@ -6626,6 +7147,13 @@ func (c *restClient) DeleteSection(ctx context.Context, req *chatpb.DeleteSectio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/DeleteSection")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=users/*/sections/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -6684,6 +7212,10 @@ func (c *restClient) UpdateSection(ctx context.Context, req *chatpb.UpdateSectio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/UpdateSection")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{section.name=users/*/sections/*}")
+	}
 	opts = append((*c.CallOptions).UpdateSection[0:len((*c.CallOptions).UpdateSection):len((*c.CallOptions).UpdateSection)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &chatpb.Section{}
@@ -6838,6 +7370,13 @@ func (c *restClient) PositionSection(ctx context.Context, req *chatpb.PositionSe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/PositionSection")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=users/*/sections/*}:position")
+	}
 	opts = append((*c.CallOptions).PositionSection[0:len((*c.CallOptions).PositionSection):len((*c.CallOptions).PositionSection)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &chatpb.PositionSectionResponse{}
@@ -6997,6 +7536,13 @@ func (c *restClient) MoveSectionItem(ctx context.Context, req *chatpb.MoveSectio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/MoveSectionItem")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=users/*/sections/*/items/*}:move")
+	}
 	opts = append((*c.CallOptions).MoveSectionItem[0:len((*c.CallOptions).MoveSectionItem):len((*c.CallOptions).MoveSectionItem)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &chatpb.MoveSectionItemResponse{}

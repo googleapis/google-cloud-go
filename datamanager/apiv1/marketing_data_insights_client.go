@@ -27,6 +27,7 @@ import (
 
 	datamanagerpb "cloud.google.com/go/datamanager/apiv1/datamanagerpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -162,6 +163,16 @@ type marketingDataInsightsGRPCClient struct {
 // This feature is only available to data partners.
 func NewMarketingDataInsightsClient(ctx context.Context, opts ...option.ClientOption) (*MarketingDataInsightsClient, error) {
 	clientOpts := defaultMarketingDataInsightsGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "datamanager",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/datamanager/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "datamanager.googleapis.com",
+		}))
+	}
 	if newMarketingDataInsightsClientHook != nil {
 		hookOpts, err := newMarketingDataInsightsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -183,6 +194,20 @@ func NewMarketingDataInsightsClient(ctx context.Context, opts ...option.ClientOp
 		logger:                      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "datamanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datamanager/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "datamanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.RetrieveInsights = append(client.CallOptions.RetrieveInsights, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -238,6 +263,16 @@ type marketingDataInsightsRESTClient struct {
 // This feature is only available to data partners.
 func NewMarketingDataInsightsRESTClient(ctx context.Context, opts ...option.ClientOption) (*MarketingDataInsightsClient, error) {
 	clientOpts := append(defaultMarketingDataInsightsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "datamanager",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/datamanager/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "datamanager.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -251,6 +286,21 @@ func NewMarketingDataInsightsRESTClient(ctx context.Context, opts ...option.Clie
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "datamanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datamanager/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "datamanager.googleapis.com",
+			}),
+		)
+
+		callOpts.RetrieveInsights = append(callOpts.RetrieveInsights, gax.WithClientMetrics(metrics))
+	}
 
 	return &MarketingDataInsightsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -297,6 +347,9 @@ func (c *marketingDataInsightsGRPCClient) RetrieveInsights(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.MarketingDataInsightsService/RetrieveInsights")
+	}
 	opts = append((*c.CallOptions).RetrieveInsights[0:len((*c.CallOptions).RetrieveInsights):len((*c.CallOptions).RetrieveInsights)], opts...)
 	var resp *datamanagerpb.RetrieveInsightsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -351,6 +404,10 @@ func (c *marketingDataInsightsRESTClient) RetrieveInsights(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.MarketingDataInsightsService/RetrieveInsights")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=accountTypes/*/accounts/*}/insights:retrieve")
+	}
 	opts = append((*c.CallOptions).RetrieveInsights[0:len((*c.CallOptions).RetrieveInsights):len((*c.CallOptions).RetrieveInsights)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datamanagerpb.RetrieveInsightsResponse{}

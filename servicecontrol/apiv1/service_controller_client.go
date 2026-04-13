@@ -28,6 +28,7 @@ import (
 
 	servicecontrolpb "cloud.google.com/go/servicecontrol/apiv1/servicecontrolpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -214,6 +215,16 @@ type serviceControllerGRPCClient struct {
 // service (at https://cloud.google.com/service-management/reference/rpc/google.api/servicemanagement.v1#google.api.servicemanagement.v1.ManagedService).
 func NewServiceControllerClient(ctx context.Context, opts ...option.ClientOption) (*ServiceControllerClient, error) {
 	clientOpts := defaultServiceControllerGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "servicecontrol",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/servicecontrol/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "servicecontrol.googleapis.com",
+		}))
+	}
 	if newServiceControllerClientHook != nil {
 		hookOpts, err := newServiceControllerClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -235,6 +246,21 @@ func NewServiceControllerClient(ctx context.Context, opts ...option.ClientOption
 		logger:                  internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "servicecontrol",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/servicecontrol/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "servicecontrol.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.Check = append(client.CallOptions.Check, gax.WithClientMetrics(metrics))
+		client.CallOptions.Report = append(client.CallOptions.Report, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -291,6 +317,16 @@ type serviceControllerRESTClient struct {
 // service (at https://cloud.google.com/service-management/reference/rpc/google.api/servicemanagement.v1#google.api.servicemanagement.v1.ManagedService).
 func NewServiceControllerRESTClient(ctx context.Context, opts ...option.ClientOption) (*ServiceControllerClient, error) {
 	clientOpts := append(defaultServiceControllerRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "servicecontrol",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/servicecontrol/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "servicecontrol.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -304,6 +340,22 @@ func NewServiceControllerRESTClient(ctx context.Context, opts ...option.ClientOp
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "servicecontrol",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/servicecontrol/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "servicecontrol.googleapis.com",
+			}),
+		)
+
+		callOpts.Check = append(callOpts.Check, gax.WithClientMetrics(metrics))
+		callOpts.Report = append(callOpts.Report, gax.WithClientMetrics(metrics))
+	}
 
 	return &ServiceControllerClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -350,6 +402,9 @@ func (c *serviceControllerGRPCClient) Check(ctx context.Context, req *servicecon
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.servicecontrol.v1.ServiceController/Check")
+	}
 	opts = append((*c.CallOptions).Check[0:len((*c.CallOptions).Check):len((*c.CallOptions).Check)], opts...)
 	var resp *servicecontrolpb.CheckResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -368,6 +423,9 @@ func (c *serviceControllerGRPCClient) Report(ctx context.Context, req *serviceco
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.servicecontrol.v1.ServiceController/Report")
+	}
 	opts = append((*c.CallOptions).Report[0:len((*c.CallOptions).Report):len((*c.CallOptions).Report)], opts...)
 	var resp *servicecontrolpb.ReportResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -422,6 +480,10 @@ func (c *serviceControllerRESTClient) Check(ctx context.Context, req *servicecon
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.servicecontrol.v1.ServiceController/Check")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/services/{service_name}:check")
+	}
 	opts = append((*c.CallOptions).Check[0:len((*c.CallOptions).Check):len((*c.CallOptions).Check)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &servicecontrolpb.CheckResponse{}
@@ -492,6 +554,10 @@ func (c *serviceControllerRESTClient) Report(ctx context.Context, req *serviceco
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.servicecontrol.v1.ServiceController/Report")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/services/{service_name}:report")
+	}
 	opts = append((*c.CallOptions).Report[0:len((*c.CallOptions).Report):len((*c.CallOptions).Report)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &servicecontrolpb.ReportResponse{}

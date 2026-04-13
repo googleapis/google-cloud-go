@@ -27,6 +27,7 @@ import (
 
 	datamanagerpb "cloud.google.com/go/datamanager/apiv1/datamanagerpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -175,6 +176,16 @@ type ingestionGRPCClient struct {
 // Service for sending audience data to supported destinations.
 func NewIngestionClient(ctx context.Context, opts ...option.ClientOption) (*IngestionClient, error) {
 	clientOpts := defaultIngestionGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "datamanager",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/datamanager/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "datamanager.googleapis.com",
+		}))
+	}
 	if newIngestionClientHook != nil {
 		hookOpts, err := newIngestionClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -196,6 +207,23 @@ func NewIngestionClient(ctx context.Context, opts ...option.ClientOption) (*Inge
 		logger:          internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "datamanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datamanager/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "datamanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.IngestAudienceMembers = append(client.CallOptions.IngestAudienceMembers, gax.WithClientMetrics(metrics))
+		client.CallOptions.RemoveAudienceMembers = append(client.CallOptions.RemoveAudienceMembers, gax.WithClientMetrics(metrics))
+		client.CallOptions.IngestEvents = append(client.CallOptions.IngestEvents, gax.WithClientMetrics(metrics))
+		client.CallOptions.RetrieveRequestStatus = append(client.CallOptions.RetrieveRequestStatus, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -249,6 +277,16 @@ type ingestionRESTClient struct {
 // Service for sending audience data to supported destinations.
 func NewIngestionRESTClient(ctx context.Context, opts ...option.ClientOption) (*IngestionClient, error) {
 	clientOpts := append(defaultIngestionRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "datamanager",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/datamanager/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "datamanager.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -262,6 +300,24 @@ func NewIngestionRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "datamanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datamanager/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "datamanager.googleapis.com",
+			}),
+		)
+
+		callOpts.IngestAudienceMembers = append(callOpts.IngestAudienceMembers, gax.WithClientMetrics(metrics))
+		callOpts.RemoveAudienceMembers = append(callOpts.RemoveAudienceMembers, gax.WithClientMetrics(metrics))
+		callOpts.IngestEvents = append(callOpts.IngestEvents, gax.WithClientMetrics(metrics))
+		callOpts.RetrieveRequestStatus = append(callOpts.RetrieveRequestStatus, gax.WithClientMetrics(metrics))
+	}
 
 	return &IngestionClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -305,6 +361,9 @@ func (c *ingestionRESTClient) Connection() *grpc.ClientConn {
 }
 func (c *ingestionGRPCClient) IngestAudienceMembers(ctx context.Context, req *datamanagerpb.IngestAudienceMembersRequest, opts ...gax.CallOption) (*datamanagerpb.IngestAudienceMembersResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.IngestionService/IngestAudienceMembers")
+	}
 	opts = append((*c.CallOptions).IngestAudienceMembers[0:len((*c.CallOptions).IngestAudienceMembers):len((*c.CallOptions).IngestAudienceMembers)], opts...)
 	var resp *datamanagerpb.IngestAudienceMembersResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -320,6 +379,9 @@ func (c *ingestionGRPCClient) IngestAudienceMembers(ctx context.Context, req *da
 
 func (c *ingestionGRPCClient) RemoveAudienceMembers(ctx context.Context, req *datamanagerpb.RemoveAudienceMembersRequest, opts ...gax.CallOption) (*datamanagerpb.RemoveAudienceMembersResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.IngestionService/RemoveAudienceMembers")
+	}
 	opts = append((*c.CallOptions).RemoveAudienceMembers[0:len((*c.CallOptions).RemoveAudienceMembers):len((*c.CallOptions).RemoveAudienceMembers)], opts...)
 	var resp *datamanagerpb.RemoveAudienceMembersResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -335,6 +397,9 @@ func (c *ingestionGRPCClient) RemoveAudienceMembers(ctx context.Context, req *da
 
 func (c *ingestionGRPCClient) IngestEvents(ctx context.Context, req *datamanagerpb.IngestEventsRequest, opts ...gax.CallOption) (*datamanagerpb.IngestEventsResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.IngestionService/IngestEvents")
+	}
 	opts = append((*c.CallOptions).IngestEvents[0:len((*c.CallOptions).IngestEvents):len((*c.CallOptions).IngestEvents)], opts...)
 	var resp *datamanagerpb.IngestEventsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -350,6 +415,9 @@ func (c *ingestionGRPCClient) IngestEvents(ctx context.Context, req *datamanager
 
 func (c *ingestionGRPCClient) RetrieveRequestStatus(ctx context.Context, req *datamanagerpb.RetrieveRequestStatusRequest, opts ...gax.CallOption) (*datamanagerpb.RetrieveRequestStatusResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.IngestionService/RetrieveRequestStatus")
+	}
 	opts = append((*c.CallOptions).RetrieveRequestStatus[0:len((*c.CallOptions).RetrieveRequestStatus):len((*c.CallOptions).RetrieveRequestStatus)], opts...)
 	var resp *datamanagerpb.RetrieveRequestStatusResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -387,6 +455,10 @@ func (c *ingestionRESTClient) IngestAudienceMembers(ctx context.Context, req *da
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.IngestionService/IngestAudienceMembers")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/audienceMembers:ingest")
+	}
 	opts = append((*c.CallOptions).IngestAudienceMembers[0:len((*c.CallOptions).IngestAudienceMembers):len((*c.CallOptions).IngestAudienceMembers)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datamanagerpb.IngestAudienceMembersResponse{}
@@ -442,6 +514,10 @@ func (c *ingestionRESTClient) RemoveAudienceMembers(ctx context.Context, req *da
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.IngestionService/RemoveAudienceMembers")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/audienceMembers:remove")
+	}
 	opts = append((*c.CallOptions).RemoveAudienceMembers[0:len((*c.CallOptions).RemoveAudienceMembers):len((*c.CallOptions).RemoveAudienceMembers)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datamanagerpb.RemoveAudienceMembersResponse{}
@@ -497,6 +573,10 @@ func (c *ingestionRESTClient) IngestEvents(ctx context.Context, req *datamanager
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.IngestionService/IngestEvents")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/events:ingest")
+	}
 	opts = append((*c.CallOptions).IngestEvents[0:len((*c.CallOptions).IngestEvents):len((*c.CallOptions).IngestEvents)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datamanagerpb.IngestEventsResponse{}
@@ -545,6 +625,10 @@ func (c *ingestionRESTClient) RetrieveRequestStatus(ctx context.Context, req *da
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.IngestionService/RetrieveRequestStatus")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/requestStatus:retrieve")
+	}
 	opts = append((*c.CallOptions).RetrieveRequestStatus[0:len((*c.CallOptions).RetrieveRequestStatus):len((*c.CallOptions).RetrieveRequestStatus)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datamanagerpb.RetrieveRequestStatusResponse{}

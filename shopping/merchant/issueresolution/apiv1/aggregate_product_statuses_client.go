@@ -27,6 +27,7 @@ import (
 
 	issueresolutionpb "cloud.google.com/go/shopping/merchant/issueresolution/apiv1/issueresolutionpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -169,6 +170,16 @@ type aggregateProductStatusesGRPCClient struct {
 // Service to manage aggregate product statuses.
 func NewAggregateProductStatusesClient(ctx context.Context, opts ...option.ClientOption) (*AggregateProductStatusesClient, error) {
 	clientOpts := defaultAggregateProductStatusesGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/issueresolution/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	if newAggregateProductStatusesClientHook != nil {
 		hookOpts, err := newAggregateProductStatusesClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -190,6 +201,20 @@ func NewAggregateProductStatusesClient(ctx context.Context, opts ...option.Clien
 		logger:                         internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/issueresolution/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListAggregateProductStatuses = append(client.CallOptions.ListAggregateProductStatuses, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -243,6 +268,16 @@ type aggregateProductStatusesRESTClient struct {
 // Service to manage aggregate product statuses.
 func NewAggregateProductStatusesRESTClient(ctx context.Context, opts ...option.ClientOption) (*AggregateProductStatusesClient, error) {
 	clientOpts := append(defaultAggregateProductStatusesRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/issueresolution/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -256,6 +291,21 @@ func NewAggregateProductStatusesRESTClient(ctx context.Context, opts ...option.C
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/issueresolution/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.ListAggregateProductStatuses = append(callOpts.ListAggregateProductStatuses, gax.WithClientMetrics(metrics))
+	}
 
 	return &AggregateProductStatusesClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -302,6 +352,12 @@ func (c *aggregateProductStatusesGRPCClient) ListAggregateProductStatuses(ctx co
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.issueresolution.v1.AggregateProductStatusesService/ListAggregateProductStatuses")
+	}
 	opts = append((*c.CallOptions).ListAggregateProductStatuses[0:len((*c.CallOptions).ListAggregateProductStatuses):len((*c.CallOptions).ListAggregateProductStatuses)], opts...)
 	it := &AggregateProductStatusIterator{}
 	req = proto.Clone(req).(*issueresolutionpb.ListAggregateProductStatusesRequest)

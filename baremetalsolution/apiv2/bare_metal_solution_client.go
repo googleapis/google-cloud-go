@@ -31,6 +31,7 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -884,6 +885,16 @@ type gRPCClient struct {
 // upon specific servers in your Bare Metal Solution environment.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "baremetalsolution",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/baremetalsolution/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "baremetalsolution.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -906,6 +917,65 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		locationsClient: locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "baremetalsolution",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/baremetalsolution/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "baremetalsolution.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListInstances = append(client.CallOptions.ListInstances, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetInstance = append(client.CallOptions.GetInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateInstance = append(client.CallOptions.UpdateInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.RenameInstance = append(client.CallOptions.RenameInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.ResetInstance = append(client.CallOptions.ResetInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.StartInstance = append(client.CallOptions.StartInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.StopInstance = append(client.CallOptions.StopInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.EnableInteractiveSerialConsole = append(client.CallOptions.EnableInteractiveSerialConsole, gax.WithClientMetrics(metrics))
+		client.CallOptions.DisableInteractiveSerialConsole = append(client.CallOptions.DisableInteractiveSerialConsole, gax.WithClientMetrics(metrics))
+		client.CallOptions.DetachLun = append(client.CallOptions.DetachLun, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListSSHKeys = append(client.CallOptions.ListSSHKeys, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateSSHKey = append(client.CallOptions.CreateSSHKey, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteSSHKey = append(client.CallOptions.DeleteSSHKey, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListVolumes = append(client.CallOptions.ListVolumes, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetVolume = append(client.CallOptions.GetVolume, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateVolume = append(client.CallOptions.UpdateVolume, gax.WithClientMetrics(metrics))
+		client.CallOptions.RenameVolume = append(client.CallOptions.RenameVolume, gax.WithClientMetrics(metrics))
+		client.CallOptions.EvictVolume = append(client.CallOptions.EvictVolume, gax.WithClientMetrics(metrics))
+		client.CallOptions.ResizeVolume = append(client.CallOptions.ResizeVolume, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListNetworks = append(client.CallOptions.ListNetworks, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListNetworkUsage = append(client.CallOptions.ListNetworkUsage, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetNetwork = append(client.CallOptions.GetNetwork, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateNetwork = append(client.CallOptions.UpdateNetwork, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateVolumeSnapshot = append(client.CallOptions.CreateVolumeSnapshot, gax.WithClientMetrics(metrics))
+		client.CallOptions.RestoreVolumeSnapshot = append(client.CallOptions.RestoreVolumeSnapshot, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteVolumeSnapshot = append(client.CallOptions.DeleteVolumeSnapshot, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetVolumeSnapshot = append(client.CallOptions.GetVolumeSnapshot, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListVolumeSnapshots = append(client.CallOptions.ListVolumeSnapshots, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLun = append(client.CallOptions.GetLun, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLuns = append(client.CallOptions.ListLuns, gax.WithClientMetrics(metrics))
+		client.CallOptions.EvictLun = append(client.CallOptions.EvictLun, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetNfsShare = append(client.CallOptions.GetNfsShare, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListNfsShares = append(client.CallOptions.ListNfsShares, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateNfsShare = append(client.CallOptions.UpdateNfsShare, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateNfsShare = append(client.CallOptions.CreateNfsShare, gax.WithClientMetrics(metrics))
+		client.CallOptions.RenameNfsShare = append(client.CallOptions.RenameNfsShare, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteNfsShare = append(client.CallOptions.DeleteNfsShare, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListProvisioningQuotas = append(client.CallOptions.ListProvisioningQuotas, gax.WithClientMetrics(metrics))
+		client.CallOptions.SubmitProvisioningConfig = append(client.CallOptions.SubmitProvisioningConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetProvisioningConfig = append(client.CallOptions.GetProvisioningConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateProvisioningConfig = append(client.CallOptions.CreateProvisioningConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateProvisioningConfig = append(client.CallOptions.UpdateProvisioningConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.RenameNetwork = append(client.CallOptions.RenameNetwork, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOSImages = append(client.CallOptions.ListOSImages, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -982,6 +1052,16 @@ type restClient struct {
 // upon specific servers in your Bare Metal Solution environment.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "baremetalsolution",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/baremetalsolution/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "baremetalsolution.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -995,6 +1075,66 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "baremetalsolution",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/baremetalsolution/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "baremetalsolution.googleapis.com",
+			}),
+		)
+
+		callOpts.ListInstances = append(callOpts.ListInstances, gax.WithClientMetrics(metrics))
+		callOpts.GetInstance = append(callOpts.GetInstance, gax.WithClientMetrics(metrics))
+		callOpts.UpdateInstance = append(callOpts.UpdateInstance, gax.WithClientMetrics(metrics))
+		callOpts.RenameInstance = append(callOpts.RenameInstance, gax.WithClientMetrics(metrics))
+		callOpts.ResetInstance = append(callOpts.ResetInstance, gax.WithClientMetrics(metrics))
+		callOpts.StartInstance = append(callOpts.StartInstance, gax.WithClientMetrics(metrics))
+		callOpts.StopInstance = append(callOpts.StopInstance, gax.WithClientMetrics(metrics))
+		callOpts.EnableInteractiveSerialConsole = append(callOpts.EnableInteractiveSerialConsole, gax.WithClientMetrics(metrics))
+		callOpts.DisableInteractiveSerialConsole = append(callOpts.DisableInteractiveSerialConsole, gax.WithClientMetrics(metrics))
+		callOpts.DetachLun = append(callOpts.DetachLun, gax.WithClientMetrics(metrics))
+		callOpts.ListSSHKeys = append(callOpts.ListSSHKeys, gax.WithClientMetrics(metrics))
+		callOpts.CreateSSHKey = append(callOpts.CreateSSHKey, gax.WithClientMetrics(metrics))
+		callOpts.DeleteSSHKey = append(callOpts.DeleteSSHKey, gax.WithClientMetrics(metrics))
+		callOpts.ListVolumes = append(callOpts.ListVolumes, gax.WithClientMetrics(metrics))
+		callOpts.GetVolume = append(callOpts.GetVolume, gax.WithClientMetrics(metrics))
+		callOpts.UpdateVolume = append(callOpts.UpdateVolume, gax.WithClientMetrics(metrics))
+		callOpts.RenameVolume = append(callOpts.RenameVolume, gax.WithClientMetrics(metrics))
+		callOpts.EvictVolume = append(callOpts.EvictVolume, gax.WithClientMetrics(metrics))
+		callOpts.ResizeVolume = append(callOpts.ResizeVolume, gax.WithClientMetrics(metrics))
+		callOpts.ListNetworks = append(callOpts.ListNetworks, gax.WithClientMetrics(metrics))
+		callOpts.ListNetworkUsage = append(callOpts.ListNetworkUsage, gax.WithClientMetrics(metrics))
+		callOpts.GetNetwork = append(callOpts.GetNetwork, gax.WithClientMetrics(metrics))
+		callOpts.UpdateNetwork = append(callOpts.UpdateNetwork, gax.WithClientMetrics(metrics))
+		callOpts.CreateVolumeSnapshot = append(callOpts.CreateVolumeSnapshot, gax.WithClientMetrics(metrics))
+		callOpts.RestoreVolumeSnapshot = append(callOpts.RestoreVolumeSnapshot, gax.WithClientMetrics(metrics))
+		callOpts.DeleteVolumeSnapshot = append(callOpts.DeleteVolumeSnapshot, gax.WithClientMetrics(metrics))
+		callOpts.GetVolumeSnapshot = append(callOpts.GetVolumeSnapshot, gax.WithClientMetrics(metrics))
+		callOpts.ListVolumeSnapshots = append(callOpts.ListVolumeSnapshots, gax.WithClientMetrics(metrics))
+		callOpts.GetLun = append(callOpts.GetLun, gax.WithClientMetrics(metrics))
+		callOpts.ListLuns = append(callOpts.ListLuns, gax.WithClientMetrics(metrics))
+		callOpts.EvictLun = append(callOpts.EvictLun, gax.WithClientMetrics(metrics))
+		callOpts.GetNfsShare = append(callOpts.GetNfsShare, gax.WithClientMetrics(metrics))
+		callOpts.ListNfsShares = append(callOpts.ListNfsShares, gax.WithClientMetrics(metrics))
+		callOpts.UpdateNfsShare = append(callOpts.UpdateNfsShare, gax.WithClientMetrics(metrics))
+		callOpts.CreateNfsShare = append(callOpts.CreateNfsShare, gax.WithClientMetrics(metrics))
+		callOpts.RenameNfsShare = append(callOpts.RenameNfsShare, gax.WithClientMetrics(metrics))
+		callOpts.DeleteNfsShare = append(callOpts.DeleteNfsShare, gax.WithClientMetrics(metrics))
+		callOpts.ListProvisioningQuotas = append(callOpts.ListProvisioningQuotas, gax.WithClientMetrics(metrics))
+		callOpts.SubmitProvisioningConfig = append(callOpts.SubmitProvisioningConfig, gax.WithClientMetrics(metrics))
+		callOpts.GetProvisioningConfig = append(callOpts.GetProvisioningConfig, gax.WithClientMetrics(metrics))
+		callOpts.CreateProvisioningConfig = append(callOpts.CreateProvisioningConfig, gax.WithClientMetrics(metrics))
+		callOpts.UpdateProvisioningConfig = append(callOpts.UpdateProvisioningConfig, gax.WithClientMetrics(metrics))
+		callOpts.RenameNetwork = append(callOpts.RenameNetwork, gax.WithClientMetrics(metrics))
+		callOpts.ListOSImages = append(callOpts.ListOSImages, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -1051,6 +1191,12 @@ func (c *gRPCClient) ListInstances(ctx context.Context, req *baremetalsolutionpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/ListInstances")
+	}
 	opts = append((*c.CallOptions).ListInstances[0:len((*c.CallOptions).ListInstances):len((*c.CallOptions).ListInstances)], opts...)
 	it := &InstanceIterator{}
 	req = proto.Clone(req).(*baremetalsolutionpb.ListInstancesRequest)
@@ -1097,6 +1243,12 @@ func (c *gRPCClient) GetInstance(ctx context.Context, req *baremetalsolutionpb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/GetInstance")
+	}
 	opts = append((*c.CallOptions).GetInstance[0:len((*c.CallOptions).GetInstance):len((*c.CallOptions).GetInstance)], opts...)
 	var resp *baremetalsolutionpb.Instance
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1115,6 +1267,9 @@ func (c *gRPCClient) UpdateInstance(ctx context.Context, req *baremetalsolutionp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/UpdateInstance")
+	}
 	opts = append((*c.CallOptions).UpdateInstance[0:len((*c.CallOptions).UpdateInstance):len((*c.CallOptions).UpdateInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1135,6 +1290,12 @@ func (c *gRPCClient) RenameInstance(ctx context.Context, req *baremetalsolutionp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/RenameInstance")
+	}
 	opts = append((*c.CallOptions).RenameInstance[0:len((*c.CallOptions).RenameInstance):len((*c.CallOptions).RenameInstance)], opts...)
 	var resp *baremetalsolutionpb.Instance
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1153,6 +1314,12 @@ func (c *gRPCClient) ResetInstance(ctx context.Context, req *baremetalsolutionpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/ResetInstance")
+	}
 	opts = append((*c.CallOptions).ResetInstance[0:len((*c.CallOptions).ResetInstance):len((*c.CallOptions).ResetInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1173,6 +1340,12 @@ func (c *gRPCClient) StartInstance(ctx context.Context, req *baremetalsolutionpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/StartInstance")
+	}
 	opts = append((*c.CallOptions).StartInstance[0:len((*c.CallOptions).StartInstance):len((*c.CallOptions).StartInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1193,6 +1366,12 @@ func (c *gRPCClient) StopInstance(ctx context.Context, req *baremetalsolutionpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/StopInstance")
+	}
 	opts = append((*c.CallOptions).StopInstance[0:len((*c.CallOptions).StopInstance):len((*c.CallOptions).StopInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1213,6 +1392,12 @@ func (c *gRPCClient) EnableInteractiveSerialConsole(ctx context.Context, req *ba
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/EnableInteractiveSerialConsole")
+	}
 	opts = append((*c.CallOptions).EnableInteractiveSerialConsole[0:len((*c.CallOptions).EnableInteractiveSerialConsole):len((*c.CallOptions).EnableInteractiveSerialConsole)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1233,6 +1418,12 @@ func (c *gRPCClient) DisableInteractiveSerialConsole(ctx context.Context, req *b
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/DisableInteractiveSerialConsole")
+	}
 	opts = append((*c.CallOptions).DisableInteractiveSerialConsole[0:len((*c.CallOptions).DisableInteractiveSerialConsole):len((*c.CallOptions).DisableInteractiveSerialConsole)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1253,6 +1444,12 @@ func (c *gRPCClient) DetachLun(ctx context.Context, req *baremetalsolutionpb.Det
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetInstance()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/DetachLun")
+	}
 	opts = append((*c.CallOptions).DetachLun[0:len((*c.CallOptions).DetachLun):len((*c.CallOptions).DetachLun)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1273,6 +1470,12 @@ func (c *gRPCClient) ListSSHKeys(ctx context.Context, req *baremetalsolutionpb.L
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/ListSSHKeys")
+	}
 	opts = append((*c.CallOptions).ListSSHKeys[0:len((*c.CallOptions).ListSSHKeys):len((*c.CallOptions).ListSSHKeys)], opts...)
 	it := &SSHKeyIterator{}
 	req = proto.Clone(req).(*baremetalsolutionpb.ListSSHKeysRequest)
@@ -1319,6 +1522,12 @@ func (c *gRPCClient) CreateSSHKey(ctx context.Context, req *baremetalsolutionpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/CreateSSHKey")
+	}
 	opts = append((*c.CallOptions).CreateSSHKey[0:len((*c.CallOptions).CreateSSHKey):len((*c.CallOptions).CreateSSHKey)], opts...)
 	var resp *baremetalsolutionpb.SSHKey
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1337,6 +1546,12 @@ func (c *gRPCClient) DeleteSSHKey(ctx context.Context, req *baremetalsolutionpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/DeleteSSHKey")
+	}
 	opts = append((*c.CallOptions).DeleteSSHKey[0:len((*c.CallOptions).DeleteSSHKey):len((*c.CallOptions).DeleteSSHKey)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1351,6 +1566,12 @@ func (c *gRPCClient) ListVolumes(ctx context.Context, req *baremetalsolutionpb.L
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/ListVolumes")
+	}
 	opts = append((*c.CallOptions).ListVolumes[0:len((*c.CallOptions).ListVolumes):len((*c.CallOptions).ListVolumes)], opts...)
 	it := &VolumeIterator{}
 	req = proto.Clone(req).(*baremetalsolutionpb.ListVolumesRequest)
@@ -1397,6 +1618,12 @@ func (c *gRPCClient) GetVolume(ctx context.Context, req *baremetalsolutionpb.Get
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/GetVolume")
+	}
 	opts = append((*c.CallOptions).GetVolume[0:len((*c.CallOptions).GetVolume):len((*c.CallOptions).GetVolume)], opts...)
 	var resp *baremetalsolutionpb.Volume
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1415,6 +1642,9 @@ func (c *gRPCClient) UpdateVolume(ctx context.Context, req *baremetalsolutionpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/UpdateVolume")
+	}
 	opts = append((*c.CallOptions).UpdateVolume[0:len((*c.CallOptions).UpdateVolume):len((*c.CallOptions).UpdateVolume)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1435,6 +1665,12 @@ func (c *gRPCClient) RenameVolume(ctx context.Context, req *baremetalsolutionpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/RenameVolume")
+	}
 	opts = append((*c.CallOptions).RenameVolume[0:len((*c.CallOptions).RenameVolume):len((*c.CallOptions).RenameVolume)], opts...)
 	var resp *baremetalsolutionpb.Volume
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1453,6 +1689,12 @@ func (c *gRPCClient) EvictVolume(ctx context.Context, req *baremetalsolutionpb.E
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/EvictVolume")
+	}
 	opts = append((*c.CallOptions).EvictVolume[0:len((*c.CallOptions).EvictVolume):len((*c.CallOptions).EvictVolume)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1473,6 +1715,12 @@ func (c *gRPCClient) ResizeVolume(ctx context.Context, req *baremetalsolutionpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetVolume()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/ResizeVolume")
+	}
 	opts = append((*c.CallOptions).ResizeVolume[0:len((*c.CallOptions).ResizeVolume):len((*c.CallOptions).ResizeVolume)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1493,6 +1741,12 @@ func (c *gRPCClient) ListNetworks(ctx context.Context, req *baremetalsolutionpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/ListNetworks")
+	}
 	opts = append((*c.CallOptions).ListNetworks[0:len((*c.CallOptions).ListNetworks):len((*c.CallOptions).ListNetworks)], opts...)
 	it := &NetworkIterator{}
 	req = proto.Clone(req).(*baremetalsolutionpb.ListNetworksRequest)
@@ -1539,6 +1793,12 @@ func (c *gRPCClient) ListNetworkUsage(ctx context.Context, req *baremetalsolutio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetLocation()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/ListNetworkUsage")
+	}
 	opts = append((*c.CallOptions).ListNetworkUsage[0:len((*c.CallOptions).ListNetworkUsage):len((*c.CallOptions).ListNetworkUsage)], opts...)
 	var resp *baremetalsolutionpb.ListNetworkUsageResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1557,6 +1817,12 @@ func (c *gRPCClient) GetNetwork(ctx context.Context, req *baremetalsolutionpb.Ge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/GetNetwork")
+	}
 	opts = append((*c.CallOptions).GetNetwork[0:len((*c.CallOptions).GetNetwork):len((*c.CallOptions).GetNetwork)], opts...)
 	var resp *baremetalsolutionpb.Network
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1575,6 +1841,9 @@ func (c *gRPCClient) UpdateNetwork(ctx context.Context, req *baremetalsolutionpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/UpdateNetwork")
+	}
 	opts = append((*c.CallOptions).UpdateNetwork[0:len((*c.CallOptions).UpdateNetwork):len((*c.CallOptions).UpdateNetwork)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1595,6 +1864,12 @@ func (c *gRPCClient) CreateVolumeSnapshot(ctx context.Context, req *baremetalsol
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/CreateVolumeSnapshot")
+	}
 	opts = append((*c.CallOptions).CreateVolumeSnapshot[0:len((*c.CallOptions).CreateVolumeSnapshot):len((*c.CallOptions).CreateVolumeSnapshot)], opts...)
 	var resp *baremetalsolutionpb.VolumeSnapshot
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1613,6 +1888,12 @@ func (c *gRPCClient) RestoreVolumeSnapshot(ctx context.Context, req *baremetalso
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetVolumeSnapshot()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/RestoreVolumeSnapshot")
+	}
 	opts = append((*c.CallOptions).RestoreVolumeSnapshot[0:len((*c.CallOptions).RestoreVolumeSnapshot):len((*c.CallOptions).RestoreVolumeSnapshot)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1633,6 +1914,12 @@ func (c *gRPCClient) DeleteVolumeSnapshot(ctx context.Context, req *baremetalsol
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/DeleteVolumeSnapshot")
+	}
 	opts = append((*c.CallOptions).DeleteVolumeSnapshot[0:len((*c.CallOptions).DeleteVolumeSnapshot):len((*c.CallOptions).DeleteVolumeSnapshot)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1647,6 +1934,12 @@ func (c *gRPCClient) GetVolumeSnapshot(ctx context.Context, req *baremetalsoluti
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/GetVolumeSnapshot")
+	}
 	opts = append((*c.CallOptions).GetVolumeSnapshot[0:len((*c.CallOptions).GetVolumeSnapshot):len((*c.CallOptions).GetVolumeSnapshot)], opts...)
 	var resp *baremetalsolutionpb.VolumeSnapshot
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1665,6 +1958,12 @@ func (c *gRPCClient) ListVolumeSnapshots(ctx context.Context, req *baremetalsolu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/ListVolumeSnapshots")
+	}
 	opts = append((*c.CallOptions).ListVolumeSnapshots[0:len((*c.CallOptions).ListVolumeSnapshots):len((*c.CallOptions).ListVolumeSnapshots)], opts...)
 	it := &VolumeSnapshotIterator{}
 	req = proto.Clone(req).(*baremetalsolutionpb.ListVolumeSnapshotsRequest)
@@ -1711,6 +2010,12 @@ func (c *gRPCClient) GetLun(ctx context.Context, req *baremetalsolutionpb.GetLun
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/GetLun")
+	}
 	opts = append((*c.CallOptions).GetLun[0:len((*c.CallOptions).GetLun):len((*c.CallOptions).GetLun)], opts...)
 	var resp *baremetalsolutionpb.Lun
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1729,6 +2034,12 @@ func (c *gRPCClient) ListLuns(ctx context.Context, req *baremetalsolutionpb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/ListLuns")
+	}
 	opts = append((*c.CallOptions).ListLuns[0:len((*c.CallOptions).ListLuns):len((*c.CallOptions).ListLuns)], opts...)
 	it := &LunIterator{}
 	req = proto.Clone(req).(*baremetalsolutionpb.ListLunsRequest)
@@ -1775,6 +2086,12 @@ func (c *gRPCClient) EvictLun(ctx context.Context, req *baremetalsolutionpb.Evic
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/EvictLun")
+	}
 	opts = append((*c.CallOptions).EvictLun[0:len((*c.CallOptions).EvictLun):len((*c.CallOptions).EvictLun)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1795,6 +2112,12 @@ func (c *gRPCClient) GetNfsShare(ctx context.Context, req *baremetalsolutionpb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/GetNfsShare")
+	}
 	opts = append((*c.CallOptions).GetNfsShare[0:len((*c.CallOptions).GetNfsShare):len((*c.CallOptions).GetNfsShare)], opts...)
 	var resp *baremetalsolutionpb.NfsShare
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1813,6 +2136,12 @@ func (c *gRPCClient) ListNfsShares(ctx context.Context, req *baremetalsolutionpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/ListNfsShares")
+	}
 	opts = append((*c.CallOptions).ListNfsShares[0:len((*c.CallOptions).ListNfsShares):len((*c.CallOptions).ListNfsShares)], opts...)
 	it := &NfsShareIterator{}
 	req = proto.Clone(req).(*baremetalsolutionpb.ListNfsSharesRequest)
@@ -1859,6 +2188,9 @@ func (c *gRPCClient) UpdateNfsShare(ctx context.Context, req *baremetalsolutionp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/UpdateNfsShare")
+	}
 	opts = append((*c.CallOptions).UpdateNfsShare[0:len((*c.CallOptions).UpdateNfsShare):len((*c.CallOptions).UpdateNfsShare)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1879,6 +2211,12 @@ func (c *gRPCClient) CreateNfsShare(ctx context.Context, req *baremetalsolutionp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/CreateNfsShare")
+	}
 	opts = append((*c.CallOptions).CreateNfsShare[0:len((*c.CallOptions).CreateNfsShare):len((*c.CallOptions).CreateNfsShare)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1899,6 +2237,12 @@ func (c *gRPCClient) RenameNfsShare(ctx context.Context, req *baremetalsolutionp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/RenameNfsShare")
+	}
 	opts = append((*c.CallOptions).RenameNfsShare[0:len((*c.CallOptions).RenameNfsShare):len((*c.CallOptions).RenameNfsShare)], opts...)
 	var resp *baremetalsolutionpb.NfsShare
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1917,6 +2261,12 @@ func (c *gRPCClient) DeleteNfsShare(ctx context.Context, req *baremetalsolutionp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/DeleteNfsShare")
+	}
 	opts = append((*c.CallOptions).DeleteNfsShare[0:len((*c.CallOptions).DeleteNfsShare):len((*c.CallOptions).DeleteNfsShare)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1937,6 +2287,12 @@ func (c *gRPCClient) ListProvisioningQuotas(ctx context.Context, req *baremetals
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/ListProvisioningQuotas")
+	}
 	opts = append((*c.CallOptions).ListProvisioningQuotas[0:len((*c.CallOptions).ListProvisioningQuotas):len((*c.CallOptions).ListProvisioningQuotas)], opts...)
 	it := &ProvisioningQuotaIterator{}
 	req = proto.Clone(req).(*baremetalsolutionpb.ListProvisioningQuotasRequest)
@@ -1983,6 +2339,12 @@ func (c *gRPCClient) SubmitProvisioningConfig(ctx context.Context, req *baremeta
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/SubmitProvisioningConfig")
+	}
 	opts = append((*c.CallOptions).SubmitProvisioningConfig[0:len((*c.CallOptions).SubmitProvisioningConfig):len((*c.CallOptions).SubmitProvisioningConfig)], opts...)
 	var resp *baremetalsolutionpb.SubmitProvisioningConfigResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2001,6 +2363,12 @@ func (c *gRPCClient) GetProvisioningConfig(ctx context.Context, req *baremetalso
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/GetProvisioningConfig")
+	}
 	opts = append((*c.CallOptions).GetProvisioningConfig[0:len((*c.CallOptions).GetProvisioningConfig):len((*c.CallOptions).GetProvisioningConfig)], opts...)
 	var resp *baremetalsolutionpb.ProvisioningConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2019,6 +2387,12 @@ func (c *gRPCClient) CreateProvisioningConfig(ctx context.Context, req *baremeta
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/CreateProvisioningConfig")
+	}
 	opts = append((*c.CallOptions).CreateProvisioningConfig[0:len((*c.CallOptions).CreateProvisioningConfig):len((*c.CallOptions).CreateProvisioningConfig)], opts...)
 	var resp *baremetalsolutionpb.ProvisioningConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2037,6 +2411,9 @@ func (c *gRPCClient) UpdateProvisioningConfig(ctx context.Context, req *baremeta
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/UpdateProvisioningConfig")
+	}
 	opts = append((*c.CallOptions).UpdateProvisioningConfig[0:len((*c.CallOptions).UpdateProvisioningConfig):len((*c.CallOptions).UpdateProvisioningConfig)], opts...)
 	var resp *baremetalsolutionpb.ProvisioningConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2055,6 +2432,12 @@ func (c *gRPCClient) RenameNetwork(ctx context.Context, req *baremetalsolutionpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/RenameNetwork")
+	}
 	opts = append((*c.CallOptions).RenameNetwork[0:len((*c.CallOptions).RenameNetwork):len((*c.CallOptions).RenameNetwork)], opts...)
 	var resp *baremetalsolutionpb.Network
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2073,6 +2456,12 @@ func (c *gRPCClient) ListOSImages(ctx context.Context, req *baremetalsolutionpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/ListOSImages")
+	}
 	opts = append((*c.CallOptions).ListOSImages[0:len((*c.CallOptions).ListOSImages):len((*c.CallOptions).ListOSImages)], opts...)
 	it := &OSImageIterator{}
 	req = proto.Clone(req).(*baremetalsolutionpb.ListOSImagesRequest)
@@ -2119,6 +2508,9 @@ func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2137,6 +2529,9 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
@@ -2278,6 +2673,13 @@ func (c *restClient) GetInstance(ctx context.Context, req *baremetalsolutionpb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/GetInstance")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/instances/*}")
+	}
 	opts = append((*c.CallOptions).GetInstance[0:len((*c.CallOptions).GetInstance):len((*c.CallOptions).GetInstance)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &baremetalsolutionpb.Instance{}
@@ -2342,6 +2744,10 @@ func (c *restClient) UpdateInstance(ctx context.Context, req *baremetalsolutionp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/UpdateInstance")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{instance.name=projects/*/locations/*/instances/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2402,6 +2808,13 @@ func (c *restClient) RenameInstance(ctx context.Context, req *baremetalsolutionp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/RenameInstance")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/instances/*}:rename")
+	}
 	opts = append((*c.CallOptions).RenameInstance[0:len((*c.CallOptions).RenameInstance):len((*c.CallOptions).RenameInstance)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &baremetalsolutionpb.Instance{}
@@ -2459,6 +2872,13 @@ func (c *restClient) ResetInstance(ctx context.Context, req *baremetalsolutionpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/ResetInstance")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/instances/*}:reset")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2518,6 +2938,13 @@ func (c *restClient) StartInstance(ctx context.Context, req *baremetalsolutionpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/StartInstance")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/instances/*}:start")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2577,6 +3004,13 @@ func (c *restClient) StopInstance(ctx context.Context, req *baremetalsolutionpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/StopInstance")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/instances/*}:stop")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2636,6 +3070,13 @@ func (c *restClient) EnableInteractiveSerialConsole(ctx context.Context, req *ba
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/EnableInteractiveSerialConsole")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/instances/*}:enableInteractiveSerialConsole")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2695,6 +3136,13 @@ func (c *restClient) DisableInteractiveSerialConsole(ctx context.Context, req *b
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/DisableInteractiveSerialConsole")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/instances/*}:disableInteractiveSerialConsole")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2754,6 +3202,13 @@ func (c *restClient) DetachLun(ctx context.Context, req *baremetalsolutionpb.Det
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetInstance()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/DetachLun")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{instance=projects/*/locations/*/instances/*}:detachLun")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2895,6 +3350,13 @@ func (c *restClient) CreateSSHKey(ctx context.Context, req *baremetalsolutionpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/CreateSSHKey")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*/locations/*}/sshKeys")
+	}
 	opts = append((*c.CallOptions).CreateSSHKey[0:len((*c.CallOptions).CreateSSHKey):len((*c.CallOptions).CreateSSHKey)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &baremetalsolutionpb.SSHKey{}
@@ -2945,6 +3407,13 @@ func (c *restClient) DeleteSSHKey(ctx context.Context, req *baremetalsolutionpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/DeleteSSHKey")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/sshKeys/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -3061,6 +3530,13 @@ func (c *restClient) GetVolume(ctx context.Context, req *baremetalsolutionpb.Get
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/GetVolume")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/volumes/*}")
+	}
 	opts = append((*c.CallOptions).GetVolume[0:len((*c.CallOptions).GetVolume):len((*c.CallOptions).GetVolume)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &baremetalsolutionpb.Volume{}
@@ -3125,6 +3601,10 @@ func (c *restClient) UpdateVolume(ctx context.Context, req *baremetalsolutionpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/UpdateVolume")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{volume.name=projects/*/locations/*/volumes/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3185,6 +3665,13 @@ func (c *restClient) RenameVolume(ctx context.Context, req *baremetalsolutionpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/RenameVolume")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/volumes/*}:rename")
+	}
 	opts = append((*c.CallOptions).RenameVolume[0:len((*c.CallOptions).RenameVolume):len((*c.CallOptions).RenameVolume)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &baremetalsolutionpb.Volume{}
@@ -3242,6 +3729,13 @@ func (c *restClient) EvictVolume(ctx context.Context, req *baremetalsolutionpb.E
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/EvictVolume")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/volumes/*}:evict")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3301,6 +3795,13 @@ func (c *restClient) ResizeVolume(ctx context.Context, req *baremetalsolutionpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetVolume()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/ResizeVolume")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{volume=projects/*/locations/*/volumes/*}:resize")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3436,6 +3937,13 @@ func (c *restClient) ListNetworkUsage(ctx context.Context, req *baremetalsolutio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetLocation()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/ListNetworkUsage")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{location=projects/*/locations/*}/networks:listNetworkUsage")
+	}
 	opts = append((*c.CallOptions).ListNetworkUsage[0:len((*c.CallOptions).ListNetworkUsage):len((*c.CallOptions).ListNetworkUsage)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &baremetalsolutionpb.ListNetworkUsageResponse{}
@@ -3486,6 +3994,13 @@ func (c *restClient) GetNetwork(ctx context.Context, req *baremetalsolutionpb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/GetNetwork")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/networks/*}")
+	}
 	opts = append((*c.CallOptions).GetNetwork[0:len((*c.CallOptions).GetNetwork):len((*c.CallOptions).GetNetwork)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &baremetalsolutionpb.Network{}
@@ -3550,6 +4065,10 @@ func (c *restClient) UpdateNetwork(ctx context.Context, req *baremetalsolutionpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/UpdateNetwork")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{network.name=projects/*/locations/*/networks/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3611,6 +4130,13 @@ func (c *restClient) CreateVolumeSnapshot(ctx context.Context, req *baremetalsol
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/CreateVolumeSnapshot")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*/locations/*/volumes/*}/snapshots")
+	}
 	opts = append((*c.CallOptions).CreateVolumeSnapshot[0:len((*c.CallOptions).CreateVolumeSnapshot):len((*c.CallOptions).CreateVolumeSnapshot)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &baremetalsolutionpb.VolumeSnapshot{}
@@ -3668,6 +4194,13 @@ func (c *restClient) RestoreVolumeSnapshot(ctx context.Context, req *baremetalso
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetVolumeSnapshot()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/RestoreVolumeSnapshot")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{volume_snapshot=projects/*/locations/*/volumes/*/snapshots/*}:restoreVolumeSnapshot")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3722,6 +4255,13 @@ func (c *restClient) DeleteVolumeSnapshot(ctx context.Context, req *baremetalsol
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/DeleteVolumeSnapshot")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/volumes/*/snapshots/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -3758,6 +4298,13 @@ func (c *restClient) GetVolumeSnapshot(ctx context.Context, req *baremetalsoluti
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/GetVolumeSnapshot")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/volumes/*/snapshots/*}")
+	}
 	opts = append((*c.CallOptions).GetVolumeSnapshot[0:len((*c.CallOptions).GetVolumeSnapshot):len((*c.CallOptions).GetVolumeSnapshot)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &baremetalsolutionpb.VolumeSnapshot{}
@@ -3888,6 +4435,13 @@ func (c *restClient) GetLun(ctx context.Context, req *baremetalsolutionpb.GetLun
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/GetLun")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/volumes/*/luns/*}")
+	}
 	opts = append((*c.CallOptions).GetLun[0:len((*c.CallOptions).GetLun):len((*c.CallOptions).GetLun)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &baremetalsolutionpb.Lun{}
@@ -4023,6 +4577,13 @@ func (c *restClient) EvictLun(ctx context.Context, req *baremetalsolutionpb.Evic
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/EvictLun")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/volumes/*/luns/*}:evict")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4076,6 +4637,13 @@ func (c *restClient) GetNfsShare(ctx context.Context, req *baremetalsolutionpb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/GetNfsShare")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/nfsShares/*}")
+	}
 	opts = append((*c.CallOptions).GetNfsShare[0:len((*c.CallOptions).GetNfsShare):len((*c.CallOptions).GetNfsShare)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &baremetalsolutionpb.NfsShare{}
@@ -4221,6 +4789,10 @@ func (c *restClient) UpdateNfsShare(ctx context.Context, req *baremetalsolutionp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/UpdateNfsShare")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{nfs_share.name=projects/*/locations/*/nfsShares/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4281,6 +4853,13 @@ func (c *restClient) CreateNfsShare(ctx context.Context, req *baremetalsolutionp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/CreateNfsShare")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*/locations/*}/nfsShares")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4341,6 +4920,13 @@ func (c *restClient) RenameNfsShare(ctx context.Context, req *baremetalsolutionp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/RenameNfsShare")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/nfsShares/*}:rename")
+	}
 	opts = append((*c.CallOptions).RenameNfsShare[0:len((*c.CallOptions).RenameNfsShare):len((*c.CallOptions).RenameNfsShare)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &baremetalsolutionpb.NfsShare{}
@@ -4391,6 +4977,13 @@ func (c *restClient) DeleteNfsShare(ctx context.Context, req *baremetalsolutionp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/DeleteNfsShare")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/nfsShares/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4528,6 +5121,13 @@ func (c *restClient) SubmitProvisioningConfig(ctx context.Context, req *baremeta
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/SubmitProvisioningConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*/locations/*}/provisioningConfigs:submit")
+	}
 	opts = append((*c.CallOptions).SubmitProvisioningConfig[0:len((*c.CallOptions).SubmitProvisioningConfig):len((*c.CallOptions).SubmitProvisioningConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &baremetalsolutionpb.SubmitProvisioningConfigResponse{}
@@ -4578,6 +5178,13 @@ func (c *restClient) GetProvisioningConfig(ctx context.Context, req *baremetalso
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/GetProvisioningConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/provisioningConfigs/*}")
+	}
 	opts = append((*c.CallOptions).GetProvisioningConfig[0:len((*c.CallOptions).GetProvisioningConfig):len((*c.CallOptions).GetProvisioningConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &baremetalsolutionpb.ProvisioningConfig{}
@@ -4638,6 +5245,13 @@ func (c *restClient) CreateProvisioningConfig(ctx context.Context, req *baremeta
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/CreateProvisioningConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*/locations/*}/provisioningConfigs")
+	}
 	opts = append((*c.CallOptions).CreateProvisioningConfig[0:len((*c.CallOptions).CreateProvisioningConfig):len((*c.CallOptions).CreateProvisioningConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &baremetalsolutionpb.ProvisioningConfig{}
@@ -4705,6 +5319,10 @@ func (c *restClient) UpdateProvisioningConfig(ctx context.Context, req *baremeta
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/UpdateProvisioningConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{provisioning_config.name=projects/*/locations/*/provisioningConfigs/*}")
+	}
 	opts = append((*c.CallOptions).UpdateProvisioningConfig[0:len((*c.CallOptions).UpdateProvisioningConfig):len((*c.CallOptions).UpdateProvisioningConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &baremetalsolutionpb.ProvisioningConfig{}
@@ -4762,6 +5380,13 @@ func (c *restClient) RenameNetwork(ctx context.Context, req *baremetalsolutionpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//baremetalsolution.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.baremetalsolution.v2.BareMetalSolution/RenameNetwork")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/networks/*}:rename")
+	}
 	opts = append((*c.CallOptions).RenameNetwork[0:len((*c.CallOptions).RenameNetwork):len((*c.CallOptions).RenameNetwork)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &baremetalsolutionpb.Network{}
@@ -4890,6 +5515,10 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}

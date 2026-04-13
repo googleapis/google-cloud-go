@@ -27,6 +27,7 @@ import (
 
 	binaryauthorizationpb "cloud.google.com/go/binaryauthorization/apiv1/binaryauthorizationpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -143,6 +144,16 @@ type validationHelperGRPCClient struct {
 // BinAuthz Attestor verification
 func NewValidationHelperClient(ctx context.Context, opts ...option.ClientOption) (*ValidationHelperClient, error) {
 	clientOpts := defaultValidationHelperGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "binaryauthorization",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/binaryauthorization/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "binaryauthorization.googleapis.com",
+		}))
+	}
 	if newValidationHelperClientHook != nil {
 		hookOpts, err := newValidationHelperClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -164,6 +175,20 @@ func NewValidationHelperClient(ctx context.Context, opts ...option.ClientOption)
 		logger:                 internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "binaryauthorization",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/binaryauthorization/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "binaryauthorization.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ValidateAttestationOccurrence = append(client.CallOptions.ValidateAttestationOccurrence, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -217,6 +242,16 @@ type validationHelperRESTClient struct {
 // BinAuthz Attestor verification
 func NewValidationHelperRESTClient(ctx context.Context, opts ...option.ClientOption) (*ValidationHelperClient, error) {
 	clientOpts := append(defaultValidationHelperRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "binaryauthorization",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/binaryauthorization/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "binaryauthorization.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -230,6 +265,21 @@ func NewValidationHelperRESTClient(ctx context.Context, opts ...option.ClientOpt
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "binaryauthorization",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/binaryauthorization/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "binaryauthorization.googleapis.com",
+			}),
+		)
+
+		callOpts.ValidateAttestationOccurrence = append(callOpts.ValidateAttestationOccurrence, gax.WithClientMetrics(metrics))
+	}
 
 	return &ValidationHelperClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -276,6 +326,9 @@ func (c *validationHelperGRPCClient) ValidateAttestationOccurrence(ctx context.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.binaryauthorization.v1.ValidationHelperV1/ValidateAttestationOccurrence")
+	}
 	opts = append((*c.CallOptions).ValidateAttestationOccurrence[0:len((*c.CallOptions).ValidateAttestationOccurrence):len((*c.CallOptions).ValidateAttestationOccurrence)], opts...)
 	var resp *binaryauthorizationpb.ValidateAttestationOccurrenceResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -315,6 +368,10 @@ func (c *validationHelperRESTClient) ValidateAttestationOccurrence(ctx context.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.binaryauthorization.v1.ValidationHelperV1/ValidateAttestationOccurrence")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{attestor=projects/*/attestors/*}:validateAttestationOccurrence")
+	}
 	opts = append((*c.CallOptions).ValidateAttestationOccurrence[0:len((*c.CallOptions).ValidateAttestationOccurrence):len((*c.CallOptions).ValidateAttestationOccurrence)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &binaryauthorizationpb.ValidateAttestationOccurrenceResponse{}

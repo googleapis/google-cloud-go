@@ -26,6 +26,7 @@ import (
 
 	storagepb "cloud.google.com/go/bigquery/storage/apiv1alpha/storagepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -219,6 +220,16 @@ type metastorePartitionGRPCClient struct {
 // metastore. The service supports only batch operations for write.
 func NewMetastorePartitionClient(ctx context.Context, opts ...option.ClientOption) (*MetastorePartitionClient, error) {
 	clientOpts := defaultMetastorePartitionGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "bigquerystorage",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/bigquery/storage/apiv1alpha",
+			"gcp.client.language": "go",
+			"url.domain":          "bigquerystorage.googleapis.com",
+		}))
+	}
 	if newMetastorePartitionClientHook != nil {
 		hookOpts, err := newMetastorePartitionClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -240,6 +251,24 @@ func NewMetastorePartitionClient(ctx context.Context, opts ...option.ClientOptio
 		logger:                   internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "bigquerystorage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/storage/apiv1alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "bigquerystorage.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.BatchCreateMetastorePartitions = append(client.CallOptions.BatchCreateMetastorePartitions, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchDeleteMetastorePartitions = append(client.CallOptions.BatchDeleteMetastorePartitions, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchUpdateMetastorePartitions = append(client.CallOptions.BatchUpdateMetastorePartitions, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListMetastorePartitions = append(client.CallOptions.ListMetastorePartitions, gax.WithClientMetrics(metrics))
+		client.CallOptions.StreamMetastorePartitions = append(client.CallOptions.StreamMetastorePartitions, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -276,6 +305,12 @@ func (c *metastorePartitionGRPCClient) BatchCreateMetastorePartitions(ctx contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerystorage.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.storage.v1alpha.MetastorePartitionService/BatchCreateMetastorePartitions")
+	}
 	opts = append((*c.CallOptions).BatchCreateMetastorePartitions[0:len((*c.CallOptions).BatchCreateMetastorePartitions):len((*c.CallOptions).BatchCreateMetastorePartitions)], opts...)
 	var resp *storagepb.BatchCreateMetastorePartitionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -294,6 +329,12 @@ func (c *metastorePartitionGRPCClient) BatchDeleteMetastorePartitions(ctx contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerystorage.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.storage.v1alpha.MetastorePartitionService/BatchDeleteMetastorePartitions")
+	}
 	opts = append((*c.CallOptions).BatchDeleteMetastorePartitions[0:len((*c.CallOptions).BatchDeleteMetastorePartitions):len((*c.CallOptions).BatchDeleteMetastorePartitions)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -308,6 +349,12 @@ func (c *metastorePartitionGRPCClient) BatchUpdateMetastorePartitions(ctx contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerystorage.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.storage.v1alpha.MetastorePartitionService/BatchUpdateMetastorePartitions")
+	}
 	opts = append((*c.CallOptions).BatchUpdateMetastorePartitions[0:len((*c.CallOptions).BatchUpdateMetastorePartitions):len((*c.CallOptions).BatchUpdateMetastorePartitions)], opts...)
 	var resp *storagepb.BatchUpdateMetastorePartitionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -326,6 +373,12 @@ func (c *metastorePartitionGRPCClient) ListMetastorePartitions(ctx context.Conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerystorage.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.storage.v1alpha.MetastorePartitionService/ListMetastorePartitions")
+	}
 	opts = append((*c.CallOptions).ListMetastorePartitions[0:len((*c.CallOptions).ListMetastorePartitions):len((*c.CallOptions).ListMetastorePartitions)], opts...)
 	var resp *storagepb.ListMetastorePartitionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -341,6 +394,9 @@ func (c *metastorePartitionGRPCClient) ListMetastorePartitions(ctx context.Conte
 
 func (c *metastorePartitionGRPCClient) StreamMetastorePartitions(ctx context.Context, opts ...gax.CallOption) (storagepb.MetastorePartitionService_StreamMetastorePartitionsClient, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.storage.v1alpha.MetastorePartitionService/StreamMetastorePartitions")
+	}
 	var resp storagepb.MetastorePartitionService_StreamMetastorePartitionsClient
 	opts = append((*c.CallOptions).StreamMetastorePartitions[0:len((*c.CallOptions).StreamMetastorePartitions):len((*c.CallOptions).StreamMetastorePartitions)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

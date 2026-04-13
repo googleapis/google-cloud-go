@@ -28,6 +28,7 @@ import (
 
 	websecurityscannerpb "cloud.google.com/go/websecurityscanner/apiv1/websecurityscannerpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -482,6 +483,16 @@ type gRPCClient struct {
 // attempts to exercise as many user inputs and event handlers as possible.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "websecurityscanner",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/websecurityscanner/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "websecurityscanner.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -503,6 +514,32 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "websecurityscanner",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/websecurityscanner/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "websecurityscanner.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateScanConfig = append(client.CallOptions.CreateScanConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteScanConfig = append(client.CallOptions.DeleteScanConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetScanConfig = append(client.CallOptions.GetScanConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListScanConfigs = append(client.CallOptions.ListScanConfigs, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateScanConfig = append(client.CallOptions.UpdateScanConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.StartScanRun = append(client.CallOptions.StartScanRun, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetScanRun = append(client.CallOptions.GetScanRun, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListScanRuns = append(client.CallOptions.ListScanRuns, gax.WithClientMetrics(metrics))
+		client.CallOptions.StopScanRun = append(client.CallOptions.StopScanRun, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListCrawledUrls = append(client.CallOptions.ListCrawledUrls, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetFinding = append(client.CallOptions.GetFinding, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListFindings = append(client.CallOptions.ListFindings, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListFindingTypeStats = append(client.CallOptions.ListFindingTypeStats, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -558,6 +595,16 @@ type restClient struct {
 // attempts to exercise as many user inputs and event handlers as possible.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "websecurityscanner",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/websecurityscanner/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "websecurityscanner.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -571,6 +618,33 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "websecurityscanner",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/websecurityscanner/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "websecurityscanner.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateScanConfig = append(callOpts.CreateScanConfig, gax.WithClientMetrics(metrics))
+		callOpts.DeleteScanConfig = append(callOpts.DeleteScanConfig, gax.WithClientMetrics(metrics))
+		callOpts.GetScanConfig = append(callOpts.GetScanConfig, gax.WithClientMetrics(metrics))
+		callOpts.ListScanConfigs = append(callOpts.ListScanConfigs, gax.WithClientMetrics(metrics))
+		callOpts.UpdateScanConfig = append(callOpts.UpdateScanConfig, gax.WithClientMetrics(metrics))
+		callOpts.StartScanRun = append(callOpts.StartScanRun, gax.WithClientMetrics(metrics))
+		callOpts.GetScanRun = append(callOpts.GetScanRun, gax.WithClientMetrics(metrics))
+		callOpts.ListScanRuns = append(callOpts.ListScanRuns, gax.WithClientMetrics(metrics))
+		callOpts.StopScanRun = append(callOpts.StopScanRun, gax.WithClientMetrics(metrics))
+		callOpts.ListCrawledUrls = append(callOpts.ListCrawledUrls, gax.WithClientMetrics(metrics))
+		callOpts.GetFinding = append(callOpts.GetFinding, gax.WithClientMetrics(metrics))
+		callOpts.ListFindings = append(callOpts.ListFindings, gax.WithClientMetrics(metrics))
+		callOpts.ListFindingTypeStats = append(callOpts.ListFindingTypeStats, gax.WithClientMetrics(metrics))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -617,6 +691,9 @@ func (c *gRPCClient) CreateScanConfig(ctx context.Context, req *websecurityscann
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.websecurityscanner.v1.WebSecurityScanner/CreateScanConfig")
+	}
 	opts = append((*c.CallOptions).CreateScanConfig[0:len((*c.CallOptions).CreateScanConfig):len((*c.CallOptions).CreateScanConfig)], opts...)
 	var resp *websecurityscannerpb.ScanConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -635,6 +712,9 @@ func (c *gRPCClient) DeleteScanConfig(ctx context.Context, req *websecurityscann
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.websecurityscanner.v1.WebSecurityScanner/DeleteScanConfig")
+	}
 	opts = append((*c.CallOptions).DeleteScanConfig[0:len((*c.CallOptions).DeleteScanConfig):len((*c.CallOptions).DeleteScanConfig)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -649,6 +729,9 @@ func (c *gRPCClient) GetScanConfig(ctx context.Context, req *websecurityscannerp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.websecurityscanner.v1.WebSecurityScanner/GetScanConfig")
+	}
 	opts = append((*c.CallOptions).GetScanConfig[0:len((*c.CallOptions).GetScanConfig):len((*c.CallOptions).GetScanConfig)], opts...)
 	var resp *websecurityscannerpb.ScanConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -667,6 +750,9 @@ func (c *gRPCClient) ListScanConfigs(ctx context.Context, req *websecurityscanne
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.websecurityscanner.v1.WebSecurityScanner/ListScanConfigs")
+	}
 	opts = append((*c.CallOptions).ListScanConfigs[0:len((*c.CallOptions).ListScanConfigs):len((*c.CallOptions).ListScanConfigs)], opts...)
 	it := &ScanConfigIterator{}
 	req = proto.Clone(req).(*websecurityscannerpb.ListScanConfigsRequest)
@@ -713,6 +799,9 @@ func (c *gRPCClient) UpdateScanConfig(ctx context.Context, req *websecurityscann
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.websecurityscanner.v1.WebSecurityScanner/UpdateScanConfig")
+	}
 	opts = append((*c.CallOptions).UpdateScanConfig[0:len((*c.CallOptions).UpdateScanConfig):len((*c.CallOptions).UpdateScanConfig)], opts...)
 	var resp *websecurityscannerpb.ScanConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -731,6 +820,9 @@ func (c *gRPCClient) StartScanRun(ctx context.Context, req *websecurityscannerpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.websecurityscanner.v1.WebSecurityScanner/StartScanRun")
+	}
 	opts = append((*c.CallOptions).StartScanRun[0:len((*c.CallOptions).StartScanRun):len((*c.CallOptions).StartScanRun)], opts...)
 	var resp *websecurityscannerpb.ScanRun
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -749,6 +841,9 @@ func (c *gRPCClient) GetScanRun(ctx context.Context, req *websecurityscannerpb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.websecurityscanner.v1.WebSecurityScanner/GetScanRun")
+	}
 	opts = append((*c.CallOptions).GetScanRun[0:len((*c.CallOptions).GetScanRun):len((*c.CallOptions).GetScanRun)], opts...)
 	var resp *websecurityscannerpb.ScanRun
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -767,6 +862,9 @@ func (c *gRPCClient) ListScanRuns(ctx context.Context, req *websecurityscannerpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.websecurityscanner.v1.WebSecurityScanner/ListScanRuns")
+	}
 	opts = append((*c.CallOptions).ListScanRuns[0:len((*c.CallOptions).ListScanRuns):len((*c.CallOptions).ListScanRuns)], opts...)
 	it := &ScanRunIterator{}
 	req = proto.Clone(req).(*websecurityscannerpb.ListScanRunsRequest)
@@ -813,6 +911,9 @@ func (c *gRPCClient) StopScanRun(ctx context.Context, req *websecurityscannerpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.websecurityscanner.v1.WebSecurityScanner/StopScanRun")
+	}
 	opts = append((*c.CallOptions).StopScanRun[0:len((*c.CallOptions).StopScanRun):len((*c.CallOptions).StopScanRun)], opts...)
 	var resp *websecurityscannerpb.ScanRun
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -831,6 +932,9 @@ func (c *gRPCClient) ListCrawledUrls(ctx context.Context, req *websecurityscanne
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.websecurityscanner.v1.WebSecurityScanner/ListCrawledUrls")
+	}
 	opts = append((*c.CallOptions).ListCrawledUrls[0:len((*c.CallOptions).ListCrawledUrls):len((*c.CallOptions).ListCrawledUrls)], opts...)
 	it := &CrawledUrlIterator{}
 	req = proto.Clone(req).(*websecurityscannerpb.ListCrawledUrlsRequest)
@@ -877,6 +981,9 @@ func (c *gRPCClient) GetFinding(ctx context.Context, req *websecurityscannerpb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.websecurityscanner.v1.WebSecurityScanner/GetFinding")
+	}
 	opts = append((*c.CallOptions).GetFinding[0:len((*c.CallOptions).GetFinding):len((*c.CallOptions).GetFinding)], opts...)
 	var resp *websecurityscannerpb.Finding
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -895,6 +1002,9 @@ func (c *gRPCClient) ListFindings(ctx context.Context, req *websecurityscannerpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.websecurityscanner.v1.WebSecurityScanner/ListFindings")
+	}
 	opts = append((*c.CallOptions).ListFindings[0:len((*c.CallOptions).ListFindings):len((*c.CallOptions).ListFindings)], opts...)
 	it := &FindingIterator{}
 	req = proto.Clone(req).(*websecurityscannerpb.ListFindingsRequest)
@@ -941,6 +1051,9 @@ func (c *gRPCClient) ListFindingTypeStats(ctx context.Context, req *websecuritys
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.websecurityscanner.v1.WebSecurityScanner/ListFindingTypeStats")
+	}
 	opts = append((*c.CallOptions).ListFindingTypeStats[0:len((*c.CallOptions).ListFindingTypeStats):len((*c.CallOptions).ListFindingTypeStats)], opts...)
 	var resp *websecurityscannerpb.ListFindingTypeStatsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -980,6 +1093,10 @@ func (c *restClient) CreateScanConfig(ctx context.Context, req *websecurityscann
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.websecurityscanner.v1.WebSecurityScanner/CreateScanConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*}/scanConfigs")
+	}
 	opts = append((*c.CallOptions).CreateScanConfig[0:len((*c.CallOptions).CreateScanConfig):len((*c.CallOptions).CreateScanConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &websecurityscannerpb.ScanConfig{}
@@ -1030,6 +1147,10 @@ func (c *restClient) DeleteScanConfig(ctx context.Context, req *websecurityscann
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.websecurityscanner.v1.WebSecurityScanner/DeleteScanConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/scanConfigs/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1065,6 +1186,10 @@ func (c *restClient) GetScanConfig(ctx context.Context, req *websecurityscannerp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.websecurityscanner.v1.WebSecurityScanner/GetScanConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/scanConfigs/*}")
+	}
 	opts = append((*c.CallOptions).GetScanConfig[0:len((*c.CallOptions).GetScanConfig):len((*c.CallOptions).GetScanConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &websecurityscannerpb.ScanConfig{}
@@ -1207,6 +1332,10 @@ func (c *restClient) UpdateScanConfig(ctx context.Context, req *websecurityscann
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.websecurityscanner.v1.WebSecurityScanner/UpdateScanConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{scan_config.name=projects/*/scanConfigs/*}")
+	}
 	opts = append((*c.CallOptions).UpdateScanConfig[0:len((*c.CallOptions).UpdateScanConfig):len((*c.CallOptions).UpdateScanConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &websecurityscannerpb.ScanConfig{}
@@ -1263,6 +1392,10 @@ func (c *restClient) StartScanRun(ctx context.Context, req *websecurityscannerpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.websecurityscanner.v1.WebSecurityScanner/StartScanRun")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/scanConfigs/*}:start")
+	}
 	opts = append((*c.CallOptions).StartScanRun[0:len((*c.CallOptions).StartScanRun):len((*c.CallOptions).StartScanRun)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &websecurityscannerpb.ScanRun{}
@@ -1313,6 +1446,10 @@ func (c *restClient) GetScanRun(ctx context.Context, req *websecurityscannerpb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.websecurityscanner.v1.WebSecurityScanner/GetScanRun")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/scanConfigs/*/scanRuns/*}")
+	}
 	opts = append((*c.CallOptions).GetScanRun[0:len((*c.CallOptions).GetScanRun):len((*c.CallOptions).GetScanRun)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &websecurityscannerpb.ScanRun{}
@@ -1448,6 +1585,10 @@ func (c *restClient) StopScanRun(ctx context.Context, req *websecurityscannerpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.websecurityscanner.v1.WebSecurityScanner/StopScanRun")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/scanConfigs/*/scanRuns/*}:stop")
+	}
 	opts = append((*c.CallOptions).StopScanRun[0:len((*c.CallOptions).StopScanRun):len((*c.CallOptions).StopScanRun)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &websecurityscannerpb.ScanRun{}
@@ -1576,6 +1717,10 @@ func (c *restClient) GetFinding(ctx context.Context, req *websecurityscannerpb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.websecurityscanner.v1.WebSecurityScanner/GetFinding")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/scanConfigs/*/scanRuns/*/findings/*}")
+	}
 	opts = append((*c.CallOptions).GetFinding[0:len((*c.CallOptions).GetFinding):len((*c.CallOptions).GetFinding)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &websecurityscannerpb.Finding{}
@@ -1707,6 +1852,10 @@ func (c *restClient) ListFindingTypeStats(ctx context.Context, req *websecuritys
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.websecurityscanner.v1.WebSecurityScanner/ListFindingTypeStats")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/scanConfigs/*/scanRuns/*}/findingTypeStats")
+	}
 	opts = append((*c.CallOptions).ListFindingTypeStats[0:len((*c.CallOptions).ListFindingTypeStats):len((*c.CallOptions).ListFindingTypeStats)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &websecurityscannerpb.ListFindingTypeStatsResponse{}

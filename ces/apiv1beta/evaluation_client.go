@@ -31,6 +31,7 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1248,6 +1249,16 @@ type evaluationGRPCClient struct {
 // EvaluationService exposes methods to perform evaluation for the CES app.
 func NewEvaluationClient(ctx context.Context, opts ...option.ClientOption) (*EvaluationClient, error) {
 	clientOpts := defaultEvaluationGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "ces",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/ces/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "ces.googleapis.com",
+		}))
+	}
 	if newEvaluationClientHook != nil {
 		hookOpts, err := newEvaluationClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -1271,6 +1282,56 @@ func NewEvaluationClient(ctx context.Context, opts ...option.ClientOption) (*Eva
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "ces",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ces/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "ces.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.RunEvaluation = append(client.CallOptions.RunEvaluation, gax.WithClientMetrics(metrics))
+		client.CallOptions.UploadEvaluationAudio = append(client.CallOptions.UploadEvaluationAudio, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateEvaluation = append(client.CallOptions.CreateEvaluation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GenerateEvaluation = append(client.CallOptions.GenerateEvaluation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ImportEvaluations = append(client.CallOptions.ImportEvaluations, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateEvaluationDataset = append(client.CallOptions.CreateEvaluationDataset, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateEvaluation = append(client.CallOptions.UpdateEvaluation, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateEvaluationDataset = append(client.CallOptions.UpdateEvaluationDataset, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteEvaluation = append(client.CallOptions.DeleteEvaluation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteEvaluationResult = append(client.CallOptions.DeleteEvaluationResult, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteEvaluationDataset = append(client.CallOptions.DeleteEvaluationDataset, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteEvaluationRun = append(client.CallOptions.DeleteEvaluationRun, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetEvaluation = append(client.CallOptions.GetEvaluation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetEvaluationResult = append(client.CallOptions.GetEvaluationResult, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetEvaluationDataset = append(client.CallOptions.GetEvaluationDataset, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetEvaluationRun = append(client.CallOptions.GetEvaluationRun, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListEvaluations = append(client.CallOptions.ListEvaluations, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListEvaluationResults = append(client.CallOptions.ListEvaluationResults, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListEvaluationDatasets = append(client.CallOptions.ListEvaluationDatasets, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListEvaluationRuns = append(client.CallOptions.ListEvaluationRuns, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListEvaluationExpectations = append(client.CallOptions.ListEvaluationExpectations, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetEvaluationExpectation = append(client.CallOptions.GetEvaluationExpectation, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateEvaluationExpectation = append(client.CallOptions.CreateEvaluationExpectation, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateEvaluationExpectation = append(client.CallOptions.UpdateEvaluationExpectation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteEvaluationExpectation = append(client.CallOptions.DeleteEvaluationExpectation, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateScheduledEvaluationRun = append(client.CallOptions.CreateScheduledEvaluationRun, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetScheduledEvaluationRun = append(client.CallOptions.GetScheduledEvaluationRun, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListScheduledEvaluationRuns = append(client.CallOptions.ListScheduledEvaluationRuns, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateScheduledEvaluationRun = append(client.CallOptions.UpdateScheduledEvaluationRun, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteScheduledEvaluationRun = append(client.CallOptions.DeleteScheduledEvaluationRun, gax.WithClientMetrics(metrics))
+		client.CallOptions.TestPersonaVoice = append(client.CallOptions.TestPersonaVoice, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -1340,6 +1401,16 @@ type evaluationRESTClient struct {
 // EvaluationService exposes methods to perform evaluation for the CES app.
 func NewEvaluationRESTClient(ctx context.Context, opts ...option.ClientOption) (*EvaluationClient, error) {
 	clientOpts := append(defaultEvaluationRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "ces",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/ces/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "ces.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -1353,6 +1424,57 @@ func NewEvaluationRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "ces",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ces/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "ces.googleapis.com",
+			}),
+		)
+
+		callOpts.RunEvaluation = append(callOpts.RunEvaluation, gax.WithClientMetrics(metrics))
+		callOpts.UploadEvaluationAudio = append(callOpts.UploadEvaluationAudio, gax.WithClientMetrics(metrics))
+		callOpts.CreateEvaluation = append(callOpts.CreateEvaluation, gax.WithClientMetrics(metrics))
+		callOpts.GenerateEvaluation = append(callOpts.GenerateEvaluation, gax.WithClientMetrics(metrics))
+		callOpts.ImportEvaluations = append(callOpts.ImportEvaluations, gax.WithClientMetrics(metrics))
+		callOpts.CreateEvaluationDataset = append(callOpts.CreateEvaluationDataset, gax.WithClientMetrics(metrics))
+		callOpts.UpdateEvaluation = append(callOpts.UpdateEvaluation, gax.WithClientMetrics(metrics))
+		callOpts.UpdateEvaluationDataset = append(callOpts.UpdateEvaluationDataset, gax.WithClientMetrics(metrics))
+		callOpts.DeleteEvaluation = append(callOpts.DeleteEvaluation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteEvaluationResult = append(callOpts.DeleteEvaluationResult, gax.WithClientMetrics(metrics))
+		callOpts.DeleteEvaluationDataset = append(callOpts.DeleteEvaluationDataset, gax.WithClientMetrics(metrics))
+		callOpts.DeleteEvaluationRun = append(callOpts.DeleteEvaluationRun, gax.WithClientMetrics(metrics))
+		callOpts.GetEvaluation = append(callOpts.GetEvaluation, gax.WithClientMetrics(metrics))
+		callOpts.GetEvaluationResult = append(callOpts.GetEvaluationResult, gax.WithClientMetrics(metrics))
+		callOpts.GetEvaluationDataset = append(callOpts.GetEvaluationDataset, gax.WithClientMetrics(metrics))
+		callOpts.GetEvaluationRun = append(callOpts.GetEvaluationRun, gax.WithClientMetrics(metrics))
+		callOpts.ListEvaluations = append(callOpts.ListEvaluations, gax.WithClientMetrics(metrics))
+		callOpts.ListEvaluationResults = append(callOpts.ListEvaluationResults, gax.WithClientMetrics(metrics))
+		callOpts.ListEvaluationDatasets = append(callOpts.ListEvaluationDatasets, gax.WithClientMetrics(metrics))
+		callOpts.ListEvaluationRuns = append(callOpts.ListEvaluationRuns, gax.WithClientMetrics(metrics))
+		callOpts.ListEvaluationExpectations = append(callOpts.ListEvaluationExpectations, gax.WithClientMetrics(metrics))
+		callOpts.GetEvaluationExpectation = append(callOpts.GetEvaluationExpectation, gax.WithClientMetrics(metrics))
+		callOpts.CreateEvaluationExpectation = append(callOpts.CreateEvaluationExpectation, gax.WithClientMetrics(metrics))
+		callOpts.UpdateEvaluationExpectation = append(callOpts.UpdateEvaluationExpectation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteEvaluationExpectation = append(callOpts.DeleteEvaluationExpectation, gax.WithClientMetrics(metrics))
+		callOpts.CreateScheduledEvaluationRun = append(callOpts.CreateScheduledEvaluationRun, gax.WithClientMetrics(metrics))
+		callOpts.GetScheduledEvaluationRun = append(callOpts.GetScheduledEvaluationRun, gax.WithClientMetrics(metrics))
+		callOpts.ListScheduledEvaluationRuns = append(callOpts.ListScheduledEvaluationRuns, gax.WithClientMetrics(metrics))
+		callOpts.UpdateScheduledEvaluationRun = append(callOpts.UpdateScheduledEvaluationRun, gax.WithClientMetrics(metrics))
+		callOpts.DeleteScheduledEvaluationRun = append(callOpts.DeleteScheduledEvaluationRun, gax.WithClientMetrics(metrics))
+		callOpts.TestPersonaVoice = append(callOpts.TestPersonaVoice, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -1409,6 +1531,12 @@ func (c *evaluationGRPCClient) RunEvaluation(ctx context.Context, req *cespb.Run
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetApp()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/RunEvaluation")
+	}
 	opts = append((*c.CallOptions).RunEvaluation[0:len((*c.CallOptions).RunEvaluation):len((*c.CallOptions).RunEvaluation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1429,6 +1557,12 @@ func (c *evaluationGRPCClient) UploadEvaluationAudio(ctx context.Context, req *c
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/UploadEvaluationAudio")
+	}
 	opts = append((*c.CallOptions).UploadEvaluationAudio[0:len((*c.CallOptions).UploadEvaluationAudio):len((*c.CallOptions).UploadEvaluationAudio)], opts...)
 	var resp *cespb.UploadEvaluationAudioResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1447,6 +1581,12 @@ func (c *evaluationGRPCClient) CreateEvaluation(ctx context.Context, req *cespb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/CreateEvaluation")
+	}
 	opts = append((*c.CallOptions).CreateEvaluation[0:len((*c.CallOptions).CreateEvaluation):len((*c.CallOptions).CreateEvaluation)], opts...)
 	var resp *cespb.Evaluation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1465,6 +1605,12 @@ func (c *evaluationGRPCClient) GenerateEvaluation(ctx context.Context, req *cesp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetConversation()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/GenerateEvaluation")
+	}
 	opts = append((*c.CallOptions).GenerateEvaluation[0:len((*c.CallOptions).GenerateEvaluation):len((*c.CallOptions).GenerateEvaluation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1485,6 +1631,12 @@ func (c *evaluationGRPCClient) ImportEvaluations(ctx context.Context, req *cespb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/ImportEvaluations")
+	}
 	opts = append((*c.CallOptions).ImportEvaluations[0:len((*c.CallOptions).ImportEvaluations):len((*c.CallOptions).ImportEvaluations)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1505,6 +1657,12 @@ func (c *evaluationGRPCClient) CreateEvaluationDataset(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/CreateEvaluationDataset")
+	}
 	opts = append((*c.CallOptions).CreateEvaluationDataset[0:len((*c.CallOptions).CreateEvaluationDataset):len((*c.CallOptions).CreateEvaluationDataset)], opts...)
 	var resp *cespb.EvaluationDataset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1523,6 +1681,9 @@ func (c *evaluationGRPCClient) UpdateEvaluation(ctx context.Context, req *cespb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/UpdateEvaluation")
+	}
 	opts = append((*c.CallOptions).UpdateEvaluation[0:len((*c.CallOptions).UpdateEvaluation):len((*c.CallOptions).UpdateEvaluation)], opts...)
 	var resp *cespb.Evaluation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1541,6 +1702,9 @@ func (c *evaluationGRPCClient) UpdateEvaluationDataset(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/UpdateEvaluationDataset")
+	}
 	opts = append((*c.CallOptions).UpdateEvaluationDataset[0:len((*c.CallOptions).UpdateEvaluationDataset):len((*c.CallOptions).UpdateEvaluationDataset)], opts...)
 	var resp *cespb.EvaluationDataset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1559,6 +1723,12 @@ func (c *evaluationGRPCClient) DeleteEvaluation(ctx context.Context, req *cespb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/DeleteEvaluation")
+	}
 	opts = append((*c.CallOptions).DeleteEvaluation[0:len((*c.CallOptions).DeleteEvaluation):len((*c.CallOptions).DeleteEvaluation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1573,6 +1743,12 @@ func (c *evaluationGRPCClient) DeleteEvaluationResult(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/DeleteEvaluationResult")
+	}
 	opts = append((*c.CallOptions).DeleteEvaluationResult[0:len((*c.CallOptions).DeleteEvaluationResult):len((*c.CallOptions).DeleteEvaluationResult)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1587,6 +1763,12 @@ func (c *evaluationGRPCClient) DeleteEvaluationDataset(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/DeleteEvaluationDataset")
+	}
 	opts = append((*c.CallOptions).DeleteEvaluationDataset[0:len((*c.CallOptions).DeleteEvaluationDataset):len((*c.CallOptions).DeleteEvaluationDataset)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1601,6 +1783,12 @@ func (c *evaluationGRPCClient) DeleteEvaluationRun(ctx context.Context, req *ces
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/DeleteEvaluationRun")
+	}
 	opts = append((*c.CallOptions).DeleteEvaluationRun[0:len((*c.CallOptions).DeleteEvaluationRun):len((*c.CallOptions).DeleteEvaluationRun)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1621,6 +1809,12 @@ func (c *evaluationGRPCClient) GetEvaluation(ctx context.Context, req *cespb.Get
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/GetEvaluation")
+	}
 	opts = append((*c.CallOptions).GetEvaluation[0:len((*c.CallOptions).GetEvaluation):len((*c.CallOptions).GetEvaluation)], opts...)
 	var resp *cespb.Evaluation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1639,6 +1833,12 @@ func (c *evaluationGRPCClient) GetEvaluationResult(ctx context.Context, req *ces
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/GetEvaluationResult")
+	}
 	opts = append((*c.CallOptions).GetEvaluationResult[0:len((*c.CallOptions).GetEvaluationResult):len((*c.CallOptions).GetEvaluationResult)], opts...)
 	var resp *cespb.EvaluationResult
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1657,6 +1857,12 @@ func (c *evaluationGRPCClient) GetEvaluationDataset(ctx context.Context, req *ce
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/GetEvaluationDataset")
+	}
 	opts = append((*c.CallOptions).GetEvaluationDataset[0:len((*c.CallOptions).GetEvaluationDataset):len((*c.CallOptions).GetEvaluationDataset)], opts...)
 	var resp *cespb.EvaluationDataset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1675,6 +1881,12 @@ func (c *evaluationGRPCClient) GetEvaluationRun(ctx context.Context, req *cespb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/GetEvaluationRun")
+	}
 	opts = append((*c.CallOptions).GetEvaluationRun[0:len((*c.CallOptions).GetEvaluationRun):len((*c.CallOptions).GetEvaluationRun)], opts...)
 	var resp *cespb.EvaluationRun
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1693,6 +1905,12 @@ func (c *evaluationGRPCClient) ListEvaluations(ctx context.Context, req *cespb.L
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/ListEvaluations")
+	}
 	opts = append((*c.CallOptions).ListEvaluations[0:len((*c.CallOptions).ListEvaluations):len((*c.CallOptions).ListEvaluations)], opts...)
 	it := &EvaluationIterator{}
 	req = proto.Clone(req).(*cespb.ListEvaluationsRequest)
@@ -1739,6 +1957,12 @@ func (c *evaluationGRPCClient) ListEvaluationResults(ctx context.Context, req *c
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/ListEvaluationResults")
+	}
 	opts = append((*c.CallOptions).ListEvaluationResults[0:len((*c.CallOptions).ListEvaluationResults):len((*c.CallOptions).ListEvaluationResults)], opts...)
 	it := &EvaluationResultIterator{}
 	req = proto.Clone(req).(*cespb.ListEvaluationResultsRequest)
@@ -1785,6 +2009,12 @@ func (c *evaluationGRPCClient) ListEvaluationDatasets(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/ListEvaluationDatasets")
+	}
 	opts = append((*c.CallOptions).ListEvaluationDatasets[0:len((*c.CallOptions).ListEvaluationDatasets):len((*c.CallOptions).ListEvaluationDatasets)], opts...)
 	it := &EvaluationDatasetIterator{}
 	req = proto.Clone(req).(*cespb.ListEvaluationDatasetsRequest)
@@ -1831,6 +2061,12 @@ func (c *evaluationGRPCClient) ListEvaluationRuns(ctx context.Context, req *cesp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/ListEvaluationRuns")
+	}
 	opts = append((*c.CallOptions).ListEvaluationRuns[0:len((*c.CallOptions).ListEvaluationRuns):len((*c.CallOptions).ListEvaluationRuns)], opts...)
 	it := &EvaluationRunIterator{}
 	req = proto.Clone(req).(*cespb.ListEvaluationRunsRequest)
@@ -1877,6 +2113,12 @@ func (c *evaluationGRPCClient) ListEvaluationExpectations(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/ListEvaluationExpectations")
+	}
 	opts = append((*c.CallOptions).ListEvaluationExpectations[0:len((*c.CallOptions).ListEvaluationExpectations):len((*c.CallOptions).ListEvaluationExpectations)], opts...)
 	it := &EvaluationExpectationIterator{}
 	req = proto.Clone(req).(*cespb.ListEvaluationExpectationsRequest)
@@ -1923,6 +2165,12 @@ func (c *evaluationGRPCClient) GetEvaluationExpectation(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/GetEvaluationExpectation")
+	}
 	opts = append((*c.CallOptions).GetEvaluationExpectation[0:len((*c.CallOptions).GetEvaluationExpectation):len((*c.CallOptions).GetEvaluationExpectation)], opts...)
 	var resp *cespb.EvaluationExpectation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1941,6 +2189,12 @@ func (c *evaluationGRPCClient) CreateEvaluationExpectation(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/CreateEvaluationExpectation")
+	}
 	opts = append((*c.CallOptions).CreateEvaluationExpectation[0:len((*c.CallOptions).CreateEvaluationExpectation):len((*c.CallOptions).CreateEvaluationExpectation)], opts...)
 	var resp *cespb.EvaluationExpectation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1959,6 +2213,9 @@ func (c *evaluationGRPCClient) UpdateEvaluationExpectation(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/UpdateEvaluationExpectation")
+	}
 	opts = append((*c.CallOptions).UpdateEvaluationExpectation[0:len((*c.CallOptions).UpdateEvaluationExpectation):len((*c.CallOptions).UpdateEvaluationExpectation)], opts...)
 	var resp *cespb.EvaluationExpectation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1977,6 +2234,12 @@ func (c *evaluationGRPCClient) DeleteEvaluationExpectation(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/DeleteEvaluationExpectation")
+	}
 	opts = append((*c.CallOptions).DeleteEvaluationExpectation[0:len((*c.CallOptions).DeleteEvaluationExpectation):len((*c.CallOptions).DeleteEvaluationExpectation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1991,6 +2254,12 @@ func (c *evaluationGRPCClient) CreateScheduledEvaluationRun(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/CreateScheduledEvaluationRun")
+	}
 	opts = append((*c.CallOptions).CreateScheduledEvaluationRun[0:len((*c.CallOptions).CreateScheduledEvaluationRun):len((*c.CallOptions).CreateScheduledEvaluationRun)], opts...)
 	var resp *cespb.ScheduledEvaluationRun
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2009,6 +2278,12 @@ func (c *evaluationGRPCClient) GetScheduledEvaluationRun(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/GetScheduledEvaluationRun")
+	}
 	opts = append((*c.CallOptions).GetScheduledEvaluationRun[0:len((*c.CallOptions).GetScheduledEvaluationRun):len((*c.CallOptions).GetScheduledEvaluationRun)], opts...)
 	var resp *cespb.ScheduledEvaluationRun
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2027,6 +2302,12 @@ func (c *evaluationGRPCClient) ListScheduledEvaluationRuns(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/ListScheduledEvaluationRuns")
+	}
 	opts = append((*c.CallOptions).ListScheduledEvaluationRuns[0:len((*c.CallOptions).ListScheduledEvaluationRuns):len((*c.CallOptions).ListScheduledEvaluationRuns)], opts...)
 	it := &ScheduledEvaluationRunIterator{}
 	req = proto.Clone(req).(*cespb.ListScheduledEvaluationRunsRequest)
@@ -2073,6 +2354,9 @@ func (c *evaluationGRPCClient) UpdateScheduledEvaluationRun(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/UpdateScheduledEvaluationRun")
+	}
 	opts = append((*c.CallOptions).UpdateScheduledEvaluationRun[0:len((*c.CallOptions).UpdateScheduledEvaluationRun):len((*c.CallOptions).UpdateScheduledEvaluationRun)], opts...)
 	var resp *cespb.ScheduledEvaluationRun
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2091,6 +2375,12 @@ func (c *evaluationGRPCClient) DeleteScheduledEvaluationRun(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/DeleteScheduledEvaluationRun")
+	}
 	opts = append((*c.CallOptions).DeleteScheduledEvaluationRun[0:len((*c.CallOptions).DeleteScheduledEvaluationRun):len((*c.CallOptions).DeleteScheduledEvaluationRun)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2105,6 +2395,12 @@ func (c *evaluationGRPCClient) TestPersonaVoice(ctx context.Context, req *cespb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetApp()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/TestPersonaVoice")
+	}
 	opts = append((*c.CallOptions).TestPersonaVoice[0:len((*c.CallOptions).TestPersonaVoice):len((*c.CallOptions).TestPersonaVoice)], opts...)
 	var resp *cespb.TestPersonaVoiceResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2123,6 +2419,9 @@ func (c *evaluationGRPCClient) GetLocation(ctx context.Context, req *locationpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2141,6 +2440,9 @@ func (c *evaluationGRPCClient) ListLocations(ctx context.Context, req *locationp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
@@ -2187,6 +2489,9 @@ func (c *evaluationGRPCClient) CancelOperation(ctx context.Context, req *longrun
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2201,6 +2506,9 @@ func (c *evaluationGRPCClient) DeleteOperation(ctx context.Context, req *longrun
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2215,6 +2523,9 @@ func (c *evaluationGRPCClient) GetOperation(ctx context.Context, req *longrunnin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2233,6 +2544,9 @@ func (c *evaluationGRPCClient) ListOperations(ctx context.Context, req *longrunn
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
@@ -2299,6 +2613,13 @@ func (c *evaluationRESTClient) RunEvaluation(ctx context.Context, req *cespb.Run
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetApp()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/RunEvaluation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{app=projects/*/locations/*/apps/*}:runEvaluation")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2361,6 +2682,13 @@ func (c *evaluationRESTClient) UploadEvaluationAudio(ctx context.Context, req *c
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/UploadEvaluationAudio")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/apps/*/evaluations/*}:uploadEvaluationAudio")
+	}
 	opts = append((*c.CallOptions).UploadEvaluationAudio[0:len((*c.CallOptions).UploadEvaluationAudio):len((*c.CallOptions).UploadEvaluationAudio)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cespb.UploadEvaluationAudioResponse{}
@@ -2421,6 +2749,13 @@ func (c *evaluationRESTClient) CreateEvaluation(ctx context.Context, req *cespb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/CreateEvaluation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*/apps/*}/evaluations")
+	}
 	opts = append((*c.CallOptions).CreateEvaluation[0:len((*c.CallOptions).CreateEvaluation):len((*c.CallOptions).CreateEvaluation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cespb.Evaluation{}
@@ -2477,6 +2812,13 @@ func (c *evaluationRESTClient) GenerateEvaluation(ctx context.Context, req *cesp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetConversation()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/GenerateEvaluation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{conversation=projects/*/locations/*/apps/*/conversations/*}:generateEvaluation")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2536,6 +2878,13 @@ func (c *evaluationRESTClient) ImportEvaluations(ctx context.Context, req *cespb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/ImportEvaluations")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*/apps/*}:importEvaluations")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2599,6 +2948,13 @@ func (c *evaluationRESTClient) CreateEvaluationDataset(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/CreateEvaluationDataset")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*/apps/*}/evaluationDatasets")
+	}
 	opts = append((*c.CallOptions).CreateEvaluationDataset[0:len((*c.CallOptions).CreateEvaluationDataset):len((*c.CallOptions).CreateEvaluationDataset)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cespb.EvaluationDataset{}
@@ -2663,6 +3019,10 @@ func (c *evaluationRESTClient) UpdateEvaluation(ctx context.Context, req *cespb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/UpdateEvaluation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{evaluation.name=projects/*/locations/*/apps/*/evaluations/*}")
+	}
 	opts = append((*c.CallOptions).UpdateEvaluation[0:len((*c.CallOptions).UpdateEvaluation):len((*c.CallOptions).UpdateEvaluation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cespb.Evaluation{}
@@ -2727,6 +3087,10 @@ func (c *evaluationRESTClient) UpdateEvaluationDataset(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/UpdateEvaluationDataset")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{evaluation_dataset.name=projects/*/locations/*/apps/*/evaluationDatasets/*}")
+	}
 	opts = append((*c.CallOptions).UpdateEvaluationDataset[0:len((*c.CallOptions).UpdateEvaluationDataset):len((*c.CallOptions).UpdateEvaluationDataset)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cespb.EvaluationDataset{}
@@ -2783,6 +3147,13 @@ func (c *evaluationRESTClient) DeleteEvaluation(ctx context.Context, req *cespb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/DeleteEvaluation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/apps/*/evaluations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2818,6 +3189,13 @@ func (c *evaluationRESTClient) DeleteEvaluationResult(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/DeleteEvaluationResult")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/apps/*/evaluations/*/results/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2856,6 +3234,13 @@ func (c *evaluationRESTClient) DeleteEvaluationDataset(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/DeleteEvaluationDataset")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/apps/*/evaluationDatasets/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2891,6 +3276,13 @@ func (c *evaluationRESTClient) DeleteEvaluationRun(ctx context.Context, req *ces
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/DeleteEvaluationRun")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/apps/*/evaluationRuns/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2944,6 +3336,13 @@ func (c *evaluationRESTClient) GetEvaluation(ctx context.Context, req *cespb.Get
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/GetEvaluation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/apps/*/evaluations/*}")
+	}
 	opts = append((*c.CallOptions).GetEvaluation[0:len((*c.CallOptions).GetEvaluation):len((*c.CallOptions).GetEvaluation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cespb.Evaluation{}
@@ -2994,6 +3393,13 @@ func (c *evaluationRESTClient) GetEvaluationResult(ctx context.Context, req *ces
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/GetEvaluationResult")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/apps/*/evaluations/*/results/*}")
+	}
 	opts = append((*c.CallOptions).GetEvaluationResult[0:len((*c.CallOptions).GetEvaluationResult):len((*c.CallOptions).GetEvaluationResult)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cespb.EvaluationResult{}
@@ -3044,6 +3450,13 @@ func (c *evaluationRESTClient) GetEvaluationDataset(ctx context.Context, req *ce
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/GetEvaluationDataset")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/apps/*/evaluationDatasets/*}")
+	}
 	opts = append((*c.CallOptions).GetEvaluationDataset[0:len((*c.CallOptions).GetEvaluationDataset):len((*c.CallOptions).GetEvaluationDataset)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cespb.EvaluationDataset{}
@@ -3094,6 +3507,13 @@ func (c *evaluationRESTClient) GetEvaluationRun(ctx context.Context, req *cespb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/GetEvaluationRun")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/apps/*/evaluationRuns/*}")
+	}
 	opts = append((*c.CallOptions).GetEvaluationRun[0:len((*c.CallOptions).GetEvaluationRun):len((*c.CallOptions).GetEvaluationRun)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cespb.EvaluationRun{}
@@ -3573,6 +3993,13 @@ func (c *evaluationRESTClient) GetEvaluationExpectation(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/GetEvaluationExpectation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/apps/*/evaluationExpectations/*}")
+	}
 	opts = append((*c.CallOptions).GetEvaluationExpectation[0:len((*c.CallOptions).GetEvaluationExpectation):len((*c.CallOptions).GetEvaluationExpectation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cespb.EvaluationExpectation{}
@@ -3633,6 +4060,13 @@ func (c *evaluationRESTClient) CreateEvaluationExpectation(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/CreateEvaluationExpectation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*/apps/*}/evaluationExpectations")
+	}
 	opts = append((*c.CallOptions).CreateEvaluationExpectation[0:len((*c.CallOptions).CreateEvaluationExpectation):len((*c.CallOptions).CreateEvaluationExpectation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cespb.EvaluationExpectation{}
@@ -3697,6 +4131,10 @@ func (c *evaluationRESTClient) UpdateEvaluationExpectation(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/UpdateEvaluationExpectation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{evaluation_expectation.name=projects/*/locations/*/apps/*/evaluationExpectations/*}")
+	}
 	opts = append((*c.CallOptions).UpdateEvaluationExpectation[0:len((*c.CallOptions).UpdateEvaluationExpectation):len((*c.CallOptions).UpdateEvaluationExpectation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cespb.EvaluationExpectation{}
@@ -3750,6 +4188,13 @@ func (c *evaluationRESTClient) DeleteEvaluationExpectation(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/DeleteEvaluationExpectation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/apps/*/evaluationExpectations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -3795,6 +4240,13 @@ func (c *evaluationRESTClient) CreateScheduledEvaluationRun(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/CreateScheduledEvaluationRun")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*/apps/*}/scheduledEvaluationRuns")
+	}
 	opts = append((*c.CallOptions).CreateScheduledEvaluationRun[0:len((*c.CallOptions).CreateScheduledEvaluationRun):len((*c.CallOptions).CreateScheduledEvaluationRun)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cespb.ScheduledEvaluationRun{}
@@ -3845,6 +4297,13 @@ func (c *evaluationRESTClient) GetScheduledEvaluationRun(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/GetScheduledEvaluationRun")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/apps/*/scheduledEvaluationRuns/*}")
+	}
 	opts = append((*c.CallOptions).GetScheduledEvaluationRun[0:len((*c.CallOptions).GetScheduledEvaluationRun):len((*c.CallOptions).GetScheduledEvaluationRun)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cespb.ScheduledEvaluationRun{}
@@ -3993,6 +4452,10 @@ func (c *evaluationRESTClient) UpdateScheduledEvaluationRun(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/UpdateScheduledEvaluationRun")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{scheduled_evaluation_run.name=projects/*/locations/*/apps/*/scheduledEvaluationRuns/*}")
+	}
 	opts = append((*c.CallOptions).UpdateScheduledEvaluationRun[0:len((*c.CallOptions).UpdateScheduledEvaluationRun):len((*c.CallOptions).UpdateScheduledEvaluationRun)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cespb.ScheduledEvaluationRun{}
@@ -4046,6 +4509,13 @@ func (c *evaluationRESTClient) DeleteScheduledEvaluationRun(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/DeleteScheduledEvaluationRun")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/apps/*/scheduledEvaluationRuns/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -4087,6 +4557,13 @@ func (c *evaluationRESTClient) TestPersonaVoice(ctx context.Context, req *cespb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetApp()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/TestPersonaVoice")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{app=projects/*/locations/*/apps/*}:testPersonaVoice")
+	}
 	opts = append((*c.CallOptions).TestPersonaVoice[0:len((*c.CallOptions).TestPersonaVoice):len((*c.CallOptions).TestPersonaVoice)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cespb.TestPersonaVoiceResponse{}
@@ -4137,6 +4614,10 @@ func (c *evaluationRESTClient) GetLocation(ctx context.Context, req *locationpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -4290,6 +4771,10 @@ func (c *evaluationRESTClient) CancelOperation(ctx context.Context, req *longrun
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -4325,6 +4810,10 @@ func (c *evaluationRESTClient) DeleteOperation(ctx context.Context, req *longrun
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -4360,6 +4849,10 @@ func (c *evaluationRESTClient) GetOperation(ctx context.Context, req *longrunnin
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}

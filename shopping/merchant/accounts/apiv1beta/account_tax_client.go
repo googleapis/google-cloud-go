@@ -28,6 +28,7 @@ import (
 
 	accountspb "cloud.google.com/go/shopping/merchant/accounts/apiv1beta/accountspb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -238,6 +239,16 @@ type accountTaxGRPCClient struct {
 //	AccountTax
 func NewAccountTaxClient(ctx context.Context, opts ...option.ClientOption) (*AccountTaxClient, error) {
 	clientOpts := defaultAccountTaxGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	if newAccountTaxClientHook != nil {
 		hookOpts, err := newAccountTaxClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -259,6 +270,22 @@ func NewAccountTaxClient(ctx context.Context, opts ...option.ClientOption) (*Acc
 		logger:           internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetAccountTax = append(client.CallOptions.GetAccountTax, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAccountTax = append(client.CallOptions.ListAccountTax, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateAccountTax = append(client.CallOptions.UpdateAccountTax, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -316,6 +343,16 @@ type accountTaxRESTClient struct {
 //	AccountTax
 func NewAccountTaxRESTClient(ctx context.Context, opts ...option.ClientOption) (*AccountTaxClient, error) {
 	clientOpts := append(defaultAccountTaxRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -329,6 +366,23 @@ func NewAccountTaxRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetAccountTax = append(callOpts.GetAccountTax, gax.WithClientMetrics(metrics))
+		callOpts.ListAccountTax = append(callOpts.ListAccountTax, gax.WithClientMetrics(metrics))
+		callOpts.UpdateAccountTax = append(callOpts.UpdateAccountTax, gax.WithClientMetrics(metrics))
+	}
 
 	return &AccountTaxClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -375,6 +429,12 @@ func (c *accountTaxGRPCClient) GetAccountTax(ctx context.Context, req *accountsp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.AccountTaxService/GetAccountTax")
+	}
 	opts = append((*c.CallOptions).GetAccountTax[0:len((*c.CallOptions).GetAccountTax):len((*c.CallOptions).GetAccountTax)], opts...)
 	var resp *accountspb.AccountTax
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -393,6 +453,12 @@ func (c *accountTaxGRPCClient) ListAccountTax(ctx context.Context, req *accounts
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.AccountTaxService/ListAccountTax")
+	}
 	opts = append((*c.CallOptions).ListAccountTax[0:len((*c.CallOptions).ListAccountTax):len((*c.CallOptions).ListAccountTax)], opts...)
 	it := &AccountTaxIterator{}
 	req = proto.Clone(req).(*accountspb.ListAccountTaxRequest)
@@ -439,6 +505,9 @@ func (c *accountTaxGRPCClient) UpdateAccountTax(ctx context.Context, req *accoun
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.AccountTaxService/UpdateAccountTax")
+	}
 	opts = append((*c.CallOptions).UpdateAccountTax[0:len((*c.CallOptions).UpdateAccountTax):len((*c.CallOptions).UpdateAccountTax)], opts...)
 	var resp *accountspb.AccountTax
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -471,6 +540,13 @@ func (c *accountTaxRESTClient) GetAccountTax(ctx context.Context, req *accountsp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.AccountTaxService/GetAccountTax")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1beta/{name=accounts/*/accounttax/*}")
+	}
 	opts = append((*c.CallOptions).GetAccountTax[0:len((*c.CallOptions).GetAccountTax):len((*c.CallOptions).GetAccountTax)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &accountspb.AccountTax{}
@@ -616,6 +692,10 @@ func (c *accountTaxRESTClient) UpdateAccountTax(ctx context.Context, req *accoun
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.AccountTaxService/UpdateAccountTax")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1beta/{account_tax.name=accounts/*/accounttax/*}")
+	}
 	opts = append((*c.CallOptions).UpdateAccountTax[0:len((*c.CallOptions).UpdateAccountTax):len((*c.CallOptions).UpdateAccountTax)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &accountspb.AccountTax{}

@@ -29,6 +29,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	networkconnectivitypb "cloud.google.com/go/networkconnectivity/apiv1/networkconnectivitypb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -444,6 +445,16 @@ type crossNetworkAutomationGRPCClient struct {
 // The service for CrossNetworkAutomation resources.
 func NewCrossNetworkAutomationClient(ctx context.Context, opts ...option.ClientOption) (*CrossNetworkAutomationClient, error) {
 	clientOpts := defaultCrossNetworkAutomationGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "networkconnectivity",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/networkconnectivity/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "networkconnectivity.googleapis.com",
+		}))
+	}
 	if newCrossNetworkAutomationClientHook != nil {
 		hookOpts, err := newCrossNetworkAutomationClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -468,6 +479,46 @@ func NewCrossNetworkAutomationClient(ctx context.Context, opts ...option.ClientO
 		locationsClient:              locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "networkconnectivity",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/networkconnectivity/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "networkconnectivity.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListServiceConnectionMaps = append(client.CallOptions.ListServiceConnectionMaps, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetServiceConnectionMap = append(client.CallOptions.GetServiceConnectionMap, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateServiceConnectionMap = append(client.CallOptions.CreateServiceConnectionMap, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateServiceConnectionMap = append(client.CallOptions.UpdateServiceConnectionMap, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteServiceConnectionMap = append(client.CallOptions.DeleteServiceConnectionMap, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListServiceConnectionPolicies = append(client.CallOptions.ListServiceConnectionPolicies, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetServiceConnectionPolicy = append(client.CallOptions.GetServiceConnectionPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateServiceConnectionPolicy = append(client.CallOptions.CreateServiceConnectionPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateServiceConnectionPolicy = append(client.CallOptions.UpdateServiceConnectionPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteServiceConnectionPolicy = append(client.CallOptions.DeleteServiceConnectionPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListServiceClasses = append(client.CallOptions.ListServiceClasses, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetServiceClass = append(client.CallOptions.GetServiceClass, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateServiceClass = append(client.CallOptions.UpdateServiceClass, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteServiceClass = append(client.CallOptions.DeleteServiceClass, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetServiceConnectionToken = append(client.CallOptions.GetServiceConnectionToken, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListServiceConnectionTokens = append(client.CallOptions.ListServiceConnectionTokens, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateServiceConnectionToken = append(client.CallOptions.CreateServiceConnectionToken, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteServiceConnectionToken = append(client.CallOptions.DeleteServiceConnectionToken, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -515,6 +566,12 @@ func (c *crossNetworkAutomationGRPCClient) ListServiceConnectionMaps(ctx context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService/ListServiceConnectionMaps")
+	}
 	opts = append((*c.CallOptions).ListServiceConnectionMaps[0:len((*c.CallOptions).ListServiceConnectionMaps):len((*c.CallOptions).ListServiceConnectionMaps)], opts...)
 	it := &ServiceConnectionMapIterator{}
 	req = proto.Clone(req).(*networkconnectivitypb.ListServiceConnectionMapsRequest)
@@ -561,6 +618,12 @@ func (c *crossNetworkAutomationGRPCClient) GetServiceConnectionMap(ctx context.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService/GetServiceConnectionMap")
+	}
 	opts = append((*c.CallOptions).GetServiceConnectionMap[0:len((*c.CallOptions).GetServiceConnectionMap):len((*c.CallOptions).GetServiceConnectionMap)], opts...)
 	var resp *networkconnectivitypb.ServiceConnectionMap
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -579,6 +642,12 @@ func (c *crossNetworkAutomationGRPCClient) CreateServiceConnectionMap(ctx contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService/CreateServiceConnectionMap")
+	}
 	opts = append((*c.CallOptions).CreateServiceConnectionMap[0:len((*c.CallOptions).CreateServiceConnectionMap):len((*c.CallOptions).CreateServiceConnectionMap)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -599,6 +668,9 @@ func (c *crossNetworkAutomationGRPCClient) UpdateServiceConnectionMap(ctx contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService/UpdateServiceConnectionMap")
+	}
 	opts = append((*c.CallOptions).UpdateServiceConnectionMap[0:len((*c.CallOptions).UpdateServiceConnectionMap):len((*c.CallOptions).UpdateServiceConnectionMap)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -619,6 +691,12 @@ func (c *crossNetworkAutomationGRPCClient) DeleteServiceConnectionMap(ctx contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService/DeleteServiceConnectionMap")
+	}
 	opts = append((*c.CallOptions).DeleteServiceConnectionMap[0:len((*c.CallOptions).DeleteServiceConnectionMap):len((*c.CallOptions).DeleteServiceConnectionMap)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -639,6 +717,12 @@ func (c *crossNetworkAutomationGRPCClient) ListServiceConnectionPolicies(ctx con
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService/ListServiceConnectionPolicies")
+	}
 	opts = append((*c.CallOptions).ListServiceConnectionPolicies[0:len((*c.CallOptions).ListServiceConnectionPolicies):len((*c.CallOptions).ListServiceConnectionPolicies)], opts...)
 	it := &ServiceConnectionPolicyIterator{}
 	req = proto.Clone(req).(*networkconnectivitypb.ListServiceConnectionPoliciesRequest)
@@ -685,6 +769,12 @@ func (c *crossNetworkAutomationGRPCClient) GetServiceConnectionPolicy(ctx contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService/GetServiceConnectionPolicy")
+	}
 	opts = append((*c.CallOptions).GetServiceConnectionPolicy[0:len((*c.CallOptions).GetServiceConnectionPolicy):len((*c.CallOptions).GetServiceConnectionPolicy)], opts...)
 	var resp *networkconnectivitypb.ServiceConnectionPolicy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -703,6 +793,12 @@ func (c *crossNetworkAutomationGRPCClient) CreateServiceConnectionPolicy(ctx con
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService/CreateServiceConnectionPolicy")
+	}
 	opts = append((*c.CallOptions).CreateServiceConnectionPolicy[0:len((*c.CallOptions).CreateServiceConnectionPolicy):len((*c.CallOptions).CreateServiceConnectionPolicy)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -723,6 +819,9 @@ func (c *crossNetworkAutomationGRPCClient) UpdateServiceConnectionPolicy(ctx con
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService/UpdateServiceConnectionPolicy")
+	}
 	opts = append((*c.CallOptions).UpdateServiceConnectionPolicy[0:len((*c.CallOptions).UpdateServiceConnectionPolicy):len((*c.CallOptions).UpdateServiceConnectionPolicy)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -743,6 +842,12 @@ func (c *crossNetworkAutomationGRPCClient) DeleteServiceConnectionPolicy(ctx con
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService/DeleteServiceConnectionPolicy")
+	}
 	opts = append((*c.CallOptions).DeleteServiceConnectionPolicy[0:len((*c.CallOptions).DeleteServiceConnectionPolicy):len((*c.CallOptions).DeleteServiceConnectionPolicy)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -763,6 +868,12 @@ func (c *crossNetworkAutomationGRPCClient) ListServiceClasses(ctx context.Contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService/ListServiceClasses")
+	}
 	opts = append((*c.CallOptions).ListServiceClasses[0:len((*c.CallOptions).ListServiceClasses):len((*c.CallOptions).ListServiceClasses)], opts...)
 	it := &ServiceClassIterator{}
 	req = proto.Clone(req).(*networkconnectivitypb.ListServiceClassesRequest)
@@ -809,6 +920,12 @@ func (c *crossNetworkAutomationGRPCClient) GetServiceClass(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService/GetServiceClass")
+	}
 	opts = append((*c.CallOptions).GetServiceClass[0:len((*c.CallOptions).GetServiceClass):len((*c.CallOptions).GetServiceClass)], opts...)
 	var resp *networkconnectivitypb.ServiceClass
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -827,6 +944,9 @@ func (c *crossNetworkAutomationGRPCClient) UpdateServiceClass(ctx context.Contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService/UpdateServiceClass")
+	}
 	opts = append((*c.CallOptions).UpdateServiceClass[0:len((*c.CallOptions).UpdateServiceClass):len((*c.CallOptions).UpdateServiceClass)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -847,6 +967,12 @@ func (c *crossNetworkAutomationGRPCClient) DeleteServiceClass(ctx context.Contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService/DeleteServiceClass")
+	}
 	opts = append((*c.CallOptions).DeleteServiceClass[0:len((*c.CallOptions).DeleteServiceClass):len((*c.CallOptions).DeleteServiceClass)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -867,6 +993,12 @@ func (c *crossNetworkAutomationGRPCClient) GetServiceConnectionToken(ctx context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService/GetServiceConnectionToken")
+	}
 	opts = append((*c.CallOptions).GetServiceConnectionToken[0:len((*c.CallOptions).GetServiceConnectionToken):len((*c.CallOptions).GetServiceConnectionToken)], opts...)
 	var resp *networkconnectivitypb.ServiceConnectionToken
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -885,6 +1017,12 @@ func (c *crossNetworkAutomationGRPCClient) ListServiceConnectionTokens(ctx conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService/ListServiceConnectionTokens")
+	}
 	opts = append((*c.CallOptions).ListServiceConnectionTokens[0:len((*c.CallOptions).ListServiceConnectionTokens):len((*c.CallOptions).ListServiceConnectionTokens)], opts...)
 	it := &ServiceConnectionTokenIterator{}
 	req = proto.Clone(req).(*networkconnectivitypb.ListServiceConnectionTokensRequest)
@@ -931,6 +1069,12 @@ func (c *crossNetworkAutomationGRPCClient) CreateServiceConnectionToken(ctx cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService/CreateServiceConnectionToken")
+	}
 	opts = append((*c.CallOptions).CreateServiceConnectionToken[0:len((*c.CallOptions).CreateServiceConnectionToken):len((*c.CallOptions).CreateServiceConnectionToken)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -951,6 +1095,12 @@ func (c *crossNetworkAutomationGRPCClient) DeleteServiceConnectionToken(ctx cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1.CrossNetworkAutomationService/DeleteServiceConnectionToken")
+	}
 	opts = append((*c.CallOptions).DeleteServiceConnectionToken[0:len((*c.CallOptions).DeleteServiceConnectionToken):len((*c.CallOptions).DeleteServiceConnectionToken)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -971,6 +1121,9 @@ func (c *crossNetworkAutomationGRPCClient) GetLocation(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -989,6 +1142,9 @@ func (c *crossNetworkAutomationGRPCClient) ListLocations(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
@@ -1035,6 +1191,12 @@ func (c *crossNetworkAutomationGRPCClient) GetIamPolicy(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1053,6 +1215,12 @@ func (c *crossNetworkAutomationGRPCClient) SetIamPolicy(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1071,6 +1239,12 @@ func (c *crossNetworkAutomationGRPCClient) TestIamPermissions(ctx context.Contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1089,6 +1263,9 @@ func (c *crossNetworkAutomationGRPCClient) CancelOperation(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1103,6 +1280,9 @@ func (c *crossNetworkAutomationGRPCClient) DeleteOperation(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1117,6 +1297,9 @@ func (c *crossNetworkAutomationGRPCClient) GetOperation(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1135,6 +1318,9 @@ func (c *crossNetworkAutomationGRPCClient) ListOperations(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)

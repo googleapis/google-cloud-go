@@ -28,6 +28,7 @@ import (
 
 	issueresolutionpb "cloud.google.com/go/shopping/merchant/issueresolution/apiv1/issueresolutionpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -241,6 +242,16 @@ type gRPCClient struct {
 // issues.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/issueresolution/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -262,6 +273,22 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/issueresolution/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.RenderAccountIssues = append(client.CallOptions.RenderAccountIssues, gax.WithClientMetrics(metrics))
+		client.CallOptions.RenderProductIssues = append(client.CallOptions.RenderProductIssues, gax.WithClientMetrics(metrics))
+		client.CallOptions.TriggerAction = append(client.CallOptions.TriggerAction, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -316,6 +343,16 @@ type restClient struct {
 // issues.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/issueresolution/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -329,6 +366,23 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/issueresolution/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.RenderAccountIssues = append(callOpts.RenderAccountIssues, gax.WithClientMetrics(metrics))
+		callOpts.RenderProductIssues = append(callOpts.RenderProductIssues, gax.WithClientMetrics(metrics))
+		callOpts.TriggerAction = append(callOpts.TriggerAction, gax.WithClientMetrics(metrics))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -375,6 +429,12 @@ func (c *gRPCClient) RenderAccountIssues(ctx context.Context, req *issueresoluti
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.issueresolution.v1.IssueResolutionService/RenderAccountIssues")
+	}
 	opts = append((*c.CallOptions).RenderAccountIssues[0:len((*c.CallOptions).RenderAccountIssues):len((*c.CallOptions).RenderAccountIssues)], opts...)
 	var resp *issueresolutionpb.RenderAccountIssuesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -393,6 +453,12 @@ func (c *gRPCClient) RenderProductIssues(ctx context.Context, req *issueresoluti
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.issueresolution.v1.IssueResolutionService/RenderProductIssues")
+	}
 	opts = append((*c.CallOptions).RenderProductIssues[0:len((*c.CallOptions).RenderProductIssues):len((*c.CallOptions).RenderProductIssues)], opts...)
 	var resp *issueresolutionpb.RenderProductIssuesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -411,6 +477,12 @@ func (c *gRPCClient) TriggerAction(ctx context.Context, req *issueresolutionpb.T
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.issueresolution.v1.IssueResolutionService/TriggerAction")
+	}
 	opts = append((*c.CallOptions).TriggerAction[0:len((*c.CallOptions).TriggerAction):len((*c.CallOptions).TriggerAction)], opts...)
 	var resp *issueresolutionpb.TriggerActionResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -458,6 +530,13 @@ func (c *restClient) RenderAccountIssues(ctx context.Context, req *issueresoluti
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.issueresolution.v1.IssueResolutionService/RenderAccountIssues")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/issueresolution/v1/{name=accounts/*}:renderaccountissues")
+	}
 	opts = append((*c.CallOptions).RenderAccountIssues[0:len((*c.CallOptions).RenderAccountIssues):len((*c.CallOptions).RenderAccountIssues)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &issueresolutionpb.RenderAccountIssuesResponse{}
@@ -523,6 +602,13 @@ func (c *restClient) RenderProductIssues(ctx context.Context, req *issueresoluti
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.issueresolution.v1.IssueResolutionService/RenderProductIssues")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/issueresolution/v1/{name=accounts/*/products/*}:renderproductissues")
+	}
 	opts = append((*c.CallOptions).RenderProductIssues[0:len((*c.CallOptions).RenderProductIssues):len((*c.CallOptions).RenderProductIssues)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &issueresolutionpb.RenderProductIssuesResponse{}
@@ -593,6 +679,13 @@ func (c *restClient) TriggerAction(ctx context.Context, req *issueresolutionpb.T
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.issueresolution.v1.IssueResolutionService/TriggerAction")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/issueresolution/v1/{name=accounts/*}:triggeraction")
+	}
 	opts = append((*c.CallOptions).TriggerAction[0:len((*c.CallOptions).TriggerAction):len((*c.CallOptions).TriggerAction)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &issueresolutionpb.TriggerActionResponse{}

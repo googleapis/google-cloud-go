@@ -28,6 +28,7 @@ import (
 
 	addressvalidationpb "cloud.google.com/go/maps/addressvalidation/apiv1/addressvalidationpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -199,6 +200,16 @@ type gRPCClient struct {
 // The service for validating addresses.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "addressvalidation",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/maps/addressvalidation/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "addressvalidation.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -220,6 +231,21 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "addressvalidation",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/addressvalidation/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "addressvalidation.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ValidateAddress = append(client.CallOptions.ValidateAddress, gax.WithClientMetrics(metrics))
+		client.CallOptions.ProvideValidationFeedback = append(client.CallOptions.ProvideValidationFeedback, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -273,6 +299,16 @@ type restClient struct {
 // The service for validating addresses.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "addressvalidation",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/maps/addressvalidation/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "addressvalidation.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -286,6 +322,22 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "addressvalidation",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/addressvalidation/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "addressvalidation.googleapis.com",
+			}),
+		)
+
+		callOpts.ValidateAddress = append(callOpts.ValidateAddress, gax.WithClientMetrics(metrics))
+		callOpts.ProvideValidationFeedback = append(callOpts.ProvideValidationFeedback, gax.WithClientMetrics(metrics))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -329,6 +381,9 @@ func (c *restClient) Connection() *grpc.ClientConn {
 }
 func (c *gRPCClient) ValidateAddress(ctx context.Context, req *addressvalidationpb.ValidateAddressRequest, opts ...gax.CallOption) (*addressvalidationpb.ValidateAddressResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.addressvalidation.v1.AddressValidation/ValidateAddress")
+	}
 	opts = append((*c.CallOptions).ValidateAddress[0:len((*c.CallOptions).ValidateAddress):len((*c.CallOptions).ValidateAddress)], opts...)
 	var resp *addressvalidationpb.ValidateAddressResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -344,6 +399,9 @@ func (c *gRPCClient) ValidateAddress(ctx context.Context, req *addressvalidation
 
 func (c *gRPCClient) ProvideValidationFeedback(ctx context.Context, req *addressvalidationpb.ProvideValidationFeedbackRequest, opts ...gax.CallOption) (*addressvalidationpb.ProvideValidationFeedbackResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.addressvalidation.v1.AddressValidation/ProvideValidationFeedback")
+	}
 	opts = append((*c.CallOptions).ProvideValidationFeedback[0:len((*c.CallOptions).ProvideValidationFeedback):len((*c.CallOptions).ProvideValidationFeedback)], opts...)
 	var resp *addressvalidationpb.ProvideValidationFeedbackResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -379,6 +437,10 @@ func (c *restClient) ValidateAddress(ctx context.Context, req *addressvalidation
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.addressvalidation.v1.AddressValidation/ValidateAddress")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1:validateAddress")
+	}
 	opts = append((*c.CallOptions).ValidateAddress[0:len((*c.CallOptions).ValidateAddress):len((*c.CallOptions).ValidateAddress)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &addressvalidationpb.ValidateAddressResponse{}
@@ -436,6 +498,10 @@ func (c *restClient) ProvideValidationFeedback(ctx context.Context, req *address
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.addressvalidation.v1.AddressValidation/ProvideValidationFeedback")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1:provideValidationFeedback")
+	}
 	opts = append((*c.CallOptions).ProvideValidationFeedback[0:len((*c.CallOptions).ProvideValidationFeedback):len((*c.CallOptions).ProvideValidationFeedback)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &addressvalidationpb.ProvideValidationFeedbackResponse{}

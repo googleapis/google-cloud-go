@@ -27,6 +27,7 @@ import (
 
 	datasourcespb "cloud.google.com/go/shopping/merchant/datasources/apiv1/datasourcespb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -165,6 +166,16 @@ type fileUploadsGRPCClient struct {
 // Service to manage data source file uploads.
 func NewFileUploadsClient(ctx context.Context, opts ...option.ClientOption) (*FileUploadsClient, error) {
 	clientOpts := defaultFileUploadsGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/datasources/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	if newFileUploadsClientHook != nil {
 		hookOpts, err := newFileUploadsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -186,6 +197,20 @@ func NewFileUploadsClient(ctx context.Context, opts ...option.ClientOption) (*Fi
 		logger:            internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/datasources/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetFileUpload = append(client.CallOptions.GetFileUpload, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -239,6 +264,16 @@ type fileUploadsRESTClient struct {
 // Service to manage data source file uploads.
 func NewFileUploadsRESTClient(ctx context.Context, opts ...option.ClientOption) (*FileUploadsClient, error) {
 	clientOpts := append(defaultFileUploadsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/datasources/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -252,6 +287,21 @@ func NewFileUploadsRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/datasources/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetFileUpload = append(callOpts.GetFileUpload, gax.WithClientMetrics(metrics))
+	}
 
 	return &FileUploadsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -298,6 +348,12 @@ func (c *fileUploadsGRPCClient) GetFileUpload(ctx context.Context, req *datasour
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.datasources.v1.FileUploadsService/GetFileUpload")
+	}
 	opts = append((*c.CallOptions).GetFileUpload[0:len((*c.CallOptions).GetFileUpload):len((*c.CallOptions).GetFileUpload)], opts...)
 	var resp *datasourcespb.FileUpload
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -331,6 +387,13 @@ func (c *fileUploadsRESTClient) GetFileUpload(ctx context.Context, req *datasour
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.datasources.v1.FileUploadsService/GetFileUpload")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/datasources/v1/{name=accounts/*/dataSources/*/fileUploads/*}")
+	}
 	opts = append((*c.CallOptions).GetFileUpload[0:len((*c.CallOptions).GetFileUpload):len((*c.CallOptions).GetFileUpload)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datasourcespb.FileUpload{}

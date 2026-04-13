@@ -28,6 +28,7 @@ import (
 
 	settingspb "cloud.google.com/go/securitycenter/settings/apiv1beta1/settingspb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -594,6 +595,16 @@ type securityCenterSettingsGRPCClient struct {
 // folders, projects, and clusters.
 func NewSecurityCenterSettingsClient(ctx context.Context, opts ...option.ClientOption) (*SecurityCenterSettingsClient, error) {
 	clientOpts := defaultSecurityCenterSettingsGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "securitycenter",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/securitycenter/settings/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "securitycenter.googleapis.com",
+		}))
+	}
 	if newSecurityCenterSettingsClientHook != nil {
 		hookOpts, err := newSecurityCenterSettingsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -615,6 +626,32 @@ func NewSecurityCenterSettingsClient(ctx context.Context, opts ...option.ClientO
 		logger:                       internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "securitycenter",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/securitycenter/settings/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "securitycenter.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetServiceAccount = append(client.CallOptions.GetServiceAccount, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetSettings = append(client.CallOptions.GetSettings, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateSettings = append(client.CallOptions.UpdateSettings, gax.WithClientMetrics(metrics))
+		client.CallOptions.ResetSettings = append(client.CallOptions.ResetSettings, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchGetSettings = append(client.CallOptions.BatchGetSettings, gax.WithClientMetrics(metrics))
+		client.CallOptions.CalculateEffectiveSettings = append(client.CallOptions.CalculateEffectiveSettings, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchCalculateEffectiveSettings = append(client.CallOptions.BatchCalculateEffectiveSettings, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetComponentSettings = append(client.CallOptions.GetComponentSettings, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateComponentSettings = append(client.CallOptions.UpdateComponentSettings, gax.WithClientMetrics(metrics))
+		client.CallOptions.ResetComponentSettings = append(client.CallOptions.ResetComponentSettings, gax.WithClientMetrics(metrics))
+		client.CallOptions.CalculateEffectiveComponentSettings = append(client.CallOptions.CalculateEffectiveComponentSettings, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListDetectors = append(client.CallOptions.ListDetectors, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListComponents = append(client.CallOptions.ListComponents, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -671,6 +708,16 @@ type securityCenterSettingsRESTClient struct {
 // folders, projects, and clusters.
 func NewSecurityCenterSettingsRESTClient(ctx context.Context, opts ...option.ClientOption) (*SecurityCenterSettingsClient, error) {
 	clientOpts := append(defaultSecurityCenterSettingsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "securitycenter",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/securitycenter/settings/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "securitycenter.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -684,6 +731,33 @@ func NewSecurityCenterSettingsRESTClient(ctx context.Context, opts ...option.Cli
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "securitycenter",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/securitycenter/settings/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "securitycenter.googleapis.com",
+			}),
+		)
+
+		callOpts.GetServiceAccount = append(callOpts.GetServiceAccount, gax.WithClientMetrics(metrics))
+		callOpts.GetSettings = append(callOpts.GetSettings, gax.WithClientMetrics(metrics))
+		callOpts.UpdateSettings = append(callOpts.UpdateSettings, gax.WithClientMetrics(metrics))
+		callOpts.ResetSettings = append(callOpts.ResetSettings, gax.WithClientMetrics(metrics))
+		callOpts.BatchGetSettings = append(callOpts.BatchGetSettings, gax.WithClientMetrics(metrics))
+		callOpts.CalculateEffectiveSettings = append(callOpts.CalculateEffectiveSettings, gax.WithClientMetrics(metrics))
+		callOpts.BatchCalculateEffectiveSettings = append(callOpts.BatchCalculateEffectiveSettings, gax.WithClientMetrics(metrics))
+		callOpts.GetComponentSettings = append(callOpts.GetComponentSettings, gax.WithClientMetrics(metrics))
+		callOpts.UpdateComponentSettings = append(callOpts.UpdateComponentSettings, gax.WithClientMetrics(metrics))
+		callOpts.ResetComponentSettings = append(callOpts.ResetComponentSettings, gax.WithClientMetrics(metrics))
+		callOpts.CalculateEffectiveComponentSettings = append(callOpts.CalculateEffectiveComponentSettings, gax.WithClientMetrics(metrics))
+		callOpts.ListDetectors = append(callOpts.ListDetectors, gax.WithClientMetrics(metrics))
+		callOpts.ListComponents = append(callOpts.ListComponents, gax.WithClientMetrics(metrics))
+	}
 
 	return &SecurityCenterSettingsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -730,6 +804,12 @@ func (c *securityCenterSettingsGRPCClient) GetServiceAccount(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycenter.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycenter.settings.v1beta1.SecurityCenterSettingsService/GetServiceAccount")
+	}
 	opts = append((*c.CallOptions).GetServiceAccount[0:len((*c.CallOptions).GetServiceAccount):len((*c.CallOptions).GetServiceAccount)], opts...)
 	var resp *settingspb.ServiceAccount
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -748,6 +828,12 @@ func (c *securityCenterSettingsGRPCClient) GetSettings(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycenter.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycenter.settings.v1beta1.SecurityCenterSettingsService/GetSettings")
+	}
 	opts = append((*c.CallOptions).GetSettings[0:len((*c.CallOptions).GetSettings):len((*c.CallOptions).GetSettings)], opts...)
 	var resp *settingspb.Settings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -766,6 +852,9 @@ func (c *securityCenterSettingsGRPCClient) UpdateSettings(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycenter.settings.v1beta1.SecurityCenterSettingsService/UpdateSettings")
+	}
 	opts = append((*c.CallOptions).UpdateSettings[0:len((*c.CallOptions).UpdateSettings):len((*c.CallOptions).UpdateSettings)], opts...)
 	var resp *settingspb.Settings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -784,6 +873,12 @@ func (c *securityCenterSettingsGRPCClient) ResetSettings(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycenter.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycenter.settings.v1beta1.SecurityCenterSettingsService/ResetSettings")
+	}
 	opts = append((*c.CallOptions).ResetSettings[0:len((*c.CallOptions).ResetSettings):len((*c.CallOptions).ResetSettings)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -798,6 +893,12 @@ func (c *securityCenterSettingsGRPCClient) BatchGetSettings(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycenter.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycenter.settings.v1beta1.SecurityCenterSettingsService/BatchGetSettings")
+	}
 	opts = append((*c.CallOptions).BatchGetSettings[0:len((*c.CallOptions).BatchGetSettings):len((*c.CallOptions).BatchGetSettings)], opts...)
 	var resp *settingspb.BatchGetSettingsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -816,6 +917,12 @@ func (c *securityCenterSettingsGRPCClient) CalculateEffectiveSettings(ctx contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycenter.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycenter.settings.v1beta1.SecurityCenterSettingsService/CalculateEffectiveSettings")
+	}
 	opts = append((*c.CallOptions).CalculateEffectiveSettings[0:len((*c.CallOptions).CalculateEffectiveSettings):len((*c.CallOptions).CalculateEffectiveSettings)], opts...)
 	var resp *settingspb.Settings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -834,6 +941,12 @@ func (c *securityCenterSettingsGRPCClient) BatchCalculateEffectiveSettings(ctx c
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycenter.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycenter.settings.v1beta1.SecurityCenterSettingsService/BatchCalculateEffectiveSettings")
+	}
 	opts = append((*c.CallOptions).BatchCalculateEffectiveSettings[0:len((*c.CallOptions).BatchCalculateEffectiveSettings):len((*c.CallOptions).BatchCalculateEffectiveSettings)], opts...)
 	var resp *settingspb.BatchCalculateEffectiveSettingsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -852,6 +965,12 @@ func (c *securityCenterSettingsGRPCClient) GetComponentSettings(ctx context.Cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycenter.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycenter.settings.v1beta1.SecurityCenterSettingsService/GetComponentSettings")
+	}
 	opts = append((*c.CallOptions).GetComponentSettings[0:len((*c.CallOptions).GetComponentSettings):len((*c.CallOptions).GetComponentSettings)], opts...)
 	var resp *settingspb.ComponentSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -870,6 +989,9 @@ func (c *securityCenterSettingsGRPCClient) UpdateComponentSettings(ctx context.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycenter.settings.v1beta1.SecurityCenterSettingsService/UpdateComponentSettings")
+	}
 	opts = append((*c.CallOptions).UpdateComponentSettings[0:len((*c.CallOptions).UpdateComponentSettings):len((*c.CallOptions).UpdateComponentSettings)], opts...)
 	var resp *settingspb.ComponentSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -888,6 +1010,12 @@ func (c *securityCenterSettingsGRPCClient) ResetComponentSettings(ctx context.Co
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycenter.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycenter.settings.v1beta1.SecurityCenterSettingsService/ResetComponentSettings")
+	}
 	opts = append((*c.CallOptions).ResetComponentSettings[0:len((*c.CallOptions).ResetComponentSettings):len((*c.CallOptions).ResetComponentSettings)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -902,6 +1030,12 @@ func (c *securityCenterSettingsGRPCClient) CalculateEffectiveComponentSettings(c
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycenter.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycenter.settings.v1beta1.SecurityCenterSettingsService/CalculateEffectiveComponentSettings")
+	}
 	opts = append((*c.CallOptions).CalculateEffectiveComponentSettings[0:len((*c.CallOptions).CalculateEffectiveComponentSettings):len((*c.CallOptions).CalculateEffectiveComponentSettings)], opts...)
 	var resp *settingspb.ComponentSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -920,6 +1054,12 @@ func (c *securityCenterSettingsGRPCClient) ListDetectors(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycenter.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycenter.settings.v1beta1.SecurityCenterSettingsService/ListDetectors")
+	}
 	opts = append((*c.CallOptions).ListDetectors[0:len((*c.CallOptions).ListDetectors):len((*c.CallOptions).ListDetectors)], opts...)
 	it := &DetectorIterator{}
 	req = proto.Clone(req).(*settingspb.ListDetectorsRequest)
@@ -966,6 +1106,12 @@ func (c *securityCenterSettingsGRPCClient) ListComponents(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycenter.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycenter.settings.v1beta1.SecurityCenterSettingsService/ListComponents")
+	}
 	opts = append((*c.CallOptions).ListComponents[0:len((*c.CallOptions).ListComponents):len((*c.CallOptions).ListComponents)], opts...)
 	it := &StringIterator{}
 	req = proto.Clone(req).(*settingspb.ListComponentsRequest)
@@ -1030,6 +1176,13 @@ func (c *securityCenterSettingsRESTClient) GetServiceAccount(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycenter.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycenter.settings.v1beta1.SecurityCenterSettingsService/GetServiceAccount")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/settings/v1beta1/{name=organizations/*/serviceAccount}")
+	}
 	opts = append((*c.CallOptions).GetServiceAccount[0:len((*c.CallOptions).GetServiceAccount):len((*c.CallOptions).GetServiceAccount)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &settingspb.ServiceAccount{}
@@ -1075,6 +1228,13 @@ func (c *securityCenterSettingsRESTClient) GetSettings(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycenter.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycenter.settings.v1beta1.SecurityCenterSettingsService/GetSettings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/settings/v1beta1/{name=organizations/*/settings}")
+	}
 	opts = append((*c.CallOptions).GetSettings[0:len((*c.CallOptions).GetSettings):len((*c.CallOptions).GetSettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &settingspb.Settings{}
@@ -1138,6 +1298,10 @@ func (c *securityCenterSettingsRESTClient) UpdateSettings(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycenter.settings.v1beta1.SecurityCenterSettingsService/UpdateSettings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/settings/v1beta1/{settings.name=organizations/*/settings}")
+	}
 	opts = append((*c.CallOptions).UpdateSettings[0:len((*c.CallOptions).UpdateSettings):len((*c.CallOptions).UpdateSettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &settingspb.Settings{}
@@ -1198,6 +1362,13 @@ func (c *securityCenterSettingsRESTClient) ResetSettings(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycenter.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycenter.settings.v1beta1.SecurityCenterSettingsService/ResetSettings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/settings/v1beta1/{name=organizations/*/settings}:reset")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1237,6 +1408,13 @@ func (c *securityCenterSettingsRESTClient) BatchGetSettings(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycenter.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycenter.settings.v1beta1.SecurityCenterSettingsService/BatchGetSettings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/settings/v1beta1/{parent=organizations/*}/settings:batchGet")
+	}
 	opts = append((*c.CallOptions).BatchGetSettings[0:len((*c.CallOptions).BatchGetSettings):len((*c.CallOptions).BatchGetSettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &settingspb.BatchGetSettingsResponse{}
@@ -1295,6 +1473,13 @@ func (c *securityCenterSettingsRESTClient) CalculateEffectiveSettings(ctx contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycenter.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycenter.settings.v1beta1.SecurityCenterSettingsService/CalculateEffectiveSettings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/settings/v1beta1/{name=organizations/*/effectiveSettings}:calculate")
+	}
 	opts = append((*c.CallOptions).CalculateEffectiveSettings[0:len((*c.CallOptions).CalculateEffectiveSettings):len((*c.CallOptions).CalculateEffectiveSettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &settingspb.Settings{}
@@ -1346,6 +1531,13 @@ func (c *securityCenterSettingsRESTClient) BatchCalculateEffectiveSettings(ctx c
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycenter.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycenter.settings.v1beta1.SecurityCenterSettingsService/BatchCalculateEffectiveSettings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/settings/v1beta1/{parent=organizations/*}/effectiveSettings:batchCalculate")
+	}
 	opts = append((*c.CallOptions).BatchCalculateEffectiveSettings[0:len((*c.CallOptions).BatchCalculateEffectiveSettings):len((*c.CallOptions).BatchCalculateEffectiveSettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &settingspb.BatchCalculateEffectiveSettingsResponse{}
@@ -1391,6 +1583,13 @@ func (c *securityCenterSettingsRESTClient) GetComponentSettings(ctx context.Cont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycenter.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycenter.settings.v1beta1.SecurityCenterSettingsService/GetComponentSettings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/settings/v1beta1/{name=organizations/*/components/*/settings}")
+	}
 	opts = append((*c.CallOptions).GetComponentSettings[0:len((*c.CallOptions).GetComponentSettings):len((*c.CallOptions).GetComponentSettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &settingspb.ComponentSettings{}
@@ -1454,6 +1653,10 @@ func (c *securityCenterSettingsRESTClient) UpdateComponentSettings(ctx context.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycenter.settings.v1beta1.SecurityCenterSettingsService/UpdateComponentSettings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/settings/v1beta1/{component_settings.name=organizations/*/components/*/settings}")
+	}
 	opts = append((*c.CallOptions).UpdateComponentSettings[0:len((*c.CallOptions).UpdateComponentSettings):len((*c.CallOptions).UpdateComponentSettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &settingspb.ComponentSettings{}
@@ -1509,6 +1712,13 @@ func (c *securityCenterSettingsRESTClient) ResetComponentSettings(ctx context.Co
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycenter.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycenter.settings.v1beta1.SecurityCenterSettingsService/ResetComponentSettings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/settings/v1beta1/{name=organizations/*/components/*/settings}:reset")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1539,6 +1749,13 @@ func (c *securityCenterSettingsRESTClient) CalculateEffectiveComponentSettings(c
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycenter.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycenter.settings.v1beta1.SecurityCenterSettingsService/CalculateEffectiveComponentSettings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/settings/v1beta1/{name=organizations/*/components/*/effectiveSettings}:calculate")
+	}
 	opts = append((*c.CallOptions).CalculateEffectiveComponentSettings[0:len((*c.CallOptions).CalculateEffectiveComponentSettings):len((*c.CallOptions).CalculateEffectiveComponentSettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &settingspb.ComponentSettings{}

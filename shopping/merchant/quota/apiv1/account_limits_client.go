@@ -27,6 +27,7 @@ import (
 
 	quotapb "cloud.google.com/go/shopping/merchant/quota/apiv1/quotapb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -196,6 +197,16 @@ type accountLimitsGRPCClient struct {
 // Service to retrieve account limits.
 func NewAccountLimitsClient(ctx context.Context, opts ...option.ClientOption) (*AccountLimitsClient, error) {
 	clientOpts := defaultAccountLimitsGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/quota/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	if newAccountLimitsClientHook != nil {
 		hookOpts, err := newAccountLimitsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -217,6 +228,21 @@ func NewAccountLimitsClient(ctx context.Context, opts ...option.ClientOption) (*
 		logger:              internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/quota/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetAccountLimit = append(client.CallOptions.GetAccountLimit, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAccountLimits = append(client.CallOptions.ListAccountLimits, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -270,6 +296,16 @@ type accountLimitsRESTClient struct {
 // Service to retrieve account limits.
 func NewAccountLimitsRESTClient(ctx context.Context, opts ...option.ClientOption) (*AccountLimitsClient, error) {
 	clientOpts := append(defaultAccountLimitsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/quota/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -283,6 +319,22 @@ func NewAccountLimitsRESTClient(ctx context.Context, opts ...option.ClientOption
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/quota/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetAccountLimit = append(callOpts.GetAccountLimit, gax.WithClientMetrics(metrics))
+		callOpts.ListAccountLimits = append(callOpts.ListAccountLimits, gax.WithClientMetrics(metrics))
+	}
 
 	return &AccountLimitsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -329,6 +381,12 @@ func (c *accountLimitsGRPCClient) GetAccountLimit(ctx context.Context, req *quot
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.quota.v1.AccountLimitsService/GetAccountLimit")
+	}
 	opts = append((*c.CallOptions).GetAccountLimit[0:len((*c.CallOptions).GetAccountLimit):len((*c.CallOptions).GetAccountLimit)], opts...)
 	var resp *quotapb.AccountLimit
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -347,6 +405,12 @@ func (c *accountLimitsGRPCClient) ListAccountLimits(ctx context.Context, req *qu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.quota.v1.AccountLimitsService/ListAccountLimits")
+	}
 	opts = append((*c.CallOptions).ListAccountLimits[0:len((*c.CallOptions).ListAccountLimits):len((*c.CallOptions).ListAccountLimits)], opts...)
 	it := &AccountLimitIterator{}
 	req = proto.Clone(req).(*quotapb.ListAccountLimitsRequest)
@@ -407,6 +471,13 @@ func (c *accountLimitsRESTClient) GetAccountLimit(ctx context.Context, req *quot
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.quota.v1.AccountLimitsService/GetAccountLimit")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1/{name=accounts/*/limits/*}")
+	}
 	opts = append((*c.CallOptions).GetAccountLimit[0:len((*c.CallOptions).GetAccountLimit):len((*c.CallOptions).GetAccountLimit)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &quotapb.AccountLimit{}
