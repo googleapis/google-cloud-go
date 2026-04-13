@@ -1,5 +1,7 @@
 # Changes
 
+## [1.26.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkmanagement%2Fv1.26.0) (2026-04-13)
+
 ## [1.25.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkmanagement%2Fv1.25.0) (2026-04-09)
 
 ## [1.24.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkmanagement%2Fv1.24.0) (2026-04-02)

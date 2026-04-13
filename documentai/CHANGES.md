@@ -1,6 +1,8 @@
 # Changes
 
 
+## [1.46.0](https://github.com/googleapis/google-cloud-go/releases/tag/documentai%2Fv1.46.0) (2026-04-13)
+
 ## [1.45.0](https://github.com/googleapis/google-cloud-go/releases/tag/documentai%2Fv1.45.0) (2026-04-09)
 
 ## [1.44.0](https://github.com/googleapis/google-cloud-go/releases/tag/documentai%2Fv1.44.0) (2026-04-02)

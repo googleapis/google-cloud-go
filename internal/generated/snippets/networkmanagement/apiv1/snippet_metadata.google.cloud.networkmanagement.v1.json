@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/networkmanagement/apiv1",
-    "version": "1.25.0"
+    "version": "1.26.0"
   },
   "snippets": [
     {

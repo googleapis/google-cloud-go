@@ -1,6 +1,8 @@
 # Changes
 
 
+## [1.17.0](https://github.com/googleapis/google-cloud-go/releases/tag/oslogin%2Fv1.17.0) (2026-04-13)
+
 ## [1.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/oslogin%2Fv1.16.0) (2026-04-09)
 
 ## [1.15.0](https://github.com/googleapis/google-cloud-go/releases/tag/oslogin%2Fv1.15.0) (2026-04-02)

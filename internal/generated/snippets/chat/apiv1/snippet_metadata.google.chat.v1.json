@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/chat/apiv1",
-    "version": "0.20.0"
+    "version": "0.21.0"
   },
   "snippets": [
     {

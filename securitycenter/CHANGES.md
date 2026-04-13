@@ -1,5 +1,7 @@
 # Changes
 
+## [1.42.0](https://github.com/googleapis/google-cloud-go/releases/tag/securitycenter%2Fv1.42.0) (2026-04-13)
+
 ## [1.41.0](https://github.com/googleapis/google-cloud-go/releases/tag/securitycenter%2Fv1.41.0) (2026-04-09)
 
 ## [1.40.0](https://github.com/googleapis/google-cloud-go/releases/tag/securitycenter%2Fv1.40.0) (2026-04-02)

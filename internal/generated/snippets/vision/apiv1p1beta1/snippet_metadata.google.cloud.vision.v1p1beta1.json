@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/vision/v2/apiv1p1beta1",
-    "version": "2.11.0"
+    "version": "2.12.0"
   },
   "snippets": [
     {

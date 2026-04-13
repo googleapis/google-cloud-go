@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/analytics/admin/apiv1alpha",
-    "version": "0.32.0"
+    "version": "0.33.0"
   },
   "snippets": [
     {

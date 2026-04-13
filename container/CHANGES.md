@@ -1,5 +1,7 @@
 # Changes
 
+## [1.49.0](https://github.com/googleapis/google-cloud-go/releases/tag/container%2Fv1.49.0) (2026-04-13)
+
 ## [1.48.0](https://github.com/googleapis/google-cloud-go/releases/tag/container%2Fv1.48.0) (2026-04-09)
 
 ## [1.47.0](https://github.com/googleapis/google-cloud-go/releases/tag/container%2Fv1.47.0) (2026-04-02)

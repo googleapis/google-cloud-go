@@ -1,6 +1,8 @@
 # Changes
 
 
+## [1.19.0](https://github.com/googleapis/google-cloud-go/releases/tag/run%2Fv1.19.0) (2026-04-13)
+
 ## [1.18.0](https://github.com/googleapis/google-cloud-go/releases/tag/run%2Fv1.18.0) (2026-04-09)
 
 ## [1.17.0](https://github.com/googleapis/google-cloud-go/releases/tag/run%2Fv1.17.0) (2026-04-02)

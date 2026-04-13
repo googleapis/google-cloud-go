@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/area120/tables/apiv1alpha1",
-    "version": "0.12.0"
+    "version": "0.13.0"
   },
   "snippets": [
     {

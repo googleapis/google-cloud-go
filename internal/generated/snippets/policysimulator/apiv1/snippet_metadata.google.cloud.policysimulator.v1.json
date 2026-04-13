@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/policysimulator/apiv1",
-    "version": "0.6.0"
+    "version": "0.7.0"
   },
   "snippets": [
     {

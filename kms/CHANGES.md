@@ -1,6 +1,8 @@
 # Changes
 
 
+## [1.29.0](https://github.com/googleapis/google-cloud-go/releases/tag/kms%2Fv1.29.0) (2026-04-13)
+
 ## [1.28.0](https://github.com/googleapis/google-cloud-go/releases/tag/kms%2Fv1.28.0) (2026-04-09)
 
 ## [1.27.0](https://github.com/googleapis/google-cloud-go/releases/tag/kms%2Fv1.27.0) (2026-04-02)

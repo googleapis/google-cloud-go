@@ -1,5 +1,7 @@
 # Changes
 
+## [0.9.0](https://github.com/googleapis/google-cloud-go/releases/tag/modelarmor%2Fv0.9.0) (2026-04-13)
+
 ## [0.8.0](https://github.com/googleapis/google-cloud-go/releases/tag/modelarmor%2Fv0.8.0) (2026-04-09)
 
 ## [0.7.0](https://github.com/googleapis/google-cloud-go/releases/tag/modelarmor%2Fv0.7.0) (2026-04-02)
