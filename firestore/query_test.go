@@ -2074,7 +2074,6 @@ func TestQuery_AlwaysUseImplicitOrderBy(t *testing.T) {
 	}
 }
 
-
 func TestQueryToPipeline_Unit(t *testing.T) {
 	c := newTestClient()
 	coll := c.Collection("C")
@@ -2364,7 +2363,7 @@ func TestQueryToPipeline_Unit(t *testing.T) {
 			},
 		},
 		{
-			name: "supportsQueryOverCollectionPathWithSpecialCharacters",
+			name:  "supportsQueryOverCollectionPathWithSpecialCharacters",
 			query: coll.Doc("so!@#$%^&*()_+special").Collection("so!@#$%^&*()_+special").OrderBy("foo", Asc),
 			want: []*pb.Pipeline_Stage{
 				collStage("/C/so!@#$%^&*()_+special/so!@#$%^&*()_+special"),
@@ -2416,7 +2415,7 @@ func TestQueryToPipeline_Unit(t *testing.T) {
 			},
 		},
 		{
-			name:  "supportsMultipleInequalityOnSameField",
+			name: "supportsMultipleInequalityOnSameField",
 			query: coll.WhereEntity(AndFilter{[]EntityFilter{
 				PropertyFilter{Path: "id", Operator: ">", Value: 2},
 				PropertyFilter{Path: "id", Operator: "<=", Value: 10},
@@ -2434,7 +2433,7 @@ func TestQueryToPipeline_Unit(t *testing.T) {
 			},
 		},
 		{
-			name:  "supportsMultipleInequalityOnDifferentFields",
+			name: "supportsMultipleInequalityOnDifferentFields",
 			query: coll.WhereEntity(AndFilter{[]EntityFilter{
 				PropertyFilter{Path: "id", Operator: ">=", Value: 2},
 				PropertyFilter{Path: "baz", Operator: "<", Value: 2},
