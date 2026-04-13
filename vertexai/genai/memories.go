@@ -160,6 +160,11 @@ func generateAgentEngineMemoriesConfigToVertex(fromObject map[string]any, parent
 		genai.InternalSetValueByPath(parentObject, []string{"metadataMergeStrategy"}, fromMetadataMergeStrategy)
 	}
 
+	fromAllowedTopics := genai.InternalGetValueByPath(fromObject, []string{"allowedTopics"})
+	if fromAllowedTopics != nil {
+		genai.InternalSetValueByPath(parentObject, []string{"allowedTopics"}, fromAllowedTopics)
+	}
+
 	return toObject, nil
 }
 
