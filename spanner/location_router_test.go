@@ -26,6 +26,11 @@ import (
 	structpb "google.golang.org/protobuf/types/known/structpb"
 )
 
+func waitForAsyncRoutingUpdate(t *testing.T, cond func() bool) {
+	t.Helper()
+	waitForCondition(t, time.Second, cond)
+}
+
 func TestChannelFinder_IsMaterialUpdate(t *testing.T) {
 	finder := newChannelFinder(nil)
 
@@ -215,6 +220,23 @@ func TestLocationRouter_PrepareReadRequest_FromObservedResultSetUpdate(t *testin
 			},
 		},
 	})
+	waitForAsyncRoutingUpdate(t, func() bool {
+		req := &sppb.ReadRequest{
+			Table:   "T",
+			Columns: []string{"c1"},
+			KeySet: &sppb.KeySet{
+				Keys: []*structpb.ListValue{
+					{Values: []*structpb.Value{structpb.NewStringValue("foo")}},
+				},
+			},
+		}
+		router.prepareReadRequest(context.Background(), req)
+		hint := req.GetRoutingHint()
+		return hint != nil &&
+			hint.GetDatabaseId() == 1 &&
+			bytes.Equal(hint.GetSchemaGeneration(), []byte("1")) &&
+			len(hint.GetKey()) > 0
+	})
 
 	req := &sppb.ReadRequest{
 		Table:   "T",
@@ -252,6 +274,9 @@ func TestLocationRouter_ObserveResultSet_ProcessesDatabaseIDChangeWithoutMateria
 	router.observeResultSet(&sppb.ResultSet{
 		CacheUpdate: &sppb.CacheUpdate{DatabaseId: 9},
 	})
+	waitForAsyncRoutingUpdate(t, func() bool {
+		return router.finder.databaseID.Load() == 9
+	})
 
 	if got := router.finder.databaseID.Load(); got != 9 {
 		t.Fatalf("databaseID after observeResultSet = %d, want 9", got)
@@ -276,6 +301,19 @@ func TestLocationRouter_PrepareExecuteSQLRequest_FromObservedPartialResultSetUpd
 		CacheUpdate: &sppb.CacheUpdate{
 			DatabaseId: 7,
 		},
+	})
+	waitForAsyncRoutingUpdate(t, func() bool {
+		req := &sppb.ExecuteSqlRequest{
+			Sql: "SELECT * FROM T WHERE p1=@p1",
+			Params: &structpb.Struct{
+				Fields: map[string]*structpb.Value{
+					"p1": structpb.NewStringValue("foo"),
+				},
+			},
+		}
+		router.prepareExecuteSQLRequest(context.Background(), req)
+		hint := req.GetRoutingHint()
+		return hint != nil && hint.GetDatabaseId() == 7
 	})
 
 	req := &sppb.ExecuteSqlRequest{

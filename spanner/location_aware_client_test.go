@@ -17,6 +17,7 @@ limitations under the License.
 package spanner
 
 import (
+	"bytes"
 	"context"
 	"io"
 	"sync"
@@ -362,6 +363,10 @@ func TestLocationAwareSpannerClient_ExecuteSQLRetriesAvoidExcludedEndpoint(t *te
 	epCache.addEndpoint("server-a:443", endpointClient)
 	router := newLocationRouter(epCache)
 	router.observeResultSet(&sppb.ResultSet{CacheUpdate: createRangeCacheUpdateForHint(&sppb.RoutingHint{Key: []byte("b")})})
+	waitForAsyncRoutingUpdate(t, func() bool {
+		req := executeSQLWithKeyAndSelector("b", nil)
+		return router.prepareExecuteSQLRequest(context.Background(), req) != nil
+	})
 
 	lac := newLocationAwareSpannerClient(defaultClient, router, epCache)
 
@@ -407,6 +412,10 @@ func TestLocationAwareSpannerClient_ExecuteStreamingSQLRetriesAvoidExcludedEndpo
 	epCache.addEndpoint("server-a:443", endpointClient)
 	router := newLocationRouter(epCache)
 	router.observeResultSet(&sppb.ResultSet{CacheUpdate: createRangeCacheUpdateForHint(&sppb.RoutingHint{Key: []byte("b")})})
+	waitForAsyncRoutingUpdate(t, func() bool {
+		req := executeSQLWithKeyAndSelector("b", nil)
+		return router.prepareExecuteSQLRequest(context.Background(), req) != nil
+	})
 
 	lac := newLocationAwareSpannerClient(defaultClient, router, epCache)
 
@@ -565,6 +574,18 @@ func TestLocationAwareSpannerClient_BeginTransactionAddsRoutingHint(t *testing.T
 	epCache := newMockEndpointCache()
 	router := newLocationRouter(epCache)
 	router.observeResultSet(&sppb.ResultSet{CacheUpdate: createMutationRoutingCacheUpdate()})
+	waitForAsyncRoutingUpdate(t, func() bool {
+		req := &sppb.BeginTransactionRequest{
+			Session:     "projects/p/instances/i/databases/d/sessions/s",
+			MutationKey: createInsertMutation("b"),
+		}
+		router.prepareBeginTransactionRequest(context.Background(), req)
+		hint := req.GetRoutingHint()
+		return hint != nil &&
+			hint.GetDatabaseId() == 7 &&
+			bytes.Equal(hint.GetSchemaGeneration(), []byte("1")) &&
+			len(hint.GetKey()) > 0
+	})
 
 	lac := newLocationAwareSpannerClient(defaultClient, router, epCache)
 	_, err := lac.BeginTransaction(context.Background(), &sppb.BeginTransactionRequest{
@@ -610,6 +631,21 @@ func TestLocationAwareSpannerClient_TransactionCacheUpdateEnablesCommitRoutingHi
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
+	waitForAsyncRoutingUpdate(t, func() bool {
+		req := &sppb.CommitRequest{
+			Session: "projects/p/instances/i/databases/d/sessions/s",
+			Transaction: &sppb.CommitRequest_TransactionId{
+				TransactionId: []byte("tx-cache-update"),
+			},
+			Mutations: []*sppb.Mutation{createInsertMutation("b")},
+		}
+		router.prepareCommitRequest(context.Background(), req)
+		hint := req.GetRoutingHint()
+		return hint != nil &&
+			hint.GetDatabaseId() == 7 &&
+			bytes.Equal(hint.GetSchemaGeneration(), []byte("1")) &&
+			len(hint.GetKey()) > 0
+	})
 	_, err = lac.Commit(context.Background(), &sppb.CommitRequest{
 		Session: "projects/p/instances/i/databases/d/sessions/s",
 		Transaction: &sppb.CommitRequest_TransactionId{
@@ -646,6 +682,19 @@ func TestLocationAwareSpannerClient_SingleUseCommitRoutesUsingRoutingHint(t *tes
 	epCache.addEndpoint("server-a:443", endpointClient)
 	router := newLocationRouter(epCache)
 	router.observeResultSet(&sppb.ResultSet{CacheUpdate: createMutationRecipeCacheUpdate()})
+	waitForAsyncRoutingUpdate(t, func() bool {
+		req := &sppb.CommitRequest{
+			Session: "projects/p/instances/i/databases/d/sessions/s",
+			Transaction: &sppb.CommitRequest_SingleUseTransaction{
+				SingleUseTransaction: &sppb.TransactionOptions{
+					Mode: &sppb.TransactionOptions_ReadWrite_{ReadWrite: &sppb.TransactionOptions_ReadWrite{}},
+				},
+			},
+			Mutations: []*sppb.Mutation{createInsertMutation("b")},
+		}
+		router.prepareCommitRequest(context.Background(), req)
+		return req.GetRoutingHint() != nil && len(req.GetRoutingHint().GetKey()) > 0
+	})
 
 	lac := newLocationAwareSpannerClient(defaultClient, router, epCache)
 	_, err := lac.Commit(context.Background(), &sppb.CommitRequest{
@@ -664,6 +713,18 @@ func TestLocationAwareSpannerClient_SingleUseCommitRoutesUsingRoutingHint(t *tes
 		t.Fatal("expected initial Commit request to be captured")
 	}
 	router.observeResultSet(&sppb.ResultSet{CacheUpdate: createRangeCacheUpdateForHint(defaultClient.lastCommitReq.GetRoutingHint())})
+	waitForAsyncRoutingUpdate(t, func() bool {
+		req := &sppb.CommitRequest{
+			Session: "projects/p/instances/i/databases/d/sessions/s",
+			Transaction: &sppb.CommitRequest_SingleUseTransaction{
+				SingleUseTransaction: &sppb.TransactionOptions{
+					Mode: &sppb.TransactionOptions_ReadWrite_{ReadWrite: &sppb.TransactionOptions_ReadWrite{}},
+				},
+			},
+			Mutations: []*sppb.Mutation{createInsertMutation("b")},
+		}
+		return router.prepareCommitRequest(context.Background(), req) != nil
+	})
 
 	_, err = lac.Commit(context.Background(), &sppb.CommitRequest{
 		Session: "projects/p/instances/i/databases/d/sessions/s",
@@ -695,10 +756,19 @@ func TestLocationAwareSpannerClient_SingleUseCommitUsesSameMutationSelectionAsBe
 	}
 	epCache := newMockEndpointCache()
 	router := newLocationRouter(epCache)
+	deleteMutation := createDeleteMutation("b")
 	router.observeResultSet(&sppb.ResultSet{CacheUpdate: createMutationRecipeCacheUpdate()})
+	waitForAsyncRoutingUpdate(t, func() bool {
+		req := &sppb.BeginTransactionRequest{
+			Session:     "projects/p/instances/i/databases/d/sessions/s",
+			MutationKey: deleteMutation,
+		}
+		router.prepareBeginTransactionRequest(context.Background(), req)
+		hint := req.GetRoutingHint()
+		return hint != nil && len(hint.GetKey()) > 0
+	})
 
 	lac := newLocationAwareSpannerClient(defaultClient, router, epCache)
-	deleteMutation := createDeleteMutation("b")
 
 	_, err := lac.BeginTransaction(context.Background(), &sppb.BeginTransactionRequest{
 		Session:     "projects/p/instances/i/databases/d/sessions/s",
@@ -743,6 +813,17 @@ func TestLocationAwareSpannerClient_CommitWithTransactionIDRoutesUsingRoutingHin
 	epCache.addEndpoint("server-a:443", endpointClient)
 	router := newLocationRouter(epCache)
 	router.observeResultSet(&sppb.ResultSet{CacheUpdate: createMutationRecipeCacheUpdate()})
+	waitForAsyncRoutingUpdate(t, func() bool {
+		req := &sppb.CommitRequest{
+			Session: "projects/p/instances/i/databases/d/sessions/s",
+			Transaction: &sppb.CommitRequest_TransactionId{
+				TransactionId: []byte("tx-no-affinity"),
+			},
+			Mutations: []*sppb.Mutation{createInsertMutation("b")},
+		}
+		router.prepareCommitRequest(context.Background(), req)
+		return req.GetRoutingHint() != nil && len(req.GetRoutingHint().GetKey()) > 0
+	})
 
 	lac := newLocationAwareSpannerClient(defaultClient, router, epCache)
 	_, err := lac.Commit(context.Background(), &sppb.CommitRequest{
@@ -759,6 +840,16 @@ func TestLocationAwareSpannerClient_CommitWithTransactionIDRoutesUsingRoutingHin
 		t.Fatal("expected initial Commit request to be captured")
 	}
 	router.observeResultSet(&sppb.ResultSet{CacheUpdate: createRangeCacheUpdateForHint(defaultClient.lastCommitReq.GetRoutingHint())})
+	waitForAsyncRoutingUpdate(t, func() bool {
+		req := &sppb.CommitRequest{
+			Session: "projects/p/instances/i/databases/d/sessions/s",
+			Transaction: &sppb.CommitRequest_TransactionId{
+				TransactionId: []byte("tx-no-affinity"),
+			},
+			Mutations: []*sppb.Mutation{createInsertMutation("b")},
+		}
+		return router.prepareCommitRequest(context.Background(), req) != nil
+	})
 
 	_, err = lac.Commit(context.Background(), &sppb.CommitRequest{
 		Session: "projects/p/instances/i/databases/d/sessions/s",
@@ -802,6 +893,18 @@ func TestLocationAwareSpannerClient_CommitResponseCacheUpdateEnablesSubsequentBe
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
+	waitForAsyncRoutingUpdate(t, func() bool {
+		req := &sppb.BeginTransactionRequest{
+			Session:     "projects/p/instances/i/databases/d/sessions/s",
+			MutationKey: createInsertMutation("b"),
+		}
+		router.prepareBeginTransactionRequest(context.Background(), req)
+		hint := req.GetRoutingHint()
+		return hint != nil &&
+			hint.GetDatabaseId() == 7 &&
+			bytes.Equal(hint.GetSchemaGeneration(), []byte("1")) &&
+			len(hint.GetKey()) > 0
+	})
 	_, err = lac.BeginTransaction(context.Background(), &sppb.BeginTransactionRequest{
 		Session:     "projects/p/instances/i/databases/d/sessions/s",
 		MutationKey: createInsertMutation("b"),
@@ -978,7 +1081,7 @@ func TestLocationAwareSpannerClient_ReadOnlyInlinedBeginRoutesIndependently(t *t
 	epCache.addEndpoint("server-a:443", endpointA)
 	epCache.addEndpoint("server-b:443", endpointB)
 	router := newLocationRouter(epCache)
-	seedTwoRangeRoutingCache(router)
+	seedTwoRangeRoutingCache(t, router)
 
 	lac := newLocationAwareSpannerClient(defaultClient, router, epCache)
 
@@ -1034,7 +1137,7 @@ func TestLocationAwareSpannerClient_ReadWriteInlinedBeginMaintainsAffinity(t *te
 	epCache.addEndpoint("server-a:443", endpointA)
 	epCache.addEndpoint("server-b:443", endpointB)
 	router := newLocationRouter(epCache)
-	seedTwoRangeRoutingCache(router)
+	seedTwoRangeRoutingCache(t, router)
 
 	lac := newLocationAwareSpannerClient(defaultClient, router, epCache)
 
@@ -1086,7 +1189,7 @@ func TestLocationAwareSpannerClient_ReadWriteExplicitBeginPinsDefaultClient(t *t
 	epCache := newMockEndpointCache()
 	epCache.addEndpoint("server-b:443", endpointB)
 	router := newLocationRouter(epCache)
-	seedTwoRangeRoutingCache(router)
+	seedTwoRangeRoutingCache(t, router)
 	lac := newLocationAwareSpannerClient(defaultClient, router, epCache)
 
 	_, err := lac.BeginTransaction(context.Background(), &sppb.BeginTransactionRequest{
@@ -1123,7 +1226,7 @@ func TestLocationAwareSpannerClient_ReadOnlyTransactionIgnoresAffinityLookup(t *
 	epCache.addEndpoint("server-a:443", endpointA)
 	epCache.addEndpoint("server-b:443", endpointB)
 	router := newLocationRouter(epCache)
-	seedTwoRangeRoutingCache(router)
+	seedTwoRangeRoutingCache(t, router)
 	lac := newLocationAwareSpannerClient(defaultClient, router, epCache)
 
 	ep := epCache.Get(context.Background(), "server-a:443")
@@ -1288,7 +1391,7 @@ func (c *mockCloseCache) DefaultChannel() channelEndpoint {
 func (c *mockCloseCache) ClientFor(_ channelEndpoint) spannerClient { return nil }
 func (c *mockCloseCache) Close() error                              { return c.closeFn() }
 
-func seedTwoRangeRoutingCache(router *locationRouter) {
+func seedTwoRangeRoutingCache(t *testing.T, router *locationRouter) {
 	router.observeResultSet(&sppb.ResultSet{
 		CacheUpdate: &sppb.CacheUpdate{
 			DatabaseId: 1,
@@ -1335,6 +1438,16 @@ func seedTwoRangeRoutingCache(router *locationRouter) {
 				},
 			},
 		},
+	})
+	waitForAsyncRoutingUpdate(t, func() bool {
+		reqA := executeSQLWithKeyAndSelector("b", nil)
+		reqB := executeSQLWithKeyAndSelector("n", nil)
+		router.prepareExecuteSQLRequest(context.Background(), reqA)
+		router.prepareExecuteSQLRequest(context.Background(), reqB)
+		hintA := reqA.GetRoutingHint()
+		hintB := reqB.GetRoutingHint()
+		return hintA != nil && hintA.GetDatabaseId() == 1 && hintA.GetGroupUid() == 1 && hintA.GetSplitId() == 1 &&
+			hintB != nil && hintB.GetDatabaseId() == 1 && hintB.GetGroupUid() == 2 && hintB.GetSplitId() == 2
 	})
 }
 
