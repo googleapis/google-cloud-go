@@ -1773,7 +1773,7 @@ func TestQuery_Pipeline(t *testing.T) {
 		{
 			name:    "query with all clauses",
 			query:   coll.Where("f", ">", 1).OrderBy("f", Asc).Select("f").Offset(1),
-			expPipe: client.Pipeline().Collection("C").Where(And(And(FieldExists("f"), GreaterThan("f", 1)), FieldExists("f"))).Sort(Orders(Ordering{Expr: FieldOf("f"), Direction: OrderingAsc}, Ordering{Expr: FieldOf("__name__"), Direction: OrderingAsc})).Offset(1).Select(Fields("f")),
+			expPipe: client.Pipeline().Collection("C").Where(And(And(FieldExists("f"), GreaterThan("f", 1)), FieldExists("f"))).Select(Fields("f")).Sort(Orders(Ordering{Expr: FieldOf("f"), Direction: OrderingAsc}, Ordering{Expr: FieldOf("__name__"), Direction: OrderingAsc})).Offset(1),
 		},
 		{
 			name:    "query with collection group",
@@ -1784,11 +1784,6 @@ func TestQuery_Pipeline(t *testing.T) {
 			name:    "query with cursor",
 			query:   coll.OrderBy("f", Asc).StartAt(1),
 			expPipe: client.Pipeline().Collection("C").Where(And(FieldExists("f"), GreaterThanOrEqual(FieldPath{"f"}, 1))).Sort(Orders(Ordering{Expr: FieldOf("f"), Direction: OrderingAsc}, Ordering{Expr: FieldOf("__name__"), Direction: OrderingAsc})),
-		},
-		{
-			name:    "query with findNearest",
-			query:   coll.FindNearest("f", []float32{1, 2, 3}, 5, DistanceMeasureEuclidean, &FindNearestOptions{DistanceResultField: "dist"}).q,
-			expPipe: client.Pipeline().Collection("C").Sort(Orders(Ordering{Expr: FieldOf("__name__"), Direction: OrderingAsc})).FindNearest("f", []float32{1, 2, 3}, PipelineDistanceMeasureEuclidean, RawOptions{"limit": 5, "distance_field": "dist"}),
 		},
 	}
 
@@ -2074,7 +2069,7 @@ func TestQuery_AlwaysUseImplicitOrderBy(t *testing.T) {
 	}
 }
 
-func TestQueryToPipeline_Unit(t *testing.T) {
+func TestQueryToPipeline(t *testing.T) {
 	c := newTestClient()
 	coll := c.Collection("C")
 

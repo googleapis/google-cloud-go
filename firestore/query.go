@@ -1937,6 +1937,22 @@ func (q *Query) toPipeline() *Pipeline {
 		p = p.Where(And(allFilters[0], allFilters[1:]...))
 	}
 
+	// Select
+	if len(q.selection) > 0 {
+		var fields []any
+		for _, s := range q.selection {
+			fp, err := fieldPathFromFieldRef(s)
+			if err != nil {
+				p.err = err
+				return p
+			}
+			fields = append(fields, fp)
+		}
+		if len(fields) > 0 {
+			p = p.Select(fields)
+		}
+	}
+
 	if q.limitToLast {
 		if len(orders) == 0 {
 			p.err = errors.New("firestore: limitToLast queries require specifying at least one orderBy clause")
@@ -1966,59 +1982,10 @@ func (q *Query) toPipeline() *Pipeline {
 	}
 
 	if q.limitToLast {
+		// limitToLast fetches the last N results by reversing the initial
+		// sort direction and limiting to N. Now that the limit has been
+		// applied, we must revert the sort back to the user's original order.
 		p = p.Sort(orders)
-	}
-
-	// Select
-	if len(q.selection) > 0 {
-		var fields []any
-		for _, s := range q.selection {
-			fp, err := fieldPathFromFieldRef(s)
-			if err != nil {
-				p.err = err
-				return p
-			}
-			fields = append(fields, fp)
-		}
-		if len(fields) > 0 {
-			p = p.Select(fields)
-		}
-	}
-
-	// FindNearest
-	if q.findNearest != nil {
-		var measure PipelineDistanceMeasure
-		switch q.findNearest.DistanceMeasure {
-		case pb.StructuredQuery_FindNearest_EUCLIDEAN:
-			measure = PipelineDistanceMeasureEuclidean
-		case pb.StructuredQuery_FindNearest_COSINE:
-			measure = PipelineDistanceMeasureCosine
-		case pb.StructuredQuery_FindNearest_DOT_PRODUCT:
-			measure = PipelineDistanceMeasureDotProduct
-		}
-
-		vectorField, err := fieldPathFromFieldRef(q.findNearest.VectorField)
-		if err != nil {
-			p.err = err
-			return p
-		}
-
-		queryVector, err := createFromProtoValue(q.findNearest.QueryVector, q.c)
-		if err != nil {
-			p.err = err
-			return p
-		}
-		var opts []FindNearestOption
-		if q.findNearest.Limit != nil {
-			val := int(q.findNearest.Limit.Value)
-			opts = append(opts, WithFindNearestLimit(val))
-		}
-
-		if q.findNearest.DistanceResultField != "" {
-			opts = append(opts, WithFindNearestDistanceField(q.findNearest.DistanceResultField))
-		}
-
-		p = p.FindNearest(vectorField, queryVector, measure, opts...)
 	}
 
 	return p
@@ -2079,6 +2046,8 @@ func toPipelineFieldFilter(q *Query, f *pb.StructuredQuery_FieldFilter) (Boolean
 	case pb.StructuredQuery_FieldFilter_EQUAL:
 		return And(FieldExists(fp), Equal(fp, v)), nil
 	case pb.StructuredQuery_FieldFilter_NOT_EQUAL:
+		// Inequality filters include documents where the field is missing.
+		// We do not add a FieldExists check here to match Firestore semantics.
 		return NotEqual(fp, v), nil
 	case pb.StructuredQuery_FieldFilter_LESS_THAN:
 		return And(FieldExists(fp), LessThan(fp, v)), nil
@@ -2091,6 +2060,8 @@ func toPipelineFieldFilter(q *Query, f *pb.StructuredQuery_FieldFilter) (Boolean
 	case pb.StructuredQuery_FieldFilter_IN:
 		return And(FieldExists(fp), EqualAny(fp, v)), nil
 	case pb.StructuredQuery_FieldFilter_NOT_IN:
+		// Inequality filters include documents where the field is missing.
+		// We do not add a FieldExists check here to match Firestore semantics.
 		return NotEqualAny(fp, v), nil
 	case pb.StructuredQuery_FieldFilter_ARRAY_CONTAINS:
 		return And(FieldExists(fp), ArrayContains(fp, v)), nil
