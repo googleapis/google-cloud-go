@@ -1903,9 +1903,9 @@ func (q *Query) toPipeline() *Pipeline {
 		var startFilter BooleanExpression
 		var err error
 		if q.startDoc != nil {
-			startFilter, err = newCursorFilter(q, q.adjustOrders(), q.startDoc, q.startBefore, true)
+			startFilter, err = toPipelineCursorFilter(q, q.adjustOrders(), q.startDoc, q.startBefore, true)
 		} else {
-			startFilter, err = newCursorFilterWithValues(q, q.orders, q.startVals, q.startBefore, true)
+			startFilter, err = toPipelineCursorFilterWithValues(q, q.orders, q.startVals, q.startBefore, true)
 		}
 		if err != nil {
 			p.err = err
@@ -1919,9 +1919,9 @@ func (q *Query) toPipeline() *Pipeline {
 		var endFilter BooleanExpression
 		var err error
 		if q.endDoc != nil {
-			endFilter, err = newCursorFilter(q, q.adjustOrders(), q.endDoc, q.endBefore, false)
+			endFilter, err = toPipelineCursorFilter(q, q.adjustOrders(), q.endDoc, q.endBefore, false)
 		} else {
-			endFilter, err = newCursorFilterWithValues(q, q.orders, q.endVals, q.endBefore, false)
+			endFilter, err = toPipelineCursorFilterWithValues(q, q.orders, q.endVals, q.endBefore, false)
 		}
 		if err != nil {
 			p.err = err
@@ -2030,10 +2030,10 @@ func fieldPathFromFieldRef(ref *pb.StructuredQuery_FieldReference) (FieldPath, e
 
 func toPipelineFilter(q *Query, f *pb.StructuredQuery_Filter) (BooleanExpression, error) {
 	if f.GetFieldFilter() != nil {
-		return newQueryFilter(q, f.GetFieldFilter())
+		return toPipelineFieldFilter(q, f.GetFieldFilter())
 	}
 	if f.GetUnaryFilter() != nil {
-		return newQueryUnaryFilter(f.GetUnaryFilter())
+		return toPipelineUnaryFilter(f.GetUnaryFilter())
 	}
 	if f.GetCompositeFilter() != nil {
 		cf := f.GetCompositeFilter()
@@ -2065,7 +2065,7 @@ func toPipelineFilter(q *Query, f *pb.StructuredQuery_Filter) (BooleanExpression
 	return nil, fmt.Errorf("firestore: unsupported filter type: %T", f.GetFilterType())
 }
 
-func newQueryFilter(q *Query, f *pb.StructuredQuery_FieldFilter) (BooleanExpression, error) {
+func toPipelineFieldFilter(q *Query, f *pb.StructuredQuery_FieldFilter) (BooleanExpression, error) {
 	fp, err := fieldPathFromFieldRef(f.GetField())
 	if err != nil {
 		return nil, err
@@ -2101,7 +2101,7 @@ func newQueryFilter(q *Query, f *pb.StructuredQuery_FieldFilter) (BooleanExpress
 	}
 }
 
-func newQueryUnaryFilter(f *pb.StructuredQuery_UnaryFilter) (BooleanExpression, error) {
+func toPipelineUnaryFilter(f *pb.StructuredQuery_UnaryFilter) (BooleanExpression, error) {
 	fp, err := fieldPathFromFieldRef(f.GetField())
 	if err != nil {
 		return nil, err
@@ -2120,8 +2120,8 @@ func newQueryUnaryFilter(f *pb.StructuredQuery_UnaryFilter) (BooleanExpression, 
 	}
 }
 
-// newCursorFilter creates a pipeline filter expression from a document snapshot cursor.
-func newCursorFilter(q *Query, orders []order, doc *DocumentSnapshot, before, isStart bool) (BooleanExpression, error) {
+// toPipelineCursorFilter creates a pipeline filter expression from a document snapshot cursor.
+func toPipelineCursorFilter(q *Query, orders []order, doc *DocumentSnapshot, before, isStart bool) (BooleanExpression, error) {
 	values := make([]interface{}, len(orders))
 	for i, o := range orders {
 		var err error
@@ -2134,11 +2134,11 @@ func newCursorFilter(q *Query, orders []order, doc *DocumentSnapshot, before, is
 			}
 		}
 	}
-	return newCursorFilterWithValues(q, orders, values, before, isStart)
+	return toPipelineCursorFilterWithValues(q, orders, values, before, isStart)
 }
 
-// newCursorFilterWithValues creates a pipeline filter expression from a list of values.
-func newCursorFilterWithValues(q *Query, orders []order, values []interface{}, before, isStart bool) (BooleanExpression, error) {
+// toPipelineCursorFilterWithValues creates a pipeline filter expression from a list of values.
+func toPipelineCursorFilterWithValues(q *Query, orders []order, values []interface{}, before, isStart bool) (BooleanExpression, error) {
 	if len(values) > len(orders) {
 		return nil, errors.New("firestore: too many cursor values for OrderBy fields")
 	}
