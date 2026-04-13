@@ -1,6 +1,8 @@
 # Changes
 
 
+## [1.62.1](https://github.com/googleapis/google-cloud-go/releases/tag/storage%2Fv1.62.1) (2026-04-13)
+
 ## [1.62.0](https://github.com/googleapis/google-cloud-go/releases/tag/storage%2Fv1.62.0) (2026-04-06)
 
 ### Features

@@ -1196,7 +1196,7 @@ libraries:
       - path: google/cloud/speech/v1
       - path: google/cloud/speech/v1p1beta1
   - name: storage
-    version: 1.62.0
+    version: 1.62.1
     apis:
       - path: google/storage/v2
       - path: google/storage/control/v2
