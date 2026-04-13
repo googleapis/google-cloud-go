@@ -67,18 +67,26 @@ func (r *locationRouter) prepareReadRequest(ctx context.Context, req *sppb.ReadR
 }
 
 func (r *locationRouter) prepareReadRequestWithExclusions(ctx context.Context, req *sppb.ReadRequest, excludedEndpoints endpointExcluder) channelEndpoint {
+	endpoint, _ := r.prepareReadRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
+	return endpoint
+}
+
+func (r *locationRouter) prepareReadRequestWithExclusionsAndDetails(ctx context.Context, req *sppb.ReadRequest, excludedEndpoints endpointExcluder) (channelEndpoint, routeSelectionDetails) {
+	details := newRouteSelectionDetails()
 	if r == nil || req == nil {
-		return nil
+		details.defaultReasonCode = "range_cache_miss"
+		return nil, details
 	}
 	if txID := transactionIDFromSelector(req.GetTransaction()); txID != "" {
 		if preferLeader, ok := r.getReadOnlyTransactionPreferLeader(txID); ok {
-			return r.finder.findServerReadWithExclusions(ctx, req, preferLeader, excludedEndpoints)
+			return r.finder.findServerReadWithExclusionsAndDetails(ctx, req, preferLeader, excludedEndpoints)
 		}
 		if ep := r.getTransactionAffinity(txID); ep != nil && !isEndpointExcluded(excludedEndpoints, ep.Address()) {
-			return ep
+			details.setSelectedTablet(ep.Address(), false, false)
+			return ep, details
 		}
 	}
-	return r.finder.findServerReadWithExclusions(ctx, req, preferLeaderFromSelector(req.GetTransaction()), excludedEndpoints)
+	return r.finder.findServerReadWithExclusionsAndDetails(ctx, req, preferLeaderFromSelector(req.GetTransaction()), excludedEndpoints)
 }
 
 func (r *locationRouter) prepareExecuteSQLRequest(ctx context.Context, req *sppb.ExecuteSqlRequest) channelEndpoint {
@@ -86,18 +94,26 @@ func (r *locationRouter) prepareExecuteSQLRequest(ctx context.Context, req *sppb
 }
 
 func (r *locationRouter) prepareExecuteSQLRequestWithExclusions(ctx context.Context, req *sppb.ExecuteSqlRequest, excludedEndpoints endpointExcluder) channelEndpoint {
+	endpoint, _ := r.prepareExecuteSQLRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
+	return endpoint
+}
+
+func (r *locationRouter) prepareExecuteSQLRequestWithExclusionsAndDetails(ctx context.Context, req *sppb.ExecuteSqlRequest, excludedEndpoints endpointExcluder) (channelEndpoint, routeSelectionDetails) {
+	details := newRouteSelectionDetails()
 	if r == nil || req == nil {
-		return nil
+		details.defaultReasonCode = "range_cache_miss"
+		return nil, details
 	}
 	if txID := transactionIDFromSelector(req.GetTransaction()); txID != "" {
 		if preferLeader, ok := r.getReadOnlyTransactionPreferLeader(txID); ok {
-			return r.finder.findServerExecuteSQLWithExclusions(ctx, req, preferLeader, excludedEndpoints)
+			return r.finder.findServerExecuteSQLWithExclusionsAndDetails(ctx, req, preferLeader, excludedEndpoints)
 		}
 		if ep := r.getTransactionAffinity(txID); ep != nil && !isEndpointExcluded(excludedEndpoints, ep.Address()) {
-			return ep
+			details.setSelectedTablet(ep.Address(), false, false)
+			return ep, details
 		}
 	}
-	return r.finder.findServerExecuteSQLWithExclusions(ctx, req, preferLeaderFromSelector(req.GetTransaction()), excludedEndpoints)
+	return r.finder.findServerExecuteSQLWithExclusionsAndDetails(ctx, req, preferLeaderFromSelector(req.GetTransaction()), excludedEndpoints)
 }
 
 func (r *locationRouter) prepareBeginTransactionRequest(ctx context.Context, req *sppb.BeginTransactionRequest) channelEndpoint {
@@ -105,10 +121,17 @@ func (r *locationRouter) prepareBeginTransactionRequest(ctx context.Context, req
 }
 
 func (r *locationRouter) prepareBeginTransactionRequestWithExclusions(ctx context.Context, req *sppb.BeginTransactionRequest, excludedEndpoints endpointExcluder) channelEndpoint {
+	endpoint, _ := r.prepareBeginTransactionRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
+	return endpoint
+}
+
+func (r *locationRouter) prepareBeginTransactionRequestWithExclusionsAndDetails(ctx context.Context, req *sppb.BeginTransactionRequest, excludedEndpoints endpointExcluder) (channelEndpoint, routeSelectionDetails) {
+	details := newRouteSelectionDetails()
 	if r == nil || req == nil {
-		return nil
+		details.defaultReasonCode = "range_cache_miss"
+		return nil, details
 	}
-	return r.finder.findServerBeginTransactionWithExclusions(ctx, req, excludedEndpoints)
+	return r.finder.findServerBeginTransactionWithExclusionsAndDetails(ctx, req, excludedEndpoints)
 }
 
 func (r *locationRouter) prepareCommitRequest(ctx context.Context, req *sppb.CommitRequest) channelEndpoint {
@@ -116,10 +139,17 @@ func (r *locationRouter) prepareCommitRequest(ctx context.Context, req *sppb.Com
 }
 
 func (r *locationRouter) prepareCommitRequestWithExclusions(ctx context.Context, req *sppb.CommitRequest, excludedEndpoints endpointExcluder) channelEndpoint {
+	endpoint, _ := r.prepareCommitRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
+	return endpoint
+}
+
+func (r *locationRouter) prepareCommitRequestWithExclusionsAndDetails(ctx context.Context, req *sppb.CommitRequest, excludedEndpoints endpointExcluder) (channelEndpoint, routeSelectionDetails) {
+	details := newRouteSelectionDetails()
 	if r == nil || req == nil {
-		return nil
+		details.defaultReasonCode = "range_cache_miss"
+		return nil, details
 	}
-	return r.finder.fillCommitRoutingHintWithExclusions(ctx, req, excludedEndpoints)
+	return r.finder.fillCommitRoutingHintWithExclusionsAndDetails(ctx, req, excludedEndpoints)
 }
 
 func (r *locationRouter) observePartialResultSet(prs *sppb.PartialResultSet) {

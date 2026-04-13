@@ -20,6 +20,7 @@ import (
 	"bytes"
 	"context"
 	"testing"
+	"time"
 
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
@@ -88,6 +89,63 @@ func TestChannelFinder_ShouldProcessUpdate(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestChannelFinder_UpdateAsyncCoalescesUpdates(t *testing.T) {
+	finder := newChannelFinder(nil)
+
+	recipeUpdate := &sppb.CacheUpdate{
+		DatabaseId: 1,
+		KeyRecipes: &sppb.RecipeList{
+			SchemaGeneration: []byte{1, 2},
+			Recipe: []*sppb.KeyRecipe{
+				{
+					Target: &sppb.KeyRecipe_TableName{TableName: "T"},
+					Part: []*sppb.KeyRecipe_Part{
+						{Tag: 7},
+					},
+				},
+			},
+		},
+	}
+	rangeUpdate := &sppb.CacheUpdate{
+		DatabaseId: 1,
+		Range: []*sppb.Range{
+			{
+				StartKey:   []byte("a"),
+				LimitKey:   []byte("z"),
+				GroupUid:   9,
+				SplitId:    11,
+				Generation: []byte{3},
+			},
+		},
+		Group: []*sppb.Group{
+			{
+				GroupUid: 9,
+				Tablets: []*sppb.Tablet{
+					{TabletUid: 9, ServerAddress: "replica-1"},
+				},
+			},
+		},
+	}
+
+	finder.updateAsync(recipeUpdate)
+	finder.updateAsync(rangeUpdate)
+
+	deadline := time.Now().Add(200 * time.Millisecond)
+	for time.Now().Before(deadline) {
+		if finder.databaseID.Load() == 1 &&
+			finder.rangeCache.size() == 1 {
+			hint := &sppb.RoutingHint{}
+			finder.recipeCache.applySchemaGeneration(hint)
+			if bytes.Equal(hint.GetSchemaGeneration(), []byte{1, 2}) {
+				return
+			}
+		}
+		time.Sleep(5 * time.Millisecond)
+	}
+
+	t.Fatalf("expected coalesced update to apply recipe and range state")
 }
 
 func TestIsExperimentalLocationAPIEnabled(t *testing.T) {

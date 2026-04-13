@@ -114,7 +114,12 @@ func (c *locationAwareSpannerClient) maybeExcludeEndpointOnNextCall(ep channelEn
 	c.excludedEndpoints.record(logicalRequestKey, ep.Address())
 }
 
-func (c *locationAwareSpannerClient) recordRouteSelectionTrace(ctx context.Context, method string, ep channelEndpoint, usedDefaultEndpoint, hasChannelFinder bool) {
+func (c *locationAwareSpannerClient) recordRouteSelectionTrace(ctx context.Context, method string, ep channelEndpoint, usedDefaultEndpoint bool, details routeSelectionDetails) {
+	endpointAddr := details.selectedEndpoint
+	if endpointAddr == "" && ep != nil {
+		endpointAddr = ep.Address()
+	}
+
 	if c == nil {
 		return
 	}
@@ -132,7 +137,7 @@ func (c *locationAwareSpannerClient) recordRouteSelectionTrace(ctx context.Conte
 	attrs := []attribute.KeyValue{
 		attribute.String("spanner.target", target),
 		attribute.Bool("spanner.route.used_default_endpoint", usedDefaultEndpoint),
-		attribute.Bool("spanner.route.has_channel_finder", hasChannelFinder),
+		attribute.Bool("spanner.route.has_channel_finder", endpointAddr != ""),
 		attribute.String("spanner.route.method", method),
 	}
 	span.SetAttributes(attrs...)
@@ -236,9 +241,9 @@ func (c *locationAwareSpannerClient) BatchWrite(ctx context.Context, req *spanne
 
 func (c *locationAwareSpannerClient) StreamingRead(ctx context.Context, req *spannerpb.ReadRequest, opts ...gax.CallOption) (spannerpb.Spanner_StreamingReadClient, error) {
 	logicalRequestKey, excludedEndpoints := c.excludedEndpointsForCall(opts)
-	ep := c.router.prepareReadRequestWithExclusions(ctx, req, excludedEndpoints)
+	ep, details := c.router.prepareReadRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
 	client := c.clientForEndpoint(ep)
-	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/StreamingRead", ep, client == c.defaultClient, true)
+	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/StreamingRead", ep, client == c.defaultClient, details)
 	stream, err := client.StreamingRead(ctx, req, opts...)
 	if err != nil {
 		c.maybeExcludeEndpointOnNextCall(ep, logicalRequestKey, err)
@@ -261,9 +266,9 @@ func (c *locationAwareSpannerClient) StreamingRead(ctx context.Context, req *spa
 
 func (c *locationAwareSpannerClient) Read(ctx context.Context, req *spannerpb.ReadRequest, opts ...gax.CallOption) (*spannerpb.ResultSet, error) {
 	logicalRequestKey, excludedEndpoints := c.excludedEndpointsForCall(opts)
-	ep := c.router.prepareReadRequestWithExclusions(ctx, req, excludedEndpoints)
+	ep, details := c.router.prepareReadRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
 	client := c.clientForEndpoint(ep)
-	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/Read", ep, client == c.defaultClient, true)
+	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/Read", ep, client == c.defaultClient, details)
 	resp, err := client.Read(ctx, req, opts...)
 	if err != nil {
 		c.maybeExcludeEndpointOnNextCall(ep, logicalRequestKey, err)
@@ -282,9 +287,9 @@ func (c *locationAwareSpannerClient) Read(ctx context.Context, req *spannerpb.Re
 
 func (c *locationAwareSpannerClient) ExecuteStreamingSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (spannerpb.Spanner_ExecuteStreamingSqlClient, error) {
 	logicalRequestKey, excludedEndpoints := c.excludedEndpointsForCall(opts)
-	ep := c.router.prepareExecuteSQLRequestWithExclusions(ctx, req, excludedEndpoints)
+	ep, details := c.router.prepareExecuteSQLRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
 	client := c.clientForEndpoint(ep)
-	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/ExecuteStreamingSql", ep, client == c.defaultClient, true)
+	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/ExecuteStreamingSql", ep, client == c.defaultClient, details)
 	stream, err := client.ExecuteStreamingSql(ctx, req, opts...)
 	if err != nil {
 		c.maybeExcludeEndpointOnNextCall(ep, logicalRequestKey, err)
@@ -307,9 +312,9 @@ func (c *locationAwareSpannerClient) ExecuteStreamingSql(ctx context.Context, re
 
 func (c *locationAwareSpannerClient) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (*spannerpb.ResultSet, error) {
 	logicalRequestKey, excludedEndpoints := c.excludedEndpointsForCall(opts)
-	ep := c.router.prepareExecuteSQLRequestWithExclusions(ctx, req, excludedEndpoints)
+	ep, details := c.router.prepareExecuteSQLRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
 	client := c.clientForEndpoint(ep)
-	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/ExecuteSql", ep, client == c.defaultClient, true)
+	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/ExecuteSql", ep, client == c.defaultClient, details)
 	resp, err := client.ExecuteSql(ctx, req, opts...)
 	if err != nil {
 		c.maybeExcludeEndpointOnNextCall(ep, logicalRequestKey, err)
@@ -328,9 +333,9 @@ func (c *locationAwareSpannerClient) ExecuteSql(ctx context.Context, req *spanne
 
 func (c *locationAwareSpannerClient) BeginTransaction(ctx context.Context, req *spannerpb.BeginTransactionRequest, opts ...gax.CallOption) (*spannerpb.Transaction, error) {
 	logicalRequestKey, excludedEndpoints := c.excludedEndpointsForCall(opts)
-	ep := c.router.prepareBeginTransactionRequestWithExclusions(ctx, req, excludedEndpoints)
+	ep, details := c.router.prepareBeginTransactionRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
 	client := c.clientForEndpoint(ep)
-	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/BeginTransaction", ep, client == c.defaultClient, true)
+	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/BeginTransaction", ep, client == c.defaultClient, details)
 	resp, err := client.BeginTransaction(ctx, req, opts...)
 	if err != nil {
 		c.maybeExcludeEndpointOnNextCall(ep, logicalRequestKey, err)
@@ -351,14 +356,15 @@ func (c *locationAwareSpannerClient) BeginTransaction(ctx context.Context, req *
 
 func (c *locationAwareSpannerClient) Commit(ctx context.Context, req *spannerpb.CommitRequest, opts ...gax.CallOption) (*spannerpb.CommitResponse, error) {
 	logicalRequestKey, excludedEndpoints := c.excludedEndpointsForCall(opts)
-	ep := c.router.prepareCommitRequestWithExclusions(ctx, req, excludedEndpoints)
+	ep, details := c.router.prepareCommitRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
 	if txID := req.GetTransactionId(); len(txID) > 0 {
 		if affinityEndpoint := c.affinityEndpoint(txID, excludedEndpoints); affinityEndpoint != nil {
 			ep = affinityEndpoint
+			details.setSelectedTablet(ep.Address(), false, false)
 		}
 	}
 	client := c.clientForEndpoint(ep)
-	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/Commit", ep, client == c.defaultClient, len(req.GetMutations()) > 0)
+	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/Commit", ep, client == c.defaultClient, details)
 	resp, err := client.Commit(ctx, req, opts...)
 	c.maybeExcludeEndpointOnNextCall(ep, logicalRequestKey, err)
 	c.router.observeCommitResponse(resp)
@@ -369,8 +375,12 @@ func (c *locationAwareSpannerClient) Commit(ctx context.Context, req *spannerpb.
 func (c *locationAwareSpannerClient) Rollback(ctx context.Context, req *spannerpb.RollbackRequest, opts ...gax.CallOption) error {
 	logicalRequestKey, excludedEndpoints := c.excludedEndpointsForCall(opts)
 	ep := c.affinityEndpoint(req.GetTransactionId(), excludedEndpoints)
+	details := newRouteSelectionDetails()
+	if ep != nil {
+		details.setSelectedTablet(ep.Address(), false, false)
+	}
 	client := c.clientForEndpoint(ep)
-	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/Rollback", ep, client == c.defaultClient, false)
+	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/Rollback", ep, client == c.defaultClient, details)
 	err := client.Rollback(ctx, req, opts...)
 	c.maybeExcludeEndpointOnNextCall(ep, logicalRequestKey, err)
 	c.router.clearTransactionAffinity(string(req.GetTransactionId()))

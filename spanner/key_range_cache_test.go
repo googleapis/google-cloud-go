@@ -410,6 +410,115 @@ func TestKeyRangeCache_FillRoutingHintRecordsRecentlyEvictedTransientFailure(t *
 	}
 }
 
+func TestKeyRangeCache_FillRoutingHintWithDetailsTracksSelectionAndSkipReasons(t *testing.T) {
+	endpointCache := newTestEndpointCache()
+	cache := newKeyRangeCache(endpointCache)
+
+	cache.addRanges(&sppb.CacheUpdate{
+		Range: []*sppb.Range{
+			{
+				StartKey:   []byte("a"),
+				LimitKey:   []byte("z"),
+				GroupUid:   5,
+				SplitId:    1,
+				Generation: []byte("1"),
+			},
+		},
+		Group: []*sppb.Group{
+			{
+				GroupUid:    5,
+				Generation:  []byte("1"),
+				LeaderIndex: 1,
+				Tablets: []*sppb.Tablet{
+					{
+						TabletUid:     1,
+						ServerAddress: "server-first",
+						Incarnation:   []byte("1"),
+						Distance:      0,
+					},
+					{
+						TabletUid:     2,
+						ServerAddress: "server-leader",
+						Incarnation:   []byte("1"),
+						Distance:      0,
+					},
+					{
+						TabletUid:     3,
+						ServerAddress: "server-transient",
+						Incarnation:   []byte("1"),
+						Distance:      0,
+					},
+					{
+						TabletUid:     4,
+						ServerAddress: "server-excluded",
+						Incarnation:   []byte("1"),
+						Distance:      0,
+					},
+				},
+			},
+		},
+	})
+
+	endpointCache.Get(context.Background(), "server-first")
+	endpointCache.Get(context.Background(), "server-leader")
+	endpointCache.Get(context.Background(), "server-transient")
+	endpointCache.setHealthy("server-first", false)
+	endpointCache.setHealthy("server-transient", false)
+	endpointCache.setTransientFailure("server-transient", true)
+
+	hint := &sppb.RoutingHint{Key: []byte("a")}
+	endpoint, details := cache.fillRoutingHintWithExclusionsAndDetails(
+		context.Background(),
+		false,
+		rangeModeCoveringSplit,
+		&sppb.DirectedReadOptions{},
+		hint,
+		func(address string) bool { return address == "server-excluded" },
+	)
+
+	if endpoint == nil || endpoint.Address() != "server-leader" {
+		t.Fatalf("expected server-leader endpoint, got %#v", endpoint)
+	}
+	if !details.selectedIsLeader {
+		t.Fatal("expected selected endpoint to be marked as leader")
+	}
+	if details.selectedIsFirstReplica {
+		t.Fatal("did not expect selected endpoint to be marked as first replica")
+	}
+	if got, want := details.selectedEndpoint, "server-leader"; got != want {
+		t.Fatalf("selectedEndpoint=%q, want %q", got, want)
+	}
+	if got, want := details.notReadySkipList(), []string{"server-first"}; fmt.Sprint(got) != fmt.Sprint(want) {
+		t.Fatalf("notReadySkipList=%v, want %v", got, want)
+	}
+	if got, want := details.transientFailureSkipList(), []string{"server-transient"}; fmt.Sprint(got) != fmt.Sprint(want) {
+		t.Fatalf("transientFailureSkipList=%v, want %v", got, want)
+	}
+	if got, want := details.resourceExhaustedExclusionList(), []string{"server-excluded"}; fmt.Sprint(got) != fmt.Sprint(want) {
+		t.Fatalf("resourceExhaustedExclusionList=%v, want %v", got, want)
+	}
+}
+
+func TestKeyRangeCache_FillRoutingHintWithDetailsMarksCacheMiss(t *testing.T) {
+	cache := newKeyRangeCache(newPassthroughChannelEndpointCache())
+
+	endpoint, details := cache.fillRoutingHintWithExclusionsAndDetails(
+		context.Background(),
+		false,
+		rangeModeCoveringSplit,
+		&sppb.DirectedReadOptions{},
+		&sppb.RoutingHint{Key: []byte("missing")},
+		nil,
+	)
+
+	if endpoint != nil {
+		t.Fatalf("expected nil endpoint on cache miss, got %#v", endpoint)
+	}
+	if got, want := details.defaultReasonCode, "range_cache_miss"; got != want {
+		t.Fatalf("defaultReasonCode=%q, want %q", got, want)
+	}
+}
+
 func TestKeyRangeCache_ShrinkTo(t *testing.T) {
 	cache := newKeyRangeCache(newPassthroughChannelEndpointCache())
 	const numRanges = 40

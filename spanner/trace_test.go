@@ -92,7 +92,7 @@ func TestLocationAwareRouteSelectionTrace(t *testing.T) {
 		"google.spanner.v1.Spanner/ExecuteSql",
 		&passthroughChannelEndpoint{address: "replica:443"},
 		false,
-		true,
+		routeSelectionDetails{selectedEndpoint: "replica:443"},
 	)
 	endSpan(ctx, nil)
 
