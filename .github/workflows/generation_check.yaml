@@ -1,9 +1,9 @@
 ---
 name: generation-check
 on:
-  schedule:
-    # Runs every day at 4:00 AM UTC
-    - cron: '0 4 * * *'
+  push:
+    branches:
+      - main
   # Allows manual triggering for debugging purpose.
   workflow_dispatch:
 permissions:
@@ -35,10 +35,10 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           if [ -n "$(git status --porcelain)" ]; then
-            TITLE="Daily regeneration check found diff"
+            TITLE="Regeneration check found diff"
             RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             DIFF_STAT=$(git diff --stat)
-            BODY="The daily [regeneration check]($RUN_URL) found a diff.
+            BODY="The post-submit [regeneration check]($RUN_URL) found a diff.
 
             Diff summary:
             \`\`\`
