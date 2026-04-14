@@ -1824,7 +1824,7 @@ libraries:
     go:
       nested_module: v2
   - name: pubsub/v2
-    version: 2.5.1
+    version: 2.6.0
     apis:
       - path: google/pubsub/v1
     keep:
