@@ -88,20 +88,6 @@ func (f *channelFinder) setFlushSchedulerForTest(schedule func(time.Duration, fu
 	f.scheduleFlush = schedule
 }
 
-func (f *channelFinder) recordEndpointLatency(address string, latency time.Duration) {
-	if f == nil {
-		return
-	}
-	f.rangeCache.recordEndpointLatency(address, latency)
-}
-
-func (f *channelFinder) recordEndpointError(address string) {
-	if f == nil {
-		return
-	}
-	f.rangeCache.recordEndpointError(address)
-}
-
 func (f *channelFinder) update(update *sppb.CacheUpdate) {
 	if update == nil {
 		return
