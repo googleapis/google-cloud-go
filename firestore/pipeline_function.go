@@ -322,7 +322,7 @@ func TimestampTruncate(timestamp, granularity any) Expression {
 //
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
-func TimestampTruncateWithTimezone(timestamp, granularity any, timezone string) Expression {
+func TimestampTruncateWithTimezone(timestamp, granularity any, timezone any) Expression {
 	return newBaseFunction("timestamp_trunc", []Expression{asFieldExpr(timestamp), asStringExpr(granularity), asStringExpr(timezone)})
 }
 
@@ -579,14 +579,14 @@ func ArraySlice(exprOrFieldPath any, offset any) Expression {
 	return newBaseFunction("array_slice", []Expression{asFieldExpr(exprOrFieldPath), asInt64Expr(offset)})
 }
 
-// ArraySliceLength creates an expression that returns a slice of an array starting from the specified offset with a given length.
+// ArraySliceToEnd creates an expression that returns a slice of an array starting from the specified offset with a given length.
 // - exprOrFieldPath can be a field path string, [FieldPath] or an [Expression] that evaluates to an array.
 // - offset is the 0-based index of the first element to include. It can be an int, int32, int64 or [Expression].
 // - length is the number of elements to include. It can be an int, int32, int64 or [Expression].
 //
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
-func ArraySliceLength(exprOrFieldPath any, offset any, length any) Expression {
+func ArraySliceToEnd(exprOrFieldPath any, offset any, length any) Expression {
 	return newBaseFunction("array_slice", []Expression{asFieldExpr(exprOrFieldPath), asInt64Expr(offset), asInt64Expr(length)})
 }
 
@@ -597,10 +597,9 @@ func ArraySliceLength(exprOrFieldPath any, offset any, length any) Expression {
 //
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
-// TODO: Uncomment this after fixing the proto representation of this function.
-// func ArrayFilter(array any, param string, body BooleanExpression) Expression {
-// 	return newBaseFunction("array_filter", []Expression{asFieldExpr(array), ConstantOf(param), body})
-// }
+func ArrayFilter(array any, param string, body BooleanExpression) Expression {
+	return newBaseFunction("array_filter", []Expression{asFieldExpr(array), ConstantOf(param), body})
+}
 
 // ArrayIndexOf creates an expression that returns the first index of a search value in an array.
 // - exprOrFieldPath can be a field path string, [FieldPath] or an [Expression] that evaluates to an array.

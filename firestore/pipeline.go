@@ -16,10 +16,18 @@ package firestore
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"reflect"
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
+)
+
+var (
+	// ErrPipelineWithoutDatabase is returned when a pipeline is executed without a database such as a subcollection pipeline.
+	ErrPipelineWithoutDatabase = errors.New("firestore: pipeline without a database cannot be executed directly, only as part of another pipeline")
+	// ErrUnionNotSupportRelativeScope is returned when a union is used with a relative scope pipeline.
+	ErrUnionNotSupportRelativeScope = errors.New("firestore: union only supports combining root pipelines; relative scope pipelines (like subcollection pipelines) are not supported")
 )
 
 // Pipeline class provides a flexible and expressive framework for building complex data
@@ -256,7 +264,7 @@ func (p *Pipeline) Execute(ctx context.Context, opts ...ExecuteOption) *Pipeline
 	}
 
 	if newP.c == nil {
-		newP.err = fmt.Errorf("pipeline created without a database (e.g., as a subcollection pipeline) cannot be executed directly; it can only be used as part of another pipeline")
+		newP.err = ErrPipelineWithoutDatabase
 		return &PipelineSnapshot{
 			iter: &PipelineResultIterator{
 				err: newP.err,
@@ -900,7 +908,7 @@ func (p *Pipeline) Union(other *Pipeline, opts ...UnionOption) *Pipeline {
 		return p
 	}
 	if other.c == nil {
-		p.err = fmt.Errorf("union only supports combining root pipelines; relative scope pipelines (like subcollection pipelines) are not supported")
+		p.err = ErrUnionNotSupportRelativeScope
 		return p
 	}
 	options := make(map[string]any)

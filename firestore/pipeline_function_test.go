@@ -983,7 +983,7 @@ func TestArrayFunctions(t *testing.T) {
 		},
 		{
 			desc: "ArraySliceWithLength",
-			expr: ArraySliceLength("field", 1, 2),
+			expr: ArraySliceToEnd("field", 1, 2),
 			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
 				FunctionValue: &pb.Function{
 					Name: "array_slice",
@@ -995,51 +995,50 @@ func TestArrayFunctions(t *testing.T) {
 				},
 			}},
 		},
-		// TODO: Uncomment this after fixing the proto representation of this function.
-		// {
-		// 	desc: "ArrayFilter",
-		// 	expr: ArrayFilter("field", "item", FieldOf("item").GreaterThan(5)),
-		// 	want: &pb.Value{ValueType: &pb.Value_FunctionValue{
-		// 		FunctionValue: &pb.Function{
-		// 			Name: "array_filter",
-		// 			Args: []*pb.Value{
-		// 				{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "field"}},
-		// 				{ValueType: &pb.Value_StringValue{StringValue: "item"}},
-		// 				{ValueType: &pb.Value_FunctionValue{
-		// 					FunctionValue: &pb.Function{
-		// 						Name: "greater_than",
-		// 						Args: []*pb.Value{
-		// 							{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "item"}},
-		// 							{ValueType: &pb.Value_IntegerValue{IntegerValue: 5}},
-		// 						},
-		// 					},
-		// 				}},
-		// 			},
-		// 		},
-		// 	}},
-		// },
-		// {
-		// 	desc: "baseExpression ArrayFilter",
-		// 	expr: FieldOf("field").ArrayFilter("item", FieldOf("item").GreaterThan(5)),
-		// 	want: &pb.Value{ValueType: &pb.Value_FunctionValue{
-		// 		FunctionValue: &pb.Function{
-		// 			Name: "array_filter",
-		// 			Args: []*pb.Value{
-		// 				{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "field"}},
-		// 				{ValueType: &pb.Value_StringValue{StringValue: "item"}},
-		// 				{ValueType: &pb.Value_FunctionValue{
-		// 					FunctionValue: &pb.Function{
-		// 						Name: "greater_than",
-		// 						Args: []*pb.Value{
-		// 							{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "item"}},
-		// 							{ValueType: &pb.Value_IntegerValue{IntegerValue: 5}},
-		// 						},
-		// 					},
-		// 				}},
-		// 			},
-		// 		},
-		// 	}},
-		// },
+		{
+			desc: "ArrayFilter",
+			expr: ArrayFilter("field", "item", FieldOf("item").GreaterThan(5)),
+			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
+				FunctionValue: &pb.Function{
+					Name: "array_filter",
+					Args: []*pb.Value{
+						{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "field"}},
+						{ValueType: &pb.Value_StringValue{StringValue: "item"}},
+						{ValueType: &pb.Value_FunctionValue{
+							FunctionValue: &pb.Function{
+								Name: "greater_than",
+								Args: []*pb.Value{
+									{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "item"}},
+									{ValueType: &pb.Value_IntegerValue{IntegerValue: 5}},
+								},
+							},
+						}},
+					},
+				},
+			}},
+		},
+		{
+			desc: "baseExpression ArrayFilter",
+			expr: FieldOf("field").ArrayFilter("item", FieldOf("item").GreaterThan(5)),
+			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
+				FunctionValue: &pb.Function{
+					Name: "array_filter",
+					Args: []*pb.Value{
+						{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "field"}},
+						{ValueType: &pb.Value_StringValue{StringValue: "item"}},
+						{ValueType: &pb.Value_FunctionValue{
+							FunctionValue: &pb.Function{
+								Name: "greater_than",
+								Args: []*pb.Value{
+									{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "item"}},
+									{ValueType: &pb.Value_IntegerValue{IntegerValue: 5}},
+								},
+							},
+						}},
+					},
+				},
+			}},
+		},
 		{
 			desc: "ArrayIndexOf",
 			expr: ArrayIndexOf("field", "search"),

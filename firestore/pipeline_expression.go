@@ -174,11 +174,11 @@ type Expression interface {
 	//
 	// The parameter 'offset' is the 0-based index of the first element to include. It can be an int, int32, int64 or [Expression].
 	ArraySlice(offset any) Expression
-	// ArraySliceWithLength creates an expression that returns a slice of an array starting from the specified offset with a given length.
+	// ArraySliceToEnd creates an expression that returns a slice of an array starting from the specified offset with a given length.
 	//
 	// The parameter 'offset' is the 0-based index of the first element to include. It can be an int, int32, int64 or [Expression].
 	// The parameter 'length' is the number of elements to include. It can be an int, int32, int64 or [Expression].
-	ArraySliceWithLength(offset, length any) Expression
+	ArraySliceToEnd(offset, length any) Expression
 	// ArrayIndexOf creates an expression that returns the first index of a search value in an array.
 	//
 	// The parameter 'search' is the value to search for. It can be a constant or [Expression].
@@ -205,12 +205,11 @@ type Expression interface {
 	// If the expression resolves to an absent value, it is converted to NULL.
 	// The order of elements in the output array is not stable and shouldn't be relied upon.
 	ArrayAggDistinct() AggregateFunction
-	// TODO: Uncomment this after fixing the proto representation of this function.
 	// ArrayFilter creates an expression for array_filter(array, param, body).
 	//
 	// The parameter 'param' is the name of the parameter to use in the body expression.
 	// The parameter 'body' is the expression to evaluate for each element of the array.
-	// ArrayFilter(param string, body BooleanExpression) Expression
+	ArrayFilter(param string, body BooleanExpression) Expression
 	// LogicalMaximum returns the maximum value of the expression and the specified values.
 	LogicalMaximum(others ...any) Expression
 	// LogicalMinimum returns the minimum value of the expression and the specified values.
@@ -242,7 +241,7 @@ type Expression interface {
 	// "week(wednesday)", "week(thursday)", "week(friday)", "week(saturday)", "week(sunday)", "isoweek", "month", "quarter", "year", and "isoyear".
 	// The parameter 'timezone' can be a string constant (e.g., "America/Los_Angeles") or an [Expression] that evaluates to a valid timezone string.
 	// Valid values are from the TZ database or in the format "Etc/GMT-1".
-	TimestampTruncateWithTimezone(granularity any, timezone string) Expression
+	TimestampTruncateWithTimezone(granularity any, timezone any) Expression
 	// TimestampToUnixMicros creates an expression that converts a timestamp expression to the number of microseconds since
 	// the Unix epoch (1970-01-01 00:00:00 UTC).
 	TimestampToUnixMicros() Expression
@@ -588,8 +587,8 @@ func (b *baseExpression) ArrayFirstN(n any) Expression     { return ArrayFirstN(
 func (b *baseExpression) ArrayLast() Expression            { return ArrayLast(b) }
 func (b *baseExpression) ArrayLastN(n any) Expression      { return ArrayLastN(b, n) }
 func (b *baseExpression) ArraySlice(offset any) Expression { return ArraySlice(b, offset) }
-func (b *baseExpression) ArraySliceWithLength(offset, length any) Expression {
-	return ArraySliceLength(b, offset, length)
+func (b *baseExpression) ArraySliceToEnd(offset, length any) Expression {
+	return ArraySliceToEnd(b, offset, length)
 }
 func (b *baseExpression) ArrayIndexOf(search any) Expression {
 	return ArrayIndexOf(b, search)
@@ -605,11 +604,9 @@ func (b *baseExpression) Last() AggregateFunction             { return Last(b) }
 func (b *baseExpression) ArrayAgg() AggregateFunction         { return ArrayAgg(b) }
 func (b *baseExpression) ArrayAggDistinct() AggregateFunction { return ArrayAggDistinct(b) }
 
-// TODO: Uncomment this after fixing the proto representation of this function.
-//
-//	func (b *baseExpression) ArrayFilter(param string, body BooleanExpression) Expression {
-//		return ArrayFilter(b, param, body)
-//	}
+func (b *baseExpression) ArrayFilter(param string, body BooleanExpression) Expression {
+	return ArrayFilter(b, param, body)
+}
 func (b *baseExpression) LogicalMaximum(others ...any) Expression {
 	return LogicalMaximum(b, others...)
 }
@@ -627,7 +624,7 @@ func (b *baseExpression) TimestampSubtract(unit, amount any) Expression {
 func (b *baseExpression) TimestampTruncate(granularity any) Expression {
 	return TimestampTruncate(b, granularity)
 }
-func (b *baseExpression) TimestampTruncateWithTimezone(granularity any, timezone string) Expression {
+func (b *baseExpression) TimestampTruncateWithTimezone(granularity any, timezone any) Expression {
 	return TimestampTruncateWithTimezone(b, granularity, timezone)
 }
 func (b *baseExpression) TimestampToUnixMicros() Expression  { return TimestampToUnixMicros(b) }
