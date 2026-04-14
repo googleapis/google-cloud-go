@@ -95,6 +95,8 @@ type Expression interface {
 	Pow(other any) Expression
 	// Round creates an expression that rounds the input field or expression to nearest integer.
 	Round() Expression
+	// RoundToPrecision creates an expression that rounds the input field or expression to a specified number of decimal places.
+	RoundToPrecision(places any) Expression
 	// Trunc creates an expression that truncates a number to an integer.
 	Trunc() Expression
 	// TruncToPrecision creates an expression that truncates a number to a specified number of decimal places.
@@ -138,6 +140,14 @@ type Expression interface {
 	// The parameter 'offset' is the 0-based index of the element to retrieve.
 	// It can be an integer constant or an [Expression] that evaluates to an integer.
 	ArrayGet(offset any) Expression
+	// Offset creates an expression that accesses an element from an array at a specified index.
+	//
+	// This is a field access function. If the input is not an array, or if the index
+	// is out of bounds, it evaluates to an absent value.
+	//
+	// The parameter 'index' is the 0-based index of the element to retrieve. It can be an int or an [Expression].
+	// Supports negative indexing (e.g., -1 returns the last element).
+	Offset(index any) Expression
 	// ArrayReverse creates an expression that reverses the order of elements in an array.
 	ArrayReverse() Expression
 	// ArrayConcat creates an expression that concatenates multiple arrays into a single array.
@@ -179,6 +189,16 @@ type Expression interface {
 	// The parameter 'offset' is the 0-based index of the first element to include. It can be an int, int32, int64 or [Expression].
 	// The parameter 'length' is the number of elements to include. It can be an int, int32, int64 or [Expression].
 	ArraySlice(offset, length any) Expression
+	// ReferenceSliceToEnd creates an expression that returns a subset of segments from a document reference.
+	//
+	// The parameter 'offset' is the 0-based index of the first element to include. It can be an int, int32, int64 or [Expression].
+	ReferenceSliceToEnd(offset any) Expression
+	// ReferenceSlice creates an expression that returns a subset of segments from a document reference.
+	//
+	// The parameter 'offset' is the 0-based index of the first element to include. It can be an int, int32, int64 or [Expression].
+	// The parameter 'length' is the number of elements to include. It can be an int, int32, int64 or [Expression].
+	ReferenceSlice(offset, length any) Expression
+
 	// ArrayIndexOf creates an expression that returns the first index of a search value in an array.
 	//
 	// The parameter 'search' is the value to search for. It can be a constant or [Expression].
@@ -210,6 +230,17 @@ type Expression interface {
 	// The parameter 'param' is the name of the parameter to use in the body expression.
 	// The parameter 'body' is the expression to evaluate for each element of the array.
 	ArrayFilter(param string, body BooleanExpression) Expression
+	// ArrayTransform applies a transformation to each element of an array.
+	//
+	// The parameter 'param' is the name of the parameter to use in the transform expression.
+	// The parameter 'body' is the expression to evaluate for each element of the array.
+	ArrayTransform(param string, body Expression) Expression
+	// ArrayTransformWithIndex applies a transformation to each element of an array, providing the index.
+	//
+	// The parameter 'param' is the name of the parameter to use in the transform expression for the element.
+	// The parameter 'indexParam' is the name of the parameter to use in the transform expression for the index.
+	// The parameter 'body' is the expression to evaluate for each element of the array.
+	ArrayTransformWithIndex(param, indexParam string, body Expression) Expression
 	// LogicalMaximum returns the maximum value of the expression and the specified values.
 	LogicalMaximum(others ...any) Expression
 	// LogicalMinimum returns the minimum value of the expression and the specified values.
@@ -316,6 +347,8 @@ type Expression interface {
 	GetCollectionID() Expression
 	// GetDocumentID creates an expression that returns the ID of the document.
 	GetDocumentID() Expression
+	// GetParent creates an expression that returns the parent document of a document reference.
+	GetParent() Expression
 	// GetField creates an expression that accesses a field/property of a document field using the provided key.
 	//
 	// The parameter 'key' can be a string constant or an [Expression] that evaluates to a string.
@@ -338,10 +371,15 @@ type Expression interface {
 	// The parameter 'catchExprOrValue' is the value to return if the expression is absent.
 	// It can be a constant or an [Expression].
 	IfAbsent(catchExprOrValue any) Expression
-	// IfNull creates an expression that returns the first non-null value in a list of expressions.
+	// IfNull creates an expression that returns a default value if an expression evaluates to null.
+	//
+	// The parameter 'elseValueOrExpr' can be a constant or [Expression].
+	IfNull(elseValueOrExpr any) Expression
+	// Coalesce returns the first non-null, non-absent argument, without evaluating the rest of the arguments.
+	// When all arguments are null or absent, returns the last argument.
 	//
 	// The parameter 'others' can be a list of constants or [Expression].
-	IfNull(others ...any) Expression
+	Coalesce(replacement any, others ...any) Expression
 
 	// Object functions
 	// MapGet creates an expression that accesses a value from a map (object) field using the provided key.
@@ -363,7 +401,7 @@ type Expression interface {
 	// MapSet creates an expression that updates a map with key-value pairs.
 	//
 	// The parameter 'keysAndValues' is a list of alternating key and value arguments.
-	MapSet(keysAndValues ...any) Expression
+	MapSet(key any, value any, moreKeysAndValues ...any) Expression
 	// MapKeys creates an expression that returns the keys of a map as an array.
 	MapKeys() Expression
 	// MapValues creates an expression that returns the values of a map as an array.
@@ -384,6 +422,10 @@ type Expression interface {
 	Maximum() AggregateFunction
 	// Minimum creates an aggregate function that finds the minimum value of the expression.
 	Minimum() AggregateFunction
+
+	// Data size functions
+	// StorageSize creates an expression that calculates the storage size of a field or [Expression] in bytes.
+	StorageSize() Expression
 
 	// String functions
 	// ByteLength creates an expression that calculates the length of a string represented by a field or [Expression] in UTF-8
@@ -483,8 +525,11 @@ type Expression interface {
 	Type() Expression
 	// IsType creates a boolean expression that checks if the expression is of a specific type.
 	//
-	// The parameter 'dataType' can be a string constant or an [Expression] that evaluates to a type name.
-	IsType(dataType any) BooleanExpression
+	// The parameter 'dataType' can be one of the following string constants:
+	//   "null", "array", "boolean", "bytes", "timestamp", "geo_point", "number",
+	//   "int32", "int64", "float64", "decimal128", "map", "reference", "string",
+	//   "vector", "max_key", "min_key", "object_id", "regex", "request_timestamp".
+	IsType(dataType string) BooleanExpression
 
 	// Vector functions
 	// CosineDistance creates an expression that calculates the cosine distance between two vectors.
@@ -554,7 +599,10 @@ func (b *baseExpression) Ln() Expression                { return Ln(b) }
 func (b *baseExpression) Mod(other any) Expression      { return Mod(b, other) }
 func (b *baseExpression) Pow(other any) Expression      { return Pow(b, other) }
 func (b *baseExpression) Round() Expression             { return Round(b) }
-func (b *baseExpression) Trunc() Expression             { return Trunc(b) }
+func (b *baseExpression) RoundToPrecision(places any) Expression {
+	return RoundToPrecision(b, places)
+}
+func (b *baseExpression) Trunc() Expression { return Trunc(b) }
 func (b *baseExpression) TruncToPrecision(places any) Expression {
 	return TruncToPrecision(b, places)
 }
@@ -573,6 +621,7 @@ func (b *baseExpression) ArrayLength() Expression                  { return Arra
 func (b *baseExpression) EqualAny(values any) BooleanExpression    { return EqualAny(b, values) }
 func (b *baseExpression) NotEqualAny(values any) BooleanExpression { return NotEqualAny(b, values) }
 func (b *baseExpression) ArrayGet(offset any) Expression           { return ArrayGet(b, offset) }
+func (b *baseExpression) Offset(index any) Expression              { return Offset(b, index) }
 func (b *baseExpression) ArrayReverse() Expression                 { return ArrayReverse(b) }
 func (b *baseExpression) ArrayConcat(otherArrays ...any) Expression {
 	return ArrayConcat(b, otherArrays...)
@@ -590,6 +639,12 @@ func (b *baseExpression) ArraySliceToEnd(offset any) Expression { return ArraySl
 func (b *baseExpression) ArraySlice(offset, length any) Expression {
 	return ArraySlice(b, offset, length)
 }
+func (b *baseExpression) ReferenceSliceToEnd(offset any) Expression {
+	return ReferenceSliceToEnd(b, offset)
+}
+func (b *baseExpression) ReferenceSlice(offset, length any) Expression {
+	return ReferenceSlice(b, offset, length)
+}
 func (b *baseExpression) ArrayIndexOf(search any) Expression {
 	return ArrayIndexOf(b, search)
 }
@@ -606,6 +661,12 @@ func (b *baseExpression) ArrayAggDistinct() AggregateFunction { return ArrayAggD
 
 func (b *baseExpression) ArrayFilter(param string, body BooleanExpression) Expression {
 	return ArrayFilter(b, param, body)
+}
+func (b *baseExpression) ArrayTransform(param string, body Expression) Expression {
+	return ArrayTransform(b, param, body)
+}
+func (b *baseExpression) ArrayTransformWithIndex(param, indexParam string, body Expression) Expression {
+	return ArrayTransformWithIndex(b, param, indexParam, body)
 }
 func (b *baseExpression) LogicalMaximum(others ...any) Expression {
 	return LogicalMaximum(b, others...)
@@ -663,6 +724,7 @@ func (b *baseExpression) Concat(others ...any) Expression { return Concat(b, oth
 // Key functions
 func (b *baseExpression) GetCollectionID() Expression { return GetCollectionID(b) }
 func (b *baseExpression) GetDocumentID() Expression   { return GetDocumentID(b) }
+func (b *baseExpression) GetParent() Expression       { return GetParent(b) }
 func (b *baseExpression) GetField(key any) Expression { return GetField(b, key) }
 
 // Logical functions
@@ -682,8 +744,11 @@ func (b *baseExpression) IsAbsent() BooleanExpression {
 func (b *baseExpression) IfAbsent(catchExprOrValue any) Expression {
 	return IfAbsent(b, catchExprOrValue)
 }
-func (b *baseExpression) IfNull(others ...any) Expression {
-	return IfNull(b, others...)
+func (b *baseExpression) IfNull(elseValueOrExpr any) Expression {
+	return IfNull(b, elseValueOrExpr)
+}
+func (b *baseExpression) Coalesce(replacement any, others ...any) Expression {
+	return Coalesce(b, replacement, others...)
 }
 
 // Object functions
@@ -692,8 +757,8 @@ func (b *baseExpression) MapMerge(secondMap Expression, otherMaps ...Expression)
 	return MapMerge(b, secondMap, otherMaps...)
 }
 func (b *baseExpression) MapRemove(strOrExprkey any) Expression { return MapRemove(b, strOrExprkey) }
-func (b *baseExpression) MapSet(keysAndValues ...any) Expression {
-	return MapSet(b, keysAndValues...)
+func (b *baseExpression) MapSet(key any, value any, moreKeysAndValues ...any) Expression {
+	return MapSet(b, key, value, moreKeysAndValues...)
 }
 func (b *baseExpression) MapKeys() Expression    { return MapKeys(b) }
 func (b *baseExpression) MapValues() Expression  { return MapValues(b) }
@@ -706,6 +771,9 @@ func (b *baseExpression) Count() AggregateFunction         { return Count(b) }
 func (b *baseExpression) CountDistinct() AggregateFunction { return CountDistinct(b) }
 func (b *baseExpression) Maximum() AggregateFunction       { return Maximum(b) }
 func (b *baseExpression) Minimum() AggregateFunction       { return Minimum(b) }
+
+// Data size functions
+func (b *baseExpression) StorageSize() Expression { return StorageSize(b) }
 
 // String functions
 func (b *baseExpression) ByteLength() Expression                { return ByteLength(b) }
@@ -761,8 +829,8 @@ func (b *baseExpression) RTrimValue(valuesToTrim any) Expression {
 func (b *baseExpression) Split(delimiter any) Expression { return Split(b, delimiter) }
 
 // Type functions
-func (b *baseExpression) Type() Expression                      { return Type(b) }
-func (b *baseExpression) IsType(dataType any) BooleanExpression { return IsType(b, dataType) }
+func (b *baseExpression) Type() Expression                         { return Type(b) }
+func (b *baseExpression) IsType(dataType string) BooleanExpression { return IsType(b, dataType) }
 
 // Vector functions
 func (b *baseExpression) CosineDistance(other any) Expression    { return CosineDistance(b, other) }

@@ -37,13 +37,13 @@ type baseAggregateFunction struct {
 	err   error
 }
 
-func newBaseAggregateFunction(name string, fieldOrExpr any) *baseAggregateFunction {
+func newBaseAggregateFunction(name string, args ...any) *baseAggregateFunction {
 	var argsPbVals []*pb.Value
 	var err error
 
-	if fieldOrExpr != nil {
+	for _, arg := range args {
 		var valueExpr Expression
-		switch value := fieldOrExpr.(type) {
+		switch value := arg.(type) {
 		case string:
 			valueExpr = FieldOf(value)
 		case FieldPath:
@@ -60,6 +60,10 @@ func newBaseAggregateFunction(name string, fieldOrExpr any) *baseAggregateFuncti
 			if err == nil {
 				argsPbVals = append(argsPbVals, pbVal)
 			}
+		}
+
+		if err != nil {
+			break
 		}
 	}
 
@@ -100,6 +104,21 @@ var _ AggregateFunction = (*baseAggregateFunction)(nil)
 type AliasedAggregate struct {
 	*baseAggregateFunction
 	alias string
+}
+
+// RawAggregate creates a raw aggregation function.
+//
+// This method provides a way to call aggregation functions that are supported by the Firestore
+// backend but that are not available as specific factory methods in this class.
+//
+// Example:
+//
+//	RawAggregate("sum", "orderAmount").As("totalRevenue")
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func RawAggregate(name string, fieldOrExprs ...any) AggregateFunction {
+	return newBaseAggregateFunction(name, fieldOrExprs...)
 }
 
 // Sum creates an aggregation that calculates the sum of values from an expression or a field's values
@@ -160,7 +179,7 @@ func Count(fieldOrExpr any) AggregateFunction {
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
 func CountAll() AggregateFunction {
-	return newBaseAggregateFunction("count", nil)
+	return newBaseAggregateFunction("count")
 }
 
 // CountDistinct creates an aggregation that counts the number of distinct values of the

@@ -428,15 +428,28 @@ func IsAbsent(exprOrField any) BooleanExpression {
 	return &baseBooleanExpression{baseFunction: newBaseFunction("is_absent", []Expression{asFieldExpr(exprOrField)})}
 }
 
+// RawBooleanFunction creates a 'raw' boolean function expression.
+// This is useful if the expression is available in the backend, but not yet in the current version of the SDK.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func RawBooleanFunction(name string, exprs ...any) BooleanExpression {
+	expressions := make([]Expression, len(exprs))
+	for i, expr := range exprs {
+		expressions[i] = asFieldExpr(expr)
+	}
+	return &baseBooleanExpression{baseFunction: newBaseFunction(name, expressions)}
+}
+
 // IsType creates an expression that checks if an expression is of a specific type.
 //   - exprOrField can be a field path string, [FieldPath] or an [Expression].
-//   - dataType can be a string constant or an [Expression] that evaluates to a type name. Valid values are
+//   - dataType can be a valid type name. Valid values are
 //     "null", "array", "boolean", "bytes", "timestamp", "geo_point", "number", "int32", "int64",
 //     "float64", "decimal128", "map", "reference", "string", "vector", "max_key", "min_key",
 //     "min_array", "object_id", "regex", "request_timestamp"
 //
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
-func IsType(exprOrField any, dataType any) BooleanExpression {
-	return &baseBooleanExpression{baseFunction: newBaseFunction("is_type", []Expression{asFieldExpr(exprOrField), asStringExpr(dataType)})}
+func IsType(exprOrField any, dataType string) BooleanExpression {
+	return &baseBooleanExpression{baseFunction: newBaseFunction("is_type", []Expression{asFieldExpr(exprOrField), ConstantOf(dataType)})}
 }
