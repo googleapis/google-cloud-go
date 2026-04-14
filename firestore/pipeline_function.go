@@ -1017,6 +1017,10 @@ func GeoDistance(field any, location *latlng.LatLng) Expression {
 // Experimental: Update, Delete and Search stages in pipeline queries are in public preview
 // and are subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
+//
+// Experimental: Update, Delete and Search stages in pipeline queries are in public preview
+// and are subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func Score() Expression {
 	return newBaseFunction("score", nil)
 }
