@@ -48,6 +48,7 @@ type locationAwareSpannerClient struct {
 	defaultAffinityEndpoint channelEndpoint
 	defaultEndpointAddress  string
 	excludedEndpoints       *logicalRequestEndpointExclusionCache
+	endpointCooldowns       *endpointOverloadCooldownTracker
 }
 
 var _ spannerClient = (*locationAwareSpannerClient)(nil)
@@ -80,6 +81,7 @@ func newLocationAwareSpannerClient(defaultClient spannerClient, router *location
 		defaultAffinityEndpoint: defaultAffinityEndpoint,
 		defaultEndpointAddress:  defaultAffinityEndpoint.Address(),
 		excludedEndpoints:       newLogicalRequestEndpointExclusionCache(),
+		endpointCooldowns:       newEndpointOverloadCooldownTracker(),
 	}
 }
 
@@ -98,15 +100,28 @@ func (c *locationAwareSpannerClient) onRequestRouted(ep channelEndpoint) {
 }
 
 func (c *locationAwareSpannerClient) excludedEndpointsForCall(opts []gax.CallOption) (string, endpointExcluder) {
-	if c == nil || c.excludedEndpoints == nil {
+	if c == nil {
 		return "", noExcludedEndpoints
 	}
 	logicalRequestKey := logicalRequestKeyFromCallOptions(opts)
-	return logicalRequestKey, c.excludedEndpoints.consume(logicalRequestKey)
+
+	requestScopedExcluded := noExcludedEndpoints
+	if c.excludedEndpoints != nil {
+		requestScopedExcluded = c.excludedEndpoints.consume(logicalRequestKey)
+	}
+
+	cooldownExcluded := noExcludedEndpoints
+	if c.endpointCooldowns != nil {
+		cooldownExcluded = func(address string) bool {
+			return c.endpointCooldowns.isCoolingDown(address)
+		}
+	}
+
+	return logicalRequestKey, combineEndpointExcluderFuncs(requestScopedExcluded, cooldownExcluded)
 }
 
 func (c *locationAwareSpannerClient) maybeExcludeEndpointOnNextCall(ep channelEndpoint, logicalRequestKey string, err error) {
-	if c == nil || c.excludedEndpoints == nil || ep == nil || logicalRequestKey == "" {
+	if c == nil || ep == nil {
 		return
 	}
 	if status.Code(err) != codes.ResourceExhausted {
@@ -115,7 +130,22 @@ func (c *locationAwareSpannerClient) maybeExcludeEndpointOnNextCall(ep channelEn
 	if ep.Address() == c.defaultEndpointAddress {
 		return
 	}
-	c.excludedEndpoints.record(logicalRequestKey, ep.Address())
+	if c.endpointCooldowns != nil {
+		c.endpointCooldowns.recordFailure(ep.Address())
+	}
+	if c.excludedEndpoints != nil && logicalRequestKey != "" {
+		c.excludedEndpoints.record(logicalRequestKey, ep.Address())
+	}
+}
+
+func (c *locationAwareSpannerClient) clearEndpointCooldown(ep channelEndpoint) {
+	if c == nil || c.endpointCooldowns == nil || ep == nil {
+		return
+	}
+	if ep.Address() == "" || ep.Address() == c.defaultEndpointAddress {
+		return
+	}
+	c.endpointCooldowns.recordSuccess(ep.Address())
 }
 
 func (c *locationAwareSpannerClient) recordRouteSelectionTrace(ctx context.Context, method string, ep channelEndpoint, usedDefaultEndpoint bool, details routeSelectionDetails) {
@@ -180,6 +210,17 @@ func appendUnaryRetryOverrideOptions(base []gax.CallOption, requestID requestIDA
 	}
 	opts = append(opts, newSuppressRetryCodesOption(codes.ResourceExhausted))
 	return opts
+}
+
+func combineEndpointExcluderFuncs(excluders ...endpointExcluder) endpointExcluder {
+	return func(address string) bool {
+		for _, excluded := range excluders {
+			if isEndpointExcluded(excluded, address) {
+				return true
+			}
+		}
+		return false
+	}
 }
 
 func combineEndpointExcluders(base endpointExcluder, excludedAddress string) endpointExcluder {
@@ -350,7 +391,9 @@ func (c *locationAwareSpannerClient) StreamingRead(ctx context.Context, req *spa
 		isReadOnlyBegin,
 		readOnlyStrong,
 		isReadWriteBeginFromSelector(req.GetTransaction()),
-		nil,
+		func() {
+			c.clearEndpointCooldown(ep)
+		},
 		func(err error) {
 			c.maybeExcludeEndpointOnNextCall(ep, logicalRequestKey, err)
 		},
@@ -369,6 +412,7 @@ func (c *locationAwareSpannerClient) Read(ctx context.Context, req *spannerpb.Re
 			c.maybeExcludeEndpointOnNextCall(ep, logicalRequestKey, err)
 			return nil, err
 		}
+		c.maybeExcludeEndpointOnNextCall(ep, "", err)
 
 		retryExcludedEndpoints := combineEndpointExcluders(excludedEndpoints, ep.Address())
 		retryEndpoint, retryDetails := c.router.prepareReadRequestWithExclusionsAndDetails(ctx, req, retryExcludedEndpoints)
@@ -376,12 +420,14 @@ func (c *locationAwareSpannerClient) Read(ctx context.Context, req *spannerpb.Re
 		c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/Read", retryEndpoint, retryClient == c.defaultClient, retryDetails)
 		resp, err = retryClient.Read(ctx, req, appendUnaryRetryOverrideOptions(opts, requestID, 2)...)
 		if err == nil {
+			c.clearEndpointCooldown(retryEndpoint)
 			c.observeReadResponse(req, resp, retryEndpoint)
 			return resp, nil
 		}
 		c.maybeExcludeEndpointOnNextCall(retryEndpoint, logicalRequestKey, err)
 		return nil, err
 	}
+	c.clearEndpointCooldown(ep)
 	c.observeReadResponse(req, resp, ep)
 	return resp, nil
 }
@@ -404,7 +450,9 @@ func (c *locationAwareSpannerClient) ExecuteStreamingSql(ctx context.Context, re
 		isReadOnlyBegin,
 		readOnlyStrong,
 		isReadWriteBeginFromSelector(req.GetTransaction()),
-		nil,
+		func() {
+			c.clearEndpointCooldown(ep)
+		},
 		func(err error) {
 			c.maybeExcludeEndpointOnNextCall(ep, logicalRequestKey, err)
 		},
@@ -423,6 +471,7 @@ func (c *locationAwareSpannerClient) ExecuteSql(ctx context.Context, req *spanne
 			c.maybeExcludeEndpointOnNextCall(ep, logicalRequestKey, err)
 			return nil, err
 		}
+		c.maybeExcludeEndpointOnNextCall(ep, "", err)
 
 		retryExcludedEndpoints := combineEndpointExcluders(excludedEndpoints, ep.Address())
 		retryEndpoint, retryDetails := c.router.prepareExecuteSQLRequestWithExclusionsAndDetails(ctx, req, retryExcludedEndpoints)
@@ -430,12 +479,14 @@ func (c *locationAwareSpannerClient) ExecuteSql(ctx context.Context, req *spanne
 		c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/ExecuteSql", retryEndpoint, retryClient == c.defaultClient, retryDetails)
 		resp, err = retryClient.ExecuteSql(ctx, req, appendUnaryRetryOverrideOptions(opts, requestID, 2)...)
 		if err == nil {
+			c.clearEndpointCooldown(retryEndpoint)
 			c.observeExecuteSQLResponse(req, resp, retryEndpoint)
 			return resp, nil
 		}
 		c.maybeExcludeEndpointOnNextCall(retryEndpoint, logicalRequestKey, err)
 		return nil, err
 	}
+	c.clearEndpointCooldown(ep)
 	c.observeExecuteSQLResponse(req, resp, ep)
 	return resp, nil
 }
@@ -452,6 +503,7 @@ func (c *locationAwareSpannerClient) BeginTransaction(ctx context.Context, req *
 			c.maybeExcludeEndpointOnNextCall(ep, logicalRequestKey, err)
 			return nil, err
 		}
+		c.maybeExcludeEndpointOnNextCall(ep, "", err)
 
 		retryExcludedEndpoints := combineEndpointExcluders(excludedEndpoints, ep.Address())
 		retryEndpoint, retryDetails := c.router.prepareBeginTransactionRequestWithExclusionsAndDetails(ctx, req, retryExcludedEndpoints)
@@ -459,12 +511,14 @@ func (c *locationAwareSpannerClient) BeginTransaction(ctx context.Context, req *
 		c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/BeginTransaction", retryEndpoint, retryClient == c.defaultClient, retryDetails)
 		resp, err = retryClient.BeginTransaction(ctx, req, appendUnaryRetryOverrideOptions(opts, requestID, 2)...)
 		if err == nil {
+			c.clearEndpointCooldown(retryEndpoint)
 			c.observeBeginTransactionResponse(req, resp, retryEndpoint)
 			return resp, nil
 		}
 		c.maybeExcludeEndpointOnNextCall(retryEndpoint, logicalRequestKey, err)
 		return nil, err
 	}
+	c.clearEndpointCooldown(ep)
 	c.observeBeginTransactionResponse(req, resp, ep)
 	return resp, nil
 }
@@ -484,6 +538,9 @@ func (c *locationAwareSpannerClient) Commit(ctx context.Context, req *spannerpb.
 	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/Commit", ep, client == c.defaultClient, details)
 	resp, err := client.Commit(ctx, req, opts...)
 	c.maybeExcludeEndpointOnNextCall(ep, logicalRequestKey, err)
+	if err == nil {
+		c.clearEndpointCooldown(ep)
+	}
 	c.router.observeCommitResponse(resp)
 	c.router.clearTransactionAffinity(string(req.GetTransactionId()))
 	return resp, err
@@ -500,6 +557,9 @@ func (c *locationAwareSpannerClient) Rollback(ctx context.Context, req *spannerp
 	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/Rollback", ep, client == c.defaultClient, details)
 	err := client.Rollback(ctx, req, opts...)
 	c.maybeExcludeEndpointOnNextCall(ep, logicalRequestKey, err)
+	if err == nil {
+		c.clearEndpointCooldown(ep)
+	}
 	c.router.clearTransactionAffinity(string(req.GetTransactionId()))
 	return err
 }
