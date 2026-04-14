@@ -2285,7 +2285,7 @@ func TestIntegration_WatchQueryCancel(t *testing.T) {
 }
 
 func TestIntegration_MissingDocs(t *testing.T) {
-	// skipIfEnterprise(t, "MissingDocs")
+	skipIfEdition(t, "show_missing", editionEnterprise)
 	ctx := context.Background()
 	h := testHelper{t}
 	client := integrationClient(t)
