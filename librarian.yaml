@@ -1126,7 +1126,7 @@ libraries:
             - F_open_telemetry_attributes
           path: google/cloud/financialservices/v1
   - name: firestore
-    version: 1.21.0
+    version: 1.22.0
     apis:
       - path: google/firestore/v1
       - path: google/firestore/admin/v1

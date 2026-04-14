@@ -1303,7 +1303,7 @@ libraries:
       - internal/generated/snippets/financialservices/
     tag_format: '{id}/v{version}'
   - id: firestore
-    version: 1.21.0
+    version: 1.22.0
     last_generated_commit: ""
     apis:
       - path: google/firestore/admin/v1
