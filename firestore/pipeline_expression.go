@@ -809,5 +809,3 @@ func (e *AliasedExpression) isSelectable() {}
 
 // Ensure that AliasedExpr implements the Selectable interface.
 var _ Selectable = (*AliasedExpression)(nil)
-
-
