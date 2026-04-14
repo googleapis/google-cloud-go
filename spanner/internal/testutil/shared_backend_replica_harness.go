@@ -30,6 +30,8 @@ import (
 )
 
 const (
+	// MethodRead identifies unary Read requests recorded by the shared replica
+	// harness.
 	MethodRead = "READ"
 )
 
@@ -44,6 +46,8 @@ type HookedUnaryReplicaServer struct {
 	requests     map[string][]proto.Message
 }
 
+// NewHookedUnaryReplicaServer creates a replica-fronting test server backed by
+// the shared in-memory Spanner backend.
 func NewHookedUnaryReplicaServer(backend InMemSpannerServer) *HookedUnaryReplicaServer {
 	return &HookedUnaryReplicaServer{
 		InMemSpannerServer: backend,
@@ -52,12 +56,14 @@ func NewHookedUnaryReplicaServer(backend InMemSpannerServer) *HookedUnaryReplica
 	}
 }
 
+// PutMethodErrors replaces the queued injected errors for the given method.
 func (s *HookedUnaryReplicaServer) PutMethodErrors(method string, errs ...error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.methodErrors[method] = append([]error(nil), errs...)
 }
 
+// Requests returns a copy of the captured requests for the given method.
 func (s *HookedUnaryReplicaServer) Requests(method string) []proto.Message {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -67,6 +73,8 @@ func (s *HookedUnaryReplicaServer) Requests(method string) []proto.Message {
 	return out
 }
 
+// ExecuteSql records and optionally injects an error before delegating to the
+// shared backend.
 func (s *HookedUnaryReplicaServer) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest) (*spannerpb.ResultSet, error) {
 	s.recordRequest(MethodExecuteSql, req)
 	if err := s.nextError(MethodExecuteSql); err != nil {
@@ -75,6 +83,8 @@ func (s *HookedUnaryReplicaServer) ExecuteSql(ctx context.Context, req *spannerp
 	return s.InMemSpannerServer.ExecuteSql(ctx, req)
 }
 
+// ExecuteStreamingSql records and optionally injects an error before
+// delegating to the shared backend.
 func (s *HookedUnaryReplicaServer) ExecuteStreamingSql(req *spannerpb.ExecuteSqlRequest, stream spannerpb.Spanner_ExecuteStreamingSqlServer) error {
 	s.recordRequest(MethodExecuteStreamingSql, req)
 	if err := s.nextError(MethodExecuteStreamingSql); err != nil {
@@ -83,6 +93,8 @@ func (s *HookedUnaryReplicaServer) ExecuteStreamingSql(req *spannerpb.ExecuteSql
 	return s.InMemSpannerServer.ExecuteStreamingSql(req, stream)
 }
 
+// Read records and optionally injects an error before delegating to the shared
+// backend.
 func (s *HookedUnaryReplicaServer) Read(ctx context.Context, req *spannerpb.ReadRequest) (*spannerpb.ResultSet, error) {
 	s.recordRequest(MethodRead, req)
 	if err := s.nextError(MethodRead); err != nil {
@@ -97,6 +109,8 @@ func (s *HookedUnaryReplicaServer) Read(ctx context.Context, req *spannerpb.Read
 	})
 }
 
+// BeginTransaction records and optionally injects an error before delegating to
+// the shared backend.
 func (s *HookedUnaryReplicaServer) BeginTransaction(ctx context.Context, req *spannerpb.BeginTransactionRequest) (*spannerpb.Transaction, error) {
 	s.recordRequest(MethodBeginTransaction, req)
 	if err := s.nextError(MethodBeginTransaction); err != nil {
@@ -105,6 +119,8 @@ func (s *HookedUnaryReplicaServer) BeginTransaction(ctx context.Context, req *sp
 	return s.InMemSpannerServer.BeginTransaction(ctx, req)
 }
 
+// Commit records and optionally injects an error before delegating to the
+// shared backend.
 func (s *HookedUnaryReplicaServer) Commit(ctx context.Context, req *spannerpb.CommitRequest) (*spannerpb.CommitResponse, error) {
 	s.recordRequest(MethodCommitTransaction, req)
 	if err := s.nextError(MethodCommitTransaction); err != nil {
@@ -133,6 +149,9 @@ func (s *HookedUnaryReplicaServer) nextError(method string) error {
 	return err
 }
 
+// SharedBackendSpannerReplicaHarness exposes one shared in-memory backend
+// through a default listener and multiple replica listeners for location-aware
+// routing tests.
 type SharedBackendSpannerReplicaHarness struct {
 	Backend InMemSpannerServer
 
