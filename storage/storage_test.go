@@ -517,8 +517,8 @@ func TestSignedURL_SchemelessEndpoint(t *testing.T) {
 	defer client.Close()
 
 	u, err := client.Bucket("my-bucket").SignedURL("my-object", &SignedURLOptions{
-		Method:  "GET",
-		Expires: time.Now().Add(time.Hour),
+		Method:         "GET",
+		Expires:        time.Now().Add(time.Hour),
 		GoogleAccessID: "xxx@xxx.com",
 		SignBytes: func(b []byte) ([]byte, error) {
 			return []byte("signed"), nil
