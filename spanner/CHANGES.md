@@ -6,7 +6,7 @@
 
 * feat(spanner): add EnableDirectAccess field to ClientConfig (#14287) ([6adf5b7](https://github.com/googleapis/google-cloud-go/commit/6adf5b7))
 * feat(spanner): Switch to using builtin open telemetry for EEF (#14193)([751febd](https://github.com/googleapis/google-cloud-go/commit/751febd))
-*  feat(spanner): complete location-aware routing resilience and observability (#14418 ) ([77aa4df](https://github.com/googleapis/google-cloud-go/commit/77aa4df))
+* feat(spanner): complete location-aware routing resilience and observability (#14418 ) ([77aa4df](https://github.com/googleapis/google-cloud-go/commit/77aa4df))
 
 ###  Bug Fixes
 
