@@ -202,8 +202,8 @@ func Round(numericExprOrFieldPath any) Expression {
 }
 
 // RoundToPrecision creates an expression that rounds a number to a specified number of decimal places.
-// If places is positive, rounds off digits to the left of the decimal point.
-// If places is negative, rounds off digits to the right of the decimal point.
+// If places is positive, rounds off digits to the right of the decimal point.
+// If places is negative, rounds off digits to the left of the decimal point.
 // - numericExprOrFieldPath can be a field path string, [FieldPath] or an [Expression] that returns a number when evaluated.
 // - places can be an int, int32, int64 or [Expression].
 //
@@ -745,11 +745,12 @@ func CharLength(exprOrFieldPath any) Expression {
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
 func StringConcat(exprOrFieldPath any, otherStrings ...any) Expression {
-	exprs := make([]Expression, len(otherStrings))
+	args := make([]Expression, 1+len(otherStrings))
+	args[0] = asFieldExpr(exprOrFieldPath)
 	for i, v := range otherStrings {
-		exprs[i] = asStringExpr(v)
+		args[i+1] = asStringExpr(v)
 	}
-	return newBaseFunction("string_concat", append([]Expression{asFieldExpr(exprOrFieldPath)}, exprs...))
+	return newBaseFunction("string_concat", args)
 }
 
 // StringRepeat creates an expression that repeats a string a specified number of times.
@@ -1150,7 +1151,9 @@ func IfNull(exprOrField any, elseValueOrExpr any) Expression {
 func Coalesce(exprOrField any, replacement any, others ...any) Expression {
 	exprs := make([]Expression, 0, len(others)+2)
 	exprs = append(exprs, asFieldExpr(exprOrField), toExprOrConstant(replacement))
-	exprs = append(exprs, toArrayOfExprOrConstant(others)...)
+	for _, v := range others {
+		exprs = append(exprs, toExprOrConstant(v))
+	}
 	return newBaseFunction("coalesce", exprs)
 }
 
@@ -1178,7 +1181,9 @@ func Coalesce(exprOrField any, replacement any, others ...any) Expression {
 func SwitchOn(condition BooleanExpression, result any, others ...any) Expression {
 	exprs := make([]Expression, 0, len(others)+2)
 	exprs = append(exprs, condition, toExprOrConstant(result))
-	exprs = append(exprs, toArrayOfExprOrConstant(others)...)
+	for _, v := range others {
+		exprs = append(exprs, toExprOrConstant(v))
+	}
 	return newBaseFunction("switch_on", exprs)
 }
 
@@ -1238,7 +1243,9 @@ func MapRemove(exprOrField any, strOrExprkey any) Expression {
 func MapSet(exprOrField any, key any, value any, moreKeysAndValues ...any) Expression {
 	exprs := make([]Expression, 0, len(moreKeysAndValues)+3)
 	exprs = append(exprs, asFieldExpr(exprOrField), toExprOrConstant(key), toExprOrConstant(value))
-	exprs = append(exprs, toArrayOfExprOrConstant(moreKeysAndValues)...)
+	for _, v := range moreKeysAndValues {
+		exprs = append(exprs, toExprOrConstant(v))
+	}
 	return newBaseFunction("map_set", exprs)
 }
 
