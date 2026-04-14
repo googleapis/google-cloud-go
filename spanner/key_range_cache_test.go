@@ -432,17 +432,11 @@ func TestKeyRangeCache_FillRoutingHintWithDetailsTracksSelectionAndSkipReasons(t
 			{
 				GroupUid:    5,
 				Generation:  []byte("1"),
-				LeaderIndex: 1,
+				LeaderIndex: 3,
 				Tablets: []*sppb.Tablet{
 					{
 						TabletUid:     1,
 						ServerAddress: "server-first",
-						Incarnation:   []byte("1"),
-						Distance:      0,
-					},
-					{
-						TabletUid:     2,
-						ServerAddress: "server-leader",
 						Incarnation:   []byte("1"),
 						Distance:      0,
 					},
@@ -455,6 +449,12 @@ func TestKeyRangeCache_FillRoutingHintWithDetailsTracksSelectionAndSkipReasons(t
 					{
 						TabletUid:     4,
 						ServerAddress: "server-excluded",
+						Incarnation:   []byte("1"),
+						Distance:      0,
+					},
+					{
+						TabletUid:     2,
+						ServerAddress: "server-leader",
 						Incarnation:   []byte("1"),
 						Distance:      0,
 					},
@@ -518,7 +518,7 @@ func TestKeyRangeCache_FillRoutingHintWithDetailsMarksCacheMiss(t *testing.T) {
 	if endpoint != nil {
 		t.Fatalf("expected nil endpoint on cache miss, got %#v", endpoint)
 	}
-	if got, want := details.defaultReasonCode, "range_cache_miss"; got != want {
+	if got, want := details.defaultReasonCode, routeReasonRangeCacheMiss; got != want {
 		t.Fatalf("defaultReasonCode=%q, want %q", got, want)
 	}
 }
