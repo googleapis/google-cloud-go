@@ -20,9 +20,6 @@ import (
 )
 
 // Selectable is an interface for expressions that can be selected in a pipeline.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 type Selectable interface {
 	// getSelectionDetails returns the output alias and the underlying expression.
 	getSelectionDetails() (alias string, expr Expression)
@@ -43,9 +40,6 @@ type Selectable interface {
 //
 // The [Expression] interface provides a fluent API for building expressions. You can chain together
 // method calls to create complex expressions.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 type Expression interface {
 	isExpr()
 	toProto() (*pb.Value, error)
@@ -845,6 +839,8 @@ func (b *baseExpression) VectorLength() Expression               { return Vector
 func (b *baseExpression) Ascending() Ordering  { return Ascending(b) }
 func (b *baseExpression) Descending() Ordering { return Descending(b) }
 
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func (b *baseExpression) GeoDistance(location *latlng.LatLng) Expression {
 	return GeoDistance(b, location)
 }
@@ -858,9 +854,6 @@ var _ Expression = (*baseExpression)(nil)
 
 // AliasedExpression represents an expression with an alias.
 // It implements the [Selectable] interface, allowing it to be used in projection stages like `Select` and `AddFields`.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 type AliasedExpression struct {
 	expr  Expression
 	alias string

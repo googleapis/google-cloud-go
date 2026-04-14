@@ -44,9 +44,6 @@ var (
 // NOTE: The chained stages do not prescribe exactly how Firestore will execute the pipeline.
 // Instead, Firestore only guarantees that the result is the same as if the chained stages were
 // executed in order.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 type Pipeline struct {
 	c               *Client
 	stages          []pipelineStage
@@ -73,9 +70,6 @@ type executeSettings struct {
 }
 
 // ExecuteOption is an option for executing a pipeline query.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 type ExecuteOption interface {
 	apply(*executeSettings)
 }
@@ -95,9 +89,6 @@ func newFuncExecuteOption(f func(*executeSettings)) *funcExecuteOption {
 }
 
 // ExplainMode is the execution mode for pipeline explain.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 type ExplainMode string
 
 const (
@@ -111,9 +102,6 @@ type executeExplainOptions struct {
 }
 
 // WithExplainMode sets the execution mode for pipeline explain.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func WithExplainMode(mode ExplainMode) ExecuteOption {
 	return newFuncExecuteOption(func(eo *executeSettings) {
 		eo.ExplainOptions = &executeExplainOptions{Mode: mode}
@@ -121,9 +109,6 @@ func WithExplainMode(mode ExplainMode) ExecuteOption {
 }
 
 // StageOption is an option for configuring a pipeline stage.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 type StageOption interface {
 	applyStage(options map[string]any)
 }
@@ -131,9 +116,6 @@ type StageOption interface {
 // RawOptions specifies raw options to be passed to the Firestore backend.
 // These options are not validated by the SDK and are passed directly to the backend.
 // Options specified here will take precedence over any options with the same name set by the SDK.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 type RawOptions map[string]any
 
 func (r RawOptions) applyStage(options map[string]any) {
@@ -205,53 +187,35 @@ func (r RawOptions) apply(eo *executeSettings) {
 
 // Fields is a helper function that returns its arguments as a slice of any.
 // It is used to provide variadic-like ergonomics for pipeline stages that accept a slice of fields or expressions.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func Fields(f ...any) []any {
 	return []any(f)
 }
 
 // Orders is a helper function that returns its arguments as a slice of Ordering.
 // It is used to provide variadic-like ergonomics for the Sort pipeline stage.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func Orders(o ...Ordering) []Ordering {
 	return []Ordering(o)
 }
 
 // Accumulators is a helper function that returns its arguments as a slice of *AliasedAggregate.
 // It is used to provide variadic-like ergonomics for the Aggregate pipeline stage.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func Accumulators(a ...*AliasedAggregate) []*AliasedAggregate {
 	return []*AliasedAggregate(a)
 }
 
 // Selectables is a helper function that returns its arguments as a slice of Selectable.
 // It is used to provide variadic-like ergonomics for pipeline stages that accept a slice of Selectable expressions.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func Selectables(s ...Selectable) []Selectable {
 	return []Selectable(s)
 }
 
 // AliasedExpressions is a helper function that returns its arguments as a slice of *AliasedExpression.
 // It is used to provide variadic-like ergonomics for the [Pipeline.Define] pipeline stage.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func AliasedExpressions(v ...*AliasedExpression) []*AliasedExpression {
 	return v
 }
 
 // Execute executes the pipeline and returns a snapshot of the results.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func (p *Pipeline) Execute(ctx context.Context, opts ...ExecuteOption) *PipelineSnapshot {
 	newP := p
 	if len(opts) > 0 {
@@ -372,9 +336,6 @@ func (p *Pipeline) copy() *Pipeline {
 
 // WithReadOptions specifies constraints for accessing documents from the database,
 // such as ReadTime.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func (p *Pipeline) WithReadOptions(opts ...ReadOption) *Pipeline {
 	newP := p.copy()
 	for _, opt := range opts {
@@ -396,18 +357,12 @@ func (p *Pipeline) append(s pipelineStage) *Pipeline {
 }
 
 // LimitOption is an option for a Limit pipeline stage.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 type LimitOption interface {
 	StageOption
 	isLimitOption()
 }
 
 // Limit limits the maximum number of documents returned by previous stages.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func (p *Pipeline) Limit(limit int, opts ...LimitOption) *Pipeline {
 	if p.err != nil {
 		return p
@@ -422,9 +377,6 @@ func (p *Pipeline) Limit(limit int, opts ...LimitOption) *Pipeline {
 }
 
 // OrderingDirection is the sort direction for pipeline result ordering.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 type OrderingDirection string
 
 const (
@@ -436,34 +388,22 @@ const (
 )
 
 // Ordering specifies the field and direction for sorting.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 type Ordering struct {
 	Expr      Expression
 	Direction OrderingDirection
 }
 
 // Ascending creates an Ordering for ascending sort direction.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func Ascending(expr Expression) Ordering {
 	return Ordering{Expr: expr, Direction: OrderingAsc}
 }
 
 // Descending creates an Ordering for descending sort direction.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func Descending(expr Expression) Ordering {
 	return Ordering{Expr: expr, Direction: OrderingDesc}
 }
 
 // SortOption is an option for a Sort pipeline stage.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 type SortOption interface {
 	StageOption
 	isSortOption()
@@ -471,9 +411,6 @@ type SortOption interface {
 
 // Sort sorts the documents by the given fields and directions.
 // Use [Orders] to provide variadic-like ergonomics for the orders argument.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func (p *Pipeline) Sort(orders []Ordering, opts ...SortOption) *Pipeline {
 	if p.err != nil {
 		return p
@@ -488,9 +425,6 @@ func (p *Pipeline) Sort(orders []Ordering, opts ...SortOption) *Pipeline {
 }
 
 // OffsetOption is an option for an Offset pipeline stage.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 type OffsetOption interface {
 	StageOption
 	isOffsetOption()
@@ -508,9 +442,6 @@ type OffsetOption interface {
 //	  client.Pipeline().Collection("books").
 //		  .Offset(20)   // Skip the first 20 results
 //		  .Limit(20)    // Take the next 20 results
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func (p *Pipeline) Offset(offset int, opts ...OffsetOption) *Pipeline {
 	if p.err != nil {
 		return p
@@ -525,9 +456,6 @@ func (p *Pipeline) Offset(offset int, opts ...OffsetOption) *Pipeline {
 }
 
 // SelectOption is an option for a Select pipeline stage.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 type SelectOption interface {
 	StageOption
 	isSelectOption()
@@ -548,9 +476,6 @@ type SelectOption interface {
 //		client.Pipeline().Collection("users").Select(Fields(FieldOf([]string{"info", "email"})))
 //		client.Pipeline().Collection("users").Select([]any{"info.email", "name"})
 //	 	client.Pipeline().Collection("users").Select(Fields(Add("age", 5).As("agePlus5")))
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func (p *Pipeline) Select(fields []any, opts ...SelectOption) *Pipeline {
 	if p.err != nil {
 		return p
@@ -570,9 +495,6 @@ func (p *Pipeline) Select(fields []any, opts ...SelectOption) *Pipeline {
 }
 
 // DistinctOption is an option for a Distinct pipeline stage.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 type DistinctOption interface {
 	StageOption
 	isDistinctOption()
@@ -583,9 +505,6 @@ type DistinctOption interface {
 // You can optionally specify fields or [Selectable] expressions to determine distinctness.
 // If no fields are specified, the entire document is used to determine distinctness.
 // Use [Fields] to provide variadic-like ergonomics for the fields argument.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func (p *Pipeline) Distinct(fields []any, opts ...DistinctOption) *Pipeline {
 	if p.err != nil {
 		return p
@@ -605,9 +524,6 @@ func (p *Pipeline) Distinct(fields []any, opts ...DistinctOption) *Pipeline {
 }
 
 // AddFieldsOption is an option for an AddFields pipeline stage.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 type AddFieldsOption interface {
 	StageOption
 	isAddFieldsOption()
@@ -621,9 +537,6 @@ type AddFieldsOption interface {
 //
 // The added fields are defined using [Selectable]'s.
 // Use [Selectables] to provide variadic-like ergonomics for the fields argument.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func (p *Pipeline) AddFields(fields []Selectable, opts ...AddFieldsOption) *Pipeline {
 	if p.err != nil {
 		return p
@@ -643,9 +556,6 @@ func (p *Pipeline) AddFields(fields []Selectable, opts ...AddFieldsOption) *Pipe
 }
 
 // RemoveFieldsOption is an option for an RemoveFields pipeline stage.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 type RemoveFieldsOption interface {
 	StageOption
 	isRemoveFieldsOption()
@@ -654,9 +564,6 @@ type RemoveFieldsOption interface {
 // RemoveFields removes fields from outputs from previous stages.
 // fieldpaths can be a string or a [FieldPath] or an expression obtained by calling [FieldOf].
 // Use [Fields] to provide variadic-like ergonomics for the fields argument.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func (p *Pipeline) RemoveFields(fields []any, opts ...RemoveFieldsOption) *Pipeline {
 	if p.err != nil {
 		return p
@@ -676,9 +583,6 @@ func (p *Pipeline) RemoveFields(fields []any, opts ...RemoveFieldsOption) *Pipel
 }
 
 // WhereOption is an option for a Where pipeline stage.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 type WhereOption interface {
 	StageOption
 	isWhereOption()
@@ -687,9 +591,6 @@ type WhereOption interface {
 // Where filters the documents from previous stages to only include those matching the specified [BooleanExpression].
 //
 // This stage allows you to apply conditions to the data, similar to a "WHERE" clause in SQL.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func (p *Pipeline) Where(condition BooleanExpression, opts ...WhereOption) *Pipeline {
 	if p.err != nil {
 		return p
@@ -709,9 +610,6 @@ func (p *Pipeline) Where(condition BooleanExpression, opts ...WhereOption) *Pipe
 }
 
 // AggregateOption is an option for executing a pipeline aggregation stage.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 type AggregateOption interface {
 	StageOption
 	applyAggregate(options map[string]any)
@@ -740,9 +638,6 @@ func newFuncAggregateOption(f func(map[string]any)) *funcAggregateOption {
 
 // WithAggregateGroups specifies the fields or expressions to group the documents by.
 // Each of the grouping keys can be a string field path, a [FieldPath], or a [Selectable] expression.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func WithAggregateGroups(groups ...any) AggregateOption {
 	return newFuncAggregateOption(func(ao map[string]any) {
 		g, ok := ao["groups"].([]any)
@@ -763,9 +658,6 @@ func WithAggregateGroups(groups ...any) AggregateOption {
 //
 //	client.Pipeline().Collection("users").
 //		Aggregate(Accumulators(Sum("age").As("age_sum")))
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func (p *Pipeline) Aggregate(accumulators []*AliasedAggregate, opts ...AggregateOption) *Pipeline {
 	if p.err != nil {
 		return p
@@ -785,9 +677,6 @@ func (p *Pipeline) Aggregate(accumulators []*AliasedAggregate, opts ...Aggregate
 }
 
 // UnnestOption is an option for executing a pipeline unnest stage.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 type UnnestOption interface {
 	StageOption
 	isUnnestOption()
@@ -810,9 +699,6 @@ func newFuncUnnestOption(f func(map[string]any)) *funcUnnestOption {
 }
 
 // WithUnnestIndexField specifies the name of the field to store the array index of the unnested element.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func WithUnnestIndexField(indexField any) UnnestOption {
 	return newFuncUnnestOption(func(uo map[string]any) {
 		uo["index_field"] = indexField
@@ -824,9 +710,6 @@ func WithUnnestIndexField(indexField any) UnnestOption {
 // Each output document is a copy of the input document, but the array field is replaced by an element from the array.
 // The `field` parameter specifies the array field to unnest. It can be a string representing the field path or a [Selectable] expression.
 // The alias of the selectable will be used as the new field name.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func (p *Pipeline) Unnest(field Selectable, opts ...UnnestOption) *Pipeline {
 	if p.err != nil {
 		return p
@@ -847,9 +730,6 @@ func (p *Pipeline) Unnest(field Selectable, opts ...UnnestOption) *Pipeline {
 
 // UnnestWithAlias produces a document for each element in an array field, with a specified alias for the unnested field.
 // It can optionally take UnnestOptions.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func (p *Pipeline) UnnestWithAlias(fieldpath any, alias string, opts ...UnnestOption) *Pipeline {
 	if p.err != nil {
 		return p
@@ -881,9 +761,6 @@ func (p *Pipeline) UnnestWithAlias(fieldpath any, alias string, opts ...UnnestOp
 }
 
 // UnionOption is an option for a Union pipeline stage.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 type UnionOption interface {
 	StageOption
 	isUnionOption()
@@ -900,9 +777,6 @@ type UnionOption interface {
 //	// Emit documents from books collection and magazines collection.
 //	client.Pipeline().Collection("books").
 //		Union(client.Pipeline().Collection("magazines"))
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func (p *Pipeline) Union(other *Pipeline, opts ...UnionOption) *Pipeline {
 	if p.err != nil {
 		return p
@@ -926,9 +800,6 @@ func (p *Pipeline) Union(other *Pipeline, opts ...UnionOption) *Pipeline {
 }
 
 // SampleMode defines the mode for the sample stage.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 type SampleMode string
 
 const (
@@ -939,34 +810,22 @@ const (
 )
 
 // Sampler is used to define a sample operation.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 type Sampler struct {
 	Size any
 	Mode SampleMode
 }
 
 // WithDocLimit creates a Sampler for sampling a fixed number of documents.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func WithDocLimit(limit int) *Sampler {
 	return &Sampler{Size: limit, Mode: SampleModeDocuments}
 }
 
 // WithPercentage creates a Sampler for sampling a percentage of documents.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func WithPercentage(percentage float64) *Sampler {
 	return &Sampler{Size: percentage, Mode: SampleModePercent}
 }
 
 // SampleOption is an option for a Sample pipeline stage.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 type SampleOption interface {
 	StageOption
 	isSampleOption()
@@ -984,9 +843,6 @@ type SampleOption interface {
 //
 //	// Sample 50% of books.
 //	client.Pipeline().Collection("books").Sample(WithPercentage(0.5))
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func (p *Pipeline) Sample(sampler *Sampler, opts ...SampleOption) *Pipeline {
 	if p.err != nil {
 		return p
@@ -1006,9 +862,6 @@ func (p *Pipeline) Sample(sampler *Sampler, opts ...SampleOption) *Pipeline {
 }
 
 // ReplaceWithOption is an option for a ReplaceWith pipeline stage.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 type ReplaceWithOption interface {
 	StageOption
 	isReplaceWithOption()
@@ -1025,9 +878,6 @@ type ReplaceWithOption interface {
 //	// Emit parents as document.
 //	client.Pipeline().Collection("people").ReplaceWith("parents")
 //	// Output: { "father": "John Doe Sr.", "mother": "Jane Doe" }
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func (p *Pipeline) ReplaceWith(fieldpathOrExpr any, opts ...ReplaceWithOption) *Pipeline {
 	if p.err != nil {
 		return p
@@ -1047,9 +897,6 @@ func (p *Pipeline) ReplaceWith(fieldpathOrExpr any, opts ...ReplaceWithOption) *
 }
 
 // PipelineDistanceMeasure is the distance measure for find_nearest pipeline stage.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 type PipelineDistanceMeasure string
 
 const (
@@ -1062,9 +909,6 @@ const (
 )
 
 // FindNearestOption is an option for a FindNearest pipeline stage.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 type FindNearestOption interface {
 	StageOption
 	isFindNearestOption()
@@ -1087,9 +931,6 @@ func newFuncFindNearestOption(f func(map[string]any)) *funcFindNearestOption {
 }
 
 // WithFindNearestLimit specifies the maximum number of nearest neighbors to return.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func WithFindNearestLimit(limit int) FindNearestOption {
 	return newFuncFindNearestOption(func(ao map[string]any) {
 		ao["limit"] = limit
@@ -1097,9 +938,6 @@ func WithFindNearestLimit(limit int) FindNearestOption {
 }
 
 // WithFindNearestDistanceField specifies the name of the field to store the calculated distance.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func WithFindNearestDistanceField(field string) FindNearestOption {
 	return newFuncFindNearestOption(func(ao map[string]any) {
 		ao["distance_field"] = field
@@ -1114,9 +952,6 @@ func WithFindNearestDistanceField(field string) FindNearestOption {
 //
 // The vectorField can be a string, a FieldPath or an Expr.
 // The queryVector can be Vector32, Vector64, []float32, or []float64.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func (p *Pipeline) FindNearest(vectorField any, queryVector any, measure PipelineDistanceMeasure, opts ...FindNearestOption) *Pipeline {
 	if p.err != nil {
 		return p
@@ -1258,9 +1093,6 @@ func (p *Pipeline) Search(opts ...SearchOption) *Pipeline {
 //	client.Pipeline().Collection("books").
 //		RawStage("where", []any{LessThan(FieldOf("published"), 1900)}).
 //		Select(Fields("title", "author"))
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func (p *Pipeline) RawStage(name string, args []any, opts ...StageOption) *Pipeline {
 	if p.err != nil {
 		return p
@@ -1413,9 +1245,6 @@ func (p *Pipeline) Delete(opts ...DeleteOption) *Pipeline {
 //	//     }
 //	//   }
 //	// ]
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func (p *Pipeline) ToScalarExpression() Expression {
 	return newBaseFunction("scalar", []Expression{newPipelineValueExpression(p)})
 }
@@ -1441,17 +1270,11 @@ func (p *Pipeline) ToScalarExpression() Expression {
 //	//     ]
 //	//   }
 //	// ]
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func (p *Pipeline) ToArrayExpression() Expression {
 	return newBaseFunction("array", []Expression{newPipelineValueExpression(p)})
 }
 
 // DefineOption is an option for a Define pipeline stage.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 type DefineOption interface {
 	StageOption
 	isDefineOption()
@@ -1477,9 +1300,6 @@ type DefineOption interface {
 //		)).
 //		Where(LessThan(Variable("discountedPrice"), 100)).
 //		Select(Fields("name", Variable("newStock")))
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func (p *Pipeline) Define(variables []*AliasedExpression, opts ...DefineOption) *Pipeline {
 	if p.err != nil {
 		return p

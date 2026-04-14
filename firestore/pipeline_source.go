@@ -18,17 +18,11 @@ import "fmt"
 
 // PipelineSource is a factory for creating Pipeline instances.
 // It is obtained by calling [Client.Pipeline].
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 type PipelineSource struct {
 	client *Client
 }
 
 // WithForceIndex specifies an index to force the query to use.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func WithForceIndex(index string) CollectionSourceOption {
 	return newFuncOption(func(options map[string]any) {
 		options["force_index"] = index
@@ -36,9 +30,6 @@ func WithForceIndex(index string) CollectionSourceOption {
 }
 
 // WithIgnoreIndexFields specifies fields to ignore when selecting an index.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func WithIgnoreIndexFields(fields ...string) CollectionSourceOption {
 	return newFuncOption(func(options map[string]any) {
 		options["ignore_index_fields"] = fields
@@ -46,27 +37,18 @@ func WithIgnoreIndexFields(fields ...string) CollectionSourceOption {
 }
 
 // CollectionOption is an option for a Collection pipeline stage.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 type CollectionOption interface {
 	StageOption
 	isCollectionOption()
 }
 
 // CollectionGroupOption is an option for a CollectionGroup pipeline stage.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 type CollectionGroupOption interface {
 	StageOption
 	isCollectionGroupOption()
 }
 
 // CollectionSourceOption is an option that can be applied to both Collection and CollectionGroup pipeline stages.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 type CollectionSourceOption interface {
 	CollectionOption
 	CollectionGroupOption
@@ -92,9 +74,6 @@ func newFuncOption(f func(map[string]any)) *funcOption {
 }
 
 // Collection creates a new [Pipeline] that operates on the specified Firestore collection.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func (ps *PipelineSource) Collection(path string, opts ...CollectionOption) *Pipeline {
 	options := make(map[string]any)
 	for _, opt := range opts {
@@ -114,9 +93,6 @@ func (ps *PipelineSource) Collection(path string, opts ...CollectionOption) *Pip
 //
 // CollectionGroup can be used to query across all "Cities" regardless of
 // its parent "Countries".
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func (ps *PipelineSource) CollectionGroup(collectionID string, opts ...CollectionGroupOption) *Pipeline {
 	options := make(map[string]any)
 	for _, opt := range opts {
@@ -128,18 +104,12 @@ func (ps *PipelineSource) CollectionGroup(collectionID string, opts ...Collectio
 }
 
 // DatabaseOption is an option for a Database pipeline stage.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 type DatabaseOption interface {
 	StageOption
 	isDatabaseOption()
 }
 
 // Database creates a new [Pipeline] that operates on all documents in the Firestore database.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func (ps *PipelineSource) Database(opts ...DatabaseOption) *Pipeline {
 	options := make(map[string]any)
 	for _, opt := range opts {
@@ -151,18 +121,12 @@ func (ps *PipelineSource) Database(opts ...DatabaseOption) *Pipeline {
 }
 
 // DocumentsOption is an option for a Documents pipeline stage.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 type DocumentsOption interface {
 	StageOption
 	isDocumentsOption()
 }
 
 // Documents creates a new [Pipeline] that operates on a specific set of Firestore documents.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func (ps *PipelineSource) Documents(refs []*DocumentRef, opts ...DocumentsOption) *Pipeline {
 	options := make(map[string]any)
 	for _, opt := range opts {
@@ -182,35 +146,23 @@ func (ps *PipelineSource) Documents(refs []*DocumentRef, opts ...DocumentsOption
 
 // CreateFromQuery creates a new [Pipeline] from the given [Queryer]. Under the hood, this will
 // translate the query semantics (order by document ID, etc.) to an equivalent pipeline.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func (ps *PipelineSource) CreateFromQuery(query Queryer) *Pipeline {
 	return query.query().Pipeline()
 }
 
 // CreateFromAggregationQuery creates a new [Pipeline] from the given [AggregationQuery]. Under the hood, this will
 // translate the query semantics (order by document ID, etc.) to an equivalent pipeline.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func (ps *PipelineSource) CreateFromAggregationQuery(query *AggregationQuery) *Pipeline {
 	return query.Pipeline()
 }
 
 // LiteralsOption is an option for a Literals pipeline stage.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 type LiteralsOption interface {
 	StageOption
 	isLiteralsOption()
 }
 
 // Literals creates a new [Pipeline] that operates on a fixed set of predefined document objects.
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func (ps *PipelineSource) Literals(documents []map[string]any, opts ...LiteralsOption) *Pipeline {
 	options := make(map[string]any)
 	for _, opt := range opts {
@@ -237,9 +189,6 @@ func (ps *PipelineSource) Literals(documents []map[string]any, opts ...LiteralsO
 //				Aggregate(Accumulators(Average("rating").As("avg_rating"))).
 //				ToScalarExpression().As("average_rating"),
 //		))
-//
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
-// regardless of any other documented package stability guarantees.
 func Subcollection(path string) *Pipeline {
 	return newPipeline(nil, newInputStageSubcollection(path))
 }
