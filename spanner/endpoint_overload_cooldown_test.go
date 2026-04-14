@@ -21,13 +21,12 @@ import (
 	"time"
 )
 
-func TestEndpointOverloadCooldownTracker_RequiresTwoSuccessesToClearState(t *testing.T) {
+func TestEndpointOverloadCooldownTracker_SuccessDoesNotClearFailureState(t *testing.T) {
 	clock := newLifecycleTestClock(time.Unix(100, 0))
 	tracker := newEndpointOverloadCooldownTrackerWithOptions(
 		time.Minute,
 		time.Minute,
 		10*time.Minute,
-		2,
 		clock.Now,
 		func(n int64) int64 {
 			return n - 1
@@ -44,14 +43,16 @@ func TestEndpointOverloadCooldownTracker_RequiresTwoSuccessesToClearState(t *tes
 		t.Fatal("expected cooldown to expire after advancing test clock")
 	}
 
-	tracker.recordSuccess("replica-a:443")
 	if _, ok := tracker.entries["replica-a:443"]; !ok {
-		t.Fatal("expected first success not to clear failure state")
+		t.Fatal("expected expired cooldown to retain failure state until reset window passes")
 	}
 
-	tracker.recordSuccess("replica-a:443")
+	clock.Advance(9 * time.Minute)
+	if tracker.isCoolingDown("replica-a:443") {
+		t.Fatal("expected endpoint not to be cooling down after extended quiet period")
+	}
 	if _, ok := tracker.entries["replica-a:443"]; ok {
-		t.Fatal("expected second consecutive success to clear failure state")
+		t.Fatal("expected failure state to clear only after the reset window passes")
 	}
 }
 
@@ -61,7 +62,6 @@ func TestEndpointOverloadCooldownTracker_UsesFullJitterWithinCooldownRange(t *te
 		10*time.Second,
 		10*time.Second,
 		10*time.Minute,
-		2,
 		clock.Now,
 		func(n int64) int64 {
 			return 0
@@ -74,5 +74,35 @@ func TestEndpointOverloadCooldownTracker_UsesFullJitterWithinCooldownRange(t *te
 	got := state.cooldownUntil.Sub(clock.Now())
 	if got != 0 {
 		t.Fatalf("cooldown = %v, want 0 from deterministic jitter hook", got)
+	}
+}
+
+func TestEndpointOverloadCooldownTracker_ResetsPenaltyOnlyAfterQuietWindow(t *testing.T) {
+	clock := newLifecycleTestClock(time.Unix(100, 0))
+	tracker := newEndpointOverloadCooldownTrackerWithOptions(
+		time.Second,
+		8*time.Second,
+		10*time.Minute,
+		clock.Now,
+		func(n int64) int64 {
+			return n - 1
+		},
+	)
+
+	tracker.recordFailure("replica-a:443")
+	first := tracker.entries["replica-a:443"]
+
+	clock.Advance(2 * time.Minute)
+	tracker.recordFailure("replica-a:443")
+	second := tracker.entries["replica-a:443"]
+	if second.consecutiveFailures != first.consecutiveFailures+1 {
+		t.Fatalf("consecutiveFailures = %d, want %d", second.consecutiveFailures, first.consecutiveFailures+1)
+	}
+
+	clock.Advance(11 * time.Minute)
+	tracker.recordFailure("replica-a:443")
+	third := tracker.entries["replica-a:443"]
+	if third.consecutiveFailures != 1 {
+		t.Fatalf("expected quiet window to reset failure count, got %d", third.consecutiveFailures)
 	}
 }

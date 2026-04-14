@@ -945,7 +945,7 @@ func TestLocationAwareExecuteStreamingSql_RetryUsesExcludedEndpointOnNextCall(t 
 	}
 }
 
-func TestLocationAwareExecuteSql_CooldownRoutesToNextReplicaAndReenablesEndpoint(t *testing.T) {
+func TestLocationAwareExecuteSql_CooldownRoutesToNextReplicaAndEndpointBecomesEligibleAfterExpiry(t *testing.T) {
 	t.Parallel()
 
 	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
@@ -1003,7 +1003,7 @@ func TestLocationAwareExecuteSql_CooldownRoutesToNextReplicaAndReenablesEndpoint
 		t.Fatalf("session client type = %T, want *locationAwareSpannerClient", sh.getClient())
 	}
 	clock := newLifecycleTestClock(time.Unix(100, 0))
-	lac.endpointCooldowns = newEndpointOverloadCooldownTrackerWithOptions(time.Minute, time.Minute, 10*time.Minute, 2, clock.Now, func(n int64) int64 {
+	lac.endpointCooldowns = newEndpointOverloadCooldownTrackerWithOptions(time.Minute, time.Minute, 10*time.Minute, clock.Now, func(n int64) int64 {
 		return n - 1
 	})
 
@@ -1033,7 +1033,10 @@ func TestLocationAwareExecuteSql_CooldownRoutesToNextReplicaAndReenablesEndpoint
 		t.Fatalf("third ExecuteSql() returned unexpected error: %v", err)
 	}
 	if lac.endpointCooldowns.isCoolingDown(harness.ReplicaAddresses[0]) {
-		t.Fatalf("expected routed address %q cooldown to clear after successful reuse", harness.ReplicaAddresses[0])
+		t.Fatalf("expected routed address %q cooldown to remain expired after cooldown-window re-entry", harness.ReplicaAddresses[0])
+	}
+	if _, ok := lac.endpointCooldowns.entries[harness.ReplicaAddresses[0]]; !ok {
+		t.Fatalf("expected routed address %q failure state to remain tracked until quiet-window reset", harness.ReplicaAddresses[0])
 	}
 
 	replicaARequests = harness.Replicas[0].Requests(MethodExecuteSql)
@@ -1105,7 +1108,7 @@ func TestLocationAwareExecuteSql_CooldownFallsBackToDefaultWhenAllRoutedReplicas
 		t.Fatalf("session client type = %T, want *locationAwareSpannerClient", sh.getClient())
 	}
 	clock := newLifecycleTestClock(time.Unix(100, 0))
-	lac.endpointCooldowns = newEndpointOverloadCooldownTrackerWithOptions(time.Minute, time.Minute, 10*time.Minute, 2, clock.Now, func(n int64) int64 {
+	lac.endpointCooldowns = newEndpointOverloadCooldownTrackerWithOptions(time.Minute, time.Minute, 10*time.Minute, clock.Now, func(n int64) int64 {
 		return n - 1
 	})
 
@@ -1138,7 +1141,7 @@ func TestLocationAwareExecuteSql_CooldownFallsBackToDefaultWhenAllRoutedReplicas
 	}
 }
 
-func TestLocationAwareExecuteStreamingSql_CooldownRoutesToNextReplicaAndReenablesEndpoint(t *testing.T) {
+func TestLocationAwareExecuteStreamingSql_CooldownRoutesToNextReplicaAndEndpointBecomesEligibleAfterExpiry(t *testing.T) {
 	t.Parallel()
 
 	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
@@ -1196,7 +1199,7 @@ func TestLocationAwareExecuteStreamingSql_CooldownRoutesToNextReplicaAndReenable
 		t.Fatalf("session client type = %T, want *locationAwareSpannerClient", sh.getClient())
 	}
 	clock := newLifecycleTestClock(time.Unix(100, 0))
-	lac.endpointCooldowns = newEndpointOverloadCooldownTrackerWithOptions(time.Minute, time.Minute, 10*time.Minute, 2, clock.Now, func(n int64) int64 {
+	lac.endpointCooldowns = newEndpointOverloadCooldownTrackerWithOptions(time.Minute, time.Minute, 10*time.Minute, clock.Now, func(n int64) int64 {
 		return n - 1
 	})
 
@@ -1241,7 +1244,10 @@ func TestLocationAwareExecuteStreamingSql_CooldownRoutesToNextReplicaAndReenable
 		t.Fatalf("third stream Recv() returned unexpected error: %v", err)
 	}
 	if lac.endpointCooldowns.isCoolingDown(harness.ReplicaAddresses[0]) {
-		t.Fatalf("expected routed address %q cooldown to clear after successful reuse", harness.ReplicaAddresses[0])
+		t.Fatalf("expected routed address %q cooldown to remain expired after cooldown-window re-entry", harness.ReplicaAddresses[0])
+	}
+	if _, ok := lac.endpointCooldowns.entries[harness.ReplicaAddresses[0]]; !ok {
+		t.Fatalf("expected routed address %q failure state to remain tracked until quiet-window reset", harness.ReplicaAddresses[0])
 	}
 
 	replicaARequests = harness.Replicas[0].Requests(MethodExecuteStreamingSql)

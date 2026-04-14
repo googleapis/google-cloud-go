@@ -23,15 +23,13 @@ import (
 )
 
 const (
-	defaultEndpointOverloadInitialCooldown = 3 * time.Second
+	defaultEndpointOverloadInitialCooldown = 5 * time.Second
 	defaultEndpointOverloadMaxCooldown     = time.Minute
-	defaultEndpointOverloadResetAfter      = 5 * time.Minute
-	defaultEndpointOverloadRecoverySuccess = 2
+	defaultEndpointOverloadResetAfter      = 10 * time.Minute
 )
 
 type endpointOverloadCooldownState struct {
 	consecutiveFailures int
-	consecutiveSuccess  int
 	cooldownUntil       time.Time
 	lastFailureAt       time.Time
 }
@@ -44,7 +42,6 @@ type endpointOverloadCooldownTracker struct {
 	initialCooldown time.Duration
 	maxCooldown     time.Duration
 	resetAfter      time.Duration
-	recoverySuccess int
 	now             func() time.Time
 	randInt63n      func(int64) int64
 }
@@ -54,7 +51,6 @@ func newEndpointOverloadCooldownTracker() *endpointOverloadCooldownTracker {
 		defaultEndpointOverloadInitialCooldown,
 		defaultEndpointOverloadMaxCooldown,
 		defaultEndpointOverloadResetAfter,
-		defaultEndpointOverloadRecoverySuccess,
 		time.Now,
 		rand.Int63n,
 	)
@@ -64,7 +60,6 @@ func newEndpointOverloadCooldownTrackerWithOptions(
 	initialCooldown time.Duration,
 	maxCooldown time.Duration,
 	resetAfter time.Duration,
-	recoverySuccess int,
 	now func() time.Time,
 	randInt63n func(int64) int64,
 ) *endpointOverloadCooldownTracker {
@@ -80,9 +75,6 @@ func newEndpointOverloadCooldownTrackerWithOptions(
 	if resetAfter <= 0 {
 		resetAfter = defaultEndpointOverloadResetAfter
 	}
-	if recoverySuccess <= 0 {
-		recoverySuccess = defaultEndpointOverloadRecoverySuccess
-	}
 	if now == nil {
 		now = time.Now
 	}
@@ -94,7 +86,6 @@ func newEndpointOverloadCooldownTrackerWithOptions(
 		initialCooldown: initialCooldown,
 		maxCooldown:     maxCooldown,
 		resetAfter:      resetAfter,
-		recoverySuccess: recoverySuccess,
 		now:             now,
 		randInt63n:      randInt63n,
 	}
@@ -138,28 +129,8 @@ func (t *endpointOverloadCooldownTracker) recordFailure(address string) {
 		state.consecutiveFailures = 0
 	}
 	state.consecutiveFailures++
-	state.consecutiveSuccess = 0
 	state.lastFailureAt = now
 	state.cooldownUntil = now.Add(t.cooldownForFailures(state.consecutiveFailures))
-	t.entries[address] = state
-}
-
-func (t *endpointOverloadCooldownTracker) recordSuccess(address string) {
-	if t == nil || address == "" {
-		return
-	}
-
-	t.mu.Lock()
-	defer t.mu.Unlock()
-	state, ok := t.entries[address]
-	if !ok {
-		return
-	}
-	state.consecutiveSuccess++
-	if state.consecutiveSuccess >= t.recoverySuccess {
-		delete(t.entries, address)
-		return
-	}
 	t.entries[address] = state
 }
 
