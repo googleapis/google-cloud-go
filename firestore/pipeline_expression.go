@@ -559,7 +559,8 @@ type Expression interface {
 	//			WithSearchSort(Ascending(FieldOf("location").GeoDistance(&latlng.LatLng{Latitude: 37.0, Longitude: -122.0}))),
 	//		)
 	//
-	// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+	// Experimental: Update, Delete and Search stages in pipeline queries are in public preview
+	// and are subject to potential breaking changes in future versions,
 	// regardless of any other documented package stability guarantees.
 	GeoDistance(location *latlng.LatLng) Expression
 
@@ -839,7 +840,8 @@ func (b *baseExpression) VectorLength() Expression               { return Vector
 func (b *baseExpression) Ascending() Ordering  { return Ascending(b) }
 func (b *baseExpression) Descending() Ordering { return Descending(b) }
 
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// Experimental: Update, Delete and Search stages in pipeline queries are in public preview
+// and are subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
 func (b *baseExpression) GeoDistance(location *latlng.LatLng) Expression {
 	return GeoDistance(b, location)

@@ -975,7 +975,8 @@ func Rand() Expression {
 //
 // - query: Define the search query using the search domain-specific language (DSL).
 //
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// Experimental: Update, Delete and Search stages in pipeline queries are in public preview
+// and are subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
 func DocumentMatches(query string) BooleanExpression {
 	return &baseBooleanExpression{baseFunction: newBaseFunction("document_matches", []Expression{ConstantOf(query)})}
@@ -996,7 +997,8 @@ func DocumentMatches(query string) BooleanExpression {
 // - field: Specifies the field in the document which contains the GeoPoint for distance computation. It can be a field path string, [FieldPath] or [Expression].
 // - location: Compute distance to this GeoPoint.
 //
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// Experimental: Update, Delete and Search stages in pipeline queries are in public preview
+// and are subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
 func GeoDistance(field any, location *latlng.LatLng) Expression {
 	return newBaseFunction("geo_distance", []Expression{asFieldExpr(field), ConstantOf(location)})
@@ -1011,6 +1013,10 @@ func GeoDistance(field any, location *latlng.LatLng) Expression {
 //
 //	client.Pipeline().Collection("restaurants").
 //		Search(WithSearchQuery("waffles"), WithSearchSort(Descending(Score())))
+//
+// Experimental: Update, Delete and Search stages in pipeline queries are in public preview
+// and are subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func Score() Expression {
 	return newBaseFunction("score", nil)
 }

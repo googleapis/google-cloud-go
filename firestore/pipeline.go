@@ -972,7 +972,8 @@ func (p *Pipeline) FindNearest(vectorField any, queryVector any, measure Pipelin
 
 // SearchOption is an option for a Search pipeline stage.
 //
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// Experimental: Update, Delete and Search stages in pipeline queries are in public preview
+// and are subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
 type SearchOption interface {
 	StageOption
@@ -1004,7 +1005,8 @@ func newFuncSearchOption(f func(map[string]any)) *funcSearchOption {
 //		WithSearchQuery("waffles"),
 //	)
 //
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// Experimental: Update, Delete and Search stages in pipeline queries are in public preview
+// and are subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
 func WithSearchQuery(query any) SearchOption {
 	return newFuncSearchOption(func(so map[string]any) {
@@ -1014,7 +1016,8 @@ func WithSearchQuery(query any) SearchOption {
 
 // WithSearchSort specifies how the returned documents are sorted. One or more ordering are required.
 //
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// Experimental: Update, Delete and Search stages in pipeline queries are in public preview
+// and are subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
 func WithSearchSort(orders ...Ordering) SearchOption {
 	return newFuncSearchOption(func(so map[string]any) {
@@ -1028,7 +1031,8 @@ func WithSearchSort(orders ...Ordering) SearchOption {
 
 // WithSearchAddFields specifies the fields to add to each document.
 //
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// Experimental: Update, Delete and Search stages in pipeline queries are in public preview
+// and are subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
 func WithSearchAddFields(fields ...Selectable) SearchOption {
 	return newFuncSearchOption(func(so map[string]any) {
@@ -1043,7 +1047,8 @@ func WithSearchAddFields(fields ...Selectable) SearchOption {
 // WithSearchRetrievalDepth specifies the maximum number of documents to retrieve. Documents will be retrieved in the
 // pre-sort order specified by the search index.
 //
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// Experimental: Update, Delete and Search stages in pipeline queries are in public preview
+// and are subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
 func WithSearchRetrievalDepth(depth int64) SearchOption {
 	return newFuncSearchOption(func(so map[string]any) {
@@ -1064,7 +1069,8 @@ func WithSearchRetrievalDepth(depth int64) SearchOption {
 //		WithSearchRetrievalDepth(10),
 //	)
 //
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// Experimental: Update, Delete and Search stages in pipeline queries are in public preview
+// and are subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
 func (p *Pipeline) Search(opts ...SearchOption) *Pipeline {
 	if p.err != nil {
@@ -1115,7 +1121,8 @@ func (p *Pipeline) RawStage(name string, args []any, opts ...StageOption) *Pipel
 
 // UpdateOption is an option for an Update pipeline stage.
 //
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// Experimental: Update, Delete and Search stages in pipeline queries are in public preview
+// and are subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
 type UpdateOption interface {
 	StageOption
@@ -1140,7 +1147,8 @@ func newFuncUpdateOption(f func(map[string]any)) *funcUpdateOption {
 
 // WithUpdateTransformations specifies the list of field transformations to apply in an update operation.
 //
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// Experimental: Update, Delete and Search stages in pipeline queries are in public preview
+// and are subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
 func WithUpdateTransformations(field Selectable, additionalFields ...Selectable) UpdateOption {
 	return newFuncUpdateOption(func(uo map[string]any) {
@@ -1168,7 +1176,8 @@ func WithUpdateTransformations(field Selectable, additionalFields ...Selectable)
 //		Where(GreaterThan("price", 50)).
 //		Update(WithUpdateTransformations(ConstantOf("Discounted").As("status")))
 //
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// Experimental: Update, Delete and Search stages in pipeline queries are in public preview
+// and are subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
 func (p *Pipeline) Update(opts ...UpdateOption) *Pipeline {
 	if p.err != nil {
@@ -1192,7 +1201,8 @@ func (p *Pipeline) Update(opts ...UpdateOption) *Pipeline {
 
 // DeleteOption is an option for a Delete pipeline stage.
 //
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// Experimental: Update, Delete and Search stages in pipeline queries are in public preview
+// and are subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
 type DeleteOption interface {
 	StageOption
@@ -1207,7 +1217,8 @@ type DeleteOption interface {
 //		Where(Equal("status", "archived")).
 //		Delete()
 //
-// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// Experimental: Update, Delete and Search stages in pipeline queries are in public preview
+// and are subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
 func (p *Pipeline) Delete(opts ...DeleteOption) *Pipeline {
 	if p.err != nil {
