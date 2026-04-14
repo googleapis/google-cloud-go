@@ -1,5 +1,7 @@
 # Changes
 
+## [1.90.0](https://github.com/googleapis/google-cloud-go/releases/tag/spanner%2Fv1.90.0) (2026-04-14)
+
 ## [1.89.0](https://github.com/googleapis/google-cloud-go/releases/tag/spanner%2Fv1.89.0) (2026-03-26)
 
 ### Features
