@@ -170,15 +170,15 @@ type Expression interface {
 	//
 	// The parameter 'n' can be an integer constant or an [Expression] that evaluates to an integer.
 	ArrayLastN(n any) Expression
-	// ArraySlice creates an expression that returns a slice of an array starting from the specified offset.
+	// ArraySliceToEnd creates an expression that returns a slice of an array starting from the specified offset.
 	//
 	// The parameter 'offset' is the 0-based index of the first element to include. It can be an int, int32, int64 or [Expression].
-	ArraySlice(offset any) Expression
-	// ArraySliceToEnd creates an expression that returns a slice of an array starting from the specified offset with a given length.
+	ArraySliceToEnd(offset any) Expression
+	// ArraySlice creates an expression that returns a slice of an array starting from the specified offset with a given length.
 	//
 	// The parameter 'offset' is the 0-based index of the first element to include. It can be an int, int32, int64 or [Expression].
 	// The parameter 'length' is the number of elements to include. It can be an int, int32, int64 or [Expression].
-	ArraySliceToEnd(offset, length any) Expression
+	ArraySlice(offset, length any) Expression
 	// ArrayIndexOf creates an expression that returns the first index of a search value in an array.
 	//
 	// The parameter 'search' is the value to search for. It can be a constant or [Expression].
@@ -577,18 +577,18 @@ func (b *baseExpression) ArrayReverse() Expression                 { return Arra
 func (b *baseExpression) ArrayConcat(otherArrays ...any) Expression {
 	return ArrayConcat(b, otherArrays...)
 }
-func (b *baseExpression) ArraySum() Expression             { return ArraySum(b) }
-func (b *baseExpression) ArrayMaximum() Expression         { return ArrayMaximum(b) }
-func (b *baseExpression) ArrayMaximumN(n any) Expression   { return ArrayMaximumN(b, n) }
-func (b *baseExpression) ArrayMinimum() Expression         { return ArrayMinimum(b) }
-func (b *baseExpression) ArrayMinimumN(n any) Expression   { return ArrayMinimumN(b, n) }
-func (b *baseExpression) ArrayFirst() Expression           { return ArrayFirst(b) }
-func (b *baseExpression) ArrayFirstN(n any) Expression     { return ArrayFirstN(b, n) }
-func (b *baseExpression) ArrayLast() Expression            { return ArrayLast(b) }
-func (b *baseExpression) ArrayLastN(n any) Expression      { return ArrayLastN(b, n) }
-func (b *baseExpression) ArraySlice(offset any) Expression { return ArraySlice(b, offset) }
-func (b *baseExpression) ArraySliceToEnd(offset, length any) Expression {
-	return ArraySliceToEnd(b, offset, length)
+func (b *baseExpression) ArraySum() Expression                  { return ArraySum(b) }
+func (b *baseExpression) ArrayMaximum() Expression              { return ArrayMaximum(b) }
+func (b *baseExpression) ArrayMaximumN(n any) Expression        { return ArrayMaximumN(b, n) }
+func (b *baseExpression) ArrayMinimum() Expression              { return ArrayMinimum(b) }
+func (b *baseExpression) ArrayMinimumN(n any) Expression        { return ArrayMinimumN(b, n) }
+func (b *baseExpression) ArrayFirst() Expression                { return ArrayFirst(b) }
+func (b *baseExpression) ArrayFirstN(n any) Expression          { return ArrayFirstN(b, n) }
+func (b *baseExpression) ArrayLast() Expression                 { return ArrayLast(b) }
+func (b *baseExpression) ArrayLastN(n any) Expression           { return ArrayLastN(b, n) }
+func (b *baseExpression) ArraySliceToEnd(offset any) Expression { return ArraySliceToEnd(b, offset) }
+func (b *baseExpression) ArraySlice(offset, length any) Expression {
+	return ArraySlice(b, offset, length)
 }
 func (b *baseExpression) ArrayIndexOf(search any) Expression {
 	return ArrayIndexOf(b, search)

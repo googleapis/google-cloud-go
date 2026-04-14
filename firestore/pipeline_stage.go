@@ -158,7 +158,7 @@ func (s *inputStageDocuments) toProto() (*pb.Pipeline_Stage, error) {
 	args := make([]*pb.Value, len(s.refs))
 	for i, ref := range s.refs {
 		if ref == nil {
-			return nil, fmt.Errorf("firestore: internal error: inputStageDocuments contains nil reference")
+			return nil, fmt.Errorf("firestore: inputStageDocuments contains nil reference")
 		}
 		args[i] = &pb.Value{ValueType: &pb.Value_ReferenceValue{ReferenceValue: "/" + ref.shortPath}}
 	}

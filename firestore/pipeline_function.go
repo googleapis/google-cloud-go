@@ -569,24 +569,24 @@ func ArrayLastN(exprOrFieldPath any, n any) Expression {
 	return newBaseFunction("array_last_n", []Expression{asFieldExpr(exprOrFieldPath), asInt64Expr(n)})
 }
 
-// ArraySlice creates an expression that returns a slice of an array starting from the specified offset.
+// ArraySliceToEnd creates an expression that returns a slice of an array starting from the specified offset.
 // - exprOrFieldPath can be a field path string, [FieldPath] or an [Expression] that evaluates to an array.
 // - offset is the 0-based index of the first element to include. It can be an int, int32, int64 or [Expression].
 //
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
-func ArraySlice(exprOrFieldPath any, offset any) Expression {
+func ArraySliceToEnd(exprOrFieldPath any, offset any) Expression {
 	return newBaseFunction("array_slice", []Expression{asFieldExpr(exprOrFieldPath), asInt64Expr(offset)})
 }
 
-// ArraySliceToEnd creates an expression that returns a slice of an array starting from the specified offset with a given length.
+// ArraySlice creates an expression that returns a slice of an array starting from the specified offset with a given length.
 // - exprOrFieldPath can be a field path string, [FieldPath] or an [Expression] that evaluates to an array.
 // - offset is the 0-based index of the first element to include. It can be an int, int32, int64 or [Expression].
 // - length is the number of elements to include. It can be an int, int32, int64 or [Expression].
 //
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
-func ArraySliceToEnd(exprOrFieldPath any, offset any, length any) Expression {
+func ArraySlice(exprOrFieldPath any, offset any, length any) Expression {
 	return newBaseFunction("array_slice", []Expression{asFieldExpr(exprOrFieldPath), asInt64Expr(offset), asInt64Expr(length)})
 }
 

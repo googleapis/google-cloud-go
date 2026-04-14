@@ -14,6 +14,8 @@
 
 package firestore
 
+import "fmt"
+
 // PipelineSource is a factory for creating Pipeline instances.
 // It is obtained by calling [Client.Pipeline].
 //
@@ -168,7 +170,14 @@ func (ps *PipelineSource) Documents(refs []*DocumentRef, opts ...DocumentsOption
 			opt.applyStage(options)
 		}
 	}
-	return newPipeline(ps.client, newInputStageDocuments(refs, options))
+	p := newPipeline(ps.client, newInputStageDocuments(refs, options))
+	for _, ref := range refs {
+		if ref == nil {
+			p.err = fmt.Errorf("firestore: Documents() cannot contain nil references")
+			break
+		}
+	}
+	return p
 }
 
 // CreateFromQuery creates a new [Pipeline] from the given [Queryer]. Under the hood, this will

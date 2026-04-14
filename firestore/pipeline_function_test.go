@@ -969,8 +969,8 @@ func TestArrayFunctions(t *testing.T) {
 			}},
 		},
 		{
-			desc: "ArraySlice",
-			expr: ArraySlice("field", 1),
+			desc: "ArraySliceToEnd",
+			expr: ArraySliceToEnd("field", 1),
 			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
 				FunctionValue: &pb.Function{
 					Name: "array_slice",
@@ -983,7 +983,7 @@ func TestArrayFunctions(t *testing.T) {
 		},
 		{
 			desc: "ArraySliceWithLength",
-			expr: ArraySliceToEnd("field", 1, 2),
+			expr: ArraySlice("field", 1, 2),
 			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
 				FunctionValue: &pb.Function{
 					Name: "array_slice",

@@ -931,9 +931,6 @@ func aggregationFuncs(t *testing.T) {
 		docRefs = append(docRefs, docRef)
 		h.mustCreate(docRef, d)
 	}
-	t.Cleanup(func() {
-		deleteDocuments(docRefs)
-	})
 
 	pipeline := client.Pipeline().Collection(coll.ID).
 		Sort(Orders(Ascending(FieldOf("val")))).
@@ -1501,13 +1498,13 @@ func arrayFuncs(t *testing.T) {
 			want:     map[string]interface{}{"last_n": []interface{}{int64(2), int64(3)}},
 		},
 		{
-			name:     "ArraySlice",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(ArraySlice("a", 1).As("slice"))),
+			name:     "ArraySliceToEnd",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(ArraySliceToEnd("a", 1).As("slice"))),
 			want:     map[string]interface{}{"slice": []interface{}{int64(2), int64(3)}},
 		},
 		{
 			name:     "ArraySliceWithLength",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(ArraySliceToEnd("a", 1, 1).As("slice_len"))),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(ArraySlice("a", 1, 1).As("slice_len"))),
 			want:     map[string]interface{}{"slice_len": []interface{}{int64(2)}},
 		},
 		// TODO: Uncomment this after fixing the proto representation of this function.

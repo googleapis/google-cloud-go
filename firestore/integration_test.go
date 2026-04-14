@@ -81,7 +81,7 @@ func TestMain(m *testing.M) {
 		testParams[firestoreEditionKey] = edition
 		initIntegrationTest()
 		status := m.Run()
-		// cleanupIntegrationTest()
+		cleanupIntegrationTest()
 		if status != 0 {
 			os.Exit(status)
 		}
@@ -189,12 +189,12 @@ func deleteCollection(ctx context.Context, coll *CollectionRef) error {
 	bulkwriter := iClient.BulkWriter(ctx)
 
 	// Get  documents
-	iter := coll.Select().Documents(ctx)
+	iter := coll.DocumentRefs(ctx)
 
 	// Iterate through the documents, adding
 	// a delete operation for each one to the BulkWriter.
 	for {
-		docSnap, err := iter.Next()
+		docRef, err := iter.Next()
 		if err == iterator.Done {
 			break
 		}
@@ -202,7 +202,7 @@ func deleteCollection(ctx context.Context, coll *CollectionRef) error {
 			log.Printf("Failed to get next document: %+v\n", err)
 			return err
 		}
-		err = deleteDocument(ctx, docSnap.Ref, bulkwriter)
+		err = deleteDocument(ctx, docRef, bulkwriter)
 		if err != nil {
 			log.Printf("Failed to delete document: %+v\n", err)
 			return err
