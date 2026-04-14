@@ -43,27 +43,34 @@ type mockSpannerClient struct {
 	streamingReadCalled    bool
 	executeSQLCalled       bool
 	executeStreamSQLCalled bool
+	readCalled             bool
 	beginTxCalled          bool
 	commitCalled           bool
 	rollbackCalled         bool
 	streamingReadCount     int
 	executeSQLCount        int
 	executeStreamSQLCount  int
+	readCount              int
 	beginTxCount           int
 	commitCount            int
 	rollbackCount          int
 	closeCount             int
 	lastBeginTxReq         *sppb.BeginTransactionRequest
 	lastCommitReq          *sppb.CommitRequest
+	executeSQLOptsHistory  [][]gax.CallOption
+	readOptsHistory        [][]gax.CallOption
+	beginTxOptsHistory     [][]gax.CallOption
 
 	// Return values
 	beginTxResp    *sppb.Transaction
 	executeSQLResp *sppb.ResultSet
+	readResp       *sppb.ResultSet
 	commitResp     *sppb.CommitResponse
 	streamResp     *mockStreamingClient
 	conn           *grpc.ClientConn
 	beginTxErr     error
 	executeSQLErr  error
+	readErr        error
 	commitErr      error
 	rollbackErr    error
 	streamReadErr  error
@@ -111,6 +118,12 @@ func (m *mockSpannerClient) StreamingRead(ctx context.Context, req *sppb.ReadReq
 }
 
 func (m *mockSpannerClient) Read(ctx context.Context, req *sppb.ReadRequest, opts ...gax.CallOption) (*sppb.ResultSet, error) {
+	m.readCalled = true
+	m.readCount++
+	m.readOptsHistory = append(m.readOptsHistory, append([]gax.CallOption(nil), opts...))
+	if m.readResp != nil || m.readErr != nil {
+		return m.readResp, m.readErr
+	}
 	return &sppb.ResultSet{}, nil
 }
 
@@ -123,12 +136,14 @@ func (m *mockSpannerClient) ExecuteStreamingSql(ctx context.Context, req *sppb.E
 func (m *mockSpannerClient) ExecuteSql(ctx context.Context, req *sppb.ExecuteSqlRequest, opts ...gax.CallOption) (*sppb.ResultSet, error) {
 	m.executeSQLCalled = true
 	m.executeSQLCount++
+	m.executeSQLOptsHistory = append(m.executeSQLOptsHistory, append([]gax.CallOption(nil), opts...))
 	return m.executeSQLResp, m.executeSQLErr
 }
 
 func (m *mockSpannerClient) BeginTransaction(ctx context.Context, req *sppb.BeginTransactionRequest, opts ...gax.CallOption) (*sppb.Transaction, error) {
 	m.beginTxCalled = true
 	m.beginTxCount++
+	m.beginTxOptsHistory = append(m.beginTxOptsHistory, append([]gax.CallOption(nil), opts...))
 	if req != nil {
 		m.lastBeginTxReq = proto.Clone(req).(*sppb.BeginTransactionRequest)
 	}
@@ -350,7 +365,7 @@ func TestLocationAwareSpannerClient_UsesCacheDefaultChannelForAffinityFallback(t
 	}
 }
 
-func TestLocationAwareSpannerClient_ExecuteSQLRetriesAvoidExcludedEndpoint(t *testing.T) {
+func TestLocationAwareSpannerClient_ExecuteSQLRetriesInternallyAvoidExcludedEndpoint(t *testing.T) {
 	defaultClient := &mockSpannerClient{
 		executeSQLResp: &sppb.ResultSet{},
 	}
@@ -370,19 +385,11 @@ func TestLocationAwareSpannerClient_ExecuteSQLRetriesAvoidExcludedEndpoint(t *te
 
 	lac := newLocationAwareSpannerClient(defaultClient, router, epCache)
 
+	opts := testCallOptionsWithRequestID("1.proc.1.1.77.1")
 	_, err := lac.ExecuteSql(
 		context.Background(),
 		executeSQLWithKeyAndSelector("b", nil),
-		testCallOptionsWithRequestID("1.proc.1.1.77.1")...,
-	)
-	if status.Code(err) != codes.ResourceExhausted {
-		t.Fatalf("expected RESOURCE_EXHAUSTED, got %v", err)
-	}
-
-	_, err = lac.ExecuteSql(
-		context.Background(),
-		executeSQLWithKeyAndSelector("b", nil),
-		testCallOptionsWithRequestID("1.proc.1.1.77.2")...,
+		opts...,
 	)
 	if err != nil {
 		t.Fatalf("unexpected retry error: %v", err)
@@ -392,6 +399,136 @@ func TestLocationAwareSpannerClient_ExecuteSQLRetriesAvoidExcludedEndpoint(t *te
 	}
 	if defaultClient.executeSQLCount != 1 {
 		t.Fatalf("expected retry attempt to fall back to default endpoint once, got %d", defaultClient.executeSQLCount)
+	}
+	logicalRequestKey := logicalRequestKeyFromCallOptions(opts)
+	excluded := lac.excludedEndpoints.consume(logicalRequestKey)
+	if excluded != nil && excluded("server-a:443") {
+		t.Fatal("expected internal retry not to populate endpoint exclusion cache")
+	}
+	if got, want := requestIDFromTestCallOptions(endpointClient.executeSQLOptsHistory[0]), "1.proc.1.1.77.1"; got != want {
+		t.Fatalf("first attempt request ID = %q, want %q", got, want)
+	}
+	if got, want := requestIDFromTestCallOptions(defaultClient.executeSQLOptsHistory[0]), "1.proc.1.1.77.2"; got != want {
+		t.Fatalf("retry attempt request ID = %q, want %q", got, want)
+	}
+}
+
+func TestLocationAwareSpannerClient_ReadRetriesInternallyAvoidExcludedEndpoint(t *testing.T) {
+	defaultClient := &mockSpannerClient{
+		readResp: &sppb.ResultSet{},
+	}
+	endpointClient := &mockSpannerClient{
+		readErr: status.Error(codes.ResourceExhausted, "busy"),
+	}
+
+	epCache := newMockEndpointCache()
+	epCache.defaultEndpoint = &passthroughChannelEndpoint{address: "default:443"}
+	epCache.addEndpoint("server-a:443", endpointClient)
+	router := newLocationRouter(epCache)
+	router.observeResultSet(&sppb.ResultSet{CacheUpdate: createRangeCacheUpdateForHint(&sppb.RoutingHint{Key: []byte("b")})})
+	waitForAsyncRoutingUpdate(t, func() bool {
+		req := &sppb.ReadRequest{
+			Session:     "projects/p/instances/i/databases/d/sessions/s",
+			Table:       "BAR",
+			Columns:     []string{"FOO"},
+			RoutingHint: &sppb.RoutingHint{Key: []byte("b")},
+		}
+		return router.prepareReadRequest(context.Background(), req) != nil
+	})
+
+	lac := newLocationAwareSpannerClient(defaultClient, router, epCache)
+	opts := testCallOptionsWithRequestID("1.proc.1.1.78.1")
+	_, err := lac.Read(context.Background(), &sppb.ReadRequest{
+		Session:     "projects/p/instances/i/databases/d/sessions/s",
+		Table:       "BAR",
+		Columns:     []string{"FOO"},
+		RoutingHint: &sppb.RoutingHint{Key: []byte("b")},
+	}, opts...)
+	if err != nil {
+		t.Fatalf("unexpected retry error: %v", err)
+	}
+	if endpointClient.readCount != 1 {
+		t.Fatalf("expected first attempt to hit routed endpoint once, got %d", endpointClient.readCount)
+	}
+	if defaultClient.readCount != 1 {
+		t.Fatalf("expected retry attempt to fall back to default endpoint once, got %d", defaultClient.readCount)
+	}
+	logicalRequestKey := logicalRequestKeyFromCallOptions(opts)
+	excluded := lac.excludedEndpoints.consume(logicalRequestKey)
+	if excluded != nil && excluded("server-a:443") {
+		t.Fatal("expected internal retry not to populate endpoint exclusion cache")
+	}
+	if got, want := requestIDFromTestCallOptions(endpointClient.readOptsHistory[0]), "1.proc.1.1.78.1"; got != want {
+		t.Fatalf("first attempt request ID = %q, want %q", got, want)
+	}
+	if got, want := requestIDFromTestCallOptions(defaultClient.readOptsHistory[0]), "1.proc.1.1.78.2"; got != want {
+		t.Fatalf("retry attempt request ID = %q, want %q", got, want)
+	}
+}
+
+func TestLocationAwareSpannerClient_BeginTransactionRetriesInternallyAvoidExcludedEndpoint(t *testing.T) {
+	defaultClient := &mockSpannerClient{
+		beginTxResp: &sppb.Transaction{Id: []byte("tx-default")},
+	}
+	endpointClient := &mockSpannerClient{
+		beginTxErr: status.Error(codes.ResourceExhausted, "busy"),
+	}
+
+	epCache := newMockEndpointCache()
+	epCache.defaultEndpoint = &passthroughChannelEndpoint{address: "default:443"}
+	epCache.addEndpoint("server-a:443", endpointClient)
+	router := newLocationRouter(epCache)
+	router.observeResultSet(&sppb.ResultSet{CacheUpdate: createMutationRecipeCacheUpdate()})
+	var routingHint *sppb.RoutingHint
+	waitForAsyncRoutingUpdate(t, func() bool {
+		req := &sppb.BeginTransactionRequest{
+			Session:     "projects/p/instances/i/databases/d/sessions/s",
+			MutationKey: createInsertMutation("a"),
+		}
+		router.prepareBeginTransactionRequest(context.Background(), req)
+		hint := req.GetRoutingHint()
+		if hint == nil || len(hint.GetKey()) == 0 {
+			return false
+		}
+		routingHint = proto.Clone(hint).(*sppb.RoutingHint)
+		return true
+	})
+	rangeUpdate := createRangeCacheUpdateForHint(routingHint)
+	rangeUpdate.Group[0].Tablets[0].ServerAddress = "server-a:443"
+	router.observeResultSet(&sppb.ResultSet{CacheUpdate: rangeUpdate})
+	waitForAsyncRoutingUpdate(t, func() bool {
+		req := &sppb.BeginTransactionRequest{
+			Session:     "projects/p/instances/i/databases/d/sessions/s",
+			MutationKey: createInsertMutation("a"),
+		}
+		return router.prepareBeginTransactionRequest(context.Background(), req) != nil
+	})
+
+	lac := newLocationAwareSpannerClient(defaultClient, router, epCache)
+	opts := testCallOptionsWithRequestID("1.proc.1.1.79.1")
+	_, err := lac.BeginTransaction(context.Background(), &sppb.BeginTransactionRequest{
+		Session:     "projects/p/instances/i/databases/d/sessions/s",
+		MutationKey: createInsertMutation("a"),
+	}, opts...)
+	if err != nil {
+		t.Fatalf("unexpected retry error: %v", err)
+	}
+	if endpointClient.beginTxCount != 1 {
+		t.Fatalf("expected first attempt to hit routed endpoint once, got %d", endpointClient.beginTxCount)
+	}
+	if defaultClient.beginTxCount != 1 {
+		t.Fatalf("expected retry attempt to fall back to default endpoint once, got %d", defaultClient.beginTxCount)
+	}
+	logicalRequestKey := logicalRequestKeyFromCallOptions(opts)
+	excluded := lac.excludedEndpoints.consume(logicalRequestKey)
+	if excluded != nil && excluded("server-a:443") {
+		t.Fatal("expected internal retry not to populate endpoint exclusion cache")
+	}
+	if got, want := requestIDFromTestCallOptions(endpointClient.beginTxOptsHistory[0]), "1.proc.1.1.79.1"; got != want {
+		t.Fatalf("first attempt request ID = %q, want %q", got, want)
+	}
+	if got, want := requestIDFromTestCallOptions(defaultClient.beginTxOptsHistory[0]), "1.proc.1.1.79.2"; got != want {
+		t.Fatalf("retry attempt request ID = %q, want %q", got, want)
 	}
 }
 
@@ -1564,4 +1701,19 @@ func executeSQLWithKeyAndSelector(key string, selector *sppb.TransactionSelector
 func testCallOptionsWithRequestID(requestIDValue string) []gax.CallOption {
 	md := metadata.MD{xSpannerRequestIDHeader: []string{requestIDValue}}
 	return []gax.CallOption{gax.WithGRPCOptions(grpc.Header(&md))}
+}
+
+func requestIDFromTestCallOptions(opts []gax.CallOption) string {
+	var settings gax.CallSettings
+	for _, opt := range opts {
+		if opt == nil {
+			continue
+		}
+		opt.Resolve(&settings)
+	}
+	_, reqID, found := gRPCCallOptionsToRequestID(settings.GRPC)
+	if !found {
+		return ""
+	}
+	return string(reqID)
 }

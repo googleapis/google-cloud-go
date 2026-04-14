@@ -708,7 +708,7 @@ func TestKeyRangeCache_GetActiveAddresses(t *testing.T) {
 		},
 	})
 
-	addresses := cache.getActiveAddresses()
+	addresses := activeAddressesForTest(cache)
 	if len(addresses) != 2 {
 		t.Fatalf("expected 2 active addresses, got %d", len(addresses))
 	}
@@ -718,6 +718,24 @@ func TestKeyRangeCache_GetActiveAddresses(t *testing.T) {
 	if _, ok := addresses["server-b"]; !ok {
 		t.Fatal("expected server-b to be active")
 	}
+}
+
+func activeAddressesForTest(cache *keyRangeCache) map[string]struct{} {
+	state := cache.loadState()
+	addresses := make(map[string]struct{})
+	for _, shard := range state.groupShards {
+		for _, group := range shard {
+			group.mu.Lock()
+			for _, tablet := range group.tablets {
+				if tablet.serverAddress == "" {
+					continue
+				}
+				addresses[tablet.serverAddress] = struct{}{}
+			}
+			group.mu.Unlock()
+		}
+	}
+	return addresses
 }
 
 func countCacheHits(cache *keyRangeCache, numRanges int) int {

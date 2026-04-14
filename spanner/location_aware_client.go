@@ -52,6 +52,10 @@ type locationAwareSpannerClient struct {
 
 var _ spannerClient = (*locationAwareSpannerClient)(nil)
 
+type requestIDAttemptOptioner interface {
+	withNextRetryAttempt(uint32) gax.CallOption
+}
+
 // asGRPCSpannerClient extracts the underlying *grpcSpannerClient from a
 // spannerClient, handling the locationAwareSpannerClient wrapper.
 func asGRPCSpannerClient(c spannerClient) *grpcSpannerClient {
@@ -145,6 +149,92 @@ func (c *locationAwareSpannerClient) recordRouteSelectionTrace(ctx context.Conte
 	}
 	span.SetAttributes(attrs...)
 	span.AddEvent("spanner.route.selected", otrace.WithAttributes(attrs...))
+}
+
+func requestIDAttemptOptionerFromCallOptions(client spannerClient, opts []gax.CallOption) requestIDAttemptOptioner {
+	if len(opts) != 0 {
+		var settings gax.CallSettings
+		for _, opt := range opts {
+			if opt == nil {
+				continue
+			}
+			opt.Resolve(&settings)
+		}
+		_, reqID, found := gRPCCallOptionsToRequestID(settings.GRPC)
+		if found {
+			return logicalRequestIDWrap{logicalKey: reqID.logicalRequestKey()}
+		}
+	}
+
+	gsc := asGRPCSpannerClient(client)
+	if gsc == nil {
+		return nil
+	}
+	return gsc.generateRequestIDHeaderInjector()
+}
+
+func appendUnaryRetryOverrideOptions(base []gax.CallOption, requestID requestIDAttemptOptioner, attempt uint32) []gax.CallOption {
+	opts := append([]gax.CallOption{}, base...)
+	if requestID != nil {
+		opts = append(opts, requestID.withNextRetryAttempt(attempt))
+	}
+	opts = append(opts, newSuppressRetryCodesOption(codes.ResourceExhausted))
+	return opts
+}
+
+func combineEndpointExcluders(base endpointExcluder, excludedAddress string) endpointExcluder {
+	if excludedAddress == "" {
+		return base
+	}
+	return func(address string) bool {
+		if address == excludedAddress {
+			return true
+		}
+		return isEndpointExcluded(base, address)
+	}
+}
+
+func (c *locationAwareSpannerClient) shouldManualRoutedUnaryRetry(ep channelEndpoint, client spannerClient, err error) bool {
+	if c == nil || ep == nil || client == nil || client == c.defaultClient {
+		return false
+	}
+	if ep.Address() == "" || ep.Address() == c.defaultEndpointAddress {
+		return false
+	}
+	return status.Code(err) == codes.ResourceExhausted
+}
+
+func (c *locationAwareSpannerClient) observeExecuteSQLResponse(req *spannerpb.ExecuteSqlRequest, resp *spannerpb.ResultSet, ep channelEndpoint) {
+	c.router.observeResultSet(resp)
+	if txMeta := resp.GetMetadata().GetTransaction(); txMeta != nil && len(txMeta.GetId()) > 0 {
+		if isReadOnlyBegin, readOnlyStrong := readOnlyBeginFromSelector(req.GetTransaction()); isReadOnlyBegin {
+			c.router.trackReadOnlyTransaction(string(txMeta.GetId()), readOnlyStrong)
+		} else if isReadWriteBeginFromSelector(req.GetTransaction()) {
+			c.router.setTransactionAffinity(string(txMeta.GetId()), c.affinityTrackingEndpoint(ep))
+		}
+	}
+}
+
+func (c *locationAwareSpannerClient) observeReadResponse(req *spannerpb.ReadRequest, resp *spannerpb.ResultSet, ep channelEndpoint) {
+	c.router.observeResultSet(resp)
+	if txMeta := resp.GetMetadata().GetTransaction(); txMeta != nil && len(txMeta.GetId()) > 0 {
+		if isReadOnlyBegin, readOnlyStrong := readOnlyBeginFromSelector(req.GetTransaction()); isReadOnlyBegin {
+			c.router.trackReadOnlyTransaction(string(txMeta.GetId()), readOnlyStrong)
+		} else if isReadWriteBeginFromSelector(req.GetTransaction()) {
+			c.router.setTransactionAffinity(string(txMeta.GetId()), c.affinityTrackingEndpoint(ep))
+		}
+	}
+}
+
+func (c *locationAwareSpannerClient) observeBeginTransactionResponse(req *spannerpb.BeginTransactionRequest, resp *spannerpb.Transaction, ep channelEndpoint) {
+	c.router.observeTransaction(resp)
+	if len(resp.GetId()) > 0 {
+		if isReadOnly, readOnlyStrong := readOnlyBeginFromTransactionOptions(req.GetOptions()); isReadOnly {
+			c.router.trackReadOnlyTransaction(string(resp.GetId()), readOnlyStrong)
+		} else {
+			c.router.setTransactionAffinity(string(resp.GetId()), c.affinityTrackingEndpoint(ep))
+		}
+	}
 }
 
 // clientForEndpoint resolves a channelEndpoint to a spannerClient, falling
@@ -269,22 +359,30 @@ func (c *locationAwareSpannerClient) StreamingRead(ctx context.Context, req *spa
 
 func (c *locationAwareSpannerClient) Read(ctx context.Context, req *spannerpb.ReadRequest, opts ...gax.CallOption) (*spannerpb.ResultSet, error) {
 	logicalRequestKey, excludedEndpoints := c.excludedEndpointsForCall(opts)
+	requestID := requestIDAttemptOptionerFromCallOptions(c.defaultClient, opts)
 	ep, details := c.router.prepareReadRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
 	client := c.clientForEndpoint(ep)
 	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/Read", ep, client == c.defaultClient, details)
-	resp, err := client.Read(ctx, req, opts...)
+	resp, err := client.Read(ctx, req, appendUnaryRetryOverrideOptions(opts, requestID, 1)...)
 	if err != nil {
-		c.maybeExcludeEndpointOnNextCall(ep, logicalRequestKey, err)
+		if !c.shouldManualRoutedUnaryRetry(ep, client, err) {
+			c.maybeExcludeEndpointOnNextCall(ep, logicalRequestKey, err)
+			return nil, err
+		}
+
+		retryExcludedEndpoints := combineEndpointExcluders(excludedEndpoints, ep.Address())
+		retryEndpoint, retryDetails := c.router.prepareReadRequestWithExclusionsAndDetails(ctx, req, retryExcludedEndpoints)
+		retryClient := c.clientForEndpoint(retryEndpoint)
+		c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/Read", retryEndpoint, retryClient == c.defaultClient, retryDetails)
+		resp, err = retryClient.Read(ctx, req, appendUnaryRetryOverrideOptions(opts, requestID, 2)...)
+		if err == nil {
+			c.observeReadResponse(req, resp, retryEndpoint)
+			return resp, nil
+		}
+		c.maybeExcludeEndpointOnNextCall(retryEndpoint, logicalRequestKey, err)
 		return nil, err
 	}
-	c.router.observeResultSet(resp)
-	if txMeta := resp.GetMetadata().GetTransaction(); txMeta != nil && len(txMeta.GetId()) > 0 {
-		if isReadOnlyBegin, readOnlyStrong := readOnlyBeginFromSelector(req.GetTransaction()); isReadOnlyBegin {
-			c.router.trackReadOnlyTransaction(string(txMeta.GetId()), readOnlyStrong)
-		} else if isReadWriteBeginFromSelector(req.GetTransaction()) {
-			c.router.setTransactionAffinity(string(txMeta.GetId()), c.affinityTrackingEndpoint(ep))
-		}
-	}
+	c.observeReadResponse(req, resp, ep)
 	return resp, nil
 }
 
@@ -315,43 +413,59 @@ func (c *locationAwareSpannerClient) ExecuteStreamingSql(ctx context.Context, re
 
 func (c *locationAwareSpannerClient) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (*spannerpb.ResultSet, error) {
 	logicalRequestKey, excludedEndpoints := c.excludedEndpointsForCall(opts)
+	requestID := requestIDAttemptOptionerFromCallOptions(c.defaultClient, opts)
 	ep, details := c.router.prepareExecuteSQLRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
 	client := c.clientForEndpoint(ep)
 	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/ExecuteSql", ep, client == c.defaultClient, details)
-	resp, err := client.ExecuteSql(ctx, req, opts...)
+	resp, err := client.ExecuteSql(ctx, req, appendUnaryRetryOverrideOptions(opts, requestID, 1)...)
 	if err != nil {
-		c.maybeExcludeEndpointOnNextCall(ep, logicalRequestKey, err)
+		if !c.shouldManualRoutedUnaryRetry(ep, client, err) {
+			c.maybeExcludeEndpointOnNextCall(ep, logicalRequestKey, err)
+			return nil, err
+		}
+
+		retryExcludedEndpoints := combineEndpointExcluders(excludedEndpoints, ep.Address())
+		retryEndpoint, retryDetails := c.router.prepareExecuteSQLRequestWithExclusionsAndDetails(ctx, req, retryExcludedEndpoints)
+		retryClient := c.clientForEndpoint(retryEndpoint)
+		c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/ExecuteSql", retryEndpoint, retryClient == c.defaultClient, retryDetails)
+		resp, err = retryClient.ExecuteSql(ctx, req, appendUnaryRetryOverrideOptions(opts, requestID, 2)...)
+		if err == nil {
+			c.observeExecuteSQLResponse(req, resp, retryEndpoint)
+			return resp, nil
+		}
+		c.maybeExcludeEndpointOnNextCall(retryEndpoint, logicalRequestKey, err)
 		return nil, err
 	}
-	c.router.observeResultSet(resp)
-	if txMeta := resp.GetMetadata().GetTransaction(); txMeta != nil && len(txMeta.GetId()) > 0 {
-		if isReadOnlyBegin, readOnlyStrong := readOnlyBeginFromSelector(req.GetTransaction()); isReadOnlyBegin {
-			c.router.trackReadOnlyTransaction(string(txMeta.GetId()), readOnlyStrong)
-		} else if isReadWriteBeginFromSelector(req.GetTransaction()) {
-			c.router.setTransactionAffinity(string(txMeta.GetId()), c.affinityTrackingEndpoint(ep))
-		}
-	}
+	c.observeExecuteSQLResponse(req, resp, ep)
 	return resp, nil
 }
 
 func (c *locationAwareSpannerClient) BeginTransaction(ctx context.Context, req *spannerpb.BeginTransactionRequest, opts ...gax.CallOption) (*spannerpb.Transaction, error) {
 	logicalRequestKey, excludedEndpoints := c.excludedEndpointsForCall(opts)
+	requestID := requestIDAttemptOptionerFromCallOptions(c.defaultClient, opts)
 	ep, details := c.router.prepareBeginTransactionRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
 	client := c.clientForEndpoint(ep)
 	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/BeginTransaction", ep, client == c.defaultClient, details)
-	resp, err := client.BeginTransaction(ctx, req, opts...)
+	resp, err := client.BeginTransaction(ctx, req, appendUnaryRetryOverrideOptions(opts, requestID, 1)...)
 	if err != nil {
-		c.maybeExcludeEndpointOnNextCall(ep, logicalRequestKey, err)
+		if !c.shouldManualRoutedUnaryRetry(ep, client, err) {
+			c.maybeExcludeEndpointOnNextCall(ep, logicalRequestKey, err)
+			return nil, err
+		}
+
+		retryExcludedEndpoints := combineEndpointExcluders(excludedEndpoints, ep.Address())
+		retryEndpoint, retryDetails := c.router.prepareBeginTransactionRequestWithExclusionsAndDetails(ctx, req, retryExcludedEndpoints)
+		retryClient := c.clientForEndpoint(retryEndpoint)
+		c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/BeginTransaction", retryEndpoint, retryClient == c.defaultClient, retryDetails)
+		resp, err = retryClient.BeginTransaction(ctx, req, appendUnaryRetryOverrideOptions(opts, requestID, 2)...)
+		if err == nil {
+			c.observeBeginTransactionResponse(req, resp, retryEndpoint)
+			return resp, nil
+		}
+		c.maybeExcludeEndpointOnNextCall(retryEndpoint, logicalRequestKey, err)
 		return nil, err
 	}
-	c.router.observeTransaction(resp)
-	if len(resp.GetId()) > 0 {
-		if isReadOnly, readOnlyStrong := readOnlyBeginFromTransactionOptions(req.GetOptions()); isReadOnly {
-			c.router.trackReadOnlyTransaction(string(resp.GetId()), readOnlyStrong)
-		} else {
-			c.router.setTransactionAffinity(string(resp.GetId()), c.affinityTrackingEndpoint(ep))
-		}
-	}
+	c.observeBeginTransactionResponse(req, resp, ep)
 	return resp, nil
 }
 

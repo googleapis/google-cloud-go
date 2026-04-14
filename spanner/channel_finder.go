@@ -43,14 +43,16 @@ type channelFinder struct {
 
 const cacheUpdateCoalescingWindow = 5 * time.Millisecond
 
+func defaultChannelFinderFlushScheduler(delay time.Duration, fn func()) {
+	time.AfterFunc(delay, fn)
+}
+
 func newChannelFinder(endpointCache channelEndpointCache) *channelFinder {
 	return &channelFinder{
 		recipeCache:     newKeyRecipeCache(),
 		rangeCache:      newKeyRangeCache(endpointCache),
 		coalescingDelay: cacheUpdateCoalescingWindow,
-		scheduleFlush: func(delay time.Duration, fn func()) {
-			time.AfterFunc(delay, fn)
-		},
+		scheduleFlush:   defaultChannelFinderFlushScheduler,
 	}
 }
 
@@ -79,9 +81,7 @@ func (f *channelFinder) setFlushSchedulerForTest(schedule func(time.Duration, fu
 		return
 	}
 	if schedule == nil {
-		schedule = func(delay time.Duration, fn func()) {
-			time.AfterFunc(delay, fn)
-		}
+		schedule = defaultChannelFinderFlushScheduler
 	}
 	f.coalescingMu.Lock()
 	defer f.coalescingMu.Unlock()
@@ -138,6 +138,11 @@ func (f *channelFinder) shouldProcessUpdate(update *sppb.CacheUpdate) bool {
 	if update == nil {
 		return false
 	}
+	// Apply any material cache update and let applyUpdateLocked handle a database
+	// switch by clearing stale state before storing the new database ID. For
+	// database-ID-only messages, only process them when they indicate that this
+	// finder has switched to a different database; database IDs are treated as
+	// identity values, not an ordered sequence.
 	if f.isMaterialUpdate(update) {
 		return true
 	}

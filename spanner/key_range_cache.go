@@ -19,7 +19,6 @@ package spanner
 import (
 	"bytes"
 	"context"
-	"crypto/sha256"
 	"hash/crc32"
 	"math/rand"
 	"sort"
@@ -28,7 +27,6 @@ import (
 
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"google.golang.org/grpc/connectivity"
-	"google.golang.org/protobuf/proto"
 )
 
 const (
@@ -59,7 +57,6 @@ type keyRangeCache struct {
 	state atomic.Value // *keyRangeCacheState
 
 	accessCounter atomic.Int64
-	seenUpdates   sync.Map
 }
 
 type cachedTablet struct {
@@ -358,13 +355,6 @@ func (c *keyRangeCache) addRanges(cacheUpdate *sppb.CacheUpdate) {
 		return
 	}
 
-	if b, err := proto.Marshal(cacheUpdate); err == nil {
-		hashArr := sha256.Sum256(b)
-		if _, loaded := c.seenUpdates.LoadOrStore(hashArr, true); loaded {
-			return
-		}
-	}
-
 	c.updateMu.Lock()
 	defer c.updateMu.Unlock()
 
@@ -537,24 +527,6 @@ func (b *keyRangeCacheStateBuilder) replacePartitionWindow(start, end int, range
 	next = append(next, rebuilt...)
 	next = append(next, b.partitions[end:]...)
 	b.partitions = next
-}
-
-func (c *keyRangeCache) getActiveAddresses() map[string]struct{} {
-	state := c.loadState()
-	addresses := make(map[string]struct{})
-	for _, shard := range state.groupShards {
-		for _, group := range shard {
-			group.mu.Lock()
-			for _, tablet := range group.tablets {
-				if tablet.serverAddress == "" {
-					continue
-				}
-				addresses[tablet.serverAddress] = struct{}{}
-			}
-			group.mu.Unlock()
-		}
-	}
-	return addresses
 }
 
 func (c *keyRangeCache) shrinkTo(newSize int) {
@@ -843,159 +815,6 @@ func (b *keyRangeCacheStateBuilder) findGroup(groupUID uint64) *cachedGroup {
 		return nil
 	}
 	return shard[groupUID]
-}
-
-func countRecipesInUpdate(update *sppb.CacheUpdate) int {
-	if update == nil || update.GetKeyRecipes() == nil {
-		return 0
-	}
-	return len(update.GetKeyRecipes().GetRecipe())
-}
-
-func countTrueBools(values []bool) int {
-	count := 0
-	for _, value := range values {
-		if value {
-			count++
-		}
-	}
-	return count
-}
-
-func evaluateRangeShardCandidates(update *sppb.CacheUpdate) (int, int, int, int, int, int, int, int, int, int, []uint8, []uint16, []uint32, []uint32) {
-	if update == nil {
-		return 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, nil, nil, nil, nil
-	}
-	ranges := update.GetRange()
-	if len(ranges) == 0 {
-		return 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, nil, nil, nil, nil
-	}
-	startPrefix8 := make([]uint8, 0, len(ranges))
-	startPrefix16 := make([]uint16, 0, len(ranges))
-	startPrefix24 := make([]uint32, 0, len(ranges))
-	startPrefix32 := make([]uint32, 0, len(ranges))
-	var lead8Sum, lead8Max int
-	var lead12Sum, lead12Max int
-	var lead16Sum, lead16Max int
-	var lead24Sum, lead24Max int
-	var lead32Sum, lead32Max int
-	for _, r := range ranges {
-		if r == nil {
-			continue
-		}
-		startKey := r.GetStartKey()
-		limitKey := r.GetLimitKey()
-		startPrefix8 = append(startPrefix8, leadingPrefix8(startKey))
-		startPrefix16 = append(startPrefix16, leadingPrefix16(startKey))
-		startPrefix24 = append(startPrefix24, leadingPrefix24(startKey))
-		startPrefix32 = append(startPrefix32, leadingPrefix32(startKey))
-		span8 := leadingPrefixShardSpan(startKey, limitKey, 8)
-		span12 := leadingPrefixShardSpan(startKey, limitKey, 12)
-		span16 := leadingPrefixShardSpan(startKey, limitKey, 16)
-		span24 := leadingPrefixShardSpan(startKey, limitKey, 24)
-		span32 := leadingPrefixShardSpan(startKey, limitKey, 32)
-		lead8Sum += span8
-		lead12Sum += span12
-		lead16Sum += span16
-		lead24Sum += span24
-		lead32Sum += span32
-		if span8 > lead8Max {
-			lead8Max = span8
-		}
-		if span12 > lead12Max {
-			lead12Max = span12
-		}
-		if span16 > lead16Max {
-			lead16Max = span16
-		}
-		if span24 > lead24Max {
-			lead24Max = span24
-		}
-		if span32 > lead32Max {
-			lead32Max = span32
-		}
-	}
-	return lead8Sum, lead8Max, lead12Sum, lead12Max, lead16Sum, lead16Max, lead24Sum, lead24Max, lead32Sum, lead32Max, startPrefix8, startPrefix16, startPrefix24, startPrefix32
-}
-
-func leadingPrefixShardSpan(startKey, limitKey []byte, bits int) int {
-	if bits <= 0 {
-		return 1
-	}
-	if len(startKey) == 0 || len(limitKey) == 0 {
-		return 1 << bits
-	}
-	start := leadingPrefixBits(startKey, bits)
-	limit := leadingPrefixBits(limitKey, bits)
-	if start > limit {
-		return 1 << bits
-	}
-	return limit - start + 1
-}
-
-func leadingPrefixBits(key []byte, bits int) int {
-	if bits <= 0 {
-		return 0
-	}
-	bytesNeeded := (bits + 7) / 8
-	var value uint32
-	for i := 0; i < bytesNeeded; i++ {
-		value <<= 8
-		if i < len(key) {
-			value |= uint32(key[i])
-		}
-	}
-	shift := bytesNeeded*8 - bits
-	return int(value >> shift)
-}
-
-func leadingPrefix8(key []byte) uint8 {
-	if len(key) == 0 {
-		return 0
-	}
-	return key[0]
-}
-
-func leadingPrefix16(key []byte) uint16 {
-	if len(key) == 0 {
-		return 0
-	}
-	var value uint16 = uint16(key[0]) << 8
-	if len(key) > 1 {
-		value |= uint16(key[1])
-	}
-	return value
-}
-
-func leadingPrefix24(key []byte) uint32 {
-	if len(key) == 0 {
-		return 0
-	}
-	var value uint32 = uint32(key[0]) << 16
-	if len(key) > 1 {
-		value |= uint32(key[1]) << 8
-	}
-	if len(key) > 2 {
-		value |= uint32(key[2])
-	}
-	return value
-}
-
-func leadingPrefix32(key []byte) uint32 {
-	if len(key) == 0 {
-		return 0
-	}
-	var value uint32 = uint32(key[0]) << 24
-	if len(key) > 1 {
-		value |= uint32(key[1]) << 16
-	}
-	if len(key) > 2 {
-		value |= uint32(key[2]) << 8
-	}
-	if len(key) > 3 {
-		value |= uint32(key[3])
-	}
-	return value
 }
 
 func (t *cachedTablet) update(tabletIn *sppb.Tablet) {

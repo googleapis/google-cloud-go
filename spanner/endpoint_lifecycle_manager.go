@@ -335,6 +335,12 @@ func (m *endpointLifecycleManager) probe(address string) {
 		return
 	}
 
+	// GetState reports grpc-go's current connectivity state; it is not an
+	// active liveness probe. A connection that is silently broken can remain
+	// Ready until real traffic or keepalive detects the failure. Since the
+	// client configures a 2 minute keepalive and this lifecycle probe runs once
+	// per minute, an otherwise idle broken connection can take on the order of
+	// a few minutes to transition out of Ready.
 	state := conn.GetState()
 
 	m.mu.Lock()
