@@ -1362,17 +1362,17 @@ func objectFuncs(t *testing.T) {
 			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(MapSet("m1", "c", 3).As("updated"))),
 			want:     map[string]interface{}{"updated": map[string]interface{}{"a": int64(1), "b": int64(2), "c": int64(3)}},
 		},
-		{ 
+		{
 			name:     "MapKeys",
 			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(MapKeys("m1").As("keys"))),
 			want:     map[string]interface{}{"keys": []interface{}{"a", "b"}},
 		},
-		{ 
+		{
 			name:     "MapValues",
 			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(MapValues("m1").As("values"))),
 			want:     map[string]interface{}{"values": []interface{}{int64(1), int64(2)}},
 		},
-		{ 
+		{
 			name:     "MapEntries",
 			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(MapEntries("m1").As("entries"))),
 			want:     map[string]interface{}{"entries": []interface{}{map[string]interface{}{"k": "a", "v": int64(1)}, map[string]interface{}{"k": "b", "v": int64(2)}}},
