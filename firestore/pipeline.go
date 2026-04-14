@@ -26,8 +26,8 @@ import (
 var (
 	// ErrPipelineWithoutDatabase is returned when a pipeline is executed without a database such as a subcollection pipeline.
 	ErrPipelineWithoutDatabase = errors.New("firestore: pipeline without a database cannot be executed directly, only as part of another pipeline")
-	// ErrUnionNotSupportRelativeScope is returned when a union is used with a relative scope pipeline.
-	ErrUnionNotSupportRelativeScope = errors.New("firestore: union only supports combining root pipelines; relative scope pipelines (like subcollection pipelines) are not supported")
+	// ErrRelativeScopeUnionUnsupported is returned when a union is used with a relative scope pipeline.
+	ErrRelativeScopeUnionUnsupported = errors.New("firestore: union only supports combining root pipelines; relative scope pipelines (like subcollection pipelines) are not supported")
 )
 
 // Pipeline class provides a flexible and expressive framework for building complex data
@@ -908,7 +908,7 @@ func (p *Pipeline) Union(other *Pipeline, opts ...UnionOption) *Pipeline {
 		return p
 	}
 	if other.c == nil {
-		p.err = ErrUnionNotSupportRelativeScope
+		p.err = ErrRelativeScopeUnionUnsupported
 		return p
 	}
 	options := make(map[string]any)
