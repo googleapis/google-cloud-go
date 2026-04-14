@@ -732,6 +732,18 @@ func serverErrorWithMinimalRetryDelay(code codes.Code, msg string) error {
 	return st.Err()
 }
 
+func waitForLocationAwareEndpointHealthy(t *testing.T, client *Client, address string) {
+	t.Helper()
+
+	waitForCondition(t, time.Second, func() bool {
+		if client == nil || client.locationRouter == nil || client.locationRouter.endpointCache == nil {
+			return false
+		}
+		endpoint := client.locationRouter.endpointCache.Get(context.Background(), address)
+		return endpoint != nil && endpoint.IsHealthy()
+	})
+}
+
 func TestLocationAwareExecuteSql_UnaryRetryDoesNotPopulateEndpointExclusion(t *testing.T) {
 	t.Parallel()
 
@@ -788,6 +800,7 @@ func TestLocationAwareExecuteSql_UnaryRetryDoesNotPopulateEndpointExclusion(t *t
 		endpoint := client.locationRouter.prepareExecuteSQLRequest(context.Background(), prepared)
 		return endpoint != nil && endpoint.Address() == harness.ReplicaAddresses[0]
 	})
+	waitForLocationAwareEndpointHealthy(t, client, harness.ReplicaAddresses[1])
 
 	lac, ok := sh.getClient().(*locationAwareSpannerClient)
 	if !ok {
@@ -830,6 +843,9 @@ func TestLocationAwareExecuteSql_UnaryRetryDoesNotPopulateEndpointExclusion(t *t
 	excluded := lac.excludedEndpoints.consume(logicalRequestKey)
 	if excluded != nil && excluded(harness.ReplicaAddresses[0]) {
 		t.Fatalf("expected routed address %q not to be excluded after internal unary retry", harness.ReplicaAddresses[0])
+	}
+	if !lac.endpointCooldowns.isCoolingDown(harness.ReplicaAddresses[0]) {
+		t.Fatalf("expected routed address %q to enter overload cooldown after internal unary retry", harness.ReplicaAddresses[0])
 	}
 }
 
@@ -889,6 +905,7 @@ func TestLocationAwareExecuteStreamingSql_RetryUsesExcludedEndpointOnNextCall(t 
 		endpoint := client.locationRouter.prepareExecuteSQLRequest(context.Background(), prepared)
 		return endpoint != nil && endpoint.Address() == harness.ReplicaAddresses[0]
 	})
+	waitForLocationAwareEndpointHealthy(t, client, harness.ReplicaAddresses[1])
 
 	lac, ok := sh.getClient().(*locationAwareSpannerClient)
 	if !ok {
@@ -997,6 +1014,7 @@ func TestLocationAwareExecuteSql_CooldownRoutesToNextReplicaAndEndpointBecomesEl
 		endpoint := client.locationRouter.prepareExecuteSQLRequest(context.Background(), prepared)
 		return endpoint != nil && endpoint.Address() == harness.ReplicaAddresses[0]
 	})
+	waitForLocationAwareEndpointHealthy(t, client, harness.ReplicaAddresses[1])
 
 	lac, ok := sh.getClient().(*locationAwareSpannerClient)
 	if !ok {
@@ -1102,6 +1120,7 @@ func TestLocationAwareExecuteSql_CooldownFallsBackToDefaultWhenAllRoutedReplicas
 		endpoint := client.locationRouter.prepareExecuteSQLRequest(context.Background(), prepared)
 		return endpoint != nil && endpoint.Address() == harness.ReplicaAddresses[0]
 	})
+	waitForLocationAwareEndpointHealthy(t, client, harness.ReplicaAddresses[1])
 
 	lac, ok := sh.getClient().(*locationAwareSpannerClient)
 	if !ok {
@@ -1193,6 +1212,7 @@ func TestLocationAwareExecuteStreamingSql_CooldownRoutesToNextReplicaAndEndpoint
 		endpoint := client.locationRouter.prepareExecuteSQLRequest(context.Background(), prepared)
 		return endpoint != nil && endpoint.Address() == harness.ReplicaAddresses[0]
 	})
+	waitForLocationAwareEndpointHealthy(t, client, harness.ReplicaAddresses[1])
 
 	lac, ok := sh.getClient().(*locationAwareSpannerClient)
 	if !ok {
@@ -1310,6 +1330,7 @@ func TestLocationAwareRead_UnaryRetryDoesNotPopulateEndpointExclusion(t *testing
 		endpoint := client.locationRouter.prepareReadRequest(context.Background(), prepared)
 		return endpoint != nil && endpoint.Address() == harness.ReplicaAddresses[0]
 	})
+	waitForLocationAwareEndpointHealthy(t, client, harness.ReplicaAddresses[1])
 
 	lac, ok := sh.getClient().(*locationAwareSpannerClient)
 	if !ok {
@@ -1352,6 +1373,9 @@ func TestLocationAwareRead_UnaryRetryDoesNotPopulateEndpointExclusion(t *testing
 	excluded := lac.excludedEndpoints.consume(logicalRequestKey)
 	if excluded != nil && excluded(harness.ReplicaAddresses[0]) {
 		t.Fatalf("expected routed address %q not to be excluded after internal unary retry", harness.ReplicaAddresses[0])
+	}
+	if !lac.endpointCooldowns.isCoolingDown(harness.ReplicaAddresses[0]) {
+		t.Fatalf("expected routed address %q to enter overload cooldown after internal unary retry", harness.ReplicaAddresses[0])
 	}
 }
 
@@ -1415,6 +1439,7 @@ func TestLocationAwareBeginTransaction_UnaryRetryDoesNotPopulateEndpointExclusio
 		endpoint := client.locationRouter.prepareBeginTransactionRequest(context.Background(), prepared)
 		return endpoint != nil && endpoint.Address() == harness.ReplicaAddresses[0]
 	})
+	waitForLocationAwareEndpointHealthy(t, client, harness.ReplicaAddresses[1])
 
 	lac, ok := sh.getClient().(*locationAwareSpannerClient)
 	if !ok {
@@ -1457,6 +1482,9 @@ func TestLocationAwareBeginTransaction_UnaryRetryDoesNotPopulateEndpointExclusio
 	excluded := lac.excludedEndpoints.consume(logicalRequestKey)
 	if excluded != nil && excluded(harness.ReplicaAddresses[0]) {
 		t.Fatalf("expected routed address %q not to be excluded after internal unary retry", harness.ReplicaAddresses[0])
+	}
+	if !lac.endpointCooldowns.isCoolingDown(harness.ReplicaAddresses[0]) {
+		t.Fatalf("expected routed address %q to enter overload cooldown after internal unary retry", harness.ReplicaAddresses[0])
 	}
 }
 
