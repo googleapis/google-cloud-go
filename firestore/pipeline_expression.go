@@ -862,18 +862,18 @@ var _ Expression = (*baseExpression)(nil)
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
 type AliasedExpression struct {
-	*baseExpression
+	expr  Expression
 	alias string
 }
 
 func newAliasedExpr(expr Expression, alias string) *AliasedExpression {
-	return &AliasedExpression{baseExpression: expr.getBaseExpr(), alias: alias}
+	return &AliasedExpression{expr: expr, alias: alias}
 }
 
 // getSelectionDetails returns the alias and the underlying expression for this AliasedExpr.
 // This method allows AliasedExpr to satisfy the Selectable interface.
 func (e *AliasedExpression) getSelectionDetails() (string, Expression) {
-	return e.alias, e.baseExpression
+	return e.alias, e.expr
 }
 
 func (e *AliasedExpression) isSelectable() {}

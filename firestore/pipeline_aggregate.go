@@ -90,7 +90,7 @@ func (b *baseAggregateFunction) toProto() (*pb.Value, error) {
 func (b *baseAggregateFunction) getBaseAggregateFunction() *baseAggregateFunction { return b }
 func (b *baseAggregateFunction) isAggregateFunction()                             {}
 func (b *baseAggregateFunction) As(alias string) *AliasedAggregate {
-	return &AliasedAggregate{baseAggregateFunction: b, alias: alias}
+	return &AliasedAggregate{aggregate: b, alias: alias}
 }
 
 // Ensure that baseAggregateFunction implements the AggregateFunction interface.
@@ -102,8 +102,8 @@ var _ AggregateFunction = (*baseAggregateFunction)(nil)
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
 type AliasedAggregate struct {
-	*baseAggregateFunction
-	alias string
+	aggregate AggregateFunction
+	alias     string
 }
 
 // RawAggregate creates a raw aggregation function.

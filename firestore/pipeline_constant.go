@@ -30,6 +30,8 @@ type constant struct {
 }
 
 // ConstantOf creates a new constant [Expression] from a Go value.
+// It accepts primitive types (strings, numbers, booleans), slices, arrays, maps, structs, and specific
+// Firestore types such as time.Time, *timestamppb.Timestamp, []byte, Vector32, Vector64, *latlng.LatLng, and *DocumentRef.
 //
 // Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
@@ -64,7 +66,7 @@ func ConstantOf(value any) Expression {
 		return &constant{baseExpression: &baseExpression{err: fmt.Errorf("firestore: unknown constant type: %T", value)}}
 	}
 	switch v.Kind() {
-	case reflect.Slice, reflect.Array:
+	case reflect.Slice, reflect.Array, reflect.Map, reflect.Struct, reflect.Interface, reflect.Ptr:
 		pbVal, _, err := toProtoValue(v)
 		if err != nil {
 			return &constant{baseExpression: &baseExpression{err: err}}
