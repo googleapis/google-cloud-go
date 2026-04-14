@@ -181,7 +181,7 @@ func aliasedAggregatesToMapValue(aggregates []*AliasedAggregate) (*pb.Value, err
 			return nil, fmt.Errorf("firestore: duplicate alias %q in aggregations", agg.alias)
 		}
 
-		base := agg.getBaseAggregateFunction()
+		base := agg.aggregate.getBaseAggregateFunction()
 		if base.err != nil {
 			return nil, fmt.Errorf("firestore: error in aggregate expression for alias %q: %w", agg.alias, base.err)
 		}
