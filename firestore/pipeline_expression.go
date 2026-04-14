@@ -722,7 +722,7 @@ func (b *baseExpression) GetDocumentID() Expression   { return GetDocumentID(b) 
 func (b *baseExpression) GetField(key any) Expression { return GetField(b, key) }
 
 // Reference functions
-func (b *baseExpression) GetParent() Expression       { return GetParent(b) }
+func (b *baseExpression) GetParent() Expression { return GetParent(b) }
 func (b *baseExpression) ReferenceSliceToEnd(offset any) Expression {
 	return ReferenceSliceToEnd(b, offset)
 }

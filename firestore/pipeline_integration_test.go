@@ -2781,7 +2781,7 @@ func referenceFuncs(t *testing.T) {
 			defer iter.Stop()
 
 			docs, err := iter.GetAll()
-			
+
 			if test.wantErrMsg != "" {
 				var gotErr error
 				if err != nil {
@@ -2793,7 +2793,7 @@ func referenceFuncs(t *testing.T) {
 						gotErr = err
 					}
 				}
-				
+
 				if gotErr == nil {
 					t.Fatalf("expected error containing %q for this operation, but it succeeded", test.wantErrMsg)
 				} else if !strings.Contains(gotErr.Error(), test.wantErrMsg) {
