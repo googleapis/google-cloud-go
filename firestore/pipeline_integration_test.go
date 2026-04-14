@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"math"
 	"sort"
+	"strings"
 	"testing"
 	"time"
 
@@ -899,6 +900,7 @@ func TestIntegration_PipelineFunctions(t *testing.T) {
 	t.Run("comparisonFuncs", comparisonFuncs)
 	t.Run("generalFuncs", generalFuncs)
 	t.Run("keyFuncs", keyFuncs)
+	t.Run("referenceFuncs", referenceFuncs)
 	t.Run("objectFuncs", objectFuncs)
 	t.Run("logicalFuncs", logicalFuncs)
 	t.Run("typeFuncs", typeFuncs)
@@ -2662,22 +2664,6 @@ func keyFuncs(t *testing.T) {
 			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(GetDocumentID(docRef1).As("documentId"))),
 			want:     map[string]interface{}{"documentId": "doc1"},
 		},
-		{
-			name:     "GetParent",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(GetParent(subDocRef1).As("parent"))),
-			want:     map[string]interface{}{"parent": docRef1.Path},
-		},
-		{
-			name:     "ReferenceSlice (to end)",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(ReferenceSlice(ConstantOf(docRef1), 0, 2).As("segments"))),
-			want:     map[string]interface{}{"segments": docRef1.Path},
-		},
-		{
-			name:     "ReferenceSlice (subdoc to doc)",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(ReferenceSlice(ConstantOf(subDocRef1), 0, 2).As("segments"))),
-			// Note: reference_slice appears to return the full path regardless of length in this test.
-			want: map[string]interface{}{"segments": subDocRef1.Path},
-		},
 	}
 
 	for _, test := range tests {
@@ -2695,6 +2681,141 @@ func keyFuncs(t *testing.T) {
 				t.Fatalf("expected 1 doc, got %d", len(docs))
 			}
 			got := docs[0].Data()
+			// Convert DocumentRef to path string for comparison
+			for k, v := range got {
+				if ref, ok := v.(*DocumentRef); ok {
+					got[k] = ref.Path
+				}
+			}
+			if diff := testutil.Diff(got, test.want); diff != "" {
+				t.Errorf("got: %v, want: %v, diff +want -got: %s", got, test.want, diff)
+			}
+		})
+	}
+}
+
+func referenceFuncs(t *testing.T) {
+	t.Parallel()
+	h := testHelper{t}
+	client := integrationClient(t)
+	coll := client.Collection(collectionIDs.New())
+	docRef1 := coll.Doc("doc1")
+	subDocRef1 := docRef1.Collection("sub").Doc("sub1")
+	t.Cleanup(func() { deleteDocuments([]*DocumentRef{subDocRef1, docRef1}) })
+
+	h.mustCreate(docRef1, map[string]interface{}{
+		"a": "hello",
+		"b": "world",
+	})
+	h.mustCreate(subDocRef1, map[string]interface{}{
+		"c": "sub-hello",
+	})
+
+	tests := []struct {
+		name       string
+		pipeline   *Pipeline
+		want       map[string]interface{}
+		wantErrMsg string
+	}{
+		{
+			name:     "GetParent",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(GetParent(subDocRef1).As("parent"))),
+			want:     map[string]interface{}{"parent": docRef1.Path},
+		},
+		{
+			name:       "GetParent (root-level doc)",
+			pipeline:   client.Pipeline().Collection(coll.ID).Select(Fields(GetParent(docRef1).As("parent"))),
+			wantErrMsg: "the SDK does not support decoding reference values for collections or databases",
+		},
+		{
+			name:     "GetParent (database)",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(GetParent(GetParent(docRef1)).As("parent"))),
+			want:     map[string]interface{}{"parent": nil},
+		},
+		{
+			name:       "ReferenceSlice (database root)",
+			pipeline:   client.Pipeline().Collection(coll.ID).Select(Fields(ReferenceSlice(ConstantOf(docRef1), 0, 0).As("segments"))),
+			wantErrMsg: "the SDK does not support decoding reference values for collections or databases", // The SDK cannot decode a database root reference
+		},
+		{
+			name:       "ReferenceSlice (to end)",
+			pipeline:   client.Pipeline().Collection(coll.ID).Select(Fields(ReferenceSliceToEnd(ConstantOf(docRef1), 0).As("segments"))),
+			wantErrMsg: "takes [3..3] argument(s), but 2 were provided", // Backend expects exactly 3 arguments for reference_slice
+		},
+		{
+			name:     "ReferenceSliceToEnd (subdoc to doc)",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(ReferenceSlice(ConstantOf(subDocRef1), 0, 1).As("segments"))),
+			want:     map[string]interface{}{"segments": docRef1.Path},
+		},
+		{
+			name:       "ReferenceSlice (negative offset)",
+			pipeline:   client.Pipeline().Collection(coll.ID).Select(Fields(ReferenceSliceToEnd(ConstantOf(docRef1), -2).As("segments"))),
+			wantErrMsg: "takes [3..3] argument(s), but 2 were provided", // Backend expects exactly 3 arguments for reference_slice
+		},
+		{
+			name:     "ReferenceSlice (negative offset, explicit length)",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(ReferenceSlice(ConstantOf(subDocRef1), -2, 1).As("segments"))),
+			want:     map[string]interface{}{"segments": docRef1.Path},
+		},
+		{
+			name:       "ReferenceSlice (offset out of bounds)",
+			pipeline:   client.Pipeline().Collection(coll.ID).Select(Fields(ReferenceSliceToEnd(ConstantOf(docRef1), 100).As("segments"))),
+			wantErrMsg: "takes [3..3] argument(s), but 2 were provided", // Backend expects exactly 3 arguments for reference_slice
+		},
+		{
+			name:     "ReferenceSlice (length out of bounds)",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(ReferenceSlice(ConstantOf(docRef1), 0, 100).As("segments"))),
+			want:     map[string]interface{}{"segments": docRef1.Path},
+		},
+		{
+			name:       "ReferenceSlice (negative length)",
+			pipeline:   client.Pipeline().Collection(coll.ID).Select(Fields(ReferenceSlice(ConstantOf(docRef1), 0, -1).As("segments"))),
+			wantErrMsg: "length must be non-negative", // The backend throws an InvalidArgument error for negative lengths
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			ctx := context.Background()
+			iter := test.pipeline.Execute(ctx).Results()
+			defer iter.Stop()
+
+			docs, err := iter.GetAll()
+			
+			if test.wantErrMsg != "" {
+				var gotErr error
+				if err != nil {
+					gotErr = err
+				} else if len(docs) == 1 {
+					var got map[string]interface{}
+					err = docs[0].DataTo(&got)
+					if err != nil {
+						gotErr = err
+					}
+				}
+				
+				if gotErr == nil {
+					t.Fatalf("expected error containing %q for this operation, but it succeeded", test.wantErrMsg)
+				} else if !strings.Contains(gotErr.Error(), test.wantErrMsg) {
+					t.Fatalf("expected error to contain %q, but got: %v", test.wantErrMsg, gotErr)
+				}
+				return
+			}
+
+			if err != nil {
+				t.Fatalf("GetAll: %v", err)
+				return
+			}
+			if len(docs) != 1 {
+				t.Fatalf("expected 1 doc, got %d", len(docs))
+			}
+
+			var got map[string]interface{}
+			err = docs[0].DataTo(&got)
+			if err != nil {
+				t.Fatalf("DataTo: %v", err)
+			}
+
 			// Convert DocumentRef to path string for comparison
 			for k, v := range got {
 				if ref, ok := v.(*DocumentRef); ok {

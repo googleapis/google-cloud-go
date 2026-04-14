@@ -639,12 +639,7 @@ func (b *baseExpression) ArraySliceToEnd(offset any) Expression { return ArraySl
 func (b *baseExpression) ArraySlice(offset, length any) Expression {
 	return ArraySlice(b, offset, length)
 }
-func (b *baseExpression) ReferenceSliceToEnd(offset any) Expression {
-	return ReferenceSliceToEnd(b, offset)
-}
-func (b *baseExpression) ReferenceSlice(offset, length any) Expression {
-	return ReferenceSlice(b, offset, length)
-}
+
 func (b *baseExpression) ArrayIndexOf(search any) Expression {
 	return ArrayIndexOf(b, search)
 }
@@ -724,8 +719,16 @@ func (b *baseExpression) Concat(others ...any) Expression { return Concat(b, oth
 // Key functions
 func (b *baseExpression) GetCollectionID() Expression { return GetCollectionID(b) }
 func (b *baseExpression) GetDocumentID() Expression   { return GetDocumentID(b) }
-func (b *baseExpression) GetParent() Expression       { return GetParent(b) }
 func (b *baseExpression) GetField(key any) Expression { return GetField(b, key) }
+
+// Reference functions
+func (b *baseExpression) GetParent() Expression       { return GetParent(b) }
+func (b *baseExpression) ReferenceSliceToEnd(offset any) Expression {
+	return ReferenceSliceToEnd(b, offset)
+}
+func (b *baseExpression) ReferenceSlice(offset, length any) Expression {
+	return ReferenceSlice(b, offset, length)
+}
 
 // Logical functions
 func (b *baseExpression) IfError(catchExprOrValue any) Expression {
