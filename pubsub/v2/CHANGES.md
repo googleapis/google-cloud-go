@@ -1,5 +1,19 @@
 # Changes
 
+## [2.6.0](https://github.com/googleapis/google-cloud-go/releases/tag/pubsub%2Fv2.6.0) (2026-04-14)
+
+### Features
+
+* enable open telemetry attrs (#14426) ([74eab64](https://github.com/googleapis/google-cloud-go/commit/74eab64d1b4e22d8c79b0de4e5fc9a36bc4c6c19))
+
+### Bug Fixes
+
+* fix span linking and add missing attributes (#14326) ([ec20708](https://github.com/googleapis/google-cloud-go/commit/ec20708bfb2c04a60909ffc3bd956580b82a4713))
+
+### Documentation
+
+* revamp package docs (#14317) ([71df27f](https://github.com/googleapis/google-cloud-go/commit/71df27f8820459b3e2452c20b5aa802d8c17b61a))
+
 ## [2.5.1](https://github.com/googleapis/google-cloud-go/releases/tag/pubsub%2Fv2.5.1) (2026-03-31)
 
 ### Bug Fixes
