@@ -661,6 +661,11 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 			sc.endpointAuthority = normalizeAuthorityTarget(conn.Target())
 			defaultEndpointAddress = sc.endpointAuthority
 		}
+		// Some transport wrappers, such as GCPMultiEndpoint and GCPFallback,
+		// intentionally do not expose a concrete default *grpc.ClientConn and
+		// return nil from Conn(). In that case location-aware routing remains
+		// enabled; we only skip deriving the default endpoint metadata used for
+		// authority preservation and default-endpoint diagnostics.
 		epCache := newEndpointClientCacheWithDefaultAddress(sc.createEndpointClient, defaultEndpointAddress)
 		locationRouter = newLocationRouter(epCache)
 		locationRouter.lifecycleManager = newEndpointLifecycleManager(epCache)

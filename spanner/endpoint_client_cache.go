@@ -44,11 +44,7 @@ func (e *grpcChannelEndpoint) IsHealthy() bool {
 	if e == nil || e.conn == nil {
 		return false
 	}
-	state := e.conn.GetState()
-	if state == connectivity.Shutdown {
-		return false
-	}
-	return state == connectivity.Ready
+	return e.conn.GetState() == connectivity.Ready
 }
 
 func (e *grpcChannelEndpoint) IsTransientFailure() bool {

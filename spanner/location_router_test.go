@@ -134,23 +134,25 @@ func TestChannelFinder_UpdateAsyncCoalescesUpdates(t *testing.T) {
 		},
 	}
 
+	var flush func()
+	finder.setFlushSchedulerForTest(func(_ time.Duration, fn func()) {
+		flush = fn
+	})
 	finder.updateAsync(recipeUpdate)
 	finder.updateAsync(rangeUpdate)
-
-	deadline := time.Now().Add(200 * time.Millisecond)
-	for time.Now().Before(deadline) {
-		if finder.databaseID.Load() == 1 &&
-			finder.rangeCache.size() == 1 {
-			hint := &sppb.RoutingHint{}
-			finder.recipeCache.applySchemaGeneration(hint)
-			if bytes.Equal(hint.GetSchemaGeneration(), []byte{1, 2}) {
-				return
-			}
-		}
-		time.Sleep(5 * time.Millisecond)
+	if flush == nil {
+		t.Fatal("expected coalesced flush to be scheduled")
 	}
+	flush()
 
-	t.Fatalf("expected coalesced update to apply recipe and range state")
+	if finder.databaseID.Load() != 1 || finder.rangeCache.size() != 1 {
+		t.Fatalf("expected coalesced update to apply database and range state")
+	}
+	hint := &sppb.RoutingHint{}
+	finder.recipeCache.applySchemaGeneration(hint)
+	if !bytes.Equal(hint.GetSchemaGeneration(), []byte{1, 2}) {
+		t.Fatalf("expected coalesced update to apply recipe state")
+	}
 }
 
 func TestIsExperimentalLocationAPIEnabled(t *testing.T) {
@@ -167,6 +169,68 @@ func TestIsExperimentalLocationAPIEnabled(t *testing.T) {
 	t.Setenv(experimentalLocationAPIEnvVar, "not-a-bool")
 	if isExperimentalLocationAPIEnabled() {
 		t.Fatal("expected invalid boolean env var to be treated as disabled")
+	}
+}
+
+func TestLocationRouter_ObserveResultSet_CoalescesUpdatesInOrder(t *testing.T) {
+	finder := newChannelFinder(nil)
+
+	db1RecipeUpdate := &sppb.CacheUpdate{
+		DatabaseId: 1,
+		KeyRecipes: &sppb.RecipeList{
+			SchemaGeneration: []byte{1, 1},
+			Recipe: []*sppb.KeyRecipe{
+				{
+					Target: &sppb.KeyRecipe_TableName{TableName: "T1"},
+					Part: []*sppb.KeyRecipe_Part{
+						{Tag: 1},
+					},
+				},
+			},
+		},
+	}
+	db2RangeUpdate := &sppb.CacheUpdate{
+		DatabaseId: 2,
+		Range: []*sppb.Range{
+			{
+				StartKey:   []byte("a"),
+				LimitKey:   []byte("z"),
+				GroupUid:   7,
+				SplitId:    9,
+				Generation: []byte{2},
+			},
+		},
+		Group: []*sppb.Group{
+			{
+				GroupUid: 7,
+				Tablets: []*sppb.Tablet{
+					{TabletUid: 7, ServerAddress: "replica-2"},
+				},
+			},
+		},
+	}
+
+	var flush func()
+	finder.setFlushSchedulerForTest(func(_ time.Duration, fn func()) {
+		flush = fn
+	})
+	finder.updateAsync(db1RecipeUpdate)
+	finder.updateAsync(db2RangeUpdate)
+	if flush == nil {
+		t.Fatal("expected coalesced flush to be scheduled")
+	}
+	flush()
+
+	if got := finder.databaseID.Load(); got != 2 {
+		t.Fatalf("databaseID=%d, want 2", got)
+	}
+	if got := finder.rangeCache.size(); got != 1 {
+		t.Fatalf("rangeCache.size()=%d, want 1", got)
+	}
+	hint := &sppb.RoutingHint{}
+	finder.recipeCache.applySchemaGeneration(hint)
+	if len(hint.GetSchemaGeneration()) != 0 {
+		t.Fatalf("expected recipe cache to be cleared on database change, got %v", hint.GetSchemaGeneration())
 	}
 }
 

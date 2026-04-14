@@ -429,6 +429,30 @@ func TestEndpointClientCache_DefaultChannelUsesConfiguredAddress(t *testing.T) {
 	}
 }
 
+func TestEndpointClientCache_GetReturnsDefaultChannelForConfiguredAddress(t *testing.T) {
+	createCount := 0
+	cache := newEndpointClientCacheWithDefaultAddress(
+		func(context.Context, string) (spannerClient, error) {
+			createCount++
+			t.Fatal("factory should not be called for the configured default endpoint")
+			return nil, nil
+		},
+		"spanner.googleapis.com:443",
+	)
+
+	defaultChannel := cache.DefaultChannel()
+	if defaultChannel == nil {
+		t.Fatal("expected non-nil default channel")
+	}
+
+	if got := cache.Get(context.Background(), "spanner.googleapis.com:443"); got != defaultChannel {
+		t.Fatalf("Get(default endpoint) = %#v, want %#v", got, defaultChannel)
+	}
+	if createCount != 0 {
+		t.Fatalf("factory createCount = %d, want 0", createCount)
+	}
+}
+
 func TestGRPCChannelEndpoint_GetConn(t *testing.T) {
 	conn, cleanup := newReadyTestConn(t)
 	defer cleanup()

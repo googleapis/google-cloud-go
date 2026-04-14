@@ -74,7 +74,7 @@ func (r *locationRouter) prepareReadRequestWithExclusions(ctx context.Context, r
 func (r *locationRouter) prepareReadRequestWithExclusionsAndDetails(ctx context.Context, req *sppb.ReadRequest, excludedEndpoints endpointExcluder) (channelEndpoint, routeSelectionDetails) {
 	details := newRouteSelectionDetails()
 	if r == nil || req == nil {
-		details.defaultReasonCode = "range_cache_miss"
+		details.defaultReasonCode = routeReasonRangeCacheMiss
 		return nil, details
 	}
 	if txID := transactionIDFromSelector(req.GetTransaction()); txID != "" {
@@ -101,7 +101,7 @@ func (r *locationRouter) prepareExecuteSQLRequestWithExclusions(ctx context.Cont
 func (r *locationRouter) prepareExecuteSQLRequestWithExclusionsAndDetails(ctx context.Context, req *sppb.ExecuteSqlRequest, excludedEndpoints endpointExcluder) (channelEndpoint, routeSelectionDetails) {
 	details := newRouteSelectionDetails()
 	if r == nil || req == nil {
-		details.defaultReasonCode = "range_cache_miss"
+		details.defaultReasonCode = routeReasonRangeCacheMiss
 		return nil, details
 	}
 	if txID := transactionIDFromSelector(req.GetTransaction()); txID != "" {
@@ -128,7 +128,7 @@ func (r *locationRouter) prepareBeginTransactionRequestWithExclusions(ctx contex
 func (r *locationRouter) prepareBeginTransactionRequestWithExclusionsAndDetails(ctx context.Context, req *sppb.BeginTransactionRequest, excludedEndpoints endpointExcluder) (channelEndpoint, routeSelectionDetails) {
 	details := newRouteSelectionDetails()
 	if r == nil || req == nil {
-		details.defaultReasonCode = "range_cache_miss"
+		details.defaultReasonCode = routeReasonRangeCacheMiss
 		return nil, details
 	}
 	return r.finder.findServerBeginTransactionWithExclusionsAndDetails(ctx, req, excludedEndpoints)
@@ -146,7 +146,7 @@ func (r *locationRouter) prepareCommitRequestWithExclusions(ctx context.Context,
 func (r *locationRouter) prepareCommitRequestWithExclusionsAndDetails(ctx context.Context, req *sppb.CommitRequest, excludedEndpoints endpointExcluder) (channelEndpoint, routeSelectionDetails) {
 	details := newRouteSelectionDetails()
 	if r == nil || req == nil {
-		details.defaultReasonCode = "range_cache_miss"
+		details.defaultReasonCode = routeReasonRangeCacheMiss
 		return nil, details
 	}
 	return r.finder.fillCommitRoutingHintWithExclusionsAndDetails(ctx, req, excludedEndpoints)

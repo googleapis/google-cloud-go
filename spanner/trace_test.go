@@ -92,7 +92,10 @@ func TestLocationAwareRouteSelectionTrace(t *testing.T) {
 		"google.spanner.v1.Spanner/ExecuteSql",
 		&passthroughChannelEndpoint{address: "replica:443"},
 		false,
-		routeSelectionDetails{selectedEndpoint: "replica:443"},
+		routeSelectionDetails{
+			defaultReasonCode: routeReasonRangeCacheMiss,
+			selectedEndpoint:  "replica:443",
+		},
 	)
 	endSpan(ctx, nil)
 
@@ -113,6 +116,9 @@ func TestLocationAwareRouteSelectionTrace(t *testing.T) {
 	if !hasKeyValueAttribute(gotSpan.Attributes, "spanner.route.method", "google.spanner.v1.Spanner/ExecuteSql") {
 		t.Fatal("expected spanner.route.method attribute")
 	}
+	if !hasKeyValueAttribute(gotSpan.Attributes, "spanner.route.default_reason_code", routeReasonRangeCacheMiss) {
+		t.Fatal("expected spanner.route.default_reason_code attribute")
+	}
 	if len(gotSpan.Events) != 1 {
 		t.Fatalf("expected one route-selection event, got %d", len(gotSpan.Events))
 	}
@@ -121,6 +127,9 @@ func TestLocationAwareRouteSelectionTrace(t *testing.T) {
 	}
 	if !hasKeyValueAttribute(gotSpan.Events[0].Attributes, "spanner.target", "replica:443") {
 		t.Fatal("expected spanner.target event attribute")
+	}
+	if !hasKeyValueAttribute(gotSpan.Events[0].Attributes, "spanner.route.default_reason_code", routeReasonRangeCacheMiss) {
+		t.Fatal("expected spanner.route.default_reason_code event attribute")
 	}
 }
 

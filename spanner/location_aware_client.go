@@ -140,6 +140,9 @@ func (c *locationAwareSpannerClient) recordRouteSelectionTrace(ctx context.Conte
 		attribute.Bool("spanner.route.has_channel_finder", endpointAddr != ""),
 		attribute.String("spanner.route.method", method),
 	}
+	if details.defaultReasonCode != "" {
+		attrs = append(attrs, attribute.String("spanner.route.default_reason_code", details.defaultReasonCode))
+	}
 	span.SetAttributes(attrs...)
 	span.AddEvent("spanner.route.selected", otrace.WithAttributes(attrs...))
 }

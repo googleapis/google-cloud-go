@@ -103,6 +103,11 @@ func newRouteSelectionDetails() routeSelectionDetails {
 	}
 }
 
+const (
+	routeReasonRangeCacheMiss          = "range_cache_miss"
+	routeReasonNoHealthyTabletForGroup = "no_healthy_tablet_for_group"
+)
+
 func (d *routeSelectionDetails) addResourceExhaustedExclusion(address string) {
 	if d == nil || address == "" {
 		return
@@ -475,7 +480,7 @@ func (c *keyRangeCache) fillRoutingHintWithExclusions(ctx context.Context, prefe
 func (c *keyRangeCache) fillRoutingHintWithExclusionsAndDetails(ctx context.Context, preferLeader bool, mode rangeMode, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint, excludedEndpoints endpointExcluder) (channelEndpoint, routeSelectionDetails) {
 	details := newRouteSelectionDetails()
 	if hint == nil || len(hint.GetKey()) == 0 {
-		details.defaultReasonCode = "range_cache_miss"
+		details.defaultReasonCode = routeReasonRangeCacheMiss
 		return nil, details
 	}
 	if directedReadOptions == nil {
@@ -486,12 +491,12 @@ func (c *keyRangeCache) fillRoutingHintWithExclusionsAndDetails(ctx context.Cont
 	cfg := c.loadRoutingConfig()
 	targetRange := c.findRangeInState(state, hint.GetKey(), hint.GetLimitKey(), mode, cfg)
 	if targetRange == nil {
-		details.defaultReasonCode = "range_cache_miss"
+		details.defaultReasonCode = routeReasonRangeCacheMiss
 		return nil, details
 	}
 	targetGroup := state.findGroup(targetRange.groupUID)
 	if targetGroup == nil {
-		details.defaultReasonCode = "range_cache_miss"
+		details.defaultReasonCode = routeReasonRangeCacheMiss
 		return nil, details
 	}
 
@@ -502,7 +507,7 @@ func (c *keyRangeCache) fillRoutingHintWithExclusionsAndDetails(ctx context.Cont
 
 	endpoint := targetGroup.fillRoutingHintWithExclusions(ctx, c, cfg.replicaSelector, c.endpointCache, cfg.lifecycleManager, preferLeader, directedReadOptions, hint, excludedEndpoints, &details)
 	if endpoint == nil && details.defaultReasonCode == "" {
-		details.defaultReasonCode = "no_healthy_tablet_for_group"
+		details.defaultReasonCode = routeReasonNoHealthyTabletForGroup
 	}
 	return endpoint, details
 }
@@ -1157,7 +1162,7 @@ func (t *cachedTablet) shouldSkipWithExclusions(hint *sppb.RoutingHint, excluded
 	return false
 }
 
-func (t *cachedTablet) shouldSkipForRouting(ctx context.Context, endpointCache channelEndpointCache, lifecycleManager *endpointLifecycleManager, hint *sppb.RoutingHint, excludedEndpoints endpointExcluder, skippedTabletUIDs map[uint64]struct{}, details *routeSelectionDetails) bool {
+func (t *cachedTablet) shouldSkipForRouting(endpointCache channelEndpointCache, lifecycleManager *endpointLifecycleManager, hint *sppb.RoutingHint, excludedEndpoints endpointExcluder, skippedTabletUIDs map[uint64]struct{}, pendingCreations map[string]struct{}, details *routeSelectionDetails) bool {
 	if hint == nil {
 		return true
 	}
@@ -1174,9 +1179,16 @@ func (t *cachedTablet) shouldSkipForRouting(ctx context.Context, endpointCache c
 	t.clearShutdownEndpoint()
 
 	if t.endpoint == nil && endpointCache != nil {
-		t.endpoint = endpointCache.Get(ctx, t.serverAddress)
+		t.endpoint = endpointCache.GetIfPresent(t.serverAddress)
 	}
 	if t.endpoint == nil {
+		if pendingCreations != nil {
+			pendingCreations[t.serverAddress] = struct{}{}
+			if lifecycleManager != nil {
+				lifecycleManager.requestEndpointRecreation(t.serverAddress)
+			}
+			return true
+		}
 		if lifecycleManager != nil {
 			lifecycleManager.requestEndpointRecreation(t.serverAddress)
 		}
@@ -1263,12 +1275,9 @@ func (t *cachedTablet) addSkippedTablet(hint *sppb.RoutingHint, skippedTabletUID
 	})
 }
 
-func (t *cachedTablet) pick(ctx context.Context, endpointCache channelEndpointCache, hint *sppb.RoutingHint) channelEndpoint {
+func (t *cachedTablet) pick(hint *sppb.RoutingHint) channelEndpoint {
 	if hint != nil {
 		hint.TabletUid = t.tabletUID
-	}
-	if t.endpoint == nil && t.serverAddress != "" {
-		t.endpoint = endpointCache.Get(ctx, t.serverAddress)
 	}
 	return t.endpoint
 }
@@ -1337,7 +1346,25 @@ func (g *cachedGroup) fillRoutingHint(ctx context.Context, endpointCache channel
 }
 
 func (g *cachedGroup) fillRoutingHintWithExclusions(ctx context.Context, cache *keyRangeCache, selector replicaSelector, endpointCache channelEndpointCache, lifecycleManager *endpointLifecycleManager, preferLeader bool, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint, excludedEndpoints endpointExcluder, details *routeSelectionDetails) channelEndpoint {
+	pendingCreations := make(map[string]struct{})
+	selected := g.fillRoutingHintAttempt(cache, selector, endpointCache, lifecycleManager, preferLeader, directedReadOptions, hint, excludedEndpoints, details, pendingCreations)
+	if selected != nil {
+		return selected.pick(hint)
+	}
+	if len(pendingCreations) == 0 {
+		return nil
+	}
+	warmPendingEndpoints(ctx, endpointCache, pendingCreations)
+	selected = g.fillRoutingHintAttempt(cache, selector, endpointCache, lifecycleManager, preferLeader, directedReadOptions, hint, excludedEndpoints, details, nil)
+	if selected == nil {
+		return nil
+	}
+	return selected.pick(hint)
+}
+
+func (g *cachedGroup) fillRoutingHintAttempt(cache *keyRangeCache, selector replicaSelector, endpointCache channelEndpointCache, lifecycleManager *endpointLifecycleManager, preferLeader bool, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint, excludedEndpoints endpointExcluder, details *routeSelectionDetails, pendingCreations map[string]struct{}) *cachedTablet {
 	g.mu.Lock()
+	defer g.mu.Unlock()
 
 	if directedReadOptions == nil {
 		directedReadOptions = &sppb.DirectedReadOptions{}
@@ -1346,19 +1373,17 @@ func (g *cachedGroup) fillRoutingHintWithExclusions(ctx context.Context, cache *
 	skippedTabletUIDs := skippedTabletUIDsFromHint(hint)
 
 	leader := g.leaderLocked()
-	if preferLeader && !hasDirectedReadOptions && leader != nil && leader.distance <= maxLocalReplicaDistance && !leader.shouldSkipForRouting(ctx, endpointCache, lifecycleManager, hint, excludedEndpoints, skippedTabletUIDs, details) {
+	if preferLeader && !hasDirectedReadOptions && leader != nil && leader.distance <= maxLocalReplicaDistance && !leader.shouldSkipForRouting(endpointCache, lifecycleManager, hint, excludedEndpoints, skippedTabletUIDs, pendingCreations, details) {
 		g.recordKnownTransientFailuresLocked(endpointCache, lifecycleManager, leader, directedReadOptions, hint, excludedEndpoints, skippedTabletUIDs, details)
 		g.recordSelectedTabletLocked(leader, details)
-		endpoint := leader.pick(ctx, endpointCache, hint)
-		g.mu.Unlock()
-		return endpoint
+		return leader
 	}
 	candidates := make([]*cachedTablet, 0, len(g.tablets))
 	for _, tablet := range g.tablets {
 		if !tablet.matches(directedReadOptions) {
 			continue
 		}
-		if tablet.shouldSkipForRouting(ctx, endpointCache, lifecycleManager, hint, excludedEndpoints, skippedTabletUIDs, details) {
+		if tablet.shouldSkipForRouting(endpointCache, lifecycleManager, hint, excludedEndpoints, skippedTabletUIDs, pendingCreations, details) {
 			continue
 		}
 		candidates = append(candidates, tablet)
@@ -1367,12 +1392,18 @@ func (g *cachedGroup) fillRoutingHintWithExclusions(ctx context.Context, cache *
 	if selected != nil {
 		g.recordKnownTransientFailuresLocked(endpointCache, lifecycleManager, selected, directedReadOptions, hint, excludedEndpoints, skippedTabletUIDs, details)
 		g.recordSelectedTabletLocked(selected, details)
-		endpoint := selected.pick(ctx, endpointCache, hint)
-		g.mu.Unlock()
-		return endpoint
+		return selected
 	}
-	g.mu.Unlock()
 	return nil
+}
+
+func warmPendingEndpoints(ctx context.Context, endpointCache channelEndpointCache, pendingCreations map[string]struct{}) {
+	if endpointCache == nil || len(pendingCreations) == 0 {
+		return
+	}
+	for address := range pendingCreations {
+		endpointCache.Get(ctx, address)
+	}
 }
 
 func selectReplicaCandidate(cache *keyRangeCache, selector replicaSelector, candidates []*cachedTablet) *cachedTablet {

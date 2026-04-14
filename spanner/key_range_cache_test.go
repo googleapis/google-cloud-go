@@ -58,6 +58,7 @@ func (e *testEndpoint) GetConn() *grpc.ClientConn {
 
 type testEndpointCache struct {
 	endpoints map[string]*testEndpoint
+	onGet     func(address string)
 }
 
 func newTestEndpointCache() *testEndpointCache {
@@ -71,6 +72,9 @@ func (c *testEndpointCache) DefaultChannel() channelEndpoint {
 }
 
 func (c *testEndpointCache) Get(_ context.Context, address string) channelEndpoint {
+	if c.onGet != nil {
+		c.onGet(address)
+	}
 	if endpoint, ok := c.endpoints[address]; ok {
 		return endpoint
 	}
@@ -516,6 +520,71 @@ func TestKeyRangeCache_FillRoutingHintWithDetailsMarksCacheMiss(t *testing.T) {
 	}
 	if got, want := details.defaultReasonCode, "range_cache_miss"; got != want {
 		t.Fatalf("defaultReasonCode=%q, want %q", got, want)
+	}
+}
+
+func TestKeyRangeCache_FillRoutingHintCreatesMissingEndpointOutsideGroupLock(t *testing.T) {
+	endpointCache := newTestEndpointCache()
+	cache := newKeyRangeCache(endpointCache)
+
+	cache.addRanges(&sppb.CacheUpdate{
+		Range: []*sppb.Range{
+			{
+				StartKey:   []byte("a"),
+				LimitKey:   []byte("z"),
+				GroupUid:   5,
+				SplitId:    1,
+				Generation: []byte("1"),
+			},
+		},
+		Group: []*sppb.Group{
+			{
+				GroupUid:    5,
+				Generation:  []byte("1"),
+				LeaderIndex: 0,
+				Tablets: []*sppb.Tablet{
+					{
+						TabletUid:     1,
+						ServerAddress: "server-missing",
+						Incarnation:   []byte("1"),
+						Distance:      0,
+					},
+				},
+			},
+		},
+	})
+
+	state := cache.loadState()
+	targetRange := cache.findRangeInState(state, []byte("a"), nil, rangeModeCoveringSplit, cache.loadRoutingConfig())
+	if targetRange == nil {
+		t.Fatal("expected target range")
+	}
+	group := state.findGroup(targetRange.groupUID)
+	if group == nil {
+		t.Fatal("expected target group")
+	}
+
+	endpointCache.onGet = func(address string) {
+		if address != "server-missing" {
+			return
+		}
+		locked := make(chan struct{}, 1)
+		go func() {
+			group.mu.Lock()
+			group.mu.Unlock()
+			locked <- struct{}{}
+		}()
+		select {
+		case <-locked:
+		case <-time.After(100 * time.Millisecond):
+			t.Fatal("endpoint creation happened while group lock was held")
+		}
+	}
+
+	hint := &sppb.RoutingHint{Key: []byte("a")}
+	endpoint := cache.fillRoutingHint(context.Background(), false, rangeModeCoveringSplit, &sppb.DirectedReadOptions{}, hint)
+	if endpoint == nil || endpoint.Address() != "server-missing" {
+		t.Fatalf("expected warmed endpoint server-missing, got %#v", endpoint)
 	}
 }
 

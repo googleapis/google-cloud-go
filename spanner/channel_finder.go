@@ -34,17 +34,23 @@ type channelFinder struct {
 	recipeCache *keyRecipeCache
 	rangeCache  *keyRangeCache
 
-	coalescingMu   sync.Mutex
-	pendingUpdate  *sppb.CacheUpdate
-	flushScheduled bool
+	coalescingMu    sync.Mutex
+	pendingUpdates  []*sppb.CacheUpdate
+	flushScheduled  bool
+	coalescingDelay time.Duration
+	scheduleFlush   func(time.Duration, func())
 }
 
 const cacheUpdateCoalescingWindow = 5 * time.Millisecond
 
 func newChannelFinder(endpointCache channelEndpointCache) *channelFinder {
 	return &channelFinder{
-		recipeCache: newKeyRecipeCache(),
-		rangeCache:  newKeyRangeCache(endpointCache),
+		recipeCache:     newKeyRecipeCache(),
+		rangeCache:      newKeyRangeCache(endpointCache),
+		coalescingDelay: cacheUpdateCoalescingWindow,
+		scheduleFlush: func(delay time.Duration, fn func()) {
+			time.AfterFunc(delay, fn)
+		},
 	}
 }
 
@@ -57,6 +63,29 @@ func (f *channelFinder) setLifecycleManager(lifecycleManager *endpointLifecycleM
 		return
 	}
 	f.rangeCache.setLifecycleManager(lifecycleManager)
+}
+
+func (f *channelFinder) setCoalescingDelayForTest(delay time.Duration) {
+	if f == nil {
+		return
+	}
+	f.coalescingMu.Lock()
+	defer f.coalescingMu.Unlock()
+	f.coalescingDelay = delay
+}
+
+func (f *channelFinder) setFlushSchedulerForTest(schedule func(time.Duration, func())) {
+	if f == nil {
+		return
+	}
+	if schedule == nil {
+		schedule = func(delay time.Duration, fn func()) {
+			time.AfterFunc(delay, fn)
+		}
+	}
+	f.coalescingMu.Lock()
+	defer f.coalescingMu.Unlock()
+	f.scheduleFlush = schedule
 }
 
 func (f *channelFinder) recordEndpointLatency(address string, latency time.Duration) {
@@ -79,7 +108,25 @@ func (f *channelFinder) update(update *sppb.CacheUpdate) {
 	}
 	f.updateMu.Lock()
 	defer f.updateMu.Unlock()
+	f.applyUpdateLocked(update)
+}
 
+func (f *channelFinder) applyUpdates(updates []*sppb.CacheUpdate) {
+	if len(updates) == 0 {
+		return
+	}
+	f.updateMu.Lock()
+	defer f.updateMu.Unlock()
+
+	for _, update := range updates {
+		f.applyUpdateLocked(update)
+	}
+}
+
+func (f *channelFinder) applyUpdateLocked(update *sppb.CacheUpdate) {
+	if update == nil {
+		return
+	}
 	currentID := f.databaseID.Load()
 	if currentID != update.GetDatabaseId() {
 		if currentID != 0 {
@@ -127,22 +174,17 @@ func (f *channelFinder) enqueueCoalescedUpdate(update *sppb.CacheUpdate) {
 	}
 
 	f.coalescingMu.Lock()
-	if f.pendingUpdate == nil {
-		f.pendingUpdate = cloneCacheUpdate(update)
-	} else {
-		f.pendingUpdate = mergeCacheUpdates(f.pendingUpdate, update)
-	}
+	f.pendingUpdates = append(f.pendingUpdates, cloneCacheUpdate(update))
 	if f.flushScheduled {
 		f.coalescingMu.Unlock()
 		return
 	}
 	f.flushScheduled = true
+	delay := f.coalescingDelay
+	scheduleFlush := f.scheduleFlush
 	f.coalescingMu.Unlock()
 
-	go func() {
-		time.Sleep(cacheUpdateCoalescingWindow)
-		f.flushCoalescedUpdates()
-	}()
+	scheduleFlush(delay, f.flushCoalescedUpdates)
 }
 
 func (f *channelFinder) flushCoalescedUpdates() {
@@ -150,14 +192,12 @@ func (f *channelFinder) flushCoalescedUpdates() {
 		return
 	}
 	f.coalescingMu.Lock()
-	update := f.pendingUpdate
-	f.pendingUpdate = nil
+	updates := f.pendingUpdates
+	f.pendingUpdates = nil
 	f.flushScheduled = false
 	f.coalescingMu.Unlock()
 
-	if update != nil {
-		f.update(update)
-	}
+	f.applyUpdates(updates)
 }
 
 func cloneCacheUpdate(update *sppb.CacheUpdate) *sppb.CacheUpdate {
@@ -167,34 +207,12 @@ func cloneCacheUpdate(update *sppb.CacheUpdate) *sppb.CacheUpdate {
 	return cloneProto(update)
 }
 
-func mergeCacheUpdates(base, incoming *sppb.CacheUpdate) *sppb.CacheUpdate {
-	switch {
-	case base == nil:
-		return cloneCacheUpdate(incoming)
-	case incoming == nil:
-		return base
-	}
-	merged := cloneCacheUpdate(base)
-	if merged == nil {
-		return cloneCacheUpdate(incoming)
-	}
-	protoMergeCacheUpdate(merged, incoming)
-	return merged
-}
-
 func cloneProto[M interface{ ProtoReflect() protoreflect.Message }](msg M) M {
 	if any(msg) == nil {
 		var zero M
 		return zero
 	}
 	return proto.Clone(msg).(M)
-}
-
-func protoMergeCacheUpdate(dst, src *sppb.CacheUpdate) {
-	if dst == nil || src == nil {
-		return
-	}
-	proto.Merge(dst, src)
 }
 
 func (f *channelFinder) findServerRead(ctx context.Context, req *sppb.ReadRequest, preferLeader bool) channelEndpoint {
@@ -209,7 +227,7 @@ func (f *channelFinder) findServerReadWithExclusions(ctx context.Context, req *s
 func (f *channelFinder) findServerReadWithExclusionsAndDetails(ctx context.Context, req *sppb.ReadRequest, preferLeader bool, excludedEndpoints endpointExcluder) (channelEndpoint, routeSelectionDetails) {
 	details := newRouteSelectionDetails()
 	if req == nil {
-		details.defaultReasonCode = "range_cache_miss"
+		details.defaultReasonCode = routeReasonRangeCacheMiss
 		return nil, details
 	}
 	f.recipeCache.computeReadKeys(req)
@@ -236,7 +254,7 @@ func (f *channelFinder) findServerExecuteSQLWithExclusions(ctx context.Context, 
 func (f *channelFinder) findServerExecuteSQLWithExclusionsAndDetails(ctx context.Context, req *sppb.ExecuteSqlRequest, preferLeader bool, excludedEndpoints endpointExcluder) (channelEndpoint, routeSelectionDetails) {
 	details := newRouteSelectionDetails()
 	if req == nil {
-		details.defaultReasonCode = "range_cache_miss"
+		details.defaultReasonCode = routeReasonRangeCacheMiss
 		return nil, details
 	}
 	f.recipeCache.computeQueryKeys(req)
@@ -263,7 +281,7 @@ func (f *channelFinder) findServerBeginTransactionWithExclusions(ctx context.Con
 func (f *channelFinder) findServerBeginTransactionWithExclusionsAndDetails(ctx context.Context, req *sppb.BeginTransactionRequest, excludedEndpoints endpointExcluder) (channelEndpoint, routeSelectionDetails) {
 	details := newRouteSelectionDetails()
 	if req == nil || req.GetMutationKey() == nil {
-		details.defaultReasonCode = "range_cache_miss"
+		details.defaultReasonCode = routeReasonRangeCacheMiss
 		return nil, details
 	}
 	return f.routeMutationWithExclusionsAndDetails(ctx, req.GetMutationKey(), preferLeaderFromTransactionOptions(req.GetOptions()), ensureBeginTransactionRoutingHint(req), excludedEndpoints)
@@ -281,12 +299,12 @@ func (f *channelFinder) fillCommitRoutingHintWithExclusions(ctx context.Context,
 func (f *channelFinder) fillCommitRoutingHintWithExclusionsAndDetails(ctx context.Context, req *sppb.CommitRequest, excludedEndpoints endpointExcluder) (channelEndpoint, routeSelectionDetails) {
 	details := newRouteSelectionDetails()
 	if req == nil {
-		details.defaultReasonCode = "range_cache_miss"
+		details.defaultReasonCode = routeReasonRangeCacheMiss
 		return nil, details
 	}
 	mutation := selectMutationProtoForRouting(req.GetMutations())
 	if mutation == nil {
-		details.defaultReasonCode = "range_cache_miss"
+		details.defaultReasonCode = routeReasonRangeCacheMiss
 		return nil, details
 	}
 	return f.routeMutationWithExclusionsAndDetails(ctx, mutation, true, ensureCommitRoutingHint(req), excludedEndpoints)
@@ -304,13 +322,13 @@ func (f *channelFinder) routeMutationWithExclusions(ctx context.Context, mutatio
 func (f *channelFinder) routeMutationWithExclusionsAndDetails(ctx context.Context, mutation *sppb.Mutation, preferLeader bool, hint *sppb.RoutingHint, excludedEndpoints endpointExcluder) (channelEndpoint, routeSelectionDetails) {
 	details := newRouteSelectionDetails()
 	if mutation == nil || hint == nil {
-		details.defaultReasonCode = "range_cache_miss"
+		details.defaultReasonCode = routeReasonRangeCacheMiss
 		return nil, details
 	}
 	f.recipeCache.applySchemaGeneration(hint)
 	target := f.recipeCache.mutationToTargetRange(mutation)
 	if target == nil {
-		details.defaultReasonCode = "range_cache_miss"
+		details.defaultReasonCode = routeReasonRangeCacheMiss
 		return nil, details
 	}
 	f.recipeCache.applyTargetRange(hint, target)
@@ -329,12 +347,12 @@ func (f *channelFinder) fillRoutingHintWithExclusions(ctx context.Context, prefe
 func (f *channelFinder) fillRoutingHintWithExclusionsAndDetails(ctx context.Context, preferLeader bool, mode rangeMode, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint, excludedEndpoints endpointExcluder) (channelEndpoint, routeSelectionDetails) {
 	details := newRouteSelectionDetails()
 	if hint == nil {
-		details.defaultReasonCode = "range_cache_miss"
+		details.defaultReasonCode = routeReasonRangeCacheMiss
 		return nil, details
 	}
 	databaseID := f.databaseID.Load()
 	if databaseID == 0 {
-		details.defaultReasonCode = "range_cache_miss"
+		details.defaultReasonCode = routeReasonRangeCacheMiss
 		return nil, details
 	}
 	hint.DatabaseId = databaseID

@@ -38,14 +38,10 @@ const (
 	lifecycleEvictionReasonTransientFailure lifecycleEvictionReason = iota
 	lifecycleEvictionReasonShutdown
 	lifecycleEvictionReasonIdle
-	lifecycleEvictionReasonStale
 )
 
 type endpointLifecycleState struct {
-	address                      string
-	lastProbeAt                  time.Time
 	lastRealTrafficAt            time.Time
-	lastReadyAt                  time.Time
 	consecutiveTransientFailures int
 	needsCreate                  bool
 }
@@ -167,7 +163,6 @@ func (m *endpointLifecycleManager) recordRealTraffic(address string) {
 	state, ok := m.endpoints[address]
 	if !ok {
 		state = &endpointLifecycleState{
-			address:           address,
 			lastRealTrafficAt: now,
 			needsCreate:       true,
 		}
@@ -204,7 +199,6 @@ func (m *endpointLifecycleManager) requestEndpointRecreation(address string) {
 	state, ok := m.endpoints[address]
 	if !ok {
 		state = &endpointLifecycleState{
-			address:           address,
 			lastRealTrafficAt: now,
 		}
 		m.endpoints[address] = state
@@ -341,7 +335,6 @@ func (m *endpointLifecycleManager) probe(address string) {
 		return
 	}
 
-	now := m.now()
 	state := conn.GetState()
 
 	m.mu.Lock()
@@ -350,11 +343,9 @@ func (m *endpointLifecycleManager) probe(address string) {
 		m.mu.Unlock()
 		return
 	}
-	lifecycleState.lastProbeAt = now
 
 	switch state {
 	case connectivity.Ready:
-		lifecycleState.lastReadyAt = now
 		lifecycleState.consecutiveTransientFailures = 0
 		delete(m.transientFailureEvictedAddresses, address)
 		m.mu.Unlock()
