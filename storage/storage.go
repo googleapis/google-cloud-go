@@ -206,6 +206,27 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %w", err)
 	}
+
+	// If the resolved endpoint doesn't have a scheme, it is most likely a
+	// host-only string from WithEndpoint. Prepend https:// and ensure it has
+	// the storage path.
+	if !strings.Contains(ep, "://") {
+		ep = "https://" + ep
+		if !strings.Contains(ep, "/storage/v1") {
+			if !strings.HasSuffix(ep, "/") {
+				ep += "/"
+			}
+			ep += "storage/v1/"
+		}
+		// Redial with the fixed endpoint so that the HTTP transport is
+		// correctly configured for HTTPS (including ALPN for HTTP/2).
+		opts = append(opts, option.WithEndpoint(ep))
+		hc, ep, err = htransport.NewClient(ctx, opts...)
+		if err != nil {
+			return nil, fmt.Errorf("dialing with fixed endpoint: %w", err)
+		}
+	}
+
 	// RawService should be created with the chosen endpoint to take account of user override.
 	// Preserve other user-supplied options as well.
 	opts = append(opts, option.WithEndpoint(ep), option.WithHTTPClient(hc))
@@ -214,10 +235,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		return nil, fmt.Errorf("storage client: %w", err)
 	}
 	// Update xmlHost and scheme with the chosen endpoint.
-	// If the endpoint doesn't have a scheme, prepend https:// so it parses correctly.
-	if !strings.Contains(ep, "://") {
-		ep = "https://" + ep
-	}
 	u, err := url.Parse(ep)
 	if err != nil {
 		return nil, fmt.Errorf("supplied endpoint %q is not valid: %w", ep, err)
