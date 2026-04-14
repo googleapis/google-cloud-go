@@ -110,6 +110,9 @@ func TestAgentEngines(t *testing.T) {
 		want := &types.ReasoningEngine{
 			DisplayName: tt.Name(),
 			Description: "You can remove this agent engine if it is older than 10 minutes. It must be an orphan AE.",
+			TrafficConfig: &types.ReasoningEngineTrafficConfig{
+				TrafficSplitAlwaysLatest: &types.ReasoningEngineTrafficConfigTrafficSplitAlwaysLatest{},
+			},
 		}
 		config := &types.CreateAgentEngineConfig{
 			DisplayName: want.DisplayName,

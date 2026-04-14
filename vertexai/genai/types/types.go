@@ -808,6 +808,8 @@ type CreateAgentEngineConfig struct {
 	//     The scripts must be located in the `installation_scripts`
 	//     subdirectory and the path must be added to `extra_packages`.
 	BuildOptions map[string][]string `json:"buildOptions,omitempty"`
+	// Optional. Agent Gateway configuration for a Reasoning Engine deployment.
+	AgentGatewayConfig *ReasoningEngineSpecDeploymentSpecAgentGatewayConfig `json:"agentGatewayConfig,omitempty"`
 }
 
 // Traffic distribution configuration, where all traffic is sent to the latest Runtime
@@ -1111,6 +1113,8 @@ type UpdateAgentEngineConfig struct {
 	//     The scripts must be located in the `installation_scripts`
 	//     subdirectory and the path must be added to `extra_packages`.
 	BuildOptions map[string][]string `json:"buildOptions,omitempty"`
+	// Optional. Agent Gateway configuration for a Reasoning Engine deployment.
+	AgentGatewayConfig *ReasoningEngineSpecDeploymentSpecAgentGatewayConfig `json:"agentGatewayConfig,omitempty"`
 	// Optional. The update mask to apply. For the `FieldMask` definition, see
 	// https://protobuf.dev/reference/protobuf/google.protobuf/#field-mask.
 	UpdateMask string `json:"updateMask,omitempty"`
@@ -1553,6 +1557,8 @@ type GenerateAgentEngineMemoriesConfig struct {
 	Metadata map[string]*MemoryMetadataValue `json:"metadata,omitempty"`
 	// Optional. The strategy to use when applying metadata to existing memories.
 	MetadataMergeStrategy MemoryMetadataMergeStrategy `json:"metadataMergeStrategy,omitempty"`
+	// Optional. Restricts memory generation to a subset of memory topics.
+	AllowedTopics []*MemoryTopicID `json:"allowedTopics,omitempty"`
 }
 
 func (g *GenerateAgentEngineMemoriesConfig) UnmarshalJSON(data []byte) error {
@@ -2937,6 +2943,8 @@ type AgentEngineConfig struct {
 	AgentConfigSource *ReasoningEngineSpecSourceCodeSpecAgentConfigSource `json:"agentConfigSource,omitempty"`
 	// Optional. The container spec for the Agent Engine.
 	ContainerSpec *ReasoningEngineSpecContainerSpec `json:"containerSpec,omitempty"`
+	// Optional. Agent Gateway configuration for a Reasoning Engine deployment.
+	AgentGatewayConfig *ReasoningEngineSpecDeploymentSpecAgentGatewayConfig `json:"agentGatewayConfig,omitempty"`
 }
 
 // Config for checking a query job on an agent engine.
