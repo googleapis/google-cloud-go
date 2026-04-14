@@ -138,10 +138,12 @@ func (t *endpointOverloadCooldownTracker) cooldownForFailures(failures int) time
 	cooldown := t.initialCooldown
 	for i := 1; i < failures; i++ {
 		if cooldown >= t.maxCooldown {
-			return t.maxCooldown
+			cooldown = t.maxCooldown
+			break
 		}
 		if cooldown > t.maxCooldown/2 {
-			return t.maxCooldown
+			cooldown = t.maxCooldown
+			break
 		}
 		cooldown *= 2
 	}

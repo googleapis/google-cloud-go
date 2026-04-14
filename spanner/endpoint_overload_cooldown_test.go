@@ -77,6 +77,27 @@ func TestEndpointOverloadCooldownTracker_UsesFullJitterWithinCooldownRange(t *te
 	}
 }
 
+func TestEndpointOverloadCooldownTracker_UsesFullJitterWhenCooldownCapsAtMax(t *testing.T) {
+	clock := newLifecycleTestClock(time.Unix(100, 0))
+	tracker := newEndpointOverloadCooldownTrackerWithOptions(
+		5*time.Second,
+		60*time.Second,
+		10*time.Minute,
+		clock.Now,
+		func(n int64) int64 {
+			if n != int64(60*time.Second)+1 {
+				t.Fatalf("randInt63n called with %d, want %d", n, int64(60*time.Second)+1)
+			}
+			return 0
+		},
+	)
+
+	got := tracker.cooldownForFailures(5)
+	if got != 0 {
+		t.Fatalf("cooldown = %v, want 0 from deterministic jitter hook at capped max cooldown", got)
+	}
+}
+
 func TestEndpointOverloadCooldownTracker_ResetsPenaltyOnlyAfterQuietWindow(t *testing.T) {
 	clock := newLifecycleTestClock(time.Unix(100, 0))
 	tracker := newEndpointOverloadCooldownTrackerWithOptions(
