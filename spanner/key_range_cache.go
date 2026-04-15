@@ -1084,7 +1084,7 @@ func (g *cachedGroup) fillRoutingHintWithExclusions(ctx context.Context, endpoin
 	if selected != nil {
 		return selected.pick(hint)
 	}
-	if len(pendingCreations) == 0 {
+	if len(pendingCreations) == 0 || !shouldSynchronouslyWarmEndpoints(endpointCache) {
 		return nil
 	}
 	warmPendingEndpoints(ctx, endpointCache, pendingCreations)
@@ -1093,6 +1093,14 @@ func (g *cachedGroup) fillRoutingHintWithExclusions(ctx context.Context, endpoin
 		return nil
 	}
 	return selected.pick(hint)
+}
+
+func shouldSynchronouslyWarmEndpoints(endpointCache channelEndpointCache) bool {
+	if endpointCache == nil {
+		return false
+	}
+	_, blocksOnGet := endpointCache.(*endpointClientCache)
+	return !blocksOnGet
 }
 
 func (g *cachedGroup) fillRoutingHintAttempt(endpointCache channelEndpointCache, lifecycleManager *endpointLifecycleManager, preferLeader bool, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint, excludedEndpoints endpointExcluder, details *routeSelectionDetails, pendingCreations map[string]struct{}) *cachedTablet {
