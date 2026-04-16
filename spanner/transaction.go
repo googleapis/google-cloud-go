@@ -364,6 +364,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		setTransactionID = nil
 	}
 	retryResourceExhausted := shouldRetryResourceExhaustedInStreaming(client)
+	allowRetryResourceExhaustedWithoutDelay := shouldAllowRetryResourceExhaustedWithoutDelayInStreaming(client)
 	return streamWithTransactionCallbacks(
 		contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader),
 		sh.session.logger,
@@ -412,6 +413,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		t.release,
 		asGRPCSpannerClient(client),
 		retryResourceExhausted,
+		allowRetryResourceExhaustedWithoutDelay,
 	)
 }
 
@@ -723,6 +725,7 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 	}
 	client := sh.getClient()
 	retryResourceExhausted := shouldRetryResourceExhaustedInStreaming(client)
+	allowRetryResourceExhaustedWithoutDelay := shouldAllowRetryResourceExhaustedWithoutDelayInStreaming(client)
 	return streamWithTransactionCallbacks(
 		contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader),
 		sh.session.logger,
@@ -764,7 +767,8 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 		t.setTimestamp,
 		t.release,
 		asGRPCSpannerClient(client),
-		retryResourceExhausted)
+		retryResourceExhausted,
+		allowRetryResourceExhaustedWithoutDelay)
 }
 
 func (t *txReadOnly) prepareExecuteSQL(ctx context.Context, stmt Statement, options QueryOptions) (*sppb.ExecuteSqlRequest, *sessionHandle, error) {

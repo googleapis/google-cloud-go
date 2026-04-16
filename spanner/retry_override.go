@@ -25,20 +25,24 @@ import (
 )
 
 type resourceExhaustedMarkerOption struct {
-	mark func(error)
+	mark                         func(error)
+	allowRetryWithoutServerDelay bool
 }
 
-func appendResourceExhaustedMarkerOptions(base []gax.CallOption, mark func(error)) []gax.CallOption {
-	if mark == nil {
+func appendResourceExhaustedMarkerOptions(base []gax.CallOption, mark func(error), allowRetryWithoutServerDelay bool) []gax.CallOption {
+	if mark == nil && !allowRetryWithoutServerDelay {
 		return base
 	}
 	opts := append([]gax.CallOption{}, base...)
-	opts = append(opts, resourceExhaustedMarkerOption{mark: mark})
+	opts = append(opts, resourceExhaustedMarkerOption{
+		mark:                         mark,
+		allowRetryWithoutServerDelay: allowRetryWithoutServerDelay,
+	})
 	return opts
 }
 
 func (opt resourceExhaustedMarkerOption) Resolve(cs *gax.CallSettings) {
-	if opt.mark == nil || cs.Retry == nil {
+	if cs.Retry == nil {
 		return
 	}
 
@@ -47,6 +51,17 @@ func (opt resourceExhaustedMarkerOption) Resolve(cs *gax.CallSettings) {
 		originalRetryer := originalRetryFactory()
 		if originalRetryer == nil {
 			return nil
+		}
+		if opt.allowRetryWithoutServerDelay {
+			if originalSpannerRetryer, ok := originalRetryer.(*spannerRetryer); ok {
+				originalRetryer = &spannerRetryer{
+					Retryer:                                originalSpannerRetryer.Retryer,
+					allowResourceExhaustedWithoutRetryInfo: true,
+				}
+			}
+		}
+		if opt.mark == nil {
+			return originalRetryer
 		}
 
 		return wrapRetryFn(func(err error) (time.Duration, bool) {

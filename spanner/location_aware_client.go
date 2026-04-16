@@ -363,7 +363,7 @@ func (c *locationAwareSpannerClient) StreamingRead(ctx context.Context, req *spa
 	markResourceExhausted := c.resourceExhaustedMarker(ep, logicalRequestKey)
 	client := c.clientForEndpoint(ep)
 	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/StreamingRead", ep, client == c.defaultClient, details)
-	stream, err := client.StreamingRead(ctx, req, appendResourceExhaustedMarkerOptions(opts, markResourceExhausted)...)
+	stream, err := client.StreamingRead(ctx, req, appendResourceExhaustedMarkerOptions(opts, markResourceExhausted, true)...)
 	if err != nil {
 		markResourceExhausted(err)
 		return nil, err
@@ -387,7 +387,7 @@ func (c *locationAwareSpannerClient) Read(ctx context.Context, req *spannerpb.Re
 	markResourceExhausted := c.resourceExhaustedMarker(ep, logicalRequestKey)
 	client := c.clientForEndpoint(ep)
 	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/Read", ep, client == c.defaultClient, details)
-	resp, err := client.Read(ctx, req, appendResourceExhaustedMarkerOptions(opts, markResourceExhausted)...)
+	resp, err := client.Read(ctx, req, appendResourceExhaustedMarkerOptions(opts, markResourceExhausted, true)...)
 	if err != nil {
 		markResourceExhausted(err)
 		return nil, err
@@ -402,7 +402,7 @@ func (c *locationAwareSpannerClient) ExecuteStreamingSql(ctx context.Context, re
 	markResourceExhausted := c.resourceExhaustedMarker(ep, logicalRequestKey)
 	client := c.clientForEndpoint(ep)
 	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/ExecuteStreamingSql", ep, client == c.defaultClient, details)
-	stream, err := client.ExecuteStreamingSql(ctx, req, appendResourceExhaustedMarkerOptions(opts, markResourceExhausted)...)
+	stream, err := client.ExecuteStreamingSql(ctx, req, appendResourceExhaustedMarkerOptions(opts, markResourceExhausted, true)...)
 	if err != nil {
 		markResourceExhausted(err)
 		return nil, err
@@ -426,7 +426,7 @@ func (c *locationAwareSpannerClient) ExecuteSql(ctx context.Context, req *spanne
 	markResourceExhausted := c.resourceExhaustedMarker(ep, logicalRequestKey)
 	client := c.clientForEndpoint(ep)
 	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/ExecuteSql", ep, client == c.defaultClient, details)
-	resp, err := client.ExecuteSql(ctx, req, appendResourceExhaustedMarkerOptions(opts, markResourceExhausted)...)
+	resp, err := client.ExecuteSql(ctx, req, appendResourceExhaustedMarkerOptions(opts, markResourceExhausted, true)...)
 	if err != nil {
 		markResourceExhausted(err)
 		return nil, err
@@ -441,7 +441,7 @@ func (c *locationAwareSpannerClient) BeginTransaction(ctx context.Context, req *
 	markResourceExhausted := c.resourceExhaustedMarker(ep, logicalRequestKey)
 	client := c.clientForEndpoint(ep)
 	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/BeginTransaction", ep, client == c.defaultClient, details)
-	resp, err := client.BeginTransaction(ctx, req, appendResourceExhaustedMarkerOptions(opts, markResourceExhausted)...)
+	resp, err := client.BeginTransaction(ctx, req, appendResourceExhaustedMarkerOptions(opts, markResourceExhausted, true)...)
 	if err != nil {
 		markResourceExhausted(err)
 		return nil, err
@@ -464,7 +464,7 @@ func (c *locationAwareSpannerClient) Commit(ctx context.Context, req *spannerpb.
 	markResourceExhausted := c.resourceExhaustedMarker(ep, logicalRequestKey)
 	client := c.clientForEndpoint(ep)
 	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/Commit", ep, client == c.defaultClient, details)
-	resp, err := client.Commit(ctx, req, appendResourceExhaustedMarkerOptions(opts, markResourceExhausted)...)
+	resp, err := client.Commit(ctx, req, appendResourceExhaustedMarkerOptions(opts, markResourceExhausted, true)...)
 	markResourceExhausted(err)
 	c.router.observeCommitResponse(resp)
 	c.router.clearTransactionAffinity(string(req.GetTransactionId()))
@@ -481,7 +481,7 @@ func (c *locationAwareSpannerClient) Rollback(ctx context.Context, req *spannerp
 	}
 	client := c.clientForEndpoint(ep)
 	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/Rollback", ep, client == c.defaultClient, details)
-	err := client.Rollback(ctx, req, appendResourceExhaustedMarkerOptions(opts, markResourceExhausted)...)
+	err := client.Rollback(ctx, req, appendResourceExhaustedMarkerOptions(opts, markResourceExhausted, true)...)
 	markResourceExhausted(err)
 	c.router.clearTransactionAffinity(string(req.GetTransactionId()))
 	return err

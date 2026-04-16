@@ -749,7 +749,7 @@ func TestLocationAwareExecuteSql_RetriesViaGAXAndMarksCooldownScopes(t *testing.
 
 	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
 	defer teardown()
-	harness.Replicas[0].PutMethodErrors(MethodExecuteSql, serverErrorWithMinimalRetryDelay(codes.ResourceExhausted, "busy"))
+	harness.Replicas[0].PutMethodErrors(MethodExecuteSql, status.Error(codes.ResourceExhausted, "busy"))
 
 	client, err := makeClientWithConfig(
 		context.Background(),
@@ -964,7 +964,7 @@ func TestClient_Single_StreamingReadReturnsResourceExhaustedForBypassTraffic(t *
 
 	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
 	defer teardown()
-	harness.Replicas[0].PutMethodErrors(MethodStreamingRead, serverErrorWithMinimalRetryDelay(codes.ResourceExhausted, "busy"))
+	harness.Replicas[0].PutMethodErrors(MethodStreamingRead, status.Error(codes.ResourceExhausted, "busy"))
 
 	client, err := makeClientWithConfig(
 		context.Background(),
@@ -1229,7 +1229,7 @@ func TestClient_LocationAwareWrappersShareStateAcrossHandles(t *testing.T) {
 	}
 }
 
-func TestClient_Single_StreamingReadMidStreamRecvFailureWithoutRetryInfoReturnsErrorForBypassTraffic(t *testing.T) {
+func TestClient_Single_StreamingReadMidStreamRecvFailureWithoutRetryInfoRetriesForBypassTraffic(t *testing.T) {
 	t.Parallel()
 
 	restore := setMaxBytesBetweenResumeTokens()
@@ -1303,9 +1303,12 @@ func TestClient_Single_StreamingReadMidStreamRecvFailureWithoutRetryInfoReturnsE
 	if row == nil {
 		t.Fatal("first iter.Next() returned nil row")
 	}
-	_, err = iter.Next()
-	if status.Code(err) != codes.ResourceExhausted {
-		t.Fatalf("second iter.Next() error = %v, want RESOURCE_EXHAUSTED", err)
+	row, err = iter.Next()
+	if err != nil {
+		t.Fatalf("second iter.Next() returned unexpected error: %v", err)
+	}
+	if row == nil {
+		t.Fatal("second iter.Next() returned nil row")
 	}
 
 	replicaARequests := harness.Replicas[0].Requests(MethodStreamingRead)
@@ -1313,8 +1316,8 @@ func TestClient_Single_StreamingReadMidStreamRecvFailureWithoutRetryInfoReturnsE
 	if got, want := len(replicaARequests), 1; got != want {
 		t.Fatalf("replica A StreamingRead request count = %d, want %d", got, want)
 	}
-	if got := len(replicaBRequests); got != 0 {
-		t.Fatalf("replica B StreamingRead request count = %d, want 0", got)
+	if got, want := len(replicaBRequests), 1; got != want {
+		t.Fatalf("replica B StreamingRead request count = %d, want %d", got, want)
 	}
 	if got := len(harness.DefaultReplica.Requests(MethodStreamingRead)); got != 0 {
 		t.Fatalf("default replica StreamingRead request count = %d, want 0", got)
@@ -1326,6 +1329,13 @@ func TestClient_Single_StreamingReadMidStreamRecvFailureWithoutRetryInfoReturnsE
 	}
 	if got := replicaAReq.GetResumeToken(); got != nil {
 		t.Fatalf("replica A resume token = %v, want nil on first stream attempt", got)
+	}
+	replicaBReq, ok := replicaBRequests[0].(*sppb.ReadRequest)
+	if !ok {
+		t.Fatalf("replica B request type = %T, want *spannerpb.ReadRequest", replicaBRequests[0])
+	}
+	if got, want := string(replicaBReq.GetResumeToken()), string(EncodeResumeToken(1)); got != want {
+		t.Fatalf("replica B resume token = %v, want %v", replicaBReq.GetResumeToken(), EncodeResumeToken(1))
 	}
 }
 
