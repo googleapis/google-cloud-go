@@ -24,20 +24,21 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-type suppressRetryCodesOption struct {
-	codes map[codes.Code]struct{}
+type resourceExhaustedMarkerOption struct {
+	mark func(error)
 }
 
-func newSuppressRetryCodesOption(suppressedCodes ...codes.Code) suppressRetryCodesOption {
-	suppressed := make(map[codes.Code]struct{}, len(suppressedCodes))
-	for _, code := range suppressedCodes {
-		suppressed[code] = struct{}{}
+func appendResourceExhaustedMarkerOptions(base []gax.CallOption, mark func(error)) []gax.CallOption {
+	if mark == nil {
+		return base
 	}
-	return suppressRetryCodesOption{codes: suppressed}
+	opts := append([]gax.CallOption{}, base...)
+	opts = append(opts, resourceExhaustedMarkerOption{mark: mark})
+	return opts
 }
 
-func (opt suppressRetryCodesOption) Resolve(cs *gax.CallSettings) {
-	if len(opt.codes) == 0 || cs.Retry == nil {
+func (opt resourceExhaustedMarkerOption) Resolve(cs *gax.CallSettings) {
+	if opt.mark == nil || cs.Retry == nil {
 		return
 	}
 
@@ -49,8 +50,8 @@ func (opt suppressRetryCodesOption) Resolve(cs *gax.CallSettings) {
 		}
 
 		return wrapRetryFn(func(err error) (time.Duration, bool) {
-			if _, found := opt.codes[status.Code(err)]; found {
-				return 0, false
+			if status.Code(err) == codes.ResourceExhausted {
+				opt.mark(err)
 			}
 			return originalRetryer.Retry(err)
 		})

@@ -18,6 +18,7 @@ package spanner
 
 import (
 	"bytes"
+	"fmt"
 	"testing"
 
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
@@ -351,5 +352,41 @@ func TestMutationToTargetRange(t *testing.T) {
 	}
 	if got.approximate {
 		t.Fatal("expected exact target range for matching mutation")
+	}
+}
+
+func TestKeyRecipeCache_PreparedReadCacheIsBounded(t *testing.T) {
+	cache := newKeyRecipeCacheWithSizes(3, 3)
+
+	for i := 0; i < 10; i++ {
+		cache.computeReadKeys(&sppb.ReadRequest{
+			Table:   fmt.Sprintf("T%d", i),
+			Columns: []string{"c1"},
+		})
+	}
+
+	cache.preparedMu.RLock()
+	defer cache.preparedMu.RUnlock()
+	if got, want := len(cache.preparedReads.items), 3; got != want {
+		t.Fatalf("prepared read cache size = %d, want %d", got, want)
+	}
+}
+
+func TestKeyRecipeCache_PreparedQueryCacheIsBounded(t *testing.T) {
+	cache := newKeyRecipeCacheWithSizes(3, 3)
+
+	for i := 0; i < 10; i++ {
+		cache.computeQueryKeys(&sppb.ExecuteSqlRequest{
+			Sql: fmt.Sprintf("SELECT * FROM T%d WHERE p=@p", i),
+			Params: &structpb.Struct{Fields: map[string]*structpb.Value{
+				"p": structpb.NewStringValue("v"),
+			}},
+		})
+	}
+
+	cache.preparedMu.RLock()
+	defer cache.preparedMu.RUnlock()
+	if got, want := len(cache.preparedQueries.items), 3; got != want {
+		t.Fatalf("prepared query cache size = %d, want %d", got, want)
 	}
 }

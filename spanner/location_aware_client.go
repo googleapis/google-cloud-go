@@ -92,10 +92,6 @@ type locationAwareSpannerClient struct {
 
 var _ spannerClient = (*locationAwareSpannerClient)(nil)
 
-type requestIDAttemptOptioner interface {
-	withNextRetryAttempt(uint32) gax.CallOption
-}
-
 // asGRPCSpannerClient extracts the underlying *grpcSpannerClient from a
 // spannerClient, handling the locationAwareSpannerClient wrapper.
 func asGRPCSpannerClient(c spannerClient) *grpcSpannerClient {
@@ -188,6 +184,18 @@ func (c *locationAwareSpannerClient) maybeExcludeEndpointOnNextCall(ep channelEn
 	}
 }
 
+func (c *locationAwareSpannerClient) resourceExhaustedMarker(ep channelEndpoint, logicalRequestKey string) func(error) {
+	var once sync.Once
+	return func(err error) {
+		if status.Code(err) != codes.ResourceExhausted {
+			return
+		}
+		once.Do(func() {
+			c.maybeExcludeEndpointOnNextCall(ep, logicalRequestKey, err)
+		})
+	}
+}
+
 func (c *locationAwareSpannerClient) recordRouteSelectionTrace(ctx context.Context, method string, ep channelEndpoint, usedDefaultEndpoint bool, details routeSelectionDetails) {
 	endpointAddr := details.selectedEndpoint
 	if endpointAddr == "" && ep != nil {
@@ -219,59 +227,6 @@ func (c *locationAwareSpannerClient) recordRouteSelectionTrace(ctx context.Conte
 	}
 	span.SetAttributes(attrs...)
 	span.AddEvent("spanner.route.selected", otrace.WithAttributes(attrs...))
-}
-
-func requestIDAttemptOptionerFromCallOptions(client spannerClient, opts []gax.CallOption) requestIDAttemptOptioner {
-	if len(opts) != 0 {
-		var settings gax.CallSettings
-		for _, opt := range opts {
-			if opt == nil {
-				continue
-			}
-			opt.Resolve(&settings)
-		}
-		_, reqID, found := gRPCCallOptionsToRequestID(settings.GRPC)
-		if found {
-			return logicalRequestIDWrap{logicalKey: reqID.logicalRequestKey()}
-		}
-	}
-
-	gsc := asGRPCSpannerClient(client)
-	if gsc == nil {
-		return nil
-	}
-	return gsc.generateRequestIDHeaderInjector()
-}
-
-func appendUnaryRetryOverrideOptions(base []gax.CallOption, requestID requestIDAttemptOptioner, attempt uint32) []gax.CallOption {
-	opts := append([]gax.CallOption{}, base...)
-	if requestID != nil {
-		opts = append(opts, requestID.withNextRetryAttempt(attempt))
-	}
-	opts = append(opts, newSuppressRetryCodesOption(codes.ResourceExhausted))
-	return opts
-}
-
-func combineEndpointExcluders(base endpointExcluder, excludedAddress string) endpointExcluder {
-	if excludedAddress == "" {
-		return base
-	}
-	return func(address string) bool {
-		if address == excludedAddress {
-			return true
-		}
-		return isEndpointExcluded(base, address)
-	}
-}
-
-func (c *locationAwareSpannerClient) shouldManualRoutedUnaryRetry(ep channelEndpoint, client spannerClient, err error) bool {
-	if c == nil || ep == nil || client == nil || client == c.defaultClient {
-		return false
-	}
-	if ep.Address() == "" || ep.Address() == c.defaultEndpointAddress {
-		return false
-	}
-	return status.Code(err) == codes.ResourceExhausted
 }
 
 func (c *locationAwareSpannerClient) observeExecuteSQLResponse(req *spannerpb.ExecuteSqlRequest, resp *spannerpb.ResultSet, ep channelEndpoint) {
@@ -405,11 +360,12 @@ func (c *locationAwareSpannerClient) BatchWrite(ctx context.Context, req *spanne
 func (c *locationAwareSpannerClient) StreamingRead(ctx context.Context, req *spannerpb.ReadRequest, opts ...gax.CallOption) (spannerpb.Spanner_StreamingReadClient, error) {
 	logicalRequestKey, excludedEndpoints := c.excludedEndpointsForCall(opts)
 	ep, details := c.router.prepareReadRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
+	markResourceExhausted := c.resourceExhaustedMarker(ep, logicalRequestKey)
 	client := c.clientForEndpoint(ep)
 	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/StreamingRead", ep, client == c.defaultClient, details)
-	stream, err := client.StreamingRead(ctx, req, opts...)
+	stream, err := client.StreamingRead(ctx, req, appendResourceExhaustedMarkerOptions(opts, markResourceExhausted)...)
 	if err != nil {
-		c.maybeExcludeEndpointOnNextCall(ep, logicalRequestKey, err)
+		markResourceExhausted(err)
 		return nil, err
 	}
 	isReadOnlyBegin, readOnlyStrong := readOnlyBeginFromSelector(req.GetTransaction())
@@ -421,36 +377,19 @@ func (c *locationAwareSpannerClient) StreamingRead(ctx context.Context, req *spa
 		readOnlyStrong,
 		isReadWriteBeginFromSelector(req.GetTransaction()),
 		nil,
-		func(err error) {
-			c.maybeExcludeEndpointOnNextCall(ep, logicalRequestKey, err)
-		},
+		markResourceExhausted,
 	), nil
 }
 
 func (c *locationAwareSpannerClient) Read(ctx context.Context, req *spannerpb.ReadRequest, opts ...gax.CallOption) (*spannerpb.ResultSet, error) {
 	logicalRequestKey, excludedEndpoints := c.excludedEndpointsForCall(opts)
-	requestID := requestIDAttemptOptionerFromCallOptions(c.defaultClient, opts)
 	ep, details := c.router.prepareReadRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
+	markResourceExhausted := c.resourceExhaustedMarker(ep, logicalRequestKey)
 	client := c.clientForEndpoint(ep)
 	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/Read", ep, client == c.defaultClient, details)
-	resp, err := client.Read(ctx, req, appendUnaryRetryOverrideOptions(opts, requestID, 1)...)
+	resp, err := client.Read(ctx, req, appendResourceExhaustedMarkerOptions(opts, markResourceExhausted)...)
 	if err != nil {
-		if !c.shouldManualRoutedUnaryRetry(ep, client, err) {
-			c.maybeExcludeEndpointOnNextCall(ep, logicalRequestKey, err)
-			return nil, err
-		}
-		c.maybeExcludeEndpointOnNextCall(ep, "", err)
-
-		retryExcludedEndpoints := combineEndpointExcluders(excludedEndpoints, ep.Address())
-		retryEndpoint, retryDetails := c.router.prepareReadRequestWithExclusionsAndDetails(ctx, req, retryExcludedEndpoints)
-		retryClient := c.clientForEndpoint(retryEndpoint)
-		c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/Read", retryEndpoint, retryClient == c.defaultClient, retryDetails)
-		resp, err = retryClient.Read(ctx, req, appendUnaryRetryOverrideOptions(opts, requestID, 2)...)
-		if err == nil {
-			c.observeReadResponse(req, resp, retryEndpoint)
-			return resp, nil
-		}
-		c.maybeExcludeEndpointOnNextCall(retryEndpoint, logicalRequestKey, err)
+		markResourceExhausted(err)
 		return nil, err
 	}
 	c.observeReadResponse(req, resp, ep)
@@ -460,11 +399,12 @@ func (c *locationAwareSpannerClient) Read(ctx context.Context, req *spannerpb.Re
 func (c *locationAwareSpannerClient) ExecuteStreamingSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (spannerpb.Spanner_ExecuteStreamingSqlClient, error) {
 	logicalRequestKey, excludedEndpoints := c.excludedEndpointsForCall(opts)
 	ep, details := c.router.prepareExecuteSQLRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
+	markResourceExhausted := c.resourceExhaustedMarker(ep, logicalRequestKey)
 	client := c.clientForEndpoint(ep)
 	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/ExecuteStreamingSql", ep, client == c.defaultClient, details)
-	stream, err := client.ExecuteStreamingSql(ctx, req, opts...)
+	stream, err := client.ExecuteStreamingSql(ctx, req, appendResourceExhaustedMarkerOptions(opts, markResourceExhausted)...)
 	if err != nil {
-		c.maybeExcludeEndpointOnNextCall(ep, logicalRequestKey, err)
+		markResourceExhausted(err)
 		return nil, err
 	}
 	isReadOnlyBegin, readOnlyStrong := readOnlyBeginFromSelector(req.GetTransaction())
@@ -476,36 +416,19 @@ func (c *locationAwareSpannerClient) ExecuteStreamingSql(ctx context.Context, re
 		readOnlyStrong,
 		isReadWriteBeginFromSelector(req.GetTransaction()),
 		nil,
-		func(err error) {
-			c.maybeExcludeEndpointOnNextCall(ep, logicalRequestKey, err)
-		},
+		markResourceExhausted,
 	), nil
 }
 
 func (c *locationAwareSpannerClient) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (*spannerpb.ResultSet, error) {
 	logicalRequestKey, excludedEndpoints := c.excludedEndpointsForCall(opts)
-	requestID := requestIDAttemptOptionerFromCallOptions(c.defaultClient, opts)
 	ep, details := c.router.prepareExecuteSQLRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
+	markResourceExhausted := c.resourceExhaustedMarker(ep, logicalRequestKey)
 	client := c.clientForEndpoint(ep)
 	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/ExecuteSql", ep, client == c.defaultClient, details)
-	resp, err := client.ExecuteSql(ctx, req, appendUnaryRetryOverrideOptions(opts, requestID, 1)...)
+	resp, err := client.ExecuteSql(ctx, req, appendResourceExhaustedMarkerOptions(opts, markResourceExhausted)...)
 	if err != nil {
-		if !c.shouldManualRoutedUnaryRetry(ep, client, err) {
-			c.maybeExcludeEndpointOnNextCall(ep, logicalRequestKey, err)
-			return nil, err
-		}
-		c.maybeExcludeEndpointOnNextCall(ep, "", err)
-
-		retryExcludedEndpoints := combineEndpointExcluders(excludedEndpoints, ep.Address())
-		retryEndpoint, retryDetails := c.router.prepareExecuteSQLRequestWithExclusionsAndDetails(ctx, req, retryExcludedEndpoints)
-		retryClient := c.clientForEndpoint(retryEndpoint)
-		c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/ExecuteSql", retryEndpoint, retryClient == c.defaultClient, retryDetails)
-		resp, err = retryClient.ExecuteSql(ctx, req, appendUnaryRetryOverrideOptions(opts, requestID, 2)...)
-		if err == nil {
-			c.observeExecuteSQLResponse(req, resp, retryEndpoint)
-			return resp, nil
-		}
-		c.maybeExcludeEndpointOnNextCall(retryEndpoint, logicalRequestKey, err)
+		markResourceExhausted(err)
 		return nil, err
 	}
 	c.observeExecuteSQLResponse(req, resp, ep)
@@ -514,28 +437,13 @@ func (c *locationAwareSpannerClient) ExecuteSql(ctx context.Context, req *spanne
 
 func (c *locationAwareSpannerClient) BeginTransaction(ctx context.Context, req *spannerpb.BeginTransactionRequest, opts ...gax.CallOption) (*spannerpb.Transaction, error) {
 	logicalRequestKey, excludedEndpoints := c.excludedEndpointsForCall(opts)
-	requestID := requestIDAttemptOptionerFromCallOptions(c.defaultClient, opts)
 	ep, details := c.router.prepareBeginTransactionRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
+	markResourceExhausted := c.resourceExhaustedMarker(ep, logicalRequestKey)
 	client := c.clientForEndpoint(ep)
 	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/BeginTransaction", ep, client == c.defaultClient, details)
-	resp, err := client.BeginTransaction(ctx, req, appendUnaryRetryOverrideOptions(opts, requestID, 1)...)
+	resp, err := client.BeginTransaction(ctx, req, appendResourceExhaustedMarkerOptions(opts, markResourceExhausted)...)
 	if err != nil {
-		if !c.shouldManualRoutedUnaryRetry(ep, client, err) {
-			c.maybeExcludeEndpointOnNextCall(ep, logicalRequestKey, err)
-			return nil, err
-		}
-		c.maybeExcludeEndpointOnNextCall(ep, "", err)
-
-		retryExcludedEndpoints := combineEndpointExcluders(excludedEndpoints, ep.Address())
-		retryEndpoint, retryDetails := c.router.prepareBeginTransactionRequestWithExclusionsAndDetails(ctx, req, retryExcludedEndpoints)
-		retryClient := c.clientForEndpoint(retryEndpoint)
-		c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/BeginTransaction", retryEndpoint, retryClient == c.defaultClient, retryDetails)
-		resp, err = retryClient.BeginTransaction(ctx, req, appendUnaryRetryOverrideOptions(opts, requestID, 2)...)
-		if err == nil {
-			c.observeBeginTransactionResponse(req, resp, retryEndpoint)
-			return resp, nil
-		}
-		c.maybeExcludeEndpointOnNextCall(retryEndpoint, logicalRequestKey, err)
+		markResourceExhausted(err)
 		return nil, err
 	}
 	c.observeBeginTransactionResponse(req, resp, ep)
@@ -553,10 +461,11 @@ func (c *locationAwareSpannerClient) Commit(ctx context.Context, req *spannerpb.
 			details.setSelectedTablet(ep.Address(), false, false)
 		}
 	}
+	markResourceExhausted := c.resourceExhaustedMarker(ep, logicalRequestKey)
 	client := c.clientForEndpoint(ep)
 	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/Commit", ep, client == c.defaultClient, details)
-	resp, err := client.Commit(ctx, req, opts...)
-	c.maybeExcludeEndpointOnNextCall(ep, logicalRequestKey, err)
+	resp, err := client.Commit(ctx, req, appendResourceExhaustedMarkerOptions(opts, markResourceExhausted)...)
+	markResourceExhausted(err)
 	c.router.observeCommitResponse(resp)
 	c.router.clearTransactionAffinity(string(req.GetTransactionId()))
 	return resp, err
@@ -565,14 +474,15 @@ func (c *locationAwareSpannerClient) Commit(ctx context.Context, req *spannerpb.
 func (c *locationAwareSpannerClient) Rollback(ctx context.Context, req *spannerpb.RollbackRequest, opts ...gax.CallOption) error {
 	logicalRequestKey, excludedEndpoints := c.excludedEndpointsForCall(opts)
 	ep := c.affinityEndpoint(req.GetTransactionId(), excludedEndpoints)
+	markResourceExhausted := c.resourceExhaustedMarker(ep, logicalRequestKey)
 	details := newRouteSelectionDetails()
 	if ep != nil {
 		details.setSelectedTablet(ep.Address(), false, false)
 	}
 	client := c.clientForEndpoint(ep)
 	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/Rollback", ep, client == c.defaultClient, details)
-	err := client.Rollback(ctx, req, opts...)
-	c.maybeExcludeEndpointOnNextCall(ep, logicalRequestKey, err)
+	err := client.Rollback(ctx, req, appendResourceExhaustedMarkerOptions(opts, markResourceExhausted)...)
+	markResourceExhausted(err)
 	c.router.clearTransactionAffinity(string(req.GetTransactionId()))
 	return err
 }

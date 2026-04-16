@@ -44,9 +44,8 @@ type streamingReceiver interface {
 	Context() context.Context
 }
 
-func shouldAllowLocationAwareStreamingResourceExhaustedRetry(client spannerClient) bool {
-	_, ok := client.(*locationAwareSpannerClient)
-	return ok
+func shouldRetryResourceExhaustedInStreaming(_ spannerClient) bool {
+	return true
 }
 
 // errEarlyReadEnd returns error for read finishes when gRPC stream is still
@@ -79,7 +78,7 @@ func stream(
 		setTimestamp,
 		release,
 		gsc,
-		false,
+		true,
 	)
 }
 
@@ -96,13 +95,13 @@ func streamWithTransactionCallbacks(
 	setTimestamp func(time.Time),
 	release func(error),
 	gsc *grpcSpannerClient,
-	allowResourceExhaustedWithoutRetryInfo bool,
+	retryResourceExhausted bool,
 ) *RowIterator {
 	ctx, cancel := context.WithCancel(ctx)
 	ctx, _ = startSpan(ctx, "RowIterator")
 	return &RowIterator{
 		meterTracerFactory:   meterTracerFactory,
-		streamd:              newResumableStreamDecoder(ctx, cancel, logger, rpc, gsc, allowResourceExhaustedWithoutRetryInfo),
+		streamd:              newResumableStreamDecoder(ctx, cancel, logger, rpc, gsc, retryResourceExhausted),
 		rowd:                 &partialResultSetDecoder{},
 		setTransactionID:     setTransactionID,
 		updatePrecommitToken: updatePrecommitToken,
@@ -454,7 +453,7 @@ type resumableStreamDecoder struct {
 
 	gsc *grpcSpannerClient
 
-	allowResourceExhaustedWithoutRetryInfo bool
+	retryResourceExhausted bool
 
 	// reqIDInjector is generated once per stream, unless the stream
 	// gets broken and in that case a fresh one is generated.
@@ -467,16 +466,16 @@ type resumableStreamDecoder struct {
 // newResumableStreamDecoder creates a new resumeableStreamDecoder instance.
 // Parameter rpc should be a function that creates a new stream beginning at the
 // restartToken if non-nil.
-func newResumableStreamDecoder(ctx context.Context, cancel func(), logger *log.Logger, rpc func(ct context.Context, restartToken []byte, opts ...gax.CallOption) (streamingReceiver, error), gsc *grpcSpannerClient, allowResourceExhaustedWithoutRetryInfo bool) *resumableStreamDecoder {
+func newResumableStreamDecoder(ctx context.Context, cancel func(), logger *log.Logger, rpc func(ct context.Context, restartToken []byte, opts ...gax.CallOption) (streamingReceiver, error), gsc *grpcSpannerClient, retryResourceExhausted bool) *resumableStreamDecoder {
 	return &resumableStreamDecoder{
-		ctx:                                    ctx,
-		cancel:                                 cancel,
-		logger:                                 logger,
-		rpc:                                    rpc,
-		maxBytesBetweenResumeTokens:            atomic.LoadInt32(&maxBytesBetweenResumeTokens),
-		backoff:                                DefaultRetryBackoff,
-		gsc:                                    gsc,
-		allowResourceExhaustedWithoutRetryInfo: allowResourceExhaustedWithoutRetryInfo,
+		ctx:                         ctx,
+		cancel:                      cancel,
+		logger:                      logger,
+		rpc:                         rpc,
+		maxBytesBetweenResumeTokens: atomic.LoadInt32(&maxBytesBetweenResumeTokens),
+		backoff:                     DefaultRetryBackoff,
+		gsc:                         gsc,
+		retryResourceExhausted:      retryResourceExhausted,
 	}
 }
 
@@ -567,7 +566,11 @@ var (
 )
 
 func (d *resumableStreamDecoder) next(mt *builtinMetricsTracer) bool {
-	retryer := onCodesWithResourceExhaustedRetryOption(d.backoff, d.allowResourceExhaustedWithoutRetryInfo, codes.Unavailable, codes.ResourceExhausted, codes.Internal)
+	retryCodes := []codes.Code{codes.Unavailable, codes.Internal}
+	if d.retryResourceExhausted {
+		retryCodes = append(retryCodes, codes.ResourceExhausted)
+	}
+	retryer := onCodes(d.backoff, retryCodes...)
 
 	// Setup and track x-goog-request-id in the manual retries for ExecuteStreamingSql.
 	riw := d.reqIDInjectorOrNew()

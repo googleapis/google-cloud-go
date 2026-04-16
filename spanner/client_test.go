@@ -17,7 +17,6 @@ limitations under the License.
 package spanner
 
 import (
-	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -745,7 +744,7 @@ func waitForLocationAwareEndpointHealthy(t *testing.T, client *Client, address s
 	})
 }
 
-func TestLocationAwareExecuteSql_UnaryRetryDoesNotPopulateEndpointExclusion(t *testing.T) {
+func TestLocationAwareExecuteSql_RetriesViaGAXAndMarksCooldownScopes(t *testing.T) {
 	t.Parallel()
 
 	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
@@ -807,8 +806,13 @@ func TestLocationAwareExecuteSql_UnaryRetryDoesNotPopulateEndpointExclusion(t *t
 	if !ok {
 		t.Fatalf("session client type = %T, want *locationAwareSpannerClient", sh.getClient())
 	}
+	clock := newLifecycleTestClock(time.Unix(100, 0))
+	lac.endpointCooldowns = newEndpointOverloadCooldownTrackerWithOptions(time.Minute, time.Minute, 10*time.Minute, clock.Now, func(n int64) int64 {
+		return n - 1
+	})
 
 	callOpts := testCallOptionsWithRequestID("1.proc.1.1.55.1")
+	logicalRequestKey := logicalRequestKeyFromCallOptions(callOpts)
 	resp, err := lac.ExecuteSql(context.Background(), req, callOpts...)
 	if err != nil {
 		t.Fatalf("ExecuteSql() returned unexpected error: %v", err)
@@ -819,34 +823,26 @@ func TestLocationAwareExecuteSql_UnaryRetryDoesNotPopulateEndpointExclusion(t *t
 
 	replicaARequests := harness.Replicas[0].Requests(MethodExecuteSql)
 	replicaBRequests := harness.Replicas[1].Requests(MethodExecuteSql)
-	if got, want := len(replicaARequests), 1; got != want {
+	if got, want := len(replicaARequests), 2; got != want {
 		t.Fatalf("replica A ExecuteSql request count = %d, want %d", got, want)
 	}
-	if got, want := len(replicaBRequests), 1; got != want {
-		t.Fatalf("replica B ExecuteSql request count = %d, want %d", got, want)
+	if got := len(replicaBRequests); got != 0 {
+		t.Fatalf("replica B ExecuteSql request count = %d, want 0", got)
 	}
 	replicaAReq, ok := replicaARequests[0].(*sppb.ExecuteSqlRequest)
 	if !ok {
 		t.Fatalf("replica A request type = %T, want *spannerpb.ExecuteSqlRequest", replicaARequests[0])
 	}
-	replicaBReq, ok := replicaBRequests[0].(*sppb.ExecuteSqlRequest)
-	if !ok {
-		t.Fatalf("replica B request type = %T, want *spannerpb.ExecuteSqlRequest", replicaBRequests[0])
-	}
 	if got, want := replicaAReq.GetSession(), sh.getID(); got != want {
 		t.Fatalf("replica A session = %q, want %q", got, want)
 	}
-	if got, want := replicaBReq.GetSession(), sh.getID(); got != want {
-		t.Fatalf("replica B session = %q, want %q", got, want)
-	}
 
-	logicalRequestKey := logicalRequestKeyFromCallOptions(callOpts)
-	excluded := lac.excludedEndpoints.consume(logicalRequestKey)
-	if excluded != nil && excluded(harness.ReplicaAddresses[0]) {
-		t.Fatalf("expected routed address %q not to be excluded after internal unary retry", harness.ReplicaAddresses[0])
-	}
 	if !lac.endpointCooldowns.isCoolingDown(harness.ReplicaAddresses[0]) {
-		t.Fatalf("expected routed address %q to enter overload cooldown after internal unary retry", harness.ReplicaAddresses[0])
+		t.Fatalf("expected routed address %q to enter overload cooldown after RESOURCE_EXHAUSTED", harness.ReplicaAddresses[0])
+	}
+	excluded := lac.excludedEndpoints.consume(logicalRequestKey)
+	if !excluded(harness.ReplicaAddresses[0]) {
+		t.Fatalf("expected routed address %q to be excluded for the logical request", harness.ReplicaAddresses[0])
 	}
 }
 
@@ -963,7 +959,7 @@ func TestLocationAwareExecuteStreamingSql_RetryUsesExcludedEndpointOnNextCall(t 
 	}
 }
 
-func TestClient_Single_StreamingReadRetryUsesNextReplicaForBypassTraffic(t *testing.T) {
+func TestClient_Single_StreamingReadReturnsResourceExhaustedForBypassTraffic(t *testing.T) {
 	t.Parallel()
 
 	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
@@ -1045,15 +1041,8 @@ func TestClient_Single_StreamingReadRetryUsesNextReplicaForBypassTraffic(t *test
 	if !ok {
 		t.Fatalf("replica A request type = %T, want *spannerpb.ReadRequest", replicaARequests[0])
 	}
-	replicaBReq, ok := replicaBRequests[0].(*sppb.ReadRequest)
-	if !ok {
-		t.Fatalf("replica B request type = %T, want *spannerpb.ReadRequest", replicaBRequests[0])
-	}
 	if got := replicaAReq.GetResumeToken(); got != nil {
 		t.Fatalf("replica A resume token = %v, want nil on first attempt", got)
-	}
-	if got := replicaBReq.GetResumeToken(); got != nil {
-		t.Fatalf("replica B resume token = %v, want nil on retried stream-open after initial failure", got)
 	}
 }
 
@@ -1240,7 +1229,7 @@ func TestClient_LocationAwareWrappersShareStateAcrossHandles(t *testing.T) {
 	}
 }
 
-func TestClient_Single_StreamingReadMidStreamRecvFailureWithoutRetryInfoUsesNextReplicaForBypassTraffic(t *testing.T) {
+func TestClient_Single_StreamingReadMidStreamRecvFailureWithoutRetryInfoReturnsErrorForBypassTraffic(t *testing.T) {
 	t.Parallel()
 
 	restore := setMaxBytesBetweenResumeTokens()
@@ -1307,22 +1296,16 @@ func TestClient_Single_StreamingReadMidStreamRecvFailureWithoutRetryInfoUsesNext
 	iter := client.Single().Read(context.Background(), "Albums", KeySets(Key{"b"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
 	defer iter.Stop()
 
-	var rowCount int
-	for {
-		row, err := iter.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			t.Fatalf("iter.Next() returned unexpected error: %v", err)
-		}
-		if row == nil {
-			t.Fatal("iter.Next() returned nil row")
-		}
-		rowCount++
+	row, err := iter.Next()
+	if err != nil {
+		t.Fatalf("first iter.Next() returned unexpected error: %v", err)
 	}
-	if got, want := rowCount, int(SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount); got != want {
-		t.Fatalf("row count = %d, want %d", got, want)
+	if row == nil {
+		t.Fatal("first iter.Next() returned nil row")
+	}
+	_, err = iter.Next()
+	if status.Code(err) != codes.ResourceExhausted {
+		t.Fatalf("second iter.Next() error = %v, want RESOURCE_EXHAUSTED", err)
 	}
 
 	replicaARequests := harness.Replicas[0].Requests(MethodStreamingRead)
@@ -1330,8 +1313,8 @@ func TestClient_Single_StreamingReadMidStreamRecvFailureWithoutRetryInfoUsesNext
 	if got, want := len(replicaARequests), 1; got != want {
 		t.Fatalf("replica A StreamingRead request count = %d, want %d", got, want)
 	}
-	if got, want := len(replicaBRequests), 1; got != want {
-		t.Fatalf("replica B StreamingRead request count = %d, want %d", got, want)
+	if got := len(replicaBRequests); got != 0 {
+		t.Fatalf("replica B StreamingRead request count = %d, want 0", got)
 	}
 	if got := len(harness.DefaultReplica.Requests(MethodStreamingRead)); got != 0 {
 		t.Fatalf("default replica StreamingRead request count = %d, want 0", got)
@@ -1344,16 +1327,9 @@ func TestClient_Single_StreamingReadMidStreamRecvFailureWithoutRetryInfoUsesNext
 	if got := replicaAReq.GetResumeToken(); got != nil {
 		t.Fatalf("replica A resume token = %v, want nil on first stream attempt", got)
 	}
-	replicaBReq, ok := replicaBRequests[0].(*sppb.ReadRequest)
-	if !ok {
-		t.Fatalf("replica B request type = %T, want *spannerpb.ReadRequest", replicaBRequests[0])
-	}
-	if got, want := replicaBReq.GetResumeToken(), EncodeResumeToken(1); !bytes.Equal(got, want) {
-		t.Fatalf("replica B resume token = %v, want %v after mid-stream retry", got, want)
-	}
 }
 
-func TestClient_Single_StreamingReadMidStreamRecvFailureWithRetryInfoUsesNextReplicaForBypassTraffic(t *testing.T) {
+func TestClient_Single_StreamingReadMidStreamRecvFailureWithRetryInfoRetriesForBypassTraffic(t *testing.T) {
 	t.Parallel()
 
 	restore := setMaxBytesBetweenResumeTokens()
@@ -1420,22 +1396,19 @@ func TestClient_Single_StreamingReadMidStreamRecvFailureWithRetryInfoUsesNextRep
 	iter := client.Single().Read(context.Background(), "Albums", KeySets(Key{"b"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
 	defer iter.Stop()
 
-	var rowCount int
-	for {
-		row, err := iter.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			t.Fatalf("iter.Next() returned unexpected error: %v", err)
-		}
-		if row == nil {
-			t.Fatal("iter.Next() returned nil row")
-		}
-		rowCount++
+	row, err := iter.Next()
+	if err != nil {
+		t.Fatalf("first iter.Next() returned unexpected error: %v", err)
 	}
-	if got, want := rowCount, int(SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount); got != want {
-		t.Fatalf("row count = %d, want %d", got, want)
+	if row == nil {
+		t.Fatal("first iter.Next() returned nil row")
+	}
+	row, err = iter.Next()
+	if err != nil {
+		t.Fatalf("second iter.Next() returned unexpected error: %v", err)
+	}
+	if row == nil {
+		t.Fatal("second iter.Next() returned nil row")
 	}
 
 	replicaARequests := harness.Replicas[0].Requests(MethodStreamingRead)
@@ -1454,15 +1427,15 @@ func TestClient_Single_StreamingReadMidStreamRecvFailureWithRetryInfoUsesNextRep
 	if !ok {
 		t.Fatalf("replica A request type = %T, want *spannerpb.ReadRequest", replicaARequests[0])
 	}
+	if got := replicaAReq.GetResumeToken(); got != nil {
+		t.Fatalf("replica A resume token = %v, want nil on first stream attempt", got)
+	}
 	replicaBReq, ok := replicaBRequests[0].(*sppb.ReadRequest)
 	if !ok {
 		t.Fatalf("replica B request type = %T, want *spannerpb.ReadRequest", replicaBRequests[0])
 	}
-	if got := replicaAReq.GetResumeToken(); got != nil {
-		t.Fatalf("replica A resume token = %v, want nil on first stream attempt", got)
-	}
-	if got, want := replicaBReq.GetResumeToken(), EncodeResumeToken(1); !bytes.Equal(got, want) {
-		t.Fatalf("replica B resume token = %v, want %v after mid-stream retry", got, want)
+	if got, want := string(replicaBReq.GetResumeToken()), string(EncodeResumeToken(1)); got != want {
+		t.Fatalf("replica B resume token = %v, want %v", replicaBReq.GetResumeToken(), EncodeResumeToken(1))
 	}
 }
 
@@ -1596,10 +1569,10 @@ func TestLocationAwareExecuteSql_CooldownRoutesToNextReplicaAndEndpointBecomesEl
 
 	replicaARequests := harness.Replicas[0].Requests(MethodExecuteSql)
 	replicaBRequests := harness.Replicas[1].Requests(MethodExecuteSql)
-	if got, want := len(replicaARequests), 1; got != want {
+	if got, want := len(replicaARequests), 2; got != want {
 		t.Fatalf("replica A ExecuteSql request count after cooldown reroute = %d, want %d", got, want)
 	}
-	if got, want := len(replicaBRequests), 2; got != want {
+	if got, want := len(replicaBRequests), 1; got != want {
 		t.Fatalf("replica B ExecuteSql request count after cooldown reroute = %d, want %d", got, want)
 	}
 
@@ -1617,10 +1590,10 @@ func TestLocationAwareExecuteSql_CooldownRoutesToNextReplicaAndEndpointBecomesEl
 
 	replicaARequests = harness.Replicas[0].Requests(MethodExecuteSql)
 	replicaBRequests = harness.Replicas[1].Requests(MethodExecuteSql)
-	if got, want := len(replicaARequests), 2; got != want {
+	if got, want := len(replicaARequests), 3; got != want {
 		t.Fatalf("replica A ExecuteSql request count after cooldown expiry = %d, want %d", got, want)
 	}
-	if got, want := len(replicaBRequests), 2; got != want {
+	if got, want := len(replicaBRequests), 1; got != want {
 		t.Fatalf("replica B ExecuteSql request count after cooldown expiry = %d, want %d", got, want)
 	}
 }
@@ -1690,27 +1663,32 @@ func TestLocationAwareExecuteSql_CooldownFallsBackToDefaultWhenAllRoutedReplicas
 	})
 
 	_, err = lac.ExecuteSql(context.Background(), req, testCallOptionsWithRequestID("1.proc.1.1.81.1")...)
-	if status.Code(err) != codes.ResourceExhausted {
-		t.Fatalf("first ExecuteSql() error = %v, want RESOURCE_EXHAUSTED", err)
+	if err != nil {
+		t.Fatalf("first ExecuteSql() returned unexpected error: %v", err)
 	}
 	if !lac.endpointCooldowns.isCoolingDown(harness.ReplicaAddresses[0]) {
 		t.Fatalf("expected routed address %q to enter cooldown", harness.ReplicaAddresses[0])
 	}
+
+	_, err = lac.ExecuteSql(context.Background(), req, testCallOptionsWithRequestID("1.proc.1.1.81.2")...)
+	if err != nil {
+		t.Fatalf("second ExecuteSql() returned unexpected error: %v", err)
+	}
 	if !lac.endpointCooldowns.isCoolingDown(harness.ReplicaAddresses[1]) {
-		t.Fatalf("expected retry address %q to enter cooldown", harness.ReplicaAddresses[1])
+		t.Fatalf("expected second routed address %q to enter cooldown", harness.ReplicaAddresses[1])
 	}
 
-	if _, err := lac.ExecuteSql(context.Background(), req, testCallOptionsWithRequestID("1.proc.1.1.81.2")...); err != nil {
-		t.Fatalf("second ExecuteSql() returned unexpected error: %v", err)
+	if _, err := lac.ExecuteSql(context.Background(), req, testCallOptionsWithRequestID("1.proc.1.1.81.3")...); err != nil {
+		t.Fatalf("third ExecuteSql() returned unexpected error: %v", err)
 	}
 
 	replicaARequests := harness.Replicas[0].Requests(MethodExecuteSql)
 	replicaBRequests := harness.Replicas[1].Requests(MethodExecuteSql)
 	defaultRequests := harness.DefaultReplica.Requests(MethodExecuteSql)
-	if got, want := len(replicaARequests), 1; got != want {
+	if got, want := len(replicaARequests), 2; got != want {
 		t.Fatalf("replica A ExecuteSql request count = %d, want %d", got, want)
 	}
-	if got, want := len(replicaBRequests), 1; got != want {
+	if got, want := len(replicaBRequests), 2; got != want {
 		t.Fatalf("replica B ExecuteSql request count = %d, want %d", got, want)
 	}
 	if got, want := len(defaultRequests), 1; got != want {
@@ -1838,7 +1816,7 @@ func TestLocationAwareExecuteStreamingSql_CooldownRoutesToNextReplicaAndEndpoint
 	}
 }
 
-func TestLocationAwareRead_UnaryRetryDoesNotPopulateEndpointExclusion(t *testing.T) {
+func TestLocationAwareRead_RetriesViaGAXAndMarksCooldownScopes(t *testing.T) {
 	t.Parallel()
 
 	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
@@ -1894,8 +1872,13 @@ func TestLocationAwareRead_UnaryRetryDoesNotPopulateEndpointExclusion(t *testing
 	if !ok {
 		t.Fatalf("session client type = %T, want *locationAwareSpannerClient", sh.getClient())
 	}
+	clock := newLifecycleTestClock(time.Unix(100, 0))
+	lac.endpointCooldowns = newEndpointOverloadCooldownTrackerWithOptions(time.Minute, time.Minute, 10*time.Minute, clock.Now, func(n int64) int64 {
+		return n - 1
+	})
 
 	callOpts := testCallOptionsWithRequestID("1.proc.1.1.56.1")
+	logicalRequestKey := logicalRequestKeyFromCallOptions(callOpts)
 	resp, err := lac.Read(context.Background(), req, callOpts...)
 	if err != nil {
 		t.Fatalf("Read() returned unexpected error: %v", err)
@@ -1906,38 +1889,30 @@ func TestLocationAwareRead_UnaryRetryDoesNotPopulateEndpointExclusion(t *testing
 
 	replicaARequests := harness.Replicas[0].Requests(MethodRead)
 	replicaBRequests := harness.Replicas[1].Requests(MethodRead)
-	if got, want := len(replicaARequests), 1; got != want {
+	if got, want := len(replicaARequests), 2; got != want {
 		t.Fatalf("replica A Read request count = %d, want %d", got, want)
 	}
-	if got, want := len(replicaBRequests), 1; got != want {
-		t.Fatalf("replica B Read request count = %d, want %d", got, want)
+	if got := len(replicaBRequests); got != 0 {
+		t.Fatalf("replica B Read request count = %d, want 0", got)
 	}
 	replicaAReq, ok := replicaARequests[0].(*sppb.ReadRequest)
 	if !ok {
 		t.Fatalf("replica A request type = %T, want *spannerpb.ReadRequest", replicaARequests[0])
 	}
-	replicaBReq, ok := replicaBRequests[0].(*sppb.ReadRequest)
-	if !ok {
-		t.Fatalf("replica B request type = %T, want *spannerpb.ReadRequest", replicaBRequests[0])
-	}
 	if got, want := replicaAReq.GetSession(), sh.getID(); got != want {
 		t.Fatalf("replica A session = %q, want %q", got, want)
 	}
-	if got, want := replicaBReq.GetSession(), sh.getID(); got != want {
-		t.Fatalf("replica B session = %q, want %q", got, want)
-	}
 
-	logicalRequestKey := logicalRequestKeyFromCallOptions(callOpts)
-	excluded := lac.excludedEndpoints.consume(logicalRequestKey)
-	if excluded != nil && excluded(harness.ReplicaAddresses[0]) {
-		t.Fatalf("expected routed address %q not to be excluded after internal unary retry", harness.ReplicaAddresses[0])
-	}
 	if !lac.endpointCooldowns.isCoolingDown(harness.ReplicaAddresses[0]) {
-		t.Fatalf("expected routed address %q to enter overload cooldown after internal unary retry", harness.ReplicaAddresses[0])
+		t.Fatalf("expected routed address %q to enter overload cooldown after RESOURCE_EXHAUSTED", harness.ReplicaAddresses[0])
+	}
+	excluded := lac.excludedEndpoints.consume(logicalRequestKey)
+	if !excluded(harness.ReplicaAddresses[0]) {
+		t.Fatalf("expected routed address %q to be excluded for the logical request", harness.ReplicaAddresses[0])
 	}
 }
 
-func TestLocationAwareBeginTransaction_UnaryRetryDoesNotPopulateEndpointExclusion(t *testing.T) {
+func TestLocationAwareBeginTransaction_RetriesViaGAXAndMarksCooldownScopes(t *testing.T) {
 	t.Parallel()
 
 	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
@@ -2003,8 +1978,13 @@ func TestLocationAwareBeginTransaction_UnaryRetryDoesNotPopulateEndpointExclusio
 	if !ok {
 		t.Fatalf("session client type = %T, want *locationAwareSpannerClient", sh.getClient())
 	}
+	clock := newLifecycleTestClock(time.Unix(100, 0))
+	lac.endpointCooldowns = newEndpointOverloadCooldownTrackerWithOptions(time.Minute, time.Minute, 10*time.Minute, clock.Now, func(n int64) int64 {
+		return n - 1
+	})
 
 	callOpts := testCallOptionsWithRequestID("1.proc.1.1.57.1")
+	logicalRequestKey := logicalRequestKeyFromCallOptions(callOpts)
 	resp, err := lac.BeginTransaction(context.Background(), req, callOpts...)
 	if err != nil {
 		t.Fatalf("BeginTransaction() returned unexpected error: %v", err)
@@ -2015,34 +1995,26 @@ func TestLocationAwareBeginTransaction_UnaryRetryDoesNotPopulateEndpointExclusio
 
 	replicaARequests := harness.Replicas[0].Requests(MethodBeginTransaction)
 	replicaBRequests := harness.Replicas[1].Requests(MethodBeginTransaction)
-	if got, want := len(replicaARequests), 1; got != want {
+	if got, want := len(replicaARequests), 2; got != want {
 		t.Fatalf("replica A BeginTransaction request count = %d, want %d", got, want)
 	}
-	if got, want := len(replicaBRequests), 1; got != want {
-		t.Fatalf("replica B BeginTransaction request count = %d, want %d", got, want)
+	if got := len(replicaBRequests); got != 0 {
+		t.Fatalf("replica B BeginTransaction request count = %d, want 0", got)
 	}
 	replicaAReq, ok := replicaARequests[0].(*sppb.BeginTransactionRequest)
 	if !ok {
 		t.Fatalf("replica A request type = %T, want *spannerpb.BeginTransactionRequest", replicaARequests[0])
 	}
-	replicaBReq, ok := replicaBRequests[0].(*sppb.BeginTransactionRequest)
-	if !ok {
-		t.Fatalf("replica B request type = %T, want *spannerpb.BeginTransactionRequest", replicaBRequests[0])
-	}
 	if got, want := replicaAReq.GetSession(), sh.getID(); got != want {
 		t.Fatalf("replica A session = %q, want %q", got, want)
 	}
-	if got, want := replicaBReq.GetSession(), sh.getID(); got != want {
-		t.Fatalf("replica B session = %q, want %q", got, want)
-	}
 
-	logicalRequestKey := logicalRequestKeyFromCallOptions(callOpts)
-	excluded := lac.excludedEndpoints.consume(logicalRequestKey)
-	if excluded != nil && excluded(harness.ReplicaAddresses[0]) {
-		t.Fatalf("expected routed address %q not to be excluded after internal unary retry", harness.ReplicaAddresses[0])
-	}
 	if !lac.endpointCooldowns.isCoolingDown(harness.ReplicaAddresses[0]) {
-		t.Fatalf("expected routed address %q to enter overload cooldown after internal unary retry", harness.ReplicaAddresses[0])
+		t.Fatalf("expected routed address %q to enter overload cooldown after RESOURCE_EXHAUSTED", harness.ReplicaAddresses[0])
+	}
+	excluded := lac.excludedEndpoints.consume(logicalRequestKey)
+	if !excluded(harness.ReplicaAddresses[0]) {
+		t.Fatalf("expected routed address %q to be excluded for the logical request", harness.ReplicaAddresses[0])
 	}
 }
 

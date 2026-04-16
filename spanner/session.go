@@ -97,9 +97,7 @@ func (sh *sessionHandle) recycle() {
 	sh.client = nil
 	sh.mu.Unlock()
 	if p != nil {
-		p.mu.Lock()
-		p.decNumMultiplexedInUseLocked(context.Background())
-		p.mu.Unlock()
+		p.decNumMultiplexedInUse(context.Background())
 	}
 }
 
@@ -437,40 +435,37 @@ func (p *sessionManager) close(ctx context.Context) {
 // errInvalidSession is the error for using an invalid session.
 var errInvalidSession = spannerErrorf(codes.InvalidArgument, "invalid session")
 
-// newSessionHandle creates a new session handle for the given session.
-func (p *sessionManager) newSessionHandle(s *session) (sh *sessionHandle) {
+// newSessionHandleLocked creates a new session handle for the given session.
+// The caller must hold p.mu.
+func (p *sessionManager) newSessionHandleLocked(s *session) (sh *sessionHandle) {
 	sh = &sessionHandle{session: s}
-	p.mu.Lock()
-	client, idx := p.getRoundRobinClient()
+	client, idx := p.getRoundRobinClientLocked()
 	if p.locationAwareState != nil && p.locationAwareState.endpointCache != nil {
 		client = newIndexedLocationAwareSpannerClient(p.locationAwareState, idx)
 	}
 	sh.client = client
-	p.mu.Unlock()
 	return sh
 }
 
-func (p *sessionManager) getRoundRobinClient() (spannerClient, int) {
-	p.sc.mu.Lock()
-	defer func() {
-		p.multiplexSessionClientCounter++
-		p.sc.mu.Unlock()
-	}()
+func (p *sessionManager) getRoundRobinClientLocked() (spannerClient, int) {
 	if len(p.clientPool) == 0 {
+		p.sc.mu.Lock()
 		p.clientPool = make([]spannerClient, p.sc.connPool.Num())
 		for i := 0; i < p.sc.connPool.Num(); i++ {
 			c, err := p.sc.nextClient()
 			if err != nil {
+				p.sc.mu.Unlock()
 				return nil, -1
 			}
 			p.clientPool[i] = c
 		}
+		p.sc.mu.Unlock()
 		if p.locationAwareState != nil {
 			p.locationAwareState.clientPool = p.clientPool
 		}
 	}
-	p.multiplexSessionClientCounter = p.multiplexSessionClientCounter % len(p.clientPool)
-	idx := p.multiplexSessionClientCounter
+	idx := p.multiplexSessionClientCounter % len(p.clientPool)
+	p.multiplexSessionClientCounter++
 	return p.clientPool[idx], idx
 }
 
@@ -515,9 +510,10 @@ func (p *sessionManager) takeMultiplexed(ctx context.Context) (*sessionHandle, e
 			s = p.multiplexedSession
 			trace.TracePrintf(ctx, map[string]interface{}{"sessionID": s.getID()},
 				"Acquired multiplexed session")
+			sh := p.newSessionHandleLocked(s)
 			p.mu.Unlock()
 			p.incNumMultiplexedInUse(ctx)
-			return p.newSessionHandle(s), nil
+			return sh, nil
 		}
 		creation = p.ensureMultiplexedSessionCreationLocked(false)
 		p.mu.Unlock()
@@ -545,7 +541,7 @@ func (p *sessionManager) incNumMultiplexedInUse(ctx context.Context) {
 	}
 }
 
-func (p *sessionManager) decNumMultiplexedInUseLocked(ctx context.Context) {
+func (p *sessionManager) decNumMultiplexedInUse(ctx context.Context) {
 	p.recordStat(ctx, ReleasedSessionsCount, 1, tag.Tag{Key: tagKeyIsMultiplexed, Value: "true"})
 	if p.otConfig != nil {
 		p.recordOTStat(ctx, p.otConfig.releasedSessionsCount, 1, recordOTStatOption{attr: p.otConfig.attributeMapWithMultiplexed})
