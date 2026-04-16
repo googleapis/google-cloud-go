@@ -654,6 +654,7 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	sc.mu.Unlock()
 
 	var locationRouter *locationRouter
+	var sharedLocationAwareState *locationAwareState
 	if isExperimentalLocationAPIEnabledForConfig(config) {
 		sc.baseClientOpts = endpointClientOpts
 		defaultEndpointAddress := ""
@@ -670,21 +671,20 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		locationRouter = newLocationRouter(epCache)
 		locationRouter.lifecycleManager = newEndpointLifecycleManager(epCache)
 		locationRouter.finder.setLifecycleManager(locationRouter.lifecycleManager)
-	}
-
-	// Create a session manager.
-	sp, err := newSessionManager(sc, config.SessionPoolConfig)
-	if err != nil {
-		sc.close()
-		return nil, err
-	}
-
-	if locationRouter != nil {
-		sp.setLocationAwareState(
+		sharedLocationAwareState = newLocationAwareState(
+			nil,
 			locationRouter,
+			epCache,
 			newLogicalRequestEndpointExclusionCache(),
 			newEndpointOverloadCooldownTracker(),
 		)
+	}
+
+	// Create a session manager.
+	sp, err := newSessionManager(sc, config.SessionPoolConfig, sharedLocationAwareState)
+	if err != nil {
+		sc.close()
+		return nil, err
 	}
 
 	if enableLogClientOptions() {

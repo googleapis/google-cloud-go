@@ -1125,7 +1125,7 @@ func TestClient_Single_StreamingReadCooldownSkipsReplicaOnNextRequestForBypassTr
 	cooldownTracker := newEndpointOverloadCooldownTrackerWithOptions(time.Minute, time.Minute, 10*time.Minute, clock.Now, func(n int64) int64 {
 		return n - 1
 	})
-	client.sm.setLocationAwareState(client.locationRouter, client.sm.excludedEndpoints, cooldownTracker)
+	client.sm.setLocationAwareState(client.locationRouter, client.sm.locationAwareState.excludedEndpoints, cooldownTracker)
 	sh.recycle()
 
 	iter := client.Single().Read(context.Background(), "Albums", KeySets(Key{"b"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
@@ -1185,7 +1185,7 @@ func TestClient_Single_StreamingReadCooldownSkipsReplicaOnNextRequestForBypassTr
 	}
 }
 
-func TestClient_LocationAwareWrapperReusedAcrossHandles(t *testing.T) {
+func TestClient_LocationAwareWrappersShareStateAcrossHandles(t *testing.T) {
 	t.Parallel()
 
 	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
@@ -1226,14 +1226,17 @@ func TestClient_LocationAwareWrapperReusedAcrossHandles(t *testing.T) {
 	if !ok {
 		t.Fatalf("second handle client type = %T, want *locationAwareSpannerClient", sh2.getClient())
 	}
-	if lac1 != lac2 {
-		t.Fatalf("expected location-aware wrapper to be reused across handles")
+	if lac1 == lac2 {
+		t.Fatalf("expected a fresh location-aware wrapper per handle")
 	}
 	if lac1.endpointCooldowns != lac2.endpointCooldowns {
 		t.Fatalf("expected handles to share cooldown tracker")
 	}
 	if lac1.excludedEndpoints != lac2.excludedEndpoints {
 		t.Fatalf("expected handles to share exclusion cache")
+	}
+	if lac1.state != lac2.state {
+		t.Fatalf("expected handles to share client-level location-aware state")
 	}
 }
 

@@ -239,19 +239,12 @@ type sessionManager struct {
 
 	multiplexSessionClientCounter int
 	clientPool                    []spannerClient
-	locationAwareClientPool       []*locationAwareSpannerClient
 	multiplexedSession            *session
 	multiplexedSessionCreation    *multiplexedSessionCreation
 
-	// locationRouter is set when the experimental location API is enabled.
-	// It is used to wrap round-robin clients with location-aware routing.
-	locationRouter *locationRouter
-	// endpointCooldowns is shared across all location-aware client wrappers so
-	// overload cooldown state survives across requests.
-	endpointCooldowns *endpointOverloadCooldownTracker
-	// excludedEndpoints is shared across all location-aware client wrappers so
-	// request-scoped exclusions survive across handles and retries.
-	excludedEndpoints *logicalRequestEndpointExclusionCache
+	// locationAwareState is set when the experimental location API is enabled.
+	// It owns the shared routing, lifecycle, and cooldown state for the client.
+	locationAwareState *locationAwareState
 
 	// SessionPoolConfig is kept for backward compatibility.
 	SessionPoolConfig
@@ -264,18 +257,19 @@ type sessionManager struct {
 }
 
 // newSessionManager creates a new sessionManager for multiplexed sessions.
-func newSessionManager(sc *sessionClient, config SessionPoolConfig) (*sessionManager, error) {
+func newSessionManager(sc *sessionClient, config SessionPoolConfig, locationAwareState *locationAwareState) (*sessionManager, error) {
 	if config.MultiplexSessionCheckInterval == 0 {
 		config.MultiplexSessionCheckInterval = 10 * time.Minute
 	}
 
 	sm := &sessionManager{
-		sc:                sc,
-		valid:             true,
-		SessionPoolConfig: config,
-		rand:              rand.New(rand.NewSource(time.Now().UnixNano())),
-		otConfig:          sc.otConfig,
-		done:              make(chan struct{}),
+		sc:                 sc,
+		valid:              true,
+		locationAwareState: locationAwareState,
+		SessionPoolConfig:  config,
+		rand:               rand.New(rand.NewSource(time.Now().UnixNano())),
+		otConfig:           sc.otConfig,
+		done:               make(chan struct{}),
 	}
 
 	_, instance, database, err := parseDatabaseName(sc.database)
@@ -448,8 +442,8 @@ func (p *sessionManager) newSessionHandle(s *session) (sh *sessionHandle) {
 	sh = &sessionHandle{session: s}
 	p.mu.Lock()
 	client, idx := p.getRoundRobinClient()
-	if p.locationRouter != nil && p.locationRouter.endpointCache != nil {
-		client = p.getLocationAwareClient(idx, client)
+	if p.locationAwareState != nil && p.locationAwareState.endpointCache != nil {
+		client = newIndexedLocationAwareSpannerClient(p.locationAwareState, idx)
 	}
 	sh.client = client
 	p.mu.Unlock()
@@ -471,31 +465,13 @@ func (p *sessionManager) getRoundRobinClient() (spannerClient, int) {
 			}
 			p.clientPool[i] = c
 		}
+		if p.locationAwareState != nil {
+			p.locationAwareState.clientPool = p.clientPool
+		}
 	}
 	p.multiplexSessionClientCounter = p.multiplexSessionClientCounter % len(p.clientPool)
 	idx := p.multiplexSessionClientCounter
 	return p.clientPool[idx], idx
-}
-
-func (p *sessionManager) getLocationAwareClient(idx int, defaultClient spannerClient) spannerClient {
-	if idx < 0 {
-		return defaultClient
-	}
-	if len(p.locationAwareClientPool) == 0 {
-		p.locationAwareClientPool = make([]*locationAwareSpannerClient, len(p.clientPool))
-	}
-	if lac := p.locationAwareClientPool[idx]; lac != nil {
-		return lac
-	}
-	lac := newLocationAwareSpannerClient(defaultClient, p.locationRouter, p.locationRouter.endpointCache)
-	if p.endpointCooldowns != nil {
-		lac.endpointCooldowns = p.endpointCooldowns
-	}
-	if p.excludedEndpoints != nil {
-		lac.excludedEndpoints = p.excludedEndpoints
-	}
-	p.locationAwareClientPool[idx] = lac
-	return lac
 }
 
 func (p *sessionManager) setLocationAwareState(router *locationRouter, excluded *logicalRequestEndpointExclusionCache, cooldowns *endpointOverloadCooldownTracker) {
@@ -506,23 +482,11 @@ func (p *sessionManager) setLocationAwareState(router *locationRouter, excluded 
 	p.mu.Lock()
 	defer p.mu.Unlock()
 
-	p.locationRouter = router
-	p.excludedEndpoints = excluded
-	p.endpointCooldowns = cooldowns
-	for _, lac := range p.locationAwareClientPool {
-		if lac == nil {
-			continue
-		}
-		if router != nil {
-			lac.router = router
-		}
-		if excluded != nil {
-			lac.excludedEndpoints = excluded
-		}
-		if cooldowns != nil {
-			lac.endpointCooldowns = cooldowns
-		}
+	var endpointCache channelEndpointCache
+	if router != nil {
+		endpointCache = router.endpointCache
 	}
+	p.locationAwareState = newLocationAwareState(p.clientPool, router, endpointCache, excluded, cooldowns)
 }
 
 // errGetSessionTimeout returns error for context timeout during session acquisition.
@@ -618,9 +582,10 @@ func (p *sessionManager) multiplexSessionWorker() {
 		}
 
 		p.mu.Lock()
-		cooldowns := p.endpointCooldowns
+		locationAwareState := p.locationAwareState
 		p.mu.Unlock()
-		if cooldowns != nil {
+		if locationAwareState != nil && locationAwareState.endpointCooldowns != nil {
+			cooldowns := locationAwareState.endpointCooldowns
 			cooldowns.pruneStaleEntries(2 * cooldowns.resetAfter)
 		}
 

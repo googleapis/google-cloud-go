@@ -30,18 +30,57 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// locationAwareSpannerClient is a spannerClient wrapper that routes RPCs to
-// specific server endpoints based on location-aware routing hints.
-//
-// Routed RPCs (StreamingRead, Read, ExecuteStreamingSql, ExecuteSql,
-// BeginTransaction) first ask the locationRouter for a routing hint and
-// endpoint, then dispatch to the endpoint's spannerClient if available.
-//
-// Affinity RPCs (Commit, Rollback) look up the transaction affinity set by
-// prior RPCs and route to the same server.
-//
-// All other RPCs are passed through to the default client.
+type locationAwareState struct {
+	clientPool              []spannerClient
+	router                  *locationRouter
+	endpointCache           channelEndpointCache
+	defaultAffinityEndpoint channelEndpoint
+	defaultEndpointAddress  string
+	excludedEndpoints       *logicalRequestEndpointExclusionCache
+	endpointCooldowns       *endpointOverloadCooldownTracker
+}
+
+func newLocationAwareState(
+	clientPool []spannerClient,
+	router *locationRouter,
+	endpointCache channelEndpointCache,
+	excludedEndpoints *logicalRequestEndpointExclusionCache,
+	endpointCooldowns *endpointOverloadCooldownTracker,
+) *locationAwareState {
+	var defaultAffinityEndpoint channelEndpoint = &passthroughChannelEndpoint{address: ""}
+	if endpointCache != nil && endpointCache.DefaultChannel() != nil {
+		defaultAffinityEndpoint = endpointCache.DefaultChannel()
+	}
+	if excludedEndpoints == nil {
+		excludedEndpoints = newLogicalRequestEndpointExclusionCache()
+	}
+	if endpointCooldowns == nil {
+		endpointCooldowns = newEndpointOverloadCooldownTracker()
+	}
+	return &locationAwareState{
+		clientPool:              clientPool,
+		router:                  router,
+		endpointCache:           endpointCache,
+		defaultAffinityEndpoint: defaultAffinityEndpoint,
+		defaultEndpointAddress:  defaultAffinityEndpoint.Address(),
+		excludedEndpoints:       excludedEndpoints,
+		endpointCooldowns:       endpointCooldowns,
+	}
+}
+
+func (s *locationAwareState) defaultClient(idx int) spannerClient {
+	if s == nil || idx < 0 || idx >= len(s.clientPool) {
+		return nil
+	}
+	return s.clientPool[idx]
+}
+
+// locationAwareSpannerClient is a thin spannerClient adapter that routes RPCs
+// using shared client-level location-aware state while preserving the chosen
+// default pooled client for the current request.
 type locationAwareSpannerClient struct {
+	state                   *locationAwareState
+	defaultClientIndex      int
 	defaultClient           spannerClient
 	router                  *locationRouter
 	endpointCache           channelEndpointCache
@@ -70,18 +109,27 @@ func asGRPCSpannerClient(c spannerClient) *grpcSpannerClient {
 }
 
 func newLocationAwareSpannerClient(defaultClient spannerClient, router *locationRouter, endpointCache channelEndpointCache) *locationAwareSpannerClient {
-	var defaultAffinityEndpoint channelEndpoint = &passthroughChannelEndpoint{address: ""}
-	if endpointCache != nil && endpointCache.DefaultChannel() != nil {
-		defaultAffinityEndpoint = endpointCache.DefaultChannel()
+	return newIndexedLocationAwareSpannerClient(
+		newLocationAwareState([]spannerClient{defaultClient}, router, endpointCache, nil, nil),
+		0,
+	)
+}
+
+func newIndexedLocationAwareSpannerClient(state *locationAwareState, defaultClientIndex int) *locationAwareSpannerClient {
+	if state == nil {
+		return &locationAwareSpannerClient{defaultClientIndex: defaultClientIndex}
 	}
+	defaultClient := state.defaultClient(defaultClientIndex)
 	return &locationAwareSpannerClient{
+		state:                   state,
+		defaultClientIndex:      defaultClientIndex,
 		defaultClient:           defaultClient,
-		router:                  router,
-		endpointCache:           endpointCache,
-		defaultAffinityEndpoint: defaultAffinityEndpoint,
-		defaultEndpointAddress:  defaultAffinityEndpoint.Address(),
-		excludedEndpoints:       newLogicalRequestEndpointExclusionCache(),
-		endpointCooldowns:       newEndpointOverloadCooldownTracker(),
+		router:                  state.router,
+		endpointCache:           state.endpointCache,
+		defaultAffinityEndpoint: state.defaultAffinityEndpoint,
+		defaultEndpointAddress:  state.defaultEndpointAddress,
+		excludedEndpoints:       state.excludedEndpoints,
+		endpointCooldowns:       state.endpointCooldowns,
 	}
 }
 
