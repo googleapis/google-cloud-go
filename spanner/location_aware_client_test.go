@@ -365,7 +365,7 @@ func TestLocationAwareSpannerClient_UsesCacheDefaultChannelForAffinityFallback(t
 	}
 }
 
-func TestLocationAwareSpannerClient_ExecuteSQLReturnsResourceExhaustedAndMarksCooldownScopes(t *testing.T) {
+func TestLocationAwareSpannerClient_ExecuteSQLReroutesOnResourceExhaustedAndMarksCooldownScopes(t *testing.T) {
 	defaultClient := &mockSpannerClient{
 		executeSQLResp: &sppb.ResultSet{},
 	}
@@ -390,33 +390,35 @@ func TestLocationAwareSpannerClient_ExecuteSQLReturnsResourceExhaustedAndMarksCo
 	})
 
 	opts := testCallOptionsWithRequestID("1.proc.1.1.77.1")
-	_, err := lac.ExecuteSql(
+	resp, err := lac.ExecuteSql(
 		context.Background(),
 		executeSQLWithKeyAndSelector("b", nil),
 		opts...,
 	)
-	if status.Code(err) != codes.ResourceExhausted {
-		t.Fatalf("ExecuteSql() error = %v, want RESOURCE_EXHAUSTED", err)
+	if err != nil {
+		t.Fatalf("ExecuteSql() returned unexpected error: %v", err)
+	}
+	if resp == nil {
+		t.Fatal("ExecuteSql() returned nil response")
 	}
 	if endpointClient.executeSQLCount != 1 {
 		t.Fatalf("expected first attempt to hit routed endpoint once, got %d", endpointClient.executeSQLCount)
 	}
-	if defaultClient.executeSQLCount != 0 {
-		t.Fatalf("expected no same-request fallback to default endpoint, got %d", defaultClient.executeSQLCount)
+	if defaultClient.executeSQLCount != 1 {
+		t.Fatalf("expected same-request fallback to default endpoint once, got %d", defaultClient.executeSQLCount)
 	}
 	if got, want := requestIDFromTestCallOptions(endpointClient.executeSQLOptsHistory[0]), "1.proc.1.1.77.1"; got != want {
 		t.Fatalf("first attempt request ID = %q, want %q", got, want)
 	}
+	if got, want := requestIDFromTestCallOptions(defaultClient.executeSQLOptsHistory[0]), "1.proc.1.1.77.2"; got != want {
+		t.Fatalf("reroute attempt request ID = %q, want %q", got, want)
+	}
 	if !lac.endpointCooldowns.isCoolingDown("server-a:443") {
 		t.Fatal("expected routed endpoint to enter cooldown after RESOURCE_EXHAUSTED")
 	}
-	excluded := lac.excludedEndpoints.consume(logicalRequestKeyFromCallOptions(opts))
-	if !excluded("server-a:443") {
-		t.Fatal("expected routed endpoint to be excluded for the logical request")
-	}
 }
 
-func TestLocationAwareSpannerClient_ReadReturnsResourceExhaustedAndMarksCooldownScopes(t *testing.T) {
+func TestLocationAwareSpannerClient_ReadReroutesOnResourceExhaustedAndMarksCooldownScopes(t *testing.T) {
 	defaultClient := &mockSpannerClient{
 		readResp: &sppb.ResultSet{},
 	}
@@ -445,34 +447,36 @@ func TestLocationAwareSpannerClient_ReadReturnsResourceExhaustedAndMarksCooldown
 		return n - 1
 	})
 	opts := testCallOptionsWithRequestID("1.proc.1.1.78.1")
-	_, err := lac.Read(context.Background(), &sppb.ReadRequest{
+	resp, err := lac.Read(context.Background(), &sppb.ReadRequest{
 		Session:     "projects/p/instances/i/databases/d/sessions/s",
 		Table:       "BAR",
 		Columns:     []string{"FOO"},
 		RoutingHint: &sppb.RoutingHint{Key: []byte("b")},
 	}, opts...)
-	if status.Code(err) != codes.ResourceExhausted {
-		t.Fatalf("Read() error = %v, want RESOURCE_EXHAUSTED", err)
+	if err != nil {
+		t.Fatalf("Read() returned unexpected error: %v", err)
+	}
+	if resp == nil {
+		t.Fatal("Read() returned nil response")
 	}
 	if endpointClient.readCount != 1 {
 		t.Fatalf("expected first attempt to hit routed endpoint once, got %d", endpointClient.readCount)
 	}
-	if defaultClient.readCount != 0 {
-		t.Fatalf("expected no same-request fallback to default endpoint, got %d", defaultClient.readCount)
+	if defaultClient.readCount != 1 {
+		t.Fatalf("expected same-request fallback to default endpoint once, got %d", defaultClient.readCount)
 	}
 	if got, want := requestIDFromTestCallOptions(endpointClient.readOptsHistory[0]), "1.proc.1.1.78.1"; got != want {
 		t.Fatalf("first attempt request ID = %q, want %q", got, want)
 	}
+	if got, want := requestIDFromTestCallOptions(defaultClient.readOptsHistory[0]), "1.proc.1.1.78.2"; got != want {
+		t.Fatalf("reroute attempt request ID = %q, want %q", got, want)
+	}
 	if !lac.endpointCooldowns.isCoolingDown("server-a:443") {
 		t.Fatal("expected routed endpoint to enter cooldown after RESOURCE_EXHAUSTED")
 	}
-	excluded := lac.excludedEndpoints.consume(logicalRequestKeyFromCallOptions(opts))
-	if !excluded("server-a:443") {
-		t.Fatal("expected routed endpoint to be excluded for the logical request")
-	}
 }
 
-func TestLocationAwareSpannerClient_BeginTransactionReturnsResourceExhaustedAndMarksCooldownScopes(t *testing.T) {
+func TestLocationAwareSpannerClient_BeginTransactionReroutesOnResourceExhaustedAndMarksCooldownScopes(t *testing.T) {
 	defaultClient := &mockSpannerClient{
 		beginTxResp: &sppb.Transaction{Id: []byte("tx-default")},
 	}
@@ -516,32 +520,34 @@ func TestLocationAwareSpannerClient_BeginTransactionReturnsResourceExhaustedAndM
 		return n - 1
 	})
 	opts := testCallOptionsWithRequestID("1.proc.1.1.79.1")
-	_, err := lac.BeginTransaction(context.Background(), &sppb.BeginTransactionRequest{
+	resp, err := lac.BeginTransaction(context.Background(), &sppb.BeginTransactionRequest{
 		Session:     "projects/p/instances/i/databases/d/sessions/s",
 		MutationKey: createInsertMutation("a"),
 	}, opts...)
-	if status.Code(err) != codes.ResourceExhausted {
-		t.Fatalf("BeginTransaction() error = %v, want RESOURCE_EXHAUSTED", err)
+	if err != nil {
+		t.Fatalf("BeginTransaction() returned unexpected error: %v", err)
+	}
+	if resp == nil {
+		t.Fatal("BeginTransaction() returned nil response")
 	}
 	if endpointClient.beginTxCount != 1 {
 		t.Fatalf("expected first attempt to hit routed endpoint once, got %d", endpointClient.beginTxCount)
 	}
-	if defaultClient.beginTxCount != 0 {
-		t.Fatalf("expected no same-request fallback to default endpoint, got %d", defaultClient.beginTxCount)
+	if defaultClient.beginTxCount != 1 {
+		t.Fatalf("expected same-request fallback to default endpoint once, got %d", defaultClient.beginTxCount)
 	}
 	if got, want := requestIDFromTestCallOptions(endpointClient.beginTxOptsHistory[0]), "1.proc.1.1.79.1"; got != want {
 		t.Fatalf("first attempt request ID = %q, want %q", got, want)
 	}
+	if got, want := requestIDFromTestCallOptions(defaultClient.beginTxOptsHistory[0]), "1.proc.1.1.79.2"; got != want {
+		t.Fatalf("reroute attempt request ID = %q, want %q", got, want)
+	}
 	if !lac.endpointCooldowns.isCoolingDown("server-a:443") {
 		t.Fatal("expected routed endpoint to enter cooldown after RESOURCE_EXHAUSTED")
 	}
-	excluded := lac.excludedEndpoints.consume(logicalRequestKeyFromCallOptions(opts))
-	if !excluded("server-a:443") {
-		t.Fatal("expected routed endpoint to be excluded for the logical request")
-	}
 }
 
-func TestLocationAwareSpannerClient_ExecuteStreamingSQLRetriesAvoidExcludedEndpoint(t *testing.T) {
+func TestLocationAwareSpannerClient_ExecuteStreamingSQLNextCallSkipsExcludedEndpoint(t *testing.T) {
 	defaultClient := &mockSpannerClient{
 		streamResp: &mockStreamingClient{
 			results: []*sppb.PartialResultSet{{}},

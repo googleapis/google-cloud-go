@@ -24,6 +24,18 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+type suppressRetryCodesOption struct {
+	codes map[codes.Code]struct{}
+}
+
+func newSuppressRetryCodesOption(suppressedCodes ...codes.Code) suppressRetryCodesOption {
+	suppressed := make(map[codes.Code]struct{}, len(suppressedCodes))
+	for _, code := range suppressedCodes {
+		suppressed[code] = struct{}{}
+	}
+	return suppressRetryCodesOption{codes: suppressed}
+}
+
 type resourceExhaustedMarkerOption struct {
 	mark                         func(error)
 	allowRetryWithoutServerDelay bool
@@ -67,6 +79,27 @@ func (opt resourceExhaustedMarkerOption) Resolve(cs *gax.CallSettings) {
 		return wrapRetryFn(func(err error) (time.Duration, bool) {
 			if status.Code(err) == codes.ResourceExhausted {
 				opt.mark(err)
+			}
+			return originalRetryer.Retry(err)
+		})
+	}
+}
+
+func (opt suppressRetryCodesOption) Resolve(cs *gax.CallSettings) {
+	if len(opt.codes) == 0 || cs.Retry == nil {
+		return
+	}
+
+	originalRetryFactory := cs.Retry
+	cs.Retry = func() gax.Retryer {
+		originalRetryer := originalRetryFactory()
+		if originalRetryer == nil {
+			return nil
+		}
+
+		return wrapRetryFn(func(err error) (time.Duration, bool) {
+			if _, found := opt.codes[status.Code(err)]; found {
+				return 0, false
 			}
 			return originalRetryer.Retry(err)
 		})

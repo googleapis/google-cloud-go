@@ -196,6 +196,16 @@ func (c *locationAwareSpannerClient) resourceExhaustedMarker(ep channelEndpoint,
 	}
 }
 
+func (c *locationAwareSpannerClient) reroutedUnaryCallOptions(base []gax.CallOption, logicalRequestKey string, attempt uint32, mark func(error)) []gax.CallOption {
+	opts := append([]gax.CallOption{}, base...)
+	if logicalRequestKey != "" && attempt > 1 {
+		opts = append(opts, logicalRequestIDWrap{logicalKey: logicalRequestKey}.withNextRetryAttempt(attempt))
+	}
+	opts = appendResourceExhaustedMarkerOptions(opts, mark, false)
+	opts = append(opts, newSuppressRetryCodesOption(codes.ResourceExhausted))
+	return opts
+}
+
 func (c *locationAwareSpannerClient) recordRouteSelectionTrace(ctx context.Context, method string, ep channelEndpoint, usedDefaultEndpoint bool, details routeSelectionDetails) {
 	endpointAddr := details.selectedEndpoint
 	if endpointAddr == "" && ep != nil {
@@ -358,96 +368,181 @@ func (c *locationAwareSpannerClient) BatchWrite(ctx context.Context, req *spanne
 // --- Routed RPCs ---
 
 func (c *locationAwareSpannerClient) StreamingRead(ctx context.Context, req *spannerpb.ReadRequest, opts ...gax.CallOption) (spannerpb.Spanner_StreamingReadClient, error) {
-	logicalRequestKey, excludedEndpoints := c.excludedEndpointsForCall(opts)
-	ep, details := c.router.prepareReadRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
-	markResourceExhausted := c.resourceExhaustedMarker(ep, logicalRequestKey)
-	client := c.clientForEndpoint(ep)
-	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/StreamingRead", ep, client == c.defaultClient, details)
-	stream, err := client.StreamingRead(ctx, req, appendResourceExhaustedMarkerOptions(opts, markResourceExhausted, true)...)
-	if err != nil {
+	logicalRequestKey, baseExcluded := c.excludedEndpointsForCall(opts)
+	attemptExcluded := make(map[string]struct{})
+	for attempt := uint32(1); ; attempt++ {
+		currentOpts := c.reroutedUnaryCallOptions(opts, logicalRequestKey, attempt, nil)
+		_, dynamicExcluded := c.excludedEndpointsForCall(currentOpts)
+		excludedEndpoints := func(address string) bool {
+			if dynamicExcluded(address) || baseExcluded(address) {
+				return true
+			}
+			_, ok := attemptExcluded[address]
+			return ok
+		}
+		ep, details := c.router.prepareReadRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
+		markResourceExhausted := c.resourceExhaustedMarker(ep, logicalRequestKey)
+		currentOpts = c.reroutedUnaryCallOptions(opts, logicalRequestKey, attempt, markResourceExhausted)
+		client := c.clientForEndpoint(ep)
+		usedDefaultEndpoint := client == c.defaultClient
+		c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/StreamingRead", ep, usedDefaultEndpoint, details)
+		stream, err := client.StreamingRead(ctx, req, currentOpts...)
+		if err == nil {
+			isReadOnlyBegin, readOnlyStrong := readOnlyBeginFromSelector(req.GetTransaction())
+			return newAffinityTrackingStream(
+				stream,
+				c.router,
+				c.affinityTrackingEndpoint(ep),
+				isReadOnlyBegin,
+				readOnlyStrong,
+				isReadWriteBeginFromSelector(req.GetTransaction()),
+				nil,
+				markResourceExhausted,
+			), nil
+		}
 		markResourceExhausted(err)
-		return nil, err
+		if status.Code(err) != codes.ResourceExhausted || ep == nil || usedDefaultEndpoint {
+			return nil, err
+		}
+		attemptExcluded[ep.Address()] = struct{}{}
 	}
-	isReadOnlyBegin, readOnlyStrong := readOnlyBeginFromSelector(req.GetTransaction())
-	return newAffinityTrackingStream(
-		stream,
-		c.router,
-		c.affinityTrackingEndpoint(ep),
-		isReadOnlyBegin,
-		readOnlyStrong,
-		isReadWriteBeginFromSelector(req.GetTransaction()),
-		nil,
-		markResourceExhausted,
-	), nil
 }
 
 func (c *locationAwareSpannerClient) Read(ctx context.Context, req *spannerpb.ReadRequest, opts ...gax.CallOption) (*spannerpb.ResultSet, error) {
-	logicalRequestKey, excludedEndpoints := c.excludedEndpointsForCall(opts)
-	ep, details := c.router.prepareReadRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
-	markResourceExhausted := c.resourceExhaustedMarker(ep, logicalRequestKey)
-	client := c.clientForEndpoint(ep)
-	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/Read", ep, client == c.defaultClient, details)
-	resp, err := client.Read(ctx, req, appendResourceExhaustedMarkerOptions(opts, markResourceExhausted, true)...)
-	if err != nil {
+	logicalRequestKey, baseExcluded := c.excludedEndpointsForCall(opts)
+	attemptExcluded := make(map[string]struct{})
+	for attempt := uint32(1); ; attempt++ {
+		currentOpts := c.reroutedUnaryCallOptions(opts, logicalRequestKey, attempt, nil)
+		_, dynamicExcluded := c.excludedEndpointsForCall(currentOpts)
+		excludedEndpoints := func(address string) bool {
+			if dynamicExcluded(address) || baseExcluded(address) {
+				return true
+			}
+			_, ok := attemptExcluded[address]
+			return ok
+		}
+		ep, details := c.router.prepareReadRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
+		markResourceExhausted := c.resourceExhaustedMarker(ep, logicalRequestKey)
+		currentOpts = c.reroutedUnaryCallOptions(opts, logicalRequestKey, attempt, markResourceExhausted)
+		client := c.clientForEndpoint(ep)
+		usedDefaultEndpoint := client == c.defaultClient
+		c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/Read", ep, usedDefaultEndpoint, details)
+		resp, err := client.Read(ctx, req, currentOpts...)
+		if err == nil {
+			c.observeReadResponse(req, resp, ep)
+			return resp, nil
+		}
 		markResourceExhausted(err)
-		return nil, err
+		if status.Code(err) != codes.ResourceExhausted || ep == nil || usedDefaultEndpoint {
+			return nil, err
+		}
+		attemptExcluded[ep.Address()] = struct{}{}
 	}
-	c.observeReadResponse(req, resp, ep)
-	return resp, nil
 }
 
 func (c *locationAwareSpannerClient) ExecuteStreamingSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (spannerpb.Spanner_ExecuteStreamingSqlClient, error) {
-	logicalRequestKey, excludedEndpoints := c.excludedEndpointsForCall(opts)
-	ep, details := c.router.prepareExecuteSQLRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
-	markResourceExhausted := c.resourceExhaustedMarker(ep, logicalRequestKey)
-	client := c.clientForEndpoint(ep)
-	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/ExecuteStreamingSql", ep, client == c.defaultClient, details)
-	stream, err := client.ExecuteStreamingSql(ctx, req, appendResourceExhaustedMarkerOptions(opts, markResourceExhausted, true)...)
-	if err != nil {
+	logicalRequestKey, baseExcluded := c.excludedEndpointsForCall(opts)
+	attemptExcluded := make(map[string]struct{})
+	for attempt := uint32(1); ; attempt++ {
+		currentOpts := c.reroutedUnaryCallOptions(opts, logicalRequestKey, attempt, nil)
+		_, dynamicExcluded := c.excludedEndpointsForCall(currentOpts)
+		excludedEndpoints := func(address string) bool {
+			if dynamicExcluded(address) || baseExcluded(address) {
+				return true
+			}
+			_, ok := attemptExcluded[address]
+			return ok
+		}
+		ep, details := c.router.prepareExecuteSQLRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
+		markResourceExhausted := c.resourceExhaustedMarker(ep, logicalRequestKey)
+		currentOpts = c.reroutedUnaryCallOptions(opts, logicalRequestKey, attempt, markResourceExhausted)
+		client := c.clientForEndpoint(ep)
+		usedDefaultEndpoint := client == c.defaultClient
+		c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/ExecuteStreamingSql", ep, usedDefaultEndpoint, details)
+		stream, err := client.ExecuteStreamingSql(ctx, req, currentOpts...)
+		if err == nil {
+			isReadOnlyBegin, readOnlyStrong := readOnlyBeginFromSelector(req.GetTransaction())
+			return newAffinityTrackingStream(
+				stream,
+				c.router,
+				c.affinityTrackingEndpoint(ep),
+				isReadOnlyBegin,
+				readOnlyStrong,
+				isReadWriteBeginFromSelector(req.GetTransaction()),
+				nil,
+				markResourceExhausted,
+			), nil
+		}
 		markResourceExhausted(err)
-		return nil, err
+		if status.Code(err) != codes.ResourceExhausted || ep == nil || usedDefaultEndpoint {
+			return nil, err
+		}
+		attemptExcluded[ep.Address()] = struct{}{}
 	}
-	isReadOnlyBegin, readOnlyStrong := readOnlyBeginFromSelector(req.GetTransaction())
-	return newAffinityTrackingStream(
-		stream,
-		c.router,
-		c.affinityTrackingEndpoint(ep),
-		isReadOnlyBegin,
-		readOnlyStrong,
-		isReadWriteBeginFromSelector(req.GetTransaction()),
-		nil,
-		markResourceExhausted,
-	), nil
 }
 
 func (c *locationAwareSpannerClient) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (*spannerpb.ResultSet, error) {
-	logicalRequestKey, excludedEndpoints := c.excludedEndpointsForCall(opts)
-	ep, details := c.router.prepareExecuteSQLRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
-	markResourceExhausted := c.resourceExhaustedMarker(ep, logicalRequestKey)
-	client := c.clientForEndpoint(ep)
-	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/ExecuteSql", ep, client == c.defaultClient, details)
-	resp, err := client.ExecuteSql(ctx, req, appendResourceExhaustedMarkerOptions(opts, markResourceExhausted, true)...)
-	if err != nil {
+	logicalRequestKey, baseExcluded := c.excludedEndpointsForCall(opts)
+	attemptExcluded := make(map[string]struct{})
+	for attempt := uint32(1); ; attempt++ {
+		currentOpts := c.reroutedUnaryCallOptions(opts, logicalRequestKey, attempt, nil)
+		_, dynamicExcluded := c.excludedEndpointsForCall(currentOpts)
+		excludedEndpoints := func(address string) bool {
+			if dynamicExcluded(address) || baseExcluded(address) {
+				return true
+			}
+			_, ok := attemptExcluded[address]
+			return ok
+		}
+		ep, details := c.router.prepareExecuteSQLRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
+		markResourceExhausted := c.resourceExhaustedMarker(ep, logicalRequestKey)
+		currentOpts = c.reroutedUnaryCallOptions(opts, logicalRequestKey, attempt, markResourceExhausted)
+		client := c.clientForEndpoint(ep)
+		usedDefaultEndpoint := client == c.defaultClient
+		c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/ExecuteSql", ep, usedDefaultEndpoint, details)
+		resp, err := client.ExecuteSql(ctx, req, currentOpts...)
+		if err == nil {
+			c.observeExecuteSQLResponse(req, resp, ep)
+			return resp, nil
+		}
 		markResourceExhausted(err)
-		return nil, err
+		if status.Code(err) != codes.ResourceExhausted || ep == nil || usedDefaultEndpoint {
+			return nil, err
+		}
+		attemptExcluded[ep.Address()] = struct{}{}
 	}
-	c.observeExecuteSQLResponse(req, resp, ep)
-	return resp, nil
 }
 
 func (c *locationAwareSpannerClient) BeginTransaction(ctx context.Context, req *spannerpb.BeginTransactionRequest, opts ...gax.CallOption) (*spannerpb.Transaction, error) {
-	logicalRequestKey, excludedEndpoints := c.excludedEndpointsForCall(opts)
-	ep, details := c.router.prepareBeginTransactionRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
-	markResourceExhausted := c.resourceExhaustedMarker(ep, logicalRequestKey)
-	client := c.clientForEndpoint(ep)
-	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/BeginTransaction", ep, client == c.defaultClient, details)
-	resp, err := client.BeginTransaction(ctx, req, appendResourceExhaustedMarkerOptions(opts, markResourceExhausted, true)...)
-	if err != nil {
+	logicalRequestKey, baseExcluded := c.excludedEndpointsForCall(opts)
+	attemptExcluded := make(map[string]struct{})
+	for attempt := uint32(1); ; attempt++ {
+		currentOpts := c.reroutedUnaryCallOptions(opts, logicalRequestKey, attempt, nil)
+		_, dynamicExcluded := c.excludedEndpointsForCall(currentOpts)
+		excludedEndpoints := func(address string) bool {
+			if dynamicExcluded(address) || baseExcluded(address) {
+				return true
+			}
+			_, ok := attemptExcluded[address]
+			return ok
+		}
+		ep, details := c.router.prepareBeginTransactionRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
+		markResourceExhausted := c.resourceExhaustedMarker(ep, logicalRequestKey)
+		currentOpts = c.reroutedUnaryCallOptions(opts, logicalRequestKey, attempt, markResourceExhausted)
+		client := c.clientForEndpoint(ep)
+		usedDefaultEndpoint := client == c.defaultClient
+		c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/BeginTransaction", ep, usedDefaultEndpoint, details)
+		resp, err := client.BeginTransaction(ctx, req, currentOpts...)
+		if err == nil {
+			c.observeBeginTransactionResponse(req, resp, ep)
+			return resp, nil
+		}
 		markResourceExhausted(err)
-		return nil, err
+		if status.Code(err) != codes.ResourceExhausted || ep == nil || usedDefaultEndpoint {
+			return nil, err
+		}
+		attemptExcluded[ep.Address()] = struct{}{}
 	}
-	c.observeBeginTransactionResponse(req, resp, ep)
-	return resp, nil
 }
 
 // --- Affinity RPCs ---

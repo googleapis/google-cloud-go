@@ -744,7 +744,7 @@ func waitForLocationAwareEndpointHealthy(t *testing.T, client *Client, address s
 	})
 }
 
-func TestLocationAwareExecuteSql_RetriesViaGAXAndMarksCooldownScopes(t *testing.T) {
+func TestLocationAwareExecuteSql_ReroutesToNextReplicaAndMarksCooldownScopes(t *testing.T) {
 	t.Parallel()
 
 	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
@@ -823,11 +823,11 @@ func TestLocationAwareExecuteSql_RetriesViaGAXAndMarksCooldownScopes(t *testing.
 
 	replicaARequests := harness.Replicas[0].Requests(MethodExecuteSql)
 	replicaBRequests := harness.Replicas[1].Requests(MethodExecuteSql)
-	if got, want := len(replicaARequests), 2; got != want {
+	if got, want := len(replicaARequests), 1; got != want {
 		t.Fatalf("replica A ExecuteSql request count = %d, want %d", got, want)
 	}
-	if got := len(replicaBRequests); got != 0 {
-		t.Fatalf("replica B ExecuteSql request count = %d, want 0", got)
+	if got, want := len(replicaBRequests), 1; got != want {
+		t.Fatalf("replica B ExecuteSql request count = %d, want %d", got, want)
 	}
 	replicaAReq, ok := replicaARequests[0].(*sppb.ExecuteSqlRequest)
 	if !ok {
@@ -841,12 +841,12 @@ func TestLocationAwareExecuteSql_RetriesViaGAXAndMarksCooldownScopes(t *testing.
 		t.Fatalf("expected routed address %q to enter overload cooldown after RESOURCE_EXHAUSTED", harness.ReplicaAddresses[0])
 	}
 	excluded := lac.excludedEndpoints.consume(logicalRequestKey)
-	if !excluded(harness.ReplicaAddresses[0]) {
-		t.Fatalf("expected routed address %q to be excluded for the logical request", harness.ReplicaAddresses[0])
+	if excluded != nil && excluded(harness.ReplicaAddresses[0]) {
+		t.Fatalf("expected routed address %q exclusion to be consumed by same-request reroute", harness.ReplicaAddresses[0])
 	}
 }
 
-func TestLocationAwareExecuteStreamingSql_RetryUsesExcludedEndpointOnNextCall(t *testing.T) {
+func TestLocationAwareExecuteStreamingSql_NextCallSkipsExcludedEndpoint(t *testing.T) {
 	t.Parallel()
 
 	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
@@ -959,7 +959,7 @@ func TestLocationAwareExecuteStreamingSql_RetryUsesExcludedEndpointOnNextCall(t 
 	}
 }
 
-func TestClient_Single_StreamingReadReturnsResourceExhaustedForBypassTraffic(t *testing.T) {
+func TestClient_Single_StreamingReadReroutesOnResourceExhaustedForBypassTraffic(t *testing.T) {
 	t.Parallel()
 
 	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
@@ -1579,10 +1579,10 @@ func TestLocationAwareExecuteSql_CooldownRoutesToNextReplicaAndEndpointBecomesEl
 
 	replicaARequests := harness.Replicas[0].Requests(MethodExecuteSql)
 	replicaBRequests := harness.Replicas[1].Requests(MethodExecuteSql)
-	if got, want := len(replicaARequests), 2; got != want {
+	if got, want := len(replicaARequests), 1; got != want {
 		t.Fatalf("replica A ExecuteSql request count after cooldown reroute = %d, want %d", got, want)
 	}
-	if got, want := len(replicaBRequests), 1; got != want {
+	if got, want := len(replicaBRequests), 2; got != want {
 		t.Fatalf("replica B ExecuteSql request count after cooldown reroute = %d, want %d", got, want)
 	}
 
@@ -1600,10 +1600,10 @@ func TestLocationAwareExecuteSql_CooldownRoutesToNextReplicaAndEndpointBecomesEl
 
 	replicaARequests = harness.Replicas[0].Requests(MethodExecuteSql)
 	replicaBRequests = harness.Replicas[1].Requests(MethodExecuteSql)
-	if got, want := len(replicaARequests), 3; got != want {
+	if got, want := len(replicaARequests), 2; got != want {
 		t.Fatalf("replica A ExecuteSql request count after cooldown expiry = %d, want %d", got, want)
 	}
-	if got, want := len(replicaBRequests), 1; got != want {
+	if got, want := len(replicaBRequests), 2; got != want {
 		t.Fatalf("replica B ExecuteSql request count after cooldown expiry = %d, want %d", got, want)
 	}
 }
@@ -1695,13 +1695,13 @@ func TestLocationAwareExecuteSql_CooldownFallsBackToDefaultWhenAllRoutedReplicas
 	replicaARequests := harness.Replicas[0].Requests(MethodExecuteSql)
 	replicaBRequests := harness.Replicas[1].Requests(MethodExecuteSql)
 	defaultRequests := harness.DefaultReplica.Requests(MethodExecuteSql)
-	if got, want := len(replicaARequests), 2; got != want {
+	if got, want := len(replicaARequests), 1; got != want {
 		t.Fatalf("replica A ExecuteSql request count = %d, want %d", got, want)
 	}
-	if got, want := len(replicaBRequests), 2; got != want {
+	if got, want := len(replicaBRequests), 1; got != want {
 		t.Fatalf("replica B ExecuteSql request count = %d, want %d", got, want)
 	}
-	if got, want := len(defaultRequests), 1; got != want {
+	if got, want := len(defaultRequests), 3; got != want {
 		t.Fatalf("default ExecuteSql request count = %d, want %d", got, want)
 	}
 }
@@ -1826,7 +1826,7 @@ func TestLocationAwareExecuteStreamingSql_CooldownRoutesToNextReplicaAndEndpoint
 	}
 }
 
-func TestLocationAwareRead_RetriesViaGAXAndMarksCooldownScopes(t *testing.T) {
+func TestLocationAwareRead_ReroutesToNextReplicaAndMarksCooldownScopes(t *testing.T) {
 	t.Parallel()
 
 	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
@@ -1899,11 +1899,11 @@ func TestLocationAwareRead_RetriesViaGAXAndMarksCooldownScopes(t *testing.T) {
 
 	replicaARequests := harness.Replicas[0].Requests(MethodRead)
 	replicaBRequests := harness.Replicas[1].Requests(MethodRead)
-	if got, want := len(replicaARequests), 2; got != want {
+	if got, want := len(replicaARequests), 1; got != want {
 		t.Fatalf("replica A Read request count = %d, want %d", got, want)
 	}
-	if got := len(replicaBRequests); got != 0 {
-		t.Fatalf("replica B Read request count = %d, want 0", got)
+	if got, want := len(replicaBRequests), 1; got != want {
+		t.Fatalf("replica B Read request count = %d, want %d", got, want)
 	}
 	replicaAReq, ok := replicaARequests[0].(*sppb.ReadRequest)
 	if !ok {
@@ -1917,12 +1917,12 @@ func TestLocationAwareRead_RetriesViaGAXAndMarksCooldownScopes(t *testing.T) {
 		t.Fatalf("expected routed address %q to enter overload cooldown after RESOURCE_EXHAUSTED", harness.ReplicaAddresses[0])
 	}
 	excluded := lac.excludedEndpoints.consume(logicalRequestKey)
-	if !excluded(harness.ReplicaAddresses[0]) {
-		t.Fatalf("expected routed address %q to be excluded for the logical request", harness.ReplicaAddresses[0])
+	if excluded != nil && excluded(harness.ReplicaAddresses[0]) {
+		t.Fatalf("expected routed address %q exclusion to be consumed by same-request reroute", harness.ReplicaAddresses[0])
 	}
 }
 
-func TestLocationAwareBeginTransaction_RetriesViaGAXAndMarksCooldownScopes(t *testing.T) {
+func TestLocationAwareBeginTransaction_ReroutesToNextReplicaAndMarksCooldownScopes(t *testing.T) {
 	t.Parallel()
 
 	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
@@ -2005,11 +2005,11 @@ func TestLocationAwareBeginTransaction_RetriesViaGAXAndMarksCooldownScopes(t *te
 
 	replicaARequests := harness.Replicas[0].Requests(MethodBeginTransaction)
 	replicaBRequests := harness.Replicas[1].Requests(MethodBeginTransaction)
-	if got, want := len(replicaARequests), 2; got != want {
+	if got, want := len(replicaARequests), 1; got != want {
 		t.Fatalf("replica A BeginTransaction request count = %d, want %d", got, want)
 	}
-	if got := len(replicaBRequests); got != 0 {
-		t.Fatalf("replica B BeginTransaction request count = %d, want 0", got)
+	if got, want := len(replicaBRequests), 1; got != want {
+		t.Fatalf("replica B BeginTransaction request count = %d, want %d", got, want)
 	}
 	replicaAReq, ok := replicaARequests[0].(*sppb.BeginTransactionRequest)
 	if !ok {
@@ -2023,8 +2023,8 @@ func TestLocationAwareBeginTransaction_RetriesViaGAXAndMarksCooldownScopes(t *te
 		t.Fatalf("expected routed address %q to enter overload cooldown after RESOURCE_EXHAUSTED", harness.ReplicaAddresses[0])
 	}
 	excluded := lac.excludedEndpoints.consume(logicalRequestKey)
-	if !excluded(harness.ReplicaAddresses[0]) {
-		t.Fatalf("expected routed address %q to be excluded for the logical request", harness.ReplicaAddresses[0])
+	if excluded != nil && excluded(harness.ReplicaAddresses[0]) {
+		t.Fatalf("expected routed address %q exclusion to be consumed by same-request reroute", harness.ReplicaAddresses[0])
 	}
 }
 

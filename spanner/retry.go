@@ -83,8 +83,13 @@ func (r *spannerRetryer) Retry(err error) (time.Duration, bool) {
 	}
 
 	serverDelay, hasServerDelay := ExtractRetryDelay(err)
-	// Retry ResourceExhausted error only if there's a server delay in the trailer
-	if errCode == codes.ResourceExhausted && !r.allowResourceExhaustedWithoutRetryInfo && (!hasServerDelay || serverDelay <= 0) {
+	// Location-aware retries move to a different replica immediately after marking
+	// cooldown/exclusion, so they should not sleep before retrying.
+	if errCode == codes.ResourceExhausted && r.allowResourceExhaustedWithoutRetryInfo {
+		return 0, true
+	}
+	// Retry ResourceExhausted error only if there's a server delay in the trailer.
+	if errCode == codes.ResourceExhausted && (!hasServerDelay || serverDelay <= 0) {
 		return 0, false
 	}
 
