@@ -1116,7 +1116,7 @@ func TestClient_Single_StreamingReadCooldownSkipsReplicaOnNextRequestForBypassTr
 	if err != nil {
 		t.Fatalf("takeMultiplexed() failed: %v", err)
 	}
-	lac, ok := sh.getClient().(*locationAwareSpannerClient)
+	_, ok := sh.getClient().(*locationAwareSpannerClient)
 	if !ok {
 		sh.recycle()
 		t.Fatalf("session client type = %T, want *locationAwareSpannerClient", sh.getClient())
@@ -1125,10 +1125,7 @@ func TestClient_Single_StreamingReadCooldownSkipsReplicaOnNextRequestForBypassTr
 	cooldownTracker := newEndpointOverloadCooldownTrackerWithOptions(time.Minute, time.Minute, 10*time.Minute, clock.Now, func(n int64) int64 {
 		return n - 1
 	})
-	client.sm.mu.Lock()
-	client.sm.endpointCooldowns = cooldownTracker
-	client.sm.mu.Unlock()
-	lac.endpointCooldowns = cooldownTracker
+	client.sm.setLocationAwareState(client.locationRouter, client.sm.excludedEndpoints, cooldownTracker)
 	sh.recycle()
 
 	iter := client.Single().Read(context.Background(), "Albums", KeySets(Key{"b"}), []string{"SingerId", "AlbumId", "AlbumTitle"})

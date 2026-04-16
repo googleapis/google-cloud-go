@@ -680,9 +680,11 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	}
 
 	if locationRouter != nil {
-		sp.locationRouter = locationRouter
-		sp.excludedEndpoints = newLogicalRequestEndpointExclusionCache()
-		sp.endpointCooldowns = newEndpointOverloadCooldownTracker()
+		sp.setLocationAwareState(
+			locationRouter,
+			newLogicalRequestEndpointExclusionCache(),
+			newEndpointOverloadCooldownTracker(),
+		)
 	}
 
 	if enableLogClientOptions() {

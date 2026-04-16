@@ -498,6 +498,33 @@ func (p *sessionManager) getLocationAwareClient(idx int, defaultClient spannerCl
 	return lac
 }
 
+func (p *sessionManager) setLocationAwareState(router *locationRouter, excluded *logicalRequestEndpointExclusionCache, cooldowns *endpointOverloadCooldownTracker) {
+	if p == nil {
+		return
+	}
+
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	p.locationRouter = router
+	p.excludedEndpoints = excluded
+	p.endpointCooldowns = cooldowns
+	for _, lac := range p.locationAwareClientPool {
+		if lac == nil {
+			continue
+		}
+		if router != nil {
+			lac.router = router
+		}
+		if excluded != nil {
+			lac.excludedEndpoints = excluded
+		}
+		if cooldowns != nil {
+			lac.endpointCooldowns = cooldowns
+		}
+	}
+}
+
 // errGetSessionTimeout returns error for context timeout during session acquisition.
 func (p *sessionManager) errGetSessionTimeout(ctx context.Context) error {
 	var code codes.Code
@@ -590,8 +617,11 @@ func (p *sessionManager) multiplexSessionWorker() {
 			}
 		}
 
-		if p.endpointCooldowns != nil {
-			p.endpointCooldowns.pruneStaleEntries(2 * p.endpointCooldowns.resetAfter)
+		p.mu.Lock()
+		cooldowns := p.endpointCooldowns
+		p.mu.Unlock()
+		if cooldowns != nil {
+			cooldowns.pruneStaleEntries(2 * cooldowns.resetAfter)
 		}
 
 		// Sleep for a while to avoid burning CPU.
