@@ -1444,6 +1444,7 @@ libraries:
           path: google/cloud/managedkafka/schemaregistry/v1
   - name: maps
     version: 1.33.0
+    title_override: "Google Maps Platform"
     apis:
       - path: google/maps/geocode/v4
       - path: google/maps/routing/v2
