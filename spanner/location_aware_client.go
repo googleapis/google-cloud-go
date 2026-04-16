@@ -117,7 +117,9 @@ func (c *locationAwareSpannerClient) excludedEndpointsForCall(opts []gax.CallOpt
 		}
 	}
 
-	return logicalRequestKey, combineEndpointExcluderFuncs(requestScopedExcluded, cooldownExcluded)
+	return logicalRequestKey, func(address string) bool {
+		return requestScopedExcluded(address) || cooldownExcluded(address)
+	}
 }
 
 func (c *locationAwareSpannerClient) maybeExcludeEndpointOnNextCall(ep channelEndpoint, logicalRequestKey string, err error) {
@@ -200,17 +202,6 @@ func appendUnaryRetryOverrideOptions(base []gax.CallOption, requestID requestIDA
 	}
 	opts = append(opts, newSuppressRetryCodesOption(codes.ResourceExhausted))
 	return opts
-}
-
-func combineEndpointExcluderFuncs(excluders ...endpointExcluder) endpointExcluder {
-	return func(address string) bool {
-		for _, excluded := range excluders {
-			if isEndpointExcluded(excluded, address) {
-				return true
-			}
-		}
-		return false
-	}
 }
 
 func combineEndpointExcluders(base endpointExcluder, excludedAddress string) endpointExcluder {

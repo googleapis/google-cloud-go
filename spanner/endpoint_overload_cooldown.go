@@ -23,7 +23,7 @@ import (
 )
 
 const (
-	defaultEndpointOverloadInitialCooldown = 25 * time.Second
+	defaultEndpointOverloadInitialCooldown = 10 * time.Second
 	defaultEndpointOverloadMaxCooldown     = time.Minute
 	defaultEndpointOverloadResetAfter      = 10 * time.Minute
 )
@@ -99,19 +99,33 @@ func (t *endpointOverloadCooldownTracker) isCoolingDown(address string) bool {
 	now := t.now()
 
 	t.mu.RLock()
-	defer t.mu.RUnlock()
-
 	state, ok := t.entries[address]
+	t.mu.RUnlock()
 	if !ok {
 		return false
 	}
-	if !state.cooldownUntil.After(now) {
-		if now.Sub(state.lastFailureAt) >= t.resetAfter {
-			delete(t.entries, address)
-		}
+	if state.cooldownUntil.After(now) {
+		return true
+	}
+
+	if now.Sub(state.lastFailureAt) < t.resetAfter {
 		return false
 	}
-	return true
+
+	t.mu.Lock()
+	defer t.mu.Unlock()
+
+	state, ok = t.entries[address]
+	if !ok {
+		return false
+	}
+	if state.cooldownUntil.After(now) {
+		return true
+	}
+	if now.Sub(state.lastFailureAt) >= t.resetAfter {
+		delete(t.entries, address)
+	}
+	return false
 }
 
 func (t *endpointOverloadCooldownTracker) recordFailure(address string) {
@@ -144,4 +158,24 @@ func (t *endpointOverloadCooldownTracker) cooldownForFailures(failures int) time
 		cooldown *= 2
 	}
 	return time.Duration(t.randInt63n(int64(cooldown) + 1))
+}
+
+func (t *endpointOverloadCooldownTracker) pruneStaleEntries(maxAge time.Duration) {
+	if t == nil || maxAge <= 0 {
+		return
+	}
+
+	now := t.now()
+
+	t.mu.Lock()
+	defer t.mu.Unlock()
+
+	for address, state := range t.entries {
+		if state.cooldownUntil.After(now) {
+			continue
+		}
+		if now.Sub(state.lastFailureAt) >= maxAge {
+			delete(t.entries, address)
+		}
+	}
 }

@@ -127,3 +127,54 @@ func TestEndpointOverloadCooldownTracker_ResetsPenaltyOnlyAfterQuietWindow(t *te
 		t.Fatalf("expected quiet window to reset failure count, got %d", third.consecutiveFailures)
 	}
 }
+
+func TestEndpointOverloadCooldownTracker_PruneStaleEntriesClearsUntouchedExpiredEntries(t *testing.T) {
+	clock := newLifecycleTestClock(time.Unix(100, 0))
+	tracker := newEndpointOverloadCooldownTrackerWithOptions(
+		time.Minute,
+		time.Minute,
+		10*time.Minute,
+		clock.Now,
+		func(n int64) int64 {
+			return n - 1
+		},
+	)
+
+	tracker.recordFailure("replica-a:443")
+
+	clock.Advance(15 * time.Minute)
+	tracker.pruneStaleEntries(20 * time.Minute)
+	if _, ok := tracker.entries["replica-a:443"]; !ok {
+		t.Fatal("expected entry to be retained before background cleanup window passes")
+	}
+
+	clock.Advance(5 * time.Minute)
+	tracker.pruneStaleEntries(20 * time.Minute)
+	if _, ok := tracker.entries["replica-a:443"]; ok {
+		t.Fatal("expected stale entry to be pruned after background cleanup window passes")
+	}
+}
+
+func TestEndpointOverloadCooldownTracker_PruneStaleEntriesKeepsActiveCooldowns(t *testing.T) {
+	clock := newLifecycleTestClock(time.Unix(100, 0))
+	tracker := newEndpointOverloadCooldownTrackerWithOptions(
+		30*time.Minute,
+		30*time.Minute,
+		10*time.Minute,
+		clock.Now,
+		func(n int64) int64 {
+			return n - 1
+		},
+	)
+
+	tracker.recordFailure("replica-a:443")
+
+	clock.Advance(25 * time.Minute)
+	tracker.pruneStaleEntries(20 * time.Minute)
+	if _, ok := tracker.entries["replica-a:443"]; !ok {
+		t.Fatal("expected active cooldown entry to be retained during background cleanup")
+	}
+	if !tracker.isCoolingDown("replica-a:443") {
+		t.Fatal("expected endpoint to remain in cooldown while cooldown window is active")
+	}
+}

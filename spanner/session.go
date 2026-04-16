@@ -590,6 +590,10 @@ func (p *sessionManager) multiplexSessionWorker() {
 			}
 		}
 
+		if p.endpointCooldowns != nil {
+			p.endpointCooldowns.pruneStaleEntries(2 * p.endpointCooldowns.resetAfter)
+		}
+
 		// Sleep for a while to avoid burning CPU.
 		select {
 		case <-time.After(p.MultiplexSessionCheckInterval):
