@@ -93,6 +93,16 @@ func (s *HookedUnaryReplicaServer) ExecuteStreamingSql(req *spannerpb.ExecuteSql
 	return s.InMemSpannerServer.ExecuteStreamingSql(req, stream)
 }
 
+// StreamingRead records and optionally injects an error before delegating to
+// the shared backend.
+func (s *HookedUnaryReplicaServer) StreamingRead(req *spannerpb.ReadRequest, stream spannerpb.Spanner_StreamingReadServer) error {
+	s.recordRequest(MethodStreamingRead, req)
+	if err := s.nextError(MethodStreamingRead); err != nil {
+		return err
+	}
+	return s.InMemSpannerServer.StreamingRead(req, stream)
+}
+
 // Read records and optionally injects an error before delegating to the shared
 // backend.
 func (s *HookedUnaryReplicaServer) Read(ctx context.Context, req *spannerpb.ReadRequest) (*spannerpb.ResultSet, error) {

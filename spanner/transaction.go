@@ -363,6 +363,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 	} else {
 		setTransactionID = nil
 	}
+	allowResourceExhaustedWithoutRetryInfo := shouldAllowLocationAwareStreamingResourceExhaustedRetry(client)
 	return streamWithTransactionCallbacks(
 		contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader),
 		sh.session.logger,
@@ -410,6 +411,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		t.setTimestamp,
 		t.release,
 		asGRPCSpannerClient(client),
+		allowResourceExhaustedWithoutRetryInfo,
 	)
 }
 
@@ -720,6 +722,7 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 		setTransactionID = nil
 	}
 	client := sh.getClient()
+	allowResourceExhaustedWithoutRetryInfo := shouldAllowLocationAwareStreamingResourceExhaustedRetry(client)
 	return streamWithTransactionCallbacks(
 		contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader),
 		sh.session.logger,
@@ -760,7 +763,8 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 		t.updatePrecommitToken,
 		t.setTimestamp,
 		t.release,
-		asGRPCSpannerClient(client))
+		asGRPCSpannerClient(client),
+		allowResourceExhaustedWithoutRetryInfo)
 }
 
 func (t *txReadOnly) prepareExecuteSQL(ctx context.Context, stmt Statement, options QueryOptions) (*sppb.ExecuteSqlRequest, *sessionHandle, error) {

@@ -17,6 +17,7 @@ limitations under the License.
 package spanner
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -959,6 +960,563 @@ func TestLocationAwareExecuteStreamingSql_RetryUsesExcludedEndpointOnNextCall(t 
 	excluded := lac.excludedEndpoints.consume(logicalRequestKey)
 	if excluded != nil && excluded(harness.ReplicaAddresses[0]) {
 		t.Fatalf("expected routed address %q not to remain excluded after retry call consumed it", harness.ReplicaAddresses[0])
+	}
+}
+
+func TestClient_Single_StreamingReadRetryUsesNextReplicaForBypassTraffic(t *testing.T) {
+	t.Parallel()
+
+	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
+	defer teardown()
+	harness.Replicas[0].PutMethodErrors(MethodStreamingRead, serverErrorWithMinimalRetryDelay(codes.ResourceExhausted, "busy"))
+
+	client, err := makeClientWithConfig(
+		context.Background(),
+		"projects/p/instances/i/databases/d",
+		ClientConfig{
+			DisableNativeMetrics: true,
+			IsExperimentalHost:   true,
+		},
+		harness.DefaultAddress,
+		clientOpts...,
+	)
+	if err != nil {
+		t.Fatalf("makeClientWithConfig() failed: %v", err)
+	}
+	defer client.Close()
+
+	if client.locationRouter == nil {
+		t.Fatal("expected location router to be enabled")
+	}
+
+	client.locationRouter.finder.update(createReadRecipeCacheUpdate("Albums"))
+
+	kset, err := KeySets(Key{"b"}).keySetProto()
+	if err != nil {
+		t.Fatalf("keySetProto() failed: %v", err)
+	}
+	routeReq := &sppb.ReadRequest{
+		Table:   "Albums",
+		Columns: []string{"SingerId", "AlbumId", "AlbumTitle"},
+		KeySet:  kset,
+	}
+	client.locationRouter.finder.recipeCache.computeReadKeys(routeReq)
+	update := createRangeCacheUpdateForHint(routeReq.GetRoutingHint())
+	update.Group[0].Tablets[0].ServerAddress = harness.ReplicaAddresses[0]
+	update.Group[0].Tablets = append(update.Group[0].Tablets, &sppb.Tablet{
+		TabletUid:     12,
+		ServerAddress: harness.ReplicaAddresses[1],
+		Role:          sppb.Tablet_READ_WRITE,
+		Incarnation:   []byte("i2"),
+	})
+	client.locationRouter.finder.update(update)
+
+	waitForCondition(t, time.Second, func() bool {
+		prepared := proto.Clone(routeReq).(*sppb.ReadRequest)
+		endpoint := client.locationRouter.prepareReadRequest(context.Background(), prepared)
+		return endpoint != nil && endpoint.Address() == harness.ReplicaAddresses[0]
+	})
+	waitForLocationAwareEndpointHealthy(t, client, harness.ReplicaAddresses[1])
+
+	iter := client.Single().Read(context.Background(), "Albums", KeySets(Key{"b"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+	defer iter.Stop()
+
+	row, err := iter.Next()
+	if err != nil {
+		t.Fatalf("iter.Next() returned unexpected error: %v", err)
+	}
+	if row == nil {
+		t.Fatal("iter.Next() returned nil row")
+	}
+
+	replicaARequests := harness.Replicas[0].Requests(MethodStreamingRead)
+	replicaBRequests := harness.Replicas[1].Requests(MethodStreamingRead)
+	if got, want := len(replicaARequests), 1; got != want {
+		t.Fatalf("replica A StreamingRead request count = %d, want %d", got, want)
+	}
+	if got, want := len(replicaBRequests), 1; got != want {
+		t.Fatalf("replica B StreamingRead request count = %d, want %d", got, want)
+	}
+	if got := len(harness.DefaultReplica.Requests(MethodStreamingRead)); got != 0 {
+		t.Fatalf("default replica StreamingRead request count = %d, want 0", got)
+	}
+
+	replicaAReq, ok := replicaARequests[0].(*sppb.ReadRequest)
+	if !ok {
+		t.Fatalf("replica A request type = %T, want *spannerpb.ReadRequest", replicaARequests[0])
+	}
+	replicaBReq, ok := replicaBRequests[0].(*sppb.ReadRequest)
+	if !ok {
+		t.Fatalf("replica B request type = %T, want *spannerpb.ReadRequest", replicaBRequests[0])
+	}
+	if got := replicaAReq.GetResumeToken(); got != nil {
+		t.Fatalf("replica A resume token = %v, want nil on first attempt", got)
+	}
+	if got := replicaBReq.GetResumeToken(); got != nil {
+		t.Fatalf("replica B resume token = %v, want nil on retried stream-open after initial failure", got)
+	}
+}
+
+func TestClient_Single_StreamingReadCooldownSkipsReplicaOnNextRequestForBypassTraffic(t *testing.T) {
+	t.Parallel()
+
+	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
+	defer teardown()
+	harness.Replicas[0].PutMethodErrors(MethodStreamingRead, serverErrorWithMinimalRetryDelay(codes.ResourceExhausted, "busy"))
+
+	client, err := makeClientWithConfig(
+		context.Background(),
+		"projects/p/instances/i/databases/d",
+		ClientConfig{
+			DisableNativeMetrics: true,
+			IsExperimentalHost:   true,
+		},
+		harness.DefaultAddress,
+		clientOpts...,
+	)
+	if err != nil {
+		t.Fatalf("makeClientWithConfig() failed: %v", err)
+	}
+	defer client.Close()
+
+	if client.locationRouter == nil {
+		t.Fatal("expected location router to be enabled")
+	}
+
+	client.locationRouter.finder.update(createReadRecipeCacheUpdate("Albums"))
+
+	kset, err := KeySets(Key{"b"}).keySetProto()
+	if err != nil {
+		t.Fatalf("keySetProto() failed: %v", err)
+	}
+	routeReq := &sppb.ReadRequest{
+		Table:   "Albums",
+		Columns: []string{"SingerId", "AlbumId", "AlbumTitle"},
+		KeySet:  kset,
+	}
+	client.locationRouter.finder.recipeCache.computeReadKeys(routeReq)
+	update := createRangeCacheUpdateForHint(routeReq.GetRoutingHint())
+	update.Group[0].Tablets[0].ServerAddress = harness.ReplicaAddresses[0]
+	update.Group[0].Tablets = append(update.Group[0].Tablets, &sppb.Tablet{
+		TabletUid:     12,
+		ServerAddress: harness.ReplicaAddresses[1],
+		Role:          sppb.Tablet_READ_WRITE,
+		Incarnation:   []byte("i2"),
+	})
+	client.locationRouter.finder.update(update)
+
+	waitForCondition(t, time.Second, func() bool {
+		prepared := proto.Clone(routeReq).(*sppb.ReadRequest)
+		endpoint := client.locationRouter.prepareReadRequest(context.Background(), prepared)
+		return endpoint != nil && endpoint.Address() == harness.ReplicaAddresses[0]
+	})
+	waitForLocationAwareEndpointHealthy(t, client, harness.ReplicaAddresses[1])
+
+	sh, err := client.sm.takeMultiplexed(context.Background())
+	if err != nil {
+		t.Fatalf("takeMultiplexed() failed: %v", err)
+	}
+	lac, ok := sh.getClient().(*locationAwareSpannerClient)
+	if !ok {
+		sh.recycle()
+		t.Fatalf("session client type = %T, want *locationAwareSpannerClient", sh.getClient())
+	}
+	clock := newLifecycleTestClock(time.Unix(100, 0))
+	cooldownTracker := newEndpointOverloadCooldownTrackerWithOptions(time.Minute, time.Minute, 10*time.Minute, clock.Now, func(n int64) int64 {
+		return n - 1
+	})
+	client.sm.mu.Lock()
+	client.sm.endpointCooldowns = cooldownTracker
+	client.sm.mu.Unlock()
+	lac.endpointCooldowns = cooldownTracker
+	sh.recycle()
+
+	iter := client.Single().Read(context.Background(), "Albums", KeySets(Key{"b"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+	row, err := iter.Next()
+	if err != nil {
+		iter.Stop()
+		t.Fatalf("first iter.Next() returned unexpected error: %v", err)
+	}
+	if row == nil {
+		iter.Stop()
+		t.Fatal("first iter.Next() returned nil row")
+	}
+	iter.Stop()
+	if !cooldownTracker.isCoolingDown(harness.ReplicaAddresses[0]) {
+		t.Fatalf("expected routed address %q to enter cooldown", harness.ReplicaAddresses[0])
+	}
+
+	iter = client.Single().Read(context.Background(), "Albums", KeySets(Key{"b"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+	row, err = iter.Next()
+	if err != nil {
+		iter.Stop()
+		t.Fatalf("second iter.Next() returned unexpected error: %v", err)
+	}
+	if row == nil {
+		iter.Stop()
+		t.Fatal("second iter.Next() returned nil row")
+	}
+	iter.Stop()
+
+	replicaARequests := harness.Replicas[0].Requests(MethodStreamingRead)
+	replicaBRequests := harness.Replicas[1].Requests(MethodStreamingRead)
+	if got, want := len(replicaARequests), 1; got != want {
+		t.Fatalf("replica A StreamingRead request count = %d, want %d", got, want)
+	}
+	if got, want := len(replicaBRequests), 2; got != want {
+		t.Fatalf("replica B StreamingRead request count = %d, want %d", got, want)
+	}
+	if got := len(harness.DefaultReplica.Requests(MethodStreamingRead)); got != 0 {
+		t.Fatalf("default replica StreamingRead request count = %d, want 0", got)
+	}
+
+	replicaAReq, ok := replicaARequests[0].(*sppb.ReadRequest)
+	if !ok {
+		t.Fatalf("replica A request type = %T, want *spannerpb.ReadRequest", replicaARequests[0])
+	}
+	if got := replicaAReq.GetResumeToken(); got != nil {
+		t.Fatalf("replica A resume token = %v, want nil on failed stream-open attempt", got)
+	}
+	for i, req := range replicaBRequests {
+		readReq, ok := req.(*sppb.ReadRequest)
+		if !ok {
+			t.Fatalf("replica B request[%d] type = %T, want *spannerpb.ReadRequest", i, req)
+		}
+		if got := readReq.GetResumeToken(); got != nil {
+			t.Fatalf("replica B request[%d] resume token = %v, want nil", i, got)
+		}
+	}
+}
+
+func TestClient_LocationAwareWrapperReusedAcrossHandles(t *testing.T) {
+	t.Parallel()
+
+	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
+	defer teardown()
+	clientOpts = append(clientOpts, option.WithGRPCConnectionPool(1))
+
+	client, err := makeClientWithConfig(
+		context.Background(),
+		"projects/p/instances/i/databases/d",
+		ClientConfig{
+			DisableNativeMetrics: true,
+			IsExperimentalHost:   true,
+		},
+		harness.DefaultAddress,
+		clientOpts...,
+	)
+	if err != nil {
+		t.Fatalf("makeClientWithConfig() failed: %v", err)
+	}
+	defer client.Close()
+
+	sh1, err := client.sm.takeMultiplexed(context.Background())
+	if err != nil {
+		t.Fatalf("takeMultiplexed() first handle failed: %v", err)
+	}
+	defer sh1.recycle()
+	sh2, err := client.sm.takeMultiplexed(context.Background())
+	if err != nil {
+		t.Fatalf("takeMultiplexed() second handle failed: %v", err)
+	}
+	defer sh2.recycle()
+
+	lac1, ok := sh1.getClient().(*locationAwareSpannerClient)
+	if !ok {
+		t.Fatalf("first handle client type = %T, want *locationAwareSpannerClient", sh1.getClient())
+	}
+	lac2, ok := sh2.getClient().(*locationAwareSpannerClient)
+	if !ok {
+		t.Fatalf("second handle client type = %T, want *locationAwareSpannerClient", sh2.getClient())
+	}
+	if lac1 != lac2 {
+		t.Fatalf("expected location-aware wrapper to be reused across handles")
+	}
+	if lac1.endpointCooldowns != lac2.endpointCooldowns {
+		t.Fatalf("expected handles to share cooldown tracker")
+	}
+	if lac1.excludedEndpoints != lac2.excludedEndpoints {
+		t.Fatalf("expected handles to share exclusion cache")
+	}
+}
+
+func TestClient_Single_StreamingReadMidStreamRecvFailureWithoutRetryInfoUsesNextReplicaForBypassTraffic(t *testing.T) {
+	t.Parallel()
+
+	restore := setMaxBytesBetweenResumeTokens()
+	defer restore()
+
+	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
+	defer teardown()
+	harness.Backend.AddPartialResultSetError(
+		SelectSingerIDAlbumIDAlbumTitleFromAlbums,
+		PartialResultSetExecutionTime{
+			ResumeToken: EncodeResumeToken(2),
+			Err:         status.Error(codes.ResourceExhausted, "busy"),
+		},
+	)
+
+	client, err := makeClientWithConfig(
+		context.Background(),
+		"projects/p/instances/i/databases/d",
+		ClientConfig{
+			DisableNativeMetrics: true,
+			IsExperimentalHost:   true,
+		},
+		harness.DefaultAddress,
+		clientOpts...,
+	)
+	if err != nil {
+		t.Fatalf("makeClientWithConfig() failed: %v", err)
+	}
+	defer client.Close()
+
+	if client.locationRouter == nil {
+		t.Fatal("expected location router to be enabled")
+	}
+
+	client.locationRouter.finder.update(createReadRecipeCacheUpdate("Albums"))
+
+	kset, err := KeySets(Key{"b"}).keySetProto()
+	if err != nil {
+		t.Fatalf("keySetProto() failed: %v", err)
+	}
+	routeReq := &sppb.ReadRequest{
+		Table:   "Albums",
+		Columns: []string{"SingerId", "AlbumId", "AlbumTitle"},
+		KeySet:  kset,
+	}
+	client.locationRouter.finder.recipeCache.computeReadKeys(routeReq)
+	update := createRangeCacheUpdateForHint(routeReq.GetRoutingHint())
+	update.Group[0].Tablets[0].ServerAddress = harness.ReplicaAddresses[0]
+	update.Group[0].Tablets = append(update.Group[0].Tablets, &sppb.Tablet{
+		TabletUid:     12,
+		ServerAddress: harness.ReplicaAddresses[1],
+		Role:          sppb.Tablet_READ_WRITE,
+		Incarnation:   []byte("i2"),
+	})
+	client.locationRouter.finder.update(update)
+
+	waitForCondition(t, time.Second, func() bool {
+		prepared := proto.Clone(routeReq).(*sppb.ReadRequest)
+		endpoint := client.locationRouter.prepareReadRequest(context.Background(), prepared)
+		return endpoint != nil && endpoint.Address() == harness.ReplicaAddresses[0]
+	})
+	waitForLocationAwareEndpointHealthy(t, client, harness.ReplicaAddresses[1])
+
+	iter := client.Single().Read(context.Background(), "Albums", KeySets(Key{"b"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+	defer iter.Stop()
+
+	var rowCount int
+	for {
+		row, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatalf("iter.Next() returned unexpected error: %v", err)
+		}
+		if row == nil {
+			t.Fatal("iter.Next() returned nil row")
+		}
+		rowCount++
+	}
+	if got, want := rowCount, int(SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount); got != want {
+		t.Fatalf("row count = %d, want %d", got, want)
+	}
+
+	replicaARequests := harness.Replicas[0].Requests(MethodStreamingRead)
+	replicaBRequests := harness.Replicas[1].Requests(MethodStreamingRead)
+	if got, want := len(replicaARequests), 1; got != want {
+		t.Fatalf("replica A StreamingRead request count = %d, want %d", got, want)
+	}
+	if got, want := len(replicaBRequests), 1; got != want {
+		t.Fatalf("replica B StreamingRead request count = %d, want %d", got, want)
+	}
+	if got := len(harness.DefaultReplica.Requests(MethodStreamingRead)); got != 0 {
+		t.Fatalf("default replica StreamingRead request count = %d, want 0", got)
+	}
+
+	replicaAReq, ok := replicaARequests[0].(*sppb.ReadRequest)
+	if !ok {
+		t.Fatalf("replica A request type = %T, want *spannerpb.ReadRequest", replicaARequests[0])
+	}
+	if got := replicaAReq.GetResumeToken(); got != nil {
+		t.Fatalf("replica A resume token = %v, want nil on first stream attempt", got)
+	}
+	replicaBReq, ok := replicaBRequests[0].(*sppb.ReadRequest)
+	if !ok {
+		t.Fatalf("replica B request type = %T, want *spannerpb.ReadRequest", replicaBRequests[0])
+	}
+	if got, want := replicaBReq.GetResumeToken(), EncodeResumeToken(1); !bytes.Equal(got, want) {
+		t.Fatalf("replica B resume token = %v, want %v after mid-stream retry", got, want)
+	}
+}
+
+func TestClient_Single_StreamingReadMidStreamRecvFailureWithRetryInfoUsesNextReplicaForBypassTraffic(t *testing.T) {
+	t.Parallel()
+
+	restore := setMaxBytesBetweenResumeTokens()
+	defer restore()
+
+	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
+	defer teardown()
+	harness.Backend.AddPartialResultSetError(
+		SelectSingerIDAlbumIDAlbumTitleFromAlbums,
+		PartialResultSetExecutionTime{
+			ResumeToken: EncodeResumeToken(2),
+			Err:         serverErrorWithMinimalRetryDelay(codes.ResourceExhausted, "busy"),
+		},
+	)
+
+	client, err := makeClientWithConfig(
+		context.Background(),
+		"projects/p/instances/i/databases/d",
+		ClientConfig{
+			DisableNativeMetrics: true,
+			IsExperimentalHost:   true,
+		},
+		harness.DefaultAddress,
+		clientOpts...,
+	)
+	if err != nil {
+		t.Fatalf("makeClientWithConfig() failed: %v", err)
+	}
+	defer client.Close()
+
+	if client.locationRouter == nil {
+		t.Fatal("expected location router to be enabled")
+	}
+
+	client.locationRouter.finder.update(createReadRecipeCacheUpdate("Albums"))
+
+	kset, err := KeySets(Key{"b"}).keySetProto()
+	if err != nil {
+		t.Fatalf("keySetProto() failed: %v", err)
+	}
+	routeReq := &sppb.ReadRequest{
+		Table:   "Albums",
+		Columns: []string{"SingerId", "AlbumId", "AlbumTitle"},
+		KeySet:  kset,
+	}
+	client.locationRouter.finder.recipeCache.computeReadKeys(routeReq)
+	update := createRangeCacheUpdateForHint(routeReq.GetRoutingHint())
+	update.Group[0].Tablets[0].ServerAddress = harness.ReplicaAddresses[0]
+	update.Group[0].Tablets = append(update.Group[0].Tablets, &sppb.Tablet{
+		TabletUid:     12,
+		ServerAddress: harness.ReplicaAddresses[1],
+		Role:          sppb.Tablet_READ_WRITE,
+		Incarnation:   []byte("i2"),
+	})
+	client.locationRouter.finder.update(update)
+
+	waitForCondition(t, time.Second, func() bool {
+		prepared := proto.Clone(routeReq).(*sppb.ReadRequest)
+		endpoint := client.locationRouter.prepareReadRequest(context.Background(), prepared)
+		return endpoint != nil && endpoint.Address() == harness.ReplicaAddresses[0]
+	})
+	waitForLocationAwareEndpointHealthy(t, client, harness.ReplicaAddresses[1])
+
+	iter := client.Single().Read(context.Background(), "Albums", KeySets(Key{"b"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+	defer iter.Stop()
+
+	var rowCount int
+	for {
+		row, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatalf("iter.Next() returned unexpected error: %v", err)
+		}
+		if row == nil {
+			t.Fatal("iter.Next() returned nil row")
+		}
+		rowCount++
+	}
+	if got, want := rowCount, int(SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount); got != want {
+		t.Fatalf("row count = %d, want %d", got, want)
+	}
+
+	replicaARequests := harness.Replicas[0].Requests(MethodStreamingRead)
+	replicaBRequests := harness.Replicas[1].Requests(MethodStreamingRead)
+	if got, want := len(replicaARequests), 1; got != want {
+		t.Fatalf("replica A StreamingRead request count = %d, want %d", got, want)
+	}
+	if got, want := len(replicaBRequests), 1; got != want {
+		t.Fatalf("replica B StreamingRead request count = %d, want %d", got, want)
+	}
+	if got := len(harness.DefaultReplica.Requests(MethodStreamingRead)); got != 0 {
+		t.Fatalf("default replica StreamingRead request count = %d, want 0", got)
+	}
+
+	replicaAReq, ok := replicaARequests[0].(*sppb.ReadRequest)
+	if !ok {
+		t.Fatalf("replica A request type = %T, want *spannerpb.ReadRequest", replicaARequests[0])
+	}
+	replicaBReq, ok := replicaBRequests[0].(*sppb.ReadRequest)
+	if !ok {
+		t.Fatalf("replica B request type = %T, want *spannerpb.ReadRequest", replicaBRequests[0])
+	}
+	if got := replicaAReq.GetResumeToken(); got != nil {
+		t.Fatalf("replica A resume token = %v, want nil on first stream attempt", got)
+	}
+	if got, want := replicaBReq.GetResumeToken(), EncodeResumeToken(1); !bytes.Equal(got, want) {
+		t.Fatalf("replica B resume token = %v, want %v after mid-stream retry", got, want)
+	}
+}
+
+func TestClient_Single_StreamingReadMidStreamRecvFailureWithoutRetryInfoReturnsErrorWithoutBypass(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	server.TestSpanner.AddPartialResultSetError(
+		SelectSingerIDAlbumIDAlbumTitleFromAlbums,
+		PartialResultSetExecutionTime{
+			ResumeToken: EncodeResumeToken(2),
+			Err:         status.Error(codes.ResourceExhausted, "busy"),
+		},
+	)
+
+	iter := client.Single().Read(context.Background(), "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+	defer iter.Stop()
+
+	row, err := iter.Next()
+	if err != nil {
+		t.Fatalf("first iter.Next() returned unexpected error: %v", err)
+	}
+	if row == nil {
+		t.Fatal("first iter.Next() returned nil row")
+	}
+
+	_, err = iter.Next()
+	if status.Code(err) != codes.ResourceExhausted {
+		t.Fatalf("second iter.Next() error = %v, want RESOURCE_EXHAUSTED", err)
+	}
+}
+
+func createReadRecipeCacheUpdate(table string) *sppb.CacheUpdate {
+	return &sppb.CacheUpdate{
+		DatabaseId: 7,
+		KeyRecipes: &sppb.RecipeList{
+			SchemaGeneration: []byte("1"),
+			Recipe: []*sppb.KeyRecipe{
+				{
+					Target: &sppb.KeyRecipe_TableName{TableName: table},
+					Part: []*sppb.KeyRecipe_Part{
+						{Tag: 1},
+						{
+							Order:     sppb.KeyRecipe_Part_ASCENDING,
+							NullOrder: sppb.KeyRecipe_Part_NULLS_FIRST,
+							Type:      &sppb.Type{Code: sppb.TypeCode_STRING},
+							ValueType: &sppb.KeyRecipe_Part_Identifier{Identifier: "k"},
+						},
+					},
+				},
+			},
+		},
 	}
 }
 

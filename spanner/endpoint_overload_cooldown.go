@@ -23,7 +23,7 @@ import (
 )
 
 const (
-	defaultEndpointOverloadInitialCooldown = 5 * time.Second
+	defaultEndpointOverloadInitialCooldown = 25 * time.Second
 	defaultEndpointOverloadMaxCooldown     = time.Minute
 	defaultEndpointOverloadResetAfter      = 10 * time.Minute
 )

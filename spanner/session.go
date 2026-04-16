@@ -239,12 +239,19 @@ type sessionManager struct {
 
 	multiplexSessionClientCounter int
 	clientPool                    []spannerClient
+	locationAwareClientPool       []*locationAwareSpannerClient
 	multiplexedSession            *session
 	multiplexedSessionCreation    *multiplexedSessionCreation
 
 	// locationRouter is set when the experimental location API is enabled.
 	// It is used to wrap round-robin clients with location-aware routing.
 	locationRouter *locationRouter
+	// endpointCooldowns is shared across all location-aware client wrappers so
+	// overload cooldown state survives across requests.
+	endpointCooldowns *endpointOverloadCooldownTracker
+	// excludedEndpoints is shared across all location-aware client wrappers so
+	// request-scoped exclusions survive across handles and retries.
+	excludedEndpoints *logicalRequestEndpointExclusionCache
 
 	// SessionPoolConfig is kept for backward compatibility.
 	SessionPoolConfig
@@ -440,16 +447,16 @@ var errInvalidSession = spannerErrorf(codes.InvalidArgument, "invalid session")
 func (p *sessionManager) newSessionHandle(s *session) (sh *sessionHandle) {
 	sh = &sessionHandle{session: s}
 	p.mu.Lock()
-	client := p.getRoundRobinClient()
+	client, idx := p.getRoundRobinClient()
 	if p.locationRouter != nil && p.locationRouter.endpointCache != nil {
-		client = newLocationAwareSpannerClient(client, p.locationRouter, p.locationRouter.endpointCache)
+		client = p.getLocationAwareClient(idx, client)
 	}
 	sh.client = client
 	p.mu.Unlock()
 	return sh
 }
 
-func (p *sessionManager) getRoundRobinClient() spannerClient {
+func (p *sessionManager) getRoundRobinClient() (spannerClient, int) {
 	p.sc.mu.Lock()
 	defer func() {
 		p.multiplexSessionClientCounter++
@@ -460,13 +467,35 @@ func (p *sessionManager) getRoundRobinClient() spannerClient {
 		for i := 0; i < p.sc.connPool.Num(); i++ {
 			c, err := p.sc.nextClient()
 			if err != nil {
-				return nil
+				return nil, -1
 			}
 			p.clientPool[i] = c
 		}
 	}
 	p.multiplexSessionClientCounter = p.multiplexSessionClientCounter % len(p.clientPool)
-	return p.clientPool[p.multiplexSessionClientCounter]
+	idx := p.multiplexSessionClientCounter
+	return p.clientPool[idx], idx
+}
+
+func (p *sessionManager) getLocationAwareClient(idx int, defaultClient spannerClient) spannerClient {
+	if idx < 0 {
+		return defaultClient
+	}
+	if len(p.locationAwareClientPool) == 0 {
+		p.locationAwareClientPool = make([]*locationAwareSpannerClient, len(p.clientPool))
+	}
+	if lac := p.locationAwareClientPool[idx]; lac != nil {
+		return lac
+	}
+	lac := newLocationAwareSpannerClient(defaultClient, p.locationRouter, p.locationRouter.endpointCache)
+	if p.endpointCooldowns != nil {
+		lac.endpointCooldowns = p.endpointCooldowns
+	}
+	if p.excludedEndpoints != nil {
+		lac.excludedEndpoints = p.excludedEndpoints
+	}
+	p.locationAwareClientPool[idx] = lac
+	return lac
 }
 
 // errGetSessionTimeout returns error for context timeout during session acquisition.
