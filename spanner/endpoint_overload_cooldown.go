@@ -37,7 +37,7 @@ type endpointOverloadCooldownState struct {
 // endpointOverloadCooldownTracker keeps routed endpoints out of selection for a
 // short period after RESOURCE_EXHAUSTED so the router can try another replica.
 type endpointOverloadCooldownTracker struct {
-	mu              sync.Mutex
+	mu              sync.RWMutex
 	entries         map[string]endpointOverloadCooldownState
 	initialCooldown time.Duration
 	maxCooldown     time.Duration
@@ -98,8 +98,8 @@ func (t *endpointOverloadCooldownTracker) isCoolingDown(address string) bool {
 
 	now := t.now()
 
-	t.mu.Lock()
-	defer t.mu.Unlock()
+	t.mu.RLock()
+	defer t.mu.RUnlock()
 
 	state, ok := t.entries[address]
 	if !ok {
@@ -137,24 +137,11 @@ func (t *endpointOverloadCooldownTracker) recordFailure(address string) {
 func (t *endpointOverloadCooldownTracker) cooldownForFailures(failures int) time.Duration {
 	cooldown := t.initialCooldown
 	for i := 1; i < failures; i++ {
-		if cooldown >= t.maxCooldown {
-			cooldown = t.maxCooldown
-			break
-		}
 		if cooldown > t.maxCooldown/2 {
 			cooldown = t.maxCooldown
 			break
 		}
 		cooldown *= 2
-	}
-	if cooldown > t.maxCooldown {
-		cooldown = t.maxCooldown
-	}
-	if cooldown <= 0 {
-		return 0
-	}
-	if cooldown == 1 {
-		return time.Duration(t.randInt63n(2))
 	}
 	return time.Duration(t.randInt63n(int64(cooldown) + 1))
 }
