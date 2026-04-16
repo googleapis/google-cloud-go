@@ -2450,7 +2450,7 @@ libraries:
             - F_open_telemetry_attributes
           path: google/cloud/vectorsearch/v1beta
   - name: vertexai
-    version: 0.19.0
+    version: 0.20.0
     keep:
       - README.md
       - internal/version.go

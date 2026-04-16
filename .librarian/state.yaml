@@ -2864,7 +2864,7 @@ libraries:
       - internal/generated/snippets/vectorsearch/
     tag_format: '{id}/v{version}'
   - id: vertexai
-    version: 0.19.0
+    version: 0.20.0
     last_generated_commit: ""
     apis: []
     source_roots:
