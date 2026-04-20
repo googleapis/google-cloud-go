@@ -38,9 +38,10 @@ func TestEndpointLatencyRegistryKeysByOperationUID(t *testing.T) {
 	}
 }
 
-func TestEndpointLatencyRegistryLookupDoesNotRefreshExpiry(t *testing.T) {
+func TestEndpointLatencyRegistryLookupRefreshesAccessWhenSampled(t *testing.T) {
 	now := time.Unix(1_000, 0)
 	registry := newEndpointLatencyRegistry(func() time.Time { return now })
+	registry.accessRefreshInterval = time.Second
 
 	registry.recordLatency(7, false, "server-a:443", 25*time.Millisecond)
 	if !registry.hasScore(7, false, "server-a:443") {
@@ -58,21 +59,24 @@ func TestEndpointLatencyRegistryLookupDoesNotRefreshExpiry(t *testing.T) {
 	if entry == nil {
 		t.Fatal("expected tracker entry to exist")
 	}
-	lastUpdated := entry.lastUpdatedNanos.Load()
+	shard.accessReadCounter.Store(0)
+	lastAccess := entry.lastAccessNanos.Load()
 
 	now = now.Add(time.Minute)
 
-	// Reads alone should not extend the tracker's lifetime.
+	// Reads should only refresh access when the coarse sampling condition hits.
+	for i := 0; i < endpointLatencyAccessRefreshMask; i++ {
+		if !registry.hasScore(7, false, "server-a:443") {
+			t.Fatal("expected score to remain present during unsampled lookups")
+		}
+	}
+	if touched := entry.lastAccessNanos.Load(); touched != lastAccess {
+		t.Fatal("expected unsampled lookups to leave lastAccess unchanged")
+	}
 	if cost := registry.selectionCost(7, false, nil, "server-a:443"); cost == 0 {
-		t.Fatal("expected non-zero selection cost before pruning")
+		t.Fatal("expected non-zero selection cost during sampled lookup")
 	}
-	if updated := entry.lastUpdatedNanos.Load(); updated != lastUpdated {
-		t.Fatal("expected selectionCost lookup to leave lastUpdated unchanged")
-	}
-	if !registry.hasScore(7, false, "server-a:443") {
-		t.Fatal("expected score to remain present after read-only lookup")
-	}
-	if updated := entry.lastUpdatedNanos.Load(); updated != lastUpdated {
-		t.Fatal("expected hasScore lookup to leave lastUpdated unchanged")
+	if touched := entry.lastAccessNanos.Load(); touched <= lastAccess {
+		t.Fatal("expected sampled lookup to refresh lastAccess")
 	}
 }

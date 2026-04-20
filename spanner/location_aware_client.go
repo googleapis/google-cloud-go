@@ -399,10 +399,10 @@ func (c *locationAwareSpannerClient) StreamingRead(ctx context.Context, req *spa
 	logicalRequestKey := logicalRequestKeyFromCallOptions(opts)
 	excludedEndpoints := c.coolingDownEndpointsForCall()
 	preferLeader := preferLeaderFromSelector(req.GetTransaction())
-	operationUID := req.GetRoutingHint().GetOperationUid()
 	lastRoutedAddress := ""
 	for attempt := uint32(1); ; attempt++ {
 		ep, details := c.router.prepareReadRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
+		operationUID := req.GetRoutingHint().GetOperationUid()
 		if waited, err := c.maybeWaitForReroute(ctx, ep, lastRoutedAddress); err != nil {
 			return nil, err
 		} else if waited {
@@ -455,10 +455,10 @@ func (c *locationAwareSpannerClient) Read(ctx context.Context, req *spannerpb.Re
 	logicalRequestKey := logicalRequestKeyFromCallOptions(opts)
 	excludedEndpoints := c.coolingDownEndpointsForCall()
 	preferLeader := preferLeaderFromSelector(req.GetTransaction())
-	operationUID := req.GetRoutingHint().GetOperationUid()
 	lastRoutedAddress := ""
 	for attempt := uint32(1); ; attempt++ {
 		ep, details := c.router.prepareReadRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
+		operationUID := req.GetRoutingHint().GetOperationUid()
 		if waited, err := c.maybeWaitForReroute(ctx, ep, lastRoutedAddress); err != nil {
 			return nil, err
 		} else if waited {
@@ -498,10 +498,10 @@ func (c *locationAwareSpannerClient) ExecuteStreamingSql(ctx context.Context, re
 	logicalRequestKey := logicalRequestKeyFromCallOptions(opts)
 	excludedEndpoints := c.coolingDownEndpointsForCall()
 	preferLeader := preferLeaderFromSelector(req.GetTransaction())
-	operationUID := req.GetRoutingHint().GetOperationUid()
 	lastRoutedAddress := ""
 	for attempt := uint32(1); ; attempt++ {
 		ep, details := c.router.prepareExecuteSQLRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
+		operationUID := req.GetRoutingHint().GetOperationUid()
 		if waited, err := c.maybeWaitForReroute(ctx, ep, lastRoutedAddress); err != nil {
 			return nil, err
 		} else if waited {
@@ -554,10 +554,10 @@ func (c *locationAwareSpannerClient) ExecuteSql(ctx context.Context, req *spanne
 	logicalRequestKey := logicalRequestKeyFromCallOptions(opts)
 	excludedEndpoints := c.coolingDownEndpointsForCall()
 	preferLeader := preferLeaderFromSelector(req.GetTransaction())
-	operationUID := req.GetRoutingHint().GetOperationUid()
 	lastRoutedAddress := ""
 	for attempt := uint32(1); ; attempt++ {
 		ep, details := c.router.prepareExecuteSQLRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
+		operationUID := req.GetRoutingHint().GetOperationUid()
 		if waited, err := c.maybeWaitForReroute(ctx, ep, lastRoutedAddress); err != nil {
 			return nil, err
 		} else if waited {

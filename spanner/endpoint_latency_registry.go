@@ -26,6 +26,7 @@ import (
 const (
 	endpointLatencyDefaultPenaltyValue = 1_000_000.0
 	endpointLatencyRegistryShardCount  = 64
+	endpointLatencyAccessRefreshMask   = 63
 )
 
 var (
@@ -43,20 +44,22 @@ type endpointLatencyTrackerKey struct {
 }
 
 type endpointLatencyTrackerEntry struct {
-	tracker          *ewmaLatencyTracker
-	lastUpdatedNanos atomic.Int64
+	tracker         *ewmaLatencyTracker
+	lastAccessNanos atomic.Int64
 }
 
 type endpointLatencyRegistryShard struct {
-	mu         sync.RWMutex
-	trackers   map[endpointLatencyTrackerKey]*endpointLatencyTrackerEntry
-	lastPruned time.Time
+	mu                sync.RWMutex
+	trackers          map[endpointLatencyTrackerKey]*endpointLatencyTrackerEntry
+	lastPruned        time.Time
+	accessReadCounter atomic.Uint64
 }
 
 type endpointLatencyRegistry struct {
-	now           func() time.Time
-	pruneInterval time.Duration
-	shards        [endpointLatencyRegistryShardCount]endpointLatencyRegistryShard
+	now                   func() time.Time
+	pruneInterval         time.Duration
+	accessRefreshInterval time.Duration
+	shards                [endpointLatencyRegistryShardCount]endpointLatencyRegistryShard
 }
 
 func init() {
@@ -68,8 +71,9 @@ func newEndpointLatencyRegistry(now func() time.Time) *endpointLatencyRegistry {
 		now = time.Now
 	}
 	registry := &endpointLatencyRegistry{
-		now:           now,
-		pruneInterval: endpointLatencyTrackerPruneInterval,
+		now:                   now,
+		pruneInterval:         endpointLatencyTrackerPruneInterval,
+		accessRefreshInterval: endpointLatencyTrackerPruneInterval,
 	}
 	for i := range registry.shards {
 		registry.shards[i].trackers = make(map[endpointLatencyTrackerKey]*endpointLatencyTrackerEntry)
@@ -122,6 +126,9 @@ func (r *endpointLatencyRegistry) hasScore(operationUID uint64, preferLeader boo
 	shard.mu.RLock()
 	entry, ok := shard.trackers[key]
 	shard.mu.RUnlock()
+	if ok {
+		r.maybeRefreshAccess(shard, entry)
+	}
 	return ok && entry.tracker.initialized.Load()
 }
 
@@ -141,6 +148,7 @@ func (r *endpointLatencyRegistry) selectionCost(operationUID uint64, preferLeade
 	entry, ok := shard.trackers[key]
 	shard.mu.RUnlock()
 	if ok {
+		r.maybeRefreshAccess(shard, entry)
 		tracker := entry.tracker
 		return tracker.scoreValue() * (activeRequests + 1)
 	}
@@ -158,7 +166,7 @@ func (r *endpointLatencyRegistry) recordLatency(operationUID uint64, preferLeade
 	now := r.now()
 	entry := r.getOrCreateTracker(key, now)
 	entry.tracker.update(latency)
-	entry.lastUpdatedNanos.Store(now.UnixNano())
+	entry.lastAccessNanos.Store(now.UnixNano())
 }
 
 func (r *endpointLatencyRegistry) recordError(operationUID uint64, preferLeader bool, address string, penalty time.Duration) {
@@ -169,7 +177,7 @@ func (r *endpointLatencyRegistry) recordError(operationUID uint64, preferLeader 
 	now := r.now()
 	entry := r.getOrCreateTracker(key, now)
 	entry.tracker.recordError(penalty)
-	entry.lastUpdatedNanos.Store(now.UnixNano())
+	entry.lastAccessNanos.Store(now.UnixNano())
 }
 
 func (r *endpointLatencyRegistry) getOrCreateTracker(key endpointLatencyTrackerKey, now time.Time) *endpointLatencyTrackerEntry {
@@ -183,9 +191,24 @@ func (r *endpointLatencyRegistry) getOrCreateTracker(key endpointLatencyTrackerK
 	entry := &endpointLatencyTrackerEntry{
 		tracker: newEWMALatencyTrackerWithOptions(defaultEWMADecayTime, r.now),
 	}
-	entry.lastUpdatedNanos.Store(now.UnixNano())
+	entry.lastAccessNanos.Store(now.UnixNano())
 	shard.trackers[key] = entry
 	return entry
+}
+
+func (r *endpointLatencyRegistry) maybeRefreshAccess(shard *endpointLatencyRegistryShard, entry *endpointLatencyTrackerEntry) {
+	if r.accessRefreshInterval <= 0 {
+		return
+	}
+	if shard.accessReadCounter.Add(1)&endpointLatencyAccessRefreshMask != 0 {
+		return
+	}
+	nowNanos := r.now().UnixNano()
+	lastAccess := entry.lastAccessNanos.Load()
+	if nowNanos-lastAccess < int64(r.accessRefreshInterval) {
+		return
+	}
+	entry.lastAccessNanos.CompareAndSwap(lastAccess, nowNanos)
 }
 
 func (r *endpointLatencyRegistry) shardForKey(key endpointLatencyTrackerKey) *endpointLatencyRegistryShard {
@@ -205,8 +228,8 @@ func (s *endpointLatencyRegistryShard) maybePruneLocked(now time.Time, interval 
 	}
 	s.lastPruned = now
 	for key, entry := range s.trackers {
-		lastUpdated := time.Unix(0, entry.lastUpdatedNanos.Load())
-		if now.Sub(lastUpdated) > endpointLatencyTrackerExpireAfter {
+		lastAccess := time.Unix(0, entry.lastAccessNanos.Load())
+		if now.Sub(lastAccess) > endpointLatencyTrackerExpireAfter {
 			delete(s.trackers, key)
 		}
 	}

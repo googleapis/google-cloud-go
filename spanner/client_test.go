@@ -1892,6 +1892,97 @@ func TestClient_Single_StreamingReadUnavailableSkipsReplicaOnNextRequestForBypas
 	}
 }
 
+func TestClient_Single_StreamingReadConcurrentStrongReadsRecordEndpointScoreForBypassTraffic(t *testing.T) {
+	t.Parallel()
+
+	clearEndpointLatencyRegistry()
+	t.Cleanup(clearEndpointLatencyRegistry)
+
+	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 1)
+	defer teardown()
+
+	client, err := makeClientWithConfig(
+		context.Background(),
+		"projects/p/instances/i/databases/d",
+		ClientConfig{
+			DisableNativeMetrics: true,
+			IsExperimentalHost:   true,
+		},
+		harness.DefaultAddress,
+		clientOpts...,
+	)
+	if err != nil {
+		t.Fatalf("makeClientWithConfig() failed: %v", err)
+	}
+	defer client.Close()
+
+	if client.locationRouter == nil {
+		t.Fatal("expected location router to be enabled")
+	}
+
+	client.locationRouter.finder.update(createReadRecipeCacheUpdate("Albums"))
+
+	kset, err := KeySets(Key{"b"}).keySetProto()
+	if err != nil {
+		t.Fatalf("keySetProto() failed: %v", err)
+	}
+	routeReq := &sppb.ReadRequest{
+		Table:   "Albums",
+		Columns: []string{"SingerId", "AlbumId", "AlbumTitle"},
+		KeySet:  kset,
+	}
+	client.locationRouter.finder.recipeCache.computeReadKeys(routeReq)
+	update := createRangeCacheUpdateForHint(routeReq.GetRoutingHint())
+	update.Group[0].Tablets[0].ServerAddress = harness.ReplicaAddresses[0]
+	client.locationRouter.finder.update(update)
+
+	waitForCondition(t, time.Second, func() bool {
+		prepared := proto.Clone(routeReq).(*sppb.ReadRequest)
+		endpoint := client.locationRouter.prepareReadRequest(context.Background(), prepared)
+		return endpoint != nil && endpoint.Address() == harness.ReplicaAddresses[0]
+	})
+	waitForLocationAwareEndpointHealthy(t, client, harness.ReplicaAddresses[0])
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	group, groupCtx := errgroup.WithContext(ctx)
+	for i := 0; i < 8; i++ {
+		group.Go(func() error {
+			iter := client.Single().Read(groupCtx, "Albums", KeySets(Key{"b"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+			defer iter.Stop()
+
+			row, err := iter.Next()
+			if err != nil {
+				return err
+			}
+			if row == nil {
+				return fmt.Errorf("iter.Next() returned nil row")
+			}
+			return nil
+		})
+	}
+	if err := group.Wait(); err != nil {
+		t.Fatalf("concurrent Single().Read() failed: %v", err)
+	}
+
+	operationUID := routeReq.GetRoutingHint().GetOperationUid()
+	if operationUID == 0 {
+		t.Fatal("expected routing hint operation UID to be populated")
+	}
+	waitForCondition(t, time.Second, func() bool {
+		return endpointLatencyRegistryHasScore(operationUID, true, harness.ReplicaAddresses[0])
+	})
+
+	replicaRequests := harness.Replicas[0].Requests(MethodStreamingRead)
+	if got := len(replicaRequests); got != 8 {
+		t.Fatalf("replica StreamingRead request count = %d, want 8", got)
+	}
+	if got := len(harness.DefaultReplica.Requests(MethodStreamingRead)); got != 0 {
+		t.Fatalf("default replica StreamingRead request count = %d, want 0", got)
+	}
+}
+
 func TestLocationAwareExecuteStreamingSql_CooldownRoutesToNextReplicaAndEndpointBecomesEligibleAfterExpiry(t *testing.T) {
 	t.Parallel()
 	clearEndpointLatencyRegistry()
