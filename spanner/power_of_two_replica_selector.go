@@ -19,7 +19,6 @@ package spanner
 import (
 	"math"
 	"math/rand"
-	"time"
 )
 
 type powerOfTwoReplicaSelector struct {
@@ -27,8 +26,7 @@ type powerOfTwoReplicaSelector struct {
 }
 
 func newPowerOfTwoReplicaSelector() powerOfTwoReplicaSelector {
-	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
-	return powerOfTwoReplicaSelector{intn: rng.Intn}
+	return powerOfTwoReplicaSelector{intn: rand.Intn}
 }
 
 func (s powerOfTwoReplicaSelector) choose(candidates []channelEndpoint, scoreLookup func(channelEndpoint) float64) channelEndpoint {
