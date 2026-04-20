@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"math"
 	"sort"
+	"strings"
 	"testing"
 	"time"
 
@@ -29,12 +30,6 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
-
-func skipIfNotEnterprise(t *testing.T) {
-	if testParams[firestoreEditionKey].(firestoreEdition) != editionEnterprise {
-		t.Skip("Skipping test in non-enterprise environment")
-	}
-}
 
 type Author struct {
 	Name    string `firestore:"name"`
@@ -66,7 +61,7 @@ func testBooks() []Book {
 }
 
 func TestIntegration_PipelineExecute(t *testing.T) {
-	skipIfNotEnterprise(t)
+	skipIfEdition(t, "Pipeline queries", editionStandard)
 	ctx := context.Background()
 	client := integrationClient(t)
 	coll := integrationColl(t)
@@ -104,14 +99,14 @@ func TestIntegration_PipelineExecute(t *testing.T) {
 		h := testHelper{t}
 		books := testBooks()[:2]
 		var docRefs []*DocumentRef
-		for _, b := range books {
-			docRef := coll.NewDoc()
-			h.mustCreate(docRef, b)
-			docRefs = append(docRefs, docRef)
-		}
 		t.Cleanup(func() {
 			deleteDocuments(docRefs)
 		})
+		for _, b := range books {
+			docRef := coll.NewDoc()
+			docRefs = append(docRefs, docRef)
+			h.mustCreate(docRef, b)
+		}
 		p := client.Pipeline().Collection(coll.ID)
 		err := client.RunTransaction(ctx, func(ctx context.Context, txn *Transaction) error {
 			iter := txn.Execute(p).Results()
@@ -159,10 +154,10 @@ func TestIntegration_PipelineExecute(t *testing.T) {
 		if useEmulator {
 			t.Skip("Explain with error is not supported against the emulator")
 		}
-		pipeline := client.Pipeline().Collection(coll.ID).Sort(Ascending(FieldOf("rating")))
+		pipeline := client.Pipeline().Collection(coll.ID).Sort(Orders(Ascending(FieldOf("rating"))))
 		snap := pipeline.Execute(ctx,
 			WithExplainMode(ExplainModeAnalyze),
-			WithRawExecuteOptions(map[string]any{"memory_limit": 1}),
+			RawOptions{"memory_limit": 1},
 		)
 
 		_, err := snap.Results().GetAll()
@@ -179,14 +174,14 @@ func TestIntegration_PipelineExecute(t *testing.T) {
 		coll := integrationColl(t)
 		books := testBooks()[:3]
 		var docRefs []*DocumentRef
-		for _, b := range books {
-			docRef := coll.NewDoc()
-			h.mustCreate(docRef, b)
-			docRefs = append(docRefs, docRef)
-		}
 		t.Cleanup(func() {
 			deleteDocuments(docRefs)
 		})
+		for _, b := range books {
+			docRef := coll.NewDoc()
+			docRefs = append(docRefs, docRef)
+			h.mustCreate(docRef, b)
+		}
 
 		q := coll.Where("rating", ">", 4.2)
 		p := client.Pipeline().CreateFromQuery(q)
@@ -206,14 +201,14 @@ func TestIntegration_PipelineExecute(t *testing.T) {
 		coll := integrationColl(t)
 		books := testBooks()[:3]
 		var docRefs []*DocumentRef
-		for _, b := range books {
-			docRef := coll.NewDoc()
-			h.mustCreate(docRef, b)
-			docRefs = append(docRefs, docRef)
-		}
 		t.Cleanup(func() {
 			deleteDocuments(docRefs)
 		})
+		for _, b := range books {
+			docRef := coll.NewDoc()
+			docRefs = append(docRefs, docRef)
+			h.mustCreate(docRef, b)
+		}
 
 		ag := coll.NewAggregationQuery().WithCount("count")
 		p := client.Pipeline().CreateFromAggregationQuery(ag)
@@ -234,7 +229,7 @@ func TestIntegration_PipelineExecute(t *testing.T) {
 }
 
 func TestIntegration_PipelineStages(t *testing.T) {
-	skipIfNotEnterprise(t)
+	skipIfEdition(t, "Pipeline queries", editionStandard)
 	ctx := context.Background()
 	client := integrationClient(t)
 	coll := integrationColl(t)
@@ -264,16 +259,16 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		{Title: "Dune", Author: Author{Name: "Frank Herbert", Country: "USA"}, Genre: "Science Fiction", Published: 1965, Rating: 4.6, Tags: []string{"politics", "desert", "ecology"}},
 	}
 	var docRefs []*DocumentRef
-	for _, b := range books {
-		docRef := coll.NewDoc()
-		h.mustCreate(docRef, b)
-		docRefs = append(docRefs, docRef)
-	}
 	t.Cleanup(func() {
 		deleteDocuments(docRefs)
 	})
+	for _, b := range books {
+		docRef := coll.NewDoc()
+		docRefs = append(docRefs, docRef)
+		h.mustCreate(docRef, b)
+	}
 	t.Run("AddFields", func(t *testing.T) {
-		iter := client.Pipeline().Collection(coll.ID).AddFields(Multiply(FieldOf("rating"), 2).As("doubled_rating")).Limit(1).Execute(ctx).Results()
+		iter := client.Pipeline().Collection(coll.ID).AddFields(Selectables(Multiply(FieldOf("rating"), 2).As("doubled_rating"))).Limit(1).Execute(ctx).Results()
 		defer iter.Stop()
 		doc, err := iter.Next()
 		if err != nil {
@@ -288,7 +283,7 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		}
 	})
 	t.Run("Aggregate", func(t *testing.T) {
-		iter := client.Pipeline().Collection(coll.ID).Aggregate(Count("rating").As("total_books")).Execute(ctx).Results()
+		iter := client.Pipeline().Collection(coll.ID).Aggregate(Accumulators(Count("rating").As("total_books"))).Execute(ctx).Results()
 		defer iter.Stop()
 		doc, err := iter.Next()
 		if err != nil {
@@ -303,9 +298,8 @@ func TestIntegration_PipelineStages(t *testing.T) {
 			t.Errorf("got %d total_books, want 10", data["total_books"])
 		}
 	})
-	t.Run("AggregateWithSpec", func(t *testing.T) {
-		spec := NewAggregateSpec(Average("rating").As("avg_rating")).WithGroups("genre")
-		iter := client.Pipeline().Collection(coll.ID).AggregateWithSpec(spec).Execute(ctx).Results()
+	t.Run("AggregateWith", func(t *testing.T) {
+		iter := client.Pipeline().Collection(coll.ID).Aggregate(Accumulators(Average("rating").As("avg_rating")), WithAggregateGroups("genre")).Execute(ctx).Results()
 		defer iter.Stop()
 		results, err := iter.GetAll()
 		if err != nil {
@@ -316,7 +310,7 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		}
 	})
 	t.Run("Distinct", func(t *testing.T) {
-		iter := client.Pipeline().Collection(coll.ID).Distinct("genre").Execute(ctx).Results()
+		iter := client.Pipeline().Collection(coll.ID).Distinct(Fields("genre")).Execute(ctx).Results()
 		defer iter.Stop()
 		results, err := iter.GetAll()
 		if err != nil {
@@ -327,7 +321,7 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		}
 	})
 	t.Run("Documents", func(t *testing.T) {
-		iter := client.Pipeline().Documents(docRefs[0], docRefs[1]).Execute(ctx).Results()
+		iter := client.Pipeline().Documents([]*DocumentRef{docRefs[0], docRefs[1]}).Execute(ctx).Results()
 		defer iter.Stop()
 		results, err := iter.GetAll()
 		if err != nil {
@@ -345,11 +339,11 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		cgColl2 := doc2.Collection(cgCollID)
 		cgDoc1 := cgColl1.NewDoc()
 		cgDoc2 := cgColl2.NewDoc()
-		h.mustCreate(cgDoc1, map[string]string{"val": "a"})
-		h.mustCreate(cgDoc2, map[string]string{"val": "b"})
 		t.Cleanup(func() {
 			deleteDocuments([]*DocumentRef{cgDoc1, cgDoc2, doc1, doc2})
 		})
+		h.mustCreate(cgDoc1, map[string]string{"val": "a"})
+		h.mustCreate(cgDoc2, map[string]string{"val": "b"})
 		iter := client.Pipeline().CollectionGroup(cgCollID).Execute(ctx).Results()
 		defer iter.Stop()
 		results, err := iter.GetAll()
@@ -362,14 +356,13 @@ func TestIntegration_PipelineStages(t *testing.T) {
 	})
 	t.Run("CollectionHints", func(t *testing.T) {
 		docRef := coll.NewDoc()
-		h.mustCreate(docRef, map[string]any{"a": 1})
 		t.Cleanup(func() {
 			deleteDocuments([]*DocumentRef{docRef})
 		})
+		h.mustCreate(docRef, map[string]any{"a": 1})
 
 		// Use a hint that is likely ignored or causes no error if valid.
-		hints := CollectionHints{}.WithIgnoreIndexFields("a")
-		client.Pipeline().Collection(coll.ID, WithCollectionHints(hints)).
+		client.Pipeline().Collection(coll.ID, WithIgnoreIndexFields("a")).
 			Where(Equal("a", 1)).
 			Execute(ctx).Results()
 	})
@@ -377,11 +370,11 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		dbDoc1 := coll.Doc("db_doc1")
 		otherColl := client.Collection(collectionIDs.New())
 		dbDoc2 := otherColl.Doc("db_doc2")
-		h.mustCreate(dbDoc1, map[string]string{"val": "a"})
-		h.mustCreate(dbDoc2, map[string]string{"val": "b"})
 		t.Cleanup(func() {
 			deleteDocuments([]*DocumentRef{dbDoc1, dbDoc2})
 		})
+		h.mustCreate(dbDoc1, map[string]string{"val": "a"})
+		h.mustCreate(dbDoc2, map[string]string{"val": "b"})
 		iter := client.Pipeline().Database().Limit(2).Execute(ctx).Results()
 		defer iter.Stop()
 		results, err := iter.GetAll()
@@ -393,11 +386,11 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		}
 	})
 	t.Run("Literals", func(t *testing.T) {
-		iter := client.Pipeline().Literals(
-			map[string]any{"name": "joe", "age": 10},
-			map[string]any{"name": "bob", "age": 30},
-			map[string]any{"name": "alice", "age": 40},
-		).
+		iter := client.Pipeline().Literals([]map[string]any{
+			{"name": "joe", "age": 10},
+			{"name": "bob", "age": 30},
+			{"name": "alice", "age": 40},
+		}).
 			Where(GreaterThan(FieldOf("age"), 20)).
 			Execute(ctx).Results()
 		defer iter.Stop()
@@ -410,12 +403,12 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		}
 	})
 	t.Run("Constants", func(t *testing.T) {
-		iter := client.Pipeline().Literals(map[string]any{"a": 1}).
-			Select(
+		iter := client.Pipeline().Literals([]map[string]any{{"a": 1}}).
+			Select(Fields(
 				ConstantOfNull().As("null"),
 				ConstantOfVector32([]float32{1.5, 2.5, 3.5}).As("v32"),
 				ConstantOfVector64([]float64{4.5, 5.5, 6.5}).As("v64"),
-			).
+			)).
 			Execute(ctx).Results()
 		res, err := iter.GetAll()
 		if err != nil {
@@ -446,23 +439,17 @@ func TestIntegration_PipelineStages(t *testing.T) {
 			{ID: "doc3", Vector: Vector32{7.0, 8.0, 9.0}},
 		}
 		var vectorDocRefs []*DocumentRef
-		for _, d := range docsWithVector {
-			docRef := coll.NewDoc()
-			h.mustCreate(docRef, d)
-			vectorDocRefs = append(vectorDocRefs, docRef)
-		}
 		t.Cleanup(func() {
 			deleteDocuments(vectorDocRefs)
 		})
-		queryVector := Vector32{1.1, 2.1, 3.1}
-		limit := 2
-		distanceField := "distance"
-		options := &PipelineFindNearestOptions{
-			Limit:         &limit,
-			DistanceField: &distanceField,
+		for _, d := range docsWithVector {
+			docRef := coll.NewDoc()
+			vectorDocRefs = append(vectorDocRefs, docRef)
+			h.mustCreate(docRef, d)
 		}
+		queryVector := Vector32{1.1, 2.1, 3.1}
 		iter := client.Pipeline().Collection(coll.ID).
-			FindNearest("vector", queryVector, PipelineDistanceMeasureEuclidean, options).
+			FindNearest("vector", queryVector, PipelineDistanceMeasureEuclidean, RawOptions{"limit": 2, "distance_field": "distance"}).
 			Execute(ctx).Results()
 		defer iter.Stop()
 		results, err := iter.GetAll()
@@ -483,7 +470,7 @@ func TestIntegration_PipelineStages(t *testing.T) {
 			t.Fatalf("results[1] Exists: got: false, want: true")
 		}
 		dist2 := results[1].Data()
-		if dist1[distanceField].(float64) > dist2[distanceField].(float64) {
+		if dist1["distance"].(float64) > dist2["distance"].(float64) {
 			t.Errorf("documents are not sorted by distance")
 		}
 		// Check if the correct documents are returned
@@ -503,7 +490,7 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		}
 	})
 	t.Run("Offset", func(t *testing.T) {
-		iter := client.Pipeline().Collection(coll.ID).Sort(Ascending(FieldOf("published"))).Offset(2).Limit(1).Execute(ctx).Results()
+		iter := client.Pipeline().Collection(coll.ID).Sort(Orders(Ascending(FieldOf("published")))).Offset(2).Limit(1).Execute(ctx).Results()
 		defer iter.Stop()
 		doc, err := iter.Next()
 		if err != nil {
@@ -550,7 +537,7 @@ func TestIntegration_PipelineStages(t *testing.T) {
 	t.Run("RemoveFields", func(t *testing.T) {
 		iter := client.Pipeline().Collection(coll.ID).
 			Limit(1).
-			RemoveFields("genre", "rating").
+			RemoveFields(Fields("genre", "rating")).
 			Execute(ctx).Results()
 		defer iter.Stop()
 		doc, err := iter.Next()
@@ -578,10 +565,10 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		}
 		docWithMap := DocWithMap{ID: "docWithMap", Data: map[string]int{"a": 1, "b": 2}}
 		docRef := coll.NewDoc()
-		h.mustCreate(docRef, docWithMap)
 		t.Cleanup(func() {
 			deleteDocuments([]*DocumentRef{docRef})
 		})
+		h.mustCreate(docRef, docWithMap)
 		iter := client.Pipeline().Collection(coll.ID).
 			Where(Equal(FieldOf("id"), "docWithMap")).
 			ReplaceWith("data").
@@ -601,8 +588,8 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		}
 	})
 	t.Run("Sample", func(t *testing.T) {
-		t.Run("SampleByDocuments", func(t *testing.T) {
-			iter := client.Pipeline().Collection(coll.ID).Sample(ByDocuments(5)).Execute(ctx).Results()
+		t.Run("SampleWithDocLimit", func(t *testing.T) {
+			iter := client.Pipeline().Collection(coll.ID).Sample(WithDocLimit(5)).Execute(ctx).Results()
 			defer iter.Stop()
 			var got []map[string]interface{}
 			for {
@@ -623,8 +610,8 @@ func TestIntegration_PipelineStages(t *testing.T) {
 				t.Errorf("got %d documents, want 5", len(got))
 			}
 		})
-		t.Run("SampleByPercentage", func(t *testing.T) {
-			iter := client.Pipeline().Collection(coll.ID).Sample(ByPercentage(0.6)).Execute(ctx).Results()
+		t.Run("SampleWithPercentage", func(t *testing.T) {
+			iter := client.Pipeline().Collection(coll.ID).Sample(WithPercentage(0.6)).Execute(ctx).Results()
 			defer iter.Stop()
 			var got []map[string]interface{}
 			for {
@@ -650,7 +637,7 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		})
 	})
 	t.Run("Select", func(t *testing.T) {
-		iter := client.Pipeline().Collection(coll.ID).Select("title", "author.name").Limit(1).Execute(ctx).Results()
+		iter := client.Pipeline().Collection(coll.ID).Select(Fields("title", "author.name")).Limit(1).Execute(ctx).Results()
 		defer iter.Stop()
 		doc, err := iter.Next()
 		if err != nil {
@@ -663,18 +650,22 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		if _, ok := data["title"]; !ok {
 			t.Error("missing 'title' field")
 		}
-		if _, ok := data["author.name"]; !ok {
-			t.Error("missing 'author.name' field")
+
+		authorRaw, ok := data["author"]
+		if !ok {
+			t.Error("missing 'author' map from backend reconstructed field path")
+		} else if authorMap, ok := authorRaw.(map[string]interface{}); !ok {
+			t.Errorf("'author' is not a map, got %T", authorRaw)
+		} else if _, ok := authorMap["name"]; !ok {
+			t.Error("missing nested 'name' field inside author map")
 		}
-		if _, ok := data["author"]; ok {
-			t.Error("unexpected 'author' field")
-		}
+
 		if _, ok := data["genre"]; ok {
 			t.Error("unexpected 'genre' field")
 		}
 	})
 	t.Run("Sort", func(t *testing.T) {
-		iter := client.Pipeline().Collection(coll.ID).Sort(Descending(FieldOf("rating"))).Limit(1).Execute(ctx).Results()
+		iter := client.Pipeline().Collection(coll.ID).Sort(Orders(Descending(FieldOf("rating")))).Limit(1).Execute(ctx).Results()
 		defer iter.Stop()
 		doc, err := iter.Next()
 		if err != nil {
@@ -708,19 +699,19 @@ func TestIntegration_PipelineStages(t *testing.T) {
 			{Name: "Bob", Address: "456 Oak Ave"},
 		}
 		var unionDocRefs []*DocumentRef
-		for _, e := range employees {
-			docRef := employeeColl.NewDoc()
-			h.mustCreate(docRef, e)
-			unionDocRefs = append(unionDocRefs, docRef)
-		}
-		for _, c := range customers {
-			docRef := customerColl.NewDoc()
-			h.mustCreate(docRef, c)
-			unionDocRefs = append(unionDocRefs, docRef)
-		}
 		t.Cleanup(func() {
 			deleteDocuments(unionDocRefs)
 		})
+		for _, e := range employees {
+			docRef := employeeColl.NewDoc()
+			unionDocRefs = append(unionDocRefs, docRef)
+			h.mustCreate(docRef, e)
+		}
+		for _, c := range customers {
+			docRef := customerColl.NewDoc()
+			unionDocRefs = append(unionDocRefs, docRef)
+			h.mustCreate(docRef, c)
+		}
 		employeePipeline := client.Pipeline().Collection(employeeColl.ID)
 		customerPipeline := client.Pipeline().Collection(customerColl.ID)
 		iter := employeePipeline.Union(customerPipeline).Execute(context.Background()).Results()
@@ -760,7 +751,7 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		iter := client.Pipeline().Collection(coll.ID).
 			Where(Equal(FieldOf("title"), "The Hitchhiker's Guide to the Galaxy")).
 			UnnestWithAlias("tags", "tag", nil).
-			Select("title", "tag").
+			Select(Fields("title", "tag")).
 			Execute(ctx).Results()
 		defer iter.Stop()
 		var got []map[string]interface{}
@@ -795,11 +786,9 @@ func TestIntegration_PipelineStages(t *testing.T) {
 	})
 	t.Run("UnnestWithFieldOf", func(t *testing.T) {
 		docRef := coll.NewDoc()
+		t.Cleanup(func() { deleteDocuments([]*DocumentRef{docRef}) })
 		h.mustCreate(docRef, map[string]any{
 			"tags": []string{"a", "b", "c"},
-		})
-		t.Cleanup(func() {
-			deleteDocuments([]*DocumentRef{docRef})
 		})
 
 		iter := client.Pipeline().Collection(coll.ID).
@@ -818,7 +807,7 @@ func TestIntegration_PipelineStages(t *testing.T) {
 		iter := client.Pipeline().Collection(coll.ID).
 			Where(Equal(FieldOf("title"), "The Hitchhiker's Guide to the Galaxy")).
 			UnnestWithAlias("tags", "tag", WithUnnestIndexField("tagIndex")).
-			Select("title", "tag", "tagIndex").
+			Select(Fields("title", "tag", "tagIndex")).
 			Execute(ctx).Results()
 		defer iter.Stop()
 		var got []map[string]interface{}
@@ -859,20 +848,59 @@ func TestIntegration_PipelineStages(t *testing.T) {
 			t.Errorf("got %d documents, want 4", len(results))
 		}
 	})
+	t.Run("Update", func(t *testing.T) {
+		updateIter := client.Pipeline().Collection(coll.ID).
+			Where(Equal(FieldOf("author.country"), "UK")).
+			Update(WithUpdateTransformations(ConstantOf("Active").As("status"))).
+			Execute(ctx).Results()
+		defer updateIter.Stop()
+		_, err := updateIter.GetAll()
+		if err != nil {
+			t.Fatalf("Failed to execute update: %v", err)
+		}
+
+		verifyIter := client.Pipeline().Collection(coll.ID).Where(Equal(FieldOf("status"), "Active")).Execute(ctx).Results()
+		defer verifyIter.Stop()
+		results, err := verifyIter.GetAll()
+		if err != nil {
+			t.Fatalf("Failed to execute verify: %v", err)
+		}
+		if len(results) != 4 {
+			t.Errorf("got %d updated documents, want 4", len(results))
+		}
+	})
+	t.Run("Delete", func(t *testing.T) {
+		deleteIter := client.Pipeline().Collection(coll.ID).Where(Equal(FieldOf("title"), "The Great Gatsby")).Delete().Execute(ctx).Results()
+		defer deleteIter.Stop()
+		_, err := deleteIter.GetAll()
+		if err != nil {
+			t.Fatalf("Failed to execute delete: %v", err)
+		}
+
+		verifyIter := client.Pipeline().Collection(coll.ID).Where(Equal(FieldOf("title"), "The Great Gatsby")).Execute(ctx).Results()
+		defer verifyIter.Stop()
+		results, err := verifyIter.GetAll()
+		if err != nil {
+			t.Fatalf("Failed to execute verify: %v", err)
+		}
+		if len(results) != 0 {
+			t.Errorf("got %d documents, want 0 after delete", len(results))
+		}
+	})
 }
 
 func TestIntegration_PipelineFunctions(t *testing.T) {
-	skipIfNotEnterprise(t)
+	skipIfEdition(t, "Pipeline queries", editionStandard)
 	t.Run("arrayFuncs", arrayFuncs)
 	t.Run("stringFuncs", stringFuncs)
 	t.Run("vectorFuncs", vectorFuncs)
-
 	t.Run("timestampFuncs", timestampFuncs)
 	t.Run("arithmeticFuncs", arithmeticFuncs)
 	t.Run("aggregateFuncs", aggregateFuncs)
 	t.Run("comparisonFuncs", comparisonFuncs)
 	t.Run("generalFuncs", generalFuncs)
 	t.Run("keyFuncs", keyFuncs)
+	t.Run("referenceFuncs", referenceFuncs)
 	t.Run("objectFuncs", objectFuncs)
 	t.Run("logicalFuncs", logicalFuncs)
 	t.Run("typeFuncs", typeFuncs)
@@ -896,23 +924,28 @@ func aggregationFuncs(t *testing.T) {
 	}
 
 	var docRefs []*DocumentRef
+
+	t.Cleanup(func() {
+		deleteDocuments(docRefs)
+	})
 	for _, d := range docData {
 		docRef := coll.NewDoc()
-		h.mustCreate(docRef, d)
 		docRefs = append(docRefs, docRef)
+		h.mustCreate(docRef, d)
 	}
-	defer deleteDocuments(docRefs)
 
 	pipeline := client.Pipeline().Collection(coll.ID).
-		Sort(Ascending(FieldOf("val"))).
-		Aggregate(
+		Sort(Orders(Ascending(FieldOf("val")))).
+		Aggregate(Accumulators(
 			First("val").As("first_val"),
 			Last("val").As("last_val"),
+			Maximum("val").As("max_val"),
+			Minimum("val").As("min_val"),
 			ArrayAgg("val").As("all_vals"),
 			ArrayAggDistinct("val").As("distinct_vals"),
 			CountDistinct("val").As("distinct_count_val"),
 			ArrayAgg("tags").As("all_tags"),
-		)
+		))
 
 	iter := pipeline.Execute(context.Background()).Results()
 	defer iter.Stop()
@@ -923,6 +956,13 @@ func aggregationFuncs(t *testing.T) {
 	}
 
 	data := res.Data()
+
+	if data["max_val"] != int64(2) {
+		t.Errorf("got max_val %v, want 2", data["max_val"])
+	}
+	if data["min_val"] != int64(1) {
+		t.Errorf("got min_val %v, want 1", data["min_val"])
+	}
 
 	// Check ArrayAgg "all_vals" -> [1, 2, 1] (order irrelevant)
 	allValsRaw, ok := data["all_vals"].([]interface{})
@@ -971,6 +1011,7 @@ func typeFuncs(t *testing.T) {
 	client := integrationClient(t)
 	coll := client.Collection(collectionIDs.New())
 	docRef1 := coll.NewDoc()
+	t.Cleanup(func() { deleteDocuments([]*DocumentRef{docRef1}) })
 	h.mustCreate(docRef1, map[string]interface{}{
 		"a": nil,
 		"b": true,
@@ -984,7 +1025,6 @@ func typeFuncs(t *testing.T) {
 		"k": Vector64{1, 2, 3},
 		"l": docRef1,
 	})
-	defer deleteDocuments([]*DocumentRef{docRef1})
 
 	tests := []struct {
 		name     string
@@ -993,57 +1033,57 @@ func typeFuncs(t *testing.T) {
 	}{
 		{
 			name:     "Type of null",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Type("a").As("type")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Type("a").As("type"))),
 			want:     map[string]interface{}{"type": "null"},
 		},
 		{
 			name:     "Type of boolean",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Type("b").As("type")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Type("b").As("type"))),
 			want:     map[string]interface{}{"type": "boolean"},
 		},
 		{
 			name:     "Type of int64",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Type("c").As("type")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Type("c").As("type"))),
 			want:     map[string]interface{}{"type": "int64"},
 		},
 		{
 			name:     "Type of string",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Type("d").As("type")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Type("d").As("type"))),
 			want:     map[string]interface{}{"type": "string"},
 		},
 		{
 			name:     "Type of bytes",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Type("e").As("type")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Type("e").As("type"))),
 			want:     map[string]interface{}{"type": "bytes"},
 		},
 		{
 			name:     "Type of timestamp",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Type("f").As("type")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Type("f").As("type"))),
 			want:     map[string]interface{}{"type": "timestamp"},
 		},
 		{
 			name:     "Type of geopoint",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Type("g").As("type")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Type("g").As("type"))),
 			want:     map[string]interface{}{"type": "geo_point"},
 		},
 		{
 			name:     "Type of array",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Type("h").As("type")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Type("h").As("type"))),
 			want:     map[string]interface{}{"type": "array"},
 		},
 		{
 			name:     "Type of map",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Type("i").As("type")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Type("i").As("type"))),
 			want:     map[string]interface{}{"type": "map"},
 		},
 		{
 			name:     "Type of vector",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Type("k").As("type")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Type("k").As("type"))),
 			want:     map[string]interface{}{"type": "vector"},
 		},
 		{
 			name:     "Type of reference",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Type("l").As("type")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Type("l").As("type"))),
 			want:     map[string]interface{}{"type": "reference"},
 		},
 	}
@@ -1071,7 +1111,7 @@ func typeFuncs(t *testing.T) {
 }
 
 func TestIntegration_Query_Pipeline(t *testing.T) {
-	skipIfNotEnterprise(t)
+	skipIfEdition(t, "Pipeline queries", editionStandard)
 	ctx := context.Background()
 	coll := integrationColl(t)
 	h := testHelper{t}
@@ -1089,8 +1129,8 @@ func TestIntegration_Query_Pipeline(t *testing.T) {
 	var docRefs []*DocumentRef
 	for _, b := range books {
 		docRef := coll.NewDoc()
-		h.mustCreate(docRef, b)
 		docRefs = append(docRefs, docRef)
+		h.mustCreate(docRef, b)
 	}
 	t.Cleanup(func() {
 		deleteDocuments(docRefs)
@@ -1124,7 +1164,16 @@ func TestIntegration_Query_Pipeline(t *testing.T) {
 		}
 		var publishedYears []int64
 		for _, r := range res {
-			publishedYears = append(publishedYears, r.Data()["published"].(int64))
+			if r == nil || r.Data() == nil {
+				t.Errorf("got nil document")
+				continue
+			}
+			val, ok := r.Data()["published"]
+			if !ok || val == nil {
+				t.Errorf("published field not found")
+				continue
+			}
+			publishedYears = append(publishedYears, val.(int64))
 		}
 		if !sort.SliceIsSorted(publishedYears, func(i, j int) bool { return publishedYears[i] < publishedYears[j] }) {
 			t.Errorf("results not sorted by published year: %v", publishedYears)
@@ -1179,7 +1228,7 @@ func TestIntegration_Query_Pipeline(t *testing.T) {
 }
 
 func TestIntegration_AggregationQuery_Pipeline(t *testing.T) {
-	skipIfNotEnterprise(t)
+	skipIfEdition(t, "Pipeline queries", editionStandard)
 	ctx := context.Background()
 	coll := integrationColl(t)
 	h := testHelper{t}
@@ -1195,14 +1244,14 @@ func TestIntegration_AggregationQuery_Pipeline(t *testing.T) {
 		{Title: "One Hundred Years of Solitude", Genre: "Magical Realism", Published: 1967, Rating: 4.3},
 	}
 	var docRefs []*DocumentRef
-	for _, b := range books {
-		docRef := coll.NewDoc()
-		h.mustCreate(docRef, b)
-		docRefs = append(docRefs, docRef)
-	}
 	t.Cleanup(func() {
 		deleteDocuments(docRefs)
 	})
+	for _, b := range books {
+		docRef := coll.NewDoc()
+		docRefs = append(docRefs, docRef)
+		h.mustCreate(docRef, b)
+	}
 
 	t.Run("Count", func(t *testing.T) {
 		ag := coll.NewAggregationQuery().WithCount("count")
@@ -1268,11 +1317,12 @@ func objectFuncs(t *testing.T) {
 	client := integrationClient(t)
 	coll := client.Collection(collectionIDs.New())
 	docRef1 := coll.NewDoc()
+	t.Cleanup(func() { deleteDocuments([]*DocumentRef{docRef1}) })
 	h.mustCreate(docRef1, map[string]interface{}{
-		"m1": map[string]interface{}{"a": 1, "b": 2},
-		"m2": map[string]interface{}{"c": 3, "d": 4},
+		"m1":   map[string]interface{}{"a": 1, "b": 2},
+		"m2":   map[string]interface{}{"c": 3, "d": 4},
+		"aKey": "a",
 	})
-	defer deleteDocuments([]*DocumentRef{docRef1})
 
 	tests := []struct {
 		name     string
@@ -1281,42 +1331,52 @@ func objectFuncs(t *testing.T) {
 	}{
 		{
 			name:     "Map",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Map(map[string]any{"a": 1, "b": 2}).As("map")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Map(map[string]any{"a": 1, "b": 2}).As("map"))),
 			want:     map[string]interface{}{"map": map[string]interface{}{"a": int64(1), "b": int64(2)}},
 		},
 		{
 			name:     "MapGet",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(MapGet("m1", "a").As("value")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(MapGet("m1", "a").As("value"))),
+			want:     map[string]interface{}{"value": int64(1)},
+		},
+		{
+			name:     "MapGet - Expression key",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(MapGet("m1", FieldOf("aKey")).As("value"))),
+			want:     map[string]interface{}{"value": int64(1)},
+		},
+		{
+			name:     "GetField",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(GetField("m1", "a").As("value"))),
 			want:     map[string]interface{}{"value": int64(1)},
 		},
 		{
 			name:     "MapMerge",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(MapMerge("m1", FieldOf("m2")).As("merged")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(MapMerge("m1", FieldOf("m2")).As("merged"))),
 			want:     map[string]interface{}{"merged": map[string]interface{}{"a": int64(1), "b": int64(2), "c": int64(3), "d": int64(4)}},
 		},
 		{
 			name:     "MapRemove",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(MapRemove("m1", "a").As("removed")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(MapRemove("m1", "a").As("removed"))),
 			want:     map[string]interface{}{"removed": map[string]interface{}{"b": int64(2)}},
 		},
 		{
 			name:     "MapSet",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(MapSet("m1", "c", 3).As("updated")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(MapSet("m1", "c", 3).As("updated"))),
 			want:     map[string]interface{}{"updated": map[string]interface{}{"a": int64(1), "b": int64(2), "c": int64(3)}},
 		},
 		{
 			name:     "MapKeys",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(MapKeys("m1").As("keys")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(MapKeys("m1").As("keys"))),
 			want:     map[string]interface{}{"keys": []interface{}{"a", "b"}},
 		},
 		{
 			name:     "MapValues",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(MapValues("m1").As("values")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(MapValues("m1").As("values"))),
 			want:     map[string]interface{}{"values": []interface{}{int64(1), int64(2)}},
 		},
 		{
 			name:     "MapEntries",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(MapEntries("m1").As("entries")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(MapEntries("m1").As("entries"))),
 			want:     map[string]interface{}{"entries": []interface{}{map[string]interface{}{"k": "a", "v": int64(1)}, map[string]interface{}{"k": "b", "v": int64(2)}}},
 		},
 	}
@@ -1336,6 +1396,31 @@ func objectFuncs(t *testing.T) {
 				t.Fatalf("expected 1 doc, got %d", len(docs))
 			}
 			got := docs[0].Data()
+
+			// Sort results for tests with non-deterministic order
+			switch test.name {
+			case "MapKeys":
+				if keys, ok := got["keys"].([]any); ok {
+					sort.Slice(keys, func(i, j int) bool {
+						return keys[i].(string) < keys[j].(string)
+					})
+				}
+			case "MapValues":
+				if values, ok := got["values"].([]any); ok {
+					sort.Slice(values, func(i, j int) bool {
+						return values[i].(int64) < values[j].(int64)
+					})
+				}
+			case "MapEntries":
+				if entries, ok := got["entries"].([]any); ok {
+					sort.Slice(entries, func(i, j int) bool {
+						mi := entries[i].(map[string]any)
+						mj := entries[j].(map[string]any)
+						return mi["k"].(string) < mj["k"].(string)
+					})
+				}
+			}
+
 			if diff := testutil.Diff(got, test.want); diff != "" {
 				t.Errorf("got: %v, want: %v, diff +want -got: %s", got, test.want, diff)
 			}
@@ -1349,6 +1434,7 @@ func arrayFuncs(t *testing.T) {
 	client := integrationClient(t)
 	coll := client.Collection(collectionIDs.New())
 	docRef1 := coll.NewDoc()
+	t.Cleanup(func() { deleteDocuments([]*DocumentRef{docRef1}) })
 	h.mustCreate(docRef1, map[string]interface{}{
 		"a":      []interface{}{1, 2, 3},
 		"b":      []interface{}{4, 5, 6},
@@ -1357,116 +1443,141 @@ func arrayFuncs(t *testing.T) {
 		"lang":   "Go",
 		"status": "active",
 	})
-	defer deleteDocuments([]*DocumentRef{docRef1})
 
 	tests := []struct {
-		name     string
-		pipeline *Pipeline
-		want     map[string]interface{}
+		name          string
+		pipeline      *Pipeline
+		want          map[string]interface{}
+		wantErrStatus *status.Status
 	}{
 		{
 			name:     "ArrayLength",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(ArrayLength("a").As("length")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(ArrayLength("a").As("length"))),
 			want:     map[string]interface{}{"length": int64(3)},
 		},
 		{
 			name:     "Array",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Array(1, 2, 3).As("array")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Array(1, 2, 3).As("array"))),
 			want:     map[string]interface{}{"array": []interface{}{int64(1), int64(2), int64(3)}},
 		},
 		{
 			name:     "ArrayFromSlice",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(ArrayFromSlice([]int{1, 2, 3}).As("array")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(ArrayFromSlice([]int{1, 2, 3}).As("array"))),
 			want:     map[string]interface{}{"array": []interface{}{int64(1), int64(2), int64(3)}},
 		},
 		{
 			name:     "ArrayGet",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(ArrayGet("a", 1).As("element")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(ArrayGet("a", 1).As("element"))),
 			want:     map[string]interface{}{"element": int64(2)},
 		},
 		{
+			name:     "Offset",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Offset("a", 1).As("element"))),
+			want:     map[string]interface{}{"element": int64(2)},
+		},
+		{
+			name:          "ArrayGet - not an array",
+			pipeline:      client.Pipeline().Collection(coll.ID).Select(Fields(ArrayGet("lang", 1).As("element"))),
+			wantErrStatus: status.New(codes.InvalidArgument, "The function array_get(...) requires `Array` but got `STRING`."),
+		},
+		{
+			name:     "Offset - not an array",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Offset("lang", 1).As("element"))),
+			want:     map[string]interface{}{},
+		},
+		{
 			name:     "ArrayReverse",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(ArrayReverse("a").As("reversed")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(ArrayReverse("a").As("reversed"))),
 			want:     map[string]interface{}{"reversed": []interface{}{int64(3), int64(2), int64(1)}},
 		},
 		{
 			name:     "ArrayConcat",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(ArrayConcat("a", FieldOf("b")).As("concatenated")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(ArrayConcat("a", FieldOf("b")).As("concatenated"))),
 			want:     map[string]interface{}{"concatenated": []interface{}{int64(1), int64(2), int64(3), int64(4), int64(5), int64(6)}},
 		},
 		{
 			name:     "ArraySum",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(ArraySum("a").As("sum")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(ArraySum("a").As("sum"))),
 			want:     map[string]interface{}{"sum": int64(6)},
 		},
 		{
 			name:     "ArrayMaximum",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(ArrayMaximum("a").As("max")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(ArrayMaximum("a").As("max"))),
 			want:     map[string]interface{}{"max": int64(3)},
 		},
 		{
 			name:     "ArrayMinimum",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(ArrayMinimum("a").As("min")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(ArrayMinimum("a").As("min"))),
 			want:     map[string]interface{}{"min": int64(1)},
 		},
 		{
 			name:     "ArrayMaximumN",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(ArrayMaximumN("a", 2).As("max_n")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(ArrayMaximumN("a", 2).As("max_n"))),
 			want:     map[string]interface{}{"max_n": []interface{}{int64(3), int64(2)}},
 		},
 		{
 			name:     "ArrayMinimumN",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(ArrayMinimumN("a", 2).As("min_n")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(ArrayMinimumN("a", 2).As("min_n"))),
 			want:     map[string]interface{}{"min_n": []interface{}{int64(1), int64(2)}},
 		},
 		{
 			name:     "ArrayFirst",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(ArrayFirst("a").As("first")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(ArrayFirst("a").As("first"))),
 			want:     map[string]interface{}{"first": int64(1)},
 		},
 		{
 			name:     "ArrayFirstN",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(ArrayFirstN("a", 2).As("first_n")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(ArrayFirstN("a", 2).As("first_n"))),
 			want:     map[string]interface{}{"first_n": []interface{}{int64(1), int64(2)}},
 		},
 		{
 			name:     "ArrayLast",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(ArrayLast("a").As("last")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(ArrayLast("a").As("last"))),
 			want:     map[string]interface{}{"last": int64(3)},
 		},
 		{
 			name:     "ArrayLastN",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(ArrayLastN("a", 2).As("last_n")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(ArrayLastN("a", 2).As("last_n"))),
 			want:     map[string]interface{}{"last_n": []interface{}{int64(2), int64(3)}},
 		},
 		{
-			name:     "ArraySlice",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(ArraySlice("a", 1).As("slice")),
+			name:     "ArraySliceToEnd",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(ArraySliceToEnd("a", 1).As("slice"))),
 			want:     map[string]interface{}{"slice": []interface{}{int64(2), int64(3)}},
 		},
 		{
 			name:     "ArraySliceWithLength",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(ArraySliceLength("a", 1, 1).As("slice_len")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(ArraySlice("a", 1, 1).As("slice_len"))),
 			want:     map[string]interface{}{"slice_len": []interface{}{int64(2)}},
 		},
 		{
+			name:     "ArrayTransform",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(ArrayTransform("a", "x", Add(Variable("x"), int64(1))).As("transform"))),
+			want:     map[string]interface{}{"transform": []interface{}{int64(2), int64(3), int64(4)}},
+		},
+		{
+			name:     "ArrayTransformWithIndex",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(ArrayTransformWithIndex("a", "x", "i", Add(Variable("x"), Variable("i"))).As("transform_idx"))),
+			want:     map[string]interface{}{"transform_idx": []interface{}{int64(1), int64(3), int64(5)}},
+		},
+		{
 			name:     "ArrayFilter",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(ArrayFilter("a", "x", GreaterThan(FieldOf("x"), 1)).As("filter")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(ArrayFilter("a", "x", GreaterThan(Variable("x"), int64(1))).As("filter"))),
 			want:     map[string]interface{}{"filter": []interface{}{int64(2), int64(3)}},
 		},
 		{
 			name:     "ArrayIndexOf",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(ArrayIndexOf("a", 2).As("index")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(ArrayIndexOf("a", 2).As("index"))),
 			want:     map[string]interface{}{"index": int64(1)},
 		},
 		{
 			name:     "ArrayIndexOfAll",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(ArrayIndexOfAll(Array(1, 2, 1), 1).As("indices")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(ArrayIndexOfAll(Array(1, 2, 1), 1).As("indices"))),
 			want:     map[string]interface{}{"indices": []interface{}{int64(0), int64(2)}},
 		},
 		{
 			name:     "ArrayLastIndexOf",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(ArrayLastIndexOf(Array(1, 2, 1), 1).As("lastIndex")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(ArrayLastIndexOf(Array(1, 2, 1), 1).As("lastIndex"))),
 			want:     map[string]interface{}{"lastIndex": int64(2)},
 		},
 		// Array filter conditions
@@ -1501,6 +1612,11 @@ func arrayFuncs(t *testing.T) {
 			want:     map[string]interface{}{"lang": "Go", "tags": []interface{}{"Go", "Firestore", "GCP"}, "tags2": []interface{}{"Go", "Firestore"}, "status": "active", "a": []interface{}{int64(1), int64(2), int64(3)}, "b": []interface{}{int64(4), int64(5), int64(6)}},
 		},
 		{
+			name:     "EqualAny - Expr",
+			pipeline: client.Pipeline().Collection(coll.ID).Where(Not(EqualAny("lang", FieldOf("tags")))),
+			want:     nil,
+		},
+		{
 			name:     "NotEqualAny",
 			pipeline: client.Pipeline().Collection(coll.ID).Where(NotEqualAny("status", []string{"archived", "deleted"})),
 			want:     map[string]interface{}{"lang": "Go", "tags": []interface{}{"Go", "Firestore", "GCP"}, "tags2": []interface{}{"Go", "Firestore"}, "status": "active", "a": []interface{}{int64(1), int64(2), int64(3)}, "b": []interface{}{int64(4), int64(5), int64(6)}},
@@ -1515,18 +1631,30 @@ func arrayFuncs(t *testing.T) {
 				defer iter.Stop()
 
 				docs, err := iter.GetAll()
+				if test.wantErrStatus != nil {
+					if s, ok := status.FromError(err); !(ok && s.Code() == test.wantErrStatus.Code() && s.Message() == test.wantErrStatus.Message()) {
+						t.Fatalf("expected error %v, got %v", test.wantErrStatus, err)
+					}
+					return
+				}
 				if err != nil {
 					t.Fatalf("GetAll: %v", err)
 					return
 				}
-				if len(docs) != 1 {
-					t.Fatalf("expected 1 doc, got %d", len(docs))
+				wantDocLen := 1
+				if test.want == nil {
+					wantDocLen = 0
+				}
+				if len(docs) != wantDocLen {
+					t.Fatalf("expected %d docs, got %d", wantDocLen, len(docs))
 					return
 				}
-				got := docs[0].Data()
-				if diff := testutil.Diff(got, test.want); diff != "" {
-					t.Errorf("got: %v, want: %v, diff +want -got: %s", got, test.want, diff)
-					return
+				if test.want != nil {
+					got := docs[0].Data()
+					if diff := testutil.Diff(got, test.want); diff != "" {
+						t.Errorf("got: %v, want: %v, diff +want -got: %s", got, test.want, diff)
+						return
+					}
 				}
 			})
 		})
@@ -1539,6 +1667,7 @@ func stringFuncs(t *testing.T) {
 	client := integrationClient(t)
 	coll := client.Collection(collectionIDs.New())
 	docRef1 := coll.NewDoc()
+	t.Cleanup(func() { deleteDocuments([]*DocumentRef{docRef1}) })
 	h.mustCreate(docRef1, map[string]interface{}{
 		"name":        "  John Doe  ",
 		"description": "This is a Firestore document.",
@@ -1548,7 +1677,6 @@ func stringFuncs(t *testing.T) {
 		"zipCode":     "12345",
 		"csv":         "a,b,c",
 	})
-	defer deleteDocuments([]*DocumentRef{docRef1})
 
 	doc1want := map[string]interface{}{
 		"name":        "  John Doe  ",
@@ -1567,117 +1695,117 @@ func stringFuncs(t *testing.T) {
 	}{
 		{
 			name:     "ByteLength",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(ByteLength("name").As("byte_length")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(ByteLength("name").As("byte_length"))),
 			want:     map[string]interface{}{"byte_length": int64(12)},
 		},
 		{
 			name:     "CharLength",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(CharLength("name").As("char_length")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(CharLength("name").As("char_length"))),
 			want:     map[string]interface{}{"char_length": int64(12)},
 		},
 		{
 			name:     "StringConcat",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(StringConcat(FieldOf("name"), " - ", FieldOf("productCode")).As("concatenated_string")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(StringConcat(FieldOf("name"), " - ", FieldOf("productCode")).As("concatenated_string"))),
 			want:     map[string]interface{}{"concatenated_string": "  John Doe   - abc-123"},
 		},
 		{
 			name:     "StringReverse",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(StringReverse("name").As("reversed_string")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(StringReverse("name").As("reversed_string"))),
 			want:     map[string]interface{}{"reversed_string": "  eoD nhoJ  "},
 		},
 		{
 			name:     "Join",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Join("tags", ", ").As("joined_string")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Join("tags", ", ").As("joined_string"))),
 			want:     map[string]interface{}{"joined_string": "tag1, tag2, tag3"},
 		},
 		{
 			name:     "Substring",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Substring("description", 0, 4).As("substring")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Substring("description", 0, 4).As("substring"))),
 			want:     map[string]interface{}{"substring": "This"},
 		},
 		{
 			name:     "ToLower",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(ToLower("name").As("lowercase_name")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(ToLower("name").As("lowercase_name"))),
 			want:     map[string]interface{}{"lowercase_name": "  john doe  "},
 		},
 		{
 			name:     "ToUpper",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(ToUpper("name").As("uppercase_name")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(ToUpper("name").As("uppercase_name"))),
 			want:     map[string]interface{}{"uppercase_name": "  JOHN DOE  "},
 		},
 		{
 			name:     "Trim",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Trim("name").As("trimmed_name")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Trim("name").As("trimmed_name"))),
 			want:     map[string]interface{}{"trimmed_name": "John Doe"},
 		},
 		{
 			name:     "TrimValue",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(TrimValue("name", " eD").As("trimmed_name_values")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(TrimValue("name", " eD").As("trimmed_name_values"))),
 			want:     map[string]interface{}{"trimmed_name_values": "John Do"},
 		},
 		{
 			name:     "LTrim",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(LTrim("name").As("ltrimmed_name")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(LTrim("name").As("ltrimmed_name"))),
 			want:     map[string]interface{}{"ltrimmed_name": "John Doe  "},
 		},
 		{
 			name:     "LTrimValue",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(LTrimValue("name", " J").As("ltrimmed_name_values")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(LTrimValue("name", " J").As("ltrimmed_name_values"))),
 			want:     map[string]interface{}{"ltrimmed_name_values": "ohn Doe  "},
 		},
 		{
 			name:     "RTrim",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(RTrim("name").As("rtrimmed_name")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(RTrim("name").As("rtrimmed_name"))),
 			want:     map[string]interface{}{"rtrimmed_name": "  John Doe"},
 		},
 		{
 			name:     "RTrimValue",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(RTrimValue("name", " eD").As("rtrimmed_name_values")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(RTrimValue("name", " eD").As("rtrimmed_name_values"))),
 			want:     map[string]interface{}{"rtrimmed_name_values": "  John Do"},
 		},
 		{
 			name:     "Split",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Split("csv", ",").As("split_string")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Split("csv", ",").As("split_string"))),
 			want:     map[string]interface{}{"split_string": []interface{}{"a", "b", "c"}},
 		},
 		{
 			name:     "StringRepeat",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(StringRepeat(ConstantOf("a"), 3).As("repeated")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(StringRepeat(ConstantOf("a"), 3).As("repeated"))),
 			want:     map[string]interface{}{"repeated": "aaa"},
 		},
 		{
 			name:     "StringReplaceOne",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(StringReplaceOne(ConstantOf("aba"), "a", "c").As("replaced")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(StringReplaceOne(ConstantOf("aba"), "a", "c").As("replaced"))),
 			want:     map[string]interface{}{"replaced": "cba"},
 		},
 		{
 			name:     "StringReplaceAll",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(StringReplaceAll(ConstantOf("aba"), "a", "c").As("replaced")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(StringReplaceAll(ConstantOf("aba"), "a", "c").As("replaced"))),
 			want:     map[string]interface{}{"replaced": "cbc"},
 		},
 		{
 			name:     "StringIndexOf",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(StringIndexOf("description", "Firestore").As("index")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(StringIndexOf("description", "Firestore").As("index"))),
 			want:     map[string]interface{}{"index": int64(10)},
 		},
 		{
 			name:     "LTrim",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(LTrim(ConstantOf("  abc  ")).As("ltrim")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(LTrim(ConstantOf("  abc  ")).As("ltrim"))),
 			want:     map[string]interface{}{"ltrim": "abc  "},
 		},
 		{
 			name:     "RTrim",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(RTrim(ConstantOf("  abc  ")).As("rtrim")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(RTrim(ConstantOf("  abc  ")).As("rtrim"))),
 			want:     map[string]interface{}{"rtrim": "  abc"},
 		},
 		{
 			name:     "RegexFind",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(RegexFind("email", "[a-z]+").As("find")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(RegexFind("email", "[a-z]+").As("find"))),
 			want:     map[string]interface{}{"find": "john"},
 		},
 		{
 			name:     "RegexFindAll",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(RegexFindAll("zipCode", "[0-9]").As("findall")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(RegexFindAll("zipCode", "[0-9]").As("findall"))),
 			want:     map[string]interface{}{"findall": []interface{}{"1", "2", "3", "4", "5"}},
 		},
 		// String filter conditions
@@ -1704,6 +1832,11 @@ func stringFuncs(t *testing.T) {
 		{
 			name:     "RegexMatch",
 			pipeline: client.Pipeline().Collection(coll.ID).Where(RegexMatch("zipCode", "^[0-9]{5}$")),
+			want:     []map[string]interface{}{doc1want},
+		},
+		{
+			name:     "RawBooleanFunction",
+			pipeline: client.Pipeline().Collection(coll.ID).Where(RawBooleanFunction("regex_match", "zipCode", ConstantOf("^[0-9]{5}$"))),
 			want:     []map[string]interface{}{doc1want},
 		},
 		{
@@ -1775,11 +1908,11 @@ func vectorFuncs(t *testing.T) {
 	client := integrationClient(t)
 	coll := client.Collection(collectionIDs.New())
 	docRef1 := coll.NewDoc()
+	t.Cleanup(func() { deleteDocuments([]*DocumentRef{docRef1}) })
 	h.mustCreate(docRef1, map[string]interface{}{
 		"v1": Vector64{1.0, 2.0, 3.0},
 		"v2": Vector64{4.0, 5.0, 6.0},
 	})
-	defer deleteDocuments([]*DocumentRef{docRef1})
 
 	tests := []struct {
 		name     string
@@ -1788,37 +1921,37 @@ func vectorFuncs(t *testing.T) {
 	}{
 		{
 			name:     "VectorLength",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(VectorLength("v1").As("length")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(VectorLength("v1").As("length"))),
 			want:     map[string]interface{}{"length": int64(3)},
 		},
 		{
 			name:     "DotProduct - field and field",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(DotProduct("v1", FieldOf("v2")).As("dot_product")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(DotProduct("v1", FieldOf("v2")).As("dot_product"))),
 			want:     map[string]interface{}{"dot_product": float64(1*4 + 2*5 + 3*6)},
 		},
 		{
 			name:     "DotProduct - field and constant",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(DotProduct("v1", Vector64{4.0, 5.0, 6.0}).As("dot_product")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(DotProduct("v1", Vector64{4.0, 5.0, 6.0}).As("dot_product"))),
 			want:     map[string]interface{}{"dot_product": float64(1*4 + 2*5 + 3*6)},
 		},
 		{
 			name:     "EuclideanDistance - field and field",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(EuclideanDistance("v1", FieldOf("v2")).As("euclidean")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(EuclideanDistance("v1", FieldOf("v2")).As("euclidean"))),
 			want:     map[string]interface{}{"euclidean": math.Sqrt(math.Pow(4-1, 2) + math.Pow(5-2, 2) + math.Pow(6-3, 2))},
 		},
 		{
 			name:     "EuclideanDistance - field and constant",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(EuclideanDistance("v1", Vector64{4.0, 5.0, 6.0}).As("euclidean")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(EuclideanDistance("v1", Vector64{4.0, 5.0, 6.0}).As("euclidean"))),
 			want:     map[string]interface{}{"euclidean": math.Sqrt(math.Pow(4-1, 2) + math.Pow(5-2, 2) + math.Pow(6-3, 2))},
 		},
 		{
 			name:     "CosineDistance - field and field",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(CosineDistance("v1", FieldOf("v2")).As("cosine")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(CosineDistance("v1", FieldOf("v2")).As("cosine"))),
 			want:     map[string]interface{}{"cosine": 1 - (32 / (math.Sqrt(14) * math.Sqrt(77)))},
 		},
 		{
 			name:     "CosineDistance - field and constant",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(CosineDistance("v1", Vector64{4.0, 5.0, 6.0}).As("cosine")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(CosineDistance("v1", Vector64{4.0, 5.0, 6.0}).As("cosine"))),
 			want:     map[string]interface{}{"cosine": 1 - (32 / (math.Sqrt(14) * math.Sqrt(77)))},
 		},
 	}
@@ -1853,13 +1986,13 @@ func timestampFuncs(t *testing.T) {
 	h := testHelper{t}
 	now := time.Now()
 	docRef1 := coll.NewDoc()
+	t.Cleanup(func() { deleteDocuments([]*DocumentRef{docRef1}) })
 	h.mustCreate(docRef1, map[string]interface{}{
 		"timestamp":   now,
 		"unixMicros":  now.UnixNano() / 1000,
 		"unixMillis":  now.UnixNano() / 1e6,
 		"unixSeconds": now.Unix(),
 	})
-	defer deleteDocuments([]*DocumentRef{docRef1})
 
 	tests := []struct {
 		name     string
@@ -1870,126 +2003,126 @@ func timestampFuncs(t *testing.T) {
 			name: "TimestampAdd day",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				Select(TimestampAdd("timestamp", "day", 1).As("timestamp_plus_day")),
+				Select(Fields(TimestampAdd("timestamp", "day", 1).As("timestamp_plus_day"))),
 			want: map[string]interface{}{"timestamp_plus_day": now.AddDate(0, 0, 1).Truncate(time.Microsecond)},
 		},
 		{
 			name: "TimestampAdd hour",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				Select(TimestampAdd("timestamp", "hour", 1).As("timestamp_plus_hour")),
+				Select(Fields(TimestampAdd("timestamp", "hour", 1).As("timestamp_plus_hour"))),
 			want: map[string]interface{}{"timestamp_plus_hour": now.Add(time.Hour).Truncate(time.Microsecond)},
 		},
 		{
 			name: "TimestampAdd minute",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				Select(TimestampAdd("timestamp", "minute", 1).As("timestamp_plus_minute")),
+				Select(Fields(TimestampAdd("timestamp", "minute", 1).As("timestamp_plus_minute"))),
 			want: map[string]interface{}{"timestamp_plus_minute": now.Add(time.Minute).Truncate(time.Microsecond)},
 		},
 		{
 			name: "TimestampAdd second",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				Select(TimestampAdd("timestamp", "second", 1).As("timestamp_plus_second")),
+				Select(Fields(TimestampAdd("timestamp", "second", 1).As("timestamp_plus_second"))),
 			want: map[string]interface{}{"timestamp_plus_second": now.Add(time.Second).Truncate(time.Microsecond)},
 		},
 		{
 			name: "TimestampSubtract",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				Select(TimestampSubtract("timestamp", "hour", 1).As("timestamp_minus_hour")),
+				Select(Fields(TimestampSubtract("timestamp", "hour", 1).As("timestamp_minus_hour"))),
 			want: map[string]interface{}{"timestamp_minus_hour": now.Add(-time.Hour).Truncate(time.Microsecond)},
 		},
 		{
 			name: "TimestampToUnixMicros",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				Select(FieldOf("timestamp").TimestampToUnixMicros().As("timestamp_micros")),
+				Select(Fields(FieldOf("timestamp").TimestampToUnixMicros().As("timestamp_micros"))),
 			want: map[string]interface{}{"timestamp_micros": now.UnixNano() / 1000},
 		},
 		{
 			name: "TimestampToUnixMillis",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				Select(FieldOf("timestamp").TimestampToUnixMillis().As("timestamp_millis")),
+				Select(Fields(FieldOf("timestamp").TimestampToUnixMillis().As("timestamp_millis"))),
 			want: map[string]interface{}{"timestamp_millis": now.UnixNano() / 1e6},
 		},
 		{
 			name: "TimestampToUnixSeconds",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				Select(FieldOf("timestamp").TimestampToUnixSeconds().As("timestamp_seconds")),
+				Select(Fields(FieldOf("timestamp").TimestampToUnixSeconds().As("timestamp_seconds"))),
 			want: map[string]interface{}{"timestamp_seconds": now.Unix()},
 		},
 		{
 			name: "UnixMicrosToTimestamp - constant",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				Select(UnixMicrosToTimestamp(ConstantOf(now.UnixNano() / 1000)).As("timestamp_from_micros")),
+				Select(Fields(UnixMicrosToTimestamp(ConstantOf(now.UnixNano() / 1000)).As("timestamp_from_micros"))),
 			want: map[string]interface{}{"timestamp_from_micros": now.Truncate(time.Microsecond)},
 		},
 		{
 			name: "UnixMicrosToTimestamp - fieldname",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				Select(UnixMicrosToTimestamp("unixMicros").As("timestamp_from_micros")),
+				Select(Fields(UnixMicrosToTimestamp("unixMicros").As("timestamp_from_micros"))),
 			want: map[string]interface{}{"timestamp_from_micros": now.Truncate(time.Microsecond)},
 		},
 		{
 			name: "UnixMillisToTimestamp",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				Select(UnixMillisToTimestamp(ConstantOf(now.UnixNano() / 1e6)).As("timestamp_from_millis")),
+				Select(Fields(UnixMillisToTimestamp(ConstantOf(now.UnixNano() / 1e6)).As("timestamp_from_millis"))),
 			want: map[string]interface{}{"timestamp_from_millis": now.Truncate(time.Millisecond)},
 		},
 		{
 			name: "UnixSecondsToTimestamp",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				Select(UnixSecondsToTimestamp("unixSeconds").As("timestamp_from_seconds")),
+				Select(Fields(UnixSecondsToTimestamp("unixSeconds").As("timestamp_from_seconds"))),
 			want: map[string]interface{}{"timestamp_from_seconds": now.Truncate(time.Second)},
 		},
 		{
 			name: "CurrentTimestamp",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				Select(CurrentTimestamp().As("current_timestamp")),
+				Select(Fields(CurrentTimestamp().As("current_timestamp"))),
 			want: map[string]interface{}{"current_timestamp": time.Now().Truncate(time.Microsecond)},
 		},
 		{
 			name: "TimestampTruncate day",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				Select(TimestampTruncate("timestamp", "day").As("timestamp_trunc_day")),
+				Select(Fields(TimestampTruncate("timestamp", "day").As("timestamp_trunc_day"))),
 			want: map[string]interface{}{"timestamp_trunc_day": time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location()).Truncate(time.Microsecond)},
 		},
 		{
 			name: "TimestampTruncate hour",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				Select(TimestampTruncate("timestamp", "hour").As("timestamp_trunc_hour")),
+				Select(Fields(TimestampTruncate("timestamp", "hour").As("timestamp_trunc_hour"))),
 			want: map[string]interface{}{"timestamp_trunc_hour": time.Date(now.Year(), now.Month(), now.Day(), now.Hour(), 0, 0, 0, now.Location()).Truncate(time.Microsecond)},
 		},
 		{
 			name: "TimestampTruncate minute",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				Select(TimestampTruncate("timestamp", "minute").As("timestamp_trunc_minute")),
+				Select(Fields(TimestampTruncate("timestamp", "minute").As("timestamp_trunc_minute"))),
 			want: map[string]interface{}{"timestamp_trunc_minute": time.Date(now.Year(), now.Month(), now.Day(), now.Hour(), now.Minute(), 0, 0, now.Location()).Truncate(time.Microsecond)},
 		},
 		{
 			name: "TimestampTruncate second",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				Select(TimestampTruncate("timestamp", "second").As("timestamp_trunc_second")),
+				Select(Fields(TimestampTruncate("timestamp", "second").As("timestamp_trunc_second"))),
 			want: map[string]interface{}{"timestamp_trunc_second": time.Date(now.Year(), now.Month(), now.Day(), now.Hour(), now.Minute(), now.Second(), 0, now.Location()).Truncate(time.Microsecond)},
 		},
 		{
 			name: "TimestampTruncateWithTimezone day",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				Select(TimestampTruncateWithTimezone("timestamp", "day", "America/New_York").As("timestamp_trunc_day_ny")),
+				Select(Fields(TimestampTruncateWithTimezone("timestamp", "day", "America/New_York").As("timestamp_trunc_day_ny"))),
 			want: map[string]interface{}{"timestamp_trunc_day_ny": func() time.Time {
 				loc, _ := time.LoadLocation("America/New_York")
 				nowInLoc := now.In(loc)
@@ -2000,21 +2133,21 @@ func timestampFuncs(t *testing.T) {
 			name: "TimestampExtract year",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				Select(TimestampExtract("timestamp", "year").As("year")),
+				Select(Fields(TimestampExtract("timestamp", "year").As("year"))),
 			want: map[string]interface{}{"year": int64(now.Year())},
 		},
 		{
 			name: "TimestampExtract month",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				Select(TimestampExtract("timestamp", "month").As("month")),
+				Select(Fields(TimestampExtract("timestamp", "month").As("month"))),
 			want: map[string]interface{}{"month": int64(now.Month())},
 		},
 		{
 			name: "TimestampExtractWithTimezone hour",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				Select(TimestampExtractWithTimezone("timestamp", "hour", "America/New_York").As("hour_ny")),
+				Select(Fields(TimestampExtractWithTimezone("timestamp", "hour", "America/New_York").As("hour_ny"))),
 			want: map[string]interface{}{"hour_ny": func() int64 {
 				loc, _ := time.LoadLocation("America/New_York")
 				return int64(now.In(loc).Hour())
@@ -2024,7 +2157,7 @@ func timestampFuncs(t *testing.T) {
 			name: "TimestampDiff",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				Select(TimestampDiff(TimestampAdd("timestamp", "day", 1), FieldOf("timestamp"), "day").As("diff")),
+				Select(Fields(TimestampDiff(TimestampAdd("timestamp", "day", 1), FieldOf("timestamp"), "day").As("diff"))),
 			want: map[string]interface{}{"diff": int64(1)},
 		},
 	}
@@ -2060,14 +2193,15 @@ func arithmeticFuncs(t *testing.T) {
 	client := integrationClient(t)
 	coll := client.Collection(collectionIDs.New())
 	docRef1 := coll.NewDoc()
+	t.Cleanup(func() { deleteDocuments([]*DocumentRef{docRef1}) })
 	h.mustCreate(docRef1, map[string]interface{}{
 		"a": int(1),
 		"b": int(2),
 		"c": -3,
 		"d": 4.5,
 		"e": -5.5,
+		"f": 4.596,
 	})
-	defer deleteDocuments([]*DocumentRef{docRef1})
 
 	tests := []struct {
 		name     string
@@ -2076,122 +2210,127 @@ func arithmeticFuncs(t *testing.T) {
 	}{
 		{
 			name:     "Add - left FieldOf, right FieldOf",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Add(FieldOf("a"), FieldOf("b")).As("add")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Add(FieldOf("a"), FieldOf("b")).As("add"))),
 			want:     map[string]interface{}{"add": int64(3)},
 		},
 		{
 			name:     "Add - left FieldOf, right ConstantOf",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Add(FieldOf("a"), ConstantOf(2)).As("add")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Add(FieldOf("a"), ConstantOf(2)).As("add"))),
 			want:     map[string]interface{}{"add": int64(3)},
 		},
 		{
 			name:     "Add - left FieldOf, right constant",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Add(FieldOf("a"), 5).As("add")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Add(FieldOf("a"), 5).As("add"))),
 			want:     map[string]interface{}{"add": int64(6)},
 		},
 		{
 			name:     "Add - left fieldname, right constant",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Add("a", 5).As("add")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Add("a", 5).As("add"))),
 			want:     map[string]interface{}{"add": int64(6)},
 		},
 		{
 			name:     "Add - left fieldpath, right constant",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Add(FieldPath([]string{"a"}), 5).As("add")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Add(FieldPath([]string{"a"}), 5).As("add"))),
 			want:     map[string]interface{}{"add": int64(6)},
 		},
 		{
 			name:     "Add - left fieldpath, right expression",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Add(FieldPath([]string{"a"}), Add(FieldOf("b"), FieldOf("d"))).As("add")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Add(FieldPath([]string{"a"}), Add(FieldOf("b"), FieldOf("d"))).As("add"))),
 			want:     map[string]interface{}{"add": float64(7.5)},
 		},
 		{
 			name:     "Subtract",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Subtract("a", FieldOf("b")).As("subtract")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Subtract("a", FieldOf("b")).As("subtract"))),
 			want:     map[string]interface{}{"subtract": int64(-1)},
 		},
 		{
 			name:     "Multiply",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Multiply("a", 5).As("multiply")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Multiply("a", 5).As("multiply"))),
 			want:     map[string]interface{}{"multiply": int64(5)},
 		},
 		{
 			name:     "Divide",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Divide("a", FieldOf("d")).As("divide")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Divide("a", FieldOf("d")).As("divide"))),
 			want:     map[string]interface{}{"divide": float64(1 / 4.5)},
 		},
 		{
 			name:     "Mod",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Mod("a", FieldOf("b")).As("mod")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Mod("a", FieldOf("b")).As("mod"))),
 			want:     map[string]interface{}{"mod": int64(1)},
 		},
 		{
 			name:     "Pow",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Pow("a", FieldOf("b")).As("pow")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Pow("a", FieldOf("b")).As("pow"))),
 			want:     map[string]interface{}{"pow": float64(1)},
 		},
 		{
 			name:     "Abs - fieldname",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Abs("c").As("abs")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Abs("c").As("abs"))),
 			want:     map[string]interface{}{"abs": int64(3)},
 		},
 		{
 			name:     "Abs - fieldPath",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Abs(FieldPath([]string{"c"})).As("abs")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Abs(FieldPath([]string{"c"})).As("abs"))),
 			want:     map[string]interface{}{"abs": int64(3)},
 		},
 		{
 			name:     "Abs - Expr",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Abs(Add(FieldOf("b"), FieldOf("d"))).As("abs")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Abs(Add(FieldOf("b"), FieldOf("d"))).As("abs"))),
 			want:     map[string]interface{}{"abs": float64(6.5)},
 		},
 		{
 			name:     "Ceil",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Ceil("d").As("ceil")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Ceil("d").As("ceil"))),
 			want:     map[string]interface{}{"ceil": float64(5)},
 		},
 		{
 			name:     "Floor",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Floor("d").As("floor")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Floor("d").As("floor"))),
 			want:     map[string]interface{}{"floor": float64(4)},
 		},
 		{
 			name:     "Round",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Round("d").As("round")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Round("d").As("round"))),
 			want:     map[string]interface{}{"round": float64(5)},
 		},
 		{
+			name:     "RoundToPrecision",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(RoundToPrecision("f", 2).As("roundToPrecision"))),
+			want:     map[string]interface{}{"roundToPrecision": float64(4.6)},
+		},
+		{
 			name:     "Sqrt",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Sqrt("d").As("sqrt")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Sqrt("d").As("sqrt"))),
 			want:     map[string]interface{}{"sqrt": math.Sqrt(4.5)},
 		},
 		{
 			name:     "Log",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Log("d", 2).As("log")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Log("d", 2).As("log"))),
 			want:     map[string]interface{}{"log": math.Log2(4.5)},
 		},
 		{
 			name:     "Log10",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Log10("d").As("log10")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Log10("d").As("log10"))),
 			want:     map[string]interface{}{"log10": math.Log10(4.5)},
 		},
 		{
 			name:     "Ln",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Ln("d").As("ln")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Ln("d").As("ln"))),
 			want:     map[string]interface{}{"ln": math.Log(4.5)},
 		},
 		{
 			name:     "Exp",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Exp("d").As("exp")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Exp("d").As("exp"))),
 			want:     map[string]interface{}{"exp": math.Exp(4.5)},
 		},
 		{
 			name:     "Trunc",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Trunc("d").As("trunc")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Trunc("d").As("trunc"))),
 			want:     map[string]interface{}{"trunc": float64(4)},
 		},
 		{
 			name:     "TruncToPrecision",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(TruncToPrecision("d", 1).As("trunc_places")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(TruncToPrecision("d", 1).As("trunc_places"))),
 			want:     map[string]interface{}{"trunc_places": float64(4.5)},
 		},
 	}
@@ -2218,7 +2357,7 @@ func arithmeticFuncs(t *testing.T) {
 
 	t.Run("Rand", func(t *testing.T) {
 		pipeline := client.Pipeline().Collection(coll.ID).
-			Select(Rand().As("rand_val")).
+			Select(Fields(Rand().As("rand_val"))).
 			Limit(1)
 
 		iter := pipeline.Execute(ctx).Results()
@@ -2246,18 +2385,20 @@ func aggregateFuncs(t *testing.T) {
 	client := integrationClient(t)
 	coll := client.Collection(collectionIDs.New())
 	docRef1 := coll.NewDoc()
+	t.Cleanup(func() { deleteDocuments([]*DocumentRef{docRef1}) })
 	h.mustCreate(docRef1, map[string]interface{}{
 		"a": 1,
 	})
 	docRef2 := coll.NewDoc()
+	t.Cleanup(func() { deleteDocuments([]*DocumentRef{docRef1, docRef2}) })
 	h.mustCreate(docRef2, map[string]interface{}{
 		"a": 2,
 	})
 	docRef3 := coll.NewDoc()
+	t.Cleanup(func() { deleteDocuments([]*DocumentRef{docRef1, docRef2, docRef3}) })
 	h.mustCreate(docRef3, map[string]interface{}{
 		"b": 2,
 	})
-	defer deleteDocuments([]*DocumentRef{docRef1, docRef2, docRef3})
 
 	tests := []struct {
 		name     string
@@ -2265,52 +2406,59 @@ func aggregateFuncs(t *testing.T) {
 		want     map[string]interface{}
 	}{
 		{
+			name: "RawAggregate",
+			pipeline: client.Pipeline().
+				Collection(coll.ID).
+				Aggregate(Accumulators(RawAggregate("sum", "a").As("sum_a"))),
+			want: map[string]interface{}{"sum_a": int64(3)},
+		},
+		{
 			name: "Sum - fieldname arg",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				Aggregate(Sum("a").As("sum_a")),
+				Aggregate(Accumulators(Sum("a").As("sum_a"))),
 			want: map[string]interface{}{"sum_a": int64(3)},
 		},
 		{
 			name: "Sum - fieldpath arg",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				Aggregate(Sum(FieldPath([]string{"a"})).As("sum_a")),
+				Aggregate(Accumulators(Sum(FieldPath([]string{"a"})).As("sum_a"))),
 			want: map[string]interface{}{"sum_a": int64(3)},
 		},
 		{
 			name: "Sum - FieldOf Expr",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				Aggregate(Sum(FieldOf("a")).As("sum_a")),
+				Aggregate(Accumulators(Sum(FieldOf("a")).As("sum_a"))),
 			want: map[string]interface{}{"sum_a": int64(3)},
 		},
 		{
 			name: "Sum - FieldOf Path Expr",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				Aggregate(Sum(FieldOf(FieldPath([]string{"a"}))).As("sum_a")),
+				Aggregate(Accumulators(Sum(FieldOf(FieldPath([]string{"a"}))).As("sum_a"))),
 			want: map[string]interface{}{"sum_a": int64(3)},
 		},
 		{
 			name: "Avg",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				Aggregate(Average("a").As("avg_a")),
+				Aggregate(Accumulators(Average("a").As("avg_a"))),
 			want: map[string]interface{}{"avg_a": float64(1.5)},
 		},
 		{
 			name: "Count",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				Aggregate(Count("a").As("count_a")),
+				Aggregate(Accumulators(Count("a").As("count_a"))),
 			want: map[string]interface{}{"count_a": int64(2)},
 		},
 		{
 			name: "CountAll",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				Aggregate(CountAll().As("count_all")),
+				Aggregate(Accumulators(CountAll().As("count_all"))),
 			want: map[string]interface{}{"count_all": int64(3)},
 		},
 	}
@@ -2366,7 +2514,9 @@ func comparisonFuncs(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Create: %v", err)
 	}
-	defer deleteDocuments([]*DocumentRef{coll.Doc("doc1"), coll.Doc("doc2")})
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{coll.Doc("doc1"), coll.Doc("doc2")})
+	})
 
 	doc1want := map[string]interface{}{"a": int64(1), "b": int64(2), "c": int64(-3), "d": float64(4.5), "e": float64(-5.5), "timestamp": now.Truncate(time.Microsecond)}
 
@@ -2388,6 +2538,13 @@ func comparisonFuncs(t *testing.T) {
 				Collection(coll.ID).
 				Where(NotEqual("a", 2)),
 			want: []map[string]interface{}{doc1want},
+		},
+		{
+			name: "GreaterThan",
+			pipeline: client.Pipeline().
+				Collection(coll.ID).
+				Where(GreaterThan("a", 1)),
+			want: []map[string]interface{}{{"a": int64(2), "b": int64(2), "c": int64(-3), "d": float64(4.5), "e": float64(-5.5), "timestamp": now.Truncate(time.Microsecond)}},
 		},
 		{
 			name: "LessThan",
@@ -2414,7 +2571,7 @@ func comparisonFuncs(t *testing.T) {
 			name: "Cmp",
 			pipeline: client.Pipeline().
 				Collection(coll.ID).
-				Select(Cmp("a", 1).As("cmp")),
+				Select(Fields(Cmp("a", 1).As("cmp"))),
 			want: []map[string]interface{}{{"cmp": int64(0)}, {"cmp": int64(1)}},
 		},
 	}
@@ -2482,6 +2639,8 @@ func keyFuncs(t *testing.T) {
 	coll := client.Collection(collectionIDs.New())
 	docRef1 := coll.Doc("doc1")
 	subDocRef1 := docRef1.Collection("sub").Doc("sub1")
+	t.Cleanup(func() { deleteDocuments([]*DocumentRef{subDocRef1, docRef1}) })
+
 	h.mustCreate(docRef1, map[string]interface{}{
 		"a": "hello",
 		"b": "world",
@@ -2489,7 +2648,6 @@ func keyFuncs(t *testing.T) {
 	h.mustCreate(subDocRef1, map[string]interface{}{
 		"c": "sub-hello",
 	})
-	defer deleteDocuments([]*DocumentRef{subDocRef1, docRef1})
 
 	tests := []struct {
 		name     string
@@ -2498,12 +2656,12 @@ func keyFuncs(t *testing.T) {
 	}{
 		{
 			name:     "CollectionId",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(GetCollectionID("__name__").As("collectionId")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(GetCollectionID("__name__").As("collectionId"))),
 			want:     map[string]interface{}{"collectionId": coll.ID},
 		},
 		{
 			name:     "DocumentId",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(GetDocumentID(docRef1).As("documentId")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(GetDocumentID(docRef1).As("documentId"))),
 			want:     map[string]interface{}{"documentId": "doc1"},
 		},
 	}
@@ -2523,6 +2681,147 @@ func keyFuncs(t *testing.T) {
 				t.Fatalf("expected 1 doc, got %d", len(docs))
 			}
 			got := docs[0].Data()
+			// Convert DocumentRef to path string for comparison
+			for k, v := range got {
+				if ref, ok := v.(*DocumentRef); ok {
+					got[k] = ref.Path
+				}
+			}
+			if diff := testutil.Diff(got, test.want); diff != "" {
+				t.Errorf("got: %v, want: %v, diff +want -got: %s", got, test.want, diff)
+			}
+		})
+	}
+}
+
+func referenceFuncs(t *testing.T) {
+	t.Parallel()
+	h := testHelper{t}
+	client := integrationClient(t)
+	coll := client.Collection(collectionIDs.New())
+	docRef1 := coll.Doc("doc1")
+	subDocRef1 := docRef1.Collection("sub").Doc("sub1")
+	t.Cleanup(func() { deleteDocuments([]*DocumentRef{subDocRef1, docRef1}) })
+
+	h.mustCreate(docRef1, map[string]interface{}{
+		"a": "hello",
+		"b": "world",
+	})
+	h.mustCreate(subDocRef1, map[string]interface{}{
+		"c": "sub-hello",
+	})
+
+	tests := []struct {
+		name       string
+		pipeline   *Pipeline
+		want       map[string]interface{}
+		wantErrMsg string
+	}{
+		{
+			name:     "GetParent",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(GetParent(subDocRef1).As("parent"))),
+			want:     map[string]interface{}{"parent": docRef1.Path},
+		},
+		{
+			name:       "GetParent (root-level doc)",
+			pipeline:   client.Pipeline().Collection(coll.ID).Select(Fields(GetParent(docRef1).As("parent"))),
+			wantErrMsg: "the SDK does not support decoding reference values for collections or databases",
+		},
+		{
+			name:     "GetParent (database)",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(GetParent(GetParent(docRef1)).As("parent"))),
+			want:     map[string]interface{}{"parent": nil},
+		},
+		{
+			name:       "ReferenceSlice (database root)",
+			pipeline:   client.Pipeline().Collection(coll.ID).Select(Fields(ReferenceSlice(ConstantOf(docRef1), 0, 0).As("segments"))),
+			wantErrMsg: "the SDK does not support decoding reference values for collections or databases", // The SDK cannot decode a database root reference
+		},
+		{
+			name:       "ReferenceSlice (to end)",
+			pipeline:   client.Pipeline().Collection(coll.ID).Select(Fields(ReferenceSliceToEnd(ConstantOf(docRef1), 0).As("segments"))),
+			wantErrMsg: "takes [3..3] argument(s), but 2 were provided", // Backend expects exactly 3 arguments for reference_slice
+		},
+		{
+			name:     "ReferenceSliceToEnd (subdoc to doc)",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(ReferenceSlice(ConstantOf(subDocRef1), 0, 1).As("segments"))),
+			want:     map[string]interface{}{"segments": docRef1.Path},
+		},
+		{
+			name:       "ReferenceSlice (negative offset)",
+			pipeline:   client.Pipeline().Collection(coll.ID).Select(Fields(ReferenceSliceToEnd(ConstantOf(docRef1), -2).As("segments"))),
+			wantErrMsg: "takes [3..3] argument(s), but 2 were provided", // Backend expects exactly 3 arguments for reference_slice
+		},
+		{
+			name:     "ReferenceSlice (negative offset, explicit length)",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(ReferenceSlice(ConstantOf(subDocRef1), -2, 1).As("segments"))),
+			want:     map[string]interface{}{"segments": docRef1.Path},
+		},
+		{
+			name:       "ReferenceSlice (offset out of bounds)",
+			pipeline:   client.Pipeline().Collection(coll.ID).Select(Fields(ReferenceSliceToEnd(ConstantOf(docRef1), 100).As("segments"))),
+			wantErrMsg: "takes [3..3] argument(s), but 2 were provided", // Backend expects exactly 3 arguments for reference_slice
+		},
+		{
+			name:     "ReferenceSlice (length out of bounds)",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(ReferenceSlice(ConstantOf(docRef1), 0, 100).As("segments"))),
+			want:     map[string]interface{}{"segments": docRef1.Path},
+		},
+		{
+			name:       "ReferenceSlice (negative length)",
+			pipeline:   client.Pipeline().Collection(coll.ID).Select(Fields(ReferenceSlice(ConstantOf(docRef1), 0, -1).As("segments"))),
+			wantErrMsg: "length must be non-negative", // The backend throws an InvalidArgument error for negative lengths
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			ctx := context.Background()
+			iter := test.pipeline.Execute(ctx).Results()
+			defer iter.Stop()
+
+			docs, err := iter.GetAll()
+
+			if test.wantErrMsg != "" {
+				var gotErr error
+				if err != nil {
+					gotErr = err
+				} else if len(docs) == 1 {
+					var got map[string]interface{}
+					err = docs[0].DataTo(&got)
+					if err != nil {
+						gotErr = err
+					}
+				}
+
+				if gotErr == nil {
+					t.Fatalf("expected error containing %q for this operation, but it succeeded", test.wantErrMsg)
+				} else if !strings.Contains(gotErr.Error(), test.wantErrMsg) {
+					t.Fatalf("expected error to contain %q, but got: %v", test.wantErrMsg, gotErr)
+				}
+				return
+			}
+
+			if err != nil {
+				t.Fatalf("GetAll: %v", err)
+				return
+			}
+			if len(docs) != 1 {
+				t.Fatalf("expected 1 doc, got %d", len(docs))
+			}
+
+			var got map[string]interface{}
+			err = docs[0].DataTo(&got)
+			if err != nil {
+				t.Fatalf("DataTo: %v", err)
+			}
+
+			// Convert DocumentRef to path string for comparison
+			for k, v := range got {
+				if ref, ok := v.(*DocumentRef); ok {
+					got[k] = ref.Path
+				}
+			}
 			if diff := testutil.Diff(got, test.want); diff != "" {
 				t.Errorf("got: %v, want: %v, diff +want -got: %s", got, test.want, diff)
 			}
@@ -2536,11 +2835,11 @@ func generalFuncs(t *testing.T) {
 	client := integrationClient(t)
 	coll := client.Collection(collectionIDs.New())
 	docRef1 := coll.NewDoc()
+	t.Cleanup(func() { deleteDocuments([]*DocumentRef{docRef1}) })
 	h.mustCreate(docRef1, map[string]interface{}{
 		"a": "hello",
 		"b": "world",
 	})
-	defer deleteDocuments([]*DocumentRef{docRef1})
 
 	tests := []struct {
 		name     string
@@ -2549,58 +2848,73 @@ func generalFuncs(t *testing.T) {
 	}{
 		{
 			name:     "Length - string literal",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Length(ConstantOf("hello")).As("len")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Length(ConstantOf("hello")).As("len"))),
 			want:     map[string]interface{}{"len": int64(5)},
 		},
 		{
 			name:     "Length - field",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Length("a").As("len")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Length("a").As("len"))),
 			want:     map[string]interface{}{"len": int64(5)},
 		},
 		{
 			name:     "Length - field path",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Length(FieldPath{"a"}).As("len")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Length(FieldPath{"a"}).As("len"))),
 			want:     map[string]interface{}{"len": int64(5)},
 		},
 		{
 			name:     "Reverse - string literal",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Reverse(ConstantOf("hello")).As("reverse")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Reverse(ConstantOf("hello")).As("reverse"))),
 			want:     map[string]interface{}{"reverse": "olleh"},
 		},
 		{
 			name:     "Reverse - field",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Reverse("a").As("reverse")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Reverse("a").As("reverse"))),
 			want:     map[string]interface{}{"reverse": "olleh"},
 		},
 		{
 			name:     "Reverse - field path",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Reverse(FieldPath{"a"}).As("reverse")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Reverse(FieldPath{"a"}).As("reverse"))),
 			want:     map[string]interface{}{"reverse": "olleh"},
 		},
 		{
 			name:     "Concat - two literals",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Concat(ConstantOf("hello"), ConstantOf("world")).As("concat")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Concat(ConstantOf("hello"), ConstantOf("world")).As("concat"))),
 			want:     map[string]interface{}{"concat": "helloworld"},
 		},
 		{
 			name:     "Concat - literal and field",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Concat(ConstantOf("hello"), FieldOf("b")).As("concat")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Concat(ConstantOf("hello"), FieldOf("b")).As("concat"))),
 			want:     map[string]interface{}{"concat": "helloworld"},
 		},
 		{
 			name:     "Concat - two fields",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Concat(FieldOf("a"), FieldOf("b")).As("concat")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Concat(FieldOf("a"), FieldOf("b")).As("concat"))),
 			want:     map[string]interface{}{"concat": "helloworld"},
 		},
 		{
 			name:     "Concat - field and literal",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Concat(FieldOf("a"), ConstantOf("world")).As("concat")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Concat(FieldOf("a"), ConstantOf("world")).As("concat"))),
 			want:     map[string]interface{}{"concat": "helloworld"},
 		},
 		{
 			name:     "CurrentDocument",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(CurrentDocument().As("doc")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(CurrentDocument().As("doc"))),
 			want:     map[string]interface{}{"doc": map[string]interface{}{"a": "hello", "b": "world"}},
+		},
+		{
+			name:     "Coalesce - fallback",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Coalesce("non_existent", "fallback").As("coalesce"))),
+			want:     map[string]interface{}{"coalesce": "fallback"},
+		},
+		{
+			name:     "Coalesce - field",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Coalesce("a", "fallback").As("coalesce"))),
+			want:     map[string]interface{}{"coalesce": "hello"},
+		},
+		{
+			name:     "StorageSize",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(StorageSize("a").GreaterThan(int64(0)).As("size_gt_0"))),
+			want:     map[string]interface{}{"size_gt_0": true},
 		},
 	}
 
@@ -2642,6 +2956,11 @@ func logicalFuncs(t *testing.T) {
 	client := integrationClient(t)
 	coll := client.Collection(collectionIDs.New())
 	docRef1 := coll.Doc("doc1")
+	docRef2 := coll.Doc("doc2")
+
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{docRef1, docRef2})
+	})
 	doc1Data := map[string]interface{}{
 		"a": 1,
 		"b": 2,
@@ -2650,8 +2969,6 @@ func logicalFuncs(t *testing.T) {
 		"e": false,
 	}
 	h.mustCreate(docRef1, doc1Data)
-
-	docRef2 := coll.Doc("doc2")
 	doc2Data := map[string]interface{}{
 		"a": 1,
 		"b": 1,
@@ -2659,7 +2976,6 @@ func logicalFuncs(t *testing.T) {
 		"e": true,
 	}
 	h.mustCreate(docRef2, doc2Data)
-	defer deleteDocuments([]*DocumentRef{docRef1, docRef2})
 
 	doc1Want := map[string]interface{}{
 		"a": int64(1),
@@ -2682,62 +2998,62 @@ func logicalFuncs(t *testing.T) {
 	}{
 		{
 			name:     "Conditional - true",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Conditional(Equal(ConstantOf(1), ConstantOf(1)), FieldOf("a"), FieldOf("b")).As("result")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Conditional(Equal(ConstantOf(1), ConstantOf(1)), FieldOf("a"), FieldOf("b")).As("result"))),
 			want:     []map[string]interface{}{{"result": int64(1)}, {"result": int64(1)}},
 		},
 		{
 			name:     "Conditional - false",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Conditional(Equal(ConstantOf(1), ConstantOf(0)), FieldOf("a"), FieldOf("b")).As("result")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Conditional(Equal(ConstantOf(1), ConstantOf(0)), FieldOf("a"), FieldOf("b")).As("result"))),
 			want:     []map[string]interface{}{{"result": int64(2)}, {"result": int64(1)}},
 		},
 		{
 			name:     "Conditional - field true",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Conditional(Equal(FieldOf("d"), ConstantOf(true)), FieldOf("a"), FieldOf("b")).As("result")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Conditional(Equal(FieldOf("d"), ConstantOf(true)), FieldOf("a"), FieldOf("b")).As("result"))),
 			want:     []map[string]interface{}{{"result": int64(1)}, {"result": int64(1)}},
 		},
 		{
 			name:     "Conditional - field false",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Conditional(Equal(FieldOf("e"), ConstantOf(true)), FieldOf("a"), FieldOf("b")).As("result")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Conditional(Equal(FieldOf("e"), ConstantOf(true)), FieldOf("a"), FieldOf("b")).As("result"))),
 			want:     []map[string]interface{}{{"result": int64(2)}, {"result": int64(1)}},
 		},
 		{
 			name:     "LogicalMax",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(LogicalMaximum(FieldOf("a"), FieldOf("b")).As("max")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(LogicalMaximum(FieldOf("a"), FieldOf("b")).As("max"))),
 			want:     []map[string]interface{}{{"max": int64(2)}, {"max": int64(1)}},
 		},
 		{
 			name:     "LogicalMin",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(LogicalMinimum(FieldOf("a"), FieldOf("b")).As("min")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(LogicalMinimum(FieldOf("a"), FieldOf("b")).As("min"))),
 			want:     []map[string]interface{}{{"min": int64(1)}, {"min": int64(1)}},
 		},
 		{
 			name:     "IfError - no error",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(IfError(FieldOf("a"), ConstantOf(100)).As("result")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(IfError(FieldOf("a"), ConstantOf(100)).As("result"))),
 			want:     []map[string]interface{}{{"result": int64(1)}, {"result": int64(1)}},
 		},
 		{
 			name:     "IfError - error",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(Divide("a", 0).IfError(ConstantOf("was error")).As("ifError")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Divide("a", 0).IfError(ConstantOf("was error")).As("ifError"))),
 			want:     []map[string]interface{}{{"ifError": "was error"}, {"ifError": "was error"}},
 		},
 		{
 			name:     "IfErrorBoolean - no error",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(IfErrorBoolean(Equal(FieldOf("d"), ConstantOf(true)), Equal(ConstantOf(1), ConstantOf(0))).As("result")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(IfErrorBoolean(Equal(FieldOf("d"), ConstantOf(true)), Equal(ConstantOf(1), ConstantOf(0))).As("result"))),
 			want:     []map[string]interface{}{{"result": true}, {"result": true}},
 		},
 		{
 			name:     "IfErrorBoolean - error",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(IfErrorBoolean(Equal(FieldOf("x"), ConstantOf(true)), Equal(ConstantOf(1), ConstantOf(0))).As("result")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(IfErrorBoolean(Equal(FieldOf("x"), ConstantOf(true)), Equal(ConstantOf(1), ConstantOf(0))).As("result"))),
 			want:     []map[string]interface{}{{"result": false}, {"result": false}},
 		},
 		{
 			name:     "IfAbsent - not absent",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(IfAbsent(FieldOf("a"), ConstantOf(100)).As("result")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(IfAbsent(FieldOf("a"), ConstantOf(100)).As("result"))),
 			want:     []map[string]interface{}{{"result": int64(1)}, {"result": int64(1)}},
 		},
 		{
 			name:     "IfAbsent - absent",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(IfAbsent(FieldOf("x"), ConstantOf(100)).As("result")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(IfAbsent(FieldOf("x"), ConstantOf(100)).As("result"))),
 			want:     []map[string]interface{}{{"result": int64(100)}, {"result": int64(100)}},
 		},
 		{
@@ -2804,17 +3120,17 @@ func logicalFuncs(t *testing.T) {
 		},
 		{
 			name:     "IfNull",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(IfNull(FieldOf("c"), 0).As("result")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(IfNull(FieldOf("c"), 0).As("result"))),
 			want:     []map[string]interface{}{{"result": int64(0)}, {"result": int64(0)}},
 		},
 		{
 			name:     "Switch",
-			pipeline: client.Pipeline().Collection(coll.ID).Select(SwitchOn(Equal(FieldOf("b"), 1), "one", Equal(FieldOf("b"), 2), "two", "other").As("result")),
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(SwitchOn(Equal(FieldOf("b"), 1), "one", Equal(FieldOf("b"), 2), "two", "other").As("result"))),
 			want:     []map[string]interface{}{{"result": "one"}, {"result": "two"}},
 		},
 		{
 			name:     "CountIf",
-			pipeline: client.Pipeline().Collection(coll.ID).Aggregate(Equal(FieldOf("b"), 2).CountIf().As("count_b_is_2")),
+			pipeline: client.Pipeline().Collection(coll.ID).Aggregate(Accumulators(Equal(FieldOf("b"), 2).CountIf().As("count_b_is_2"))),
 			want:     []map[string]interface{}{{"count_b_is_2": int64(1)}},
 		},
 	}
@@ -2927,4 +3243,167 @@ func logicalFuncs(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestIntegration_PipelineSubqueriesAndVariables(t *testing.T) {
+	skipIfEdition(t, "Pipeline queries", editionStandard)
+	ctx := context.Background()
+	client := integrationClient(t)
+	coll := integrationColl(t)
+
+	// Create test documents
+	restaurantsRef := coll.NewDoc()
+
+	t.Cleanup(func() {
+		restaurantsRef.Delete(ctx)
+	})
+	_, err := restaurantsRef.Create(ctx, map[string]interface{}{
+		"name": "The Burger Joint",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	review1Ref := restaurantsRef.Collection("reviews").NewDoc()
+	_, err = review1Ref.Create(ctx, map[string]interface{}{
+		"reviewer": "Alice",
+		"rating":   5,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	review2Ref := restaurantsRef.Collection("reviews").NewDoc()
+
+	t.Cleanup(func() {
+		review1Ref.Delete(ctx)
+		review2Ref.Delete(ctx)
+	})
+	_, err = review2Ref.Create(ctx, map[string]interface{}{
+		"reviewer": "Bob",
+		"rating":   4,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	productsRef := coll.NewDoc()
+
+	t.Cleanup(func() {
+
+		productsRef.Delete(ctx)
+
+	})
+	_, err = productsRef.Create(ctx, map[string]interface{}{
+		"name":  "Widget",
+		"price": 100,
+		"stock": 20,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Run("SubcollectionAndScalar", func(t *testing.T) {
+		iter := client.Pipeline().Documents([]*DocumentRef{restaurantsRef}).
+			AddFields(Selectables(
+				Subcollection("reviews").
+					Aggregate(Accumulators(Average("rating").As("avg_score"))).
+					ToScalarExpression().As("stats"),
+			)).Execute(ctx).Results()
+
+		res, err := iter.GetAll()
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(res) != 1 {
+			t.Fatalf("expected 1 doc, got %d", len(res))
+		}
+
+		data := res[0].Data()
+		stats, ok := data["stats"].(float64)
+		if !ok {
+			t.Fatalf("expected stats to be float64, got %T", data["stats"])
+		}
+		if stats != 4.5 {
+			t.Errorf("expected stats 4.5, got %v", stats)
+		}
+	})
+
+	t.Run("SubcollectionAndArray", func(t *testing.T) {
+		iter := client.Pipeline().Documents([]*DocumentRef{restaurantsRef}).
+			AddFields(Selectables(
+				Subcollection("reviews").
+					Select(Fields("reviewer", "rating")).
+					Sort(Orders(Ascending(FieldOf("reviewer")))).
+					ToArrayExpression().As("reviews"),
+			)).Execute(ctx).Results()
+
+		res, err := iter.GetAll()
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(res) != 1 {
+			t.Fatalf("expected 1 doc, got %d", len(res))
+		}
+
+		data := res[0].Data()
+		reviews, ok := data["reviews"].([]interface{})
+		if !ok {
+			t.Fatalf("expected reviews to be array, got %T", data["reviews"])
+		}
+		if len(reviews) != 2 {
+			t.Fatalf("expected 2 reviews, got %d", len(reviews))
+		}
+		r1 := reviews[0].(map[string]interface{})
+		if r1["reviewer"] != "Alice" || r1["rating"].(int64) != 5 {
+			t.Errorf("expected Alice with rating 5, got %v", r1)
+		}
+	})
+
+	t.Run("DefineAndVariable", func(t *testing.T) {
+		iter := client.Pipeline().Documents([]*DocumentRef{productsRef}).
+			Define(AliasedExpressions(
+				Multiply("price", 0.9).As("discountedPrice"),
+				Add("stock", 10).As("newStock"),
+			)).
+			Where(LessThan(Variable("discountedPrice"), 100)).
+			Select(Fields("name", Variable("newStock").As("newStock"))).
+			Execute(ctx).Results()
+
+		res, err := iter.GetAll()
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(res) != 1 {
+			t.Fatalf("expected 1 doc, got %d", len(res))
+		}
+
+		data := res[0].Data()
+		if data["name"] != "Widget" {
+			t.Errorf("expected name Widget, got %v", data["name"])
+		}
+		if data["newStock"].(int64) != 30 {
+			t.Errorf("expected newStock 30, got %v", data["newStock"])
+		}
+	})
+
+	t.Run("CurrentDocument", func(t *testing.T) {
+		iter := client.Pipeline().Documents([]*DocumentRef{productsRef}).
+			Define(AliasedExpressions(CurrentDocument().As("doc"))).
+			Select(Fields(MapGet(Variable("doc"), "name").As("name"))).
+			Execute(ctx).Results()
+
+		res, err := iter.GetAll()
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(res) != 1 {
+			t.Fatalf("expected 1 doc, got %d", len(res))
+		}
+
+		data := res[0].Data()
+		if data["name"] != "Widget" {
+			t.Errorf("expected name Widget, got %v", data["name"])
+		}
+	})
 }

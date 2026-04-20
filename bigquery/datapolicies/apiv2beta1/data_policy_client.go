@@ -29,6 +29,7 @@ import (
 	datapoliciespb "cloud.google.com/go/bigquery/datapolicies/apiv2beta1/datapoliciespb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -487,6 +488,16 @@ type dataPolicyGRPCClient struct {
 // Data Policy Service provides APIs for managing the BigQuery Data Policy.
 func NewDataPolicyClient(ctx context.Context, opts ...option.ClientOption) (*DataPolicyClient, error) {
 	clientOpts := defaultDataPolicyGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "bigquerydatapolicy",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/bigquery/datapolicies/apiv2beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "bigquerydatapolicy.googleapis.com",
+		}))
+	}
 	if newDataPolicyClientHook != nil {
 		hookOpts, err := newDataPolicyClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -508,6 +519,29 @@ func NewDataPolicyClient(ctx context.Context, opts ...option.ClientOption) (*Dat
 		logger:           internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "bigquerydatapolicy",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/datapolicies/apiv2beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "bigquerydatapolicy.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateDataPolicy = append(client.CallOptions.CreateDataPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.AddGrantees = append(client.CallOptions.AddGrantees, gax.WithClientMetrics(metrics))
+		client.CallOptions.RemoveGrantees = append(client.CallOptions.RemoveGrantees, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateDataPolicy = append(client.CallOptions.UpdateDataPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteDataPolicy = append(client.CallOptions.DeleteDataPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetDataPolicy = append(client.CallOptions.GetDataPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListDataPolicies = append(client.CallOptions.ListDataPolicies, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -561,6 +595,16 @@ type dataPolicyRESTClient struct {
 // Data Policy Service provides APIs for managing the BigQuery Data Policy.
 func NewDataPolicyRESTClient(ctx context.Context, opts ...option.ClientOption) (*DataPolicyClient, error) {
 	clientOpts := append(defaultDataPolicyRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "bigquerydatapolicy",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/bigquery/datapolicies/apiv2beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "bigquerydatapolicy.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -574,6 +618,30 @@ func NewDataPolicyRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "bigquerydatapolicy",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/datapolicies/apiv2beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "bigquerydatapolicy.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateDataPolicy = append(callOpts.CreateDataPolicy, gax.WithClientMetrics(metrics))
+		callOpts.AddGrantees = append(callOpts.AddGrantees, gax.WithClientMetrics(metrics))
+		callOpts.RemoveGrantees = append(callOpts.RemoveGrantees, gax.WithClientMetrics(metrics))
+		callOpts.UpdateDataPolicy = append(callOpts.UpdateDataPolicy, gax.WithClientMetrics(metrics))
+		callOpts.DeleteDataPolicy = append(callOpts.DeleteDataPolicy, gax.WithClientMetrics(metrics))
+		callOpts.GetDataPolicy = append(callOpts.GetDataPolicy, gax.WithClientMetrics(metrics))
+		callOpts.ListDataPolicies = append(callOpts.ListDataPolicies, gax.WithClientMetrics(metrics))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+	}
 
 	return &DataPolicyClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -620,6 +688,12 @@ func (c *dataPolicyGRPCClient) CreateDataPolicy(ctx context.Context, req *datapo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatapolicy.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datapolicies.v2beta1.DataPolicyService/CreateDataPolicy")
+	}
 	opts = append((*c.CallOptions).CreateDataPolicy[0:len((*c.CallOptions).CreateDataPolicy):len((*c.CallOptions).CreateDataPolicy)], opts...)
 	var resp *datapoliciespb.DataPolicy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -638,6 +712,12 @@ func (c *dataPolicyGRPCClient) AddGrantees(ctx context.Context, req *datapolicie
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatapolicy.googleapis.com/%v", req.GetDataPolicy()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datapolicies.v2beta1.DataPolicyService/AddGrantees")
+	}
 	opts = append((*c.CallOptions).AddGrantees[0:len((*c.CallOptions).AddGrantees):len((*c.CallOptions).AddGrantees)], opts...)
 	var resp *datapoliciespb.DataPolicy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -656,6 +736,12 @@ func (c *dataPolicyGRPCClient) RemoveGrantees(ctx context.Context, req *datapoli
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatapolicy.googleapis.com/%v", req.GetDataPolicy()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datapolicies.v2beta1.DataPolicyService/RemoveGrantees")
+	}
 	opts = append((*c.CallOptions).RemoveGrantees[0:len((*c.CallOptions).RemoveGrantees):len((*c.CallOptions).RemoveGrantees)], opts...)
 	var resp *datapoliciespb.DataPolicy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -674,6 +760,12 @@ func (c *dataPolicyGRPCClient) UpdateDataPolicy(ctx context.Context, req *datapo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatapolicy.googleapis.com/%v", req.GetDataPolicy().GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datapolicies.v2beta1.DataPolicyService/UpdateDataPolicy")
+	}
 	opts = append((*c.CallOptions).UpdateDataPolicy[0:len((*c.CallOptions).UpdateDataPolicy):len((*c.CallOptions).UpdateDataPolicy)], opts...)
 	var resp *datapoliciespb.DataPolicy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -692,6 +784,12 @@ func (c *dataPolicyGRPCClient) DeleteDataPolicy(ctx context.Context, req *datapo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatapolicy.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datapolicies.v2beta1.DataPolicyService/DeleteDataPolicy")
+	}
 	opts = append((*c.CallOptions).DeleteDataPolicy[0:len((*c.CallOptions).DeleteDataPolicy):len((*c.CallOptions).DeleteDataPolicy)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -706,6 +804,12 @@ func (c *dataPolicyGRPCClient) GetDataPolicy(ctx context.Context, req *datapolic
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatapolicy.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datapolicies.v2beta1.DataPolicyService/GetDataPolicy")
+	}
 	opts = append((*c.CallOptions).GetDataPolicy[0:len((*c.CallOptions).GetDataPolicy):len((*c.CallOptions).GetDataPolicy)], opts...)
 	var resp *datapoliciespb.DataPolicy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -724,6 +828,12 @@ func (c *dataPolicyGRPCClient) ListDataPolicies(ctx context.Context, req *datapo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatapolicy.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datapolicies.v2beta1.DataPolicyService/ListDataPolicies")
+	}
 	opts = append((*c.CallOptions).ListDataPolicies[0:len((*c.CallOptions).ListDataPolicies):len((*c.CallOptions).ListDataPolicies)], opts...)
 	it := &DataPolicyIterator{}
 	req = proto.Clone(req).(*datapoliciespb.ListDataPoliciesRequest)
@@ -770,6 +880,12 @@ func (c *dataPolicyGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetI
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatapolicy.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datapolicies.v2beta1.DataPolicyService/GetIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -788,6 +904,12 @@ func (c *dataPolicyGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetI
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatapolicy.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datapolicies.v2beta1.DataPolicyService/SetIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -806,6 +928,12 @@ func (c *dataPolicyGRPCClient) TestIamPermissions(ctx context.Context, req *iamp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatapolicy.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datapolicies.v2beta1.DataPolicyService/TestIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -845,6 +973,13 @@ func (c *dataPolicyRESTClient) CreateDataPolicy(ctx context.Context, req *datapo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatapolicy.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datapolicies.v2beta1.DataPolicyService/CreateDataPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta1/{parent=projects/*/locations/*}/dataPolicies")
+	}
 	opts = append((*c.CallOptions).CreateDataPolicy[0:len((*c.CallOptions).CreateDataPolicy):len((*c.CallOptions).CreateDataPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datapoliciespb.DataPolicy{}
@@ -905,6 +1040,13 @@ func (c *dataPolicyRESTClient) AddGrantees(ctx context.Context, req *datapolicie
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatapolicy.googleapis.com/%v", req.GetDataPolicy()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datapolicies.v2beta1.DataPolicyService/AddGrantees")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta1/{data_policy=projects/*/locations/*/dataPolicies/*}:addGrantees")
+	}
 	opts = append((*c.CallOptions).AddGrantees[0:len((*c.CallOptions).AddGrantees):len((*c.CallOptions).AddGrantees)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datapoliciespb.DataPolicy{}
@@ -964,6 +1106,13 @@ func (c *dataPolicyRESTClient) RemoveGrantees(ctx context.Context, req *datapoli
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatapolicy.googleapis.com/%v", req.GetDataPolicy()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datapolicies.v2beta1.DataPolicyService/RemoveGrantees")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta1/{data_policy=projects/*/locations/*/dataPolicies/*}:removeGrantees")
+	}
 	opts = append((*c.CallOptions).RemoveGrantees[0:len((*c.CallOptions).RemoveGrantees):len((*c.CallOptions).RemoveGrantees)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datapoliciespb.DataPolicy{}
@@ -1029,6 +1178,13 @@ func (c *dataPolicyRESTClient) UpdateDataPolicy(ctx context.Context, req *datapo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatapolicy.googleapis.com/%v", req.GetDataPolicy().GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datapolicies.v2beta1.DataPolicyService/UpdateDataPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta1/{data_policy.name=projects/*/locations/*/dataPolicies/*}")
+	}
 	opts = append((*c.CallOptions).UpdateDataPolicy[0:len((*c.CallOptions).UpdateDataPolicy):len((*c.CallOptions).UpdateDataPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datapoliciespb.DataPolicy{}
@@ -1079,6 +1235,13 @@ func (c *dataPolicyRESTClient) DeleteDataPolicy(ctx context.Context, req *datapo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatapolicy.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datapolicies.v2beta1.DataPolicyService/DeleteDataPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta1/{name=projects/*/locations/*/dataPolicies/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1114,6 +1277,13 @@ func (c *dataPolicyRESTClient) GetDataPolicy(ctx context.Context, req *datapolic
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatapolicy.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datapolicies.v2beta1.DataPolicyService/GetDataPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta1/{name=projects/*/locations/*/dataPolicies/*}")
+	}
 	opts = append((*c.CallOptions).GetDataPolicy[0:len((*c.CallOptions).GetDataPolicy):len((*c.CallOptions).GetDataPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datapoliciespb.DataPolicy{}
@@ -1248,6 +1418,13 @@ func (c *dataPolicyRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetI
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatapolicy.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datapolicies.v2beta1.DataPolicyService/GetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta1/{resource=projects/*/locations/*/dataPolicies/*}:getIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -1304,6 +1481,13 @@ func (c *dataPolicyRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetI
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatapolicy.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datapolicies.v2beta1.DataPolicyService/SetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta1/{resource=projects/*/locations/*/dataPolicies/*}:setIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -1360,6 +1544,13 @@ func (c *dataPolicyRESTClient) TestIamPermissions(ctx context.Context, req *iamp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerydatapolicy.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.datapolicies.v2beta1.DataPolicyService/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta1/{resource=projects/*/locations/*/dataPolicies/*}:testIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.TestIamPermissionsResponse{}

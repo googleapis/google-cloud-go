@@ -1,5 +1,11 @@
 # Changes
 
+## [0.5.0](https://github.com/googleapis/google-cloud-go/releases/tag/securityposture%2Fv0.5.0) (2026-04-13)
+
+## [0.4.0](https://github.com/googleapis/google-cloud-go/releases/tag/securityposture%2Fv0.4.0) (2026-04-09)
+
+## [0.3.0](https://github.com/googleapis/google-cloud-go/releases/tag/securityposture%2Fv0.3.0) (2026-04-02)
+
 ## [0.2.6](https://github.com/googleapis/google-cloud-go/compare/securityposture/v0.2.5...securityposture/v0.2.6) (2025-09-22)
 
 

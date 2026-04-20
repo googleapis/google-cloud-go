@@ -23,13 +23,18 @@ import (
 	"math/rand"
 	"sort"
 	"sync"
+	"sync/atomic"
 
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
+	"google.golang.org/grpc/connectivity"
 )
 
 const (
 	maxLocalReplicaDistance        = 5
 	defaultMinEntriesForRandomPick = 1000
+	maxRangesPerPartition          = 1024
+	groupCacheShardBits            = 12
+	groupCacheShardCount           = 1 << groupCacheShardBits
 )
 
 var crc32cTable = crc32.MakeTable(crc32.Castagnoli)
@@ -42,15 +47,16 @@ const (
 )
 
 type keyRangeCache struct {
-	endpointCache channelEndpointCache
-
-	mu     sync.Mutex
-	ranges []*cachedRange // sorted by limit key
-	groups map[uint64]*cachedGroup
-
-	accessCounter               int64
+	endpointCache               channelEndpointCache
+	updateMu                    sync.Mutex
+	configMu                    sync.RWMutex
+	lifecycleManager            *endpointLifecycleManager
 	deterministicRandom         bool
 	minEntriesForRandomPickHint int
+
+	state atomic.Value // *keyRangeCacheState
+
+	accessCounter atomic.Int64
 }
 
 type cachedTablet struct {
@@ -65,6 +71,85 @@ type cachedTablet struct {
 	endpoint channelEndpoint
 }
 
+type routeSelectionDetails struct {
+	defaultReasonCode string
+
+	selectedEndpoint       string
+	selectedIsFirstReplica bool
+	selectedIsLeader       bool
+
+	resourceExhaustedExclusions map[string]struct{}
+	transientFailureSkips       map[string]struct{}
+	notReadySkips               map[string]struct{}
+}
+
+func newRouteSelectionDetails() routeSelectionDetails {
+	return routeSelectionDetails{
+		resourceExhaustedExclusions: make(map[string]struct{}),
+		transientFailureSkips:       make(map[string]struct{}),
+		notReadySkips:               make(map[string]struct{}),
+	}
+}
+
+const (
+	routeReasonRangeCacheMiss          = "range_cache_miss"
+	routeReasonNoHealthyTabletForGroup = "no_healthy_tablet_for_group"
+)
+
+func (d *routeSelectionDetails) addResourceExhaustedExclusion(address string) {
+	if d == nil || address == "" {
+		return
+	}
+	d.resourceExhaustedExclusions[address] = struct{}{}
+}
+
+func (d *routeSelectionDetails) addTransientFailureSkip(address string) {
+	if d == nil || address == "" {
+		return
+	}
+	d.transientFailureSkips[address] = struct{}{}
+}
+
+func (d *routeSelectionDetails) addNotReadySkip(address string) {
+	if d == nil || address == "" {
+		return
+	}
+	d.notReadySkips[address] = struct{}{}
+}
+
+func (d *routeSelectionDetails) setSelectedTablet(address string, isFirstReplica, isLeader bool) {
+	if d == nil {
+		return
+	}
+	d.selectedEndpoint = address
+	d.selectedIsFirstReplica = isFirstReplica
+	d.selectedIsLeader = isLeader
+}
+
+func (d *routeSelectionDetails) resourceExhaustedExclusionList() []string {
+	return routeSelectionDetailKeys(d.resourceExhaustedExclusions)
+}
+
+func (d *routeSelectionDetails) transientFailureSkipList() []string {
+	return routeSelectionDetailKeys(d.transientFailureSkips)
+}
+
+func (d *routeSelectionDetails) notReadySkipList() []string {
+	return routeSelectionDetailKeys(d.notReadySkips)
+}
+
+func routeSelectionDetailKeys(m map[string]struct{}) []string {
+	if len(m) == 0 {
+		return nil
+	}
+	keys := make([]string, 0, len(m))
+	for key := range m {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+	return keys
+}
+
 type cachedGroup struct {
 	groupUID uint64
 
@@ -72,127 +157,406 @@ type cachedGroup struct {
 	generation []byte
 	tablets    []*cachedTablet
 	leaderIdx  int
-
-	refs int32
 }
 
 type cachedRange struct {
 	startKey   []byte
 	limitKey   []byte
-	group      *cachedGroup
+	groupUID   uint64
 	splitID    uint64
 	generation []byte
 	lastAccess int64
+}
+
+type rangePartition struct {
+	startKey []byte
+	limitKey []byte
+	ranges   []*cachedRange
+}
+
+type keyRangeCacheState struct {
+	partitions  []*rangePartition
+	groupShards [groupCacheShardCount]map[uint64]*cachedGroup
+	groupCount  int
+	rangeCount  int
+}
+
+type keyRangeCacheRoutingConfig struct {
+	lifecycleManager        *endpointLifecycleManager
+	deterministicRandom     bool
+	minEntriesForRandomPick int
+}
+
+type keyRangeCacheStateBuilder struct {
+	cache                 *keyRangeCache
+	partitions            []*rangePartition
+	groupShards           [groupCacheShardCount]map[uint64]*cachedGroup
+	clonedGroupShards     [groupCacheShardCount]bool
+	mutableGroups         map[uint64]struct{}
+	overlappingRanges     int
+	rangesInserted        int
+	rangesRemoved         int
+	clonedRangeShardCount int
+	rangeShardSizeSum     int
+	rangeShardSizeMax     int
+	groupShardSizeSum     int
+	groupShardSizeMax     int
+	groupCount            int
+	rangeCount            int
 }
 
 func newKeyRangeCache(endpointCache channelEndpointCache) *keyRangeCache {
 	if endpointCache == nil {
 		endpointCache = newPassthroughChannelEndpointCache()
 	}
-	return &keyRangeCache{
+	cache := &keyRangeCache{
 		endpointCache:               endpointCache,
-		groups:                      make(map[uint64]*cachedGroup),
 		minEntriesForRandomPickHint: defaultMinEntriesForRandomPick,
 	}
+	cache.state.Store(&keyRangeCacheState{})
+	return cache
 }
 
 func (c *keyRangeCache) useDeterministicRandom() {
-	c.mu.Lock()
-	defer c.mu.Unlock()
+	c.configMu.Lock()
+	defer c.configMu.Unlock()
 	c.deterministicRandom = true
 }
 
 func (c *keyRangeCache) setMinEntriesForRandomPick(value int) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
+	c.configMu.Lock()
+	defer c.configMu.Unlock()
 	if value <= 0 {
 		value = defaultMinEntriesForRandomPick
 	}
 	c.minEntriesForRandomPickHint = value
 }
 
+func (c *keyRangeCache) setLifecycleManager(lifecycleManager *endpointLifecycleManager) {
+	c.configMu.Lock()
+	defer c.configMu.Unlock()
+	c.lifecycleManager = lifecycleManager
+}
+
+func (c *keyRangeCache) loadState() *keyRangeCacheState {
+	state, _ := c.state.Load().(*keyRangeCacheState)
+	if state == nil {
+		return &keyRangeCacheState{}
+	}
+	return state
+}
+
+func (c *keyRangeCache) loadRoutingConfig() keyRangeCacheRoutingConfig {
+	c.configMu.RLock()
+	defer c.configMu.RUnlock()
+	minEntries := c.minEntriesForRandomPickHint
+	if minEntries <= 0 {
+		minEntries = defaultMinEntriesForRandomPick
+	}
+	return keyRangeCacheRoutingConfig{
+		lifecycleManager:        c.lifecycleManager,
+		deterministicRandom:     c.deterministicRandom,
+		minEntriesForRandomPick: minEntries,
+	}
+}
+
+func cloneCachedGroup(group *cachedGroup) *cachedGroup {
+	if group == nil {
+		return nil
+	}
+	group.mu.Lock()
+	defer group.mu.Unlock()
+	cloned := &cachedGroup{
+		groupUID:   group.groupUID,
+		generation: append([]byte(nil), group.generation...),
+		leaderIdx:  group.leaderIdx,
+		tablets:    make([]*cachedTablet, 0, len(group.tablets)),
+	}
+	for _, tablet := range group.tablets {
+		if tablet == nil {
+			cloned.tablets = append(cloned.tablets, nil)
+			continue
+		}
+		cloned.tablets = append(cloned.tablets, &cachedTablet{
+			tabletUID:     tablet.tabletUID,
+			incarnation:   append([]byte(nil), tablet.incarnation...),
+			serverAddress: tablet.serverAddress,
+			distance:      tablet.distance,
+			skip:          tablet.skip,
+			role:          tablet.role,
+			location:      tablet.location,
+			endpoint:      tablet.endpoint,
+		})
+	}
+	return cloned
+}
+
+func (c *keyRangeCache) cloneState() *keyRangeCacheStateBuilder {
+	current := c.loadState()
+	builder := &keyRangeCacheStateBuilder{
+		cache:         c,
+		partitions:    append([]*rangePartition(nil), current.partitions...),
+		mutableGroups: make(map[uint64]struct{}),
+		groupCount:    current.groupCount,
+		rangeCount:    current.rangeCount,
+	}
+	for shardIdx := range current.groupShards {
+		builder.groupShards[shardIdx] = current.groupShards[shardIdx]
+	}
+	return builder
+}
+
+func (b *keyRangeCacheStateBuilder) snapshot() *keyRangeCacheState {
+	return &keyRangeCacheState{
+		partitions:  b.partitions,
+		groupShards: b.groupShards,
+		groupCount:  b.groupCount,
+		rangeCount:  b.rangeCount,
+	}
+}
+
+func groupShardIndex(groupUID uint64) int {
+	return int(mixUint64(groupUID) & uint64(groupCacheShardCount-1))
+}
+
+func mixUint64(v uint64) uint64 {
+	v ^= v >> 30
+	v *= 0xbf58476d1ce4e5b9
+	v ^= v >> 27
+	v *= 0x94d049bb133111eb
+	v ^= v >> 31
+	return v
+}
+
+func (b *keyRangeCacheStateBuilder) cloneGroupShard(idx int) {
+	if idx < 0 || idx >= groupCacheShardCount || b.clonedGroupShards[idx] {
+		return
+	}
+	original := b.groupShards[idx]
+	b.groupShardSizeSum += len(original)
+	if len(original) > b.groupShardSizeMax {
+		b.groupShardSizeMax = len(original)
+	}
+	if len(original) == 0 {
+		b.groupShards[idx] = make(map[uint64]*cachedGroup)
+		b.clonedGroupShards[idx] = true
+		return
+	}
+	cloned := make(map[uint64]*cachedGroup, len(original))
+	for groupUID, group := range original {
+		cloned[groupUID] = group
+	}
+	b.groupShards[idx] = cloned
+	b.clonedGroupShards[idx] = true
+}
+
 func (c *keyRangeCache) addRanges(cacheUpdate *sppb.CacheUpdate) {
 	if cacheUpdate == nil {
 		return
 	}
-	c.mu.Lock()
-	defer c.mu.Unlock()
 
+	c.updateMu.Lock()
+	defer c.updateMu.Unlock()
+
+	builder := c.cloneState()
 	newGroups := make([]*cachedGroup, 0, len(cacheUpdate.GetGroup()))
 	for _, groupIn := range cacheUpdate.GetGroup() {
-		newGroups = append(newGroups, c.findOrInsertGroup(groupIn))
+		newGroups = append(newGroups, builder.findOrInsertGroup(groupIn))
 	}
 	for _, rangeIn := range cacheUpdate.GetRange() {
-		c.replaceRangeIfNewer(rangeIn)
+		builder.replaceRangeIfNewer(rangeIn)
 	}
 	for _, group := range newGroups {
-		c.unrefGroup(group)
+		builder.unrefGroup(group)
 	}
+	c.state.Store(builder.snapshot())
 }
 
 func (c *keyRangeCache) fillRoutingHint(ctx context.Context, preferLeader bool, mode rangeMode, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint) channelEndpoint {
+	return c.fillRoutingHintWithExclusions(ctx, preferLeader, mode, directedReadOptions, hint, nil)
+}
+
+func (c *keyRangeCache) fillRoutingHintWithExclusions(ctx context.Context, preferLeader bool, mode rangeMode, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint, excludedEndpoints endpointExcluder) channelEndpoint {
+	endpoint, _ := c.fillRoutingHintWithExclusionsAndDetails(ctx, preferLeader, mode, directedReadOptions, hint, excludedEndpoints)
+	return endpoint
+}
+
+func (c *keyRangeCache) fillRoutingHintWithExclusionsAndDetails(ctx context.Context, preferLeader bool, mode rangeMode, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint, excludedEndpoints endpointExcluder) (channelEndpoint, routeSelectionDetails) {
+	details := newRouteSelectionDetails()
 	if hint == nil || len(hint.GetKey()) == 0 {
-		return nil
+		details.defaultReasonCode = routeReasonRangeCacheMiss
+		return nil, details
 	}
 	if directedReadOptions == nil {
 		directedReadOptions = &sppb.DirectedReadOptions{}
 	}
 
-	c.mu.Lock()
-	targetRange := c.findRangeLocked(hint.GetKey(), hint.GetLimitKey(), mode)
-	c.mu.Unlock()
-	if targetRange == nil || targetRange.group == nil {
-		return nil
+	state := c.loadState()
+	cfg := c.loadRoutingConfig()
+	targetRange := c.findRangeInState(state, hint.GetKey(), hint.GetLimitKey(), mode, cfg)
+	if targetRange == nil {
+		details.defaultReasonCode = routeReasonRangeCacheMiss
+		return nil, details
+	}
+	targetGroup := state.findGroup(targetRange.groupUID)
+	if targetGroup == nil {
+		details.defaultReasonCode = routeReasonRangeCacheMiss
+		return nil, details
 	}
 
-	hint.GroupUid = targetRange.group.groupUID
+	hint.GroupUid = targetRange.groupUID
 	hint.SplitId = targetRange.splitID
 	hint.Key = append(hint.Key[:0], targetRange.startKey...)
 	hint.LimitKey = append(hint.LimitKey[:0], targetRange.limitKey...)
 
-	return targetRange.group.fillRoutingHint(ctx, c.endpointCache, preferLeader, directedReadOptions, hint)
+	endpoint := targetGroup.fillRoutingHintWithExclusions(ctx, c.endpointCache, cfg.lifecycleManager, preferLeader, directedReadOptions, hint, excludedEndpoints, &details)
+	if endpoint == nil && details.defaultReasonCode == "" {
+		details.defaultReasonCode = routeReasonNoHealthyTabletForGroup
+	}
+	return endpoint, details
 }
 
 func (c *keyRangeCache) clear() {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	c.clearLocked()
-}
-
-func (c *keyRangeCache) clearLocked() {
-	c.ranges = nil
-	c.groups = make(map[uint64]*cachedGroup)
-	c.accessCounter = 0
+	c.updateMu.Lock()
+	defer c.updateMu.Unlock()
+	c.state.Store(&keyRangeCacheState{})
+	c.accessCounter.Store(0)
 }
 
 func (c *keyRangeCache) size() int {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	return len(c.ranges)
+	return c.loadState().rangeCount
+}
+
+func newRangePartition(ranges []*cachedRange) *rangePartition {
+	if len(ranges) == 0 {
+		return nil
+	}
+	return &rangePartition{
+		startKey: append([]byte(nil), ranges[0].startKey...),
+		limitKey: append([]byte(nil), ranges[len(ranges)-1].limitKey...),
+		ranges:   ranges,
+	}
+}
+
+func buildRangePartitions(ranges []*cachedRange) []*rangePartition {
+	if len(ranges) == 0 {
+		return nil
+	}
+	sort.Slice(ranges, func(i, j int) bool {
+		return bytes.Compare(ranges[i].startKey, ranges[j].startKey) < 0
+	})
+	partitions := make([]*rangePartition, 0, (len(ranges)+maxRangesPerPartition-1)/maxRangesPerPartition)
+	for i := 0; i < len(ranges); i += maxRangesPerPartition {
+		end := i + maxRangesPerPartition
+		if end > len(ranges) {
+			end = len(ranges)
+		}
+		chunk := append([]*cachedRange(nil), ranges[i:end]...)
+		partitions = append(partitions, newRangePartition(chunk))
+	}
+	return partitions
+}
+
+func uniqueRangesFromPartitions(partitions []*rangePartition) []*cachedRange {
+	if len(partitions) == 0 {
+		return nil
+	}
+	total := 0
+	for _, partition := range partitions {
+		if partition != nil {
+			total += len(partition.ranges)
+		}
+	}
+	ranges := make([]*cachedRange, 0, total)
+	for _, partition := range partitions {
+		if partition == nil {
+			continue
+		}
+		ranges = append(ranges, partition.ranges...)
+	}
+	return ranges
+}
+
+func findPartitionStartIndex(partitions []*rangePartition, key []byte) int {
+	return sort.Search(len(partitions), func(i int) bool {
+		return bytes.Compare(partitions[i].limitKey, key) > 0
+	})
+}
+
+func findOverlappingPartitionWindow(partitions []*rangePartition, startKey, limitKey []byte) (int, int) {
+	start := findPartitionStartIndex(partitions, startKey)
+	if len(limitKey) == 0 {
+		end := start
+		if start < len(partitions) && bytes.Compare(partitions[start].startKey, startKey) <= 0 {
+			end = start + 1
+		}
+		return start, end
+	}
+	end := start
+	for end < len(partitions) && bytes.Compare(partitions[end].startKey, limitKey) < 0 {
+		end++
+	}
+	return start, end
+}
+
+func (b *keyRangeCacheStateBuilder) recordTouchedPartitions(start, end int) {
+	if start < 0 {
+		start = 0
+	}
+	if end > len(b.partitions) {
+		end = len(b.partitions)
+	}
+	for _, partition := range b.partitions[start:end] {
+		if partition == nil {
+			continue
+		}
+		size := len(partition.ranges)
+		b.clonedRangeShardCount++
+		b.rangeShardSizeSum += size
+		if size > b.rangeShardSizeMax {
+			b.rangeShardSizeMax = size
+		}
+	}
+}
+
+func (b *keyRangeCacheStateBuilder) replacePartitionWindow(start, end int, ranges []*cachedRange) {
+	b.recordTouchedPartitions(start, end)
+	rebuilt := buildRangePartitions(ranges)
+	next := make([]*rangePartition, 0, len(b.partitions)-(end-start)+len(rebuilt))
+	next = append(next, b.partitions[:start]...)
+	next = append(next, rebuilt...)
+	next = append(next, b.partitions[end:]...)
+	b.partitions = next
 }
 
 func (c *keyRangeCache) shrinkTo(newSize int) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-
+	c.updateMu.Lock()
+	defer c.updateMu.Unlock()
+	builder := c.cloneState()
 	if newSize <= 0 {
-		c.clearLocked()
+		c.state.Store(&keyRangeCacheState{})
+		c.accessCounter.Store(0)
 		return
 	}
-	if newSize >= len(c.ranges) {
+	if newSize >= builder.rangeCount {
 		return
 	}
 
-	numToShrink := len(c.ranges) - newSize
+	allRanges := uniqueRangesFromPartitions(builder.partitions)
+	if newSize >= len(allRanges) {
+		return
+	}
+
+	numToShrink := len(allRanges) - newSize
 	numToSample := numToShrink * 2
-	if numToSample > len(c.ranges) {
-		numToSample = len(c.ranges)
+	if numToSample > len(allRanges) {
+		numToSample = len(allRanges)
 	}
 
-	perm := rand.Perm(len(c.ranges))
+	perm := rand.Perm(len(allRanges))
 	sampled := make([]*cachedRange, 0, numToSample)
 	for i := 0; i < numToSample; i++ {
-		sampled = append(sampled, c.ranges[perm[i]])
+		sampled = append(sampled, allRanges[perm[i]])
 	}
 	sort.Slice(sampled, func(i, j int) bool {
 		return sampled[i].lastAccess < sampled[j].lastAccess
@@ -203,40 +567,52 @@ func (c *keyRangeCache) shrinkTo(newSize int) {
 		evicted[sampled[i]] = struct{}{}
 	}
 
-	kept := make([]*cachedRange, 0, len(c.ranges)-numToShrink)
-	for _, r := range c.ranges {
+	kept := make([]*cachedRange, 0, len(allRanges)-numToShrink)
+	for _, r := range allRanges {
 		if _, ok := evicted[r]; ok {
-			c.unrefGroup(r.group)
 			continue
 		}
 		kept = append(kept, r)
 	}
-	c.ranges = kept
+	builder.recordTouchedPartitions(0, len(builder.partitions))
+	builder.partitions = buildRangePartitions(kept)
+	builder.rangeCount = len(allRanges) - numToShrink
+	c.state.Store(builder.snapshot())
 }
 
-func (c *keyRangeCache) accessTimeNowLocked() int64 {
-	c.accessCounter++
-	return c.accessCounter
+func (c *keyRangeCache) accessTimeNow() int64 {
+	return c.accessCounter.Add(1)
 }
 
-func (c *keyRangeCache) findRangeLocked(key, limit []byte, mode rangeMode) *cachedRange {
-	idx := sort.Search(len(c.ranges), func(i int) bool {
-		return bytes.Compare(c.ranges[i].limitKey, key) > 0
-	})
-	if idx >= len(c.ranges) {
+func (c *keyRangeCache) findRangeInState(state *keyRangeCacheState, key, limit []byte, mode rangeMode, cfg keyRangeCacheRoutingConfig) *cachedRange {
+	if state == nil {
 		return nil
 	}
-	first := c.ranges[idx]
+	ranges := c.lookupRangesForState(state, key, limit)
+	low, high := 0, len(ranges)
+	for low < high {
+		mid := int(uint(low+high) >> 1)
+		if bytes.Compare(ranges[mid].limitKey, key) > 0 {
+			high = mid
+		} else {
+			low = mid + 1
+		}
+	}
+	idx := low
+	if idx >= len(ranges) {
+		return nil
+	}
+	first := ranges[idx]
 	startInRange := bytes.Compare(key, first.startKey) >= 0
 	if len(limit) == 0 {
 		if startInRange {
-			first.lastAccess = c.accessTimeNowLocked()
+			atomic.StoreInt64(&first.lastAccess, c.accessTimeNow())
 			return first
 		}
 		return nil
 	}
 	if startInRange && bytes.Compare(limit, first.limitKey) <= 0 {
-		first.lastAccess = c.accessTimeNowLocked()
+		atomic.StoreInt64(&first.lastAccess, c.accessTimeNow())
 		return first
 	}
 	if mode == rangeModeCoveringSplit {
@@ -250,8 +626,8 @@ func (c *keyRangeCache) findRangeLocked(key, limit []byte, mode rangeMode) *cach
 	hitEnd := false
 
 	i := idx
-	for ; i < len(c.ranges); i++ {
-		current := c.ranges[i]
+	for ; i < len(ranges); i++ {
+		current := ranges[i]
 		if bytes.Compare(lastLimit, current.startKey) != 0 {
 			foundGap = true
 			if bytes.Compare(current.startKey, limit) >= 0 {
@@ -259,33 +635,54 @@ func (c *keyRangeCache) findRangeLocked(key, limit []byte, mode rangeMode) *cach
 			}
 		}
 		total++
-		if c.uniformRandomLocked(total, key, limit, current.startKey) == 0 {
+		if c.uniformRandom(total, key, limit, current.startKey, cfg.deterministicRandom) == 0 {
 			sampledIdx = i
 		}
 		lastLimit = current.limitKey
-		if bytes.Compare(lastLimit, limit) >= 0 || total >= c.minEntriesForRandomPickHint {
+		if bytes.Compare(lastLimit, limit) >= 0 || total >= cfg.minEntriesForRandomPick {
 			break
 		}
 	}
-	if i >= len(c.ranges) {
+	if i >= len(ranges) {
 		hitEnd = true
 	}
 	if hitEnd {
 		foundGap = true
 	}
-	if !foundGap || total >= c.minEntriesForRandomPickHint {
-		selected := c.ranges[sampledIdx]
-		selected.lastAccess = c.accessTimeNowLocked()
+	if !foundGap || total >= cfg.minEntriesForRandomPick {
+		selected := ranges[sampledIdx]
+		atomic.StoreInt64(&selected.lastAccess, c.accessTimeNow())
 		return selected
 	}
 	return nil
 }
 
-func (c *keyRangeCache) uniformRandomLocked(n int, seed1, seed2, seed3 []byte) int {
+func (c *keyRangeCache) lookupRangesForState(state *keyRangeCacheState, key, limit []byte) []*cachedRange {
+	if state == nil {
+		return nil
+	}
+	start, end := findOverlappingPartitionWindow(state.partitions, key, limit)
+	if start >= len(state.partitions) {
+		return nil
+	}
+	if end <= start {
+		return state.partitions[start].ranges
+	}
+	if end == start+1 {
+		return state.partitions[start].ranges
+	}
+	ranges := uniqueRangesFromPartitions(state.partitions[start:end])
+	sort.Slice(ranges, func(i, j int) bool {
+		return bytes.Compare(ranges[i].limitKey, ranges[j].limitKey) < 0
+	})
+	return ranges
+}
+
+func (c *keyRangeCache) uniformRandom(n int, seed1, seed2, seed3 []byte, deterministic bool) int {
 	if n <= 1 {
 		return 0
 	}
-	if c.deterministicRandom {
+	if deterministic {
 		data := make([]byte, 0, len(seed1)+len(seed2)+len(seed3))
 		data = append(data, seed1...)
 		data = append(data, seed2...)
@@ -295,142 +692,129 @@ func (c *keyRangeCache) uniformRandomLocked(n int, seed1, seed2, seed3 []byte) i
 	return rand.Intn(n)
 }
 
-func (c *keyRangeCache) replaceRangeIfNewer(rangeIn *sppb.Range) {
+func (b *keyRangeCacheStateBuilder) replaceRangeIfNewer(rangeIn *sppb.Range) {
 	if rangeIn == nil {
 		return
 	}
 	startKey := append([]byte(nil), rangeIn.GetStartKey()...)
 	limitKey := append([]byte(nil), rangeIn.GetLimitKey()...)
+	start, end := findOverlappingPartitionWindow(b.partitions, startKey, limitKey)
+	touchedRanges := uniqueRangesFromPartitions(b.partitions[start:end])
 
-	overlapIdx := make([]int, 0)
-	for i, existing := range c.ranges {
-		if bytes.Compare(existing.limitKey, startKey) <= 0 {
+	overlappingRanges := make([]*cachedRange, 0)
+	rebuiltRanges := make([]*cachedRange, 0, len(touchedRanges)+3)
+	for _, existing := range touchedRanges {
+		if bytes.Compare(existing.limitKey, startKey) <= 0 || bytes.Compare(existing.startKey, limitKey) >= 0 {
+			rebuiltRanges = append(rebuiltRanges, existing)
 			continue
 		}
-		if bytes.Compare(existing.startKey, limitKey) >= 0 {
-			continue
-		}
-		overlapIdx = append(overlapIdx, i)
-	}
-
-	if len(overlapIdx) == 0 {
-		c.insertRangeLocked(&cachedRange{
-			startKey:   startKey,
-			limitKey:   limitKey,
-			group:      c.findAndRefGroup(rangeIn.GetGroupUid()),
-			splitID:    rangeIn.GetSplitId(),
-			generation: append([]byte(nil), rangeIn.GetGeneration()...),
-			lastAccess: c.accessTimeNowLocked(),
-		})
-		return
-	}
-
-	overlapping := make([]*cachedRange, 0, len(overlapIdx))
-	for _, idx := range overlapIdx {
-		existing := c.ranges[idx]
 		cmp := bytes.Compare(rangeIn.GetGeneration(), existing.generation)
 		if cmp < 0 || (cmp == 0 && bytes.Equal(existing.startKey, startKey) && bytes.Equal(existing.limitKey, limitKey)) {
 			return
 		}
-		overlapping = append(overlapping, existing)
+		overlappingRanges = append(overlappingRanges, existing)
 	}
+	b.overlappingRanges += len(overlappingRanges)
 
-	remove := make(map[int]struct{}, len(overlapIdx))
-	for _, idx := range overlapIdx {
-		remove[idx] = struct{}{}
-	}
-	remaining := make([]*cachedRange, 0, len(c.ranges)-len(overlapIdx)+3)
-	for idx, existing := range c.ranges {
-		if _, ok := remove[idx]; ok {
-			continue
-		}
-		remaining = append(remaining, existing)
-	}
-	c.ranges = remaining
-
-	first := overlapping[0]
-	if bytes.Compare(first.startKey, startKey) < 0 {
-		c.insertRangeLocked(&cachedRange{
-			startKey:   append([]byte(nil), first.startKey...),
-			limitKey:   append([]byte(nil), startKey...),
-			group:      c.refGroup(first.group),
-			splitID:    first.splitID,
-			generation: append([]byte(nil), first.generation...),
-			lastAccess: first.lastAccess,
+	if len(overlappingRanges) > 0 {
+		sort.Slice(overlappingRanges, func(i, j int) bool {
+			return bytes.Compare(overlappingRanges[i].startKey, overlappingRanges[j].startKey) < 0
 		})
+		first := overlappingRanges[0]
+		if bytes.Compare(first.startKey, startKey) < 0 {
+			rebuiltRanges = append(rebuiltRanges, &cachedRange{
+				startKey:   append([]byte(nil), first.startKey...),
+				limitKey:   append([]byte(nil), startKey...),
+				groupUID:   first.groupUID,
+				splitID:    first.splitID,
+				generation: append([]byte(nil), first.generation...),
+				lastAccess: first.lastAccess,
+			})
+			b.rangesInserted++
+		}
+		last := overlappingRanges[len(overlappingRanges)-1]
+		if bytes.Compare(last.limitKey, limitKey) > 0 {
+			rebuiltRanges = append(rebuiltRanges, &cachedRange{
+				startKey:   append([]byte(nil), limitKey...),
+				limitKey:   append([]byte(nil), last.limitKey...),
+				groupUID:   last.groupUID,
+				splitID:    last.splitID,
+				generation: append([]byte(nil), last.generation...),
+				lastAccess: last.lastAccess,
+			})
+			b.rangesInserted++
+		}
+		b.rangesRemoved += len(overlappingRanges)
 	}
 
-	c.insertRangeLocked(&cachedRange{
+	rebuiltRanges = append(rebuiltRanges, &cachedRange{
 		startKey:   startKey,
 		limitKey:   limitKey,
-		group:      c.findAndRefGroup(rangeIn.GetGroupUid()),
+		groupUID:   rangeIn.GetGroupUid(),
 		splitID:    rangeIn.GetSplitId(),
 		generation: append([]byte(nil), rangeIn.GetGeneration()...),
-		lastAccess: c.accessTimeNowLocked(),
+		lastAccess: b.cache.accessTimeNow(),
 	})
+	b.rangesInserted++
 
-	last := overlapping[len(overlapping)-1]
-	if bytes.Compare(last.limitKey, limitKey) > 0 {
-		c.insertRangeLocked(&cachedRange{
-			startKey:   append([]byte(nil), limitKey...),
-			limitKey:   append([]byte(nil), last.limitKey...),
-			group:      c.refGroup(last.group),
-			splitID:    last.splitID,
-			generation: append([]byte(nil), last.generation...),
-			lastAccess: last.lastAccess,
-		})
-	}
-
-	for _, existing := range overlapping {
-		c.unrefGroup(existing.group)
-	}
+	b.rangeCount += len(rebuiltRanges) - len(touchedRanges)
+	b.replacePartitionWindow(start, end, rebuiltRanges)
 }
 
-func (c *keyRangeCache) insertRangeLocked(r *cachedRange) {
-	c.ranges = append(c.ranges, r)
-	sort.Slice(c.ranges, func(i, j int) bool {
-		return bytes.Compare(c.ranges[i].limitKey, c.ranges[j].limitKey) < 0
-	})
+func (b *keyRangeCacheStateBuilder) findAndRefGroup(groupUID uint64) *cachedGroup {
+	return b.findGroup(groupUID)
 }
 
-func (c *keyRangeCache) findAndRefGroup(groupUID uint64) *cachedGroup {
-	group := c.groups[groupUID]
-	if group != nil {
-		group.refs++
-	}
-	return group
-}
-
-func (c *keyRangeCache) findOrInsertGroup(groupIn *sppb.Group) *cachedGroup {
+func (b *keyRangeCacheStateBuilder) findOrInsertGroup(groupIn *sppb.Group) *cachedGroup {
 	if groupIn == nil {
 		return nil
 	}
-	group, ok := c.groups[groupIn.GetGroupUid()]
+	groupUID := groupIn.GetGroupUid()
+	shardIdx := groupShardIndex(groupUID)
+	b.cloneGroupShard(shardIdx)
+
+	group, ok := b.groupShards[shardIdx][groupUID]
 	if !ok {
-		group = &cachedGroup{groupUID: groupIn.GetGroupUid(), leaderIdx: -1, refs: 1}
-		c.groups[group.groupUID] = group
-	} else {
-		group.refs++
+		group = &cachedGroup{groupUID: groupUID, leaderIdx: -1}
+		b.groupShards[shardIdx][groupUID] = group
+		b.mutableGroups[groupUID] = struct{}{}
+		b.groupCount++
+	} else if _, mutable := b.mutableGroups[groupUID]; !mutable {
+		group = cloneCachedGroup(group)
+		b.groupShards[shardIdx][groupUID] = group
+		b.mutableGroups[groupUID] = struct{}{}
 	}
 	group.update(groupIn)
 	return group
 }
 
-func (c *keyRangeCache) refGroup(group *cachedGroup) *cachedGroup {
-	if group != nil {
-		group.refs++
-	}
+func (b *keyRangeCacheStateBuilder) refGroup(group *cachedGroup) *cachedGroup {
 	return group
 }
 
-func (c *keyRangeCache) unrefGroup(group *cachedGroup) {
-	if group == nil {
-		return
+func (b *keyRangeCacheStateBuilder) unrefGroup(group *cachedGroup) {
+}
+
+func (s *keyRangeCacheState) findGroup(groupUID uint64) *cachedGroup {
+	if s == nil {
+		return nil
 	}
-	group.refs--
-	if group.refs <= 0 {
-		delete(c.groups, group.groupUID)
+	shard := s.groupShards[groupShardIndex(groupUID)]
+	if len(shard) == 0 {
+		return nil
 	}
+	return shard[groupUID]
+}
+
+func (b *keyRangeCacheStateBuilder) findGroup(groupUID uint64) *cachedGroup {
+	if b == nil {
+		return nil
+	}
+	shard := b.groupShards[groupShardIndex(groupUID)]
+	if len(shard) == 0 {
+		return nil
+	}
+	return shard[groupUID]
 }
 
 func (t *cachedTablet) update(tabletIn *sppb.Tablet) {
@@ -494,10 +878,14 @@ func (t *cachedTablet) matchesReplicaSelection(selection *sppb.DirectedReadOptio
 }
 
 func (t *cachedTablet) shouldSkip(hint *sppb.RoutingHint) bool {
+	return t.shouldSkipWithExclusions(hint, nil)
+}
+
+func (t *cachedTablet) shouldSkipWithExclusions(hint *sppb.RoutingHint, excludedEndpoints endpointExcluder) bool {
 	if hint == nil {
 		return true
 	}
-	if t.skip || t.serverAddress == "" || (t.endpoint != nil && !t.endpoint.IsHealthy()) {
+	if t.skip || t.serverAddress == "" || isEndpointExcluded(excludedEndpoints, t.serverAddress) || (t.endpoint != nil && !t.endpoint.IsHealthy()) {
 		hint.SkippedTabletUid = append(hint.SkippedTabletUid, &sppb.RoutingHint_SkippedTablet{
 			TabletUid:   t.tabletUID,
 			Incarnation: append([]byte(nil), t.incarnation...),
@@ -507,12 +895,122 @@ func (t *cachedTablet) shouldSkip(hint *sppb.RoutingHint) bool {
 	return false
 }
 
-func (t *cachedTablet) pick(ctx context.Context, endpointCache channelEndpointCache, hint *sppb.RoutingHint) channelEndpoint {
+func (t *cachedTablet) shouldSkipForRouting(endpointCache channelEndpointCache, lifecycleManager *endpointLifecycleManager, hint *sppb.RoutingHint, excludedEndpoints endpointExcluder, skippedTabletUIDs map[uint64]struct{}, pendingCreations map[string]struct{}, details *routeSelectionDetails) bool {
+	if hint == nil {
+		return true
+	}
+	if t.skip || t.serverAddress == "" {
+		t.addSkippedTablet(hint, skippedTabletUIDs)
+		return true
+	}
+	if isEndpointExcluded(excludedEndpoints, t.serverAddress) {
+		details.addResourceExhaustedExclusion(t.serverAddress)
+		t.addSkippedTablet(hint, skippedTabletUIDs)
+		return true
+	}
+
+	t.clearShutdownEndpoint()
+
+	if t.endpoint == nil && endpointCache != nil {
+		t.endpoint = endpointCache.GetIfPresent(t.serverAddress)
+	}
+	if t.endpoint == nil {
+		if pendingCreations != nil {
+			pendingCreations[t.serverAddress] = struct{}{}
+			if lifecycleManager != nil {
+				lifecycleManager.requestEndpointRecreation(t.serverAddress)
+			}
+			return true
+		}
+		if lifecycleManager != nil {
+			lifecycleManager.requestEndpointRecreation(t.serverAddress)
+		}
+		if t.maybeAddRecentTransientFailureSkip(lifecycleManager, hint, skippedTabletUIDs, details) {
+			return true
+		}
+		details.addNotReadySkip(t.serverAddress)
+		return true
+	}
+	if t.endpoint.IsHealthy() {
+		return false
+	}
+
+	if lifecycleManager != nil {
+		lifecycleManager.requestEndpointRecreation(t.serverAddress)
+	}
+	if t.endpoint.IsTransientFailure() {
+		details.addTransientFailureSkip(t.serverAddress)
+		t.addSkippedTablet(hint, skippedTabletUIDs)
+		return true
+	}
+
+	if t.maybeAddRecentTransientFailureSkip(lifecycleManager, hint, skippedTabletUIDs, details) {
+		return true
+	}
+	details.addNotReadySkip(t.serverAddress)
+	return true
+}
+
+func (t *cachedTablet) recordKnownTransientFailure(endpointCache channelEndpointCache, lifecycleManager *endpointLifecycleManager, hint *sppb.RoutingHint, excludedEndpoints endpointExcluder, skippedTabletUIDs map[uint64]struct{}, details *routeSelectionDetails) {
+	if hint == nil || t.skip || t.serverAddress == "" || isEndpointExcluded(excludedEndpoints, t.serverAddress) {
+		return
+	}
+
+	t.clearShutdownEndpoint()
+
+	if t.endpoint == nil && endpointCache != nil {
+		t.endpoint = endpointCache.GetIfPresent(t.serverAddress)
+	}
+	if t.endpoint != nil && t.endpoint.IsTransientFailure() {
+		details.addTransientFailureSkip(t.serverAddress)
+		t.addSkippedTablet(hint, skippedTabletUIDs)
+		return
+	}
+
+	t.maybeAddRecentTransientFailureSkip(lifecycleManager, hint, skippedTabletUIDs, details)
+}
+
+func (t *cachedTablet) clearShutdownEndpoint() {
+	if t.endpoint == nil {
+		return
+	}
+	conn := t.endpoint.GetConn()
+	if conn == nil {
+		return
+	}
+	if conn.GetState() == connectivity.Shutdown {
+		t.endpoint = nil
+	}
+}
+
+func (t *cachedTablet) maybeAddRecentTransientFailureSkip(lifecycleManager *endpointLifecycleManager, hint *sppb.RoutingHint, skippedTabletUIDs map[uint64]struct{}, details *routeSelectionDetails) bool {
+	if lifecycleManager == nil || !lifecycleManager.wasRecentlyEvictedTransientFailure(t.serverAddress) {
+		return false
+	}
+	details.addTransientFailureSkip(t.serverAddress)
+	t.addSkippedTablet(hint, skippedTabletUIDs)
+	return true
+}
+
+func (t *cachedTablet) addSkippedTablet(hint *sppb.RoutingHint, skippedTabletUIDs map[uint64]struct{}) {
+	if hint == nil {
+		return
+	}
+	if skippedTabletUIDs != nil {
+		if _, ok := skippedTabletUIDs[t.tabletUID]; ok {
+			return
+		}
+		skippedTabletUIDs[t.tabletUID] = struct{}{}
+	}
+	hint.SkippedTabletUid = append(hint.SkippedTabletUid, &sppb.RoutingHint_SkippedTablet{
+		TabletUid:   t.tabletUID,
+		Incarnation: append([]byte(nil), t.incarnation...),
+	})
+}
+
+func (t *cachedTablet) pick(hint *sppb.RoutingHint) channelEndpoint {
 	if hint != nil {
 		hint.TabletUid = t.tabletUID
-	}
-	if t.endpoint == nil && t.serverAddress != "" {
-		t.endpoint = endpointCache.Get(ctx, t.serverAddress)
 	}
 	return t.endpoint
 }
@@ -577,66 +1075,95 @@ func (g *cachedGroup) leaderLocked() *cachedTablet {
 }
 
 func (g *cachedGroup) fillRoutingHint(ctx context.Context, endpointCache channelEndpointCache, preferLeader bool, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint) channelEndpoint {
+	return g.fillRoutingHintWithExclusions(ctx, endpointCache, nil, preferLeader, directedReadOptions, hint, nil, nil)
+}
+
+func (g *cachedGroup) fillRoutingHintWithExclusions(ctx context.Context, endpointCache channelEndpointCache, lifecycleManager *endpointLifecycleManager, preferLeader bool, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint, excludedEndpoints endpointExcluder, details *routeSelectionDetails) channelEndpoint {
+	pendingCreations := make(map[string]struct{})
+	selected := g.fillRoutingHintAttempt(endpointCache, lifecycleManager, preferLeader, directedReadOptions, hint, excludedEndpoints, details, pendingCreations)
+	if selected != nil {
+		return selected.pick(hint)
+	}
+	if len(pendingCreations) == 0 {
+		return nil
+	}
+	warmPendingEndpoints(ctx, endpointCache, pendingCreations)
+	selected = g.fillRoutingHintAttempt(endpointCache, lifecycleManager, preferLeader, directedReadOptions, hint, excludedEndpoints, details, nil)
+	if selected == nil {
+		return nil
+	}
+	return selected.pick(hint)
+}
+
+func (g *cachedGroup) fillRoutingHintAttempt(endpointCache channelEndpointCache, lifecycleManager *endpointLifecycleManager, preferLeader bool, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint, excludedEndpoints endpointExcluder, details *routeSelectionDetails, pendingCreations map[string]struct{}) *cachedTablet {
 	g.mu.Lock()
+	defer g.mu.Unlock()
 
 	if directedReadOptions == nil {
 		directedReadOptions = &sppb.DirectedReadOptions{}
 	}
 	hasDirectedReadOptions := directedReadOptions.GetReplicas() != nil
+	skippedTabletUIDs := skippedTabletUIDsFromHint(hint)
 
 	leader := g.leaderLocked()
-	if preferLeader && !hasDirectedReadOptions && leader != nil && leader.distance <= maxLocalReplicaDistance && !leader.shouldSkip(hint) {
-		if leader.endpoint != nil || leader.serverAddress == "" {
-			endpoint := leader.pick(ctx, endpointCache, hint)
-			g.mu.Unlock()
-			return endpoint
-		}
-		if hint != nil {
-			hint.TabletUid = leader.tabletUID
-		}
-		serverAddress := leader.serverAddress
-		g.mu.Unlock()
-		endpoint := endpointCache.Get(ctx, serverAddress)
-		g.mu.Lock()
-		if leader.endpoint == nil && leader.serverAddress == serverAddress {
-			leader.endpoint = endpoint
-		}
-		if hint != nil {
-			hint.TabletUid = leader.tabletUID
-		}
-		result := leader.endpoint
-		g.mu.Unlock()
-		return result
+	if preferLeader && !hasDirectedReadOptions && leader != nil && leader.distance <= maxLocalReplicaDistance && !leader.shouldSkipForRouting(endpointCache, lifecycleManager, hint, excludedEndpoints, skippedTabletUIDs, pendingCreations, details) {
+		g.recordKnownTransientFailuresLocked(endpointCache, lifecycleManager, leader, directedReadOptions, hint, excludedEndpoints, skippedTabletUIDs, details)
+		g.recordSelectedTabletLocked(leader, details)
+		return leader
 	}
 	for _, tablet := range g.tablets {
 		if !tablet.matches(directedReadOptions) {
 			continue
 		}
-		if tablet.shouldSkip(hint) {
+		if tablet.shouldSkipForRouting(endpointCache, lifecycleManager, hint, excludedEndpoints, skippedTabletUIDs, pendingCreations, details) {
 			continue
 		}
-		if tablet.endpoint != nil || tablet.serverAddress == "" {
-			endpoint := tablet.pick(ctx, endpointCache, hint)
-			g.mu.Unlock()
-			return endpoint
-		}
-		if hint != nil {
-			hint.TabletUid = tablet.tabletUID
-		}
-		serverAddress := tablet.serverAddress
-		g.mu.Unlock()
-		endpoint := endpointCache.Get(ctx, serverAddress)
-		g.mu.Lock()
-		if tablet.endpoint == nil && tablet.serverAddress == serverAddress {
-			tablet.endpoint = endpoint
-		}
-		if hint != nil {
-			hint.TabletUid = tablet.tabletUID
-		}
-		result := tablet.endpoint
-		g.mu.Unlock()
-		return result
+		g.recordKnownTransientFailuresLocked(endpointCache, lifecycleManager, tablet, directedReadOptions, hint, excludedEndpoints, skippedTabletUIDs, details)
+		g.recordSelectedTabletLocked(tablet, details)
+		return tablet
 	}
-	g.mu.Unlock()
 	return nil
+}
+
+func warmPendingEndpoints(ctx context.Context, endpointCache channelEndpointCache, pendingCreations map[string]struct{}) {
+	if endpointCache == nil || len(pendingCreations) == 0 {
+		return
+	}
+	for address := range pendingCreations {
+		endpointCache.Get(ctx, address)
+	}
+}
+
+func (g *cachedGroup) recordKnownTransientFailuresLocked(endpointCache channelEndpointCache, lifecycleManager *endpointLifecycleManager, selected *cachedTablet, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint, excludedEndpoints endpointExcluder, skippedTabletUIDs map[uint64]struct{}, details *routeSelectionDetails) {
+	for _, tablet := range g.tablets {
+		if tablet == selected || !tablet.matches(directedReadOptions) {
+			continue
+		}
+		tablet.recordKnownTransientFailure(endpointCache, lifecycleManager, hint, excludedEndpoints, skippedTabletUIDs, details)
+	}
+}
+
+func (g *cachedGroup) recordSelectedTabletLocked(selected *cachedTablet, details *routeSelectionDetails) {
+	if selected == nil || details == nil {
+		return
+	}
+	selectedIdx := -1
+	for i, tablet := range g.tablets {
+		if tablet == selected {
+			selectedIdx = i
+			break
+		}
+	}
+	details.setSelectedTablet(selected.serverAddress, selectedIdx == 0, selectedIdx >= 0 && selectedIdx == g.leaderIdx)
+}
+
+func skippedTabletUIDsFromHint(hint *sppb.RoutingHint) map[uint64]struct{} {
+	if hint == nil || len(hint.GetSkippedTabletUid()) == 0 {
+		return make(map[uint64]struct{})
+	}
+	skippedTabletUIDs := make(map[uint64]struct{}, len(hint.GetSkippedTabletUid()))
+	for _, skippedTablet := range hint.GetSkippedTabletUid() {
+		skippedTabletUIDs[skippedTablet.GetTabletUid()] = struct{}{}
+	}
+	return skippedTabletUIDs
 }

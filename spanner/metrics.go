@@ -49,6 +49,7 @@ import (
 const (
 	builtInMetricsMeterName = "gax-go"
 	grpcMetricMeterName     = "grpc-go"
+	grpcGcpMetricMeterName  = "grpc-gcp-go"
 
 	nativeMetricsPrefix = "spanner.googleapis.com/internal/client/"
 
@@ -73,6 +74,10 @@ const (
 	metricLabelKeyGRPCLBLocality        = "grpc.lb.locality"
 	metricLabelKeyGRPCLBBackendService  = "grpc.lb.backend_service"
 	metricLabelKeyGRPCDisconnectError   = "grpc.disconnect_error"
+	metricLabelKeyFromChannelName       = "from_channel_name"
+	metricLabelKeyToChannelName         = "to_channel_name"
+	metricLabelKeyChannelName           = "channel_name"
+	metricLabelKeyStatusCode            = "status_code"
 
 	// Metric names
 	metricNameOperationLatencies        = "operation_latencies"
@@ -83,6 +88,8 @@ const (
 	metricNameGFELatencies              = "gfe_latencies"
 	metricNameGFEConnectivityErrorCount = "gfe_connectivity_error_count"
 	metricNameAFEConnectivityErrorCount = "afe_connectivity_error_count"
+	metricNameEEFFallbackCount          = "eef.fallback_count"
+	metricNameEEFCallStatus             = "eef.call_status"
 
 	// Metric units
 	metricUnitMS    = "ms"
@@ -273,6 +280,8 @@ type builtinMetricsTracerFactory struct {
 	afeErrorCount      metric.Int64Counter     // Counter for the number of requests that failed to reach the Spanner API Frontend.
 	operationCount     metric.Int64Counter     // Counter for the number of operations.
 	attemptCount       metric.Int64Counter     // Counter for the number of attempts.
+
+	meterProvider metric.MeterProvider
 }
 
 func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath, compression string, isAFEBuiltInMetricEnabled, isEnableGRPCBuiltInMetrics bool, metricsProvider metric.MeterProvider, opts ...option.ClientOption) (*builtinMetricsTracerFactory, error) {
@@ -311,6 +320,7 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath, compression str
 			return tracerFactory, err
 		}
 		meterProvider = sdkmetric.NewMeterProvider(mpOptions...)
+		tracerFactory.meterProvider = meterProvider
 
 		if isEnableGRPCBuiltInMetrics {
 			mo := opentelemetry.MetricsOptions{
@@ -366,6 +376,36 @@ func builtInMeterProviderOptions(project, compression string, clientAttributes [
 				Aggregation: sdkmetric.AggregationSum{},
 				AttributeFilter: func(kv attribute.KeyValue) bool {
 					if _, ok := allowedMetricLabels[string(kv.Key)]; ok {
+						return true
+					}
+					return false
+				},
+			},
+		))
+	}
+	skippedEEFMetrics := []string{
+		"eef.probe_result",
+		"eef.error_ratio",
+		"eef.current_channel",
+		"eef.channel_downtime",
+	}
+	for _, m := range skippedEEFMetrics {
+		views = append(views, sdkmetric.NewView(
+			sdkmetric.Instrument{Name: m},
+			sdkmetric.Stream{Aggregation: sdkmetric.AggregationDrop{}},
+		))
+	}
+	eefMetricsToEnable := []string{
+		metricNameEEFFallbackCount,
+		metricNameEEFCallStatus,
+	}
+	for _, m := range eefMetricsToEnable {
+		views = append(views, sdkmetric.NewView(
+			sdkmetric.Instrument{Name: m},
+			sdkmetric.Stream{
+				Aggregation: sdkmetric.AggregationSum{},
+				AttributeFilter: func(kv attribute.KeyValue) bool {
+					if _, ok := allowedEEFMetricLabels[string(kv.Key)]; ok {
 						return true
 					}
 					return false
@@ -632,8 +672,14 @@ func (t *builtinMetricsTracer) recordGFEError() {
 }
 
 func (t *builtinMetricsTracer) recordAFEError() {
-	// no-op: disable afe_connectivity_error_count metric as AFE header is disabled in backend currently
-	return
+	if !t.isAFEBuiltInMetricEnabled {
+		return
+	}
+	attrs, err := t.toOtelMetricAttrs(metricNameAFEConnectivityErrorCount)
+	if err != nil {
+		return
+	}
+	t.instrumentAFEErrorCount.Add(t.ctx, 1, metric.WithAttributes(attrs...))
 }
 
 // Convert error to grpc status error

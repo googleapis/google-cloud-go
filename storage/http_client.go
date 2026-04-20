@@ -45,6 +45,8 @@ import (
 
 // httpStorageClient is the HTTP-JSON API implementation of the transport-agnostic
 // storageClient interface.
+//
+// TODO(b/498422946): Add client feature tracker in HTTP client.
 type httpStorageClient struct {
 	creds                      *auth.Credentials
 	hc                         *http.Client
@@ -1424,12 +1426,16 @@ func (r *httpReader) Read(p []byte) (int, error) {
 		// Read failed (likely due to connection issues), but we will try to reopen
 		// the pipe and continue. Send a ranged read request that takes into account
 		// the number of bytes we've already seen.
+
+		// Close the current body before retrying. Otherwise we leave a
+		// connection open and the retry might fail due to quota issues.
+		r.body.Close()
+
 		res, err := r.reopen(r.seen)
 		if err != nil {
 			// reopen already retries
 			return n, err
 		}
-		r.body.Close()
 		r.body = res.Body
 	}
 	return n, nil
@@ -1523,6 +1529,7 @@ func readerReopen(ctx context.Context, header http.Header, params *newRangeReade
 			if params.gen < 0 && res.Header.Get("X-Goog-Generation") != "" {
 				gen64, err := strconv.ParseInt(res.Header.Get("X-Goog-Generation"), 10, 64)
 				if err != nil {
+					res.Body.Close()
 					return err
 				}
 				params.gen = gen64
@@ -1536,8 +1543,12 @@ func readerReopen(ctx context.Context, header http.Header, params *newRangeReade
 	}
 }
 
-func parseReadResponse(res *http.Response, params *newRangeReaderParams, reopen func(int64) (*http.Response, error)) (*Reader, error) {
-	var err error
+func parseReadResponse(res *http.Response, params *newRangeReaderParams, reopen func(int64) (*http.Response, error)) (r *Reader, err error) {
+	defer func() {
+		if err != nil {
+			res.Body.Close()
+		}
+	}()
 	var (
 		size        int64 // total size of object, even if a range was requested.
 		checkCRC    bool
@@ -1547,20 +1558,23 @@ func parseReadResponse(res *http.Response, params *newRangeReaderParams, reopen 
 	if res.StatusCode == http.StatusPartialContent {
 		cr := strings.TrimSpace(res.Header.Get("Content-Range"))
 		if !strings.HasPrefix(cr, "bytes ") || !strings.Contains(cr, "/") {
-			return nil, fmt.Errorf("storage: invalid Content-Range %q", cr)
+			err = fmt.Errorf("storage: invalid Content-Range %q", cr)
+			return nil, err
 		}
 		// Content range is formatted <first byte>-<last byte>/<total size>. We take
 		// the total size.
 		size, err = strconv.ParseInt(cr[strings.LastIndex(cr, "/")+1:], 10, 64)
 		if err != nil {
-			return nil, fmt.Errorf("storage: invalid Content-Range %q", cr)
+			err = fmt.Errorf("storage: invalid Content-Range %q: %w", cr, err)
+			return nil, err
 		}
 
 		dashIndex := strings.Index(cr, "-")
 		if dashIndex >= 0 {
 			startOffset, err = strconv.ParseInt(cr[len("bytes="):dashIndex], 10, 64)
 			if err != nil {
-				return nil, fmt.Errorf("storage: invalid Content-Range %q: %w", cr, err)
+				err = fmt.Errorf("storage: invalid Content-Range %q: %w", cr, err)
+				return nil, err
 			}
 		}
 	} else {

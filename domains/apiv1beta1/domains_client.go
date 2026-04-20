@@ -30,6 +30,7 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -422,6 +423,16 @@ type gRPCClient struct {
 // The Cloud Domains API enables management and configuration of domain names.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "domains",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/domains/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "domains.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -443,6 +454,34 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "domains",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/domains/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "domains.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.SearchDomains = append(client.CallOptions.SearchDomains, gax.WithClientMetrics(metrics))
+		client.CallOptions.RetrieveRegisterParameters = append(client.CallOptions.RetrieveRegisterParameters, gax.WithClientMetrics(metrics))
+		client.CallOptions.RegisterDomain = append(client.CallOptions.RegisterDomain, gax.WithClientMetrics(metrics))
+		client.CallOptions.RetrieveTransferParameters = append(client.CallOptions.RetrieveTransferParameters, gax.WithClientMetrics(metrics))
+		client.CallOptions.TransferDomain = append(client.CallOptions.TransferDomain, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListRegistrations = append(client.CallOptions.ListRegistrations, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetRegistration = append(client.CallOptions.GetRegistration, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateRegistration = append(client.CallOptions.UpdateRegistration, gax.WithClientMetrics(metrics))
+		client.CallOptions.ConfigureManagementSettings = append(client.CallOptions.ConfigureManagementSettings, gax.WithClientMetrics(metrics))
+		client.CallOptions.ConfigureDnsSettings = append(client.CallOptions.ConfigureDnsSettings, gax.WithClientMetrics(metrics))
+		client.CallOptions.ConfigureContactSettings = append(client.CallOptions.ConfigureContactSettings, gax.WithClientMetrics(metrics))
+		client.CallOptions.ExportRegistration = append(client.CallOptions.ExportRegistration, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteRegistration = append(client.CallOptions.DeleteRegistration, gax.WithClientMetrics(metrics))
+		client.CallOptions.RetrieveAuthorizationCode = append(client.CallOptions.RetrieveAuthorizationCode, gax.WithClientMetrics(metrics))
+		client.CallOptions.ResetAuthorizationCode = append(client.CallOptions.ResetAuthorizationCode, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -512,6 +551,16 @@ type restClient struct {
 // The Cloud Domains API enables management and configuration of domain names.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "domains",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/domains/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "domains.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -525,6 +574,35 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "domains",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/domains/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "domains.googleapis.com",
+			}),
+		)
+
+		callOpts.SearchDomains = append(callOpts.SearchDomains, gax.WithClientMetrics(metrics))
+		callOpts.RetrieveRegisterParameters = append(callOpts.RetrieveRegisterParameters, gax.WithClientMetrics(metrics))
+		callOpts.RegisterDomain = append(callOpts.RegisterDomain, gax.WithClientMetrics(metrics))
+		callOpts.RetrieveTransferParameters = append(callOpts.RetrieveTransferParameters, gax.WithClientMetrics(metrics))
+		callOpts.TransferDomain = append(callOpts.TransferDomain, gax.WithClientMetrics(metrics))
+		callOpts.ListRegistrations = append(callOpts.ListRegistrations, gax.WithClientMetrics(metrics))
+		callOpts.GetRegistration = append(callOpts.GetRegistration, gax.WithClientMetrics(metrics))
+		callOpts.UpdateRegistration = append(callOpts.UpdateRegistration, gax.WithClientMetrics(metrics))
+		callOpts.ConfigureManagementSettings = append(callOpts.ConfigureManagementSettings, gax.WithClientMetrics(metrics))
+		callOpts.ConfigureDnsSettings = append(callOpts.ConfigureDnsSettings, gax.WithClientMetrics(metrics))
+		callOpts.ConfigureContactSettings = append(callOpts.ConfigureContactSettings, gax.WithClientMetrics(metrics))
+		callOpts.ExportRegistration = append(callOpts.ExportRegistration, gax.WithClientMetrics(metrics))
+		callOpts.DeleteRegistration = append(callOpts.DeleteRegistration, gax.WithClientMetrics(metrics))
+		callOpts.RetrieveAuthorizationCode = append(callOpts.RetrieveAuthorizationCode, gax.WithClientMetrics(metrics))
+		callOpts.ResetAuthorizationCode = append(callOpts.ResetAuthorizationCode, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -581,6 +659,12 @@ func (c *gRPCClient) SearchDomains(ctx context.Context, req *domainspb.SearchDom
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//domains.googleapis.com/%v", req.GetLocation()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.domains.v1beta1.Domains/SearchDomains")
+	}
 	opts = append((*c.CallOptions).SearchDomains[0:len((*c.CallOptions).SearchDomains):len((*c.CallOptions).SearchDomains)], opts...)
 	var resp *domainspb.SearchDomainsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -599,6 +683,12 @@ func (c *gRPCClient) RetrieveRegisterParameters(ctx context.Context, req *domain
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//domains.googleapis.com/%v", req.GetLocation()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.domains.v1beta1.Domains/RetrieveRegisterParameters")
+	}
 	opts = append((*c.CallOptions).RetrieveRegisterParameters[0:len((*c.CallOptions).RetrieveRegisterParameters):len((*c.CallOptions).RetrieveRegisterParameters)], opts...)
 	var resp *domainspb.RetrieveRegisterParametersResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -617,6 +707,12 @@ func (c *gRPCClient) RegisterDomain(ctx context.Context, req *domainspb.Register
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//domains.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.domains.v1beta1.Domains/RegisterDomain")
+	}
 	opts = append((*c.CallOptions).RegisterDomain[0:len((*c.CallOptions).RegisterDomain):len((*c.CallOptions).RegisterDomain)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -637,6 +733,12 @@ func (c *gRPCClient) RetrieveTransferParameters(ctx context.Context, req *domain
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//domains.googleapis.com/%v", req.GetLocation()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.domains.v1beta1.Domains/RetrieveTransferParameters")
+	}
 	opts = append((*c.CallOptions).RetrieveTransferParameters[0:len((*c.CallOptions).RetrieveTransferParameters):len((*c.CallOptions).RetrieveTransferParameters)], opts...)
 	var resp *domainspb.RetrieveTransferParametersResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -655,6 +757,12 @@ func (c *gRPCClient) TransferDomain(ctx context.Context, req *domainspb.Transfer
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//domains.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.domains.v1beta1.Domains/TransferDomain")
+	}
 	opts = append((*c.CallOptions).TransferDomain[0:len((*c.CallOptions).TransferDomain):len((*c.CallOptions).TransferDomain)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -675,6 +783,12 @@ func (c *gRPCClient) ListRegistrations(ctx context.Context, req *domainspb.ListR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//domains.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.domains.v1beta1.Domains/ListRegistrations")
+	}
 	opts = append((*c.CallOptions).ListRegistrations[0:len((*c.CallOptions).ListRegistrations):len((*c.CallOptions).ListRegistrations)], opts...)
 	it := &RegistrationIterator{}
 	req = proto.Clone(req).(*domainspb.ListRegistrationsRequest)
@@ -721,6 +835,12 @@ func (c *gRPCClient) GetRegistration(ctx context.Context, req *domainspb.GetRegi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//domains.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.domains.v1beta1.Domains/GetRegistration")
+	}
 	opts = append((*c.CallOptions).GetRegistration[0:len((*c.CallOptions).GetRegistration):len((*c.CallOptions).GetRegistration)], opts...)
 	var resp *domainspb.Registration
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -739,6 +859,9 @@ func (c *gRPCClient) UpdateRegistration(ctx context.Context, req *domainspb.Upda
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.domains.v1beta1.Domains/UpdateRegistration")
+	}
 	opts = append((*c.CallOptions).UpdateRegistration[0:len((*c.CallOptions).UpdateRegistration):len((*c.CallOptions).UpdateRegistration)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -759,6 +882,12 @@ func (c *gRPCClient) ConfigureManagementSettings(ctx context.Context, req *domai
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//domains.googleapis.com/%v", req.GetRegistration()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.domains.v1beta1.Domains/ConfigureManagementSettings")
+	}
 	opts = append((*c.CallOptions).ConfigureManagementSettings[0:len((*c.CallOptions).ConfigureManagementSettings):len((*c.CallOptions).ConfigureManagementSettings)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -779,6 +908,12 @@ func (c *gRPCClient) ConfigureDnsSettings(ctx context.Context, req *domainspb.Co
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//domains.googleapis.com/%v", req.GetRegistration()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.domains.v1beta1.Domains/ConfigureDnsSettings")
+	}
 	opts = append((*c.CallOptions).ConfigureDnsSettings[0:len((*c.CallOptions).ConfigureDnsSettings):len((*c.CallOptions).ConfigureDnsSettings)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -799,6 +934,12 @@ func (c *gRPCClient) ConfigureContactSettings(ctx context.Context, req *domainsp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//domains.googleapis.com/%v", req.GetRegistration()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.domains.v1beta1.Domains/ConfigureContactSettings")
+	}
 	opts = append((*c.CallOptions).ConfigureContactSettings[0:len((*c.CallOptions).ConfigureContactSettings):len((*c.CallOptions).ConfigureContactSettings)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -819,6 +960,12 @@ func (c *gRPCClient) ExportRegistration(ctx context.Context, req *domainspb.Expo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//domains.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.domains.v1beta1.Domains/ExportRegistration")
+	}
 	opts = append((*c.CallOptions).ExportRegistration[0:len((*c.CallOptions).ExportRegistration):len((*c.CallOptions).ExportRegistration)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -839,6 +986,12 @@ func (c *gRPCClient) DeleteRegistration(ctx context.Context, req *domainspb.Dele
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//domains.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.domains.v1beta1.Domains/DeleteRegistration")
+	}
 	opts = append((*c.CallOptions).DeleteRegistration[0:len((*c.CallOptions).DeleteRegistration):len((*c.CallOptions).DeleteRegistration)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -859,6 +1012,12 @@ func (c *gRPCClient) RetrieveAuthorizationCode(ctx context.Context, req *domains
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//domains.googleapis.com/%v", req.GetRegistration()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.domains.v1beta1.Domains/RetrieveAuthorizationCode")
+	}
 	opts = append((*c.CallOptions).RetrieveAuthorizationCode[0:len((*c.CallOptions).RetrieveAuthorizationCode):len((*c.CallOptions).RetrieveAuthorizationCode)], opts...)
 	var resp *domainspb.AuthorizationCode
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -877,6 +1036,12 @@ func (c *gRPCClient) ResetAuthorizationCode(ctx context.Context, req *domainspb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//domains.googleapis.com/%v", req.GetRegistration()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.domains.v1beta1.Domains/ResetAuthorizationCode")
+	}
 	opts = append((*c.CallOptions).ResetAuthorizationCode[0:len((*c.CallOptions).ResetAuthorizationCode):len((*c.CallOptions).ResetAuthorizationCode)], opts...)
 	var resp *domainspb.AuthorizationCode
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -914,6 +1079,13 @@ func (c *restClient) SearchDomains(ctx context.Context, req *domainspb.SearchDom
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//domains.googleapis.com/%v", req.GetLocation()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.domains.v1beta1.Domains/SearchDomains")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{location=projects/*/locations/*}/registrations:searchDomains")
+	}
 	opts = append((*c.CallOptions).SearchDomains[0:len((*c.CallOptions).SearchDomains):len((*c.CallOptions).SearchDomains)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &domainspb.SearchDomainsResponse{}
@@ -966,6 +1138,13 @@ func (c *restClient) RetrieveRegisterParameters(ctx context.Context, req *domain
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//domains.googleapis.com/%v", req.GetLocation()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.domains.v1beta1.Domains/RetrieveRegisterParameters")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{location=projects/*/locations/*}/registrations:retrieveRegisterParameters")
+	}
 	opts = append((*c.CallOptions).RetrieveRegisterParameters[0:len((*c.CallOptions).RetrieveRegisterParameters):len((*c.CallOptions).RetrieveRegisterParameters)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &domainspb.RetrieveRegisterParametersResponse{}
@@ -1034,6 +1213,13 @@ func (c *restClient) RegisterDomain(ctx context.Context, req *domainspb.Register
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//domains.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.domains.v1beta1.Domains/RegisterDomain")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*}/registrations:register")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1092,6 +1278,13 @@ func (c *restClient) RetrieveTransferParameters(ctx context.Context, req *domain
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//domains.googleapis.com/%v", req.GetLocation()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.domains.v1beta1.Domains/RetrieveTransferParameters")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{location=projects/*/locations/*}/registrations:retrieveTransferParameters")
+	}
 	opts = append((*c.CallOptions).RetrieveTransferParameters[0:len((*c.CallOptions).RetrieveTransferParameters):len((*c.CallOptions).RetrieveTransferParameters)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &domainspb.RetrieveTransferParametersResponse{}
@@ -1167,6 +1360,13 @@ func (c *restClient) TransferDomain(ctx context.Context, req *domainspb.Transfer
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//domains.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.domains.v1beta1.Domains/TransferDomain")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*}/registrations:transfer")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1301,6 +1501,13 @@ func (c *restClient) GetRegistration(ctx context.Context, req *domainspb.GetRegi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//domains.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.domains.v1beta1.Domains/GetRegistration")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/registrations/*}")
+	}
 	opts = append((*c.CallOptions).GetRegistration[0:len((*c.CallOptions).GetRegistration):len((*c.CallOptions).GetRegistration)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &domainspb.Registration{}
@@ -1372,6 +1579,10 @@ func (c *restClient) UpdateRegistration(ctx context.Context, req *domainspb.Upda
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.domains.v1beta1.Domains/UpdateRegistration")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{registration.name=projects/*/locations/*/registrations/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1431,6 +1642,13 @@ func (c *restClient) ConfigureManagementSettings(ctx context.Context, req *domai
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//domains.googleapis.com/%v", req.GetRegistration()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.domains.v1beta1.Domains/ConfigureManagementSettings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{registration=projects/*/locations/*/registrations/*}:configureManagementSettings")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1490,6 +1708,13 @@ func (c *restClient) ConfigureDnsSettings(ctx context.Context, req *domainspb.Co
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//domains.googleapis.com/%v", req.GetRegistration()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.domains.v1beta1.Domains/ConfigureDnsSettings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{registration=projects/*/locations/*/registrations/*}:configureDnsSettings")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1550,6 +1775,13 @@ func (c *restClient) ConfigureContactSettings(ctx context.Context, req *domainsp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//domains.googleapis.com/%v", req.GetRegistration()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.domains.v1beta1.Domains/ConfigureContactSettings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{registration=projects/*/locations/*/registrations/*}:configureContactSettings")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1617,6 +1849,13 @@ func (c *restClient) ExportRegistration(ctx context.Context, req *domainspb.Expo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//domains.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.domains.v1beta1.Domains/ExportRegistration")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/registrations/*}:export")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1690,6 +1929,13 @@ func (c *restClient) DeleteRegistration(ctx context.Context, req *domainspb.Dele
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//domains.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.domains.v1beta1.Domains/DeleteRegistration")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/registrations/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1747,6 +1993,13 @@ func (c *restClient) RetrieveAuthorizationCode(ctx context.Context, req *domains
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//domains.googleapis.com/%v", req.GetRegistration()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.domains.v1beta1.Domains/RetrieveAuthorizationCode")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{registration=projects/*/locations/*/registrations/*}:retrieveAuthorizationCode")
+	}
 	opts = append((*c.CallOptions).RetrieveAuthorizationCode[0:len((*c.CallOptions).RetrieveAuthorizationCode):len((*c.CallOptions).RetrieveAuthorizationCode)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &domainspb.AuthorizationCode{}
@@ -1806,6 +2059,13 @@ func (c *restClient) ResetAuthorizationCode(ctx context.Context, req *domainspb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//domains.googleapis.com/%v", req.GetRegistration()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.domains.v1beta1.Domains/ResetAuthorizationCode")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{registration=projects/*/locations/*/registrations/*}:resetAuthorizationCode")
+	}
 	opts = append((*c.CallOptions).ResetAuthorizationCode[0:len((*c.CallOptions).ResetAuthorizationCode):len((*c.CallOptions).ResetAuthorizationCode)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &domainspb.AuthorizationCode{}

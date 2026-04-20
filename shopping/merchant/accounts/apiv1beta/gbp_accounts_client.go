@@ -28,6 +28,7 @@ import (
 
 	accountspb "cloud.google.com/go/shopping/merchant/accounts/apiv1beta/accountspb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -205,6 +206,16 @@ type gbpAccountsGRPCClient struct {
 //	GbpAccount
 func NewGbpAccountsClient(ctx context.Context, opts ...option.ClientOption) (*GbpAccountsClient, error) {
 	clientOpts := defaultGbpAccountsGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	if newGbpAccountsClientHook != nil {
 		hookOpts, err := newGbpAccountsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -226,6 +237,21 @@ func NewGbpAccountsClient(ctx context.Context, opts ...option.ClientOption) (*Gb
 		logger:            internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListGbpAccounts = append(client.CallOptions.ListGbpAccounts, gax.WithClientMetrics(metrics))
+		client.CallOptions.LinkGbpAccount = append(client.CallOptions.LinkGbpAccount, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -283,6 +309,16 @@ type gbpAccountsRESTClient struct {
 //	GbpAccount
 func NewGbpAccountsRESTClient(ctx context.Context, opts ...option.ClientOption) (*GbpAccountsClient, error) {
 	clientOpts := append(defaultGbpAccountsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -296,6 +332,22 @@ func NewGbpAccountsRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.ListGbpAccounts = append(callOpts.ListGbpAccounts, gax.WithClientMetrics(metrics))
+		callOpts.LinkGbpAccount = append(callOpts.LinkGbpAccount, gax.WithClientMetrics(metrics))
+	}
 
 	return &GbpAccountsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -342,6 +394,12 @@ func (c *gbpAccountsGRPCClient) ListGbpAccounts(ctx context.Context, req *accoun
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.GbpAccountsService/ListGbpAccounts")
+	}
 	opts = append((*c.CallOptions).ListGbpAccounts[0:len((*c.CallOptions).ListGbpAccounts):len((*c.CallOptions).ListGbpAccounts)], opts...)
 	it := &GbpAccountIterator{}
 	req = proto.Clone(req).(*accountspb.ListGbpAccountsRequest)
@@ -388,6 +446,12 @@ func (c *gbpAccountsGRPCClient) LinkGbpAccount(ctx context.Context, req *account
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.GbpAccountsService/LinkGbpAccount")
+	}
 	opts = append((*c.CallOptions).LinkGbpAccount[0:len((*c.CallOptions).LinkGbpAccount):len((*c.CallOptions).LinkGbpAccount)], opts...)
 	var resp *accountspb.LinkGbpAccountResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -504,6 +568,13 @@ func (c *gbpAccountsRESTClient) LinkGbpAccount(ctx context.Context, req *account
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.GbpAccountsService/LinkGbpAccount")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1beta/{parent=accounts/*}/gbpAccounts:linkGbpAccount")
+	}
 	opts = append((*c.CallOptions).LinkGbpAccount[0:len((*c.CallOptions).LinkGbpAccount):len((*c.CallOptions).LinkGbpAccount)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &accountspb.LinkGbpAccountResponse{}

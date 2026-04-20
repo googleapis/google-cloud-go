@@ -27,6 +27,7 @@ import (
 
 	servicehealthpb "cloud.google.com/go/servicehealth/apiv1/servicehealthpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -340,6 +341,16 @@ type gRPCClient struct {
 // Request service health events relevant to your Google Cloud project.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "servicehealth",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/servicehealth/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "servicehealth.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -362,6 +373,27 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		locationsClient: locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "servicehealth",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/servicehealth/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "servicehealth.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListEvents = append(client.CallOptions.ListEvents, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetEvent = append(client.CallOptions.GetEvent, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOrganizationEvents = append(client.CallOptions.ListOrganizationEvents, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOrganizationEvent = append(client.CallOptions.GetOrganizationEvent, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOrganizationImpacts = append(client.CallOptions.ListOrganizationImpacts, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOrganizationImpact = append(client.CallOptions.GetOrganizationImpact, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -415,6 +447,16 @@ type restClient struct {
 // Request service health events relevant to your Google Cloud project.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "servicehealth",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/servicehealth/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "servicehealth.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -428,6 +470,28 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "servicehealth",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/servicehealth/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "servicehealth.googleapis.com",
+			}),
+		)
+
+		callOpts.ListEvents = append(callOpts.ListEvents, gax.WithClientMetrics(metrics))
+		callOpts.GetEvent = append(callOpts.GetEvent, gax.WithClientMetrics(metrics))
+		callOpts.ListOrganizationEvents = append(callOpts.ListOrganizationEvents, gax.WithClientMetrics(metrics))
+		callOpts.GetOrganizationEvent = append(callOpts.GetOrganizationEvent, gax.WithClientMetrics(metrics))
+		callOpts.ListOrganizationImpacts = append(callOpts.ListOrganizationImpacts, gax.WithClientMetrics(metrics))
+		callOpts.GetOrganizationImpact = append(callOpts.GetOrganizationImpact, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -474,6 +538,12 @@ func (c *gRPCClient) ListEvents(ctx context.Context, req *servicehealthpb.ListEv
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//servicehealth.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.servicehealth.v1.ServiceHealth/ListEvents")
+	}
 	opts = append((*c.CallOptions).ListEvents[0:len((*c.CallOptions).ListEvents):len((*c.CallOptions).ListEvents)], opts...)
 	it := &EventIterator{}
 	req = proto.Clone(req).(*servicehealthpb.ListEventsRequest)
@@ -520,6 +590,12 @@ func (c *gRPCClient) GetEvent(ctx context.Context, req *servicehealthpb.GetEvent
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//servicehealth.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.servicehealth.v1.ServiceHealth/GetEvent")
+	}
 	opts = append((*c.CallOptions).GetEvent[0:len((*c.CallOptions).GetEvent):len((*c.CallOptions).GetEvent)], opts...)
 	var resp *servicehealthpb.Event
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -538,6 +614,12 @@ func (c *gRPCClient) ListOrganizationEvents(ctx context.Context, req *servicehea
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//servicehealth.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.servicehealth.v1.ServiceHealth/ListOrganizationEvents")
+	}
 	opts = append((*c.CallOptions).ListOrganizationEvents[0:len((*c.CallOptions).ListOrganizationEvents):len((*c.CallOptions).ListOrganizationEvents)], opts...)
 	it := &OrganizationEventIterator{}
 	req = proto.Clone(req).(*servicehealthpb.ListOrganizationEventsRequest)
@@ -584,6 +666,12 @@ func (c *gRPCClient) GetOrganizationEvent(ctx context.Context, req *servicehealt
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//servicehealth.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.servicehealth.v1.ServiceHealth/GetOrganizationEvent")
+	}
 	opts = append((*c.CallOptions).GetOrganizationEvent[0:len((*c.CallOptions).GetOrganizationEvent):len((*c.CallOptions).GetOrganizationEvent)], opts...)
 	var resp *servicehealthpb.OrganizationEvent
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -602,6 +690,12 @@ func (c *gRPCClient) ListOrganizationImpacts(ctx context.Context, req *servicehe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//servicehealth.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.servicehealth.v1.ServiceHealth/ListOrganizationImpacts")
+	}
 	opts = append((*c.CallOptions).ListOrganizationImpacts[0:len((*c.CallOptions).ListOrganizationImpacts):len((*c.CallOptions).ListOrganizationImpacts)], opts...)
 	it := &OrganizationImpactIterator{}
 	req = proto.Clone(req).(*servicehealthpb.ListOrganizationImpactsRequest)
@@ -648,6 +742,12 @@ func (c *gRPCClient) GetOrganizationImpact(ctx context.Context, req *serviceheal
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//servicehealth.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.servicehealth.v1.ServiceHealth/GetOrganizationImpact")
+	}
 	opts = append((*c.CallOptions).GetOrganizationImpact[0:len((*c.CallOptions).GetOrganizationImpact):len((*c.CallOptions).GetOrganizationImpact)], opts...)
 	var resp *servicehealthpb.OrganizationImpact
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -666,6 +766,9 @@ func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -684,6 +787,9 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
@@ -828,6 +934,13 @@ func (c *restClient) GetEvent(ctx context.Context, req *servicehealthpb.GetEvent
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//servicehealth.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.servicehealth.v1.ServiceHealth/GetEvent")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/events/*}")
+	}
 	opts = append((*c.CallOptions).GetEvent[0:len((*c.CallOptions).GetEvent):len((*c.CallOptions).GetEvent)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &servicehealthpb.Event{}
@@ -963,6 +1076,13 @@ func (c *restClient) GetOrganizationEvent(ctx context.Context, req *servicehealt
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//servicehealth.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.servicehealth.v1.ServiceHealth/GetOrganizationEvent")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=organizations/*/locations/*/organizationEvents/*}")
+	}
 	opts = append((*c.CallOptions).GetOrganizationEvent[0:len((*c.CallOptions).GetOrganizationEvent):len((*c.CallOptions).GetOrganizationEvent)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &servicehealthpb.OrganizationEvent{}
@@ -1096,6 +1216,13 @@ func (c *restClient) GetOrganizationImpact(ctx context.Context, req *serviceheal
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//servicehealth.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.servicehealth.v1.ServiceHealth/GetOrganizationImpact")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=organizations/*/locations/*/organizationImpacts/*}")
+	}
 	opts = append((*c.CallOptions).GetOrganizationImpact[0:len((*c.CallOptions).GetOrganizationImpact):len((*c.CallOptions).GetOrganizationImpact)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &servicehealthpb.OrganizationImpact{}
@@ -1146,6 +1273,10 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}

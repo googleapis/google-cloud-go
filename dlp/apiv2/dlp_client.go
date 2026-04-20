@@ -28,6 +28,7 @@ import (
 
 	dlppb "cloud.google.com/go/dlp/apiv2/dlppb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1581,6 +1582,16 @@ type gRPCClient struct {
 // https://cloud.google.com/sensitive-data-protection/docs/ (at https://cloud.google.com/sensitive-data-protection/docs/).
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "dlp",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/dlp/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "dlp.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -1602,6 +1613,74 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "dlp",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dlp/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dlp.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.InspectContent = append(client.CallOptions.InspectContent, gax.WithClientMetrics(metrics))
+		client.CallOptions.RedactImage = append(client.CallOptions.RedactImage, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeidentifyContent = append(client.CallOptions.DeidentifyContent, gax.WithClientMetrics(metrics))
+		client.CallOptions.ReidentifyContent = append(client.CallOptions.ReidentifyContent, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListInfoTypes = append(client.CallOptions.ListInfoTypes, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateInspectTemplate = append(client.CallOptions.CreateInspectTemplate, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateInspectTemplate = append(client.CallOptions.UpdateInspectTemplate, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetInspectTemplate = append(client.CallOptions.GetInspectTemplate, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListInspectTemplates = append(client.CallOptions.ListInspectTemplates, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteInspectTemplate = append(client.CallOptions.DeleteInspectTemplate, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateDeidentifyTemplate = append(client.CallOptions.CreateDeidentifyTemplate, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateDeidentifyTemplate = append(client.CallOptions.UpdateDeidentifyTemplate, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetDeidentifyTemplate = append(client.CallOptions.GetDeidentifyTemplate, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListDeidentifyTemplates = append(client.CallOptions.ListDeidentifyTemplates, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteDeidentifyTemplate = append(client.CallOptions.DeleteDeidentifyTemplate, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateJobTrigger = append(client.CallOptions.CreateJobTrigger, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateJobTrigger = append(client.CallOptions.UpdateJobTrigger, gax.WithClientMetrics(metrics))
+		client.CallOptions.HybridInspectJobTrigger = append(client.CallOptions.HybridInspectJobTrigger, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetJobTrigger = append(client.CallOptions.GetJobTrigger, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListJobTriggers = append(client.CallOptions.ListJobTriggers, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteJobTrigger = append(client.CallOptions.DeleteJobTrigger, gax.WithClientMetrics(metrics))
+		client.CallOptions.ActivateJobTrigger = append(client.CallOptions.ActivateJobTrigger, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateDiscoveryConfig = append(client.CallOptions.CreateDiscoveryConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateDiscoveryConfig = append(client.CallOptions.UpdateDiscoveryConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetDiscoveryConfig = append(client.CallOptions.GetDiscoveryConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListDiscoveryConfigs = append(client.CallOptions.ListDiscoveryConfigs, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteDiscoveryConfig = append(client.CallOptions.DeleteDiscoveryConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateDlpJob = append(client.CallOptions.CreateDlpJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListDlpJobs = append(client.CallOptions.ListDlpJobs, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetDlpJob = append(client.CallOptions.GetDlpJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteDlpJob = append(client.CallOptions.DeleteDlpJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelDlpJob = append(client.CallOptions.CancelDlpJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateStoredInfoType = append(client.CallOptions.CreateStoredInfoType, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateStoredInfoType = append(client.CallOptions.UpdateStoredInfoType, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetStoredInfoType = append(client.CallOptions.GetStoredInfoType, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListStoredInfoTypes = append(client.CallOptions.ListStoredInfoTypes, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteStoredInfoType = append(client.CallOptions.DeleteStoredInfoType, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListProjectDataProfiles = append(client.CallOptions.ListProjectDataProfiles, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListTableDataProfiles = append(client.CallOptions.ListTableDataProfiles, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListColumnDataProfiles = append(client.CallOptions.ListColumnDataProfiles, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetProjectDataProfile = append(client.CallOptions.GetProjectDataProfile, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListFileStoreDataProfiles = append(client.CallOptions.ListFileStoreDataProfiles, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetFileStoreDataProfile = append(client.CallOptions.GetFileStoreDataProfile, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteFileStoreDataProfile = append(client.CallOptions.DeleteFileStoreDataProfile, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetTableDataProfile = append(client.CallOptions.GetTableDataProfile, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetColumnDataProfile = append(client.CallOptions.GetColumnDataProfile, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteTableDataProfile = append(client.CallOptions.DeleteTableDataProfile, gax.WithClientMetrics(metrics))
+		client.CallOptions.HybridInspectDlpJob = append(client.CallOptions.HybridInspectDlpJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.FinishDlpJob = append(client.CallOptions.FinishDlpJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateConnection = append(client.CallOptions.CreateConnection, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetConnection = append(client.CallOptions.GetConnection, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListConnections = append(client.CallOptions.ListConnections, gax.WithClientMetrics(metrics))
+		client.CallOptions.SearchConnections = append(client.CallOptions.SearchConnections, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteConnection = append(client.CallOptions.DeleteConnection, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateConnection = append(client.CallOptions.UpdateConnection, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -1659,6 +1738,16 @@ type restClient struct {
 // https://cloud.google.com/sensitive-data-protection/docs/ (at https://cloud.google.com/sensitive-data-protection/docs/).
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "dlp",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/dlp/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "dlp.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -1672,6 +1761,75 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "dlp",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dlp/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dlp.googleapis.com",
+			}),
+		)
+
+		callOpts.InspectContent = append(callOpts.InspectContent, gax.WithClientMetrics(metrics))
+		callOpts.RedactImage = append(callOpts.RedactImage, gax.WithClientMetrics(metrics))
+		callOpts.DeidentifyContent = append(callOpts.DeidentifyContent, gax.WithClientMetrics(metrics))
+		callOpts.ReidentifyContent = append(callOpts.ReidentifyContent, gax.WithClientMetrics(metrics))
+		callOpts.ListInfoTypes = append(callOpts.ListInfoTypes, gax.WithClientMetrics(metrics))
+		callOpts.CreateInspectTemplate = append(callOpts.CreateInspectTemplate, gax.WithClientMetrics(metrics))
+		callOpts.UpdateInspectTemplate = append(callOpts.UpdateInspectTemplate, gax.WithClientMetrics(metrics))
+		callOpts.GetInspectTemplate = append(callOpts.GetInspectTemplate, gax.WithClientMetrics(metrics))
+		callOpts.ListInspectTemplates = append(callOpts.ListInspectTemplates, gax.WithClientMetrics(metrics))
+		callOpts.DeleteInspectTemplate = append(callOpts.DeleteInspectTemplate, gax.WithClientMetrics(metrics))
+		callOpts.CreateDeidentifyTemplate = append(callOpts.CreateDeidentifyTemplate, gax.WithClientMetrics(metrics))
+		callOpts.UpdateDeidentifyTemplate = append(callOpts.UpdateDeidentifyTemplate, gax.WithClientMetrics(metrics))
+		callOpts.GetDeidentifyTemplate = append(callOpts.GetDeidentifyTemplate, gax.WithClientMetrics(metrics))
+		callOpts.ListDeidentifyTemplates = append(callOpts.ListDeidentifyTemplates, gax.WithClientMetrics(metrics))
+		callOpts.DeleteDeidentifyTemplate = append(callOpts.DeleteDeidentifyTemplate, gax.WithClientMetrics(metrics))
+		callOpts.CreateJobTrigger = append(callOpts.CreateJobTrigger, gax.WithClientMetrics(metrics))
+		callOpts.UpdateJobTrigger = append(callOpts.UpdateJobTrigger, gax.WithClientMetrics(metrics))
+		callOpts.HybridInspectJobTrigger = append(callOpts.HybridInspectJobTrigger, gax.WithClientMetrics(metrics))
+		callOpts.GetJobTrigger = append(callOpts.GetJobTrigger, gax.WithClientMetrics(metrics))
+		callOpts.ListJobTriggers = append(callOpts.ListJobTriggers, gax.WithClientMetrics(metrics))
+		callOpts.DeleteJobTrigger = append(callOpts.DeleteJobTrigger, gax.WithClientMetrics(metrics))
+		callOpts.ActivateJobTrigger = append(callOpts.ActivateJobTrigger, gax.WithClientMetrics(metrics))
+		callOpts.CreateDiscoveryConfig = append(callOpts.CreateDiscoveryConfig, gax.WithClientMetrics(metrics))
+		callOpts.UpdateDiscoveryConfig = append(callOpts.UpdateDiscoveryConfig, gax.WithClientMetrics(metrics))
+		callOpts.GetDiscoveryConfig = append(callOpts.GetDiscoveryConfig, gax.WithClientMetrics(metrics))
+		callOpts.ListDiscoveryConfigs = append(callOpts.ListDiscoveryConfigs, gax.WithClientMetrics(metrics))
+		callOpts.DeleteDiscoveryConfig = append(callOpts.DeleteDiscoveryConfig, gax.WithClientMetrics(metrics))
+		callOpts.CreateDlpJob = append(callOpts.CreateDlpJob, gax.WithClientMetrics(metrics))
+		callOpts.ListDlpJobs = append(callOpts.ListDlpJobs, gax.WithClientMetrics(metrics))
+		callOpts.GetDlpJob = append(callOpts.GetDlpJob, gax.WithClientMetrics(metrics))
+		callOpts.DeleteDlpJob = append(callOpts.DeleteDlpJob, gax.WithClientMetrics(metrics))
+		callOpts.CancelDlpJob = append(callOpts.CancelDlpJob, gax.WithClientMetrics(metrics))
+		callOpts.CreateStoredInfoType = append(callOpts.CreateStoredInfoType, gax.WithClientMetrics(metrics))
+		callOpts.UpdateStoredInfoType = append(callOpts.UpdateStoredInfoType, gax.WithClientMetrics(metrics))
+		callOpts.GetStoredInfoType = append(callOpts.GetStoredInfoType, gax.WithClientMetrics(metrics))
+		callOpts.ListStoredInfoTypes = append(callOpts.ListStoredInfoTypes, gax.WithClientMetrics(metrics))
+		callOpts.DeleteStoredInfoType = append(callOpts.DeleteStoredInfoType, gax.WithClientMetrics(metrics))
+		callOpts.ListProjectDataProfiles = append(callOpts.ListProjectDataProfiles, gax.WithClientMetrics(metrics))
+		callOpts.ListTableDataProfiles = append(callOpts.ListTableDataProfiles, gax.WithClientMetrics(metrics))
+		callOpts.ListColumnDataProfiles = append(callOpts.ListColumnDataProfiles, gax.WithClientMetrics(metrics))
+		callOpts.GetProjectDataProfile = append(callOpts.GetProjectDataProfile, gax.WithClientMetrics(metrics))
+		callOpts.ListFileStoreDataProfiles = append(callOpts.ListFileStoreDataProfiles, gax.WithClientMetrics(metrics))
+		callOpts.GetFileStoreDataProfile = append(callOpts.GetFileStoreDataProfile, gax.WithClientMetrics(metrics))
+		callOpts.DeleteFileStoreDataProfile = append(callOpts.DeleteFileStoreDataProfile, gax.WithClientMetrics(metrics))
+		callOpts.GetTableDataProfile = append(callOpts.GetTableDataProfile, gax.WithClientMetrics(metrics))
+		callOpts.GetColumnDataProfile = append(callOpts.GetColumnDataProfile, gax.WithClientMetrics(metrics))
+		callOpts.DeleteTableDataProfile = append(callOpts.DeleteTableDataProfile, gax.WithClientMetrics(metrics))
+		callOpts.HybridInspectDlpJob = append(callOpts.HybridInspectDlpJob, gax.WithClientMetrics(metrics))
+		callOpts.FinishDlpJob = append(callOpts.FinishDlpJob, gax.WithClientMetrics(metrics))
+		callOpts.CreateConnection = append(callOpts.CreateConnection, gax.WithClientMetrics(metrics))
+		callOpts.GetConnection = append(callOpts.GetConnection, gax.WithClientMetrics(metrics))
+		callOpts.ListConnections = append(callOpts.ListConnections, gax.WithClientMetrics(metrics))
+		callOpts.SearchConnections = append(callOpts.SearchConnections, gax.WithClientMetrics(metrics))
+		callOpts.DeleteConnection = append(callOpts.DeleteConnection, gax.WithClientMetrics(metrics))
+		callOpts.UpdateConnection = append(callOpts.UpdateConnection, gax.WithClientMetrics(metrics))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -1718,6 +1876,12 @@ func (c *gRPCClient) InspectContent(ctx context.Context, req *dlppb.InspectConte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/InspectContent")
+	}
 	opts = append((*c.CallOptions).InspectContent[0:len((*c.CallOptions).InspectContent):len((*c.CallOptions).InspectContent)], opts...)
 	var resp *dlppb.InspectContentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1736,6 +1900,12 @@ func (c *gRPCClient) RedactImage(ctx context.Context, req *dlppb.RedactImageRequ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/RedactImage")
+	}
 	opts = append((*c.CallOptions).RedactImage[0:len((*c.CallOptions).RedactImage):len((*c.CallOptions).RedactImage)], opts...)
 	var resp *dlppb.RedactImageResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1754,6 +1924,12 @@ func (c *gRPCClient) DeidentifyContent(ctx context.Context, req *dlppb.Deidentif
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/DeidentifyContent")
+	}
 	opts = append((*c.CallOptions).DeidentifyContent[0:len((*c.CallOptions).DeidentifyContent):len((*c.CallOptions).DeidentifyContent)], opts...)
 	var resp *dlppb.DeidentifyContentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1772,6 +1948,12 @@ func (c *gRPCClient) ReidentifyContent(ctx context.Context, req *dlppb.Reidentif
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/ReidentifyContent")
+	}
 	opts = append((*c.CallOptions).ReidentifyContent[0:len((*c.CallOptions).ReidentifyContent):len((*c.CallOptions).ReidentifyContent)], opts...)
 	var resp *dlppb.ReidentifyContentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1790,6 +1972,9 @@ func (c *gRPCClient) ListInfoTypes(ctx context.Context, req *dlppb.ListInfoTypes
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/ListInfoTypes")
+	}
 	opts = append((*c.CallOptions).ListInfoTypes[0:len((*c.CallOptions).ListInfoTypes):len((*c.CallOptions).ListInfoTypes)], opts...)
 	var resp *dlppb.ListInfoTypesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1808,6 +1993,12 @@ func (c *gRPCClient) CreateInspectTemplate(ctx context.Context, req *dlppb.Creat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/CreateInspectTemplate")
+	}
 	opts = append((*c.CallOptions).CreateInspectTemplate[0:len((*c.CallOptions).CreateInspectTemplate):len((*c.CallOptions).CreateInspectTemplate)], opts...)
 	var resp *dlppb.InspectTemplate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1826,6 +2017,12 @@ func (c *gRPCClient) UpdateInspectTemplate(ctx context.Context, req *dlppb.Updat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/UpdateInspectTemplate")
+	}
 	opts = append((*c.CallOptions).UpdateInspectTemplate[0:len((*c.CallOptions).UpdateInspectTemplate):len((*c.CallOptions).UpdateInspectTemplate)], opts...)
 	var resp *dlppb.InspectTemplate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1844,6 +2041,12 @@ func (c *gRPCClient) GetInspectTemplate(ctx context.Context, req *dlppb.GetInspe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/GetInspectTemplate")
+	}
 	opts = append((*c.CallOptions).GetInspectTemplate[0:len((*c.CallOptions).GetInspectTemplate):len((*c.CallOptions).GetInspectTemplate)], opts...)
 	var resp *dlppb.InspectTemplate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1862,6 +2065,12 @@ func (c *gRPCClient) ListInspectTemplates(ctx context.Context, req *dlppb.ListIn
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/ListInspectTemplates")
+	}
 	opts = append((*c.CallOptions).ListInspectTemplates[0:len((*c.CallOptions).ListInspectTemplates):len((*c.CallOptions).ListInspectTemplates)], opts...)
 	it := &InspectTemplateIterator{}
 	req = proto.Clone(req).(*dlppb.ListInspectTemplatesRequest)
@@ -1908,6 +2117,12 @@ func (c *gRPCClient) DeleteInspectTemplate(ctx context.Context, req *dlppb.Delet
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/DeleteInspectTemplate")
+	}
 	opts = append((*c.CallOptions).DeleteInspectTemplate[0:len((*c.CallOptions).DeleteInspectTemplate):len((*c.CallOptions).DeleteInspectTemplate)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1922,6 +2137,12 @@ func (c *gRPCClient) CreateDeidentifyTemplate(ctx context.Context, req *dlppb.Cr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/CreateDeidentifyTemplate")
+	}
 	opts = append((*c.CallOptions).CreateDeidentifyTemplate[0:len((*c.CallOptions).CreateDeidentifyTemplate):len((*c.CallOptions).CreateDeidentifyTemplate)], opts...)
 	var resp *dlppb.DeidentifyTemplate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1940,6 +2161,12 @@ func (c *gRPCClient) UpdateDeidentifyTemplate(ctx context.Context, req *dlppb.Up
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/UpdateDeidentifyTemplate")
+	}
 	opts = append((*c.CallOptions).UpdateDeidentifyTemplate[0:len((*c.CallOptions).UpdateDeidentifyTemplate):len((*c.CallOptions).UpdateDeidentifyTemplate)], opts...)
 	var resp *dlppb.DeidentifyTemplate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1958,6 +2185,12 @@ func (c *gRPCClient) GetDeidentifyTemplate(ctx context.Context, req *dlppb.GetDe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/GetDeidentifyTemplate")
+	}
 	opts = append((*c.CallOptions).GetDeidentifyTemplate[0:len((*c.CallOptions).GetDeidentifyTemplate):len((*c.CallOptions).GetDeidentifyTemplate)], opts...)
 	var resp *dlppb.DeidentifyTemplate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1976,6 +2209,12 @@ func (c *gRPCClient) ListDeidentifyTemplates(ctx context.Context, req *dlppb.Lis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/ListDeidentifyTemplates")
+	}
 	opts = append((*c.CallOptions).ListDeidentifyTemplates[0:len((*c.CallOptions).ListDeidentifyTemplates):len((*c.CallOptions).ListDeidentifyTemplates)], opts...)
 	it := &DeidentifyTemplateIterator{}
 	req = proto.Clone(req).(*dlppb.ListDeidentifyTemplatesRequest)
@@ -2022,6 +2261,12 @@ func (c *gRPCClient) DeleteDeidentifyTemplate(ctx context.Context, req *dlppb.De
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/DeleteDeidentifyTemplate")
+	}
 	opts = append((*c.CallOptions).DeleteDeidentifyTemplate[0:len((*c.CallOptions).DeleteDeidentifyTemplate):len((*c.CallOptions).DeleteDeidentifyTemplate)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2036,6 +2281,12 @@ func (c *gRPCClient) CreateJobTrigger(ctx context.Context, req *dlppb.CreateJobT
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/CreateJobTrigger")
+	}
 	opts = append((*c.CallOptions).CreateJobTrigger[0:len((*c.CallOptions).CreateJobTrigger):len((*c.CallOptions).CreateJobTrigger)], opts...)
 	var resp *dlppb.JobTrigger
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2054,6 +2305,12 @@ func (c *gRPCClient) UpdateJobTrigger(ctx context.Context, req *dlppb.UpdateJobT
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/UpdateJobTrigger")
+	}
 	opts = append((*c.CallOptions).UpdateJobTrigger[0:len((*c.CallOptions).UpdateJobTrigger):len((*c.CallOptions).UpdateJobTrigger)], opts...)
 	var resp *dlppb.JobTrigger
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2072,6 +2329,12 @@ func (c *gRPCClient) HybridInspectJobTrigger(ctx context.Context, req *dlppb.Hyb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/HybridInspectJobTrigger")
+	}
 	opts = append((*c.CallOptions).HybridInspectJobTrigger[0:len((*c.CallOptions).HybridInspectJobTrigger):len((*c.CallOptions).HybridInspectJobTrigger)], opts...)
 	var resp *dlppb.HybridInspectResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2090,6 +2353,12 @@ func (c *gRPCClient) GetJobTrigger(ctx context.Context, req *dlppb.GetJobTrigger
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/GetJobTrigger")
+	}
 	opts = append((*c.CallOptions).GetJobTrigger[0:len((*c.CallOptions).GetJobTrigger):len((*c.CallOptions).GetJobTrigger)], opts...)
 	var resp *dlppb.JobTrigger
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2108,6 +2377,12 @@ func (c *gRPCClient) ListJobTriggers(ctx context.Context, req *dlppb.ListJobTrig
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/ListJobTriggers")
+	}
 	opts = append((*c.CallOptions).ListJobTriggers[0:len((*c.CallOptions).ListJobTriggers):len((*c.CallOptions).ListJobTriggers)], opts...)
 	it := &JobTriggerIterator{}
 	req = proto.Clone(req).(*dlppb.ListJobTriggersRequest)
@@ -2154,6 +2429,12 @@ func (c *gRPCClient) DeleteJobTrigger(ctx context.Context, req *dlppb.DeleteJobT
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/DeleteJobTrigger")
+	}
 	opts = append((*c.CallOptions).DeleteJobTrigger[0:len((*c.CallOptions).DeleteJobTrigger):len((*c.CallOptions).DeleteJobTrigger)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2168,6 +2449,12 @@ func (c *gRPCClient) ActivateJobTrigger(ctx context.Context, req *dlppb.Activate
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/ActivateJobTrigger")
+	}
 	opts = append((*c.CallOptions).ActivateJobTrigger[0:len((*c.CallOptions).ActivateJobTrigger):len((*c.CallOptions).ActivateJobTrigger)], opts...)
 	var resp *dlppb.DlpJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2186,6 +2473,12 @@ func (c *gRPCClient) CreateDiscoveryConfig(ctx context.Context, req *dlppb.Creat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/CreateDiscoveryConfig")
+	}
 	opts = append((*c.CallOptions).CreateDiscoveryConfig[0:len((*c.CallOptions).CreateDiscoveryConfig):len((*c.CallOptions).CreateDiscoveryConfig)], opts...)
 	var resp *dlppb.DiscoveryConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2204,6 +2497,12 @@ func (c *gRPCClient) UpdateDiscoveryConfig(ctx context.Context, req *dlppb.Updat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/UpdateDiscoveryConfig")
+	}
 	opts = append((*c.CallOptions).UpdateDiscoveryConfig[0:len((*c.CallOptions).UpdateDiscoveryConfig):len((*c.CallOptions).UpdateDiscoveryConfig)], opts...)
 	var resp *dlppb.DiscoveryConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2222,6 +2521,12 @@ func (c *gRPCClient) GetDiscoveryConfig(ctx context.Context, req *dlppb.GetDisco
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/GetDiscoveryConfig")
+	}
 	opts = append((*c.CallOptions).GetDiscoveryConfig[0:len((*c.CallOptions).GetDiscoveryConfig):len((*c.CallOptions).GetDiscoveryConfig)], opts...)
 	var resp *dlppb.DiscoveryConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2240,6 +2545,12 @@ func (c *gRPCClient) ListDiscoveryConfigs(ctx context.Context, req *dlppb.ListDi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/ListDiscoveryConfigs")
+	}
 	opts = append((*c.CallOptions).ListDiscoveryConfigs[0:len((*c.CallOptions).ListDiscoveryConfigs):len((*c.CallOptions).ListDiscoveryConfigs)], opts...)
 	it := &DiscoveryConfigIterator{}
 	req = proto.Clone(req).(*dlppb.ListDiscoveryConfigsRequest)
@@ -2286,6 +2597,12 @@ func (c *gRPCClient) DeleteDiscoveryConfig(ctx context.Context, req *dlppb.Delet
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/DeleteDiscoveryConfig")
+	}
 	opts = append((*c.CallOptions).DeleteDiscoveryConfig[0:len((*c.CallOptions).DeleteDiscoveryConfig):len((*c.CallOptions).DeleteDiscoveryConfig)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2300,6 +2617,12 @@ func (c *gRPCClient) CreateDlpJob(ctx context.Context, req *dlppb.CreateDlpJobRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/CreateDlpJob")
+	}
 	opts = append((*c.CallOptions).CreateDlpJob[0:len((*c.CallOptions).CreateDlpJob):len((*c.CallOptions).CreateDlpJob)], opts...)
 	var resp *dlppb.DlpJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2318,6 +2641,12 @@ func (c *gRPCClient) ListDlpJobs(ctx context.Context, req *dlppb.ListDlpJobsRequ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/ListDlpJobs")
+	}
 	opts = append((*c.CallOptions).ListDlpJobs[0:len((*c.CallOptions).ListDlpJobs):len((*c.CallOptions).ListDlpJobs)], opts...)
 	it := &DlpJobIterator{}
 	req = proto.Clone(req).(*dlppb.ListDlpJobsRequest)
@@ -2364,6 +2693,12 @@ func (c *gRPCClient) GetDlpJob(ctx context.Context, req *dlppb.GetDlpJobRequest,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/GetDlpJob")
+	}
 	opts = append((*c.CallOptions).GetDlpJob[0:len((*c.CallOptions).GetDlpJob):len((*c.CallOptions).GetDlpJob)], opts...)
 	var resp *dlppb.DlpJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2382,6 +2717,12 @@ func (c *gRPCClient) DeleteDlpJob(ctx context.Context, req *dlppb.DeleteDlpJobRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/DeleteDlpJob")
+	}
 	opts = append((*c.CallOptions).DeleteDlpJob[0:len((*c.CallOptions).DeleteDlpJob):len((*c.CallOptions).DeleteDlpJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2396,6 +2737,12 @@ func (c *gRPCClient) CancelDlpJob(ctx context.Context, req *dlppb.CancelDlpJobRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/CancelDlpJob")
+	}
 	opts = append((*c.CallOptions).CancelDlpJob[0:len((*c.CallOptions).CancelDlpJob):len((*c.CallOptions).CancelDlpJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2410,6 +2757,12 @@ func (c *gRPCClient) CreateStoredInfoType(ctx context.Context, req *dlppb.Create
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/CreateStoredInfoType")
+	}
 	opts = append((*c.CallOptions).CreateStoredInfoType[0:len((*c.CallOptions).CreateStoredInfoType):len((*c.CallOptions).CreateStoredInfoType)], opts...)
 	var resp *dlppb.StoredInfoType
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2428,6 +2781,12 @@ func (c *gRPCClient) UpdateStoredInfoType(ctx context.Context, req *dlppb.Update
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/UpdateStoredInfoType")
+	}
 	opts = append((*c.CallOptions).UpdateStoredInfoType[0:len((*c.CallOptions).UpdateStoredInfoType):len((*c.CallOptions).UpdateStoredInfoType)], opts...)
 	var resp *dlppb.StoredInfoType
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2446,6 +2805,12 @@ func (c *gRPCClient) GetStoredInfoType(ctx context.Context, req *dlppb.GetStored
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/GetStoredInfoType")
+	}
 	opts = append((*c.CallOptions).GetStoredInfoType[0:len((*c.CallOptions).GetStoredInfoType):len((*c.CallOptions).GetStoredInfoType)], opts...)
 	var resp *dlppb.StoredInfoType
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2464,6 +2829,12 @@ func (c *gRPCClient) ListStoredInfoTypes(ctx context.Context, req *dlppb.ListSto
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/ListStoredInfoTypes")
+	}
 	opts = append((*c.CallOptions).ListStoredInfoTypes[0:len((*c.CallOptions).ListStoredInfoTypes):len((*c.CallOptions).ListStoredInfoTypes)], opts...)
 	it := &StoredInfoTypeIterator{}
 	req = proto.Clone(req).(*dlppb.ListStoredInfoTypesRequest)
@@ -2510,6 +2881,12 @@ func (c *gRPCClient) DeleteStoredInfoType(ctx context.Context, req *dlppb.Delete
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/DeleteStoredInfoType")
+	}
 	opts = append((*c.CallOptions).DeleteStoredInfoType[0:len((*c.CallOptions).DeleteStoredInfoType):len((*c.CallOptions).DeleteStoredInfoType)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2524,6 +2901,12 @@ func (c *gRPCClient) ListProjectDataProfiles(ctx context.Context, req *dlppb.Lis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/ListProjectDataProfiles")
+	}
 	opts = append((*c.CallOptions).ListProjectDataProfiles[0:len((*c.CallOptions).ListProjectDataProfiles):len((*c.CallOptions).ListProjectDataProfiles)], opts...)
 	it := &ProjectDataProfileIterator{}
 	req = proto.Clone(req).(*dlppb.ListProjectDataProfilesRequest)
@@ -2570,6 +2953,12 @@ func (c *gRPCClient) ListTableDataProfiles(ctx context.Context, req *dlppb.ListT
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/ListTableDataProfiles")
+	}
 	opts = append((*c.CallOptions).ListTableDataProfiles[0:len((*c.CallOptions).ListTableDataProfiles):len((*c.CallOptions).ListTableDataProfiles)], opts...)
 	it := &TableDataProfileIterator{}
 	req = proto.Clone(req).(*dlppb.ListTableDataProfilesRequest)
@@ -2616,6 +3005,12 @@ func (c *gRPCClient) ListColumnDataProfiles(ctx context.Context, req *dlppb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/ListColumnDataProfiles")
+	}
 	opts = append((*c.CallOptions).ListColumnDataProfiles[0:len((*c.CallOptions).ListColumnDataProfiles):len((*c.CallOptions).ListColumnDataProfiles)], opts...)
 	it := &ColumnDataProfileIterator{}
 	req = proto.Clone(req).(*dlppb.ListColumnDataProfilesRequest)
@@ -2662,6 +3057,12 @@ func (c *gRPCClient) GetProjectDataProfile(ctx context.Context, req *dlppb.GetPr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/GetProjectDataProfile")
+	}
 	opts = append((*c.CallOptions).GetProjectDataProfile[0:len((*c.CallOptions).GetProjectDataProfile):len((*c.CallOptions).GetProjectDataProfile)], opts...)
 	var resp *dlppb.ProjectDataProfile
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2680,6 +3081,12 @@ func (c *gRPCClient) ListFileStoreDataProfiles(ctx context.Context, req *dlppb.L
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/ListFileStoreDataProfiles")
+	}
 	opts = append((*c.CallOptions).ListFileStoreDataProfiles[0:len((*c.CallOptions).ListFileStoreDataProfiles):len((*c.CallOptions).ListFileStoreDataProfiles)], opts...)
 	it := &FileStoreDataProfileIterator{}
 	req = proto.Clone(req).(*dlppb.ListFileStoreDataProfilesRequest)
@@ -2726,6 +3133,12 @@ func (c *gRPCClient) GetFileStoreDataProfile(ctx context.Context, req *dlppb.Get
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/GetFileStoreDataProfile")
+	}
 	opts = append((*c.CallOptions).GetFileStoreDataProfile[0:len((*c.CallOptions).GetFileStoreDataProfile):len((*c.CallOptions).GetFileStoreDataProfile)], opts...)
 	var resp *dlppb.FileStoreDataProfile
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2744,6 +3157,12 @@ func (c *gRPCClient) DeleteFileStoreDataProfile(ctx context.Context, req *dlppb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/DeleteFileStoreDataProfile")
+	}
 	opts = append((*c.CallOptions).DeleteFileStoreDataProfile[0:len((*c.CallOptions).DeleteFileStoreDataProfile):len((*c.CallOptions).DeleteFileStoreDataProfile)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2758,6 +3177,12 @@ func (c *gRPCClient) GetTableDataProfile(ctx context.Context, req *dlppb.GetTabl
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/GetTableDataProfile")
+	}
 	opts = append((*c.CallOptions).GetTableDataProfile[0:len((*c.CallOptions).GetTableDataProfile):len((*c.CallOptions).GetTableDataProfile)], opts...)
 	var resp *dlppb.TableDataProfile
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2776,6 +3201,12 @@ func (c *gRPCClient) GetColumnDataProfile(ctx context.Context, req *dlppb.GetCol
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/GetColumnDataProfile")
+	}
 	opts = append((*c.CallOptions).GetColumnDataProfile[0:len((*c.CallOptions).GetColumnDataProfile):len((*c.CallOptions).GetColumnDataProfile)], opts...)
 	var resp *dlppb.ColumnDataProfile
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2794,6 +3225,12 @@ func (c *gRPCClient) DeleteTableDataProfile(ctx context.Context, req *dlppb.Dele
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/DeleteTableDataProfile")
+	}
 	opts = append((*c.CallOptions).DeleteTableDataProfile[0:len((*c.CallOptions).DeleteTableDataProfile):len((*c.CallOptions).DeleteTableDataProfile)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2808,6 +3245,12 @@ func (c *gRPCClient) HybridInspectDlpJob(ctx context.Context, req *dlppb.HybridI
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/HybridInspectDlpJob")
+	}
 	opts = append((*c.CallOptions).HybridInspectDlpJob[0:len((*c.CallOptions).HybridInspectDlpJob):len((*c.CallOptions).HybridInspectDlpJob)], opts...)
 	var resp *dlppb.HybridInspectResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2826,6 +3269,12 @@ func (c *gRPCClient) FinishDlpJob(ctx context.Context, req *dlppb.FinishDlpJobRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/FinishDlpJob")
+	}
 	opts = append((*c.CallOptions).FinishDlpJob[0:len((*c.CallOptions).FinishDlpJob):len((*c.CallOptions).FinishDlpJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2840,6 +3289,12 @@ func (c *gRPCClient) CreateConnection(ctx context.Context, req *dlppb.CreateConn
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/CreateConnection")
+	}
 	opts = append((*c.CallOptions).CreateConnection[0:len((*c.CallOptions).CreateConnection):len((*c.CallOptions).CreateConnection)], opts...)
 	var resp *dlppb.Connection
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2858,6 +3313,12 @@ func (c *gRPCClient) GetConnection(ctx context.Context, req *dlppb.GetConnection
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/GetConnection")
+	}
 	opts = append((*c.CallOptions).GetConnection[0:len((*c.CallOptions).GetConnection):len((*c.CallOptions).GetConnection)], opts...)
 	var resp *dlppb.Connection
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2876,6 +3337,12 @@ func (c *gRPCClient) ListConnections(ctx context.Context, req *dlppb.ListConnect
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/ListConnections")
+	}
 	opts = append((*c.CallOptions).ListConnections[0:len((*c.CallOptions).ListConnections):len((*c.CallOptions).ListConnections)], opts...)
 	it := &ConnectionIterator{}
 	req = proto.Clone(req).(*dlppb.ListConnectionsRequest)
@@ -2922,6 +3389,12 @@ func (c *gRPCClient) SearchConnections(ctx context.Context, req *dlppb.SearchCon
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/SearchConnections")
+	}
 	opts = append((*c.CallOptions).SearchConnections[0:len((*c.CallOptions).SearchConnections):len((*c.CallOptions).SearchConnections)], opts...)
 	it := &ConnectionIterator{}
 	req = proto.Clone(req).(*dlppb.SearchConnectionsRequest)
@@ -2968,6 +3441,12 @@ func (c *gRPCClient) DeleteConnection(ctx context.Context, req *dlppb.DeleteConn
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/DeleteConnection")
+	}
 	opts = append((*c.CallOptions).DeleteConnection[0:len((*c.CallOptions).DeleteConnection):len((*c.CallOptions).DeleteConnection)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2982,6 +3461,12 @@ func (c *gRPCClient) UpdateConnection(ctx context.Context, req *dlppb.UpdateConn
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/UpdateConnection")
+	}
 	opts = append((*c.CallOptions).UpdateConnection[0:len((*c.CallOptions).UpdateConnection):len((*c.CallOptions).UpdateConnection)], opts...)
 	var resp *dlppb.Connection
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3030,6 +3515,13 @@ func (c *restClient) InspectContent(ctx context.Context, req *dlppb.InspectConte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/InspectContent")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*}/content:inspect")
+	}
 	opts = append((*c.CallOptions).InspectContent[0:len((*c.CallOptions).InspectContent):len((*c.CallOptions).InspectContent)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dlppb.InspectContentResponse{}
@@ -3097,6 +3589,13 @@ func (c *restClient) RedactImage(ctx context.Context, req *dlppb.RedactImageRequ
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/RedactImage")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*}/image:redact")
+	}
 	opts = append((*c.CallOptions).RedactImage[0:len((*c.CallOptions).RedactImage):len((*c.CallOptions).RedactImage)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dlppb.RedactImageResponse{}
@@ -3161,6 +3660,13 @@ func (c *restClient) DeidentifyContent(ctx context.Context, req *dlppb.Deidentif
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/DeidentifyContent")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*}/content:deidentify")
+	}
 	opts = append((*c.CallOptions).DeidentifyContent[0:len((*c.CallOptions).DeidentifyContent):len((*c.CallOptions).DeidentifyContent)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dlppb.DeidentifyContentResponse{}
@@ -3220,6 +3726,13 @@ func (c *restClient) ReidentifyContent(ctx context.Context, req *dlppb.Reidentif
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/ReidentifyContent")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*}/content:reidentify")
+	}
 	opts = append((*c.CallOptions).ReidentifyContent[0:len((*c.CallOptions).ReidentifyContent):len((*c.CallOptions).ReidentifyContent)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dlppb.ReidentifyContentResponse{}
@@ -3285,6 +3798,10 @@ func (c *restClient) ListInfoTypes(ctx context.Context, req *dlppb.ListInfoTypes
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/ListInfoTypes")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/infoTypes")
+	}
 	opts = append((*c.CallOptions).ListInfoTypes[0:len((*c.CallOptions).ListInfoTypes):len((*c.CallOptions).ListInfoTypes)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dlppb.ListInfoTypesResponse{}
@@ -3345,6 +3862,13 @@ func (c *restClient) CreateInspectTemplate(ctx context.Context, req *dlppb.Creat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/CreateInspectTemplate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*/locations/*}/inspectTemplates")
+	}
 	opts = append((*c.CallOptions).CreateInspectTemplate[0:len((*c.CallOptions).CreateInspectTemplate):len((*c.CallOptions).CreateInspectTemplate)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dlppb.InspectTemplate{}
@@ -3404,6 +3928,13 @@ func (c *restClient) UpdateInspectTemplate(ctx context.Context, req *dlppb.Updat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/UpdateInspectTemplate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/inspectTemplates/*}")
+	}
 	opts = append((*c.CallOptions).UpdateInspectTemplate[0:len((*c.CallOptions).UpdateInspectTemplate):len((*c.CallOptions).UpdateInspectTemplate)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dlppb.InspectTemplate{}
@@ -3457,6 +3988,13 @@ func (c *restClient) GetInspectTemplate(ctx context.Context, req *dlppb.GetInspe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/GetInspectTemplate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/inspectTemplates/*}")
+	}
 	opts = append((*c.CallOptions).GetInspectTemplate[0:len((*c.CallOptions).GetInspectTemplate):len((*c.CallOptions).GetInspectTemplate)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dlppb.InspectTemplate{}
@@ -3597,6 +4135,13 @@ func (c *restClient) DeleteInspectTemplate(ctx context.Context, req *dlppb.Delet
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/DeleteInspectTemplate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/inspectTemplates/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -3642,6 +4187,13 @@ func (c *restClient) CreateDeidentifyTemplate(ctx context.Context, req *dlppb.Cr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/CreateDeidentifyTemplate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=organizations/*}/deidentifyTemplates")
+	}
 	opts = append((*c.CallOptions).CreateDeidentifyTemplate[0:len((*c.CallOptions).CreateDeidentifyTemplate):len((*c.CallOptions).CreateDeidentifyTemplate)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dlppb.DeidentifyTemplate{}
@@ -3701,6 +4253,13 @@ func (c *restClient) UpdateDeidentifyTemplate(ctx context.Context, req *dlppb.Up
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/UpdateDeidentifyTemplate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=organizations/*/deidentifyTemplates/*}")
+	}
 	opts = append((*c.CallOptions).UpdateDeidentifyTemplate[0:len((*c.CallOptions).UpdateDeidentifyTemplate):len((*c.CallOptions).UpdateDeidentifyTemplate)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dlppb.DeidentifyTemplate{}
@@ -3754,6 +4313,13 @@ func (c *restClient) GetDeidentifyTemplate(ctx context.Context, req *dlppb.GetDe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/GetDeidentifyTemplate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=organizations/*/deidentifyTemplates/*}")
+	}
 	opts = append((*c.CallOptions).GetDeidentifyTemplate[0:len((*c.CallOptions).GetDeidentifyTemplate):len((*c.CallOptions).GetDeidentifyTemplate)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dlppb.DeidentifyTemplate{}
@@ -3894,6 +4460,13 @@ func (c *restClient) DeleteDeidentifyTemplate(ctx context.Context, req *dlppb.De
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/DeleteDeidentifyTemplate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=organizations/*/deidentifyTemplates/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -3939,6 +4512,13 @@ func (c *restClient) CreateJobTrigger(ctx context.Context, req *dlppb.CreateJobT
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/CreateJobTrigger")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*}/jobTriggers")
+	}
 	opts = append((*c.CallOptions).CreateJobTrigger[0:len((*c.CallOptions).CreateJobTrigger):len((*c.CallOptions).CreateJobTrigger)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dlppb.JobTrigger{}
@@ -3998,6 +4578,13 @@ func (c *restClient) UpdateJobTrigger(ctx context.Context, req *dlppb.UpdateJobT
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/UpdateJobTrigger")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/jobTriggers/*}")
+	}
 	opts = append((*c.CallOptions).UpdateJobTrigger[0:len((*c.CallOptions).UpdateJobTrigger):len((*c.CallOptions).UpdateJobTrigger)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dlppb.JobTrigger{}
@@ -4056,6 +4643,13 @@ func (c *restClient) HybridInspectJobTrigger(ctx context.Context, req *dlppb.Hyb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/HybridInspectJobTrigger")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/jobTriggers/*}:hybridInspect")
+	}
 	opts = append((*c.CallOptions).HybridInspectJobTrigger[0:len((*c.CallOptions).HybridInspectJobTrigger):len((*c.CallOptions).HybridInspectJobTrigger)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dlppb.HybridInspectResponse{}
@@ -4109,6 +4703,13 @@ func (c *restClient) GetJobTrigger(ctx context.Context, req *dlppb.GetJobTrigger
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/GetJobTrigger")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/jobTriggers/*}")
+	}
 	opts = append((*c.CallOptions).GetJobTrigger[0:len((*c.CallOptions).GetJobTrigger):len((*c.CallOptions).GetJobTrigger)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dlppb.JobTrigger{}
@@ -4255,6 +4856,13 @@ func (c *restClient) DeleteJobTrigger(ctx context.Context, req *dlppb.DeleteJobT
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/DeleteJobTrigger")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/jobTriggers/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -4297,6 +4905,13 @@ func (c *restClient) ActivateJobTrigger(ctx context.Context, req *dlppb.Activate
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/ActivateJobTrigger")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/jobTriggers/*}:activate")
+	}
 	opts = append((*c.CallOptions).ActivateJobTrigger[0:len((*c.CallOptions).ActivateJobTrigger):len((*c.CallOptions).ActivateJobTrigger)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dlppb.DlpJob{}
@@ -4353,6 +4968,13 @@ func (c *restClient) CreateDiscoveryConfig(ctx context.Context, req *dlppb.Creat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/CreateDiscoveryConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*/locations/*}/discoveryConfigs")
+	}
 	opts = append((*c.CallOptions).CreateDiscoveryConfig[0:len((*c.CallOptions).CreateDiscoveryConfig):len((*c.CallOptions).CreateDiscoveryConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dlppb.DiscoveryConfig{}
@@ -4409,6 +5031,13 @@ func (c *restClient) UpdateDiscoveryConfig(ctx context.Context, req *dlppb.Updat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/UpdateDiscoveryConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/discoveryConfigs/*}")
+	}
 	opts = append((*c.CallOptions).UpdateDiscoveryConfig[0:len((*c.CallOptions).UpdateDiscoveryConfig):len((*c.CallOptions).UpdateDiscoveryConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dlppb.DiscoveryConfig{}
@@ -4459,6 +5088,13 @@ func (c *restClient) GetDiscoveryConfig(ctx context.Context, req *dlppb.GetDisco
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/GetDiscoveryConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/discoveryConfigs/*}")
+	}
 	opts = append((*c.CallOptions).GetDiscoveryConfig[0:len((*c.CallOptions).GetDiscoveryConfig):len((*c.CallOptions).GetDiscoveryConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dlppb.DiscoveryConfig{}
@@ -4590,6 +5226,13 @@ func (c *restClient) DeleteDiscoveryConfig(ctx context.Context, req *dlppb.Delet
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/DeleteDiscoveryConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/discoveryConfigs/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -4640,6 +5283,13 @@ func (c *restClient) CreateDlpJob(ctx context.Context, req *dlppb.CreateDlpJobRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/CreateDlpJob")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*}/dlpJobs")
+	}
 	opts = append((*c.CallOptions).CreateDlpJob[0:len((*c.CallOptions).CreateDlpJob):len((*c.CallOptions).CreateDlpJob)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dlppb.DlpJob{}
@@ -4790,6 +5440,13 @@ func (c *restClient) GetDlpJob(ctx context.Context, req *dlppb.GetDlpJobRequest,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/GetDlpJob")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/dlpJobs/*}")
+	}
 	opts = append((*c.CallOptions).GetDlpJob[0:len((*c.CallOptions).GetDlpJob):len((*c.CallOptions).GetDlpJob)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dlppb.DlpJob{}
@@ -4847,6 +5504,13 @@ func (c *restClient) DeleteDlpJob(ctx context.Context, req *dlppb.DeleteDlpJobRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/DeleteDlpJob")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/dlpJobs/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -4895,6 +5559,13 @@ func (c *restClient) CancelDlpJob(ctx context.Context, req *dlppb.CancelDlpJobRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/CancelDlpJob")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/dlpJobs/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -4939,6 +5610,13 @@ func (c *restClient) CreateStoredInfoType(ctx context.Context, req *dlppb.Create
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/CreateStoredInfoType")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=organizations/*}/storedInfoTypes")
+	}
 	opts = append((*c.CallOptions).CreateStoredInfoType[0:len((*c.CallOptions).CreateStoredInfoType):len((*c.CallOptions).CreateStoredInfoType)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dlppb.StoredInfoType{}
@@ -4999,6 +5677,13 @@ func (c *restClient) UpdateStoredInfoType(ctx context.Context, req *dlppb.Update
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/UpdateStoredInfoType")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=organizations/*/storedInfoTypes/*}")
+	}
 	opts = append((*c.CallOptions).UpdateStoredInfoType[0:len((*c.CallOptions).UpdateStoredInfoType):len((*c.CallOptions).UpdateStoredInfoType)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dlppb.StoredInfoType{}
@@ -5052,6 +5737,13 @@ func (c *restClient) GetStoredInfoType(ctx context.Context, req *dlppb.GetStored
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/GetStoredInfoType")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=organizations/*/storedInfoTypes/*}")
+	}
 	opts = append((*c.CallOptions).GetStoredInfoType[0:len((*c.CallOptions).GetStoredInfoType):len((*c.CallOptions).GetStoredInfoType)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dlppb.StoredInfoType{}
@@ -5192,6 +5884,13 @@ func (c *restClient) DeleteStoredInfoType(ctx context.Context, req *dlppb.Delete
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/DeleteStoredInfoType")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=organizations/*/storedInfoTypes/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -5479,6 +6178,13 @@ func (c *restClient) GetProjectDataProfile(ctx context.Context, req *dlppb.GetPr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/GetProjectDataProfile")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=organizations/*/locations/*/projectDataProfiles/*}")
+	}
 	opts = append((*c.CallOptions).GetProjectDataProfile[0:len((*c.CallOptions).GetProjectDataProfile):len((*c.CallOptions).GetProjectDataProfile)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dlppb.ProjectDataProfile{}
@@ -5613,6 +6319,13 @@ func (c *restClient) GetFileStoreDataProfile(ctx context.Context, req *dlppb.Get
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/GetFileStoreDataProfile")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=organizations/*/locations/*/fileStoreDataProfiles/*}")
+	}
 	opts = append((*c.CallOptions).GetFileStoreDataProfile[0:len((*c.CallOptions).GetFileStoreDataProfile):len((*c.CallOptions).GetFileStoreDataProfile)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dlppb.FileStoreDataProfile{}
@@ -5664,6 +6377,13 @@ func (c *restClient) DeleteFileStoreDataProfile(ctx context.Context, req *dlppb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/DeleteFileStoreDataProfile")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=organizations/*/locations/*/fileStoreDataProfiles/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -5699,6 +6419,13 @@ func (c *restClient) GetTableDataProfile(ctx context.Context, req *dlppb.GetTabl
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/GetTableDataProfile")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=organizations/*/locations/*/tableDataProfiles/*}")
+	}
 	opts = append((*c.CallOptions).GetTableDataProfile[0:len((*c.CallOptions).GetTableDataProfile):len((*c.CallOptions).GetTableDataProfile)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dlppb.TableDataProfile{}
@@ -5749,6 +6476,13 @@ func (c *restClient) GetColumnDataProfile(ctx context.Context, req *dlppb.GetCol
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/GetColumnDataProfile")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=organizations/*/locations/*/columnDataProfiles/*}")
+	}
 	opts = append((*c.CallOptions).GetColumnDataProfile[0:len((*c.CallOptions).GetColumnDataProfile):len((*c.CallOptions).GetColumnDataProfile)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dlppb.ColumnDataProfile{}
@@ -5800,6 +6534,13 @@ func (c *restClient) DeleteTableDataProfile(ctx context.Context, req *dlppb.Dele
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/DeleteTableDataProfile")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=organizations/*/locations/*/tableDataProfiles/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -5843,6 +6584,13 @@ func (c *restClient) HybridInspectDlpJob(ctx context.Context, req *dlppb.HybridI
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/HybridInspectDlpJob")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/dlpJobs/*}:hybridInspect")
+	}
 	opts = append((*c.CallOptions).HybridInspectDlpJob[0:len((*c.CallOptions).HybridInspectDlpJob):len((*c.CallOptions).HybridInspectDlpJob)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dlppb.HybridInspectResponse{}
@@ -5900,6 +6648,13 @@ func (c *restClient) FinishDlpJob(ctx context.Context, req *dlppb.FinishDlpJobRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/FinishDlpJob")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/dlpJobs/*}:finish")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -5941,6 +6696,13 @@ func (c *restClient) CreateConnection(ctx context.Context, req *dlppb.CreateConn
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/CreateConnection")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*/locations/*}/connections")
+	}
 	opts = append((*c.CallOptions).CreateConnection[0:len((*c.CallOptions).CreateConnection):len((*c.CallOptions).CreateConnection)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dlppb.Connection{}
@@ -5991,6 +6753,13 @@ func (c *restClient) GetConnection(ctx context.Context, req *dlppb.GetConnection
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/GetConnection")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/connections/*}")
+	}
 	opts = append((*c.CallOptions).GetConnection[0:len((*c.CallOptions).GetConnection):len((*c.CallOptions).GetConnection)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dlppb.Connection{}
@@ -6204,6 +6973,13 @@ func (c *restClient) DeleteConnection(ctx context.Context, req *dlppb.DeleteConn
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/DeleteConnection")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/connections/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -6245,6 +7021,13 @@ func (c *restClient) UpdateConnection(ctx context.Context, req *dlppb.UpdateConn
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dlp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.privacy.dlp.v2.DlpService/UpdateConnection")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/connections/*}")
+	}
 	opts = append((*c.CallOptions).UpdateConnection[0:len((*c.CallOptions).UpdateConnection):len((*c.CallOptions).UpdateConnection)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dlppb.Connection{}

@@ -197,6 +197,53 @@ $ gcloud auth login
 # Use empty string as databaseID or skip database flag for default database.
 $ gcloud alpha datastore indexes create --database=your-databaseID-1 --project=$GCLOUD_TESTS_GOLANG_PROJECT_ID testdata/index.yaml
 
+# Create the indexes for all the databases you want to use in the firestore integration tests.
+# Use empty string as databaseID or skip database flag for default database.
+# For TestIntegration_QueryDocuments_WhereEntity
+$ gcloud firestore indexes composite create \
+    --database=your-databaseID-1 --project=$GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID \
+    --collection-group=indexed_collection --query-scope=COLLECTION \
+    --field-config=field-path=updatedAt,order=ascending \
+    --field-config=field-path=weight,order=ascending \
+    --field-config=field-path=height,order=ascending
+$ gcloud firestore indexes composite create \
+    --database=your-databaseID-1 --project=$GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID \
+    --collection-group=indexed_collection --query-scope=COLLECTION \
+    --field-config=field-path=weight,order=ascending \
+    --field-config=field-path=height,order=ascending
+
+# For TestIntegration_QueryUnary
+$ gcloud firestore indexes composite create \
+    --database=your-databaseID-1 --project=$GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID \
+    --collection-group=indexed_collection --query-scope=COLLECTION \
+    --field-config=field-path=testNull,order=ascending \
+    --field-config=field-path=x,order=ascending \
+    --field-config=field-path=q,order=ascending
+$ gcloud firestore indexes composite create \
+    --database=your-databaseID-1 --project=$GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID \
+    --collection-group=indexed_collection --query-scope=COLLECTION \
+    --field-config=field-path=testNaN,order=ascending \
+    --field-config=field-path=x,order=ascending \
+    --field-config=field-path=q,order=ascending
+
+# For TestIntegration_AggregationQueries
+$ gcloud firestore indexes composite create \
+    --database=your-databaseID-1 --project=$GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID \
+    --collection-group=indexed_collection --query-scope=COLLECTION \
+    --field-config=field-path=weight,order=ascending \
+    --field-config=field-path=model,order=ascending
+$ gcloud firestore indexes composite create \
+    --database=your-databaseID-1 --project=$GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID \
+    --collection-group=indexed_collection --query-scope=COLLECTION \
+    --field-config=field-path=weight,order=ascending \
+    --field-config=field-path=volume,order=ascending
+
+# For TestIntegration_FindNearest (Vector Index)
+$ gcloud alpha firestore indexes composite create \
+    --database=your-databaseID-1 --project=$GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID \
+    --collection-group=indexed_collection --query-scope=COLLECTION \
+    --field-config=field-path=EmbeddedField64,vector-config='{"dimension":"3","flat": "{}"}'
+
 # Creates a Google Cloud storage bucket with the same name as your test project,
 # and with the Cloud Logging service account as owner, for the sink
 # integration tests in logging.

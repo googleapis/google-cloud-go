@@ -28,6 +28,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	metricsscopepb "cloud.google.com/go/monitoring/metricsscope/apiv1/metricsscopepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -189,6 +190,16 @@ type metricsScopesGRPCClient struct {
 // projects and AWS accounts.
 func NewMetricsScopesClient(ctx context.Context, opts ...option.ClientOption) (*MetricsScopesClient, error) {
 	clientOpts := defaultMetricsScopesGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "monitoring",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/monitoring/metricsscope/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "monitoring.googleapis.com",
+		}))
+	}
 	if newMetricsScopesClientHook != nil {
 		hookOpts, err := newMetricsScopesClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -210,6 +221,23 @@ func NewMetricsScopesClient(ctx context.Context, opts ...option.ClientOption) (*
 		logger:              internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "monitoring",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/monitoring/metricsscope/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "monitoring.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetMetricsScope = append(client.CallOptions.GetMetricsScope, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListMetricsScopesByMonitoredProject = append(client.CallOptions.ListMetricsScopesByMonitoredProject, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateMonitoredProject = append(client.CallOptions.CreateMonitoredProject, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteMonitoredProject = append(client.CallOptions.DeleteMonitoredProject, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -257,6 +285,12 @@ func (c *metricsScopesGRPCClient) GetMetricsScope(ctx context.Context, req *metr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//monitoring.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.monitoring.metricsscope.v1.MetricsScopes/GetMetricsScope")
+	}
 	opts = append((*c.CallOptions).GetMetricsScope[0:len((*c.CallOptions).GetMetricsScope):len((*c.CallOptions).GetMetricsScope)], opts...)
 	var resp *metricsscopepb.MetricsScope
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -272,6 +306,9 @@ func (c *metricsScopesGRPCClient) GetMetricsScope(ctx context.Context, req *metr
 
 func (c *metricsScopesGRPCClient) ListMetricsScopesByMonitoredProject(ctx context.Context, req *metricsscopepb.ListMetricsScopesByMonitoredProjectRequest, opts ...gax.CallOption) (*metricsscopepb.ListMetricsScopesByMonitoredProjectResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.monitoring.metricsscope.v1.MetricsScopes/ListMetricsScopesByMonitoredProject")
+	}
 	opts = append((*c.CallOptions).ListMetricsScopesByMonitoredProject[0:len((*c.CallOptions).ListMetricsScopesByMonitoredProject):len((*c.CallOptions).ListMetricsScopesByMonitoredProject)], opts...)
 	var resp *metricsscopepb.ListMetricsScopesByMonitoredProjectResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -290,6 +327,12 @@ func (c *metricsScopesGRPCClient) CreateMonitoredProject(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//monitoring.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.monitoring.metricsscope.v1.MetricsScopes/CreateMonitoredProject")
+	}
 	opts = append((*c.CallOptions).CreateMonitoredProject[0:len((*c.CallOptions).CreateMonitoredProject):len((*c.CallOptions).CreateMonitoredProject)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -310,6 +353,12 @@ func (c *metricsScopesGRPCClient) DeleteMonitoredProject(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//monitoring.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.monitoring.metricsscope.v1.MetricsScopes/DeleteMonitoredProject")
+	}
 	opts = append((*c.CallOptions).DeleteMonitoredProject[0:len((*c.CallOptions).DeleteMonitoredProject):len((*c.CallOptions).DeleteMonitoredProject)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

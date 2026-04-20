@@ -28,6 +28,7 @@ import (
 
 	dataflowpb "cloud.google.com/go/dataflow/apiv1beta3/dataflowpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -265,6 +266,16 @@ type jobsV1Beta3GRPCClient struct {
 // A Job is a multi-stage computation graph run by the Dataflow service.
 func NewJobsV1Beta3Client(ctx context.Context, opts ...option.ClientOption) (*JobsV1Beta3Client, error) {
 	clientOpts := defaultJobsV1Beta3GRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "dataflow",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/dataflow/apiv1beta3",
+			"gcp.client.language": "go",
+			"url.domain":          "dataflow.googleapis.com",
+		}))
+	}
 	if newJobsV1Beta3ClientHook != nil {
 		hookOpts, err := newJobsV1Beta3ClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -286,6 +297,26 @@ func NewJobsV1Beta3Client(ctx context.Context, opts ...option.ClientOption) (*Jo
 		logger:            internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "dataflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataflow/apiv1beta3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dataflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateJob = append(client.CallOptions.CreateJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetJob = append(client.CallOptions.GetJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateJob = append(client.CallOptions.UpdateJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListJobs = append(client.CallOptions.ListJobs, gax.WithClientMetrics(metrics))
+		client.CallOptions.AggregatedListJobs = append(client.CallOptions.AggregatedListJobs, gax.WithClientMetrics(metrics))
+		client.CallOptions.CheckActiveJobs = append(client.CallOptions.CheckActiveJobs, gax.WithClientMetrics(metrics))
+		client.CallOptions.SnapshotJob = append(client.CallOptions.SnapshotJob, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -340,6 +371,16 @@ type jobsV1Beta3RESTClient struct {
 // A Job is a multi-stage computation graph run by the Dataflow service.
 func NewJobsV1Beta3RESTClient(ctx context.Context, opts ...option.ClientOption) (*JobsV1Beta3Client, error) {
 	clientOpts := append(defaultJobsV1Beta3RESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "dataflow",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/dataflow/apiv1beta3",
+			"gcp.client.language": "go",
+			"url.domain":          "dataflow.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -353,6 +394,27 @@ func NewJobsV1Beta3RESTClient(ctx context.Context, opts ...option.ClientOption) 
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "dataflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataflow/apiv1beta3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dataflow.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateJob = append(callOpts.CreateJob, gax.WithClientMetrics(metrics))
+		callOpts.GetJob = append(callOpts.GetJob, gax.WithClientMetrics(metrics))
+		callOpts.UpdateJob = append(callOpts.UpdateJob, gax.WithClientMetrics(metrics))
+		callOpts.ListJobs = append(callOpts.ListJobs, gax.WithClientMetrics(metrics))
+		callOpts.AggregatedListJobs = append(callOpts.AggregatedListJobs, gax.WithClientMetrics(metrics))
+		callOpts.CheckActiveJobs = append(callOpts.CheckActiveJobs, gax.WithClientMetrics(metrics))
+		callOpts.SnapshotJob = append(callOpts.SnapshotJob, gax.WithClientMetrics(metrics))
+	}
 
 	return &JobsV1Beta3Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -399,6 +461,9 @@ func (c *jobsV1Beta3GRPCClient) CreateJob(ctx context.Context, req *dataflowpb.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.dataflow.v1beta3.JobsV1Beta3/CreateJob")
+	}
 	opts = append((*c.CallOptions).CreateJob[0:len((*c.CallOptions).CreateJob):len((*c.CallOptions).CreateJob)], opts...)
 	var resp *dataflowpb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -417,6 +482,9 @@ func (c *jobsV1Beta3GRPCClient) GetJob(ctx context.Context, req *dataflowpb.GetJ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.dataflow.v1beta3.JobsV1Beta3/GetJob")
+	}
 	opts = append((*c.CallOptions).GetJob[0:len((*c.CallOptions).GetJob):len((*c.CallOptions).GetJob)], opts...)
 	var resp *dataflowpb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -435,6 +503,9 @@ func (c *jobsV1Beta3GRPCClient) UpdateJob(ctx context.Context, req *dataflowpb.U
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.dataflow.v1beta3.JobsV1Beta3/UpdateJob")
+	}
 	opts = append((*c.CallOptions).UpdateJob[0:len((*c.CallOptions).UpdateJob):len((*c.CallOptions).UpdateJob)], opts...)
 	var resp *dataflowpb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -453,6 +524,9 @@ func (c *jobsV1Beta3GRPCClient) ListJobs(ctx context.Context, req *dataflowpb.Li
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.dataflow.v1beta3.JobsV1Beta3/ListJobs")
+	}
 	opts = append((*c.CallOptions).ListJobs[0:len((*c.CallOptions).ListJobs):len((*c.CallOptions).ListJobs)], opts...)
 	it := &JobIterator{}
 	req = proto.Clone(req).(*dataflowpb.ListJobsRequest)
@@ -499,6 +573,9 @@ func (c *jobsV1Beta3GRPCClient) AggregatedListJobs(ctx context.Context, req *dat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.dataflow.v1beta3.JobsV1Beta3/AggregatedListJobs")
+	}
 	opts = append((*c.CallOptions).AggregatedListJobs[0:len((*c.CallOptions).AggregatedListJobs):len((*c.CallOptions).AggregatedListJobs)], opts...)
 	it := &JobIterator{}
 	req = proto.Clone(req).(*dataflowpb.ListJobsRequest)
@@ -542,6 +619,9 @@ func (c *jobsV1Beta3GRPCClient) AggregatedListJobs(ctx context.Context, req *dat
 
 func (c *jobsV1Beta3GRPCClient) CheckActiveJobs(ctx context.Context, req *dataflowpb.CheckActiveJobsRequest, opts ...gax.CallOption) (*dataflowpb.CheckActiveJobsResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.dataflow.v1beta3.JobsV1Beta3/CheckActiveJobs")
+	}
 	opts = append((*c.CallOptions).CheckActiveJobs[0:len((*c.CallOptions).CheckActiveJobs):len((*c.CallOptions).CheckActiveJobs)], opts...)
 	var resp *dataflowpb.CheckActiveJobsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -560,6 +640,9 @@ func (c *jobsV1Beta3GRPCClient) SnapshotJob(ctx context.Context, req *dataflowpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.dataflow.v1beta3.JobsV1Beta3/SnapshotJob")
+	}
 	opts = append((*c.CallOptions).SnapshotJob[0:len((*c.CallOptions).SnapshotJob):len((*c.CallOptions).SnapshotJob)], opts...)
 	var resp *dataflowpb.Snapshot
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -614,6 +697,10 @@ func (c *jobsV1Beta3RESTClient) CreateJob(ctx context.Context, req *dataflowpb.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.dataflow.v1beta3.JobsV1Beta3/CreateJob")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1b3/projects/{project_id}/locations/{location}/jobs")
+	}
 	opts = append((*c.CallOptions).CreateJob[0:len((*c.CallOptions).CreateJob):len((*c.CallOptions).CreateJob)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataflowpb.Job{}
@@ -673,6 +760,10 @@ func (c *jobsV1Beta3RESTClient) GetJob(ctx context.Context, req *dataflowpb.GetJ
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.dataflow.v1beta3.JobsV1Beta3/GetJob")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1b3/projects/{project_id}/locations/{location}/jobs/{job_id}")
+	}
 	opts = append((*c.CallOptions).GetJob[0:len((*c.CallOptions).GetJob):len((*c.CallOptions).GetJob)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataflowpb.Job{}
@@ -743,6 +834,10 @@ func (c *jobsV1Beta3RESTClient) UpdateJob(ctx context.Context, req *dataflowpb.U
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.dataflow.v1beta3.JobsV1Beta3/UpdateJob")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1b3/projects/{project_id}/locations/{location}/jobs/{job_id}")
+	}
 	opts = append((*c.CallOptions).UpdateJob[0:len((*c.CallOptions).UpdateJob):len((*c.CallOptions).UpdateJob)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataflowpb.Job{}
@@ -984,6 +1079,9 @@ func (c *jobsV1Beta3RESTClient) CheckActiveJobs(ctx context.Context, req *datafl
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.dataflow.v1beta3.JobsV1Beta3/CheckActiveJobs")
+	}
 	opts = append((*c.CallOptions).CheckActiveJobs[0:len((*c.CallOptions).CheckActiveJobs):len((*c.CallOptions).CheckActiveJobs)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataflowpb.CheckActiveJobsResponse{}
@@ -1040,6 +1138,10 @@ func (c *jobsV1Beta3RESTClient) SnapshotJob(ctx context.Context, req *dataflowpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.dataflow.v1beta3.JobsV1Beta3/SnapshotJob")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1b3/projects/{project_id}/locations/{location}/jobs/{job_id}:snapshot")
+	}
 	opts = append((*c.CallOptions).SnapshotJob[0:len((*c.CallOptions).SnapshotJob):len((*c.CallOptions).SnapshotJob)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataflowpb.Snapshot{}

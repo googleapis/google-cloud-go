@@ -28,6 +28,7 @@ import (
 
 	publishingpb "cloud.google.com/go/eventarc/publishing/apiv1/publishingpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -225,6 +226,16 @@ type publisherGRPCClient struct {
 // Publisher allows an event provider to publish events to Eventarc.
 func NewPublisherClient(ctx context.Context, opts ...option.ClientOption) (*PublisherClient, error) {
 	clientOpts := defaultPublisherGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "eventarcpublishing",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/eventarc/publishing/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "eventarcpublishing.googleapis.com",
+		}))
+	}
 	if newPublisherClientHook != nil {
 		hookOpts, err := newPublisherClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -246,6 +257,22 @@ func NewPublisherClient(ctx context.Context, opts ...option.ClientOption) (*Publ
 		logger:          internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "eventarcpublishing",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/eventarc/publishing/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "eventarcpublishing.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.PublishChannelConnectionEvents = append(client.CallOptions.PublishChannelConnectionEvents, gax.WithClientMetrics(metrics))
+		client.CallOptions.PublishEvents = append(client.CallOptions.PublishEvents, gax.WithClientMetrics(metrics))
+		client.CallOptions.Publish = append(client.CallOptions.Publish, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -327,6 +354,16 @@ type publisherRESTClient struct {
 // Publisher allows an event provider to publish events to Eventarc.
 func NewPublisherRESTClient(ctx context.Context, opts ...option.ClientOption) (*PublisherClient, error) {
 	clientOpts := append(defaultPublisherRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "eventarcpublishing",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/eventarc/publishing/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "eventarcpublishing.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -340,6 +377,23 @@ func NewPublisherRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "eventarcpublishing",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/eventarc/publishing/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "eventarcpublishing.googleapis.com",
+			}),
+		)
+
+		callOpts.PublishChannelConnectionEvents = append(callOpts.PublishChannelConnectionEvents, gax.WithClientMetrics(metrics))
+		callOpts.PublishEvents = append(callOpts.PublishEvents, gax.WithClientMetrics(metrics))
+		callOpts.Publish = append(callOpts.Publish, gax.WithClientMetrics(metrics))
+	}
 
 	return &PublisherClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -386,6 +440,9 @@ func (c *publisherGRPCClient) PublishChannelConnectionEvents(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.publishing.v1.Publisher/PublishChannelConnectionEvents")
+	}
 	opts = append((*c.CallOptions).PublishChannelConnectionEvents[0:len((*c.CallOptions).PublishChannelConnectionEvents):len((*c.CallOptions).PublishChannelConnectionEvents)], opts...)
 	var resp *publishingpb.PublishChannelConnectionEventsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -404,6 +461,9 @@ func (c *publisherGRPCClient) PublishEvents(ctx context.Context, req *publishing
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.publishing.v1.Publisher/PublishEvents")
+	}
 	opts = append((*c.CallOptions).PublishEvents[0:len((*c.CallOptions).PublishEvents):len((*c.CallOptions).PublishEvents)], opts...)
 	var resp *publishingpb.PublishEventsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -422,6 +482,9 @@ func (c *publisherGRPCClient) Publish(ctx context.Context, req *publishingpb.Pub
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.publishing.v1.Publisher/Publish")
+	}
 	opts = append((*c.CallOptions).Publish[0:len((*c.CallOptions).Publish):len((*c.CallOptions).Publish)], opts...)
 	var resp *publishingpb.PublishResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -460,6 +523,10 @@ func (c *publisherRESTClient) PublishChannelConnectionEvents(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.publishing.v1.Publisher/PublishChannelConnectionEvents")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{channel_connection=projects/*/locations/*/channelConnections/*}:publishEvents")
+	}
 	opts = append((*c.CallOptions).PublishChannelConnectionEvents[0:len((*c.CallOptions).PublishChannelConnectionEvents):len((*c.CallOptions).PublishChannelConnectionEvents)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &publishingpb.PublishChannelConnectionEventsResponse{}
@@ -516,6 +583,10 @@ func (c *publisherRESTClient) PublishEvents(ctx context.Context, req *publishing
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.publishing.v1.Publisher/PublishEvents")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{channel=projects/*/locations/*/channels/*}:publishEvents")
+	}
 	opts = append((*c.CallOptions).PublishEvents[0:len((*c.CallOptions).PublishEvents):len((*c.CallOptions).PublishEvents)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &publishingpb.PublishEventsResponse{}
@@ -572,6 +643,10 @@ func (c *publisherRESTClient) Publish(ctx context.Context, req *publishingpb.Pub
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.publishing.v1.Publisher/Publish")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{message_bus=projects/*/locations/*/messageBuses/*}:publish")
+	}
 	opts = append((*c.CallOptions).Publish[0:len((*c.CallOptions).Publish):len((*c.CallOptions).Publish)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &publishingpb.PublishResponse{}

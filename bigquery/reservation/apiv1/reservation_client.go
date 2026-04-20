@@ -29,6 +29,7 @@ import (
 	reservationpb "cloud.google.com/go/bigquery/reservation/apiv1/reservationpb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -897,6 +898,16 @@ type gRPCClient struct {
 // projects/myproject/locations/US/capacityCommitments/id.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "bigqueryreservation",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/bigquery/reservation/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "bigqueryreservation.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -918,6 +929,48 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "bigqueryreservation",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/reservation/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "bigqueryreservation.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateReservation = append(client.CallOptions.CreateReservation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListReservations = append(client.CallOptions.ListReservations, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetReservation = append(client.CallOptions.GetReservation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteReservation = append(client.CallOptions.DeleteReservation, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateReservation = append(client.CallOptions.UpdateReservation, gax.WithClientMetrics(metrics))
+		client.CallOptions.FailoverReservation = append(client.CallOptions.FailoverReservation, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateCapacityCommitment = append(client.CallOptions.CreateCapacityCommitment, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListCapacityCommitments = append(client.CallOptions.ListCapacityCommitments, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetCapacityCommitment = append(client.CallOptions.GetCapacityCommitment, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteCapacityCommitment = append(client.CallOptions.DeleteCapacityCommitment, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateCapacityCommitment = append(client.CallOptions.UpdateCapacityCommitment, gax.WithClientMetrics(metrics))
+		client.CallOptions.SplitCapacityCommitment = append(client.CallOptions.SplitCapacityCommitment, gax.WithClientMetrics(metrics))
+		client.CallOptions.MergeCapacityCommitments = append(client.CallOptions.MergeCapacityCommitments, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateAssignment = append(client.CallOptions.CreateAssignment, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAssignments = append(client.CallOptions.ListAssignments, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteAssignment = append(client.CallOptions.DeleteAssignment, gax.WithClientMetrics(metrics))
+		client.CallOptions.SearchAssignments = append(client.CallOptions.SearchAssignments, gax.WithClientMetrics(metrics))
+		client.CallOptions.SearchAllAssignments = append(client.CallOptions.SearchAllAssignments, gax.WithClientMetrics(metrics))
+		client.CallOptions.MoveAssignment = append(client.CallOptions.MoveAssignment, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateAssignment = append(client.CallOptions.UpdateAssignment, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetBiReservation = append(client.CallOptions.GetBiReservation, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateBiReservation = append(client.CallOptions.UpdateBiReservation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateReservationGroup = append(client.CallOptions.CreateReservationGroup, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetReservationGroup = append(client.CallOptions.GetReservationGroup, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteReservationGroup = append(client.CallOptions.DeleteReservationGroup, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListReservationGroups = append(client.CallOptions.ListReservationGroups, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -985,6 +1038,16 @@ type restClient struct {
 // projects/myproject/locations/US/capacityCommitments/id.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "bigqueryreservation",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/bigquery/reservation/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "bigqueryreservation.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -998,6 +1061,49 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "bigqueryreservation",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/reservation/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "bigqueryreservation.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateReservation = append(callOpts.CreateReservation, gax.WithClientMetrics(metrics))
+		callOpts.ListReservations = append(callOpts.ListReservations, gax.WithClientMetrics(metrics))
+		callOpts.GetReservation = append(callOpts.GetReservation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteReservation = append(callOpts.DeleteReservation, gax.WithClientMetrics(metrics))
+		callOpts.UpdateReservation = append(callOpts.UpdateReservation, gax.WithClientMetrics(metrics))
+		callOpts.FailoverReservation = append(callOpts.FailoverReservation, gax.WithClientMetrics(metrics))
+		callOpts.CreateCapacityCommitment = append(callOpts.CreateCapacityCommitment, gax.WithClientMetrics(metrics))
+		callOpts.ListCapacityCommitments = append(callOpts.ListCapacityCommitments, gax.WithClientMetrics(metrics))
+		callOpts.GetCapacityCommitment = append(callOpts.GetCapacityCommitment, gax.WithClientMetrics(metrics))
+		callOpts.DeleteCapacityCommitment = append(callOpts.DeleteCapacityCommitment, gax.WithClientMetrics(metrics))
+		callOpts.UpdateCapacityCommitment = append(callOpts.UpdateCapacityCommitment, gax.WithClientMetrics(metrics))
+		callOpts.SplitCapacityCommitment = append(callOpts.SplitCapacityCommitment, gax.WithClientMetrics(metrics))
+		callOpts.MergeCapacityCommitments = append(callOpts.MergeCapacityCommitments, gax.WithClientMetrics(metrics))
+		callOpts.CreateAssignment = append(callOpts.CreateAssignment, gax.WithClientMetrics(metrics))
+		callOpts.ListAssignments = append(callOpts.ListAssignments, gax.WithClientMetrics(metrics))
+		callOpts.DeleteAssignment = append(callOpts.DeleteAssignment, gax.WithClientMetrics(metrics))
+		callOpts.SearchAssignments = append(callOpts.SearchAssignments, gax.WithClientMetrics(metrics))
+		callOpts.SearchAllAssignments = append(callOpts.SearchAllAssignments, gax.WithClientMetrics(metrics))
+		callOpts.MoveAssignment = append(callOpts.MoveAssignment, gax.WithClientMetrics(metrics))
+		callOpts.UpdateAssignment = append(callOpts.UpdateAssignment, gax.WithClientMetrics(metrics))
+		callOpts.GetBiReservation = append(callOpts.GetBiReservation, gax.WithClientMetrics(metrics))
+		callOpts.UpdateBiReservation = append(callOpts.UpdateBiReservation, gax.WithClientMetrics(metrics))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+		callOpts.CreateReservationGroup = append(callOpts.CreateReservationGroup, gax.WithClientMetrics(metrics))
+		callOpts.GetReservationGroup = append(callOpts.GetReservationGroup, gax.WithClientMetrics(metrics))
+		callOpts.DeleteReservationGroup = append(callOpts.DeleteReservationGroup, gax.WithClientMetrics(metrics))
+		callOpts.ListReservationGroups = append(callOpts.ListReservationGroups, gax.WithClientMetrics(metrics))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -1044,6 +1150,12 @@ func (c *gRPCClient) CreateReservation(ctx context.Context, req *reservationpb.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/CreateReservation")
+	}
 	opts = append((*c.CallOptions).CreateReservation[0:len((*c.CallOptions).CreateReservation):len((*c.CallOptions).CreateReservation)], opts...)
 	var resp *reservationpb.Reservation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1062,6 +1174,12 @@ func (c *gRPCClient) ListReservations(ctx context.Context, req *reservationpb.Li
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/ListReservations")
+	}
 	opts = append((*c.CallOptions).ListReservations[0:len((*c.CallOptions).ListReservations):len((*c.CallOptions).ListReservations)], opts...)
 	it := &ReservationIterator{}
 	req = proto.Clone(req).(*reservationpb.ListReservationsRequest)
@@ -1108,6 +1226,12 @@ func (c *gRPCClient) GetReservation(ctx context.Context, req *reservationpb.GetR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/GetReservation")
+	}
 	opts = append((*c.CallOptions).GetReservation[0:len((*c.CallOptions).GetReservation):len((*c.CallOptions).GetReservation)], opts...)
 	var resp *reservationpb.Reservation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1126,6 +1250,12 @@ func (c *gRPCClient) DeleteReservation(ctx context.Context, req *reservationpb.D
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/DeleteReservation")
+	}
 	opts = append((*c.CallOptions).DeleteReservation[0:len((*c.CallOptions).DeleteReservation):len((*c.CallOptions).DeleteReservation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1140,6 +1270,12 @@ func (c *gRPCClient) UpdateReservation(ctx context.Context, req *reservationpb.U
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetReservation().GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/UpdateReservation")
+	}
 	opts = append((*c.CallOptions).UpdateReservation[0:len((*c.CallOptions).UpdateReservation):len((*c.CallOptions).UpdateReservation)], opts...)
 	var resp *reservationpb.Reservation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1158,6 +1294,12 @@ func (c *gRPCClient) FailoverReservation(ctx context.Context, req *reservationpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/FailoverReservation")
+	}
 	opts = append((*c.CallOptions).FailoverReservation[0:len((*c.CallOptions).FailoverReservation):len((*c.CallOptions).FailoverReservation)], opts...)
 	var resp *reservationpb.Reservation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1176,6 +1318,12 @@ func (c *gRPCClient) CreateCapacityCommitment(ctx context.Context, req *reservat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/CreateCapacityCommitment")
+	}
 	opts = append((*c.CallOptions).CreateCapacityCommitment[0:len((*c.CallOptions).CreateCapacityCommitment):len((*c.CallOptions).CreateCapacityCommitment)], opts...)
 	var resp *reservationpb.CapacityCommitment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1194,6 +1342,12 @@ func (c *gRPCClient) ListCapacityCommitments(ctx context.Context, req *reservati
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/ListCapacityCommitments")
+	}
 	opts = append((*c.CallOptions).ListCapacityCommitments[0:len((*c.CallOptions).ListCapacityCommitments):len((*c.CallOptions).ListCapacityCommitments)], opts...)
 	it := &CapacityCommitmentIterator{}
 	req = proto.Clone(req).(*reservationpb.ListCapacityCommitmentsRequest)
@@ -1240,6 +1394,12 @@ func (c *gRPCClient) GetCapacityCommitment(ctx context.Context, req *reservation
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/GetCapacityCommitment")
+	}
 	opts = append((*c.CallOptions).GetCapacityCommitment[0:len((*c.CallOptions).GetCapacityCommitment):len((*c.CallOptions).GetCapacityCommitment)], opts...)
 	var resp *reservationpb.CapacityCommitment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1258,6 +1418,12 @@ func (c *gRPCClient) DeleteCapacityCommitment(ctx context.Context, req *reservat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/DeleteCapacityCommitment")
+	}
 	opts = append((*c.CallOptions).DeleteCapacityCommitment[0:len((*c.CallOptions).DeleteCapacityCommitment):len((*c.CallOptions).DeleteCapacityCommitment)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1272,6 +1438,12 @@ func (c *gRPCClient) UpdateCapacityCommitment(ctx context.Context, req *reservat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetCapacityCommitment().GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/UpdateCapacityCommitment")
+	}
 	opts = append((*c.CallOptions).UpdateCapacityCommitment[0:len((*c.CallOptions).UpdateCapacityCommitment):len((*c.CallOptions).UpdateCapacityCommitment)], opts...)
 	var resp *reservationpb.CapacityCommitment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1290,6 +1462,12 @@ func (c *gRPCClient) SplitCapacityCommitment(ctx context.Context, req *reservati
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/SplitCapacityCommitment")
+	}
 	opts = append((*c.CallOptions).SplitCapacityCommitment[0:len((*c.CallOptions).SplitCapacityCommitment):len((*c.CallOptions).SplitCapacityCommitment)], opts...)
 	var resp *reservationpb.SplitCapacityCommitmentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1308,6 +1486,12 @@ func (c *gRPCClient) MergeCapacityCommitments(ctx context.Context, req *reservat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/MergeCapacityCommitments")
+	}
 	opts = append((*c.CallOptions).MergeCapacityCommitments[0:len((*c.CallOptions).MergeCapacityCommitments):len((*c.CallOptions).MergeCapacityCommitments)], opts...)
 	var resp *reservationpb.CapacityCommitment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1326,6 +1510,12 @@ func (c *gRPCClient) CreateAssignment(ctx context.Context, req *reservationpb.Cr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/CreateAssignment")
+	}
 	opts = append((*c.CallOptions).CreateAssignment[0:len((*c.CallOptions).CreateAssignment):len((*c.CallOptions).CreateAssignment)], opts...)
 	var resp *reservationpb.Assignment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1344,6 +1534,12 @@ func (c *gRPCClient) ListAssignments(ctx context.Context, req *reservationpb.Lis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/ListAssignments")
+	}
 	opts = append((*c.CallOptions).ListAssignments[0:len((*c.CallOptions).ListAssignments):len((*c.CallOptions).ListAssignments)], opts...)
 	it := &AssignmentIterator{}
 	req = proto.Clone(req).(*reservationpb.ListAssignmentsRequest)
@@ -1390,6 +1586,12 @@ func (c *gRPCClient) DeleteAssignment(ctx context.Context, req *reservationpb.De
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/DeleteAssignment")
+	}
 	opts = append((*c.CallOptions).DeleteAssignment[0:len((*c.CallOptions).DeleteAssignment):len((*c.CallOptions).DeleteAssignment)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1404,6 +1606,12 @@ func (c *gRPCClient) SearchAssignments(ctx context.Context, req *reservationpb.S
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/SearchAssignments")
+	}
 	opts = append((*c.CallOptions).SearchAssignments[0:len((*c.CallOptions).SearchAssignments):len((*c.CallOptions).SearchAssignments)], opts...)
 	it := &AssignmentIterator{}
 	req = proto.Clone(req).(*reservationpb.SearchAssignmentsRequest)
@@ -1450,6 +1658,12 @@ func (c *gRPCClient) SearchAllAssignments(ctx context.Context, req *reservationp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/SearchAllAssignments")
+	}
 	opts = append((*c.CallOptions).SearchAllAssignments[0:len((*c.CallOptions).SearchAllAssignments):len((*c.CallOptions).SearchAllAssignments)], opts...)
 	it := &AssignmentIterator{}
 	req = proto.Clone(req).(*reservationpb.SearchAllAssignmentsRequest)
@@ -1496,6 +1710,12 @@ func (c *gRPCClient) MoveAssignment(ctx context.Context, req *reservationpb.Move
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/MoveAssignment")
+	}
 	opts = append((*c.CallOptions).MoveAssignment[0:len((*c.CallOptions).MoveAssignment):len((*c.CallOptions).MoveAssignment)], opts...)
 	var resp *reservationpb.Assignment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1514,6 +1734,12 @@ func (c *gRPCClient) UpdateAssignment(ctx context.Context, req *reservationpb.Up
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetAssignment().GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/UpdateAssignment")
+	}
 	opts = append((*c.CallOptions).UpdateAssignment[0:len((*c.CallOptions).UpdateAssignment):len((*c.CallOptions).UpdateAssignment)], opts...)
 	var resp *reservationpb.Assignment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1532,6 +1758,12 @@ func (c *gRPCClient) GetBiReservation(ctx context.Context, req *reservationpb.Ge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/GetBiReservation")
+	}
 	opts = append((*c.CallOptions).GetBiReservation[0:len((*c.CallOptions).GetBiReservation):len((*c.CallOptions).GetBiReservation)], opts...)
 	var resp *reservationpb.BiReservation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1550,6 +1782,12 @@ func (c *gRPCClient) UpdateBiReservation(ctx context.Context, req *reservationpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetBiReservation().GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/UpdateBiReservation")
+	}
 	opts = append((*c.CallOptions).UpdateBiReservation[0:len((*c.CallOptions).UpdateBiReservation):len((*c.CallOptions).UpdateBiReservation)], opts...)
 	var resp *reservationpb.BiReservation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1568,6 +1806,12 @@ func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/GetIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1586,6 +1830,12 @@ func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/SetIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1604,6 +1854,12 @@ func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/TestIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1622,6 +1878,12 @@ func (c *gRPCClient) CreateReservationGroup(ctx context.Context, req *reservatio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/CreateReservationGroup")
+	}
 	opts = append((*c.CallOptions).CreateReservationGroup[0:len((*c.CallOptions).CreateReservationGroup):len((*c.CallOptions).CreateReservationGroup)], opts...)
 	var resp *reservationpb.ReservationGroup
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1640,6 +1902,12 @@ func (c *gRPCClient) GetReservationGroup(ctx context.Context, req *reservationpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/GetReservationGroup")
+	}
 	opts = append((*c.CallOptions).GetReservationGroup[0:len((*c.CallOptions).GetReservationGroup):len((*c.CallOptions).GetReservationGroup)], opts...)
 	var resp *reservationpb.ReservationGroup
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1658,6 +1926,12 @@ func (c *gRPCClient) DeleteReservationGroup(ctx context.Context, req *reservatio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/DeleteReservationGroup")
+	}
 	opts = append((*c.CallOptions).DeleteReservationGroup[0:len((*c.CallOptions).DeleteReservationGroup):len((*c.CallOptions).DeleteReservationGroup)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1672,6 +1946,12 @@ func (c *gRPCClient) ListReservationGroups(ctx context.Context, req *reservation
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/ListReservationGroups")
+	}
 	opts = append((*c.CallOptions).ListReservationGroups[0:len((*c.CallOptions).ListReservationGroups):len((*c.CallOptions).ListReservationGroups)], opts...)
 	it := &ReservationGroupIterator{}
 	req = proto.Clone(req).(*reservationpb.ListReservationGroupsRequest)
@@ -1742,6 +2022,13 @@ func (c *restClient) CreateReservation(ctx context.Context, req *reservationpb.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/CreateReservation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/reservations")
+	}
 	opts = append((*c.CallOptions).CreateReservation[0:len((*c.CallOptions).CreateReservation):len((*c.CallOptions).CreateReservation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &reservationpb.Reservation{}
@@ -1870,6 +2157,13 @@ func (c *restClient) GetReservation(ctx context.Context, req *reservationpb.GetR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/GetReservation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/reservations/*}")
+	}
 	opts = append((*c.CallOptions).GetReservation[0:len((*c.CallOptions).GetReservation):len((*c.CallOptions).GetReservation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &reservationpb.Reservation{}
@@ -1922,6 +2216,13 @@ func (c *restClient) DeleteReservation(ctx context.Context, req *reservationpb.D
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/DeleteReservation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/reservations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1971,6 +2272,13 @@ func (c *restClient) UpdateReservation(ctx context.Context, req *reservationpb.U
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetReservation().GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/UpdateReservation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{reservation.name=projects/*/locations/*/reservations/*}")
+	}
 	opts = append((*c.CallOptions).UpdateReservation[0:len((*c.CallOptions).UpdateReservation):len((*c.CallOptions).UpdateReservation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &reservationpb.Reservation{}
@@ -2031,6 +2339,13 @@ func (c *restClient) FailoverReservation(ctx context.Context, req *reservationpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/FailoverReservation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/reservations/*}:failoverReservation")
+	}
 	opts = append((*c.CallOptions).FailoverReservation[0:len((*c.CallOptions).FailoverReservation):len((*c.CallOptions).FailoverReservation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &reservationpb.Reservation{}
@@ -2094,6 +2409,13 @@ func (c *restClient) CreateCapacityCommitment(ctx context.Context, req *reservat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/CreateCapacityCommitment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/capacityCommitments")
+	}
 	opts = append((*c.CallOptions).CreateCapacityCommitment[0:len((*c.CallOptions).CreateCapacityCommitment):len((*c.CallOptions).CreateCapacityCommitment)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &reservationpb.CapacityCommitment{}
@@ -2222,6 +2544,13 @@ func (c *restClient) GetCapacityCommitment(ctx context.Context, req *reservation
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/GetCapacityCommitment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/capacityCommitments/*}")
+	}
 	opts = append((*c.CallOptions).GetCapacityCommitment[0:len((*c.CallOptions).GetCapacityCommitment):len((*c.CallOptions).GetCapacityCommitment)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &reservationpb.CapacityCommitment{}
@@ -2277,6 +2606,13 @@ func (c *restClient) DeleteCapacityCommitment(ctx context.Context, req *reservat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/DeleteCapacityCommitment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/capacityCommitments/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2332,6 +2668,13 @@ func (c *restClient) UpdateCapacityCommitment(ctx context.Context, req *reservat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetCapacityCommitment().GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/UpdateCapacityCommitment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{capacity_commitment.name=projects/*/locations/*/capacityCommitments/*}")
+	}
 	opts = append((*c.CallOptions).UpdateCapacityCommitment[0:len((*c.CallOptions).UpdateCapacityCommitment):len((*c.CallOptions).UpdateCapacityCommitment)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &reservationpb.CapacityCommitment{}
@@ -2395,6 +2738,13 @@ func (c *restClient) SplitCapacityCommitment(ctx context.Context, req *reservati
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/SplitCapacityCommitment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/capacityCommitments/*}:split")
+	}
 	opts = append((*c.CallOptions).SplitCapacityCommitment[0:len((*c.CallOptions).SplitCapacityCommitment):len((*c.CallOptions).SplitCapacityCommitment)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &reservationpb.SplitCapacityCommitmentResponse{}
@@ -2457,6 +2807,13 @@ func (c *restClient) MergeCapacityCommitments(ctx context.Context, req *reservat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/MergeCapacityCommitments")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/capacityCommitments:merge")
+	}
 	opts = append((*c.CallOptions).MergeCapacityCommitments[0:len((*c.CallOptions).MergeCapacityCommitments):len((*c.CallOptions).MergeCapacityCommitments)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &reservationpb.CapacityCommitment{}
@@ -2552,6 +2909,13 @@ func (c *restClient) CreateAssignment(ctx context.Context, req *reservationpb.Cr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/CreateAssignment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/reservations/*}/assignments")
+	}
 	opts = append((*c.CallOptions).CreateAssignment[0:len((*c.CallOptions).CreateAssignment):len((*c.CallOptions).CreateAssignment)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &reservationpb.Assignment{}
@@ -2718,6 +3082,13 @@ func (c *restClient) DeleteAssignment(ctx context.Context, req *reservationpb.De
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/DeleteAssignment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/reservations/*/assignments/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2976,6 +3347,13 @@ func (c *restClient) MoveAssignment(ctx context.Context, req *reservationpb.Move
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/MoveAssignment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/reservations/*/assignments/*}:move")
+	}
 	opts = append((*c.CallOptions).MoveAssignment[0:len((*c.CallOptions).MoveAssignment):len((*c.CallOptions).MoveAssignment)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &reservationpb.Assignment{}
@@ -3042,6 +3420,13 @@ func (c *restClient) UpdateAssignment(ctx context.Context, req *reservationpb.Up
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetAssignment().GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/UpdateAssignment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{assignment.name=projects/*/locations/*/reservations/*/assignments/*}")
+	}
 	opts = append((*c.CallOptions).UpdateAssignment[0:len((*c.CallOptions).UpdateAssignment):len((*c.CallOptions).UpdateAssignment)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &reservationpb.Assignment{}
@@ -3092,6 +3477,13 @@ func (c *restClient) GetBiReservation(ctx context.Context, req *reservationpb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/GetBiReservation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/biReservation}")
+	}
 	opts = append((*c.CallOptions).GetBiReservation[0:len((*c.CallOptions).GetBiReservation):len((*c.CallOptions).GetBiReservation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &reservationpb.BiReservation{}
@@ -3163,6 +3555,13 @@ func (c *restClient) UpdateBiReservation(ctx context.Context, req *reservationpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetBiReservation().GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/UpdateBiReservation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{bi_reservation.name=projects/*/locations/*/biReservation}")
+	}
 	opts = append((*c.CallOptions).UpdateBiReservation[0:len((*c.CallOptions).UpdateBiReservation):len((*c.CallOptions).UpdateBiReservation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &reservationpb.BiReservation{}
@@ -3233,6 +3632,13 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/GetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/reservations/*}:getIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -3299,6 +3705,13 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/SetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/reservations/*}:setIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -3362,6 +3775,13 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/reservations/*}:testIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.TestIamPermissionsResponse{}
@@ -3420,6 +3840,13 @@ func (c *restClient) CreateReservationGroup(ctx context.Context, req *reservatio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/CreateReservationGroup")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/reservationGroups")
+	}
 	opts = append((*c.CallOptions).CreateReservationGroup[0:len((*c.CallOptions).CreateReservationGroup):len((*c.CallOptions).CreateReservationGroup)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &reservationpb.ReservationGroup{}
@@ -3470,6 +3897,13 @@ func (c *restClient) GetReservationGroup(ctx context.Context, req *reservationpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/GetReservationGroup")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/reservationGroups/*}")
+	}
 	opts = append((*c.CallOptions).GetReservationGroup[0:len((*c.CallOptions).GetReservationGroup):len((*c.CallOptions).GetReservationGroup)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &reservationpb.ReservationGroup{}
@@ -3522,6 +3956,13 @@ func (c *restClient) DeleteReservationGroup(ctx context.Context, req *reservatio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/DeleteReservationGroup")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/reservationGroups/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path

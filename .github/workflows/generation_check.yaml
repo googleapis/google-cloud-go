@@ -1,0 +1,55 @@
+---
+name: generation-check
+on:
+  push:
+    branches:
+      - main
+  # Allows manual triggering for debugging purpose.
+  workflow_dispatch:
+permissions:
+  contents: read
+  issues: write
+jobs:
+  regeneration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version: '1.26.x'
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v3
+        with:
+          version: "31.0"
+      - name: Install tools
+        run: |
+          version=$(sed -n 's/^version: *//p' librarian.yaml)
+          go run "github.com/googleapis/librarian/cmd/librarian@${version}" install
+      - name: Regenerate
+        run: |
+          version=$(sed -n 's/^version: *//p' librarian.yaml)
+          go run "github.com/googleapis/librarian/cmd/librarian@${version}" generate -all
+      - name: Create issue on diff
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            TITLE="Regeneration check found diff"
+            RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            DIFF_STAT=$(git diff --stat)
+            BODY="The post-submit [regeneration check]($RUN_URL) found a diff.
+
+            Diff summary:
+            \`\`\`
+            $DIFF_STAT
+            \`\`\`"
+
+            EXISTING_ISSUE=$(gh issue list --state open --search "in:title \"$TITLE\"" --json number --jq '.[0].number')
+            if [ -z "$EXISTING_ISSUE" ]; then
+              gh issue create --title "$TITLE" --body "$BODY"
+            else
+              echo "Issue #$EXISTING_ISSUE already exists, adding a comment."
+              gh issue comment "$EXISTING_ISSUE" --body "Another failure with diff occurred: $RUN_URL"
+            fi
+          fi

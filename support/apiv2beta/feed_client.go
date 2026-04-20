@@ -27,6 +27,7 @@ import (
 
 	supportpb "cloud.google.com/go/support/apiv2beta/supportpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -167,6 +168,16 @@ type feedGRPCClient struct {
 // A service to view case feed items.
 func NewFeedClient(ctx context.Context, opts ...option.ClientOption) (*FeedClient, error) {
 	clientOpts := defaultFeedGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudsupport",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/support/apiv2beta",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudsupport.googleapis.com",
+		}))
+	}
 	if newFeedClientHook != nil {
 		hookOpts, err := newFeedClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -188,6 +199,20 @@ func NewFeedClient(ctx context.Context, opts ...option.ClientOption) (*FeedClien
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudsupport",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/support/apiv2beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudsupport.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ShowFeed = append(client.CallOptions.ShowFeed, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -241,6 +266,16 @@ type feedRESTClient struct {
 // A service to view case feed items.
 func NewFeedRESTClient(ctx context.Context, opts ...option.ClientOption) (*FeedClient, error) {
 	clientOpts := append(defaultFeedRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudsupport",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/support/apiv2beta",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudsupport.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -254,6 +289,21 @@ func NewFeedRESTClient(ctx context.Context, opts ...option.ClientOption) (*FeedC
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudsupport",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/support/apiv2beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudsupport.googleapis.com",
+			}),
+		)
+
+		callOpts.ShowFeed = append(callOpts.ShowFeed, gax.WithClientMetrics(metrics))
+	}
 
 	return &FeedClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -300,6 +350,12 @@ func (c *feedGRPCClient) ShowFeed(ctx context.Context, req *supportpb.ShowFeedRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudsupport.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.support.v2beta.FeedService/ShowFeed")
+	}
 	opts = append((*c.CallOptions).ShowFeed[0:len((*c.CallOptions).ShowFeed):len((*c.CallOptions).ShowFeed)], opts...)
 	it := &FeedItemIterator{}
 	req = proto.Clone(req).(*supportpb.ShowFeedRequest)

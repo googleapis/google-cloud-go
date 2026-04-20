@@ -28,6 +28,7 @@ import (
 
 	accountspb "cloud.google.com/go/shopping/merchant/accounts/apiv1beta/accountspb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -198,6 +199,16 @@ type businessIdentityGRPCClient struct {
 // identity (at https://support.google.com/merchants/answer/12564247) API.
 func NewBusinessIdentityClient(ctx context.Context, opts ...option.ClientOption) (*BusinessIdentityClient, error) {
 	clientOpts := defaultBusinessIdentityGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	if newBusinessIdentityClientHook != nil {
 		hookOpts, err := newBusinessIdentityClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -219,6 +230,21 @@ func NewBusinessIdentityClient(ctx context.Context, opts ...option.ClientOption)
 		logger:                 internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetBusinessIdentity = append(client.CallOptions.GetBusinessIdentity, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateBusinessIdentity = append(client.CallOptions.UpdateBusinessIdentity, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -273,6 +299,16 @@ type businessIdentityRESTClient struct {
 // identity (at https://support.google.com/merchants/answer/12564247) API.
 func NewBusinessIdentityRESTClient(ctx context.Context, opts ...option.ClientOption) (*BusinessIdentityClient, error) {
 	clientOpts := append(defaultBusinessIdentityRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -286,6 +322,22 @@ func NewBusinessIdentityRESTClient(ctx context.Context, opts ...option.ClientOpt
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetBusinessIdentity = append(callOpts.GetBusinessIdentity, gax.WithClientMetrics(metrics))
+		callOpts.UpdateBusinessIdentity = append(callOpts.UpdateBusinessIdentity, gax.WithClientMetrics(metrics))
+	}
 
 	return &BusinessIdentityClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -332,6 +384,12 @@ func (c *businessIdentityGRPCClient) GetBusinessIdentity(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.BusinessIdentityService/GetBusinessIdentity")
+	}
 	opts = append((*c.CallOptions).GetBusinessIdentity[0:len((*c.CallOptions).GetBusinessIdentity):len((*c.CallOptions).GetBusinessIdentity)], opts...)
 	var resp *accountspb.BusinessIdentity
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -350,6 +408,9 @@ func (c *businessIdentityGRPCClient) UpdateBusinessIdentity(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.BusinessIdentityService/UpdateBusinessIdentity")
+	}
 	opts = append((*c.CallOptions).UpdateBusinessIdentity[0:len((*c.CallOptions).UpdateBusinessIdentity):len((*c.CallOptions).UpdateBusinessIdentity)], opts...)
 	var resp *accountspb.BusinessIdentity
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -382,6 +443,13 @@ func (c *businessIdentityRESTClient) GetBusinessIdentity(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.BusinessIdentityService/GetBusinessIdentity")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1beta/{name=accounts/*/businessIdentity}")
+	}
 	opts = append((*c.CallOptions).GetBusinessIdentity[0:len((*c.CallOptions).GetBusinessIdentity):len((*c.CallOptions).GetBusinessIdentity)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &accountspb.BusinessIdentity{}
@@ -447,6 +515,10 @@ func (c *businessIdentityRESTClient) UpdateBusinessIdentity(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.BusinessIdentityService/UpdateBusinessIdentity")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1beta/{business_identity.name=accounts/*/businessIdentity}")
+	}
 	opts = append((*c.CallOptions).UpdateBusinessIdentity[0:len((*c.CallOptions).UpdateBusinessIdentity):len((*c.CallOptions).UpdateBusinessIdentity)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &accountspb.BusinessIdentity{}

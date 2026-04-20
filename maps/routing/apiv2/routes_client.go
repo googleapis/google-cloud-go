@@ -28,6 +28,7 @@ import (
 
 	routingpb "cloud.google.com/go/maps/routing/apiv2/routingpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -225,6 +226,16 @@ type routesGRPCClient struct {
 // The Routes API.
 func NewRoutesClient(ctx context.Context, opts ...option.ClientOption) (*RoutesClient, error) {
 	clientOpts := defaultRoutesGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "routes",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/maps/routing/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "routes.googleapis.com",
+		}))
+	}
 	if newRoutesClientHook != nil {
 		hookOpts, err := newRoutesClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -246,6 +257,21 @@ func NewRoutesClient(ctx context.Context, opts ...option.ClientOption) (*RoutesC
 		logger:       internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "routes",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/routing/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "routes.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ComputeRoutes = append(client.CallOptions.ComputeRoutes, gax.WithClientMetrics(metrics))
+		client.CallOptions.ComputeRouteMatrix = append(client.CallOptions.ComputeRouteMatrix, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -299,6 +325,16 @@ type routesRESTClient struct {
 // The Routes API.
 func NewRoutesRESTClient(ctx context.Context, opts ...option.ClientOption) (*RoutesClient, error) {
 	clientOpts := append(defaultRoutesRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "routes",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/maps/routing/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "routes.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -312,6 +348,22 @@ func NewRoutesRESTClient(ctx context.Context, opts ...option.ClientOption) (*Rou
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "routes",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/routing/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "routes.googleapis.com",
+			}),
+		)
+
+		callOpts.ComputeRoutes = append(callOpts.ComputeRoutes, gax.WithClientMetrics(metrics))
+		callOpts.ComputeRouteMatrix = append(callOpts.ComputeRouteMatrix, gax.WithClientMetrics(metrics))
+	}
 
 	return &RoutesClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -355,6 +407,9 @@ func (c *routesRESTClient) Connection() *grpc.ClientConn {
 }
 func (c *routesGRPCClient) ComputeRoutes(ctx context.Context, req *routingpb.ComputeRoutesRequest, opts ...gax.CallOption) (*routingpb.ComputeRoutesResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.routing.v2.Routes/ComputeRoutes")
+	}
 	opts = append((*c.CallOptions).ComputeRoutes[0:len((*c.CallOptions).ComputeRoutes):len((*c.CallOptions).ComputeRoutes)], opts...)
 	var resp *routingpb.ComputeRoutesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -370,6 +425,9 @@ func (c *routesGRPCClient) ComputeRoutes(ctx context.Context, req *routingpb.Com
 
 func (c *routesGRPCClient) ComputeRouteMatrix(ctx context.Context, req *routingpb.ComputeRouteMatrixRequest, opts ...gax.CallOption) (routingpb.Routes_ComputeRouteMatrixClient, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.routing.v2.Routes/ComputeRouteMatrix")
+	}
 	opts = append((*c.CallOptions).ComputeRouteMatrix[0:len((*c.CallOptions).ComputeRouteMatrix):len((*c.CallOptions).ComputeRouteMatrix)], opts...)
 	var resp routingpb.Routes_ComputeRouteMatrixClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -443,6 +501,10 @@ func (c *routesRESTClient) ComputeRoutes(ctx context.Context, req *routingpb.Com
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.routing.v2.Routes/ComputeRoutes")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/directions/v2:computeRoutes")
+	}
 	opts = append((*c.CallOptions).ComputeRoutes[0:len((*c.CallOptions).ComputeRoutes):len((*c.CallOptions).ComputeRoutes)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &routingpb.ComputeRoutesResponse{}
@@ -532,6 +594,10 @@ func (c *routesRESTClient) ComputeRouteMatrix(ctx context.Context, req *routingp
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.routing.v2.Routes/ComputeRouteMatrix")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/distanceMatrix/v2:computeRouteMatrix")
+	}
 	var streamClient *computeRouteMatrixRESTStreamClient
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {

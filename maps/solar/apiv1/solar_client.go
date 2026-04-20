@@ -27,6 +27,7 @@ import (
 
 	solarpb "cloud.google.com/go/maps/solar/apiv1/solarpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -229,6 +230,16 @@ type gRPCClient struct {
 // Service definition for the Solar API.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "solar",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/maps/solar/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "solar.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -250,6 +261,22 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "solar",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/solar/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "solar.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.FindClosestBuildingInsights = append(client.CallOptions.FindClosestBuildingInsights, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetDataLayers = append(client.CallOptions.GetDataLayers, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetGeoTiff = append(client.CallOptions.GetGeoTiff, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -303,6 +330,16 @@ type restClient struct {
 // Service definition for the Solar API.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "solar",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/maps/solar/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "solar.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -316,6 +353,23 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "solar",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/solar/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "solar.googleapis.com",
+			}),
+		)
+
+		callOpts.FindClosestBuildingInsights = append(callOpts.FindClosestBuildingInsights, gax.WithClientMetrics(metrics))
+		callOpts.GetDataLayers = append(callOpts.GetDataLayers, gax.WithClientMetrics(metrics))
+		callOpts.GetGeoTiff = append(callOpts.GetGeoTiff, gax.WithClientMetrics(metrics))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -359,6 +413,9 @@ func (c *restClient) Connection() *grpc.ClientConn {
 }
 func (c *gRPCClient) FindClosestBuildingInsights(ctx context.Context, req *solarpb.FindClosestBuildingInsightsRequest, opts ...gax.CallOption) (*solarpb.BuildingInsights, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.solar.v1.Solar/FindClosestBuildingInsights")
+	}
 	opts = append((*c.CallOptions).FindClosestBuildingInsights[0:len((*c.CallOptions).FindClosestBuildingInsights):len((*c.CallOptions).FindClosestBuildingInsights)], opts...)
 	var resp *solarpb.BuildingInsights
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -374,6 +431,9 @@ func (c *gRPCClient) FindClosestBuildingInsights(ctx context.Context, req *solar
 
 func (c *gRPCClient) GetDataLayers(ctx context.Context, req *solarpb.GetDataLayersRequest, opts ...gax.CallOption) (*solarpb.DataLayers, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.solar.v1.Solar/GetDataLayers")
+	}
 	opts = append((*c.CallOptions).GetDataLayers[0:len((*c.CallOptions).GetDataLayers):len((*c.CallOptions).GetDataLayers)], opts...)
 	var resp *solarpb.DataLayers
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -389,6 +449,9 @@ func (c *gRPCClient) GetDataLayers(ctx context.Context, req *solarpb.GetDataLaye
 
 func (c *gRPCClient) GetGeoTiff(ctx context.Context, req *solarpb.GetGeoTiffRequest, opts ...gax.CallOption) (*httpbodypb.HttpBody, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.solar.v1.Solar/GetGeoTiff")
+	}
 	opts = append((*c.CallOptions).GetGeoTiff[0:len((*c.CallOptions).GetGeoTiff):len((*c.CallOptions).GetGeoTiff)], opts...)
 	var resp *httpbodypb.HttpBody
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -437,6 +500,10 @@ func (c *restClient) FindClosestBuildingInsights(ctx context.Context, req *solar
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.solar.v1.Solar/FindClosestBuildingInsights")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/buildingInsights:findClosest")
+	}
 	opts = append((*c.CallOptions).FindClosestBuildingInsights[0:len((*c.CallOptions).FindClosestBuildingInsights):len((*c.CallOptions).FindClosestBuildingInsights)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &solarpb.BuildingInsights{}
@@ -510,6 +577,10 @@ func (c *restClient) GetDataLayers(ctx context.Context, req *solarpb.GetDataLaye
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.solar.v1.Solar/GetDataLayers")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/dataLayers:get")
+	}
 	opts = append((*c.CallOptions).GetDataLayers[0:len((*c.CallOptions).GetDataLayers):len((*c.CallOptions).GetDataLayers)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &solarpb.DataLayers{}
@@ -558,6 +629,10 @@ func (c *restClient) GetGeoTiff(ctx context.Context, req *solarpb.GetGeoTiffRequ
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.solar.v1.Solar/GetGeoTiff")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/geoTiff:get")
+	}
 	opts = append((*c.CallOptions).GetGeoTiff[0:len((*c.CallOptions).GetGeoTiff):len((*c.CallOptions).GetGeoTiff)], opts...)
 	resp := &httpbodypb.HttpBody{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

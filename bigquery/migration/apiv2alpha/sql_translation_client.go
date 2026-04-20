@@ -27,6 +27,7 @@ import (
 
 	migrationpb "cloud.google.com/go/bigquery/migration/apiv2alpha/migrationpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -142,6 +143,16 @@ type sqlTranslationGRPCClient struct {
 // Provides other SQL dialects to GoogleSQL translation operations.
 func NewSqlTranslationClient(ctx context.Context, opts ...option.ClientOption) (*SqlTranslationClient, error) {
 	clientOpts := defaultSqlTranslationGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "bigquerymigration",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/bigquery/migration/apiv2alpha",
+			"gcp.client.language": "go",
+			"url.domain":          "bigquerymigration.googleapis.com",
+		}))
+	}
 	if newSqlTranslationClientHook != nil {
 		hookOpts, err := newSqlTranslationClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -163,6 +174,20 @@ func NewSqlTranslationClient(ctx context.Context, opts ...option.ClientOption) (
 		logger:               internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "bigquerymigration",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/migration/apiv2alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "bigquerymigration.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.TranslateQuery = append(client.CallOptions.TranslateQuery, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -216,6 +241,16 @@ type sqlTranslationRESTClient struct {
 // Provides other SQL dialects to GoogleSQL translation operations.
 func NewSqlTranslationRESTClient(ctx context.Context, opts ...option.ClientOption) (*SqlTranslationClient, error) {
 	clientOpts := append(defaultSqlTranslationRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "bigquerymigration",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/bigquery/migration/apiv2alpha",
+			"gcp.client.language": "go",
+			"url.domain":          "bigquerymigration.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -229,6 +264,21 @@ func NewSqlTranslationRESTClient(ctx context.Context, opts ...option.ClientOptio
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "bigquerymigration",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/migration/apiv2alpha",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "bigquerymigration.googleapis.com",
+			}),
+		)
+
+		callOpts.TranslateQuery = append(callOpts.TranslateQuery, gax.WithClientMetrics(metrics))
+	}
 
 	return &SqlTranslationClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -275,6 +325,12 @@ func (c *sqlTranslationGRPCClient) TranslateQuery(ctx context.Context, req *migr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerymigration.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.migration.v2alpha.SqlTranslationService/TranslateQuery")
+	}
 	opts = append((*c.CallOptions).TranslateQuery[0:len((*c.CallOptions).TranslateQuery):len((*c.CallOptions).TranslateQuery)], opts...)
 	var resp *migrationpb.TranslateQueryResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -308,6 +364,13 @@ func (c *sqlTranslationRESTClient) TranslateQuery(ctx context.Context, req *migr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerymigration.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.migration.v2alpha.SqlTranslationService/TranslateQuery")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2alpha/{parent=projects/*/locations/*}:translateQuery")
+	}
 	opts = append((*c.CallOptions).TranslateQuery[0:len((*c.CallOptions).TranslateQuery):len((*c.CallOptions).TranslateQuery)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &migrationpb.TranslateQueryResponse{}

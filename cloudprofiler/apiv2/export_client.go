@@ -27,6 +27,7 @@ import (
 
 	cloudprofilerpb "cloud.google.com/go/cloudprofiler/apiv2/cloudprofilerpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -169,6 +170,16 @@ type exportGRPCClient struct {
 // out of Google Cloud.
 func NewExportClient(ctx context.Context, opts ...option.ClientOption) (*ExportClient, error) {
 	clientOpts := defaultExportGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudprofiler",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/cloudprofiler/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudprofiler.googleapis.com",
+		}))
+	}
 	if newExportClientHook != nil {
 		hookOpts, err := newExportClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -190,6 +201,20 @@ func NewExportClient(ctx context.Context, opts ...option.ClientOption) (*ExportC
 		logger:       internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudprofiler",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudprofiler/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudprofiler.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListProfiles = append(client.CallOptions.ListProfiles, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -244,6 +269,16 @@ type exportRESTClient struct {
 // out of Google Cloud.
 func NewExportRESTClient(ctx context.Context, opts ...option.ClientOption) (*ExportClient, error) {
 	clientOpts := append(defaultExportRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudprofiler",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/cloudprofiler/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudprofiler.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -257,6 +292,21 @@ func NewExportRESTClient(ctx context.Context, opts ...option.ClientOption) (*Exp
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudprofiler",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudprofiler/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudprofiler.googleapis.com",
+			}),
+		)
+
+		callOpts.ListProfiles = append(callOpts.ListProfiles, gax.WithClientMetrics(metrics))
+	}
 
 	return &ExportClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -303,6 +353,12 @@ func (c *exportGRPCClient) ListProfiles(ctx context.Context, req *cloudprofilerp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudprofiler.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudprofiler.v2.ExportService/ListProfiles")
+	}
 	opts = append((*c.CallOptions).ListProfiles[0:len((*c.CallOptions).ListProfiles):len((*c.CallOptions).ListProfiles)], opts...)
 	it := &ProfileIterator{}
 	req = proto.Clone(req).(*cloudprofilerpb.ListProfilesRequest)

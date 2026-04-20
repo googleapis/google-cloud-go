@@ -28,6 +28,7 @@ import (
 
 	meetpb "cloud.google.com/go/apps/meet/apiv2/meetpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -213,6 +214,16 @@ type spacesGRPCClient struct {
 // REST API for services dealing with spaces.
 func NewSpacesClient(ctx context.Context, opts ...option.ClientOption) (*SpacesClient, error) {
 	clientOpts := defaultSpacesGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "meet",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/apps/meet/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "meet.googleapis.com",
+		}))
+	}
 	if newSpacesClientHook != nil {
 		hookOpts, err := newSpacesClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -234,6 +245,23 @@ func NewSpacesClient(ctx context.Context, opts ...option.ClientOption) (*SpacesC
 		logger:       internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "meet",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apps/meet/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "meet.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateSpace = append(client.CallOptions.CreateSpace, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetSpace = append(client.CallOptions.GetSpace, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateSpace = append(client.CallOptions.UpdateSpace, gax.WithClientMetrics(metrics))
+		client.CallOptions.EndActiveConference = append(client.CallOptions.EndActiveConference, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -287,6 +315,16 @@ type spacesRESTClient struct {
 // REST API for services dealing with spaces.
 func NewSpacesRESTClient(ctx context.Context, opts ...option.ClientOption) (*SpacesClient, error) {
 	clientOpts := append(defaultSpacesRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "meet",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/apps/meet/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "meet.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -300,6 +338,24 @@ func NewSpacesRESTClient(ctx context.Context, opts ...option.ClientOption) (*Spa
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "meet",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apps/meet/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "meet.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateSpace = append(callOpts.CreateSpace, gax.WithClientMetrics(metrics))
+		callOpts.GetSpace = append(callOpts.GetSpace, gax.WithClientMetrics(metrics))
+		callOpts.UpdateSpace = append(callOpts.UpdateSpace, gax.WithClientMetrics(metrics))
+		callOpts.EndActiveConference = append(callOpts.EndActiveConference, gax.WithClientMetrics(metrics))
+	}
 
 	return &SpacesClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -343,6 +399,9 @@ func (c *spacesRESTClient) Connection() *grpc.ClientConn {
 }
 func (c *spacesGRPCClient) CreateSpace(ctx context.Context, req *meetpb.CreateSpaceRequest, opts ...gax.CallOption) (*meetpb.Space, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.apps.meet.v2.SpacesService/CreateSpace")
+	}
 	opts = append((*c.CallOptions).CreateSpace[0:len((*c.CallOptions).CreateSpace):len((*c.CallOptions).CreateSpace)], opts...)
 	var resp *meetpb.Space
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -361,6 +420,12 @@ func (c *spacesGRPCClient) GetSpace(ctx context.Context, req *meetpb.GetSpaceReq
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//meet.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.apps.meet.v2.SpacesService/GetSpace")
+	}
 	opts = append((*c.CallOptions).GetSpace[0:len((*c.CallOptions).GetSpace):len((*c.CallOptions).GetSpace)], opts...)
 	var resp *meetpb.Space
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -379,6 +444,9 @@ func (c *spacesGRPCClient) UpdateSpace(ctx context.Context, req *meetpb.UpdateSp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.apps.meet.v2.SpacesService/UpdateSpace")
+	}
 	opts = append((*c.CallOptions).UpdateSpace[0:len((*c.CallOptions).UpdateSpace):len((*c.CallOptions).UpdateSpace)], opts...)
 	var resp *meetpb.Space
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -397,6 +465,12 @@ func (c *spacesGRPCClient) EndActiveConference(ctx context.Context, req *meetpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//meet.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.apps.meet.v2.SpacesService/EndActiveConference")
+	}
 	opts = append((*c.CallOptions).EndActiveConference[0:len((*c.CallOptions).EndActiveConference):len((*c.CallOptions).EndActiveConference)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -429,6 +503,10 @@ func (c *spacesRESTClient) CreateSpace(ctx context.Context, req *meetpb.CreateSp
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.apps.meet.v2.SpacesService/CreateSpace")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/spaces")
+	}
 	opts = append((*c.CallOptions).CreateSpace[0:len((*c.CallOptions).CreateSpace):len((*c.CallOptions).CreateSpace)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &meetpb.Space{}
@@ -482,6 +560,13 @@ func (c *spacesRESTClient) GetSpace(ctx context.Context, req *meetpb.GetSpaceReq
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//meet.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.apps.meet.v2.SpacesService/GetSpace")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=spaces/*}")
+	}
 	opts = append((*c.CallOptions).GetSpace[0:len((*c.CallOptions).GetSpace):len((*c.CallOptions).GetSpace)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &meetpb.Space{}
@@ -549,6 +634,10 @@ func (c *spacesRESTClient) UpdateSpace(ctx context.Context, req *meetpb.UpdateSp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.apps.meet.v2.SpacesService/UpdateSpace")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{space.name=spaces/*}")
+	}
 	opts = append((*c.CallOptions).UpdateSpace[0:len((*c.CallOptions).UpdateSpace):len((*c.CallOptions).UpdateSpace)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &meetpb.Space{}
@@ -608,6 +697,13 @@ func (c *spacesRESTClient) EndActiveConference(ctx context.Context, req *meetpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//meet.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.apps.meet.v2.SpacesService/EndActiveConference")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=spaces/*}:endActiveConference")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path

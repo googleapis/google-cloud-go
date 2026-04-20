@@ -28,6 +28,7 @@ import (
 
 	cloudquotaspb "cloud.google.com/go/cloudquotas/apiv1beta/cloudquotaspb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -207,6 +208,16 @@ type quotaAdjusterSettingsManagerGRPCClient struct {
 //	Get the name of the configurations.
 func NewQuotaAdjusterSettingsManagerClient(ctx context.Context, opts ...option.ClientOption) (*QuotaAdjusterSettingsManagerClient, error) {
 	clientOpts := defaultQuotaAdjusterSettingsManagerGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudquotas",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/cloudquotas/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudquotas.googleapis.com",
+		}))
+	}
 	if newQuotaAdjusterSettingsManagerClientHook != nil {
 		hookOpts, err := newQuotaAdjusterSettingsManagerClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -228,6 +239,21 @@ func NewQuotaAdjusterSettingsManagerClient(ctx context.Context, opts ...option.C
 		logger:                             internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudquotas",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudquotas/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudquotas.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.UpdateQuotaAdjusterSettings = append(client.CallOptions.UpdateQuotaAdjusterSettings, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetQuotaAdjusterSettings = append(client.CallOptions.GetQuotaAdjusterSettings, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -287,6 +313,16 @@ type quotaAdjusterSettingsManagerRESTClient struct {
 //	Get the name of the configurations.
 func NewQuotaAdjusterSettingsManagerRESTClient(ctx context.Context, opts ...option.ClientOption) (*QuotaAdjusterSettingsManagerClient, error) {
 	clientOpts := append(defaultQuotaAdjusterSettingsManagerRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudquotas",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/cloudquotas/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudquotas.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -300,6 +336,22 @@ func NewQuotaAdjusterSettingsManagerRESTClient(ctx context.Context, opts ...opti
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudquotas",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudquotas/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudquotas.googleapis.com",
+			}),
+		)
+
+		callOpts.UpdateQuotaAdjusterSettings = append(callOpts.UpdateQuotaAdjusterSettings, gax.WithClientMetrics(metrics))
+		callOpts.GetQuotaAdjusterSettings = append(callOpts.GetQuotaAdjusterSettings, gax.WithClientMetrics(metrics))
+	}
 
 	return &QuotaAdjusterSettingsManagerClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -346,6 +398,9 @@ func (c *quotaAdjusterSettingsManagerGRPCClient) UpdateQuotaAdjusterSettings(ctx
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.cloudquotas.v1beta.QuotaAdjusterSettingsManager/UpdateQuotaAdjusterSettings")
+	}
 	opts = append((*c.CallOptions).UpdateQuotaAdjusterSettings[0:len((*c.CallOptions).UpdateQuotaAdjusterSettings):len((*c.CallOptions).UpdateQuotaAdjusterSettings)], opts...)
 	var resp *cloudquotaspb.QuotaAdjusterSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -364,6 +419,12 @@ func (c *quotaAdjusterSettingsManagerGRPCClient) GetQuotaAdjusterSettings(ctx co
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudquotas.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.cloudquotas.v1beta.QuotaAdjusterSettingsManager/GetQuotaAdjusterSettings")
+	}
 	opts = append((*c.CallOptions).GetQuotaAdjusterSettings[0:len((*c.CallOptions).GetQuotaAdjusterSettings):len((*c.CallOptions).GetQuotaAdjusterSettings)], opts...)
 	var resp *cloudquotaspb.QuotaAdjusterSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -413,6 +474,10 @@ func (c *quotaAdjusterSettingsManagerRESTClient) UpdateQuotaAdjusterSettings(ctx
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.cloudquotas.v1beta.QuotaAdjusterSettingsManager/UpdateQuotaAdjusterSettings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{quota_adjuster_settings.name=projects/*/locations/*/quotaAdjusterSettings}")
+	}
 	opts = append((*c.CallOptions).UpdateQuotaAdjusterSettings[0:len((*c.CallOptions).UpdateQuotaAdjusterSettings):len((*c.CallOptions).UpdateQuotaAdjusterSettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cloudquotaspb.QuotaAdjusterSettings{}
@@ -463,6 +528,13 @@ func (c *quotaAdjusterSettingsManagerRESTClient) GetQuotaAdjusterSettings(ctx co
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudquotas.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.cloudquotas.v1beta.QuotaAdjusterSettingsManager/GetQuotaAdjusterSettings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/quotaAdjusterSettings}")
+	}
 	opts = append((*c.CallOptions).GetQuotaAdjusterSettings[0:len((*c.CallOptions).GetQuotaAdjusterSettings):len((*c.CallOptions).GetQuotaAdjusterSettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cloudquotaspb.QuotaAdjusterSettings{}

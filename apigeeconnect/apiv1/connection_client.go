@@ -26,6 +26,7 @@ import (
 
 	apigeeconnectpb "cloud.google.com/go/apigeeconnect/apiv1/apigeeconnectpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -149,6 +150,16 @@ type connectionGRPCClient struct {
 // Service Interface for the Apigee Connect connection management APIs.
 func NewConnectionClient(ctx context.Context, opts ...option.ClientOption) (*ConnectionClient, error) {
 	clientOpts := defaultConnectionGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "apigeeconnect",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/apigeeconnect/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "apigeeconnect.googleapis.com",
+		}))
+	}
 	if newConnectionClientHook != nil {
 		hookOpts, err := newConnectionClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -170,6 +181,20 @@ func NewConnectionClient(ctx context.Context, opts ...option.ClientOption) (*Con
 		logger:           internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "apigeeconnect",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apigeeconnect/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "apigeeconnect.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListConnections = append(client.CallOptions.ListConnections, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -206,6 +231,12 @@ func (c *connectionGRPCClient) ListConnections(ctx context.Context, req *apigeec
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigeeconnect.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigeeconnect.v1.ConnectionService/ListConnections")
+	}
 	opts = append((*c.CallOptions).ListConnections[0:len((*c.CallOptions).ListConnections):len((*c.CallOptions).ListConnections)], opts...)
 	it := &ConnectionIterator{}
 	req = proto.Clone(req).(*apigeeconnectpb.ListConnectionsRequest)

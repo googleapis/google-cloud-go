@@ -23,6 +23,7 @@ import (
 
 	apigeeconnectpb "cloud.google.com/go/apigeeconnect/apiv1/apigeeconnectpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -140,6 +141,16 @@ type tetherGRPCClient struct {
 // requiring customers to open firewalls on their runtime plane.
 func NewTetherClient(ctx context.Context, opts ...option.ClientOption) (*TetherClient, error) {
 	clientOpts := defaultTetherGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "apigeeconnect",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/apigeeconnect/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "apigeeconnect.googleapis.com",
+		}))
+	}
 	if newTetherClientHook != nil {
 		hookOpts, err := newTetherClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -161,6 +172,20 @@ func NewTetherClient(ctx context.Context, opts ...option.ClientOption) (*TetherC
 		logger:       internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "apigeeconnect",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apigeeconnect/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "apigeeconnect.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.Egress = append(client.CallOptions.Egress, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -194,6 +219,9 @@ func (c *tetherGRPCClient) Close() error {
 
 func (c *tetherGRPCClient) Egress(ctx context.Context, opts ...gax.CallOption) (apigeeconnectpb.Tether_EgressClient, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigeeconnect.v1.Tether/Egress")
+	}
 	var resp apigeeconnectpb.Tether_EgressClient
 	opts = append((*c.CallOptions).Egress[0:len((*c.CallOptions).Egress):len((*c.CallOptions).Egress)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

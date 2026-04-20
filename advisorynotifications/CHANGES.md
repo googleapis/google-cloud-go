@@ -1,6 +1,12 @@
 # Changes
 
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/releases/tag/advisorynotifications%2Fv1.8.0) (2026-04-13)
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/releases/tag/advisorynotifications%2Fv1.7.0) (2026-04-09)
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/releases/tag/advisorynotifications%2Fv1.6.0) (2026-04-02)
+
 ## [1.5.6](https://github.com/googleapis/google-cloud-go/compare/advisorynotifications/v1.5.5...advisorynotifications/v1.5.6) (2025-06-04)
 
 

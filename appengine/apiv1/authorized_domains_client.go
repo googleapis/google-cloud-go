@@ -27,6 +27,7 @@ import (
 
 	appenginepb "cloud.google.com/go/appengine/apiv1/appenginepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -152,6 +153,16 @@ type authorizedDomainsGRPCClient struct {
 // Webmaster Central (at https://www.google.com/webmasters/verification/home).
 func NewAuthorizedDomainsClient(ctx context.Context, opts ...option.ClientOption) (*AuthorizedDomainsClient, error) {
 	clientOpts := defaultAuthorizedDomainsGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "appengine",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/appengine/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "appengine.googleapis.com",
+		}))
+	}
 	if newAuthorizedDomainsClientHook != nil {
 		hookOpts, err := newAuthorizedDomainsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -173,6 +184,20 @@ func NewAuthorizedDomainsClient(ctx context.Context, opts ...option.ClientOption
 		logger:                  internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListAuthorizedDomains = append(client.CallOptions.ListAuthorizedDomains, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -228,6 +253,16 @@ type authorizedDomainsRESTClient struct {
 // Webmaster Central (at https://www.google.com/webmasters/verification/home).
 func NewAuthorizedDomainsRESTClient(ctx context.Context, opts ...option.ClientOption) (*AuthorizedDomainsClient, error) {
 	clientOpts := append(defaultAuthorizedDomainsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "appengine",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/appengine/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "appengine.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -241,6 +276,21 @@ func NewAuthorizedDomainsRESTClient(ctx context.Context, opts ...option.ClientOp
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		callOpts.ListAuthorizedDomains = append(callOpts.ListAuthorizedDomains, gax.WithClientMetrics(metrics))
+	}
 
 	return &AuthorizedDomainsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -287,6 +337,9 @@ func (c *authorizedDomainsGRPCClient) ListAuthorizedDomains(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.AuthorizedDomains/ListAuthorizedDomains")
+	}
 	opts = append((*c.CallOptions).ListAuthorizedDomains[0:len((*c.CallOptions).ListAuthorizedDomains):len((*c.CallOptions).ListAuthorizedDomains)], opts...)
 	it := &AuthorizedDomainIterator{}
 	req = proto.Clone(req).(*appenginepb.ListAuthorizedDomainsRequest)

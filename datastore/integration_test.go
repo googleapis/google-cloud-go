@@ -1102,6 +1102,7 @@ type RunTransactionResult struct {
 }
 
 func TestIntegration_BeginLaterPerf(t *testing.T) {
+	t.Skip("flaky - https://github.com/googleapis/google-cloud-go/issues/14369")
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
@@ -2348,6 +2349,7 @@ func TestIntegration_KindlessQueries(t *testing.T) {
 }
 
 func TestIntegration_Transaction(t *testing.T) {
+	t.Skip("flaky - https://github.com/googleapis/google-cloud-go/issues/14370")
 	ctx := context.Background()
 	client := newTestClient(ctx, t)
 	defer client.Close()

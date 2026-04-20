@@ -28,6 +28,7 @@ import (
 
 	supportpb "cloud.google.com/go/support/apiv2beta/supportpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -332,6 +333,16 @@ type caseGRPCClient struct {
 // A service to manage Google Cloud support cases.
 func NewCaseClient(ctx context.Context, opts ...option.ClientOption) (*CaseClient, error) {
 	clientOpts := defaultCaseGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudsupport",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/support/apiv2beta",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudsupport.googleapis.com",
+		}))
+	}
 	if newCaseClientHook != nil {
 		hookOpts, err := newCaseClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -353,6 +364,27 @@ func NewCaseClient(ctx context.Context, opts ...option.ClientOption) (*CaseClien
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudsupport",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/support/apiv2beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudsupport.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetCase = append(client.CallOptions.GetCase, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListCases = append(client.CallOptions.ListCases, gax.WithClientMetrics(metrics))
+		client.CallOptions.SearchCases = append(client.CallOptions.SearchCases, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateCase = append(client.CallOptions.CreateCase, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateCase = append(client.CallOptions.UpdateCase, gax.WithClientMetrics(metrics))
+		client.CallOptions.EscalateCase = append(client.CallOptions.EscalateCase, gax.WithClientMetrics(metrics))
+		client.CallOptions.CloseCase = append(client.CallOptions.CloseCase, gax.WithClientMetrics(metrics))
+		client.CallOptions.SearchCaseClassifications = append(client.CallOptions.SearchCaseClassifications, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -406,6 +438,16 @@ type caseRESTClient struct {
 // A service to manage Google Cloud support cases.
 func NewCaseRESTClient(ctx context.Context, opts ...option.ClientOption) (*CaseClient, error) {
 	clientOpts := append(defaultCaseRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudsupport",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/support/apiv2beta",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudsupport.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -419,6 +461,28 @@ func NewCaseRESTClient(ctx context.Context, opts ...option.ClientOption) (*CaseC
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudsupport",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/support/apiv2beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudsupport.googleapis.com",
+			}),
+		)
+
+		callOpts.GetCase = append(callOpts.GetCase, gax.WithClientMetrics(metrics))
+		callOpts.ListCases = append(callOpts.ListCases, gax.WithClientMetrics(metrics))
+		callOpts.SearchCases = append(callOpts.SearchCases, gax.WithClientMetrics(metrics))
+		callOpts.CreateCase = append(callOpts.CreateCase, gax.WithClientMetrics(metrics))
+		callOpts.UpdateCase = append(callOpts.UpdateCase, gax.WithClientMetrics(metrics))
+		callOpts.EscalateCase = append(callOpts.EscalateCase, gax.WithClientMetrics(metrics))
+		callOpts.CloseCase = append(callOpts.CloseCase, gax.WithClientMetrics(metrics))
+		callOpts.SearchCaseClassifications = append(callOpts.SearchCaseClassifications, gax.WithClientMetrics(metrics))
+	}
 
 	return &CaseClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -465,6 +529,12 @@ func (c *caseGRPCClient) GetCase(ctx context.Context, req *supportpb.GetCaseRequ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudsupport.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.support.v2beta.CaseService/GetCase")
+	}
 	opts = append((*c.CallOptions).GetCase[0:len((*c.CallOptions).GetCase):len((*c.CallOptions).GetCase)], opts...)
 	var resp *supportpb.Case
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -483,6 +553,12 @@ func (c *caseGRPCClient) ListCases(ctx context.Context, req *supportpb.ListCases
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudsupport.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.support.v2beta.CaseService/ListCases")
+	}
 	opts = append((*c.CallOptions).ListCases[0:len((*c.CallOptions).ListCases):len((*c.CallOptions).ListCases)], opts...)
 	it := &CaseIterator{}
 	req = proto.Clone(req).(*supportpb.ListCasesRequest)
@@ -529,6 +605,9 @@ func (c *caseGRPCClient) SearchCases(ctx context.Context, req *supportpb.SearchC
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.support.v2beta.CaseService/SearchCases")
+	}
 	opts = append((*c.CallOptions).SearchCases[0:len((*c.CallOptions).SearchCases):len((*c.CallOptions).SearchCases)], opts...)
 	it := &CaseIterator{}
 	req = proto.Clone(req).(*supportpb.SearchCasesRequest)
@@ -575,6 +654,12 @@ func (c *caseGRPCClient) CreateCase(ctx context.Context, req *supportpb.CreateCa
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudsupport.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.support.v2beta.CaseService/CreateCase")
+	}
 	opts = append((*c.CallOptions).CreateCase[0:len((*c.CallOptions).CreateCase):len((*c.CallOptions).CreateCase)], opts...)
 	var resp *supportpb.Case
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -593,6 +678,9 @@ func (c *caseGRPCClient) UpdateCase(ctx context.Context, req *supportpb.UpdateCa
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.support.v2beta.CaseService/UpdateCase")
+	}
 	opts = append((*c.CallOptions).UpdateCase[0:len((*c.CallOptions).UpdateCase):len((*c.CallOptions).UpdateCase)], opts...)
 	var resp *supportpb.Case
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -611,6 +699,12 @@ func (c *caseGRPCClient) EscalateCase(ctx context.Context, req *supportpb.Escala
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudsupport.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.support.v2beta.CaseService/EscalateCase")
+	}
 	opts = append((*c.CallOptions).EscalateCase[0:len((*c.CallOptions).EscalateCase):len((*c.CallOptions).EscalateCase)], opts...)
 	var resp *supportpb.Case
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -629,6 +723,12 @@ func (c *caseGRPCClient) CloseCase(ctx context.Context, req *supportpb.CloseCase
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudsupport.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.support.v2beta.CaseService/CloseCase")
+	}
 	opts = append((*c.CallOptions).CloseCase[0:len((*c.CallOptions).CloseCase):len((*c.CallOptions).CloseCase)], opts...)
 	var resp *supportpb.Case
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -644,6 +744,9 @@ func (c *caseGRPCClient) CloseCase(ctx context.Context, req *supportpb.CloseCase
 
 func (c *caseGRPCClient) SearchCaseClassifications(ctx context.Context, req *supportpb.SearchCaseClassificationsRequest, opts ...gax.CallOption) *CaseClassificationIterator {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.support.v2beta.CaseService/SearchCaseClassifications")
+	}
 	opts = append((*c.CallOptions).SearchCaseClassifications[0:len((*c.CallOptions).SearchCaseClassifications):len((*c.CallOptions).SearchCaseClassifications)], opts...)
 	it := &CaseClassificationIterator{}
 	req = proto.Clone(req).(*supportpb.SearchCaseClassificationsRequest)
@@ -704,6 +807,13 @@ func (c *caseRESTClient) GetCase(ctx context.Context, req *supportpb.GetCaseRequ
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudsupport.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.support.v2beta.CaseService/GetCase")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta/{name=projects/*/cases/*}")
+	}
 	opts = append((*c.CallOptions).GetCase[0:len((*c.CallOptions).GetCase):len((*c.CallOptions).GetCase)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &supportpb.Case{}
@@ -934,6 +1044,13 @@ func (c *caseRESTClient) CreateCase(ctx context.Context, req *supportpb.CreateCa
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudsupport.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.support.v2beta.CaseService/CreateCase")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta/{parent=projects/*}/cases")
+	}
 	opts = append((*c.CallOptions).CreateCase[0:len((*c.CallOptions).CreateCase):len((*c.CallOptions).CreateCase)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &supportpb.Case{}
@@ -998,6 +1115,10 @@ func (c *caseRESTClient) UpdateCase(ctx context.Context, req *supportpb.UpdateCa
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.support.v2beta.CaseService/UpdateCase")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta/{case.name=projects/*/cases/*}")
+	}
 	opts = append((*c.CallOptions).UpdateCase[0:len((*c.CallOptions).UpdateCase):len((*c.CallOptions).UpdateCase)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &supportpb.Case{}
@@ -1060,6 +1181,13 @@ func (c *caseRESTClient) EscalateCase(ctx context.Context, req *supportpb.Escala
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudsupport.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.support.v2beta.CaseService/EscalateCase")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta/{name=projects/*/cases/*}:escalate")
+	}
 	opts = append((*c.CallOptions).EscalateCase[0:len((*c.CallOptions).EscalateCase):len((*c.CallOptions).EscalateCase)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &supportpb.Case{}
@@ -1116,6 +1244,13 @@ func (c *caseRESTClient) CloseCase(ctx context.Context, req *supportpb.CloseCase
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudsupport.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.support.v2beta.CaseService/CloseCase")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta/{name=projects/*/cases/*}:close")
+	}
 	opts = append((*c.CallOptions).CloseCase[0:len((*c.CallOptions).CloseCase):len((*c.CallOptions).CloseCase)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &supportpb.Case{}

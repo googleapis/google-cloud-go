@@ -28,6 +28,7 @@ import (
 
 	csspb "cloud.google.com/go/shopping/css/apiv1/csspb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -206,6 +207,16 @@ type accountLabelsGRPCClient struct {
 // Manages Merchant Center and CSS accounts labels.
 func NewAccountLabelsClient(ctx context.Context, opts ...option.ClientOption) (*AccountLabelsClient, error) {
 	clientOpts := defaultAccountLabelsGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "css",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/css/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "css.googleapis.com",
+		}))
+	}
 	if newAccountLabelsClientHook != nil {
 		hookOpts, err := newAccountLabelsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -227,6 +238,23 @@ func NewAccountLabelsClient(ctx context.Context, opts ...option.ClientOption) (*
 		logger:              internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "css",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/css/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "css.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListAccountLabels = append(client.CallOptions.ListAccountLabels, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateAccountLabel = append(client.CallOptions.CreateAccountLabel, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateAccountLabel = append(client.CallOptions.UpdateAccountLabel, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteAccountLabel = append(client.CallOptions.DeleteAccountLabel, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -280,6 +308,16 @@ type accountLabelsRESTClient struct {
 // Manages Merchant Center and CSS accounts labels.
 func NewAccountLabelsRESTClient(ctx context.Context, opts ...option.ClientOption) (*AccountLabelsClient, error) {
 	clientOpts := append(defaultAccountLabelsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "css",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/css/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "css.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -293,6 +331,24 @@ func NewAccountLabelsRESTClient(ctx context.Context, opts ...option.ClientOption
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "css",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/css/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "css.googleapis.com",
+			}),
+		)
+
+		callOpts.ListAccountLabels = append(callOpts.ListAccountLabels, gax.WithClientMetrics(metrics))
+		callOpts.CreateAccountLabel = append(callOpts.CreateAccountLabel, gax.WithClientMetrics(metrics))
+		callOpts.UpdateAccountLabel = append(callOpts.UpdateAccountLabel, gax.WithClientMetrics(metrics))
+		callOpts.DeleteAccountLabel = append(callOpts.DeleteAccountLabel, gax.WithClientMetrics(metrics))
+	}
 
 	return &AccountLabelsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -339,6 +395,12 @@ func (c *accountLabelsGRPCClient) ListAccountLabels(ctx context.Context, req *cs
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//css.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.css.v1.AccountLabelsService/ListAccountLabels")
+	}
 	opts = append((*c.CallOptions).ListAccountLabels[0:len((*c.CallOptions).ListAccountLabels):len((*c.CallOptions).ListAccountLabels)], opts...)
 	it := &AccountLabelIterator{}
 	req = proto.Clone(req).(*csspb.ListAccountLabelsRequest)
@@ -385,6 +447,12 @@ func (c *accountLabelsGRPCClient) CreateAccountLabel(ctx context.Context, req *c
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//css.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.css.v1.AccountLabelsService/CreateAccountLabel")
+	}
 	opts = append((*c.CallOptions).CreateAccountLabel[0:len((*c.CallOptions).CreateAccountLabel):len((*c.CallOptions).CreateAccountLabel)], opts...)
 	var resp *csspb.AccountLabel
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -403,6 +471,9 @@ func (c *accountLabelsGRPCClient) UpdateAccountLabel(ctx context.Context, req *c
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.css.v1.AccountLabelsService/UpdateAccountLabel")
+	}
 	opts = append((*c.CallOptions).UpdateAccountLabel[0:len((*c.CallOptions).UpdateAccountLabel):len((*c.CallOptions).UpdateAccountLabel)], opts...)
 	var resp *csspb.AccountLabel
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -421,6 +492,12 @@ func (c *accountLabelsGRPCClient) DeleteAccountLabel(ctx context.Context, req *c
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//css.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.css.v1.AccountLabelsService/DeleteAccountLabel")
+	}
 	opts = append((*c.CallOptions).DeleteAccountLabel[0:len((*c.CallOptions).DeleteAccountLabel):len((*c.CallOptions).DeleteAccountLabel)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -534,6 +611,13 @@ func (c *accountLabelsRESTClient) CreateAccountLabel(ctx context.Context, req *c
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//css.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.css.v1.AccountLabelsService/CreateAccountLabel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=accounts/*}/labels")
+	}
 	opts = append((*c.CallOptions).CreateAccountLabel[0:len((*c.CallOptions).CreateAccountLabel):len((*c.CallOptions).CreateAccountLabel)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &csspb.AccountLabel{}
@@ -591,6 +675,10 @@ func (c *accountLabelsRESTClient) UpdateAccountLabel(ctx context.Context, req *c
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.css.v1.AccountLabelsService/UpdateAccountLabel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{account_label.name=accounts/*/labels/*}")
+	}
 	opts = append((*c.CallOptions).UpdateAccountLabel[0:len((*c.CallOptions).UpdateAccountLabel):len((*c.CallOptions).UpdateAccountLabel)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &csspb.AccountLabel{}
@@ -641,6 +729,13 @@ func (c *accountLabelsRESTClient) DeleteAccountLabel(ctx context.Context, req *c
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//css.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.css.v1.AccountLabelsService/DeleteAccountLabel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=accounts/*/labels/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path

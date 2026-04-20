@@ -32,6 +32,7 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -759,6 +760,16 @@ type gRPCClient struct {
 // AccessPolicies
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "accesscontextmanager",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/accesscontextmanager/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "accesscontextmanager.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -781,6 +792,46 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "accesscontextmanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/accesscontextmanager/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "accesscontextmanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListAccessPolicies = append(client.CallOptions.ListAccessPolicies, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAccessPolicy = append(client.CallOptions.GetAccessPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateAccessPolicy = append(client.CallOptions.CreateAccessPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateAccessPolicy = append(client.CallOptions.UpdateAccessPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteAccessPolicy = append(client.CallOptions.DeleteAccessPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAccessLevels = append(client.CallOptions.ListAccessLevels, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAccessLevel = append(client.CallOptions.GetAccessLevel, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateAccessLevel = append(client.CallOptions.CreateAccessLevel, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateAccessLevel = append(client.CallOptions.UpdateAccessLevel, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteAccessLevel = append(client.CallOptions.DeleteAccessLevel, gax.WithClientMetrics(metrics))
+		client.CallOptions.ReplaceAccessLevels = append(client.CallOptions.ReplaceAccessLevels, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListServicePerimeters = append(client.CallOptions.ListServicePerimeters, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetServicePerimeter = append(client.CallOptions.GetServicePerimeter, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateServicePerimeter = append(client.CallOptions.CreateServicePerimeter, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateServicePerimeter = append(client.CallOptions.UpdateServicePerimeter, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteServicePerimeter = append(client.CallOptions.DeleteServicePerimeter, gax.WithClientMetrics(metrics))
+		client.CallOptions.ReplaceServicePerimeters = append(client.CallOptions.ReplaceServicePerimeters, gax.WithClientMetrics(metrics))
+		client.CallOptions.CommitServicePerimeters = append(client.CallOptions.CommitServicePerimeters, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListGcpUserAccessBindings = append(client.CallOptions.ListGcpUserAccessBindings, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetGcpUserAccessBinding = append(client.CallOptions.GetGcpUserAccessBinding, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateGcpUserAccessBinding = append(client.CallOptions.CreateGcpUserAccessBinding, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateGcpUserAccessBinding = append(client.CallOptions.UpdateGcpUserAccessBinding, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteGcpUserAccessBinding = append(client.CallOptions.DeleteGcpUserAccessBinding, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -860,6 +911,16 @@ type restClient struct {
 // AccessPolicies
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "accesscontextmanager",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/accesscontextmanager/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "accesscontextmanager.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -873,6 +934,47 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "accesscontextmanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/accesscontextmanager/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "accesscontextmanager.googleapis.com",
+			}),
+		)
+
+		callOpts.ListAccessPolicies = append(callOpts.ListAccessPolicies, gax.WithClientMetrics(metrics))
+		callOpts.GetAccessPolicy = append(callOpts.GetAccessPolicy, gax.WithClientMetrics(metrics))
+		callOpts.CreateAccessPolicy = append(callOpts.CreateAccessPolicy, gax.WithClientMetrics(metrics))
+		callOpts.UpdateAccessPolicy = append(callOpts.UpdateAccessPolicy, gax.WithClientMetrics(metrics))
+		callOpts.DeleteAccessPolicy = append(callOpts.DeleteAccessPolicy, gax.WithClientMetrics(metrics))
+		callOpts.ListAccessLevels = append(callOpts.ListAccessLevels, gax.WithClientMetrics(metrics))
+		callOpts.GetAccessLevel = append(callOpts.GetAccessLevel, gax.WithClientMetrics(metrics))
+		callOpts.CreateAccessLevel = append(callOpts.CreateAccessLevel, gax.WithClientMetrics(metrics))
+		callOpts.UpdateAccessLevel = append(callOpts.UpdateAccessLevel, gax.WithClientMetrics(metrics))
+		callOpts.DeleteAccessLevel = append(callOpts.DeleteAccessLevel, gax.WithClientMetrics(metrics))
+		callOpts.ReplaceAccessLevels = append(callOpts.ReplaceAccessLevels, gax.WithClientMetrics(metrics))
+		callOpts.ListServicePerimeters = append(callOpts.ListServicePerimeters, gax.WithClientMetrics(metrics))
+		callOpts.GetServicePerimeter = append(callOpts.GetServicePerimeter, gax.WithClientMetrics(metrics))
+		callOpts.CreateServicePerimeter = append(callOpts.CreateServicePerimeter, gax.WithClientMetrics(metrics))
+		callOpts.UpdateServicePerimeter = append(callOpts.UpdateServicePerimeter, gax.WithClientMetrics(metrics))
+		callOpts.DeleteServicePerimeter = append(callOpts.DeleteServicePerimeter, gax.WithClientMetrics(metrics))
+		callOpts.ReplaceServicePerimeters = append(callOpts.ReplaceServicePerimeters, gax.WithClientMetrics(metrics))
+		callOpts.CommitServicePerimeters = append(callOpts.CommitServicePerimeters, gax.WithClientMetrics(metrics))
+		callOpts.ListGcpUserAccessBindings = append(callOpts.ListGcpUserAccessBindings, gax.WithClientMetrics(metrics))
+		callOpts.GetGcpUserAccessBinding = append(callOpts.GetGcpUserAccessBinding, gax.WithClientMetrics(metrics))
+		callOpts.CreateGcpUserAccessBinding = append(callOpts.CreateGcpUserAccessBinding, gax.WithClientMetrics(metrics))
+		callOpts.UpdateGcpUserAccessBinding = append(callOpts.UpdateGcpUserAccessBinding, gax.WithClientMetrics(metrics))
+		callOpts.DeleteGcpUserAccessBinding = append(callOpts.DeleteGcpUserAccessBinding, gax.WithClientMetrics(metrics))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -926,6 +1028,9 @@ func (c *restClient) Connection() *grpc.ClientConn {
 }
 func (c *gRPCClient) ListAccessPolicies(ctx context.Context, req *accesscontextmanagerpb.ListAccessPoliciesRequest, opts ...gax.CallOption) *AccessPolicyIterator {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/ListAccessPolicies")
+	}
 	opts = append((*c.CallOptions).ListAccessPolicies[0:len((*c.CallOptions).ListAccessPolicies):len((*c.CallOptions).ListAccessPolicies)], opts...)
 	it := &AccessPolicyIterator{}
 	req = proto.Clone(req).(*accesscontextmanagerpb.ListAccessPoliciesRequest)
@@ -972,6 +1077,12 @@ func (c *gRPCClient) GetAccessPolicy(ctx context.Context, req *accesscontextmana
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accesscontextmanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/GetAccessPolicy")
+	}
 	opts = append((*c.CallOptions).GetAccessPolicy[0:len((*c.CallOptions).GetAccessPolicy):len((*c.CallOptions).GetAccessPolicy)], opts...)
 	var resp *accesscontextmanagerpb.AccessPolicy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -987,6 +1098,9 @@ func (c *gRPCClient) GetAccessPolicy(ctx context.Context, req *accesscontextmana
 
 func (c *gRPCClient) CreateAccessPolicy(ctx context.Context, req *accesscontextmanagerpb.AccessPolicy, opts ...gax.CallOption) (*CreateAccessPolicyOperation, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/CreateAccessPolicy")
+	}
 	opts = append((*c.CallOptions).CreateAccessPolicy[0:len((*c.CallOptions).CreateAccessPolicy):len((*c.CallOptions).CreateAccessPolicy)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1007,6 +1121,9 @@ func (c *gRPCClient) UpdateAccessPolicy(ctx context.Context, req *accesscontextm
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/UpdateAccessPolicy")
+	}
 	opts = append((*c.CallOptions).UpdateAccessPolicy[0:len((*c.CallOptions).UpdateAccessPolicy):len((*c.CallOptions).UpdateAccessPolicy)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1027,6 +1144,12 @@ func (c *gRPCClient) DeleteAccessPolicy(ctx context.Context, req *accesscontextm
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accesscontextmanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/DeleteAccessPolicy")
+	}
 	opts = append((*c.CallOptions).DeleteAccessPolicy[0:len((*c.CallOptions).DeleteAccessPolicy):len((*c.CallOptions).DeleteAccessPolicy)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1047,6 +1170,12 @@ func (c *gRPCClient) ListAccessLevels(ctx context.Context, req *accesscontextman
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accesscontextmanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/ListAccessLevels")
+	}
 	opts = append((*c.CallOptions).ListAccessLevels[0:len((*c.CallOptions).ListAccessLevels):len((*c.CallOptions).ListAccessLevels)], opts...)
 	it := &AccessLevelIterator{}
 	req = proto.Clone(req).(*accesscontextmanagerpb.ListAccessLevelsRequest)
@@ -1093,6 +1222,12 @@ func (c *gRPCClient) GetAccessLevel(ctx context.Context, req *accesscontextmanag
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accesscontextmanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/GetAccessLevel")
+	}
 	opts = append((*c.CallOptions).GetAccessLevel[0:len((*c.CallOptions).GetAccessLevel):len((*c.CallOptions).GetAccessLevel)], opts...)
 	var resp *accesscontextmanagerpb.AccessLevel
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1111,6 +1246,12 @@ func (c *gRPCClient) CreateAccessLevel(ctx context.Context, req *accesscontextma
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accesscontextmanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/CreateAccessLevel")
+	}
 	opts = append((*c.CallOptions).CreateAccessLevel[0:len((*c.CallOptions).CreateAccessLevel):len((*c.CallOptions).CreateAccessLevel)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1131,6 +1272,9 @@ func (c *gRPCClient) UpdateAccessLevel(ctx context.Context, req *accesscontextma
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/UpdateAccessLevel")
+	}
 	opts = append((*c.CallOptions).UpdateAccessLevel[0:len((*c.CallOptions).UpdateAccessLevel):len((*c.CallOptions).UpdateAccessLevel)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1151,6 +1295,12 @@ func (c *gRPCClient) DeleteAccessLevel(ctx context.Context, req *accesscontextma
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accesscontextmanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/DeleteAccessLevel")
+	}
 	opts = append((*c.CallOptions).DeleteAccessLevel[0:len((*c.CallOptions).DeleteAccessLevel):len((*c.CallOptions).DeleteAccessLevel)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1171,6 +1321,12 @@ func (c *gRPCClient) ReplaceAccessLevels(ctx context.Context, req *accesscontext
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accesscontextmanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/ReplaceAccessLevels")
+	}
 	opts = append((*c.CallOptions).ReplaceAccessLevels[0:len((*c.CallOptions).ReplaceAccessLevels):len((*c.CallOptions).ReplaceAccessLevels)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1191,6 +1347,12 @@ func (c *gRPCClient) ListServicePerimeters(ctx context.Context, req *accessconte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accesscontextmanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/ListServicePerimeters")
+	}
 	opts = append((*c.CallOptions).ListServicePerimeters[0:len((*c.CallOptions).ListServicePerimeters):len((*c.CallOptions).ListServicePerimeters)], opts...)
 	it := &ServicePerimeterIterator{}
 	req = proto.Clone(req).(*accesscontextmanagerpb.ListServicePerimetersRequest)
@@ -1237,6 +1399,12 @@ func (c *gRPCClient) GetServicePerimeter(ctx context.Context, req *accesscontext
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accesscontextmanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/GetServicePerimeter")
+	}
 	opts = append((*c.CallOptions).GetServicePerimeter[0:len((*c.CallOptions).GetServicePerimeter):len((*c.CallOptions).GetServicePerimeter)], opts...)
 	var resp *accesscontextmanagerpb.ServicePerimeter
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1255,6 +1423,12 @@ func (c *gRPCClient) CreateServicePerimeter(ctx context.Context, req *accesscont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accesscontextmanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/CreateServicePerimeter")
+	}
 	opts = append((*c.CallOptions).CreateServicePerimeter[0:len((*c.CallOptions).CreateServicePerimeter):len((*c.CallOptions).CreateServicePerimeter)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1275,6 +1449,9 @@ func (c *gRPCClient) UpdateServicePerimeter(ctx context.Context, req *accesscont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/UpdateServicePerimeter")
+	}
 	opts = append((*c.CallOptions).UpdateServicePerimeter[0:len((*c.CallOptions).UpdateServicePerimeter):len((*c.CallOptions).UpdateServicePerimeter)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1295,6 +1472,12 @@ func (c *gRPCClient) DeleteServicePerimeter(ctx context.Context, req *accesscont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accesscontextmanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/DeleteServicePerimeter")
+	}
 	opts = append((*c.CallOptions).DeleteServicePerimeter[0:len((*c.CallOptions).DeleteServicePerimeter):len((*c.CallOptions).DeleteServicePerimeter)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1315,6 +1498,12 @@ func (c *gRPCClient) ReplaceServicePerimeters(ctx context.Context, req *accessco
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accesscontextmanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/ReplaceServicePerimeters")
+	}
 	opts = append((*c.CallOptions).ReplaceServicePerimeters[0:len((*c.CallOptions).ReplaceServicePerimeters):len((*c.CallOptions).ReplaceServicePerimeters)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1335,6 +1524,12 @@ func (c *gRPCClient) CommitServicePerimeters(ctx context.Context, req *accesscon
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accesscontextmanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/CommitServicePerimeters")
+	}
 	opts = append((*c.CallOptions).CommitServicePerimeters[0:len((*c.CallOptions).CommitServicePerimeters):len((*c.CallOptions).CommitServicePerimeters)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1355,6 +1550,12 @@ func (c *gRPCClient) ListGcpUserAccessBindings(ctx context.Context, req *accessc
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accesscontextmanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/ListGcpUserAccessBindings")
+	}
 	opts = append((*c.CallOptions).ListGcpUserAccessBindings[0:len((*c.CallOptions).ListGcpUserAccessBindings):len((*c.CallOptions).ListGcpUserAccessBindings)], opts...)
 	it := &GcpUserAccessBindingIterator{}
 	req = proto.Clone(req).(*accesscontextmanagerpb.ListGcpUserAccessBindingsRequest)
@@ -1401,6 +1602,12 @@ func (c *gRPCClient) GetGcpUserAccessBinding(ctx context.Context, req *accesscon
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accesscontextmanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/GetGcpUserAccessBinding")
+	}
 	opts = append((*c.CallOptions).GetGcpUserAccessBinding[0:len((*c.CallOptions).GetGcpUserAccessBinding):len((*c.CallOptions).GetGcpUserAccessBinding)], opts...)
 	var resp *accesscontextmanagerpb.GcpUserAccessBinding
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1419,6 +1626,12 @@ func (c *gRPCClient) CreateGcpUserAccessBinding(ctx context.Context, req *access
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accesscontextmanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/CreateGcpUserAccessBinding")
+	}
 	opts = append((*c.CallOptions).CreateGcpUserAccessBinding[0:len((*c.CallOptions).CreateGcpUserAccessBinding):len((*c.CallOptions).CreateGcpUserAccessBinding)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1439,6 +1652,9 @@ func (c *gRPCClient) UpdateGcpUserAccessBinding(ctx context.Context, req *access
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/UpdateGcpUserAccessBinding")
+	}
 	opts = append((*c.CallOptions).UpdateGcpUserAccessBinding[0:len((*c.CallOptions).UpdateGcpUserAccessBinding):len((*c.CallOptions).UpdateGcpUserAccessBinding)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1459,6 +1675,12 @@ func (c *gRPCClient) DeleteGcpUserAccessBinding(ctx context.Context, req *access
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accesscontextmanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/DeleteGcpUserAccessBinding")
+	}
 	opts = append((*c.CallOptions).DeleteGcpUserAccessBinding[0:len((*c.CallOptions).DeleteGcpUserAccessBinding):len((*c.CallOptions).DeleteGcpUserAccessBinding)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1479,6 +1701,12 @@ func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accesscontextmanager.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/SetIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1497,6 +1725,12 @@ func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accesscontextmanager.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/GetIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1515,6 +1749,12 @@ func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accesscontextmanager.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/TestIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1533,6 +1773,9 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1647,6 +1890,13 @@ func (c *restClient) GetAccessPolicy(ctx context.Context, req *accesscontextmana
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accesscontextmanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/GetAccessPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=accessPolicies/*}")
+	}
 	opts = append((*c.CallOptions).GetAccessPolicy[0:len((*c.CallOptions).GetAccessPolicy):len((*c.CallOptions).GetAccessPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &accesscontextmanagerpb.AccessPolicy{}
@@ -1704,6 +1954,10 @@ func (c *restClient) CreateAccessPolicy(ctx context.Context, req *accesscontextm
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/CreateAccessPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/accessPolicies")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1776,6 +2030,10 @@ func (c *restClient) UpdateAccessPolicy(ctx context.Context, req *accesscontextm
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/UpdateAccessPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{policy.name=accessPolicies/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1833,6 +2091,13 @@ func (c *restClient) DeleteAccessPolicy(ctx context.Context, req *accesscontextm
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accesscontextmanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/DeleteAccessPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=accessPolicies/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1974,6 +2239,13 @@ func (c *restClient) GetAccessLevel(ctx context.Context, req *accesscontextmanag
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accesscontextmanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/GetAccessLevel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=accessPolicies/*/accessLevels/*}")
+	}
 	opts = append((*c.CallOptions).GetAccessLevel[0:len((*c.CallOptions).GetAccessLevel):len((*c.CallOptions).GetAccessLevel)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &accesscontextmanagerpb.AccessLevel{}
@@ -2037,6 +2309,13 @@ func (c *restClient) CreateAccessLevel(ctx context.Context, req *accesscontextma
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accesscontextmanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/CreateAccessLevel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=accessPolicies/*}/accessLevels")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2111,6 +2390,10 @@ func (c *restClient) UpdateAccessLevel(ctx context.Context, req *accesscontextma
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/UpdateAccessLevel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{access_level.name=accessPolicies/*/accessLevels/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2169,6 +2452,13 @@ func (c *restClient) DeleteAccessLevel(ctx context.Context, req *accesscontextma
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accesscontextmanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/DeleteAccessLevel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=accessPolicies/*/accessLevels/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2244,6 +2534,13 @@ func (c *restClient) ReplaceAccessLevels(ctx context.Context, req *accesscontext
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accesscontextmanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/ReplaceAccessLevels")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=accessPolicies/*}/accessLevels:replaceAll")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2379,6 +2676,13 @@ func (c *restClient) GetServicePerimeter(ctx context.Context, req *accesscontext
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accesscontextmanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/GetServicePerimeter")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=accessPolicies/*/servicePerimeters/*}")
+	}
 	opts = append((*c.CallOptions).GetServicePerimeter[0:len((*c.CallOptions).GetServicePerimeter):len((*c.CallOptions).GetServicePerimeter)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &accesscontextmanagerpb.ServicePerimeter{}
@@ -2443,6 +2747,13 @@ func (c *restClient) CreateServicePerimeter(ctx context.Context, req *accesscont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accesscontextmanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/CreateServicePerimeter")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=accessPolicies/*}/servicePerimeters")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2517,6 +2828,10 @@ func (c *restClient) UpdateServicePerimeter(ctx context.Context, req *accesscont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/UpdateServicePerimeter")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{service_perimeter.name=accessPolicies/*/servicePerimeters/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2575,6 +2890,13 @@ func (c *restClient) DeleteServicePerimeter(ctx context.Context, req *accesscont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accesscontextmanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/DeleteServicePerimeter")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=accessPolicies/*/servicePerimeters/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2646,6 +2968,13 @@ func (c *restClient) ReplaceServicePerimeters(ctx context.Context, req *accessco
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accesscontextmanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/ReplaceServicePerimeters")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=accessPolicies/*}/servicePerimeters:replaceAll")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2719,6 +3048,13 @@ func (c *restClient) CommitServicePerimeters(ctx context.Context, req *accesscon
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accesscontextmanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/CommitServicePerimeters")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=accessPolicies/*}/servicePerimeters:commit")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2854,6 +3190,13 @@ func (c *restClient) GetGcpUserAccessBinding(ctx context.Context, req *accesscon
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accesscontextmanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/GetGcpUserAccessBinding")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=organizations/*/gcpUserAccessBindings/*}")
+	}
 	opts = append((*c.CallOptions).GetGcpUserAccessBinding[0:len((*c.CallOptions).GetGcpUserAccessBinding):len((*c.CallOptions).GetGcpUserAccessBinding)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &accesscontextmanagerpb.GcpUserAccessBinding{}
@@ -2920,6 +3263,13 @@ func (c *restClient) CreateGcpUserAccessBinding(ctx context.Context, req *access
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accesscontextmanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/CreateGcpUserAccessBinding")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=organizations/*}/gcpUserAccessBindings")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2991,6 +3341,10 @@ func (c *restClient) UpdateGcpUserAccessBinding(ctx context.Context, req *access
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/UpdateGcpUserAccessBinding")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{gcp_user_access_binding.name=organizations/*/gcpUserAccessBindings/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3048,6 +3402,13 @@ func (c *restClient) DeleteGcpUserAccessBinding(ctx context.Context, req *access
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accesscontextmanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/DeleteGcpUserAccessBinding")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=organizations/*/gcpUserAccessBindings/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3112,6 +3473,13 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accesscontextmanager.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/SetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=accessPolicies/*}:setIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -3169,6 +3537,13 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accesscontextmanager.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/GetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=accessPolicies/*}:getIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -3230,6 +3605,13 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accesscontextmanager.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.identity.accesscontextmanager.v1.AccessContextManager/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=accessPolicies/*}:testIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.TestIamPermissionsResponse{}
@@ -3280,6 +3662,10 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=operations/**}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}

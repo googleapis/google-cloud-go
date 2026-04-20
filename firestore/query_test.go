@@ -25,6 +25,7 @@ import (
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/pretty"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/testing/protocmp"
 	tspb "google.golang.org/protobuf/types/known/timestamppb"
@@ -1767,27 +1768,22 @@ func TestQuery_Pipeline(t *testing.T) {
 		{
 			name:    "simple query",
 			query:   coll.Where("f", "==", 1).Limit(10),
-			expPipe: client.Pipeline().Collection("C").Sort(Ordering{Expr: FieldOf("__name__"), Direction: OrderingAsc}).Where(Equal("f", 1)).Limit(10),
+			expPipe: client.Pipeline().Collection("C").Where(And(FieldExists("f"), Equal("f", 1))).Sort(Orders(Ordering{Expr: FieldOf("__name__"), Direction: OrderingAsc})).Limit(10),
 		},
 		{
 			name:    "query with all clauses",
 			query:   coll.Where("f", ">", 1).OrderBy("f", Asc).Select("f").Offset(1),
-			expPipe: client.Pipeline().Collection("C").Sort(Ordering{Expr: FieldOf("f"), Direction: OrderingAsc}, Ordering{Expr: FieldOf("__name__"), Direction: OrderingAsc}).Where(GreaterThan("f", 1)).Offset(1).Select("f"),
+			expPipe: client.Pipeline().Collection("C").Where(And(And(FieldExists("f"), GreaterThan("f", 1)), FieldExists("f"))).Select(Fields("f")).Sort(Orders(Ordering{Expr: FieldOf("f"), Direction: OrderingAsc}, Ordering{Expr: FieldOf("__name__"), Direction: OrderingAsc})).Offset(1),
 		},
 		{
 			name:    "query with collection group",
 			query:   client.CollectionGroup("C").Where("f", "==", 1).Limit(10),
-			expPipe: client.Pipeline().CollectionGroup("C").Sort(Ordering{Expr: FieldOf("__name__"), Direction: OrderingAsc}).Where(Equal("f", 1)).Limit(10),
+			expPipe: client.Pipeline().CollectionGroup("C").Where(And(FieldExists("f"), Equal("f", 1))).Sort(Orders(Ordering{Expr: FieldOf("__name__"), Direction: OrderingAsc})).Limit(10),
 		},
 		{
 			name:    "query with cursor",
 			query:   coll.OrderBy("f", Asc).StartAt(1),
-			expPipe: client.Pipeline().Collection("C").Sort(Ordering{Expr: FieldOf("f"), Direction: OrderingAsc}, Ordering{Expr: FieldOf("__name__"), Direction: OrderingAsc}).Where(GreaterThanOrEqual(FieldPath{"f"}, 1)),
-		},
-		{
-			name:    "query with findNearest",
-			query:   coll.FindNearest("f", []float32{1, 2, 3}, 5, DistanceMeasureEuclidean, &FindNearestOptions{DistanceResultField: "dist"}).q,
-			expPipe: client.Pipeline().Collection("C").Sort(Ordering{Expr: FieldOf("__name__"), Direction: OrderingAsc}).FindNearest("f", []float32{1, 2, 3}, PipelineDistanceMeasureEuclidean, &PipelineFindNearestOptions{Limit: intptr(5), DistanceField: stringptr("dist")}),
+			expPipe: client.Pipeline().Collection("C").Where(And(FieldExists("f"), GreaterThanOrEqual(FieldPath{"f"}, 1))).Sort(Orders(Ordering{Expr: FieldOf("f"), Direction: OrderingAsc}, Ordering{Expr: FieldOf("__name__"), Direction: OrderingAsc})),
 		},
 	}
 
@@ -1839,27 +1835,27 @@ func TestAggregationQuery_Pipeline(t *testing.T) {
 		{
 			name:    "simple aggregation query",
 			query:   coll.NewAggregationQuery().WithCount("total"),
-			expPipe: client.Pipeline().Collection("C").Sort(Ordering{Expr: FieldOf("__name__"), Direction: OrderingAsc}).Aggregate(Count(DocumentID).As("total")),
+			expPipe: client.Pipeline().Collection("C").Sort(Orders(Ordering{Expr: FieldOf("__name__"), Direction: OrderingAsc})).Aggregate(Accumulators(Count(DocumentID).As("total"))),
 		},
 		{
 			name:    "aggregation query with where",
 			query:   queryWithWhere.NewAggregationQuery().WithCount("total"),
-			expPipe: client.Pipeline().Collection("C").Sort(Ordering{Expr: FieldOf("__name__"), Direction: OrderingAsc}).Where(Equal("f", 1)).Aggregate(Count(DocumentID).As("total")),
+			expPipe: client.Pipeline().Collection("C").Where(And(FieldExists("f"), Equal("f", 1))).Sort(Orders(Ordering{Expr: FieldOf("__name__"), Direction: OrderingAsc})).Aggregate(Accumulators(Count(DocumentID).As("total"))),
 		},
 		{
 			name:    "aggregation query with sum",
 			query:   coll.NewAggregationQuery().WithSum("f", "sum_f"),
-			expPipe: client.Pipeline().Collection("C").Sort(Ordering{Expr: FieldOf("__name__"), Direction: OrderingAsc}).Aggregate(Sum("f").As("sum_f")),
+			expPipe: client.Pipeline().Collection("C").Sort(Orders(Ordering{Expr: FieldOf("__name__"), Direction: OrderingAsc})).Aggregate(Accumulators(Sum("f").As("sum_f"))),
 		},
 		{
 			name:    "aggregation query with avg",
 			query:   coll.NewAggregationQuery().WithAvg("f", "avg_f"),
-			expPipe: client.Pipeline().Collection("C").Sort(Ordering{Expr: FieldOf("__name__"), Direction: OrderingAsc}).Aggregate(Average("f").As("avg_f")),
+			expPipe: client.Pipeline().Collection("C").Sort(Orders(Ordering{Expr: FieldOf("__name__"), Direction: OrderingAsc})).Aggregate(Accumulators(Average("f").As("avg_f"))),
 		},
 		{
 			name:    "aggregation query with multiple aggregations",
 			query:   coll.NewAggregationQuery().WithCount("total").WithSum("f", "sum_f"),
-			expPipe: client.Pipeline().Collection("C").Sort(Ordering{Expr: FieldOf("__name__"), Direction: OrderingAsc}).Aggregate(Count(DocumentID).As("total"), Sum("f").As("sum_f")),
+			expPipe: client.Pipeline().Collection("C").Sort(Orders(Ordering{Expr: FieldOf("__name__"), Direction: OrderingAsc})).Aggregate(Accumulators(Count(DocumentID).As("total"), Sum("f").As("sum_f"))),
 		},
 	}
 
@@ -2040,4 +2036,630 @@ func errorsMatch(got, want error) bool {
 		return got == want
 	}
 	return strings.Contains(got.Error(), want.Error())
+}
+
+func TestQuery_AlwaysUseImplicitOrderBy(t *testing.T) {
+	ctx := context.Background()
+	c, err := NewClient(ctx, "project-id")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	q1 := c.Collection("C").Where("a", ">", 1)
+
+	// Without alwaysUseImplicitOrderBy, OrderBy should be empty because there is no cursor
+	proto1, _ := q1.toProto()
+	if len(proto1.OrderBy) != 0 {
+		t.Fatalf("Expected 0 OrderBy clauses, got %d", len(proto1.OrderBy))
+	}
+
+	// With alwaysUseImplicitOrderBy, it should automatically inject the inequality and __name__
+	c.WithAlwaysUseImplicitOrderBy(true)
+	q2 := c.Collection("C").Where("a", ">", 1)
+	proto2, _ := q2.toProto()
+
+	if len(proto2.OrderBy) != 2 {
+		t.Fatalf("Expected 2 OrderBy clauses, got %v", len(proto2.OrderBy))
+	}
+	if proto2.OrderBy[0].GetField().GetFieldPath() != "a" {
+		t.Errorf("Expected first order by to be 'a', got %s", proto2.OrderBy[0].GetField().GetFieldPath())
+	}
+	if proto2.OrderBy[1].GetField().GetFieldPath() != "__name__" {
+		t.Errorf("Expected second order by to be '__name__', got %s", proto2.OrderBy[1].GetField().GetFieldPath())
+	}
+}
+
+func TestQueryToPipeline(t *testing.T) {
+	c := newTestClient()
+	coll := c.Collection("C")
+
+	// Some common expected parts
+	collStage := func(path string) *pb.Pipeline_Stage {
+		return &pb.Pipeline_Stage{
+			Name: "collection",
+			Args: []*pb.Value{refval(path)},
+		}
+	}
+
+	sortStage := func(sorts ...map[string]any) *pb.Pipeline_Stage {
+		var args []*pb.Value
+		for _, s := range sorts {
+			args = append(args, mapval(anyMapToValueMap(s)))
+		}
+		return &pb.Pipeline_Stage{
+			Name: "sort",
+			Args: args,
+		}
+	}
+
+	whereStage := func(expr *pb.Value) *pb.Pipeline_Stage {
+		return &pb.Pipeline_Stage{
+			Name: "where",
+			Args: []*pb.Value{expr},
+		}
+	}
+
+	limitStage := func(n int64) *pb.Pipeline_Stage {
+		return &pb.Pipeline_Stage{
+			Name: "limit",
+			Args: []*pb.Value{int64val(n)},
+		}
+	}
+
+	ascending := func(field string) map[string]any {
+		return map[string]any{
+			"direction":  "ascending",
+			"expression": fieldReference(field),
+		}
+	}
+
+	descending := func(field string) map[string]any {
+		return map[string]any{
+			"direction":  "descending",
+			"expression": fieldReference(field),
+		}
+	}
+
+	exists := func(field string) *pb.Value {
+		return functionval("exists", fieldReference(field))
+	}
+
+	equal := func(field string, val *pb.Value) *pb.Value {
+		return functionval("equal", fieldReference(field), val)
+	}
+
+	greaterThanOrEqual := func(field string, val *pb.Value) *pb.Value {
+		return functionval("greater_than_or_equal", fieldReference(field), val)
+	}
+
+	lessThanOrEqual := func(field string, val *pb.Value) *pb.Value {
+		return functionval("less_than_or_equal", fieldReference(field), val)
+	}
+
+	greaterThan := func(field string, val *pb.Value) *pb.Value {
+		return functionval("greater_than", fieldReference(field), val)
+	}
+
+	lessThan := func(field string, val *pb.Value) *pb.Value {
+		return functionval("less_than", fieldReference(field), val)
+	}
+
+	notEqual := func(field string, val *pb.Value) *pb.Value {
+		return functionval("not_equal", fieldReference(field), val)
+	}
+
+	or := func(args ...*pb.Value) *pb.Value {
+		return functionval("or", args...)
+	}
+
+	and := func(args ...*pb.Value) *pb.Value {
+		return functionval("and", args...)
+	}
+
+	array := func(args ...*pb.Value) *pb.Value {
+		return functionval("array", args...)
+	}
+
+	fullRef := func(path string) *pb.Value {
+		return refval("projects/test-project/databases/test-db/documents" + path)
+	}
+
+	testCases := []struct {
+		name  string
+		query Query
+		want  []*pb.Pipeline_Stage
+	}{
+		{
+			name:  "supportsDefaultQuery",
+			query: coll.Query,
+			want: []*pb.Pipeline_Stage{
+				collStage("/C"),
+				sortStage(ascending("__name__")),
+			},
+		},
+		{
+			name:  "supportsFilteredQuery",
+			query: coll.Where("foo", "==", 1),
+			want: []*pb.Pipeline_Stage{
+				collStage("/C"),
+				whereStage(and(exists("foo"), equal("foo", int64val(1)))),
+				sortStage(ascending("__name__")),
+			},
+		},
+		{
+			name:  "supportsFilteredQueryWithFieldPath",
+			query: coll.WherePath([]string{"foo"}, "==", 1),
+			want: []*pb.Pipeline_Stage{
+				collStage("/C"),
+				whereStage(and(exists("foo"), equal("foo", int64val(1)))),
+				sortStage(ascending("__name__")),
+			},
+		},
+		{
+			name:  "supportsOrderedQueryWithDefaultOrder",
+			query: coll.OrderBy("foo", Asc),
+			want: []*pb.Pipeline_Stage{
+				collStage("/C"),
+				whereStage(exists("foo")),
+				sortStage(ascending("foo"), ascending("__name__")),
+			},
+		},
+		{
+			name:  "supportsOrderedQueryWithAsc",
+			query: coll.OrderBy("foo", Asc),
+			want: []*pb.Pipeline_Stage{
+				collStage("/C"),
+				whereStage(exists("foo")),
+				sortStage(ascending("foo"), ascending("__name__")),
+			},
+		},
+		{
+			name:  "supportsOrderedQueryWithDesc",
+			query: coll.OrderBy("foo", Desc),
+			want: []*pb.Pipeline_Stage{
+				collStage("/C"),
+				whereStage(exists("foo")),
+				sortStage(descending("foo"), descending("__name__")),
+			},
+		},
+		{
+			name:  "supportsLimitQuery",
+			query: coll.OrderBy("foo", Asc).Limit(1),
+			want: []*pb.Pipeline_Stage{
+				collStage("/C"),
+				whereStage(exists("foo")),
+				sortStage(ascending("foo"), ascending("__name__")),
+				limitStage(1),
+			},
+		},
+		{
+			name:  "supportsLimitToLastQuery",
+			query: coll.OrderBy("foo", Asc).LimitToLast(2),
+			want: []*pb.Pipeline_Stage{
+				collStage("/C"),
+				whereStage(exists("foo")),
+				sortStage(descending("foo"), descending("__name__")),
+				limitStage(2),
+				sortStage(ascending("foo"), ascending("__name__")),
+			},
+		},
+		{
+			name:  "supportsStartAt",
+			query: coll.OrderBy("foo", Asc).StartAt(2),
+			want: []*pb.Pipeline_Stage{
+				collStage("/C"),
+				whereStage(and(
+					exists("foo"),
+					greaterThanOrEqual("foo", int64val(2)),
+				)),
+				sortStage(ascending("foo"), ascending("__name__")),
+			},
+		},
+		{
+			name:  "supportsStartAtWithLimitToLast",
+			query: coll.OrderBy("foo", Asc).StartAt(3).LimitToLast(4),
+			want: []*pb.Pipeline_Stage{
+				collStage("/C"),
+				whereStage(and(
+					exists("foo"),
+					greaterThanOrEqual("foo", int64val(3)),
+				)),
+				sortStage(descending("foo"), descending("__name__")),
+				limitStage(4),
+				sortStage(ascending("foo"), ascending("__name__")),
+			},
+		},
+		{
+			name:  "supportsEndAtWithLimitToLast",
+			query: coll.OrderBy("foo", Asc).EndAt(3).LimitToLast(2),
+			want: []*pb.Pipeline_Stage{
+				collStage("/C"),
+				whereStage(and(
+					exists("foo"),
+					lessThanOrEqual("foo", int64val(3)),
+				)),
+				sortStage(descending("foo"), descending("__name__")),
+				limitStage(2),
+				sortStage(ascending("foo"), ascending("__name__")),
+			},
+		},
+		{
+			name:  "supportsStartAfter",
+			query: coll.OrderBy("foo", Asc).StartAfter(1),
+			want: []*pb.Pipeline_Stage{
+				collStage("/C"),
+				whereStage(and(
+					exists("foo"),
+					greaterThan("foo", int64val(1)),
+				)),
+				sortStage(ascending("foo"), ascending("__name__")),
+			},
+		},
+		{
+			name:  "supportsEndAt",
+			query: coll.OrderBy("foo", Asc).EndAt(1),
+			want: []*pb.Pipeline_Stage{
+				collStage("/C"),
+				whereStage(and(
+					exists("foo"),
+					lessThanOrEqual("foo", int64val(1)),
+				)),
+				sortStage(ascending("foo"), ascending("__name__")),
+			},
+		},
+		{
+			name:  "supportsEndBefore",
+			query: coll.OrderBy("foo", Asc).EndBefore(2),
+			want: []*pb.Pipeline_Stage{
+				collStage("/C"),
+				whereStage(and(
+					exists("foo"),
+					lessThan("foo", int64val(2)),
+				)),
+				sortStage(ascending("foo"), ascending("__name__")),
+			},
+		},
+		{
+			name: "supportsStartAfterWithDocumentSnapshot",
+			query: coll.OrderBy("foo", Asc).OrderBy("bar", Asc).OrderBy("baz", Asc).StartAfter(&DocumentSnapshot{
+				Ref: &DocumentRef{Path: "projects/test-project/databases/test-db/documents/C/2", shortPath: "C/2", Parent: coll, ID: "2"},
+				proto: &pb.Document{
+					Fields: map[string]*pb.Value{
+						"foo": int64val(1),
+						"bar": int64val(1),
+						"baz": int64val(2),
+					},
+				},
+			}),
+			want: []*pb.Pipeline_Stage{
+				collStage("/C"),
+				whereStage(and(
+					and(exists("foo"), exists("bar"), exists("baz")),
+					or(
+						greaterThan("foo", int64val(1)),
+						and(
+							equal("foo", int64val(1)),
+							greaterThan("bar", int64val(1)),
+						),
+						and(
+							equal("foo", int64val(1)),
+							equal("bar", int64val(1)),
+							greaterThan("baz", int64val(2)),
+						),
+						and(
+							equal("foo", int64val(1)),
+							equal("bar", int64val(1)),
+							equal("baz", int64val(2)),
+							greaterThan("__name__", fullRef("/C/2")),
+						),
+					),
+				)),
+				sortStage(ascending("foo"), ascending("bar"), ascending("baz"), ascending("__name__")),
+			},
+		},
+		{
+			name:  "supportsQueryOverCollectionPathWithSpecialCharacters",
+			query: coll.Doc("so!@#$%^&*()_+special").Collection("so!@#$%^&*()_+special").OrderBy("foo", Asc),
+			want: []*pb.Pipeline_Stage{
+				collStage("/C/so!@#$%^&*()_+special/so!@#$%^&*()_+special"),
+				whereStage(exists("foo")),
+				sortStage(ascending("foo"), ascending("__name__")),
+			},
+		},
+		{
+			name:  "supportsPagination",
+			query: coll.OrderBy("foo", Asc).Limit(1).StartAfter(1),
+			want: []*pb.Pipeline_Stage{
+				collStage("/C"),
+				whereStage(and(
+					exists("foo"),
+					greaterThan("foo", int64val(1)),
+				)),
+				sortStage(ascending("foo"), ascending("__name__")),
+				limitStage(1),
+			},
+		},
+		{
+			name:  "supportsPaginationOnDocumentIds",
+			query: coll.OrderBy("foo", Asc).OrderBy(DocumentID, Asc).Limit(1).StartAfter(1, "doc1"),
+			want: []*pb.Pipeline_Stage{
+				collStage("/C"),
+				whereStage(and(
+					exists("foo"),
+					or(
+						greaterThan("foo", int64val(1)),
+						and(
+							equal("foo", int64val(1)),
+							greaterThan("__name__", fullRef("/C/doc1")),
+						),
+					),
+				)),
+				sortStage(ascending("foo"), ascending("__name__")),
+				limitStage(1),
+			},
+		},
+		{
+			name:  "supportsCollectionGroups",
+			query: c.CollectionGroup("G").OrderBy(DocumentID, Asc),
+			want: []*pb.Pipeline_Stage{
+				{
+					Name: "collection_group",
+					Args: []*pb.Value{refval(""), strval("G")},
+				},
+				sortStage(ascending("__name__")),
+			},
+		},
+		{
+			name: "supportsMultipleInequalityOnSameField",
+			query: coll.WhereEntity(AndFilter{[]EntityFilter{
+				PropertyFilter{Path: "id", Operator: ">", Value: 2},
+				PropertyFilter{Path: "id", Operator: "<=", Value: 10},
+			}}).OrderBy("id", Asc),
+			want: []*pb.Pipeline_Stage{
+				collStage("/C"),
+				whereStage(and(
+					and(
+						and(exists("id"), greaterThan("id", int64val(2))),
+						and(exists("id"), lessThanOrEqual("id", int64val(10))),
+					),
+					exists("id"),
+				)),
+				sortStage(ascending("id"), ascending("__name__")),
+			},
+		},
+		{
+			name: "supportsMultipleInequalityOnDifferentFields",
+			query: coll.WhereEntity(AndFilter{[]EntityFilter{
+				PropertyFilter{Path: "id", Operator: ">=", Value: 2},
+				PropertyFilter{Path: "baz", Operator: "<", Value: 2},
+			}}).OrderBy("id", Asc),
+			want: []*pb.Pipeline_Stage{
+				collStage("/C"),
+				whereStage(and(
+					and(
+						and(exists("id"), greaterThanOrEqual("id", int64val(2))),
+						and(exists("baz"), lessThan("baz", int64val(2))),
+					),
+					exists("id"),
+				)),
+				sortStage(ascending("id"), ascending("__name__")),
+			},
+		},
+		{
+			name:  "supportsCollectionGroupQuery",
+			query: c.CollectionGroup("C").Query,
+			want: []*pb.Pipeline_Stage{
+				{
+					Name: "collection_group",
+					Args: []*pb.Value{refval(""), strval("C")},
+				},
+				sortStage(ascending("__name__")),
+			},
+		},
+		{
+			name:  "supportsEqNan",
+			query: coll.Where("bar", "==", math.NaN()),
+			want: []*pb.Pipeline_Stage{
+				collStage("/C"),
+				whereStage(and(exists("bar"), equal("bar", floatval(math.NaN())))),
+				sortStage(ascending("__name__")),
+			},
+		},
+		{
+			name:  "supportsNeqNan",
+			query: coll.Where("bar", "!=", math.NaN()).OrderBy("foo", Asc),
+			want: []*pb.Pipeline_Stage{
+				collStage("/C"),
+				whereStage(and(
+					and(exists("bar"), notEqual("bar", floatval(math.NaN()))),
+					exists("foo"),
+				)),
+				sortStage(ascending("foo"), ascending("__name__")),
+			},
+		},
+		{
+			name:  "supportsEqNull",
+			query: coll.Where("bar", "==", nil),
+			want: []*pb.Pipeline_Stage{
+				collStage("/C"),
+				whereStage(and(exists("bar"), equal("bar", nullValue))),
+				sortStage(ascending("__name__")),
+			},
+		},
+		{
+			name:  "supportsNeqNull",
+			query: coll.Where("bar", "!=", nil),
+			want: []*pb.Pipeline_Stage{
+				collStage("/C"),
+				whereStage(and(exists("bar"), notEqual("bar", nullValue))),
+				sortStage(ascending("__name__")),
+			},
+		},
+		{
+			name:  "supportsNeq",
+			query: coll.Where("bar", "!=", 0),
+			want: []*pb.Pipeline_Stage{
+				collStage("/C"),
+				whereStage(notEqual("bar", int64val(0))),
+				sortStage(ascending("bar"), ascending("__name__")),
+			},
+		},
+		{
+			name:  "supportsArrayContains",
+			query: coll.Where("bar", "array-contains", 4),
+			want: []*pb.Pipeline_Stage{
+				collStage("/C"),
+				whereStage(and(exists("bar"), functionval("array_contains", fieldReference("bar"), int64val(4)))),
+				sortStage(ascending("__name__")),
+			},
+		},
+		{
+			name:  "supportsArrayContainsAny",
+			query: coll.Where("bar", "array-contains-any", []int{4, 5}),
+			want: []*pb.Pipeline_Stage{
+				collStage("/C"),
+				whereStage(and(exists("bar"), functionval("array_contains_any", fieldReference("bar"), array(int64val(4), int64val(5))))),
+				sortStage(ascending("__name__")),
+			},
+		},
+		{
+			name:  "supportsIn",
+			query: coll.Where("bar", "in", []int{0, 10, 20}),
+			want: []*pb.Pipeline_Stage{
+				collStage("/C"),
+				whereStage(and(exists("bar"), functionval("equal_any", fieldReference("bar"), array(int64val(0), int64val(10), int64val(20))))),
+				sortStage(ascending("__name__")),
+			},
+		},
+		{
+			name:  "supportsInWith1",
+			query: coll.Where("bar", "in", []int{2}),
+			want: []*pb.Pipeline_Stage{
+				collStage("/C"),
+				whereStage(and(exists("bar"), functionval("equal_any", fieldReference("bar"), array(int64val(2))))),
+				sortStage(ascending("__name__")),
+			},
+		},
+		{
+			name:  "supportsNotIn",
+			query: coll.Where("bar", "not-in", []int{0, 10, 20}).OrderBy("foo", Asc),
+			want: []*pb.Pipeline_Stage{
+				collStage("/C"),
+				whereStage(and(
+					functionval("not_equal_any", fieldReference("bar"), array(int64val(0), int64val(10), int64val(20))),
+					exists("foo"),
+				)),
+				sortStage(ascending("foo"), ascending("__name__")),
+			},
+		},
+		{
+			name:  "supportsNotInWith1",
+			query: coll.Where("bar", "not-in", []int{2}).OrderBy("foo", Asc),
+			want: []*pb.Pipeline_Stage{
+				collStage("/C"),
+				whereStage(and(
+					functionval("not_equal_any", fieldReference("bar"), array(int64val(2))),
+					exists("foo"),
+				)),
+				sortStage(ascending("foo"), ascending("__name__")),
+			},
+		},
+		{
+			name: "supportsOrOperator",
+			query: coll.WhereEntity(OrFilter{[]EntityFilter{
+				PropertyFilter{Path: "bar", Operator: "==", Value: 2},
+				PropertyFilter{Path: "foo", Operator: "==", Value: 3},
+			}}).OrderBy("foo", Asc),
+			want: []*pb.Pipeline_Stage{
+				collStage("/C"),
+				whereStage(and(
+					or(
+						and(exists("bar"), equal("bar", int64val(2))),
+						and(exists("foo"), equal("foo", int64val(3))),
+					),
+					exists("foo"),
+				)),
+				sortStage(ascending("foo"), ascending("__name__")),
+			},
+		},
+		{
+			name:  "testNotEqualIncludesMissingField",
+			query: coll.Where("bar", "!=", 1),
+			want: []*pb.Pipeline_Stage{
+				collStage("/C"),
+				whereStage(notEqual("bar", int64val(1))),
+				sortStage(ascending("bar"), ascending("__name__")),
+			},
+		},
+		{
+			name:  "testNotInIncludesMissingField",
+			query: coll.Where("bar", "not-in", []int{1}),
+			want: []*pb.Pipeline_Stage{
+				collStage("/C"),
+				whereStage(functionval("not_equal_any", fieldReference("bar"), array(int64val(1)))),
+				sortStage(ascending("bar"), ascending("__name__")),
+			},
+		},
+		{
+			name:  "testInequalityMaintainsExistenceFilter",
+			query: coll.Where("bar", "<", 1),
+			want: []*pb.Pipeline_Stage{
+				collStage("/C"),
+				whereStage(and(exists("bar"), lessThan("bar", int64val(1)))),
+				sortStage(ascending("bar"), ascending("__name__")),
+			},
+		},
+		{
+			name:  "testExplicitOrderMaintainsExistenceFilter",
+			query: coll.OrderBy("bar", Asc),
+			want: []*pb.Pipeline_Stage{
+				collStage("/C"),
+				whereStage(exists("bar")),
+				sortStage(ascending("bar"), ascending("__name__")),
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			p := tc.query.Pipeline()
+			if p.err != nil {
+				t.Fatalf("Pipeline() error: %v", p.err)
+			}
+			req, err := p.toExecutePipelineRequest()
+			if err != nil {
+				t.Fatalf("toExecutePipelineRequest() error: %v", err)
+			}
+			got := req.GetStructuredPipeline().GetPipeline().GetStages()
+			if diff := cmp.Diff(tc.want, got, protocmp.Transform(), cmpopts.EquateNaNs()); diff != "" {
+				t.Errorf("Mismatch (-want +got):\n%s", diff)
+			}
+		})
+	}
+}
+
+func fieldReference(name string) *pb.Value {
+	return &pb.Value{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: name}}
+}
+
+func functionval(name string, args ...*pb.Value) *pb.Value {
+	return &pb.Value{ValueType: &pb.Value_FunctionValue{FunctionValue: &pb.Function{
+		Name: name,
+		Args: args,
+	}}}
+}
+
+func anyMapToValueMap(m map[string]any) map[string]*pb.Value {
+	res := make(map[string]*pb.Value)
+	for k, v := range m {
+		switch x := v.(type) {
+		case string:
+			res[k] = strval(x)
+		case *pb.Value:
+			res[k] = x
+		default:
+			panic("unsupported type in anyMapToValueMap")
+		}
+	}
+	return res
 }

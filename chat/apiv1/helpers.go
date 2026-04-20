@@ -60,9 +60,11 @@ func DefaultAuthScopes() []string {
 		"https://www.googleapis.com/auth/chat.admin.spaces.readonly",
 		"https://www.googleapis.com/auth/chat.app.delete",
 		"https://www.googleapis.com/auth/chat.app.memberships",
+		"https://www.googleapis.com/auth/chat.app.memberships.readonly",
 		"https://www.googleapis.com/auth/chat.app.messages.readonly",
 		"https://www.googleapis.com/auth/chat.app.spaces",
 		"https://www.googleapis.com/auth/chat.app.spaces.create",
+		"https://www.googleapis.com/auth/chat.app.spaces.readonly",
 		"https://www.googleapis.com/auth/chat.bot",
 		"https://www.googleapis.com/auth/chat.customemojis",
 		"https://www.googleapis.com/auth/chat.customemojis.readonly",
@@ -82,6 +84,8 @@ func DefaultAuthScopes() []string {
 		"https://www.googleapis.com/auth/chat.spaces.readonly",
 		"https://www.googleapis.com/auth/chat.users.readstate",
 		"https://www.googleapis.com/auth/chat.users.readstate.readonly",
+		"https://www.googleapis.com/auth/chat.users.sections",
+		"https://www.googleapis.com/auth/chat.users.sections.readonly",
 		"https://www.googleapis.com/auth/chat.users.spacesettings",
 	}
 }

@@ -28,6 +28,7 @@ import (
 
 	appenginepb "cloud.google.com/go/appengine/apiv1/appenginepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -207,6 +208,16 @@ type authorizedCertificatesGRPCClient struct {
 // administer any SSL certificates applicable to their authorized domains.
 func NewAuthorizedCertificatesClient(ctx context.Context, opts ...option.ClientOption) (*AuthorizedCertificatesClient, error) {
 	clientOpts := defaultAuthorizedCertificatesGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "appengine",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/appengine/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "appengine.googleapis.com",
+		}))
+	}
 	if newAuthorizedCertificatesClientHook != nil {
 		hookOpts, err := newAuthorizedCertificatesClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -228,6 +239,24 @@ func NewAuthorizedCertificatesClient(ctx context.Context, opts ...option.ClientO
 		logger:                       internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListAuthorizedCertificates = append(client.CallOptions.ListAuthorizedCertificates, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAuthorizedCertificate = append(client.CallOptions.GetAuthorizedCertificate, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateAuthorizedCertificate = append(client.CallOptions.CreateAuthorizedCertificate, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateAuthorizedCertificate = append(client.CallOptions.UpdateAuthorizedCertificate, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteAuthorizedCertificate = append(client.CallOptions.DeleteAuthorizedCertificate, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -282,6 +311,16 @@ type authorizedCertificatesRESTClient struct {
 // administer any SSL certificates applicable to their authorized domains.
 func NewAuthorizedCertificatesRESTClient(ctx context.Context, opts ...option.ClientOption) (*AuthorizedCertificatesClient, error) {
 	clientOpts := append(defaultAuthorizedCertificatesRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "appengine",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/appengine/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "appengine.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -295,6 +334,25 @@ func NewAuthorizedCertificatesRESTClient(ctx context.Context, opts ...option.Cli
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		callOpts.ListAuthorizedCertificates = append(callOpts.ListAuthorizedCertificates, gax.WithClientMetrics(metrics))
+		callOpts.GetAuthorizedCertificate = append(callOpts.GetAuthorizedCertificate, gax.WithClientMetrics(metrics))
+		callOpts.CreateAuthorizedCertificate = append(callOpts.CreateAuthorizedCertificate, gax.WithClientMetrics(metrics))
+		callOpts.UpdateAuthorizedCertificate = append(callOpts.UpdateAuthorizedCertificate, gax.WithClientMetrics(metrics))
+		callOpts.DeleteAuthorizedCertificate = append(callOpts.DeleteAuthorizedCertificate, gax.WithClientMetrics(metrics))
+	}
 
 	return &AuthorizedCertificatesClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -341,6 +399,9 @@ func (c *authorizedCertificatesGRPCClient) ListAuthorizedCertificates(ctx contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.AuthorizedCertificates/ListAuthorizedCertificates")
+	}
 	opts = append((*c.CallOptions).ListAuthorizedCertificates[0:len((*c.CallOptions).ListAuthorizedCertificates):len((*c.CallOptions).ListAuthorizedCertificates)], opts...)
 	it := &AuthorizedCertificateIterator{}
 	req = proto.Clone(req).(*appenginepb.ListAuthorizedCertificatesRequest)
@@ -387,6 +448,9 @@ func (c *authorizedCertificatesGRPCClient) GetAuthorizedCertificate(ctx context.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.AuthorizedCertificates/GetAuthorizedCertificate")
+	}
 	opts = append((*c.CallOptions).GetAuthorizedCertificate[0:len((*c.CallOptions).GetAuthorizedCertificate):len((*c.CallOptions).GetAuthorizedCertificate)], opts...)
 	var resp *appenginepb.AuthorizedCertificate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -405,6 +469,9 @@ func (c *authorizedCertificatesGRPCClient) CreateAuthorizedCertificate(ctx conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.AuthorizedCertificates/CreateAuthorizedCertificate")
+	}
 	opts = append((*c.CallOptions).CreateAuthorizedCertificate[0:len((*c.CallOptions).CreateAuthorizedCertificate):len((*c.CallOptions).CreateAuthorizedCertificate)], opts...)
 	var resp *appenginepb.AuthorizedCertificate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -423,6 +490,9 @@ func (c *authorizedCertificatesGRPCClient) UpdateAuthorizedCertificate(ctx conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.AuthorizedCertificates/UpdateAuthorizedCertificate")
+	}
 	opts = append((*c.CallOptions).UpdateAuthorizedCertificate[0:len((*c.CallOptions).UpdateAuthorizedCertificate):len((*c.CallOptions).UpdateAuthorizedCertificate)], opts...)
 	var resp *appenginepb.AuthorizedCertificate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -441,6 +511,9 @@ func (c *authorizedCertificatesGRPCClient) DeleteAuthorizedCertificate(ctx conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.AuthorizedCertificates/DeleteAuthorizedCertificate")
+	}
 	opts = append((*c.CallOptions).DeleteAuthorizedCertificate[0:len((*c.CallOptions).DeleteAuthorizedCertificate):len((*c.CallOptions).DeleteAuthorizedCertificate)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -553,6 +626,10 @@ func (c *authorizedCertificatesRESTClient) GetAuthorizedCertificate(ctx context.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.AuthorizedCertificates/GetAuthorizedCertificate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=apps/*/authorizedCertificates/*}")
+	}
 	opts = append((*c.CallOptions).GetAuthorizedCertificate[0:len((*c.CallOptions).GetAuthorizedCertificate):len((*c.CallOptions).GetAuthorizedCertificate)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &appenginepb.AuthorizedCertificate{}
@@ -610,6 +687,10 @@ func (c *authorizedCertificatesRESTClient) CreateAuthorizedCertificate(ctx conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.AuthorizedCertificates/CreateAuthorizedCertificate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=apps/*}/authorizedCertificates")
+	}
 	opts = append((*c.CallOptions).CreateAuthorizedCertificate[0:len((*c.CallOptions).CreateAuthorizedCertificate):len((*c.CallOptions).CreateAuthorizedCertificate)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &appenginepb.AuthorizedCertificate{}
@@ -678,6 +759,10 @@ func (c *authorizedCertificatesRESTClient) UpdateAuthorizedCertificate(ctx conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.AuthorizedCertificates/UpdateAuthorizedCertificate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=apps/*/authorizedCertificates/*}")
+	}
 	opts = append((*c.CallOptions).UpdateAuthorizedCertificate[0:len((*c.CallOptions).UpdateAuthorizedCertificate):len((*c.CallOptions).UpdateAuthorizedCertificate)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &appenginepb.AuthorizedCertificate{}
@@ -728,6 +813,10 @@ func (c *authorizedCertificatesRESTClient) DeleteAuthorizedCertificate(ctx conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.AuthorizedCertificates/DeleteAuthorizedCertificate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=apps/*/authorizedCertificates/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path

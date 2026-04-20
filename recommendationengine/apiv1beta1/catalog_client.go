@@ -31,6 +31,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	recommendationenginepb "cloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -355,6 +356,16 @@ type catalogGRPCClient struct {
 // Service for ingesting catalog information of the customer’s website.
 func NewCatalogClient(ctx context.Context, opts ...option.ClientOption) (*CatalogClient, error) {
 	clientOpts := defaultCatalogGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "recommendationengine",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/recommendationengine/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "recommendationengine.googleapis.com",
+		}))
+	}
 	if newCatalogClientHook != nil {
 		hookOpts, err := newCatalogClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -376,6 +387,25 @@ func NewCatalogClient(ctx context.Context, opts ...option.ClientOption) (*Catalo
 		logger:        internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "recommendationengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/recommendationengine/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "recommendationengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateCatalogItem = append(client.CallOptions.CreateCatalogItem, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetCatalogItem = append(client.CallOptions.GetCatalogItem, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListCatalogItems = append(client.CallOptions.ListCatalogItems, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateCatalogItem = append(client.CallOptions.UpdateCatalogItem, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteCatalogItem = append(client.CallOptions.DeleteCatalogItem, gax.WithClientMetrics(metrics))
+		client.CallOptions.ImportCatalogItems = append(client.CallOptions.ImportCatalogItems, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -445,6 +475,16 @@ type catalogRESTClient struct {
 // Service for ingesting catalog information of the customer’s website.
 func NewCatalogRESTClient(ctx context.Context, opts ...option.ClientOption) (*CatalogClient, error) {
 	clientOpts := append(defaultCatalogRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "recommendationengine",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/recommendationengine/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "recommendationengine.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -458,6 +498,26 @@ func NewCatalogRESTClient(ctx context.Context, opts ...option.ClientOption) (*Ca
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "recommendationengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/recommendationengine/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "recommendationengine.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateCatalogItem = append(callOpts.CreateCatalogItem, gax.WithClientMetrics(metrics))
+		callOpts.GetCatalogItem = append(callOpts.GetCatalogItem, gax.WithClientMetrics(metrics))
+		callOpts.ListCatalogItems = append(callOpts.ListCatalogItems, gax.WithClientMetrics(metrics))
+		callOpts.UpdateCatalogItem = append(callOpts.UpdateCatalogItem, gax.WithClientMetrics(metrics))
+		callOpts.DeleteCatalogItem = append(callOpts.DeleteCatalogItem, gax.WithClientMetrics(metrics))
+		callOpts.ImportCatalogItems = append(callOpts.ImportCatalogItems, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -514,6 +574,12 @@ func (c *catalogGRPCClient) CreateCatalogItem(ctx context.Context, req *recommen
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recommendationengine.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommendationengine.v1beta1.CatalogService/CreateCatalogItem")
+	}
 	opts = append((*c.CallOptions).CreateCatalogItem[0:len((*c.CallOptions).CreateCatalogItem):len((*c.CallOptions).CreateCatalogItem)], opts...)
 	var resp *recommendationenginepb.CatalogItem
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -532,6 +598,12 @@ func (c *catalogGRPCClient) GetCatalogItem(ctx context.Context, req *recommendat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recommendationengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommendationengine.v1beta1.CatalogService/GetCatalogItem")
+	}
 	opts = append((*c.CallOptions).GetCatalogItem[0:len((*c.CallOptions).GetCatalogItem):len((*c.CallOptions).GetCatalogItem)], opts...)
 	var resp *recommendationenginepb.CatalogItem
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -550,6 +622,12 @@ func (c *catalogGRPCClient) ListCatalogItems(ctx context.Context, req *recommend
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recommendationengine.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommendationengine.v1beta1.CatalogService/ListCatalogItems")
+	}
 	opts = append((*c.CallOptions).ListCatalogItems[0:len((*c.CallOptions).ListCatalogItems):len((*c.CallOptions).ListCatalogItems)], opts...)
 	it := &CatalogItemIterator{}
 	req = proto.Clone(req).(*recommendationenginepb.ListCatalogItemsRequest)
@@ -596,6 +674,12 @@ func (c *catalogGRPCClient) UpdateCatalogItem(ctx context.Context, req *recommen
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recommendationengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommendationengine.v1beta1.CatalogService/UpdateCatalogItem")
+	}
 	opts = append((*c.CallOptions).UpdateCatalogItem[0:len((*c.CallOptions).UpdateCatalogItem):len((*c.CallOptions).UpdateCatalogItem)], opts...)
 	var resp *recommendationenginepb.CatalogItem
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -614,6 +698,12 @@ func (c *catalogGRPCClient) DeleteCatalogItem(ctx context.Context, req *recommen
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recommendationengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommendationengine.v1beta1.CatalogService/DeleteCatalogItem")
+	}
 	opts = append((*c.CallOptions).DeleteCatalogItem[0:len((*c.CallOptions).DeleteCatalogItem):len((*c.CallOptions).DeleteCatalogItem)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -628,6 +718,12 @@ func (c *catalogGRPCClient) ImportCatalogItems(ctx context.Context, req *recomme
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recommendationengine.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommendationengine.v1beta1.CatalogService/ImportCatalogItems")
+	}
 	opts = append((*c.CallOptions).ImportCatalogItems[0:len((*c.CallOptions).ImportCatalogItems):len((*c.CallOptions).ImportCatalogItems)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -669,6 +765,13 @@ func (c *catalogRESTClient) CreateCatalogItem(ctx context.Context, req *recommen
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recommendationengine.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommendationengine.v1beta1.CatalogService/CreateCatalogItem")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*/catalogs/*}/catalogItems")
+	}
 	opts = append((*c.CallOptions).CreateCatalogItem[0:len((*c.CallOptions).CreateCatalogItem):len((*c.CallOptions).CreateCatalogItem)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &recommendationenginepb.CatalogItem{}
@@ -719,6 +822,13 @@ func (c *catalogRESTClient) GetCatalogItem(ctx context.Context, req *recommendat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recommendationengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommendationengine.v1beta1.CatalogService/GetCatalogItem")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/catalogs/*/catalogItems/**}")
+	}
 	opts = append((*c.CallOptions).GetCatalogItem[0:len((*c.CallOptions).GetCatalogItem):len((*c.CallOptions).GetCatalogItem)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &recommendationenginepb.CatalogItem{}
@@ -865,6 +975,13 @@ func (c *catalogRESTClient) UpdateCatalogItem(ctx context.Context, req *recommen
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recommendationengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommendationengine.v1beta1.CatalogService/UpdateCatalogItem")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/catalogs/*/catalogItems/**}")
+	}
 	opts = append((*c.CallOptions).UpdateCatalogItem[0:len((*c.CallOptions).UpdateCatalogItem):len((*c.CallOptions).UpdateCatalogItem)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &recommendationenginepb.CatalogItem{}
@@ -915,6 +1032,13 @@ func (c *catalogRESTClient) DeleteCatalogItem(ctx context.Context, req *recommen
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recommendationengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommendationengine.v1beta1.CatalogService/DeleteCatalogItem")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/catalogs/*/catalogItems/**}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -961,6 +1085,13 @@ func (c *catalogRESTClient) ImportCatalogItems(ctx context.Context, req *recomme
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recommendationengine.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommendationengine.v1beta1.CatalogService/ImportCatalogItems")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*/catalogs/*}/catalogItems:import")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

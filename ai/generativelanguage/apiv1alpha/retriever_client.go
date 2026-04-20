@@ -28,6 +28,7 @@ import (
 	generativelanguagepb "cloud.google.com/go/ai/generativelanguage/apiv1alpha/generativelanguagepb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -336,6 +337,16 @@ type retrieverGRPCClient struct {
 // An API for semantic search over a corpus of user uploaded content.
 func NewRetrieverClient(ctx context.Context, opts ...option.ClientOption) (*RetrieverClient, error) {
 	clientOpts := defaultRetrieverGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "generativelanguage",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/ai/generativelanguage/apiv1alpha",
+			"gcp.client.language": "go",
+			"url.domain":          "generativelanguage.googleapis.com",
+		}))
+	}
 	if newRetrieverClientHook != nil {
 		hookOpts, err := newRetrieverClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -358,6 +369,41 @@ func NewRetrieverClient(ctx context.Context, opts ...option.ClientOption) (*Retr
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "generativelanguage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ai/generativelanguage/apiv1alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "generativelanguage.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateCorpus = append(client.CallOptions.CreateCorpus, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetCorpus = append(client.CallOptions.GetCorpus, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateCorpus = append(client.CallOptions.UpdateCorpus, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteCorpus = append(client.CallOptions.DeleteCorpus, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListCorpora = append(client.CallOptions.ListCorpora, gax.WithClientMetrics(metrics))
+		client.CallOptions.QueryCorpus = append(client.CallOptions.QueryCorpus, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateDocument = append(client.CallOptions.CreateDocument, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetDocument = append(client.CallOptions.GetDocument, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateDocument = append(client.CallOptions.UpdateDocument, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteDocument = append(client.CallOptions.DeleteDocument, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListDocuments = append(client.CallOptions.ListDocuments, gax.WithClientMetrics(metrics))
+		client.CallOptions.QueryDocument = append(client.CallOptions.QueryDocument, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateChunk = append(client.CallOptions.CreateChunk, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchCreateChunks = append(client.CallOptions.BatchCreateChunks, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetChunk = append(client.CallOptions.GetChunk, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateChunk = append(client.CallOptions.UpdateChunk, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchUpdateChunks = append(client.CallOptions.BatchUpdateChunks, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteChunk = append(client.CallOptions.DeleteChunk, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchDeleteChunks = append(client.CallOptions.BatchDeleteChunks, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListChunks = append(client.CallOptions.ListChunks, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -411,6 +457,16 @@ type retrieverRESTClient struct {
 // An API for semantic search over a corpus of user uploaded content.
 func NewRetrieverRESTClient(ctx context.Context, opts ...option.ClientOption) (*RetrieverClient, error) {
 	clientOpts := append(defaultRetrieverRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "generativelanguage",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/ai/generativelanguage/apiv1alpha",
+			"gcp.client.language": "go",
+			"url.domain":          "generativelanguage.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -424,6 +480,42 @@ func NewRetrieverRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "generativelanguage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ai/generativelanguage/apiv1alpha",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "generativelanguage.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateCorpus = append(callOpts.CreateCorpus, gax.WithClientMetrics(metrics))
+		callOpts.GetCorpus = append(callOpts.GetCorpus, gax.WithClientMetrics(metrics))
+		callOpts.UpdateCorpus = append(callOpts.UpdateCorpus, gax.WithClientMetrics(metrics))
+		callOpts.DeleteCorpus = append(callOpts.DeleteCorpus, gax.WithClientMetrics(metrics))
+		callOpts.ListCorpora = append(callOpts.ListCorpora, gax.WithClientMetrics(metrics))
+		callOpts.QueryCorpus = append(callOpts.QueryCorpus, gax.WithClientMetrics(metrics))
+		callOpts.CreateDocument = append(callOpts.CreateDocument, gax.WithClientMetrics(metrics))
+		callOpts.GetDocument = append(callOpts.GetDocument, gax.WithClientMetrics(metrics))
+		callOpts.UpdateDocument = append(callOpts.UpdateDocument, gax.WithClientMetrics(metrics))
+		callOpts.DeleteDocument = append(callOpts.DeleteDocument, gax.WithClientMetrics(metrics))
+		callOpts.ListDocuments = append(callOpts.ListDocuments, gax.WithClientMetrics(metrics))
+		callOpts.QueryDocument = append(callOpts.QueryDocument, gax.WithClientMetrics(metrics))
+		callOpts.CreateChunk = append(callOpts.CreateChunk, gax.WithClientMetrics(metrics))
+		callOpts.BatchCreateChunks = append(callOpts.BatchCreateChunks, gax.WithClientMetrics(metrics))
+		callOpts.GetChunk = append(callOpts.GetChunk, gax.WithClientMetrics(metrics))
+		callOpts.UpdateChunk = append(callOpts.UpdateChunk, gax.WithClientMetrics(metrics))
+		callOpts.BatchUpdateChunks = append(callOpts.BatchUpdateChunks, gax.WithClientMetrics(metrics))
+		callOpts.DeleteChunk = append(callOpts.DeleteChunk, gax.WithClientMetrics(metrics))
+		callOpts.BatchDeleteChunks = append(callOpts.BatchDeleteChunks, gax.WithClientMetrics(metrics))
+		callOpts.ListChunks = append(callOpts.ListChunks, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	return &RetrieverClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -467,6 +559,9 @@ func (c *retrieverRESTClient) Connection() *grpc.ClientConn {
 }
 func (c *retrieverGRPCClient) CreateCorpus(ctx context.Context, req *generativelanguagepb.CreateCorpusRequest, opts ...gax.CallOption) (*generativelanguagepb.Corpus, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.RetrieverService/CreateCorpus")
+	}
 	opts = append((*c.CallOptions).CreateCorpus[0:len((*c.CallOptions).CreateCorpus):len((*c.CallOptions).CreateCorpus)], opts...)
 	var resp *generativelanguagepb.Corpus
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -485,6 +580,12 @@ func (c *retrieverGRPCClient) GetCorpus(ctx context.Context, req *generativelang
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.RetrieverService/GetCorpus")
+	}
 	opts = append((*c.CallOptions).GetCorpus[0:len((*c.CallOptions).GetCorpus):len((*c.CallOptions).GetCorpus)], opts...)
 	var resp *generativelanguagepb.Corpus
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -503,6 +604,9 @@ func (c *retrieverGRPCClient) UpdateCorpus(ctx context.Context, req *generativel
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.RetrieverService/UpdateCorpus")
+	}
 	opts = append((*c.CallOptions).UpdateCorpus[0:len((*c.CallOptions).UpdateCorpus):len((*c.CallOptions).UpdateCorpus)], opts...)
 	var resp *generativelanguagepb.Corpus
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -521,6 +625,12 @@ func (c *retrieverGRPCClient) DeleteCorpus(ctx context.Context, req *generativel
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.RetrieverService/DeleteCorpus")
+	}
 	opts = append((*c.CallOptions).DeleteCorpus[0:len((*c.CallOptions).DeleteCorpus):len((*c.CallOptions).DeleteCorpus)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -532,6 +642,9 @@ func (c *retrieverGRPCClient) DeleteCorpus(ctx context.Context, req *generativel
 
 func (c *retrieverGRPCClient) ListCorpora(ctx context.Context, req *generativelanguagepb.ListCorporaRequest, opts ...gax.CallOption) *CorpusIterator {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.RetrieverService/ListCorpora")
+	}
 	opts = append((*c.CallOptions).ListCorpora[0:len((*c.CallOptions).ListCorpora):len((*c.CallOptions).ListCorpora)], opts...)
 	it := &CorpusIterator{}
 	req = proto.Clone(req).(*generativelanguagepb.ListCorporaRequest)
@@ -578,6 +691,12 @@ func (c *retrieverGRPCClient) QueryCorpus(ctx context.Context, req *generativela
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.RetrieverService/QueryCorpus")
+	}
 	opts = append((*c.CallOptions).QueryCorpus[0:len((*c.CallOptions).QueryCorpus):len((*c.CallOptions).QueryCorpus)], opts...)
 	var resp *generativelanguagepb.QueryCorpusResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -596,6 +715,12 @@ func (c *retrieverGRPCClient) CreateDocument(ctx context.Context, req *generativ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.RetrieverService/CreateDocument")
+	}
 	opts = append((*c.CallOptions).CreateDocument[0:len((*c.CallOptions).CreateDocument):len((*c.CallOptions).CreateDocument)], opts...)
 	var resp *generativelanguagepb.Document
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -614,6 +739,12 @@ func (c *retrieverGRPCClient) GetDocument(ctx context.Context, req *generativela
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.RetrieverService/GetDocument")
+	}
 	opts = append((*c.CallOptions).GetDocument[0:len((*c.CallOptions).GetDocument):len((*c.CallOptions).GetDocument)], opts...)
 	var resp *generativelanguagepb.Document
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -632,6 +763,9 @@ func (c *retrieverGRPCClient) UpdateDocument(ctx context.Context, req *generativ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.RetrieverService/UpdateDocument")
+	}
 	opts = append((*c.CallOptions).UpdateDocument[0:len((*c.CallOptions).UpdateDocument):len((*c.CallOptions).UpdateDocument)], opts...)
 	var resp *generativelanguagepb.Document
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -650,6 +784,12 @@ func (c *retrieverGRPCClient) DeleteDocument(ctx context.Context, req *generativ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.RetrieverService/DeleteDocument")
+	}
 	opts = append((*c.CallOptions).DeleteDocument[0:len((*c.CallOptions).DeleteDocument):len((*c.CallOptions).DeleteDocument)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -664,6 +804,12 @@ func (c *retrieverGRPCClient) ListDocuments(ctx context.Context, req *generative
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.RetrieverService/ListDocuments")
+	}
 	opts = append((*c.CallOptions).ListDocuments[0:len((*c.CallOptions).ListDocuments):len((*c.CallOptions).ListDocuments)], opts...)
 	it := &DocumentIterator{}
 	req = proto.Clone(req).(*generativelanguagepb.ListDocumentsRequest)
@@ -710,6 +856,12 @@ func (c *retrieverGRPCClient) QueryDocument(ctx context.Context, req *generative
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.RetrieverService/QueryDocument")
+	}
 	opts = append((*c.CallOptions).QueryDocument[0:len((*c.CallOptions).QueryDocument):len((*c.CallOptions).QueryDocument)], opts...)
 	var resp *generativelanguagepb.QueryDocumentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -728,6 +880,12 @@ func (c *retrieverGRPCClient) CreateChunk(ctx context.Context, req *generativela
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.RetrieverService/CreateChunk")
+	}
 	opts = append((*c.CallOptions).CreateChunk[0:len((*c.CallOptions).CreateChunk):len((*c.CallOptions).CreateChunk)], opts...)
 	var resp *generativelanguagepb.Chunk
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -746,6 +904,12 @@ func (c *retrieverGRPCClient) BatchCreateChunks(ctx context.Context, req *genera
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.RetrieverService/BatchCreateChunks")
+	}
 	opts = append((*c.CallOptions).BatchCreateChunks[0:len((*c.CallOptions).BatchCreateChunks):len((*c.CallOptions).BatchCreateChunks)], opts...)
 	var resp *generativelanguagepb.BatchCreateChunksResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -764,6 +928,12 @@ func (c *retrieverGRPCClient) GetChunk(ctx context.Context, req *generativelangu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.RetrieverService/GetChunk")
+	}
 	opts = append((*c.CallOptions).GetChunk[0:len((*c.CallOptions).GetChunk):len((*c.CallOptions).GetChunk)], opts...)
 	var resp *generativelanguagepb.Chunk
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -782,6 +952,9 @@ func (c *retrieverGRPCClient) UpdateChunk(ctx context.Context, req *generativela
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.RetrieverService/UpdateChunk")
+	}
 	opts = append((*c.CallOptions).UpdateChunk[0:len((*c.CallOptions).UpdateChunk):len((*c.CallOptions).UpdateChunk)], opts...)
 	var resp *generativelanguagepb.Chunk
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -800,6 +973,12 @@ func (c *retrieverGRPCClient) BatchUpdateChunks(ctx context.Context, req *genera
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.RetrieverService/BatchUpdateChunks")
+	}
 	opts = append((*c.CallOptions).BatchUpdateChunks[0:len((*c.CallOptions).BatchUpdateChunks):len((*c.CallOptions).BatchUpdateChunks)], opts...)
 	var resp *generativelanguagepb.BatchUpdateChunksResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -818,6 +997,12 @@ func (c *retrieverGRPCClient) DeleteChunk(ctx context.Context, req *generativela
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.RetrieverService/DeleteChunk")
+	}
 	opts = append((*c.CallOptions).DeleteChunk[0:len((*c.CallOptions).DeleteChunk):len((*c.CallOptions).DeleteChunk)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -832,6 +1017,12 @@ func (c *retrieverGRPCClient) BatchDeleteChunks(ctx context.Context, req *genera
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.RetrieverService/BatchDeleteChunks")
+	}
 	opts = append((*c.CallOptions).BatchDeleteChunks[0:len((*c.CallOptions).BatchDeleteChunks):len((*c.CallOptions).BatchDeleteChunks)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -846,6 +1037,12 @@ func (c *retrieverGRPCClient) ListChunks(ctx context.Context, req *generativelan
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.RetrieverService/ListChunks")
+	}
 	opts = append((*c.CallOptions).ListChunks[0:len((*c.CallOptions).ListChunks):len((*c.CallOptions).ListChunks)], opts...)
 	it := &ChunkIterator{}
 	req = proto.Clone(req).(*generativelanguagepb.ListChunksRequest)
@@ -892,6 +1089,9 @@ func (c *retrieverGRPCClient) GetOperation(ctx context.Context, req *longrunning
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -910,6 +1110,9 @@ func (c *retrieverGRPCClient) ListOperations(ctx context.Context, req *longrunni
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
@@ -974,6 +1177,10 @@ func (c *retrieverRESTClient) CreateCorpus(ctx context.Context, req *generativel
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.RetrieverService/CreateCorpus")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/corpora")
+	}
 	opts = append((*c.CallOptions).CreateCorpus[0:len((*c.CallOptions).CreateCorpus):len((*c.CallOptions).CreateCorpus)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &generativelanguagepb.Corpus{}
@@ -1024,6 +1231,13 @@ func (c *retrieverRESTClient) GetCorpus(ctx context.Context, req *generativelang
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.RetrieverService/GetCorpus")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=corpora/*}")
+	}
 	opts = append((*c.CallOptions).GetCorpus[0:len((*c.CallOptions).GetCorpus):len((*c.CallOptions).GetCorpus)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &generativelanguagepb.Corpus{}
@@ -1088,6 +1302,10 @@ func (c *retrieverRESTClient) UpdateCorpus(ctx context.Context, req *generativel
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.RetrieverService/UpdateCorpus")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{corpus.name=corpora/*}")
+	}
 	opts = append((*c.CallOptions).UpdateCorpus[0:len((*c.CallOptions).UpdateCorpus):len((*c.CallOptions).UpdateCorpus)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &generativelanguagepb.Corpus{}
@@ -1141,6 +1359,13 @@ func (c *retrieverRESTClient) DeleteCorpus(ctx context.Context, req *generativel
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.RetrieverService/DeleteCorpus")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=corpora/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1260,6 +1485,13 @@ func (c *retrieverRESTClient) QueryCorpus(ctx context.Context, req *generativela
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.RetrieverService/QueryCorpus")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=corpora/*}:query")
+	}
 	opts = append((*c.CallOptions).QueryCorpus[0:len((*c.CallOptions).QueryCorpus):len((*c.CallOptions).QueryCorpus)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &generativelanguagepb.QueryCorpusResponse{}
@@ -1317,6 +1549,13 @@ func (c *retrieverRESTClient) CreateDocument(ctx context.Context, req *generativ
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.RetrieverService/CreateDocument")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=corpora/*}/documents")
+	}
 	opts = append((*c.CallOptions).CreateDocument[0:len((*c.CallOptions).CreateDocument):len((*c.CallOptions).CreateDocument)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &generativelanguagepb.Document{}
@@ -1367,6 +1606,13 @@ func (c *retrieverRESTClient) GetDocument(ctx context.Context, req *generativela
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.RetrieverService/GetDocument")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=corpora/*/documents/*}")
+	}
 	opts = append((*c.CallOptions).GetDocument[0:len((*c.CallOptions).GetDocument):len((*c.CallOptions).GetDocument)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &generativelanguagepb.Document{}
@@ -1431,6 +1677,10 @@ func (c *retrieverRESTClient) UpdateDocument(ctx context.Context, req *generativ
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.RetrieverService/UpdateDocument")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{document.name=corpora/*/documents/*}")
+	}
 	opts = append((*c.CallOptions).UpdateDocument[0:len((*c.CallOptions).UpdateDocument):len((*c.CallOptions).UpdateDocument)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &generativelanguagepb.Document{}
@@ -1484,6 +1734,13 @@ func (c *retrieverRESTClient) DeleteDocument(ctx context.Context, req *generativ
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.RetrieverService/DeleteDocument")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=corpora/*/documents/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1603,6 +1860,13 @@ func (c *retrieverRESTClient) QueryDocument(ctx context.Context, req *generative
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.RetrieverService/QueryDocument")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=corpora/*/documents/*}:query")
+	}
 	opts = append((*c.CallOptions).QueryDocument[0:len((*c.CallOptions).QueryDocument):len((*c.CallOptions).QueryDocument)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &generativelanguagepb.QueryDocumentResponse{}
@@ -1660,6 +1924,13 @@ func (c *retrieverRESTClient) CreateChunk(ctx context.Context, req *generativela
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.RetrieverService/CreateChunk")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=corpora/*/documents/*}/chunks")
+	}
 	opts = append((*c.CallOptions).CreateChunk[0:len((*c.CallOptions).CreateChunk):len((*c.CallOptions).CreateChunk)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &generativelanguagepb.Chunk{}
@@ -1716,6 +1987,13 @@ func (c *retrieverRESTClient) BatchCreateChunks(ctx context.Context, req *genera
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.RetrieverService/BatchCreateChunks")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=corpora/*/documents/*}/chunks:batchCreate")
+	}
 	opts = append((*c.CallOptions).BatchCreateChunks[0:len((*c.CallOptions).BatchCreateChunks):len((*c.CallOptions).BatchCreateChunks)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &generativelanguagepb.BatchCreateChunksResponse{}
@@ -1766,6 +2044,13 @@ func (c *retrieverRESTClient) GetChunk(ctx context.Context, req *generativelangu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.RetrieverService/GetChunk")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=corpora/*/documents/*/chunks/*}")
+	}
 	opts = append((*c.CallOptions).GetChunk[0:len((*c.CallOptions).GetChunk):len((*c.CallOptions).GetChunk)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &generativelanguagepb.Chunk{}
@@ -1830,6 +2115,10 @@ func (c *retrieverRESTClient) UpdateChunk(ctx context.Context, req *generativela
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.RetrieverService/UpdateChunk")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{chunk.name=corpora/*/documents/*/chunks/*}")
+	}
 	opts = append((*c.CallOptions).UpdateChunk[0:len((*c.CallOptions).UpdateChunk):len((*c.CallOptions).UpdateChunk)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &generativelanguagepb.Chunk{}
@@ -1886,6 +2175,13 @@ func (c *retrieverRESTClient) BatchUpdateChunks(ctx context.Context, req *genera
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.RetrieverService/BatchUpdateChunks")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=corpora/*/documents/*}/chunks:batchUpdate")
+	}
 	opts = append((*c.CallOptions).BatchUpdateChunks[0:len((*c.CallOptions).BatchUpdateChunks):len((*c.CallOptions).BatchUpdateChunks)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &generativelanguagepb.BatchUpdateChunksResponse{}
@@ -1936,6 +2232,13 @@ func (c *retrieverRESTClient) DeleteChunk(ctx context.Context, req *generativela
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.RetrieverService/DeleteChunk")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=corpora/*/documents/*/chunks/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1977,6 +2280,13 @@ func (c *retrieverRESTClient) BatchDeleteChunks(ctx context.Context, req *genera
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.RetrieverService/BatchDeleteChunks")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=corpora/*/documents/*}/chunks:batchDelete")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2090,6 +2400,10 @@ func (c *retrieverRESTClient) GetOperation(ctx context.Context, req *longrunning
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=tunedModels/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}

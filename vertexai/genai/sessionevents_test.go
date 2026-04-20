@@ -58,7 +58,7 @@ func TestAgentEngineSessionEvents(t *testing.T) {
 		}
 		createAgentEngineSessionEvent(tt, client, session, want)
 
-		got, err := client.AgentEngines.Sessions.Events.list(tt.Context(), session.Name, nil)
+		got, err := client.AgentEngines.Sessions.Events.List(tt.Context(), session.Name, nil)
 		if err != nil {
 			tt.Fatalf("list() failed unexpectedly: %v", err)
 		}

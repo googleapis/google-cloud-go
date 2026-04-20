@@ -28,6 +28,7 @@ import (
 
 	phishingprotectionpb "cloud.google.com/go/phishingprotection/apiv1beta1/phishingprotectionpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -153,6 +154,16 @@ type phishingProtectionServiceV1Beta1GRPCClient struct {
 // Service to report phishing URIs.
 func NewPhishingProtectionServiceV1Beta1Client(ctx context.Context, opts ...option.ClientOption) (*PhishingProtectionServiceV1Beta1Client, error) {
 	clientOpts := defaultPhishingProtectionServiceV1Beta1GRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "phishingprotection",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/phishingprotection/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "phishingprotection.googleapis.com",
+		}))
+	}
 	if newPhishingProtectionServiceV1Beta1ClientHook != nil {
 		hookOpts, err := newPhishingProtectionServiceV1Beta1ClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -174,6 +185,20 @@ func NewPhishingProtectionServiceV1Beta1Client(ctx context.Context, opts ...opti
 		logger:                                 internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "phishingprotection",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/phishingprotection/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "phishingprotection.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ReportPhishing = append(client.CallOptions.ReportPhishing, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -227,6 +252,16 @@ type phishingProtectionServiceV1Beta1RESTClient struct {
 // Service to report phishing URIs.
 func NewPhishingProtectionServiceV1Beta1RESTClient(ctx context.Context, opts ...option.ClientOption) (*PhishingProtectionServiceV1Beta1Client, error) {
 	clientOpts := append(defaultPhishingProtectionServiceV1Beta1RESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "phishingprotection",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/phishingprotection/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "phishingprotection.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -240,6 +275,21 @@ func NewPhishingProtectionServiceV1Beta1RESTClient(ctx context.Context, opts ...
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "phishingprotection",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/phishingprotection/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "phishingprotection.googleapis.com",
+			}),
+		)
+
+		callOpts.ReportPhishing = append(callOpts.ReportPhishing, gax.WithClientMetrics(metrics))
+	}
 
 	return &PhishingProtectionServiceV1Beta1Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -286,6 +336,12 @@ func (c *phishingProtectionServiceV1Beta1GRPCClient) ReportPhishing(ctx context.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//phishingprotection.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.phishingprotection.v1beta1.PhishingProtectionServiceV1Beta1/ReportPhishing")
+	}
 	opts = append((*c.CallOptions).ReportPhishing[0:len((*c.CallOptions).ReportPhishing):len((*c.CallOptions).ReportPhishing)], opts...)
 	var resp *phishingprotectionpb.ReportPhishingResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -330,6 +386,13 @@ func (c *phishingProtectionServiceV1Beta1RESTClient) ReportPhishing(ctx context.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//phishingprotection.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.phishingprotection.v1beta1.PhishingProtectionServiceV1Beta1/ReportPhishing")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*}/phishing:report")
+	}
 	opts = append((*c.CallOptions).ReportPhishing[0:len((*c.CallOptions).ReportPhishing):len((*c.CallOptions).ReportPhishing)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &phishingprotectionpb.ReportPhishingResponse{}

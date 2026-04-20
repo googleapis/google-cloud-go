@@ -50,6 +50,7 @@ import (
 	"google.golang.org/grpc/encoding/gzip"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/durationpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 
@@ -147,6 +148,30 @@ func setupMockedTestServerWithConfigAndGCPMultiendpointPool(t *testing.T, config
 		t.Fatal(err)
 	}
 	// Multiplexed sessions are always enabled - wait for session creation
+	waitFor(t, func() error {
+		client.sm.mu.Lock()
+		defer client.sm.mu.Unlock()
+		if client.sm.multiplexedSession == nil {
+			return errInvalidSession
+		}
+		return nil
+	})
+	return server, client, func() {
+		client.Close()
+		serverTeardown()
+	}
+}
+
+func setupMockedTestServerWithAddrAndConfig(t *testing.T, addr string, config ClientConfig) (server *MockedSpannerInMemTestServer, client *Client, teardown func()) {
+	server, opts, serverTeardown := NewMockedSpannerInMemTestServerWithAddr(t, addr)
+	ctx := context.Background()
+	formattedDatabase := fmt.Sprintf("projects/%s/instances/%s/databases/%s", "[PROJECT]", "[INSTANCE]", "[DATABASE]")
+	var err error
+	client, err = NewClientWithConfig(ctx, formattedDatabase, config, opts...)
+	if err != nil {
+		serverTeardown()
+		t.Fatal(err)
+	}
 	waitFor(t, func() error {
 		client.sm.mu.Lock()
 		defer client.sm.mu.Unlock()
@@ -705,6 +730,419 @@ func serverErrorWithMinimalRetryDelay(code codes.Code, msg string) error {
 	}
 	st, _ = st.WithDetails(retry)
 	return st.Err()
+}
+
+func TestLocationAwareExecuteSql_UnaryRetryDoesNotPopulateEndpointExclusion(t *testing.T) {
+	t.Parallel()
+
+	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
+	defer teardown()
+	harness.Replicas[0].PutMethodErrors(MethodExecuteSql, serverErrorWithMinimalRetryDelay(codes.ResourceExhausted, "busy"))
+
+	client, err := makeClientWithConfig(
+		context.Background(),
+		"projects/p/instances/i/databases/d",
+		ClientConfig{
+			DisableNativeMetrics: true,
+			IsExperimentalHost:   true,
+		},
+		harness.DefaultAddress,
+		clientOpts...,
+	)
+	if err != nil {
+		t.Fatalf("makeClientWithConfig() failed: %v", err)
+	}
+	defer client.Close()
+
+	if client.locationRouter == nil {
+		t.Fatal("expected location router to be enabled")
+	}
+
+	update := createRangeCacheUpdateForHint(&sppb.RoutingHint{Key: []byte("b")})
+	update.Group[0].Tablets[0].ServerAddress = harness.ReplicaAddresses[0]
+	update.Group[0].Tablets = append(update.Group[0].Tablets, &sppb.Tablet{
+		TabletUid:     12,
+		ServerAddress: harness.ReplicaAddresses[1],
+		Role:          sppb.Tablet_READ_WRITE,
+		Incarnation:   []byte("i2"),
+	})
+	client.locationRouter.observeResultSet(&sppb.ResultSet{CacheUpdate: update})
+
+	sh, err := client.sm.takeMultiplexed(context.Background())
+	if err != nil {
+		t.Fatalf("takeMultiplexed() failed: %v", err)
+	}
+	defer sh.recycle()
+
+	req := &sppb.ExecuteSqlRequest{
+		Session: sh.getID(),
+		Sql:     SelectFooFromBar,
+		RoutingHint: &sppb.RoutingHint{
+			Key: []byte("b"),
+		},
+		Params: &structpb.Struct{},
+	}
+
+	waitForCondition(t, time.Second, func() bool {
+		prepared := proto.Clone(req).(*sppb.ExecuteSqlRequest)
+		endpoint := client.locationRouter.prepareExecuteSQLRequest(context.Background(), prepared)
+		return endpoint != nil && endpoint.Address() == harness.ReplicaAddresses[0]
+	})
+
+	lac, ok := sh.getClient().(*locationAwareSpannerClient)
+	if !ok {
+		t.Fatalf("session client type = %T, want *locationAwareSpannerClient", sh.getClient())
+	}
+
+	callOpts := testCallOptionsWithRequestID("1.proc.1.1.55.1")
+	resp, err := lac.ExecuteSql(context.Background(), req, callOpts...)
+	if err != nil {
+		t.Fatalf("ExecuteSql() returned unexpected error: %v", err)
+	}
+	if resp == nil {
+		t.Fatal("ExecuteSql() returned nil response")
+	}
+
+	replicaARequests := harness.Replicas[0].Requests(MethodExecuteSql)
+	replicaBRequests := harness.Replicas[1].Requests(MethodExecuteSql)
+	if got, want := len(replicaARequests), 1; got != want {
+		t.Fatalf("replica A ExecuteSql request count = %d, want %d", got, want)
+	}
+	if got, want := len(replicaBRequests), 1; got != want {
+		t.Fatalf("replica B ExecuteSql request count = %d, want %d", got, want)
+	}
+	replicaAReq, ok := replicaARequests[0].(*sppb.ExecuteSqlRequest)
+	if !ok {
+		t.Fatalf("replica A request type = %T, want *spannerpb.ExecuteSqlRequest", replicaARequests[0])
+	}
+	replicaBReq, ok := replicaBRequests[0].(*sppb.ExecuteSqlRequest)
+	if !ok {
+		t.Fatalf("replica B request type = %T, want *spannerpb.ExecuteSqlRequest", replicaBRequests[0])
+	}
+	if got, want := replicaAReq.GetSession(), sh.getID(); got != want {
+		t.Fatalf("replica A session = %q, want %q", got, want)
+	}
+	if got, want := replicaBReq.GetSession(), sh.getID(); got != want {
+		t.Fatalf("replica B session = %q, want %q", got, want)
+	}
+
+	logicalRequestKey := logicalRequestKeyFromCallOptions(callOpts)
+	excluded := lac.excludedEndpoints.consume(logicalRequestKey)
+	if excluded != nil && excluded(harness.ReplicaAddresses[0]) {
+		t.Fatalf("expected routed address %q not to be excluded after internal unary retry", harness.ReplicaAddresses[0])
+	}
+}
+
+func TestLocationAwareExecuteStreamingSql_RetryUsesExcludedEndpointOnNextCall(t *testing.T) {
+	t.Parallel()
+
+	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
+	defer teardown()
+	harness.Replicas[0].PutMethodErrors(MethodExecuteStreamingSql, serverErrorWithMinimalRetryDelay(codes.ResourceExhausted, "busy"))
+
+	client, err := makeClientWithConfig(
+		context.Background(),
+		"projects/p/instances/i/databases/d",
+		ClientConfig{
+			DisableNativeMetrics: true,
+			IsExperimentalHost:   true,
+		},
+		harness.DefaultAddress,
+		clientOpts...,
+	)
+	if err != nil {
+		t.Fatalf("makeClientWithConfig() failed: %v", err)
+	}
+	defer client.Close()
+
+	if client.locationRouter == nil {
+		t.Fatal("expected location router to be enabled")
+	}
+
+	update := createRangeCacheUpdateForHint(&sppb.RoutingHint{Key: []byte("b")})
+	update.Group[0].Tablets[0].ServerAddress = harness.ReplicaAddresses[0]
+	update.Group[0].Tablets = append(update.Group[0].Tablets, &sppb.Tablet{
+		TabletUid:     12,
+		ServerAddress: harness.ReplicaAddresses[1],
+		Role:          sppb.Tablet_READ_WRITE,
+		Incarnation:   []byte("i2"),
+	})
+	client.locationRouter.observeResultSet(&sppb.ResultSet{CacheUpdate: update})
+
+	sh, err := client.sm.takeMultiplexed(context.Background())
+	if err != nil {
+		t.Fatalf("takeMultiplexed() failed: %v", err)
+	}
+	defer sh.recycle()
+
+	req := &sppb.ExecuteSqlRequest{
+		Session: sh.getID(),
+		Sql:     SelectFooFromBar,
+		RoutingHint: &sppb.RoutingHint{
+			Key: []byte("b"),
+		},
+		Params: &structpb.Struct{},
+	}
+
+	waitForCondition(t, time.Second, func() bool {
+		prepared := proto.Clone(req).(*sppb.ExecuteSqlRequest)
+		endpoint := client.locationRouter.prepareExecuteSQLRequest(context.Background(), prepared)
+		return endpoint != nil && endpoint.Address() == harness.ReplicaAddresses[0]
+	})
+
+	lac, ok := sh.getClient().(*locationAwareSpannerClient)
+	if !ok {
+		t.Fatalf("session client type = %T, want *locationAwareSpannerClient", sh.getClient())
+	}
+
+	firstCallOpts := testCallOptionsWithRequestID("1.proc.1.1.58.1")
+	stream, err := lac.ExecuteStreamingSql(context.Background(), req, firstCallOpts...)
+	if err != nil {
+		t.Fatalf("ExecuteStreamingSql() returned unexpected stream creation error: %v", err)
+	}
+	_, err = stream.Recv()
+	if status.Code(err) != codes.ResourceExhausted {
+		t.Fatalf("first stream Recv() error = %v, want RESOURCE_EXHAUSTED", err)
+	}
+
+	secondCallOpts := testCallOptionsWithRequestID("1.proc.1.1.58.2")
+	stream, err = lac.ExecuteStreamingSql(context.Background(), req, secondCallOpts...)
+	if err != nil {
+		t.Fatalf("retry ExecuteStreamingSql() returned unexpected stream creation error: %v", err)
+	}
+	_, err = stream.Recv()
+	if err != nil {
+		t.Fatalf("retry stream Recv() returned unexpected error: %v", err)
+	}
+
+	replicaARequests := harness.Replicas[0].Requests(MethodExecuteStreamingSql)
+	replicaBRequests := harness.Replicas[1].Requests(MethodExecuteStreamingSql)
+	if got, want := len(replicaARequests), 1; got != want {
+		t.Fatalf("replica A ExecuteStreamingSql request count = %d, want %d", got, want)
+	}
+	if got, want := len(replicaBRequests), 1; got != want {
+		t.Fatalf("replica B ExecuteStreamingSql request count = %d, want %d", got, want)
+	}
+	replicaAReq, ok := replicaARequests[0].(*sppb.ExecuteSqlRequest)
+	if !ok {
+		t.Fatalf("replica A request type = %T, want *spannerpb.ExecuteSqlRequest", replicaARequests[0])
+	}
+	replicaBReq, ok := replicaBRequests[0].(*sppb.ExecuteSqlRequest)
+	if !ok {
+		t.Fatalf("replica B request type = %T, want *spannerpb.ExecuteSqlRequest", replicaBRequests[0])
+	}
+	if got, want := replicaAReq.GetSession(), sh.getID(); got != want {
+		t.Fatalf("replica A session = %q, want %q", got, want)
+	}
+	if got, want := replicaBReq.GetSession(), sh.getID(); got != want {
+		t.Fatalf("replica B session = %q, want %q", got, want)
+	}
+
+	logicalRequestKey := logicalRequestKeyFromCallOptions(firstCallOpts)
+	excluded := lac.excludedEndpoints.consume(logicalRequestKey)
+	if excluded != nil && excluded(harness.ReplicaAddresses[0]) {
+		t.Fatalf("expected routed address %q not to remain excluded after retry call consumed it", harness.ReplicaAddresses[0])
+	}
+}
+
+func TestLocationAwareRead_UnaryRetryDoesNotPopulateEndpointExclusion(t *testing.T) {
+	t.Parallel()
+
+	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
+	defer teardown()
+	harness.Replicas[0].PutMethodErrors(MethodRead, serverErrorWithMinimalRetryDelay(codes.ResourceExhausted, "busy"))
+
+	client, err := makeClientWithConfig(
+		context.Background(),
+		"projects/p/instances/i/databases/d",
+		ClientConfig{
+			DisableNativeMetrics: true,
+			IsExperimentalHost:   true,
+		},
+		harness.DefaultAddress,
+		clientOpts...,
+	)
+	if err != nil {
+		t.Fatalf("makeClientWithConfig() failed: %v", err)
+	}
+	defer client.Close()
+
+	update := createRangeCacheUpdateForHint(&sppb.RoutingHint{Key: []byte("b")})
+	update.Group[0].Tablets[0].ServerAddress = harness.ReplicaAddresses[0]
+	update.Group[0].Tablets = append(update.Group[0].Tablets, &sppb.Tablet{
+		TabletUid:     12,
+		ServerAddress: harness.ReplicaAddresses[1],
+		Role:          sppb.Tablet_READ_WRITE,
+		Incarnation:   []byte("i2"),
+	})
+	client.locationRouter.observeResultSet(&sppb.ResultSet{CacheUpdate: update})
+
+	sh, err := client.sm.takeMultiplexed(context.Background())
+	if err != nil {
+		t.Fatalf("takeMultiplexed() failed: %v", err)
+	}
+	defer sh.recycle()
+
+	req := &sppb.ReadRequest{
+		Session:     sh.getID(),
+		Table:       "BAR",
+		Columns:     []string{"FOO"},
+		RoutingHint: &sppb.RoutingHint{Key: []byte("b")},
+	}
+
+	waitForCondition(t, time.Second, func() bool {
+		prepared := proto.Clone(req).(*sppb.ReadRequest)
+		endpoint := client.locationRouter.prepareReadRequest(context.Background(), prepared)
+		return endpoint != nil && endpoint.Address() == harness.ReplicaAddresses[0]
+	})
+
+	lac, ok := sh.getClient().(*locationAwareSpannerClient)
+	if !ok {
+		t.Fatalf("session client type = %T, want *locationAwareSpannerClient", sh.getClient())
+	}
+
+	callOpts := testCallOptionsWithRequestID("1.proc.1.1.56.1")
+	resp, err := lac.Read(context.Background(), req, callOpts...)
+	if err != nil {
+		t.Fatalf("Read() returned unexpected error: %v", err)
+	}
+	if resp == nil {
+		t.Fatal("Read() returned nil response")
+	}
+
+	replicaARequests := harness.Replicas[0].Requests(MethodRead)
+	replicaBRequests := harness.Replicas[1].Requests(MethodRead)
+	if got, want := len(replicaARequests), 1; got != want {
+		t.Fatalf("replica A Read request count = %d, want %d", got, want)
+	}
+	if got, want := len(replicaBRequests), 1; got != want {
+		t.Fatalf("replica B Read request count = %d, want %d", got, want)
+	}
+	replicaAReq, ok := replicaARequests[0].(*sppb.ReadRequest)
+	if !ok {
+		t.Fatalf("replica A request type = %T, want *spannerpb.ReadRequest", replicaARequests[0])
+	}
+	replicaBReq, ok := replicaBRequests[0].(*sppb.ReadRequest)
+	if !ok {
+		t.Fatalf("replica B request type = %T, want *spannerpb.ReadRequest", replicaBRequests[0])
+	}
+	if got, want := replicaAReq.GetSession(), sh.getID(); got != want {
+		t.Fatalf("replica A session = %q, want %q", got, want)
+	}
+	if got, want := replicaBReq.GetSession(), sh.getID(); got != want {
+		t.Fatalf("replica B session = %q, want %q", got, want)
+	}
+
+	logicalRequestKey := logicalRequestKeyFromCallOptions(callOpts)
+	excluded := lac.excludedEndpoints.consume(logicalRequestKey)
+	if excluded != nil && excluded(harness.ReplicaAddresses[0]) {
+		t.Fatalf("expected routed address %q not to be excluded after internal unary retry", harness.ReplicaAddresses[0])
+	}
+}
+
+func TestLocationAwareBeginTransaction_UnaryRetryDoesNotPopulateEndpointExclusion(t *testing.T) {
+	t.Parallel()
+
+	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
+	defer teardown()
+	harness.Replicas[0].PutMethodErrors(MethodBeginTransaction, serverErrorWithMinimalRetryDelay(codes.ResourceExhausted, "busy"))
+
+	client, err := makeClientWithConfig(
+		context.Background(),
+		"projects/p/instances/i/databases/d",
+		ClientConfig{
+			DisableNativeMetrics: true,
+			IsExperimentalHost:   true,
+		},
+		harness.DefaultAddress,
+		clientOpts...,
+	)
+	if err != nil {
+		t.Fatalf("makeClientWithConfig() failed: %v", err)
+	}
+	defer client.Close()
+
+	client.locationRouter.observeResultSet(&sppb.ResultSet{CacheUpdate: createMutationRecipeCacheUpdate()})
+
+	sh, err := client.sm.takeMultiplexed(context.Background())
+	if err != nil {
+		t.Fatalf("takeMultiplexed() failed: %v", err)
+	}
+	defer sh.recycle()
+
+	req := &sppb.BeginTransactionRequest{
+		Session:     sh.getID(),
+		MutationKey: createInsertMutation("a"),
+	}
+	var routingHint *sppb.RoutingHint
+	waitForCondition(t, time.Second, func() bool {
+		prepared := proto.Clone(req).(*sppb.BeginTransactionRequest)
+		client.locationRouter.prepareBeginTransactionRequest(context.Background(), prepared)
+		hint := prepared.GetRoutingHint()
+		if hint == nil || len(hint.GetKey()) == 0 {
+			return false
+		}
+		routingHint = proto.Clone(hint).(*sppb.RoutingHint)
+		return true
+	})
+	update := createRangeCacheUpdateForHint(routingHint)
+	update.Group[0].Tablets[0].ServerAddress = harness.ReplicaAddresses[0]
+	update.Group[0].Tablets = append(update.Group[0].Tablets, &sppb.Tablet{
+		TabletUid:     12,
+		ServerAddress: harness.ReplicaAddresses[1],
+		Role:          sppb.Tablet_READ_WRITE,
+		Incarnation:   []byte("i2"),
+	})
+	client.locationRouter.observeResultSet(&sppb.ResultSet{CacheUpdate: update})
+
+	waitForCondition(t, time.Second, func() bool {
+		prepared := proto.Clone(req).(*sppb.BeginTransactionRequest)
+		endpoint := client.locationRouter.prepareBeginTransactionRequest(context.Background(), prepared)
+		return endpoint != nil && endpoint.Address() == harness.ReplicaAddresses[0]
+	})
+
+	lac, ok := sh.getClient().(*locationAwareSpannerClient)
+	if !ok {
+		t.Fatalf("session client type = %T, want *locationAwareSpannerClient", sh.getClient())
+	}
+
+	callOpts := testCallOptionsWithRequestID("1.proc.1.1.57.1")
+	resp, err := lac.BeginTransaction(context.Background(), req, callOpts...)
+	if err != nil {
+		t.Fatalf("BeginTransaction() returned unexpected error: %v", err)
+	}
+	if resp == nil {
+		t.Fatal("BeginTransaction() returned nil response")
+	}
+
+	replicaARequests := harness.Replicas[0].Requests(MethodBeginTransaction)
+	replicaBRequests := harness.Replicas[1].Requests(MethodBeginTransaction)
+	if got, want := len(replicaARequests), 1; got != want {
+		t.Fatalf("replica A BeginTransaction request count = %d, want %d", got, want)
+	}
+	if got, want := len(replicaBRequests), 1; got != want {
+		t.Fatalf("replica B BeginTransaction request count = %d, want %d", got, want)
+	}
+	replicaAReq, ok := replicaARequests[0].(*sppb.BeginTransactionRequest)
+	if !ok {
+		t.Fatalf("replica A request type = %T, want *spannerpb.BeginTransactionRequest", replicaARequests[0])
+	}
+	replicaBReq, ok := replicaBRequests[0].(*sppb.BeginTransactionRequest)
+	if !ok {
+		t.Fatalf("replica B request type = %T, want *spannerpb.BeginTransactionRequest", replicaBRequests[0])
+	}
+	if got, want := replicaAReq.GetSession(), sh.getID(); got != want {
+		t.Fatalf("replica A session = %q, want %q", got, want)
+	}
+	if got, want := replicaBReq.GetSession(), sh.getID(); got != want {
+		t.Fatalf("replica B session = %q, want %q", got, want)
+	}
+
+	logicalRequestKey := logicalRequestKeyFromCallOptions(callOpts)
+	excluded := lac.excludedEndpoints.consume(logicalRequestKey)
+	if excluded != nil && excluded(harness.ReplicaAddresses[0]) {
+		t.Fatalf("expected routed address %q not to be excluded after internal unary retry", harness.ReplicaAddresses[0])
+	}
 }
 
 func TestClient_Single_InvalidArgument(t *testing.T) {

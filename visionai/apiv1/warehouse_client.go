@@ -32,6 +32,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	visionaipb "cloud.google.com/go/visionai/apiv1/visionaipb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -2298,6 +2299,16 @@ type warehouseGRPCClient struct {
 // Service that manages media content + metadata for streaming.
 func NewWarehouseClient(ctx context.Context, opts ...option.ClientOption) (*WarehouseClient, error) {
 	clientOpts := defaultWarehouseGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "visionai",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/visionai/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "visionai.googleapis.com",
+		}))
+	}
 	if newWarehouseClientHook != nil {
 		hookOpts, err := newWarehouseClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -2321,6 +2332,88 @@ func NewWarehouseClient(ctx context.Context, opts ...option.ClientOption) (*Ware
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "visionai",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/visionai/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "visionai.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateAsset = append(client.CallOptions.CreateAsset, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateAsset = append(client.CallOptions.UpdateAsset, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAsset = append(client.CallOptions.GetAsset, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAssets = append(client.CallOptions.ListAssets, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteAsset = append(client.CallOptions.DeleteAsset, gax.WithClientMetrics(metrics))
+		client.CallOptions.UploadAsset = append(client.CallOptions.UploadAsset, gax.WithClientMetrics(metrics))
+		client.CallOptions.GenerateRetrievalUrl = append(client.CallOptions.GenerateRetrievalUrl, gax.WithClientMetrics(metrics))
+		client.CallOptions.AnalyzeAsset = append(client.CallOptions.AnalyzeAsset, gax.WithClientMetrics(metrics))
+		client.CallOptions.IndexAsset = append(client.CallOptions.IndexAsset, gax.WithClientMetrics(metrics))
+		client.CallOptions.RemoveIndexAsset = append(client.CallOptions.RemoveIndexAsset, gax.WithClientMetrics(metrics))
+		client.CallOptions.ViewIndexedAssets = append(client.CallOptions.ViewIndexedAssets, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateIndex = append(client.CallOptions.CreateIndex, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateIndex = append(client.CallOptions.UpdateIndex, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIndex = append(client.CallOptions.GetIndex, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListIndexes = append(client.CallOptions.ListIndexes, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteIndex = append(client.CallOptions.DeleteIndex, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateCorpus = append(client.CallOptions.CreateCorpus, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetCorpus = append(client.CallOptions.GetCorpus, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateCorpus = append(client.CallOptions.UpdateCorpus, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListCorpora = append(client.CallOptions.ListCorpora, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteCorpus = append(client.CallOptions.DeleteCorpus, gax.WithClientMetrics(metrics))
+		client.CallOptions.AnalyzeCorpus = append(client.CallOptions.AnalyzeCorpus, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateDataSchema = append(client.CallOptions.CreateDataSchema, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateDataSchema = append(client.CallOptions.UpdateDataSchema, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetDataSchema = append(client.CallOptions.GetDataSchema, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteDataSchema = append(client.CallOptions.DeleteDataSchema, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListDataSchemas = append(client.CallOptions.ListDataSchemas, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateAnnotation = append(client.CallOptions.CreateAnnotation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAnnotation = append(client.CallOptions.GetAnnotation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAnnotations = append(client.CallOptions.ListAnnotations, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateAnnotation = append(client.CallOptions.UpdateAnnotation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteAnnotation = append(client.CallOptions.DeleteAnnotation, gax.WithClientMetrics(metrics))
+		client.CallOptions.IngestAsset = append(client.CallOptions.IngestAsset, gax.WithClientMetrics(metrics))
+		client.CallOptions.ClipAsset = append(client.CallOptions.ClipAsset, gax.WithClientMetrics(metrics))
+		client.CallOptions.GenerateHlsUri = append(client.CallOptions.GenerateHlsUri, gax.WithClientMetrics(metrics))
+		client.CallOptions.ImportAssets = append(client.CallOptions.ImportAssets, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateSearchConfig = append(client.CallOptions.CreateSearchConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateSearchConfig = append(client.CallOptions.UpdateSearchConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetSearchConfig = append(client.CallOptions.GetSearchConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteSearchConfig = append(client.CallOptions.DeleteSearchConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListSearchConfigs = append(client.CallOptions.ListSearchConfigs, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateSearchHypernym = append(client.CallOptions.CreateSearchHypernym, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateSearchHypernym = append(client.CallOptions.UpdateSearchHypernym, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetSearchHypernym = append(client.CallOptions.GetSearchHypernym, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteSearchHypernym = append(client.CallOptions.DeleteSearchHypernym, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListSearchHypernyms = append(client.CallOptions.ListSearchHypernyms, gax.WithClientMetrics(metrics))
+		client.CallOptions.SearchAssets = append(client.CallOptions.SearchAssets, gax.WithClientMetrics(metrics))
+		client.CallOptions.SearchIndexEndpoint = append(client.CallOptions.SearchIndexEndpoint, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateIndexEndpoint = append(client.CallOptions.CreateIndexEndpoint, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIndexEndpoint = append(client.CallOptions.GetIndexEndpoint, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListIndexEndpoints = append(client.CallOptions.ListIndexEndpoints, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateIndexEndpoint = append(client.CallOptions.UpdateIndexEndpoint, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteIndexEndpoint = append(client.CallOptions.DeleteIndexEndpoint, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeployIndex = append(client.CallOptions.DeployIndex, gax.WithClientMetrics(metrics))
+		client.CallOptions.UndeployIndex = append(client.CallOptions.UndeployIndex, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateCollection = append(client.CallOptions.CreateCollection, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteCollection = append(client.CallOptions.DeleteCollection, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetCollection = append(client.CallOptions.GetCollection, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateCollection = append(client.CallOptions.UpdateCollection, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListCollections = append(client.CallOptions.ListCollections, gax.WithClientMetrics(metrics))
+		client.CallOptions.AddCollectionItem = append(client.CallOptions.AddCollectionItem, gax.WithClientMetrics(metrics))
+		client.CallOptions.RemoveCollectionItem = append(client.CallOptions.RemoveCollectionItem, gax.WithClientMetrics(metrics))
+		client.CallOptions.ViewCollectionItems = append(client.CallOptions.ViewCollectionItems, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -2390,6 +2483,16 @@ type warehouseRESTClient struct {
 // Service that manages media content + metadata for streaming.
 func NewWarehouseRESTClient(ctx context.Context, opts ...option.ClientOption) (*WarehouseClient, error) {
 	clientOpts := append(defaultWarehouseRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "visionai",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/visionai/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "visionai.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -2403,6 +2506,89 @@ func NewWarehouseRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "visionai",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/visionai/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "visionai.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateAsset = append(callOpts.CreateAsset, gax.WithClientMetrics(metrics))
+		callOpts.UpdateAsset = append(callOpts.UpdateAsset, gax.WithClientMetrics(metrics))
+		callOpts.GetAsset = append(callOpts.GetAsset, gax.WithClientMetrics(metrics))
+		callOpts.ListAssets = append(callOpts.ListAssets, gax.WithClientMetrics(metrics))
+		callOpts.DeleteAsset = append(callOpts.DeleteAsset, gax.WithClientMetrics(metrics))
+		callOpts.UploadAsset = append(callOpts.UploadAsset, gax.WithClientMetrics(metrics))
+		callOpts.GenerateRetrievalUrl = append(callOpts.GenerateRetrievalUrl, gax.WithClientMetrics(metrics))
+		callOpts.AnalyzeAsset = append(callOpts.AnalyzeAsset, gax.WithClientMetrics(metrics))
+		callOpts.IndexAsset = append(callOpts.IndexAsset, gax.WithClientMetrics(metrics))
+		callOpts.RemoveIndexAsset = append(callOpts.RemoveIndexAsset, gax.WithClientMetrics(metrics))
+		callOpts.ViewIndexedAssets = append(callOpts.ViewIndexedAssets, gax.WithClientMetrics(metrics))
+		callOpts.CreateIndex = append(callOpts.CreateIndex, gax.WithClientMetrics(metrics))
+		callOpts.UpdateIndex = append(callOpts.UpdateIndex, gax.WithClientMetrics(metrics))
+		callOpts.GetIndex = append(callOpts.GetIndex, gax.WithClientMetrics(metrics))
+		callOpts.ListIndexes = append(callOpts.ListIndexes, gax.WithClientMetrics(metrics))
+		callOpts.DeleteIndex = append(callOpts.DeleteIndex, gax.WithClientMetrics(metrics))
+		callOpts.CreateCorpus = append(callOpts.CreateCorpus, gax.WithClientMetrics(metrics))
+		callOpts.GetCorpus = append(callOpts.GetCorpus, gax.WithClientMetrics(metrics))
+		callOpts.UpdateCorpus = append(callOpts.UpdateCorpus, gax.WithClientMetrics(metrics))
+		callOpts.ListCorpora = append(callOpts.ListCorpora, gax.WithClientMetrics(metrics))
+		callOpts.DeleteCorpus = append(callOpts.DeleteCorpus, gax.WithClientMetrics(metrics))
+		callOpts.AnalyzeCorpus = append(callOpts.AnalyzeCorpus, gax.WithClientMetrics(metrics))
+		callOpts.CreateDataSchema = append(callOpts.CreateDataSchema, gax.WithClientMetrics(metrics))
+		callOpts.UpdateDataSchema = append(callOpts.UpdateDataSchema, gax.WithClientMetrics(metrics))
+		callOpts.GetDataSchema = append(callOpts.GetDataSchema, gax.WithClientMetrics(metrics))
+		callOpts.DeleteDataSchema = append(callOpts.DeleteDataSchema, gax.WithClientMetrics(metrics))
+		callOpts.ListDataSchemas = append(callOpts.ListDataSchemas, gax.WithClientMetrics(metrics))
+		callOpts.CreateAnnotation = append(callOpts.CreateAnnotation, gax.WithClientMetrics(metrics))
+		callOpts.GetAnnotation = append(callOpts.GetAnnotation, gax.WithClientMetrics(metrics))
+		callOpts.ListAnnotations = append(callOpts.ListAnnotations, gax.WithClientMetrics(metrics))
+		callOpts.UpdateAnnotation = append(callOpts.UpdateAnnotation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteAnnotation = append(callOpts.DeleteAnnotation, gax.WithClientMetrics(metrics))
+		callOpts.IngestAsset = append(callOpts.IngestAsset, gax.WithClientMetrics(metrics))
+		callOpts.ClipAsset = append(callOpts.ClipAsset, gax.WithClientMetrics(metrics))
+		callOpts.GenerateHlsUri = append(callOpts.GenerateHlsUri, gax.WithClientMetrics(metrics))
+		callOpts.ImportAssets = append(callOpts.ImportAssets, gax.WithClientMetrics(metrics))
+		callOpts.CreateSearchConfig = append(callOpts.CreateSearchConfig, gax.WithClientMetrics(metrics))
+		callOpts.UpdateSearchConfig = append(callOpts.UpdateSearchConfig, gax.WithClientMetrics(metrics))
+		callOpts.GetSearchConfig = append(callOpts.GetSearchConfig, gax.WithClientMetrics(metrics))
+		callOpts.DeleteSearchConfig = append(callOpts.DeleteSearchConfig, gax.WithClientMetrics(metrics))
+		callOpts.ListSearchConfigs = append(callOpts.ListSearchConfigs, gax.WithClientMetrics(metrics))
+		callOpts.CreateSearchHypernym = append(callOpts.CreateSearchHypernym, gax.WithClientMetrics(metrics))
+		callOpts.UpdateSearchHypernym = append(callOpts.UpdateSearchHypernym, gax.WithClientMetrics(metrics))
+		callOpts.GetSearchHypernym = append(callOpts.GetSearchHypernym, gax.WithClientMetrics(metrics))
+		callOpts.DeleteSearchHypernym = append(callOpts.DeleteSearchHypernym, gax.WithClientMetrics(metrics))
+		callOpts.ListSearchHypernyms = append(callOpts.ListSearchHypernyms, gax.WithClientMetrics(metrics))
+		callOpts.SearchAssets = append(callOpts.SearchAssets, gax.WithClientMetrics(metrics))
+		callOpts.SearchIndexEndpoint = append(callOpts.SearchIndexEndpoint, gax.WithClientMetrics(metrics))
+		callOpts.CreateIndexEndpoint = append(callOpts.CreateIndexEndpoint, gax.WithClientMetrics(metrics))
+		callOpts.GetIndexEndpoint = append(callOpts.GetIndexEndpoint, gax.WithClientMetrics(metrics))
+		callOpts.ListIndexEndpoints = append(callOpts.ListIndexEndpoints, gax.WithClientMetrics(metrics))
+		callOpts.UpdateIndexEndpoint = append(callOpts.UpdateIndexEndpoint, gax.WithClientMetrics(metrics))
+		callOpts.DeleteIndexEndpoint = append(callOpts.DeleteIndexEndpoint, gax.WithClientMetrics(metrics))
+		callOpts.DeployIndex = append(callOpts.DeployIndex, gax.WithClientMetrics(metrics))
+		callOpts.UndeployIndex = append(callOpts.UndeployIndex, gax.WithClientMetrics(metrics))
+		callOpts.CreateCollection = append(callOpts.CreateCollection, gax.WithClientMetrics(metrics))
+		callOpts.DeleteCollection = append(callOpts.DeleteCollection, gax.WithClientMetrics(metrics))
+		callOpts.GetCollection = append(callOpts.GetCollection, gax.WithClientMetrics(metrics))
+		callOpts.UpdateCollection = append(callOpts.UpdateCollection, gax.WithClientMetrics(metrics))
+		callOpts.ListCollections = append(callOpts.ListCollections, gax.WithClientMetrics(metrics))
+		callOpts.AddCollectionItem = append(callOpts.AddCollectionItem, gax.WithClientMetrics(metrics))
+		callOpts.RemoveCollectionItem = append(callOpts.RemoveCollectionItem, gax.WithClientMetrics(metrics))
+		callOpts.ViewCollectionItems = append(callOpts.ViewCollectionItems, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -2459,6 +2645,12 @@ func (c *warehouseGRPCClient) CreateAsset(ctx context.Context, req *visionaipb.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/CreateAsset")
+	}
 	opts = append((*c.CallOptions).CreateAsset[0:len((*c.CallOptions).CreateAsset):len((*c.CallOptions).CreateAsset)], opts...)
 	var resp *visionaipb.Asset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2477,6 +2669,9 @@ func (c *warehouseGRPCClient) UpdateAsset(ctx context.Context, req *visionaipb.U
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/UpdateAsset")
+	}
 	opts = append((*c.CallOptions).UpdateAsset[0:len((*c.CallOptions).UpdateAsset):len((*c.CallOptions).UpdateAsset)], opts...)
 	var resp *visionaipb.Asset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2495,6 +2690,12 @@ func (c *warehouseGRPCClient) GetAsset(ctx context.Context, req *visionaipb.GetA
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/GetAsset")
+	}
 	opts = append((*c.CallOptions).GetAsset[0:len((*c.CallOptions).GetAsset):len((*c.CallOptions).GetAsset)], opts...)
 	var resp *visionaipb.Asset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2513,6 +2714,12 @@ func (c *warehouseGRPCClient) ListAssets(ctx context.Context, req *visionaipb.Li
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/ListAssets")
+	}
 	opts = append((*c.CallOptions).ListAssets[0:len((*c.CallOptions).ListAssets):len((*c.CallOptions).ListAssets)], opts...)
 	it := &AssetIterator{}
 	req = proto.Clone(req).(*visionaipb.ListAssetsRequest)
@@ -2559,6 +2766,12 @@ func (c *warehouseGRPCClient) DeleteAsset(ctx context.Context, req *visionaipb.D
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/DeleteAsset")
+	}
 	opts = append((*c.CallOptions).DeleteAsset[0:len((*c.CallOptions).DeleteAsset):len((*c.CallOptions).DeleteAsset)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2579,6 +2792,12 @@ func (c *warehouseGRPCClient) UploadAsset(ctx context.Context, req *visionaipb.U
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/UploadAsset")
+	}
 	opts = append((*c.CallOptions).UploadAsset[0:len((*c.CallOptions).UploadAsset):len((*c.CallOptions).UploadAsset)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2599,6 +2818,12 @@ func (c *warehouseGRPCClient) GenerateRetrievalUrl(ctx context.Context, req *vis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/GenerateRetrievalUrl")
+	}
 	opts = append((*c.CallOptions).GenerateRetrievalUrl[0:len((*c.CallOptions).GenerateRetrievalUrl):len((*c.CallOptions).GenerateRetrievalUrl)], opts...)
 	var resp *visionaipb.GenerateRetrievalUrlResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2617,6 +2842,12 @@ func (c *warehouseGRPCClient) AnalyzeAsset(ctx context.Context, req *visionaipb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/AnalyzeAsset")
+	}
 	opts = append((*c.CallOptions).AnalyzeAsset[0:len((*c.CallOptions).AnalyzeAsset):len((*c.CallOptions).AnalyzeAsset)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2637,6 +2868,12 @@ func (c *warehouseGRPCClient) IndexAsset(ctx context.Context, req *visionaipb.In
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/IndexAsset")
+	}
 	opts = append((*c.CallOptions).IndexAsset[0:len((*c.CallOptions).IndexAsset):len((*c.CallOptions).IndexAsset)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2657,6 +2894,12 @@ func (c *warehouseGRPCClient) RemoveIndexAsset(ctx context.Context, req *visiona
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/RemoveIndexAsset")
+	}
 	opts = append((*c.CallOptions).RemoveIndexAsset[0:len((*c.CallOptions).RemoveIndexAsset):len((*c.CallOptions).RemoveIndexAsset)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2677,6 +2920,12 @@ func (c *warehouseGRPCClient) ViewIndexedAssets(ctx context.Context, req *vision
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetIndex()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/ViewIndexedAssets")
+	}
 	opts = append((*c.CallOptions).ViewIndexedAssets[0:len((*c.CallOptions).ViewIndexedAssets):len((*c.CallOptions).ViewIndexedAssets)], opts...)
 	it := &IndexedAssetIterator{}
 	req = proto.Clone(req).(*visionaipb.ViewIndexedAssetsRequest)
@@ -2723,6 +2972,12 @@ func (c *warehouseGRPCClient) CreateIndex(ctx context.Context, req *visionaipb.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/CreateIndex")
+	}
 	opts = append((*c.CallOptions).CreateIndex[0:len((*c.CallOptions).CreateIndex):len((*c.CallOptions).CreateIndex)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2743,6 +2998,9 @@ func (c *warehouseGRPCClient) UpdateIndex(ctx context.Context, req *visionaipb.U
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/UpdateIndex")
+	}
 	opts = append((*c.CallOptions).UpdateIndex[0:len((*c.CallOptions).UpdateIndex):len((*c.CallOptions).UpdateIndex)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2763,6 +3021,12 @@ func (c *warehouseGRPCClient) GetIndex(ctx context.Context, req *visionaipb.GetI
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/GetIndex")
+	}
 	opts = append((*c.CallOptions).GetIndex[0:len((*c.CallOptions).GetIndex):len((*c.CallOptions).GetIndex)], opts...)
 	var resp *visionaipb.Index
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2781,6 +3045,12 @@ func (c *warehouseGRPCClient) ListIndexes(ctx context.Context, req *visionaipb.L
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/ListIndexes")
+	}
 	opts = append((*c.CallOptions).ListIndexes[0:len((*c.CallOptions).ListIndexes):len((*c.CallOptions).ListIndexes)], opts...)
 	it := &IndexIterator{}
 	req = proto.Clone(req).(*visionaipb.ListIndexesRequest)
@@ -2827,6 +3097,12 @@ func (c *warehouseGRPCClient) DeleteIndex(ctx context.Context, req *visionaipb.D
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/DeleteIndex")
+	}
 	opts = append((*c.CallOptions).DeleteIndex[0:len((*c.CallOptions).DeleteIndex):len((*c.CallOptions).DeleteIndex)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2847,6 +3123,9 @@ func (c *warehouseGRPCClient) CreateCorpus(ctx context.Context, req *visionaipb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/CreateCorpus")
+	}
 	opts = append((*c.CallOptions).CreateCorpus[0:len((*c.CallOptions).CreateCorpus):len((*c.CallOptions).CreateCorpus)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2867,6 +3146,12 @@ func (c *warehouseGRPCClient) GetCorpus(ctx context.Context, req *visionaipb.Get
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/GetCorpus")
+	}
 	opts = append((*c.CallOptions).GetCorpus[0:len((*c.CallOptions).GetCorpus):len((*c.CallOptions).GetCorpus)], opts...)
 	var resp *visionaipb.Corpus
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2885,6 +3170,9 @@ func (c *warehouseGRPCClient) UpdateCorpus(ctx context.Context, req *visionaipb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/UpdateCorpus")
+	}
 	opts = append((*c.CallOptions).UpdateCorpus[0:len((*c.CallOptions).UpdateCorpus):len((*c.CallOptions).UpdateCorpus)], opts...)
 	var resp *visionaipb.Corpus
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2903,6 +3191,9 @@ func (c *warehouseGRPCClient) ListCorpora(ctx context.Context, req *visionaipb.L
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/ListCorpora")
+	}
 	opts = append((*c.CallOptions).ListCorpora[0:len((*c.CallOptions).ListCorpora):len((*c.CallOptions).ListCorpora)], opts...)
 	it := &CorpusIterator{}
 	req = proto.Clone(req).(*visionaipb.ListCorporaRequest)
@@ -2949,6 +3240,12 @@ func (c *warehouseGRPCClient) DeleteCorpus(ctx context.Context, req *visionaipb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/DeleteCorpus")
+	}
 	opts = append((*c.CallOptions).DeleteCorpus[0:len((*c.CallOptions).DeleteCorpus):len((*c.CallOptions).DeleteCorpus)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2963,6 +3260,12 @@ func (c *warehouseGRPCClient) AnalyzeCorpus(ctx context.Context, req *visionaipb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/AnalyzeCorpus")
+	}
 	opts = append((*c.CallOptions).AnalyzeCorpus[0:len((*c.CallOptions).AnalyzeCorpus):len((*c.CallOptions).AnalyzeCorpus)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2983,6 +3286,12 @@ func (c *warehouseGRPCClient) CreateDataSchema(ctx context.Context, req *visiona
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/CreateDataSchema")
+	}
 	opts = append((*c.CallOptions).CreateDataSchema[0:len((*c.CallOptions).CreateDataSchema):len((*c.CallOptions).CreateDataSchema)], opts...)
 	var resp *visionaipb.DataSchema
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3001,6 +3310,9 @@ func (c *warehouseGRPCClient) UpdateDataSchema(ctx context.Context, req *visiona
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/UpdateDataSchema")
+	}
 	opts = append((*c.CallOptions).UpdateDataSchema[0:len((*c.CallOptions).UpdateDataSchema):len((*c.CallOptions).UpdateDataSchema)], opts...)
 	var resp *visionaipb.DataSchema
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3019,6 +3331,12 @@ func (c *warehouseGRPCClient) GetDataSchema(ctx context.Context, req *visionaipb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/GetDataSchema")
+	}
 	opts = append((*c.CallOptions).GetDataSchema[0:len((*c.CallOptions).GetDataSchema):len((*c.CallOptions).GetDataSchema)], opts...)
 	var resp *visionaipb.DataSchema
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3037,6 +3355,12 @@ func (c *warehouseGRPCClient) DeleteDataSchema(ctx context.Context, req *visiona
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/DeleteDataSchema")
+	}
 	opts = append((*c.CallOptions).DeleteDataSchema[0:len((*c.CallOptions).DeleteDataSchema):len((*c.CallOptions).DeleteDataSchema)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -3051,6 +3375,12 @@ func (c *warehouseGRPCClient) ListDataSchemas(ctx context.Context, req *visionai
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/ListDataSchemas")
+	}
 	opts = append((*c.CallOptions).ListDataSchemas[0:len((*c.CallOptions).ListDataSchemas):len((*c.CallOptions).ListDataSchemas)], opts...)
 	it := &DataSchemaIterator{}
 	req = proto.Clone(req).(*visionaipb.ListDataSchemasRequest)
@@ -3097,6 +3427,12 @@ func (c *warehouseGRPCClient) CreateAnnotation(ctx context.Context, req *visiona
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/CreateAnnotation")
+	}
 	opts = append((*c.CallOptions).CreateAnnotation[0:len((*c.CallOptions).CreateAnnotation):len((*c.CallOptions).CreateAnnotation)], opts...)
 	var resp *visionaipb.Annotation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3115,6 +3451,12 @@ func (c *warehouseGRPCClient) GetAnnotation(ctx context.Context, req *visionaipb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/GetAnnotation")
+	}
 	opts = append((*c.CallOptions).GetAnnotation[0:len((*c.CallOptions).GetAnnotation):len((*c.CallOptions).GetAnnotation)], opts...)
 	var resp *visionaipb.Annotation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3133,6 +3475,12 @@ func (c *warehouseGRPCClient) ListAnnotations(ctx context.Context, req *visionai
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/ListAnnotations")
+	}
 	opts = append((*c.CallOptions).ListAnnotations[0:len((*c.CallOptions).ListAnnotations):len((*c.CallOptions).ListAnnotations)], opts...)
 	it := &AnnotationIterator{}
 	req = proto.Clone(req).(*visionaipb.ListAnnotationsRequest)
@@ -3179,6 +3527,9 @@ func (c *warehouseGRPCClient) UpdateAnnotation(ctx context.Context, req *visiona
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/UpdateAnnotation")
+	}
 	opts = append((*c.CallOptions).UpdateAnnotation[0:len((*c.CallOptions).UpdateAnnotation):len((*c.CallOptions).UpdateAnnotation)], opts...)
 	var resp *visionaipb.Annotation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3197,6 +3548,12 @@ func (c *warehouseGRPCClient) DeleteAnnotation(ctx context.Context, req *visiona
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/DeleteAnnotation")
+	}
 	opts = append((*c.CallOptions).DeleteAnnotation[0:len((*c.CallOptions).DeleteAnnotation):len((*c.CallOptions).DeleteAnnotation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -3208,6 +3565,9 @@ func (c *warehouseGRPCClient) DeleteAnnotation(ctx context.Context, req *visiona
 
 func (c *warehouseGRPCClient) IngestAsset(ctx context.Context, opts ...gax.CallOption) (visionaipb.Warehouse_IngestAssetClient, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/IngestAsset")
+	}
 	var resp visionaipb.Warehouse_IngestAssetClient
 	opts = append((*c.CallOptions).IngestAsset[0:len((*c.CallOptions).IngestAsset):len((*c.CallOptions).IngestAsset)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3228,6 +3588,12 @@ func (c *warehouseGRPCClient) ClipAsset(ctx context.Context, req *visionaipb.Cli
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/ClipAsset")
+	}
 	opts = append((*c.CallOptions).ClipAsset[0:len((*c.CallOptions).ClipAsset):len((*c.CallOptions).ClipAsset)], opts...)
 	var resp *visionaipb.ClipAssetResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3246,6 +3612,12 @@ func (c *warehouseGRPCClient) GenerateHlsUri(ctx context.Context, req *visionaip
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/GenerateHlsUri")
+	}
 	opts = append((*c.CallOptions).GenerateHlsUri[0:len((*c.CallOptions).GenerateHlsUri):len((*c.CallOptions).GenerateHlsUri)], opts...)
 	var resp *visionaipb.GenerateHlsUriResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3264,6 +3636,12 @@ func (c *warehouseGRPCClient) ImportAssets(ctx context.Context, req *visionaipb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/ImportAssets")
+	}
 	opts = append((*c.CallOptions).ImportAssets[0:len((*c.CallOptions).ImportAssets):len((*c.CallOptions).ImportAssets)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3284,6 +3662,12 @@ func (c *warehouseGRPCClient) CreateSearchConfig(ctx context.Context, req *visio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/CreateSearchConfig")
+	}
 	opts = append((*c.CallOptions).CreateSearchConfig[0:len((*c.CallOptions).CreateSearchConfig):len((*c.CallOptions).CreateSearchConfig)], opts...)
 	var resp *visionaipb.SearchConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3302,6 +3686,9 @@ func (c *warehouseGRPCClient) UpdateSearchConfig(ctx context.Context, req *visio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/UpdateSearchConfig")
+	}
 	opts = append((*c.CallOptions).UpdateSearchConfig[0:len((*c.CallOptions).UpdateSearchConfig):len((*c.CallOptions).UpdateSearchConfig)], opts...)
 	var resp *visionaipb.SearchConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3320,6 +3707,12 @@ func (c *warehouseGRPCClient) GetSearchConfig(ctx context.Context, req *visionai
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/GetSearchConfig")
+	}
 	opts = append((*c.CallOptions).GetSearchConfig[0:len((*c.CallOptions).GetSearchConfig):len((*c.CallOptions).GetSearchConfig)], opts...)
 	var resp *visionaipb.SearchConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3338,6 +3731,12 @@ func (c *warehouseGRPCClient) DeleteSearchConfig(ctx context.Context, req *visio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/DeleteSearchConfig")
+	}
 	opts = append((*c.CallOptions).DeleteSearchConfig[0:len((*c.CallOptions).DeleteSearchConfig):len((*c.CallOptions).DeleteSearchConfig)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -3352,6 +3751,12 @@ func (c *warehouseGRPCClient) ListSearchConfigs(ctx context.Context, req *vision
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/ListSearchConfigs")
+	}
 	opts = append((*c.CallOptions).ListSearchConfigs[0:len((*c.CallOptions).ListSearchConfigs):len((*c.CallOptions).ListSearchConfigs)], opts...)
 	it := &SearchConfigIterator{}
 	req = proto.Clone(req).(*visionaipb.ListSearchConfigsRequest)
@@ -3398,6 +3803,12 @@ func (c *warehouseGRPCClient) CreateSearchHypernym(ctx context.Context, req *vis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/CreateSearchHypernym")
+	}
 	opts = append((*c.CallOptions).CreateSearchHypernym[0:len((*c.CallOptions).CreateSearchHypernym):len((*c.CallOptions).CreateSearchHypernym)], opts...)
 	var resp *visionaipb.SearchHypernym
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3416,6 +3827,9 @@ func (c *warehouseGRPCClient) UpdateSearchHypernym(ctx context.Context, req *vis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/UpdateSearchHypernym")
+	}
 	opts = append((*c.CallOptions).UpdateSearchHypernym[0:len((*c.CallOptions).UpdateSearchHypernym):len((*c.CallOptions).UpdateSearchHypernym)], opts...)
 	var resp *visionaipb.SearchHypernym
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3434,6 +3848,12 @@ func (c *warehouseGRPCClient) GetSearchHypernym(ctx context.Context, req *vision
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/GetSearchHypernym")
+	}
 	opts = append((*c.CallOptions).GetSearchHypernym[0:len((*c.CallOptions).GetSearchHypernym):len((*c.CallOptions).GetSearchHypernym)], opts...)
 	var resp *visionaipb.SearchHypernym
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3452,6 +3872,12 @@ func (c *warehouseGRPCClient) DeleteSearchHypernym(ctx context.Context, req *vis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/DeleteSearchHypernym")
+	}
 	opts = append((*c.CallOptions).DeleteSearchHypernym[0:len((*c.CallOptions).DeleteSearchHypernym):len((*c.CallOptions).DeleteSearchHypernym)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -3466,6 +3892,12 @@ func (c *warehouseGRPCClient) ListSearchHypernyms(ctx context.Context, req *visi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/ListSearchHypernyms")
+	}
 	opts = append((*c.CallOptions).ListSearchHypernyms[0:len((*c.CallOptions).ListSearchHypernyms):len((*c.CallOptions).ListSearchHypernyms)], opts...)
 	it := &SearchHypernymIterator{}
 	req = proto.Clone(req).(*visionaipb.ListSearchHypernymsRequest)
@@ -3512,6 +3944,12 @@ func (c *warehouseGRPCClient) SearchAssets(ctx context.Context, req *visionaipb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetCorpus()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/SearchAssets")
+	}
 	opts = append((*c.CallOptions).SearchAssets[0:len((*c.CallOptions).SearchAssets):len((*c.CallOptions).SearchAssets)], opts...)
 	it := &SearchResultItemIterator{}
 	req = proto.Clone(req).(*visionaipb.SearchAssetsRequest)
@@ -3558,6 +3996,12 @@ func (c *warehouseGRPCClient) SearchIndexEndpoint(ctx context.Context, req *visi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetIndexEndpoint()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/SearchIndexEndpoint")
+	}
 	opts = append((*c.CallOptions).SearchIndexEndpoint[0:len((*c.CallOptions).SearchIndexEndpoint):len((*c.CallOptions).SearchIndexEndpoint)], opts...)
 	it := &SearchResultItemIterator{}
 	req = proto.Clone(req).(*visionaipb.SearchIndexEndpointRequest)
@@ -3604,6 +4048,12 @@ func (c *warehouseGRPCClient) CreateIndexEndpoint(ctx context.Context, req *visi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/CreateIndexEndpoint")
+	}
 	opts = append((*c.CallOptions).CreateIndexEndpoint[0:len((*c.CallOptions).CreateIndexEndpoint):len((*c.CallOptions).CreateIndexEndpoint)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3624,6 +4074,12 @@ func (c *warehouseGRPCClient) GetIndexEndpoint(ctx context.Context, req *visiona
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/GetIndexEndpoint")
+	}
 	opts = append((*c.CallOptions).GetIndexEndpoint[0:len((*c.CallOptions).GetIndexEndpoint):len((*c.CallOptions).GetIndexEndpoint)], opts...)
 	var resp *visionaipb.IndexEndpoint
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3642,6 +4098,12 @@ func (c *warehouseGRPCClient) ListIndexEndpoints(ctx context.Context, req *visio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/ListIndexEndpoints")
+	}
 	opts = append((*c.CallOptions).ListIndexEndpoints[0:len((*c.CallOptions).ListIndexEndpoints):len((*c.CallOptions).ListIndexEndpoints)], opts...)
 	it := &IndexEndpointIterator{}
 	req = proto.Clone(req).(*visionaipb.ListIndexEndpointsRequest)
@@ -3688,6 +4150,9 @@ func (c *warehouseGRPCClient) UpdateIndexEndpoint(ctx context.Context, req *visi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/UpdateIndexEndpoint")
+	}
 	opts = append((*c.CallOptions).UpdateIndexEndpoint[0:len((*c.CallOptions).UpdateIndexEndpoint):len((*c.CallOptions).UpdateIndexEndpoint)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3708,6 +4173,12 @@ func (c *warehouseGRPCClient) DeleteIndexEndpoint(ctx context.Context, req *visi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/DeleteIndexEndpoint")
+	}
 	opts = append((*c.CallOptions).DeleteIndexEndpoint[0:len((*c.CallOptions).DeleteIndexEndpoint):len((*c.CallOptions).DeleteIndexEndpoint)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3728,6 +4199,12 @@ func (c *warehouseGRPCClient) DeployIndex(ctx context.Context, req *visionaipb.D
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetIndexEndpoint()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/DeployIndex")
+	}
 	opts = append((*c.CallOptions).DeployIndex[0:len((*c.CallOptions).DeployIndex):len((*c.CallOptions).DeployIndex)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3748,6 +4225,12 @@ func (c *warehouseGRPCClient) UndeployIndex(ctx context.Context, req *visionaipb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetIndexEndpoint()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/UndeployIndex")
+	}
 	opts = append((*c.CallOptions).UndeployIndex[0:len((*c.CallOptions).UndeployIndex):len((*c.CallOptions).UndeployIndex)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3768,6 +4251,12 @@ func (c *warehouseGRPCClient) CreateCollection(ctx context.Context, req *visiona
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/CreateCollection")
+	}
 	opts = append((*c.CallOptions).CreateCollection[0:len((*c.CallOptions).CreateCollection):len((*c.CallOptions).CreateCollection)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3788,6 +4277,12 @@ func (c *warehouseGRPCClient) DeleteCollection(ctx context.Context, req *visiona
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/DeleteCollection")
+	}
 	opts = append((*c.CallOptions).DeleteCollection[0:len((*c.CallOptions).DeleteCollection):len((*c.CallOptions).DeleteCollection)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3808,6 +4303,12 @@ func (c *warehouseGRPCClient) GetCollection(ctx context.Context, req *visionaipb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/GetCollection")
+	}
 	opts = append((*c.CallOptions).GetCollection[0:len((*c.CallOptions).GetCollection):len((*c.CallOptions).GetCollection)], opts...)
 	var resp *visionaipb.Collection
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3826,6 +4327,9 @@ func (c *warehouseGRPCClient) UpdateCollection(ctx context.Context, req *visiona
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/UpdateCollection")
+	}
 	opts = append((*c.CallOptions).UpdateCollection[0:len((*c.CallOptions).UpdateCollection):len((*c.CallOptions).UpdateCollection)], opts...)
 	var resp *visionaipb.Collection
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3844,6 +4348,12 @@ func (c *warehouseGRPCClient) ListCollections(ctx context.Context, req *visionai
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/ListCollections")
+	}
 	opts = append((*c.CallOptions).ListCollections[0:len((*c.CallOptions).ListCollections):len((*c.CallOptions).ListCollections)], opts...)
 	it := &CollectionIterator{}
 	req = proto.Clone(req).(*visionaipb.ListCollectionsRequest)
@@ -3890,6 +4400,9 @@ func (c *warehouseGRPCClient) AddCollectionItem(ctx context.Context, req *vision
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/AddCollectionItem")
+	}
 	opts = append((*c.CallOptions).AddCollectionItem[0:len((*c.CallOptions).AddCollectionItem):len((*c.CallOptions).AddCollectionItem)], opts...)
 	var resp *visionaipb.AddCollectionItemResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3908,6 +4421,9 @@ func (c *warehouseGRPCClient) RemoveCollectionItem(ctx context.Context, req *vis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/RemoveCollectionItem")
+	}
 	opts = append((*c.CallOptions).RemoveCollectionItem[0:len((*c.CallOptions).RemoveCollectionItem):len((*c.CallOptions).RemoveCollectionItem)], opts...)
 	var resp *visionaipb.RemoveCollectionItemResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3926,6 +4442,12 @@ func (c *warehouseGRPCClient) ViewCollectionItems(ctx context.Context, req *visi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetCollection()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/ViewCollectionItems")
+	}
 	opts = append((*c.CallOptions).ViewCollectionItems[0:len((*c.CallOptions).ViewCollectionItems):len((*c.CallOptions).ViewCollectionItems)], opts...)
 	it := &CollectionItemIterator{}
 	req = proto.Clone(req).(*visionaipb.ViewCollectionItemsRequest)
@@ -3972,6 +4494,9 @@ func (c *warehouseGRPCClient) GetLocation(ctx context.Context, req *locationpb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3990,6 +4515,9 @@ func (c *warehouseGRPCClient) ListLocations(ctx context.Context, req *locationpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
@@ -4036,6 +4564,9 @@ func (c *warehouseGRPCClient) CancelOperation(ctx context.Context, req *longrunn
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -4050,6 +4581,9 @@ func (c *warehouseGRPCClient) DeleteOperation(ctx context.Context, req *longrunn
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -4064,6 +4598,9 @@ func (c *warehouseGRPCClient) GetOperation(ctx context.Context, req *longrunning
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4082,6 +4619,9 @@ func (c *warehouseGRPCClient) ListOperations(ctx context.Context, req *longrunni
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
@@ -4152,6 +4692,13 @@ func (c *warehouseRESTClient) CreateAsset(ctx context.Context, req *visionaipb.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/CreateAsset")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/corpora/*}/assets")
+	}
 	opts = append((*c.CallOptions).CreateAsset[0:len((*c.CallOptions).CreateAsset):len((*c.CallOptions).CreateAsset)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionaipb.Asset{}
@@ -4216,6 +4763,10 @@ func (c *warehouseRESTClient) UpdateAsset(ctx context.Context, req *visionaipb.U
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/UpdateAsset")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{asset.name=projects/*/locations/*/corpora/*/assets/*}")
+	}
 	opts = append((*c.CallOptions).UpdateAsset[0:len((*c.CallOptions).UpdateAsset):len((*c.CallOptions).UpdateAsset)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionaipb.Asset{}
@@ -4266,6 +4817,13 @@ func (c *warehouseRESTClient) GetAsset(ctx context.Context, req *visionaipb.GetA
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/GetAsset")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/corpora/*/assets/*}")
+	}
 	opts = append((*c.CallOptions).GetAsset[0:len((*c.CallOptions).GetAsset):len((*c.CallOptions).GetAsset)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionaipb.Asset{}
@@ -4397,6 +4955,13 @@ func (c *warehouseRESTClient) DeleteAsset(ctx context.Context, req *visionaipb.D
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/DeleteAsset")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/corpora/*/assets/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4465,6 +5030,13 @@ func (c *warehouseRESTClient) UploadAsset(ctx context.Context, req *visionaipb.U
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/UploadAsset")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/corpora/*/assets/*}:upload")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4526,6 +5098,13 @@ func (c *warehouseRESTClient) GenerateRetrievalUrl(ctx context.Context, req *vis
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/GenerateRetrievalUrl")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/corpora/*/assets/*}:generateRetrievalUrl")
+	}
 	opts = append((*c.CallOptions).GenerateRetrievalUrl[0:len((*c.CallOptions).GenerateRetrievalUrl):len((*c.CallOptions).GenerateRetrievalUrl)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionaipb.GenerateRetrievalUrlResponse{}
@@ -4582,6 +5161,13 @@ func (c *warehouseRESTClient) AnalyzeAsset(ctx context.Context, req *visionaipb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/AnalyzeAsset")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/corpora/*/assets/*}:analyze")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4642,6 +5228,13 @@ func (c *warehouseRESTClient) IndexAsset(ctx context.Context, req *visionaipb.In
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/IndexAsset")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/corpora/*/assets/*}:index")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4702,6 +5295,13 @@ func (c *warehouseRESTClient) RemoveIndexAsset(ctx context.Context, req *visiona
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/RemoveIndexAsset")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/corpora/*/assets/*}:removeIndex")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4846,6 +5446,13 @@ func (c *warehouseRESTClient) CreateIndex(ctx context.Context, req *visionaipb.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/CreateIndex")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/corpora/*}/indexes")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4915,6 +5522,10 @@ func (c *warehouseRESTClient) UpdateIndex(ctx context.Context, req *visionaipb.U
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/UpdateIndex")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{index.name=projects/*/locations/*/corpora/*/indexes/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4968,6 +5579,13 @@ func (c *warehouseRESTClient) GetIndex(ctx context.Context, req *visionaipb.GetI
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/GetIndex")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/corpora/*/indexes/*}")
+	}
 	opts = append((*c.CallOptions).GetIndex[0:len((*c.CallOptions).GetIndex):len((*c.CallOptions).GetIndex)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionaipb.Index{}
@@ -5097,6 +5715,13 @@ func (c *warehouseRESTClient) DeleteIndex(ctx context.Context, req *visionaipb.D
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/DeleteIndex")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/corpora/*/indexes/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5157,6 +5782,10 @@ func (c *warehouseRESTClient) CreateCorpus(ctx context.Context, req *visionaipb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/CreateCorpus")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/corpora")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5210,6 +5839,13 @@ func (c *warehouseRESTClient) GetCorpus(ctx context.Context, req *visionaipb.Get
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/GetCorpus")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/corpora/*}")
+	}
 	opts = append((*c.CallOptions).GetCorpus[0:len((*c.CallOptions).GetCorpus):len((*c.CallOptions).GetCorpus)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionaipb.Corpus{}
@@ -5274,6 +5910,10 @@ func (c *warehouseRESTClient) UpdateCorpus(ctx context.Context, req *visionaipb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/UpdateCorpus")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{corpus.name=projects/*/locations/*/corpora/*}")
+	}
 	opts = append((*c.CallOptions).UpdateCorpus[0:len((*c.CallOptions).UpdateCorpus):len((*c.CallOptions).UpdateCorpus)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionaipb.Corpus{}
@@ -5406,6 +6046,13 @@ func (c *warehouseRESTClient) DeleteCorpus(ctx context.Context, req *visionaipb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/DeleteCorpus")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/corpora/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -5447,6 +6094,13 @@ func (c *warehouseRESTClient) AnalyzeCorpus(ctx context.Context, req *visionaipb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/AnalyzeCorpus")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/corpora/*}:analyze")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5507,6 +6161,13 @@ func (c *warehouseRESTClient) CreateDataSchema(ctx context.Context, req *visiona
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/CreateDataSchema")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/corpora/*}/dataSchemas")
+	}
 	opts = append((*c.CallOptions).CreateDataSchema[0:len((*c.CallOptions).CreateDataSchema):len((*c.CallOptions).CreateDataSchema)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionaipb.DataSchema{}
@@ -5571,6 +6232,10 @@ func (c *warehouseRESTClient) UpdateDataSchema(ctx context.Context, req *visiona
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/UpdateDataSchema")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{data_schema.name=projects/*/locations/*/corpora/*/dataSchemas/*}")
+	}
 	opts = append((*c.CallOptions).UpdateDataSchema[0:len((*c.CallOptions).UpdateDataSchema):len((*c.CallOptions).UpdateDataSchema)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionaipb.DataSchema{}
@@ -5621,6 +6286,13 @@ func (c *warehouseRESTClient) GetDataSchema(ctx context.Context, req *visionaipb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/GetDataSchema")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/corpora/*/dataSchemas/*}")
+	}
 	opts = append((*c.CallOptions).GetDataSchema[0:len((*c.CallOptions).GetDataSchema):len((*c.CallOptions).GetDataSchema)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionaipb.DataSchema{}
@@ -5671,6 +6343,13 @@ func (c *warehouseRESTClient) DeleteDataSchema(ctx context.Context, req *visiona
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/DeleteDataSchema")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/corpora/*/dataSchemas/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -5794,6 +6473,13 @@ func (c *warehouseRESTClient) CreateAnnotation(ctx context.Context, req *visiona
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/CreateAnnotation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/corpora/*/assets/*}/annotations")
+	}
 	opts = append((*c.CallOptions).CreateAnnotation[0:len((*c.CallOptions).CreateAnnotation):len((*c.CallOptions).CreateAnnotation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionaipb.Annotation{}
@@ -5844,6 +6530,13 @@ func (c *warehouseRESTClient) GetAnnotation(ctx context.Context, req *visionaipb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/GetAnnotation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/corpora/*/assets/*/annotations/*}")
+	}
 	opts = append((*c.CallOptions).GetAnnotation[0:len((*c.CallOptions).GetAnnotation):len((*c.CallOptions).GetAnnotation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionaipb.Annotation{}
@@ -5989,6 +6682,10 @@ func (c *warehouseRESTClient) UpdateAnnotation(ctx context.Context, req *visiona
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/UpdateAnnotation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{annotation.name=projects/*/locations/*/corpora/*/assets/*/annotations/*}")
+	}
 	opts = append((*c.CallOptions).UpdateAnnotation[0:len((*c.CallOptions).UpdateAnnotation):len((*c.CallOptions).UpdateAnnotation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionaipb.Annotation{}
@@ -6039,6 +6736,13 @@ func (c *warehouseRESTClient) DeleteAnnotation(ctx context.Context, req *visiona
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/DeleteAnnotation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/corpora/*/assets/*/annotations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -6095,6 +6799,13 @@ func (c *warehouseRESTClient) ClipAsset(ctx context.Context, req *visionaipb.Cli
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/ClipAsset")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/corpora/*/assets/*}:clip")
+	}
 	opts = append((*c.CallOptions).ClipAsset[0:len((*c.CallOptions).ClipAsset):len((*c.CallOptions).ClipAsset)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionaipb.ClipAssetResponse{}
@@ -6153,6 +6864,13 @@ func (c *warehouseRESTClient) GenerateHlsUri(ctx context.Context, req *visionaip
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/GenerateHlsUri")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/corpora/*/assets/*}:generateHlsUri")
+	}
 	opts = append((*c.CallOptions).GenerateHlsUri[0:len((*c.CallOptions).GenerateHlsUri):len((*c.CallOptions).GenerateHlsUri)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionaipb.GenerateHlsUriResponse{}
@@ -6211,6 +6929,13 @@ func (c *warehouseRESTClient) ImportAssets(ctx context.Context, req *visionaipb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/ImportAssets")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/corpora/*}/assets:import")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6292,6 +7017,13 @@ func (c *warehouseRESTClient) CreateSearchConfig(ctx context.Context, req *visio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/CreateSearchConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/corpora/*}/searchConfigs")
+	}
 	opts = append((*c.CallOptions).CreateSearchConfig[0:len((*c.CallOptions).CreateSearchConfig):len((*c.CallOptions).CreateSearchConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionaipb.SearchConfig{}
@@ -6375,6 +7107,10 @@ func (c *warehouseRESTClient) UpdateSearchConfig(ctx context.Context, req *visio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/UpdateSearchConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{search_config.name=projects/*/locations/*/corpora/*/searchConfigs/*}")
+	}
 	opts = append((*c.CallOptions).UpdateSearchConfig[0:len((*c.CallOptions).UpdateSearchConfig):len((*c.CallOptions).UpdateSearchConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionaipb.SearchConfig{}
@@ -6425,6 +7161,13 @@ func (c *warehouseRESTClient) GetSearchConfig(ctx context.Context, req *visionai
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/GetSearchConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/corpora/*/searchConfigs/*}")
+	}
 	opts = append((*c.CallOptions).GetSearchConfig[0:len((*c.CallOptions).GetSearchConfig):len((*c.CallOptions).GetSearchConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionaipb.SearchConfig{}
@@ -6478,6 +7221,13 @@ func (c *warehouseRESTClient) DeleteSearchConfig(ctx context.Context, req *visio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/DeleteSearchConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/corpora/*/searchConfigs/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -6601,6 +7351,13 @@ func (c *warehouseRESTClient) CreateSearchHypernym(ctx context.Context, req *vis
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/CreateSearchHypernym")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/corpora/*}/searchHypernyms")
+	}
 	opts = append((*c.CallOptions).CreateSearchHypernym[0:len((*c.CallOptions).CreateSearchHypernym):len((*c.CallOptions).CreateSearchHypernym)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionaipb.SearchHypernym{}
@@ -6665,6 +7422,10 @@ func (c *warehouseRESTClient) UpdateSearchHypernym(ctx context.Context, req *vis
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/UpdateSearchHypernym")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{search_hypernym.name=projects/*/locations/*/corpora/*/searchHypernyms/*}")
+	}
 	opts = append((*c.CallOptions).UpdateSearchHypernym[0:len((*c.CallOptions).UpdateSearchHypernym):len((*c.CallOptions).UpdateSearchHypernym)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionaipb.SearchHypernym{}
@@ -6715,6 +7476,13 @@ func (c *warehouseRESTClient) GetSearchHypernym(ctx context.Context, req *vision
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/GetSearchHypernym")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/corpora/*/searchHypernyms/*}")
+	}
 	opts = append((*c.CallOptions).GetSearchHypernym[0:len((*c.CallOptions).GetSearchHypernym):len((*c.CallOptions).GetSearchHypernym)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionaipb.SearchHypernym{}
@@ -6765,6 +7533,13 @@ func (c *warehouseRESTClient) DeleteSearchHypernym(ctx context.Context, req *vis
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/DeleteSearchHypernym")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/corpora/*/searchHypernyms/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -7044,6 +7819,13 @@ func (c *warehouseRESTClient) CreateIndexEndpoint(ctx context.Context, req *visi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/CreateIndexEndpoint")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/indexEndpoints")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7097,6 +7879,13 @@ func (c *warehouseRESTClient) GetIndexEndpoint(ctx context.Context, req *visiona
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/GetIndexEndpoint")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/indexEndpoints/*}")
+	}
 	opts = append((*c.CallOptions).GetIndexEndpoint[0:len((*c.CallOptions).GetIndexEndpoint):len((*c.CallOptions).GetIndexEndpoint)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionaipb.IndexEndpoint{}
@@ -7242,6 +8031,10 @@ func (c *warehouseRESTClient) UpdateIndexEndpoint(ctx context.Context, req *visi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/UpdateIndexEndpoint")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{index_endpoint.name=projects/*/locations/*/indexEndpoints/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7295,6 +8088,13 @@ func (c *warehouseRESTClient) DeleteIndexEndpoint(ctx context.Context, req *visi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/DeleteIndexEndpoint")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/indexEndpoints/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7354,6 +8154,13 @@ func (c *warehouseRESTClient) DeployIndex(ctx context.Context, req *visionaipb.D
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetIndexEndpoint()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/DeployIndex")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{index_endpoint=projects/*/locations/*/indexEndpoints/*}:deployIndex")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7413,6 +8220,13 @@ func (c *warehouseRESTClient) UndeployIndex(ctx context.Context, req *visionaipb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetIndexEndpoint()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/UndeployIndex")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{index_endpoint=projects/*/locations/*/indexEndpoints/*}:undeployIndex")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7476,6 +8290,13 @@ func (c *warehouseRESTClient) CreateCollection(ctx context.Context, req *visiona
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/CreateCollection")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/corpora/*}/collections")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7529,6 +8350,13 @@ func (c *warehouseRESTClient) DeleteCollection(ctx context.Context, req *visiona
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/DeleteCollection")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/corpora/*/collections/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7582,6 +8410,13 @@ func (c *warehouseRESTClient) GetCollection(ctx context.Context, req *visionaipb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//warehouse-visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/GetCollection")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/corpora/*/collections/*}")
+	}
 	opts = append((*c.CallOptions).GetCollection[0:len((*c.CallOptions).GetCollection):len((*c.CallOptions).GetCollection)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionaipb.Collection{}
@@ -7646,6 +8481,10 @@ func (c *warehouseRESTClient) UpdateCollection(ctx context.Context, req *visiona
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/UpdateCollection")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{collection.name=projects/*/locations/*/corpora/*/collections/*}")
+	}
 	opts = append((*c.CallOptions).UpdateCollection[0:len((*c.CallOptions).UpdateCollection):len((*c.CallOptions).UpdateCollection)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionaipb.Collection{}
@@ -7780,6 +8619,10 @@ func (c *warehouseRESTClient) AddCollectionItem(ctx context.Context, req *vision
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/AddCollectionItem")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{item.collection=projects/*/locations/*/corpora/*/collections/*}:addCollectionItem")
+	}
 	opts = append((*c.CallOptions).AddCollectionItem[0:len((*c.CallOptions).AddCollectionItem):len((*c.CallOptions).AddCollectionItem)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionaipb.AddCollectionItemResponse{}
@@ -7836,6 +8679,10 @@ func (c *warehouseRESTClient) RemoveCollectionItem(ctx context.Context, req *vis
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.Warehouse/RemoveCollectionItem")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{item.collection=projects/*/locations/*/corpora/*/collections/*}:removeCollectionItem")
+	}
 	opts = append((*c.CallOptions).RemoveCollectionItem[0:len((*c.CallOptions).RemoveCollectionItem):len((*c.CallOptions).RemoveCollectionItem)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionaipb.RemoveCollectionItemResponse{}
@@ -7964,6 +8811,10 @@ func (c *warehouseRESTClient) GetLocation(ctx context.Context, req *locationpb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -8101,6 +8952,10 @@ func (c *warehouseRESTClient) CancelOperation(ctx context.Context, req *longrunn
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -8136,6 +8991,10 @@ func (c *warehouseRESTClient) DeleteOperation(ctx context.Context, req *longrunn
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -8171,6 +9030,10 @@ func (c *warehouseRESTClient) GetOperation(ctx context.Context, req *longrunning
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}

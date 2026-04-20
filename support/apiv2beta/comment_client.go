@@ -28,6 +28,7 @@ import (
 
 	supportpb "cloud.google.com/go/support/apiv2beta/supportpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -191,6 +192,16 @@ type commentGRPCClient struct {
 // A service to manage comments on cases.
 func NewCommentClient(ctx context.Context, opts ...option.ClientOption) (*CommentClient, error) {
 	clientOpts := defaultCommentGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudsupport",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/support/apiv2beta",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudsupport.googleapis.com",
+		}))
+	}
 	if newCommentClientHook != nil {
 		hookOpts, err := newCommentClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -212,6 +223,22 @@ func NewCommentClient(ctx context.Context, opts ...option.ClientOption) (*Commen
 		logger:        internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudsupport",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/support/apiv2beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudsupport.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListComments = append(client.CallOptions.ListComments, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateComment = append(client.CallOptions.CreateComment, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetComment = append(client.CallOptions.GetComment, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -265,6 +292,16 @@ type commentRESTClient struct {
 // A service to manage comments on cases.
 func NewCommentRESTClient(ctx context.Context, opts ...option.ClientOption) (*CommentClient, error) {
 	clientOpts := append(defaultCommentRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudsupport",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/support/apiv2beta",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudsupport.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -278,6 +315,23 @@ func NewCommentRESTClient(ctx context.Context, opts ...option.ClientOption) (*Co
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudsupport",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/support/apiv2beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudsupport.googleapis.com",
+			}),
+		)
+
+		callOpts.ListComments = append(callOpts.ListComments, gax.WithClientMetrics(metrics))
+		callOpts.CreateComment = append(callOpts.CreateComment, gax.WithClientMetrics(metrics))
+		callOpts.GetComment = append(callOpts.GetComment, gax.WithClientMetrics(metrics))
+	}
 
 	return &CommentClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -324,6 +378,12 @@ func (c *commentGRPCClient) ListComments(ctx context.Context, req *supportpb.Lis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudsupport.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.support.v2beta.CommentService/ListComments")
+	}
 	opts = append((*c.CallOptions).ListComments[0:len((*c.CallOptions).ListComments):len((*c.CallOptions).ListComments)], opts...)
 	it := &CommentIterator{}
 	req = proto.Clone(req).(*supportpb.ListCommentsRequest)
@@ -370,6 +430,12 @@ func (c *commentGRPCClient) CreateComment(ctx context.Context, req *supportpb.Cr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudsupport.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.support.v2beta.CommentService/CreateComment")
+	}
 	opts = append((*c.CallOptions).CreateComment[0:len((*c.CallOptions).CreateComment):len((*c.CallOptions).CreateComment)], opts...)
 	var resp *supportpb.Comment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -388,6 +454,12 @@ func (c *commentGRPCClient) GetComment(ctx context.Context, req *supportpb.GetCo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudsupport.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.support.v2beta.CommentService/GetComment")
+	}
 	opts = append((*c.CallOptions).GetComment[0:len((*c.CallOptions).GetComment):len((*c.CallOptions).GetComment)], opts...)
 	var resp *supportpb.Comment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -507,6 +579,13 @@ func (c *commentRESTClient) CreateComment(ctx context.Context, req *supportpb.Cr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudsupport.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.support.v2beta.CommentService/CreateComment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta/{parent=projects/*/cases/*}/comments")
+	}
 	opts = append((*c.CallOptions).CreateComment[0:len((*c.CallOptions).CreateComment):len((*c.CallOptions).CreateComment)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &supportpb.Comment{}
@@ -557,6 +636,13 @@ func (c *commentRESTClient) GetComment(ctx context.Context, req *supportpb.GetCo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudsupport.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.support.v2beta.CommentService/GetComment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta/{name=*/*/cases/*/comments/*}")
+	}
 	opts = append((*c.CallOptions).GetComment[0:len((*c.CallOptions).GetComment):len((*c.CallOptions).GetComment)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &supportpb.Comment{}

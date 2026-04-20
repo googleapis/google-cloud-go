@@ -160,6 +160,11 @@ func generateAgentEngineMemoriesConfigToVertex(fromObject map[string]any, parent
 		genai.InternalSetValueByPath(parentObject, []string{"metadataMergeStrategy"}, fromMetadataMergeStrategy)
 	}
 
+	fromAllowedTopics := genai.InternalGetValueByPath(fromObject, []string{"allowedTopics"})
+	if fromAllowedTopics != nil {
+		genai.InternalSetValueByPath(parentObject, []string{"allowedTopics"}, fromAllowedTopics)
+	}
+
 	return toObject, nil
 }
 
@@ -230,6 +235,56 @@ func getAgentEngineMemoryRequestParametersToVertex(fromObject map[string]any, pa
 	fromName := genai.InternalGetValueByPath(fromObject, []string{"name"})
 	if fromName != nil {
 		genai.InternalSetValueByPath(toObject, []string{"_url", "name"}, fromName)
+	}
+
+	return toObject, nil
+}
+
+func ingestEventsConfigToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
+	toObject = make(map[string]any)
+
+	fromForceFlush := genai.InternalGetValueByPath(fromObject, []string{"forceFlush"})
+	if fromForceFlush != nil {
+		genai.InternalSetValueByPath(parentObject, []string{"forceFlush"}, fromForceFlush)
+	}
+
+	return toObject, nil
+}
+
+func ingestEventsRequestParametersToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
+	toObject = make(map[string]any)
+
+	fromName := genai.InternalGetValueByPath(fromObject, []string{"name"})
+	if fromName != nil {
+		genai.InternalSetValueByPath(toObject, []string{"_url", "name"}, fromName)
+	}
+
+	fromStreamId := genai.InternalGetValueByPath(fromObject, []string{"streamId"})
+	if fromStreamId != nil {
+		genai.InternalSetValueByPath(toObject, []string{"streamId"}, fromStreamId)
+	}
+
+	fromDirectContentsSource := genai.InternalGetValueByPath(fromObject, []string{"directContentsSource"})
+	if fromDirectContentsSource != nil {
+		genai.InternalSetValueByPath(toObject, []string{"directContentsSource"}, fromDirectContentsSource)
+	}
+
+	fromScope := genai.InternalGetValueByPath(fromObject, []string{"scope"})
+	if fromScope != nil {
+		genai.InternalSetValueByPath(toObject, []string{"scope"}, fromScope)
+	}
+
+	fromGenerationTriggerConfig := genai.InternalGetValueByPath(fromObject, []string{"generationTriggerConfig"})
+	if fromGenerationTriggerConfig != nil {
+		genai.InternalSetValueByPath(toObject, []string{"generationTriggerConfig"}, fromGenerationTriggerConfig)
+	}
+
+	fromConfig := genai.InternalGetValueByPath(fromObject, []string{"config"})
+	if fromConfig != nil {
+		_, err = ingestEventsConfigToVertex(fromConfig.(map[string]any), toObject, rootObject)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return toObject, nil
@@ -463,7 +518,8 @@ func updateAgentEngineMemoryRequestParametersToVertex(fromObject map[string]any,
 }
 
 type Memories struct {
-	apiClient *genai.InternalAPIClient
+	apiClient       *genai.InternalAPIClient
+	MemoryRevisions *MemoryRevisions
 }
 
 func (m Memories) create(ctx context.Context, name string, fact string, scope map[string]string, config *types.AgentEngineMemoryConfig) (*types.AgentEngineMemoryOperation, error) {
@@ -749,6 +805,82 @@ func (m Memories) Get(ctx context.Context, name string, config *types.GetAgentEn
 		delete(body, "_query")
 	}
 	responseMap, err = genai.SendRequest(ctx, m.apiClient, path, http.MethodGet, body, httpOptions)
+	if err != nil {
+		return nil, err
+	}
+	err = genai.InternalMapToStruct(responseMap, response)
+	if err != nil {
+		return nil, err
+	}
+
+	if field, ok := reflect.TypeOf(response).Elem().FieldByName("SDKHTTPResponse"); ok {
+		{
+			if reflect.ValueOf(response).Elem().FieldByName("SDKHTTPResponse").IsValid() {
+				{
+					reflect.ValueOf(response).Elem().FieldByName("SDKHTTPResponse").Set(reflect.Zero(field.Type))
+				}
+			}
+		}
+	}
+
+	return response, nil
+}
+
+func (m Memories) ingestEvents(ctx context.Context, name string, streamId *string, directContentsSource *types.IngestionDirectContentsSource, scope *map[string]string, generationTriggerConfig *types.GenerationTriggerConfig, config *types.IngestEventsConfig) (*types.MemoryBankIngestEventsOperation, error) {
+	parameterMap := make(map[string]any)
+
+	kwargs := map[string]any{"name": name, "streamId": streamId, "directContentsSource": directContentsSource, "scope": scope, "generationTriggerConfig": generationTriggerConfig, "config": config}
+	genai.InternalDeepMarshal(kwargs, &parameterMap)
+
+	var httpOptions *genai.HTTPOptions
+	if config == nil || config.HTTPOptions == nil {
+		httpOptions = &genai.HTTPOptions{}
+	} else {
+		httpOptions = config.HTTPOptions
+	}
+	if httpOptions.Headers == nil {
+		httpOptions.Headers = http.Header{}
+	}
+	var response = new(types.MemoryBankIngestEventsOperation)
+	var responseMap map[string]any
+	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
+	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
+		toConverter = ingestEventsRequestParametersToVertex
+
+	} else {
+
+		return nil, fmt.Errorf("method IngestEvents is only supported in the Vertex AI client. You can choose to use Vertex AI by setting ClientConfig.Backend to BackendVertexAI.")
+
+	}
+
+	body, err := toConverter(parameterMap, nil, parameterMap)
+	if err != nil {
+		return nil, err
+	}
+	delete(body, "config")
+	var path string
+	var urlParams map[string]any
+	if _, ok := body["_url"]; ok {
+		urlParams = body["_url"].(map[string]any)
+		delete(body, "_url")
+	}
+	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
+		path, err = genai.InternalFormatMap("{name}/memories:ingestEvents", urlParams)
+	} else {
+		path, err = genai.InternalFormatMap("None", urlParams)
+	}
+	if err != nil {
+		return nil, fmt.Errorf("invalid url params: %#v.\n%w", urlParams, err)
+	}
+	if _, ok := body["_query"]; ok {
+		query, err := genai.InternalCreateURLQuery(body["_query"].(map[string]any))
+		if err != nil {
+			return nil, err
+		}
+		path += "?" + query
+		delete(body, "_query")
+	}
+	responseMap, err = genai.SendRequest(ctx, m.apiClient, path, http.MethodPost, body, httpOptions)
 	if err != nil {
 		return nil, err
 	}
@@ -1300,4 +1432,55 @@ func (m Memories) purge(ctx context.Context, name string, filter *string, filter
 	}
 
 	return response, nil
+}
+
+// Create creates a new memory for the given name, fact, scope, and config.
+func (m Memories) Create(ctx context.Context, name string, fact string, scope map[string]string, config *types.AgentEngineMemoryConfig) (*types.AgentEngineMemoryOperation, error) {
+	return m.create(ctx, name, fact, scope, config)
+}
+
+// Generate generates the memories for the given name, vertex session source, direct contents
+// source, direct memories source, scope, and config, and returns the operation.
+func (m Memories) Generate(ctx context.Context, name string, vertexSessionSource *types.GenerateMemoriesRequestVertexSessionSource, directContentsSource *types.GenerateMemoriesRequestDirectContentsSource, directMemoriesSource *types.GenerateMemoriesRequestDirectMemoriesSource, scope *map[string]string, config *types.GenerateAgentEngineMemoriesConfig) (*types.AgentEngineGenerateMemoriesOperation, error) {
+	return m.generate(ctx, name, vertexSessionSource, directContentsSource, directMemoriesSource, scope, config)
+}
+
+// List lists the memories for the given name and config, and returns the response.
+func (m Memories) List(ctx context.Context, name string, config *types.ListAgentEngineMemoryConfig) (*types.ListReasoningEnginesMemoriesResponse, error) {
+	return m.list(ctx, name, config)
+}
+
+// GetMemoryOperation returns the memory operation for the given operation name and config.
+func (m Memories) GetMemoryOperation(ctx context.Context, operationName string, config *types.GetAgentEngineOperationConfig) (*types.AgentEngineMemoryOperation, error) {
+	return m.getMemoryOperation(ctx, operationName, config)
+}
+
+// GetGenerateMemoriesOperation returns the generate memories operation for the given operation
+// name, vertex session source, direct contents source, direct memories source, scope, and config.
+func (m Memories) GetGenerateMemoriesOperation(ctx context.Context, operationName string, config *types.GetAgentEngineOperationConfig) (*types.AgentEngineGenerateMemoriesOperation, error) {
+	return m.getGenerateMemoriesOperation(ctx, operationName, config)
+}
+
+// Retrieve retrieves the memories for the given name, scope, similarity search params, simple
+// retrieval params, and config, and returns the response.
+func (m Memories) Retrieve(ctx context.Context, name string, scope map[string]string, similaritySearchParams *types.RetrieveMemoriesRequestSimilaritySearchParams, simpleRetrievalParams *types.RetrieveMemoriesRequestSimpleRetrievalParams, config *types.RetrieveAgentEngineMemoriesConfig) (*types.RetrieveMemoriesResponse, error) {
+	return m.retrieve(ctx, name, scope, similaritySearchParams, simpleRetrievalParams, config)
+}
+
+// Rollback rolls back the memory to the given target revision id and returns the rollback memory
+// operation.
+func (m Memories) Rollback(ctx context.Context, name string, targetRevisionId string, config *types.RollbackAgentEngineMemoryConfig) (*types.AgentEngineRollbackMemoryOperation, error) {
+	return m.rollback(ctx, name, targetRevisionId, config)
+}
+
+// Update updates the memory for the given name, fact, scope, and config, and returns the memory
+// operation.
+func (m Memories) Update(ctx context.Context, name string, fact *string, scope *map[string]string, config *types.UpdateAgentEngineMemoryConfig) (*types.AgentEngineMemoryOperation, error) {
+	return m.update(ctx, name, fact, scope, config)
+}
+
+// Purge purges the memory for the given name, filter, filter groups, force, and config, and returns
+// the purge memory operation.
+func (m Memories) Purge(ctx context.Context, name string, filter *string, filterGroups []*types.MemoryConjunctionFilter, force *bool, config *types.PurgeAgentEngineMemoriesConfig) (*types.AgentEnginePurgeMemoriesOperation, error) {
+	return m.purge(ctx, name, filter, filterGroups, force, config)
 }

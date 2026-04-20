@@ -28,6 +28,7 @@ import (
 
 	cloudprofilerpb "cloud.google.com/go/cloudprofiler/apiv2/cloudprofilerpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -213,6 +214,16 @@ type profilerGRPCClient struct {
 // agents only.
 func NewProfilerClient(ctx context.Context, opts ...option.ClientOption) (*ProfilerClient, error) {
 	clientOpts := defaultProfilerGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudprofiler",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/cloudprofiler/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudprofiler.googleapis.com",
+		}))
+	}
 	if newProfilerClientHook != nil {
 		hookOpts, err := newProfilerClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -234,6 +245,22 @@ func NewProfilerClient(ctx context.Context, opts ...option.ClientOption) (*Profi
 		logger:         internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudprofiler",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudprofiler/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudprofiler.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateProfile = append(client.CallOptions.CreateProfile, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateOfflineProfile = append(client.CallOptions.CreateOfflineProfile, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateProfile = append(client.CallOptions.UpdateProfile, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -291,6 +318,16 @@ type profilerRESTClient struct {
 // agents only.
 func NewProfilerRESTClient(ctx context.Context, opts ...option.ClientOption) (*ProfilerClient, error) {
 	clientOpts := append(defaultProfilerRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudprofiler",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/cloudprofiler/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudprofiler.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -304,6 +341,23 @@ func NewProfilerRESTClient(ctx context.Context, opts ...option.ClientOption) (*P
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudprofiler",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudprofiler/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudprofiler.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateProfile = append(callOpts.CreateProfile, gax.WithClientMetrics(metrics))
+		callOpts.CreateOfflineProfile = append(callOpts.CreateOfflineProfile, gax.WithClientMetrics(metrics))
+		callOpts.UpdateProfile = append(callOpts.UpdateProfile, gax.WithClientMetrics(metrics))
+	}
 
 	return &ProfilerClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -350,6 +404,12 @@ func (c *profilerGRPCClient) CreateProfile(ctx context.Context, req *cloudprofil
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudprofiler.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudprofiler.v2.ProfilerService/CreateProfile")
+	}
 	opts = append((*c.CallOptions).CreateProfile[0:len((*c.CallOptions).CreateProfile):len((*c.CallOptions).CreateProfile)], opts...)
 	var resp *cloudprofilerpb.Profile
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -368,6 +428,12 @@ func (c *profilerGRPCClient) CreateOfflineProfile(ctx context.Context, req *clou
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudprofiler.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudprofiler.v2.ProfilerService/CreateOfflineProfile")
+	}
 	opts = append((*c.CallOptions).CreateOfflineProfile[0:len((*c.CallOptions).CreateOfflineProfile):len((*c.CallOptions).CreateOfflineProfile)], opts...)
 	var resp *cloudprofilerpb.Profile
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -386,6 +452,9 @@ func (c *profilerGRPCClient) UpdateProfile(ctx context.Context, req *cloudprofil
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudprofiler.v2.ProfilerService/UpdateProfile")
+	}
 	opts = append((*c.CallOptions).UpdateProfile[0:len((*c.CallOptions).UpdateProfile):len((*c.CallOptions).UpdateProfile)], opts...)
 	var resp *cloudprofilerpb.Profile
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -441,6 +510,13 @@ func (c *profilerRESTClient) CreateProfile(ctx context.Context, req *cloudprofil
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudprofiler.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudprofiler.v2.ProfilerService/CreateProfile")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*}/profiles")
+	}
 	opts = append((*c.CallOptions).CreateProfile[0:len((*c.CallOptions).CreateProfile):len((*c.CallOptions).CreateProfile)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cloudprofilerpb.Profile{}
@@ -505,6 +581,13 @@ func (c *profilerRESTClient) CreateOfflineProfile(ctx context.Context, req *clou
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudprofiler.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudprofiler.v2.ProfilerService/CreateOfflineProfile")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*}/profiles:createOffline")
+	}
 	opts = append((*c.CallOptions).CreateOfflineProfile[0:len((*c.CallOptions).CreateOfflineProfile):len((*c.CallOptions).CreateOfflineProfile)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cloudprofilerpb.Profile{}
@@ -577,6 +660,10 @@ func (c *profilerRESTClient) UpdateProfile(ctx context.Context, req *cloudprofil
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudprofiler.v2.ProfilerService/UpdateProfile")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{profile.name=projects/*/profiles/*}")
+	}
 	opts = append((*c.CallOptions).UpdateProfile[0:len((*c.CallOptions).UpdateProfile):len((*c.CallOptions).UpdateProfile)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cloudprofilerpb.Profile{}

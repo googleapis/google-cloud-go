@@ -28,6 +28,7 @@ import (
 
 	accessapprovalpb "cloud.google.com/go/accessapproval/apiv1/accessapprovalpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -395,6 +396,16 @@ type gRPCClient struct {
 // If a request is not approved or dismissed, we call it pending.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "accessapproval",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/accessapproval/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "accessapproval.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -416,6 +427,28 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "accessapproval",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/accessapproval/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "accessapproval.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListApprovalRequests = append(client.CallOptions.ListApprovalRequests, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetApprovalRequest = append(client.CallOptions.GetApprovalRequest, gax.WithClientMetrics(metrics))
+		client.CallOptions.ApproveApprovalRequest = append(client.CallOptions.ApproveApprovalRequest, gax.WithClientMetrics(metrics))
+		client.CallOptions.DismissApprovalRequest = append(client.CallOptions.DismissApprovalRequest, gax.WithClientMetrics(metrics))
+		client.CallOptions.InvalidateApprovalRequest = append(client.CallOptions.InvalidateApprovalRequest, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAccessApprovalSettings = append(client.CallOptions.GetAccessApprovalSettings, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateAccessApprovalSettings = append(client.CallOptions.UpdateAccessApprovalSettings, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteAccessApprovalSettings = append(client.CallOptions.DeleteAccessApprovalSettings, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAccessApprovalServiceAccount = append(client.CallOptions.GetAccessApprovalServiceAccount, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -502,6 +535,16 @@ type restClient struct {
 // If a request is not approved or dismissed, we call it pending.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "accessapproval",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/accessapproval/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "accessapproval.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -515,6 +558,29 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "accessapproval",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/accessapproval/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "accessapproval.googleapis.com",
+			}),
+		)
+
+		callOpts.ListApprovalRequests = append(callOpts.ListApprovalRequests, gax.WithClientMetrics(metrics))
+		callOpts.GetApprovalRequest = append(callOpts.GetApprovalRequest, gax.WithClientMetrics(metrics))
+		callOpts.ApproveApprovalRequest = append(callOpts.ApproveApprovalRequest, gax.WithClientMetrics(metrics))
+		callOpts.DismissApprovalRequest = append(callOpts.DismissApprovalRequest, gax.WithClientMetrics(metrics))
+		callOpts.InvalidateApprovalRequest = append(callOpts.InvalidateApprovalRequest, gax.WithClientMetrics(metrics))
+		callOpts.GetAccessApprovalSettings = append(callOpts.GetAccessApprovalSettings, gax.WithClientMetrics(metrics))
+		callOpts.UpdateAccessApprovalSettings = append(callOpts.UpdateAccessApprovalSettings, gax.WithClientMetrics(metrics))
+		callOpts.DeleteAccessApprovalSettings = append(callOpts.DeleteAccessApprovalSettings, gax.WithClientMetrics(metrics))
+		callOpts.GetAccessApprovalServiceAccount = append(callOpts.GetAccessApprovalServiceAccount, gax.WithClientMetrics(metrics))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -561,6 +627,12 @@ func (c *gRPCClient) ListApprovalRequests(ctx context.Context, req *accessapprov
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accessapproval.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.accessapproval.v1.AccessApproval/ListApprovalRequests")
+	}
 	opts = append((*c.CallOptions).ListApprovalRequests[0:len((*c.CallOptions).ListApprovalRequests):len((*c.CallOptions).ListApprovalRequests)], opts...)
 	it := &ApprovalRequestIterator{}
 	req = proto.Clone(req).(*accessapprovalpb.ListApprovalRequestsMessage)
@@ -607,6 +679,12 @@ func (c *gRPCClient) GetApprovalRequest(ctx context.Context, req *accessapproval
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accessapproval.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.accessapproval.v1.AccessApproval/GetApprovalRequest")
+	}
 	opts = append((*c.CallOptions).GetApprovalRequest[0:len((*c.CallOptions).GetApprovalRequest):len((*c.CallOptions).GetApprovalRequest)], opts...)
 	var resp *accessapprovalpb.ApprovalRequest
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -625,6 +703,12 @@ func (c *gRPCClient) ApproveApprovalRequest(ctx context.Context, req *accessappr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accessapproval.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.accessapproval.v1.AccessApproval/ApproveApprovalRequest")
+	}
 	opts = append((*c.CallOptions).ApproveApprovalRequest[0:len((*c.CallOptions).ApproveApprovalRequest):len((*c.CallOptions).ApproveApprovalRequest)], opts...)
 	var resp *accessapprovalpb.ApprovalRequest
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -643,6 +727,12 @@ func (c *gRPCClient) DismissApprovalRequest(ctx context.Context, req *accessappr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accessapproval.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.accessapproval.v1.AccessApproval/DismissApprovalRequest")
+	}
 	opts = append((*c.CallOptions).DismissApprovalRequest[0:len((*c.CallOptions).DismissApprovalRequest):len((*c.CallOptions).DismissApprovalRequest)], opts...)
 	var resp *accessapprovalpb.ApprovalRequest
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -661,6 +751,12 @@ func (c *gRPCClient) InvalidateApprovalRequest(ctx context.Context, req *accessa
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accessapproval.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.accessapproval.v1.AccessApproval/InvalidateApprovalRequest")
+	}
 	opts = append((*c.CallOptions).InvalidateApprovalRequest[0:len((*c.CallOptions).InvalidateApprovalRequest):len((*c.CallOptions).InvalidateApprovalRequest)], opts...)
 	var resp *accessapprovalpb.ApprovalRequest
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -679,6 +775,12 @@ func (c *gRPCClient) GetAccessApprovalSettings(ctx context.Context, req *accessa
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accessapproval.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.accessapproval.v1.AccessApproval/GetAccessApprovalSettings")
+	}
 	opts = append((*c.CallOptions).GetAccessApprovalSettings[0:len((*c.CallOptions).GetAccessApprovalSettings):len((*c.CallOptions).GetAccessApprovalSettings)], opts...)
 	var resp *accessapprovalpb.AccessApprovalSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -697,6 +799,9 @@ func (c *gRPCClient) UpdateAccessApprovalSettings(ctx context.Context, req *acce
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.accessapproval.v1.AccessApproval/UpdateAccessApprovalSettings")
+	}
 	opts = append((*c.CallOptions).UpdateAccessApprovalSettings[0:len((*c.CallOptions).UpdateAccessApprovalSettings):len((*c.CallOptions).UpdateAccessApprovalSettings)], opts...)
 	var resp *accessapprovalpb.AccessApprovalSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -715,6 +820,12 @@ func (c *gRPCClient) DeleteAccessApprovalSettings(ctx context.Context, req *acce
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accessapproval.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.accessapproval.v1.AccessApproval/DeleteAccessApprovalSettings")
+	}
 	opts = append((*c.CallOptions).DeleteAccessApprovalSettings[0:len((*c.CallOptions).DeleteAccessApprovalSettings):len((*c.CallOptions).DeleteAccessApprovalSettings)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -729,6 +840,9 @@ func (c *gRPCClient) GetAccessApprovalServiceAccount(ctx context.Context, req *a
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.accessapproval.v1.AccessApproval/GetAccessApprovalServiceAccount")
+	}
 	opts = append((*c.CallOptions).GetAccessApprovalServiceAccount[0:len((*c.CallOptions).GetAccessApprovalServiceAccount):len((*c.CallOptions).GetAccessApprovalServiceAccount)], opts...)
 	var resp *accessapprovalpb.AccessApprovalServiceAccount
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -844,6 +958,13 @@ func (c *restClient) GetApprovalRequest(ctx context.Context, req *accessapproval
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accessapproval.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.accessapproval.v1.AccessApproval/GetApprovalRequest")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/approvalRequests/*}")
+	}
 	opts = append((*c.CallOptions).GetApprovalRequest[0:len((*c.CallOptions).GetApprovalRequest):len((*c.CallOptions).GetApprovalRequest)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &accessapprovalpb.ApprovalRequest{}
@@ -903,6 +1024,13 @@ func (c *restClient) ApproveApprovalRequest(ctx context.Context, req *accessappr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accessapproval.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.accessapproval.v1.AccessApproval/ApproveApprovalRequest")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/approvalRequests/*}:approve")
+	}
 	opts = append((*c.CallOptions).ApproveApprovalRequest[0:len((*c.CallOptions).ApproveApprovalRequest):len((*c.CallOptions).ApproveApprovalRequest)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &accessapprovalpb.ApprovalRequest{}
@@ -968,6 +1096,13 @@ func (c *restClient) DismissApprovalRequest(ctx context.Context, req *accessappr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accessapproval.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.accessapproval.v1.AccessApproval/DismissApprovalRequest")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/approvalRequests/*}:dismiss")
+	}
 	opts = append((*c.CallOptions).DismissApprovalRequest[0:len((*c.CallOptions).DismissApprovalRequest):len((*c.CallOptions).DismissApprovalRequest)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &accessapprovalpb.ApprovalRequest{}
@@ -1031,6 +1166,13 @@ func (c *restClient) InvalidateApprovalRequest(ctx context.Context, req *accessa
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accessapproval.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.accessapproval.v1.AccessApproval/InvalidateApprovalRequest")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/approvalRequests/*}:invalidate")
+	}
 	opts = append((*c.CallOptions).InvalidateApprovalRequest[0:len((*c.CallOptions).InvalidateApprovalRequest):len((*c.CallOptions).InvalidateApprovalRequest)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &accessapprovalpb.ApprovalRequest{}
@@ -1081,6 +1223,13 @@ func (c *restClient) GetAccessApprovalSettings(ctx context.Context, req *accessa
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accessapproval.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.accessapproval.v1.AccessApproval/GetAccessApprovalSettings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/accessApprovalSettings}")
+	}
 	opts = append((*c.CallOptions).GetAccessApprovalSettings[0:len((*c.CallOptions).GetAccessApprovalSettings):len((*c.CallOptions).GetAccessApprovalSettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &accessapprovalpb.AccessApprovalSettings{}
@@ -1146,6 +1295,10 @@ func (c *restClient) UpdateAccessApprovalSettings(ctx context.Context, req *acce
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.accessapproval.v1.AccessApproval/UpdateAccessApprovalSettings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{settings.name=projects/*/accessApprovalSettings}")
+	}
 	opts = append((*c.CallOptions).UpdateAccessApprovalSettings[0:len((*c.CallOptions).UpdateAccessApprovalSettings):len((*c.CallOptions).UpdateAccessApprovalSettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &accessapprovalpb.AccessApprovalSettings{}
@@ -1201,6 +1354,13 @@ func (c *restClient) DeleteAccessApprovalSettings(ctx context.Context, req *acce
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//accessapproval.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.accessapproval.v1.AccessApproval/DeleteAccessApprovalSettings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/accessApprovalSettings}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1237,6 +1397,10 @@ func (c *restClient) GetAccessApprovalServiceAccount(ctx context.Context, req *a
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.accessapproval.v1.AccessApproval/GetAccessApprovalServiceAccount")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/serviceAccount}")
+	}
 	opts = append((*c.CallOptions).GetAccessApprovalServiceAccount[0:len((*c.CallOptions).GetAccessApprovalServiceAccount):len((*c.CallOptions).GetAccessApprovalServiceAccount)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &accessapprovalpb.AccessApprovalServiceAccount{}

@@ -28,6 +28,7 @@ import (
 
 	inventoriespb "cloud.google.com/go/shopping/merchant/inventories/apiv1/inventoriespb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -244,6 +245,16 @@ type localInventoryGRPCClient struct {
 // Service to manage local inventory for products
 func NewLocalInventoryClient(ctx context.Context, opts ...option.ClientOption) (*LocalInventoryClient, error) {
 	clientOpts := defaultLocalInventoryGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/inventories/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	if newLocalInventoryClientHook != nil {
 		hookOpts, err := newLocalInventoryClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -265,6 +276,22 @@ func NewLocalInventoryClient(ctx context.Context, opts ...option.ClientOption) (
 		logger:               internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/inventories/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListLocalInventories = append(client.CallOptions.ListLocalInventories, gax.WithClientMetrics(metrics))
+		client.CallOptions.InsertLocalInventory = append(client.CallOptions.InsertLocalInventory, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteLocalInventory = append(client.CallOptions.DeleteLocalInventory, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -318,6 +345,16 @@ type localInventoryRESTClient struct {
 // Service to manage local inventory for products
 func NewLocalInventoryRESTClient(ctx context.Context, opts ...option.ClientOption) (*LocalInventoryClient, error) {
 	clientOpts := append(defaultLocalInventoryRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/inventories/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -331,6 +368,23 @@ func NewLocalInventoryRESTClient(ctx context.Context, opts ...option.ClientOptio
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/inventories/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.ListLocalInventories = append(callOpts.ListLocalInventories, gax.WithClientMetrics(metrics))
+		callOpts.InsertLocalInventory = append(callOpts.InsertLocalInventory, gax.WithClientMetrics(metrics))
+		callOpts.DeleteLocalInventory = append(callOpts.DeleteLocalInventory, gax.WithClientMetrics(metrics))
+	}
 
 	return &LocalInventoryClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -377,6 +431,12 @@ func (c *localInventoryGRPCClient) ListLocalInventories(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.inventories.v1.LocalInventoryService/ListLocalInventories")
+	}
 	opts = append((*c.CallOptions).ListLocalInventories[0:len((*c.CallOptions).ListLocalInventories):len((*c.CallOptions).ListLocalInventories)], opts...)
 	it := &LocalInventoryIterator{}
 	req = proto.Clone(req).(*inventoriespb.ListLocalInventoriesRequest)
@@ -423,6 +483,12 @@ func (c *localInventoryGRPCClient) InsertLocalInventory(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.inventories.v1.LocalInventoryService/InsertLocalInventory")
+	}
 	opts = append((*c.CallOptions).InsertLocalInventory[0:len((*c.CallOptions).InsertLocalInventory):len((*c.CallOptions).InsertLocalInventory)], opts...)
 	var resp *inventoriespb.LocalInventory
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -441,6 +507,12 @@ func (c *localInventoryGRPCClient) DeleteLocalInventory(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.inventories.v1.LocalInventoryService/DeleteLocalInventory")
+	}
 	opts = append((*c.CallOptions).DeleteLocalInventory[0:len((*c.CallOptions).DeleteLocalInventory):len((*c.CallOptions).DeleteLocalInventory)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -567,6 +639,13 @@ func (c *localInventoryRESTClient) InsertLocalInventory(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.inventories.v1.LocalInventoryService/InsertLocalInventory")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/inventories/v1/{parent=accounts/*/products/*}/localInventories:insert")
+	}
 	opts = append((*c.CallOptions).InsertLocalInventory[0:len((*c.CallOptions).InsertLocalInventory):len((*c.CallOptions).InsertLocalInventory)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &inventoriespb.LocalInventory{}
@@ -621,6 +700,13 @@ func (c *localInventoryRESTClient) DeleteLocalInventory(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.inventories.v1.LocalInventoryService/DeleteLocalInventory")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/inventories/v1/{name=accounts/*/products/*/localInventories/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path

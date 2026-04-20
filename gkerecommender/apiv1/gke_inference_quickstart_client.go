@@ -28,6 +28,7 @@ import (
 
 	gkerecommenderpb "cloud.google.com/go/gkerecommender/apiv1/gkerecommenderpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -245,6 +246,16 @@ type gkeInferenceQuickstartGRPCClient struct {
 // on GKE.
 func NewGkeInferenceQuickstartClient(ctx context.Context, opts ...option.ClientOption) (*GkeInferenceQuickstartClient, error) {
 	clientOpts := defaultGkeInferenceQuickstartGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "gkerecommender",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/gkerecommender/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "gkerecommender.googleapis.com",
+		}))
+	}
 	if newGkeInferenceQuickstartClientHook != nil {
 		hookOpts, err := newGkeInferenceQuickstartClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -266,6 +277,25 @@ func NewGkeInferenceQuickstartClient(ctx context.Context, opts ...option.ClientO
 		logger:                       internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "gkerecommender",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/gkerecommender/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "gkerecommender.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.FetchModels = append(client.CallOptions.FetchModels, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchModelServers = append(client.CallOptions.FetchModelServers, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchModelServerVersions = append(client.CallOptions.FetchModelServerVersions, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchProfiles = append(client.CallOptions.FetchProfiles, gax.WithClientMetrics(metrics))
+		client.CallOptions.GenerateOptimizedManifest = append(client.CallOptions.GenerateOptimizedManifest, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchBenchmarkingData = append(client.CallOptions.FetchBenchmarkingData, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -322,6 +352,16 @@ type gkeInferenceQuickstartRESTClient struct {
 // on GKE.
 func NewGkeInferenceQuickstartRESTClient(ctx context.Context, opts ...option.ClientOption) (*GkeInferenceQuickstartClient, error) {
 	clientOpts := append(defaultGkeInferenceQuickstartRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "gkerecommender",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/gkerecommender/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "gkerecommender.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -335,6 +375,26 @@ func NewGkeInferenceQuickstartRESTClient(ctx context.Context, opts ...option.Cli
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "gkerecommender",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/gkerecommender/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "gkerecommender.googleapis.com",
+			}),
+		)
+
+		callOpts.FetchModels = append(callOpts.FetchModels, gax.WithClientMetrics(metrics))
+		callOpts.FetchModelServers = append(callOpts.FetchModelServers, gax.WithClientMetrics(metrics))
+		callOpts.FetchModelServerVersions = append(callOpts.FetchModelServerVersions, gax.WithClientMetrics(metrics))
+		callOpts.FetchProfiles = append(callOpts.FetchProfiles, gax.WithClientMetrics(metrics))
+		callOpts.GenerateOptimizedManifest = append(callOpts.GenerateOptimizedManifest, gax.WithClientMetrics(metrics))
+		callOpts.FetchBenchmarkingData = append(callOpts.FetchBenchmarkingData, gax.WithClientMetrics(metrics))
+	}
 
 	return &GkeInferenceQuickstartClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -378,6 +438,9 @@ func (c *gkeInferenceQuickstartRESTClient) Connection() *grpc.ClientConn {
 }
 func (c *gkeInferenceQuickstartGRPCClient) FetchModels(ctx context.Context, req *gkerecommenderpb.FetchModelsRequest, opts ...gax.CallOption) *StringIterator {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkerecommender.v1.GkeInferenceQuickstart/FetchModels")
+	}
 	opts = append((*c.CallOptions).FetchModels[0:len((*c.CallOptions).FetchModels):len((*c.CallOptions).FetchModels)], opts...)
 	it := &StringIterator{}
 	req = proto.Clone(req).(*gkerecommenderpb.FetchModelsRequest)
@@ -421,6 +484,9 @@ func (c *gkeInferenceQuickstartGRPCClient) FetchModels(ctx context.Context, req 
 
 func (c *gkeInferenceQuickstartGRPCClient) FetchModelServers(ctx context.Context, req *gkerecommenderpb.FetchModelServersRequest, opts ...gax.CallOption) *StringIterator {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkerecommender.v1.GkeInferenceQuickstart/FetchModelServers")
+	}
 	opts = append((*c.CallOptions).FetchModelServers[0:len((*c.CallOptions).FetchModelServers):len((*c.CallOptions).FetchModelServers)], opts...)
 	it := &StringIterator{}
 	req = proto.Clone(req).(*gkerecommenderpb.FetchModelServersRequest)
@@ -464,6 +530,9 @@ func (c *gkeInferenceQuickstartGRPCClient) FetchModelServers(ctx context.Context
 
 func (c *gkeInferenceQuickstartGRPCClient) FetchModelServerVersions(ctx context.Context, req *gkerecommenderpb.FetchModelServerVersionsRequest, opts ...gax.CallOption) *StringIterator {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkerecommender.v1.GkeInferenceQuickstart/FetchModelServerVersions")
+	}
 	opts = append((*c.CallOptions).FetchModelServerVersions[0:len((*c.CallOptions).FetchModelServerVersions):len((*c.CallOptions).FetchModelServerVersions)], opts...)
 	it := &StringIterator{}
 	req = proto.Clone(req).(*gkerecommenderpb.FetchModelServerVersionsRequest)
@@ -507,6 +576,9 @@ func (c *gkeInferenceQuickstartGRPCClient) FetchModelServerVersions(ctx context.
 
 func (c *gkeInferenceQuickstartGRPCClient) FetchProfiles(ctx context.Context, req *gkerecommenderpb.FetchProfilesRequest, opts ...gax.CallOption) *ProfileIterator {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkerecommender.v1.GkeInferenceQuickstart/FetchProfiles")
+	}
 	opts = append((*c.CallOptions).FetchProfiles[0:len((*c.CallOptions).FetchProfiles):len((*c.CallOptions).FetchProfiles)], opts...)
 	it := &ProfileIterator{}
 	req = proto.Clone(req).(*gkerecommenderpb.FetchProfilesRequest)
@@ -550,6 +622,9 @@ func (c *gkeInferenceQuickstartGRPCClient) FetchProfiles(ctx context.Context, re
 
 func (c *gkeInferenceQuickstartGRPCClient) GenerateOptimizedManifest(ctx context.Context, req *gkerecommenderpb.GenerateOptimizedManifestRequest, opts ...gax.CallOption) (*gkerecommenderpb.GenerateOptimizedManifestResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkerecommender.v1.GkeInferenceQuickstart/GenerateOptimizedManifest")
+	}
 	opts = append((*c.CallOptions).GenerateOptimizedManifest[0:len((*c.CallOptions).GenerateOptimizedManifest):len((*c.CallOptions).GenerateOptimizedManifest)], opts...)
 	var resp *gkerecommenderpb.GenerateOptimizedManifestResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -565,6 +640,9 @@ func (c *gkeInferenceQuickstartGRPCClient) GenerateOptimizedManifest(ctx context
 
 func (c *gkeInferenceQuickstartGRPCClient) FetchBenchmarkingData(ctx context.Context, req *gkerecommenderpb.FetchBenchmarkingDataRequest, opts ...gax.CallOption) (*gkerecommenderpb.FetchBenchmarkingDataResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkerecommender.v1.GkeInferenceQuickstart/FetchBenchmarkingData")
+	}
 	opts = append((*c.CallOptions).FetchBenchmarkingData[0:len((*c.CallOptions).FetchBenchmarkingData):len((*c.CallOptions).FetchBenchmarkingData)], opts...)
 	var resp *gkerecommenderpb.FetchBenchmarkingDataResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -938,6 +1016,10 @@ func (c *gkeInferenceQuickstartRESTClient) GenerateOptimizedManifest(ctx context
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkerecommender.v1.GkeInferenceQuickstart/GenerateOptimizedManifest")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/optimizedManifest:generate")
+	}
 	opts = append((*c.CallOptions).GenerateOptimizedManifest[0:len((*c.CallOptions).GenerateOptimizedManifest):len((*c.CallOptions).GenerateOptimizedManifest)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &gkerecommenderpb.GenerateOptimizedManifestResponse{}
@@ -993,6 +1075,10 @@ func (c *gkeInferenceQuickstartRESTClient) FetchBenchmarkingData(ctx context.Con
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkerecommender.v1.GkeInferenceQuickstart/FetchBenchmarkingData")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/benchmarkingData:fetch")
+	}
 	opts = append((*c.CallOptions).FetchBenchmarkingData[0:len((*c.CallOptions).FetchBenchmarkingData):len((*c.CallOptions).FetchBenchmarkingData)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &gkerecommenderpb.FetchBenchmarkingDataResponse{}

@@ -28,6 +28,7 @@ import (
 
 	adminpb "cloud.google.com/go/analytics/admin/apiv1alpha/adminpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -4801,6 +4802,16 @@ type analyticsAdminGRPCClient struct {
 // Service Interface for the Google Analytics Admin API.
 func NewAnalyticsAdminClient(ctx context.Context, opts ...option.ClientOption) (*AnalyticsAdminClient, error) {
 	clientOpts := defaultAnalyticsAdminGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "analyticsadmin",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/analytics/admin/apiv1alpha",
+			"gcp.client.language": "go",
+			"url.domain":          "analyticsadmin.googleapis.com",
+		}))
+	}
 	if newAnalyticsAdminClientHook != nil {
 		hookOpts, err := newAnalyticsAdminClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -4822,6 +4833,173 @@ func NewAnalyticsAdminClient(ctx context.Context, opts ...option.ClientOption) (
 		logger:               internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "analyticsadmin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/analytics/admin/apiv1alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "analyticsadmin.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetAccount = append(client.CallOptions.GetAccount, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAccounts = append(client.CallOptions.ListAccounts, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteAccount = append(client.CallOptions.DeleteAccount, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateAccount = append(client.CallOptions.UpdateAccount, gax.WithClientMetrics(metrics))
+		client.CallOptions.ProvisionAccountTicket = append(client.CallOptions.ProvisionAccountTicket, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAccountSummaries = append(client.CallOptions.ListAccountSummaries, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetProperty = append(client.CallOptions.GetProperty, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListProperties = append(client.CallOptions.ListProperties, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateProperty = append(client.CallOptions.CreateProperty, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteProperty = append(client.CallOptions.DeleteProperty, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateProperty = append(client.CallOptions.UpdateProperty, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateFirebaseLink = append(client.CallOptions.CreateFirebaseLink, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteFirebaseLink = append(client.CallOptions.DeleteFirebaseLink, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListFirebaseLinks = append(client.CallOptions.ListFirebaseLinks, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetGlobalSiteTag = append(client.CallOptions.GetGlobalSiteTag, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateGoogleAdsLink = append(client.CallOptions.CreateGoogleAdsLink, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateGoogleAdsLink = append(client.CallOptions.UpdateGoogleAdsLink, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteGoogleAdsLink = append(client.CallOptions.DeleteGoogleAdsLink, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListGoogleAdsLinks = append(client.CallOptions.ListGoogleAdsLinks, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetDataSharingSettings = append(client.CallOptions.GetDataSharingSettings, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetMeasurementProtocolSecret = append(client.CallOptions.GetMeasurementProtocolSecret, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListMeasurementProtocolSecrets = append(client.CallOptions.ListMeasurementProtocolSecrets, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateMeasurementProtocolSecret = append(client.CallOptions.CreateMeasurementProtocolSecret, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteMeasurementProtocolSecret = append(client.CallOptions.DeleteMeasurementProtocolSecret, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateMeasurementProtocolSecret = append(client.CallOptions.UpdateMeasurementProtocolSecret, gax.WithClientMetrics(metrics))
+		client.CallOptions.AcknowledgeUserDataCollection = append(client.CallOptions.AcknowledgeUserDataCollection, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetSKAdNetworkConversionValueSchema = append(client.CallOptions.GetSKAdNetworkConversionValueSchema, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateSKAdNetworkConversionValueSchema = append(client.CallOptions.CreateSKAdNetworkConversionValueSchema, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteSKAdNetworkConversionValueSchema = append(client.CallOptions.DeleteSKAdNetworkConversionValueSchema, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateSKAdNetworkConversionValueSchema = append(client.CallOptions.UpdateSKAdNetworkConversionValueSchema, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListSKAdNetworkConversionValueSchemas = append(client.CallOptions.ListSKAdNetworkConversionValueSchemas, gax.WithClientMetrics(metrics))
+		client.CallOptions.SearchChangeHistoryEvents = append(client.CallOptions.SearchChangeHistoryEvents, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetGoogleSignalsSettings = append(client.CallOptions.GetGoogleSignalsSettings, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateGoogleSignalsSettings = append(client.CallOptions.UpdateGoogleSignalsSettings, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateConversionEvent = append(client.CallOptions.CreateConversionEvent, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateConversionEvent = append(client.CallOptions.UpdateConversionEvent, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetConversionEvent = append(client.CallOptions.GetConversionEvent, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteConversionEvent = append(client.CallOptions.DeleteConversionEvent, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListConversionEvents = append(client.CallOptions.ListConversionEvents, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateKeyEvent = append(client.CallOptions.CreateKeyEvent, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateKeyEvent = append(client.CallOptions.UpdateKeyEvent, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetKeyEvent = append(client.CallOptions.GetKeyEvent, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteKeyEvent = append(client.CallOptions.DeleteKeyEvent, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListKeyEvents = append(client.CallOptions.ListKeyEvents, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetDisplayVideo360AdvertiserLink = append(client.CallOptions.GetDisplayVideo360AdvertiserLink, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListDisplayVideo360AdvertiserLinks = append(client.CallOptions.ListDisplayVideo360AdvertiserLinks, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateDisplayVideo360AdvertiserLink = append(client.CallOptions.CreateDisplayVideo360AdvertiserLink, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteDisplayVideo360AdvertiserLink = append(client.CallOptions.DeleteDisplayVideo360AdvertiserLink, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateDisplayVideo360AdvertiserLink = append(client.CallOptions.UpdateDisplayVideo360AdvertiserLink, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetDisplayVideo360AdvertiserLinkProposal = append(client.CallOptions.GetDisplayVideo360AdvertiserLinkProposal, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListDisplayVideo360AdvertiserLinkProposals = append(client.CallOptions.ListDisplayVideo360AdvertiserLinkProposals, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateDisplayVideo360AdvertiserLinkProposal = append(client.CallOptions.CreateDisplayVideo360AdvertiserLinkProposal, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteDisplayVideo360AdvertiserLinkProposal = append(client.CallOptions.DeleteDisplayVideo360AdvertiserLinkProposal, gax.WithClientMetrics(metrics))
+		client.CallOptions.ApproveDisplayVideo360AdvertiserLinkProposal = append(client.CallOptions.ApproveDisplayVideo360AdvertiserLinkProposal, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelDisplayVideo360AdvertiserLinkProposal = append(client.CallOptions.CancelDisplayVideo360AdvertiserLinkProposal, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateCustomDimension = append(client.CallOptions.CreateCustomDimension, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateCustomDimension = append(client.CallOptions.UpdateCustomDimension, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListCustomDimensions = append(client.CallOptions.ListCustomDimensions, gax.WithClientMetrics(metrics))
+		client.CallOptions.ArchiveCustomDimension = append(client.CallOptions.ArchiveCustomDimension, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetCustomDimension = append(client.CallOptions.GetCustomDimension, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateCustomMetric = append(client.CallOptions.CreateCustomMetric, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateCustomMetric = append(client.CallOptions.UpdateCustomMetric, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListCustomMetrics = append(client.CallOptions.ListCustomMetrics, gax.WithClientMetrics(metrics))
+		client.CallOptions.ArchiveCustomMetric = append(client.CallOptions.ArchiveCustomMetric, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetCustomMetric = append(client.CallOptions.GetCustomMetric, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetDataRetentionSettings = append(client.CallOptions.GetDataRetentionSettings, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateDataRetentionSettings = append(client.CallOptions.UpdateDataRetentionSettings, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateDataStream = append(client.CallOptions.CreateDataStream, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteDataStream = append(client.CallOptions.DeleteDataStream, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateDataStream = append(client.CallOptions.UpdateDataStream, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListDataStreams = append(client.CallOptions.ListDataStreams, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetDataStream = append(client.CallOptions.GetDataStream, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAudience = append(client.CallOptions.GetAudience, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAudiences = append(client.CallOptions.ListAudiences, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateAudience = append(client.CallOptions.CreateAudience, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateAudience = append(client.CallOptions.UpdateAudience, gax.WithClientMetrics(metrics))
+		client.CallOptions.ArchiveAudience = append(client.CallOptions.ArchiveAudience, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetSearchAds360Link = append(client.CallOptions.GetSearchAds360Link, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListSearchAds360Links = append(client.CallOptions.ListSearchAds360Links, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateSearchAds360Link = append(client.CallOptions.CreateSearchAds360Link, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteSearchAds360Link = append(client.CallOptions.DeleteSearchAds360Link, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateSearchAds360Link = append(client.CallOptions.UpdateSearchAds360Link, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAttributionSettings = append(client.CallOptions.GetAttributionSettings, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateAttributionSettings = append(client.CallOptions.UpdateAttributionSettings, gax.WithClientMetrics(metrics))
+		client.CallOptions.RunAccessReport = append(client.CallOptions.RunAccessReport, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateAccessBinding = append(client.CallOptions.CreateAccessBinding, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAccessBinding = append(client.CallOptions.GetAccessBinding, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateAccessBinding = append(client.CallOptions.UpdateAccessBinding, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteAccessBinding = append(client.CallOptions.DeleteAccessBinding, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAccessBindings = append(client.CallOptions.ListAccessBindings, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchCreateAccessBindings = append(client.CallOptions.BatchCreateAccessBindings, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchGetAccessBindings = append(client.CallOptions.BatchGetAccessBindings, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchUpdateAccessBindings = append(client.CallOptions.BatchUpdateAccessBindings, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchDeleteAccessBindings = append(client.CallOptions.BatchDeleteAccessBindings, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetExpandedDataSet = append(client.CallOptions.GetExpandedDataSet, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListExpandedDataSets = append(client.CallOptions.ListExpandedDataSets, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateExpandedDataSet = append(client.CallOptions.CreateExpandedDataSet, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateExpandedDataSet = append(client.CallOptions.UpdateExpandedDataSet, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteExpandedDataSet = append(client.CallOptions.DeleteExpandedDataSet, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetChannelGroup = append(client.CallOptions.GetChannelGroup, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListChannelGroups = append(client.CallOptions.ListChannelGroups, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateChannelGroup = append(client.CallOptions.CreateChannelGroup, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateChannelGroup = append(client.CallOptions.UpdateChannelGroup, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteChannelGroup = append(client.CallOptions.DeleteChannelGroup, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateBigQueryLink = append(client.CallOptions.CreateBigQueryLink, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetBigQueryLink = append(client.CallOptions.GetBigQueryLink, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListBigQueryLinks = append(client.CallOptions.ListBigQueryLinks, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteBigQueryLink = append(client.CallOptions.DeleteBigQueryLink, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateBigQueryLink = append(client.CallOptions.UpdateBigQueryLink, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetEnhancedMeasurementSettings = append(client.CallOptions.GetEnhancedMeasurementSettings, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateEnhancedMeasurementSettings = append(client.CallOptions.UpdateEnhancedMeasurementSettings, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAdSenseLink = append(client.CallOptions.GetAdSenseLink, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateAdSenseLink = append(client.CallOptions.CreateAdSenseLink, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteAdSenseLink = append(client.CallOptions.DeleteAdSenseLink, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAdSenseLinks = append(client.CallOptions.ListAdSenseLinks, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetEventCreateRule = append(client.CallOptions.GetEventCreateRule, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListEventCreateRules = append(client.CallOptions.ListEventCreateRules, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateEventCreateRule = append(client.CallOptions.CreateEventCreateRule, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateEventCreateRule = append(client.CallOptions.UpdateEventCreateRule, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteEventCreateRule = append(client.CallOptions.DeleteEventCreateRule, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetEventEditRule = append(client.CallOptions.GetEventEditRule, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListEventEditRules = append(client.CallOptions.ListEventEditRules, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateEventEditRule = append(client.CallOptions.CreateEventEditRule, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateEventEditRule = append(client.CallOptions.UpdateEventEditRule, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteEventEditRule = append(client.CallOptions.DeleteEventEditRule, gax.WithClientMetrics(metrics))
+		client.CallOptions.ReorderEventEditRules = append(client.CallOptions.ReorderEventEditRules, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateDataRedactionSettings = append(client.CallOptions.UpdateDataRedactionSettings, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetDataRedactionSettings = append(client.CallOptions.GetDataRedactionSettings, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetCalculatedMetric = append(client.CallOptions.GetCalculatedMetric, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateCalculatedMetric = append(client.CallOptions.CreateCalculatedMetric, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListCalculatedMetrics = append(client.CallOptions.ListCalculatedMetrics, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateCalculatedMetric = append(client.CallOptions.UpdateCalculatedMetric, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteCalculatedMetric = append(client.CallOptions.DeleteCalculatedMetric, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateRollupProperty = append(client.CallOptions.CreateRollupProperty, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetRollupPropertySourceLink = append(client.CallOptions.GetRollupPropertySourceLink, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListRollupPropertySourceLinks = append(client.CallOptions.ListRollupPropertySourceLinks, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateRollupPropertySourceLink = append(client.CallOptions.CreateRollupPropertySourceLink, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteRollupPropertySourceLink = append(client.CallOptions.DeleteRollupPropertySourceLink, gax.WithClientMetrics(metrics))
+		client.CallOptions.ProvisionSubproperty = append(client.CallOptions.ProvisionSubproperty, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateSubpropertyEventFilter = append(client.CallOptions.CreateSubpropertyEventFilter, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetSubpropertyEventFilter = append(client.CallOptions.GetSubpropertyEventFilter, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListSubpropertyEventFilters = append(client.CallOptions.ListSubpropertyEventFilters, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateSubpropertyEventFilter = append(client.CallOptions.UpdateSubpropertyEventFilter, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteSubpropertyEventFilter = append(client.CallOptions.DeleteSubpropertyEventFilter, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateReportingDataAnnotation = append(client.CallOptions.CreateReportingDataAnnotation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetReportingDataAnnotation = append(client.CallOptions.GetReportingDataAnnotation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListReportingDataAnnotations = append(client.CallOptions.ListReportingDataAnnotations, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateReportingDataAnnotation = append(client.CallOptions.UpdateReportingDataAnnotation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteReportingDataAnnotation = append(client.CallOptions.DeleteReportingDataAnnotation, gax.WithClientMetrics(metrics))
+		client.CallOptions.SubmitUserDeletion = append(client.CallOptions.SubmitUserDeletion, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListSubpropertySyncConfigs = append(client.CallOptions.ListSubpropertySyncConfigs, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateSubpropertySyncConfig = append(client.CallOptions.UpdateSubpropertySyncConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetSubpropertySyncConfig = append(client.CallOptions.GetSubpropertySyncConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetReportingIdentitySettings = append(client.CallOptions.GetReportingIdentitySettings, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -4875,6 +5053,16 @@ type analyticsAdminRESTClient struct {
 // Service Interface for the Google Analytics Admin API.
 func NewAnalyticsAdminRESTClient(ctx context.Context, opts ...option.ClientOption) (*AnalyticsAdminClient, error) {
 	clientOpts := append(defaultAnalyticsAdminRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "analyticsadmin",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/analytics/admin/apiv1alpha",
+			"gcp.client.language": "go",
+			"url.domain":          "analyticsadmin.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -4888,6 +5076,174 @@ func NewAnalyticsAdminRESTClient(ctx context.Context, opts ...option.ClientOptio
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "analyticsadmin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/analytics/admin/apiv1alpha",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "analyticsadmin.googleapis.com",
+			}),
+		)
+
+		callOpts.GetAccount = append(callOpts.GetAccount, gax.WithClientMetrics(metrics))
+		callOpts.ListAccounts = append(callOpts.ListAccounts, gax.WithClientMetrics(metrics))
+		callOpts.DeleteAccount = append(callOpts.DeleteAccount, gax.WithClientMetrics(metrics))
+		callOpts.UpdateAccount = append(callOpts.UpdateAccount, gax.WithClientMetrics(metrics))
+		callOpts.ProvisionAccountTicket = append(callOpts.ProvisionAccountTicket, gax.WithClientMetrics(metrics))
+		callOpts.ListAccountSummaries = append(callOpts.ListAccountSummaries, gax.WithClientMetrics(metrics))
+		callOpts.GetProperty = append(callOpts.GetProperty, gax.WithClientMetrics(metrics))
+		callOpts.ListProperties = append(callOpts.ListProperties, gax.WithClientMetrics(metrics))
+		callOpts.CreateProperty = append(callOpts.CreateProperty, gax.WithClientMetrics(metrics))
+		callOpts.DeleteProperty = append(callOpts.DeleteProperty, gax.WithClientMetrics(metrics))
+		callOpts.UpdateProperty = append(callOpts.UpdateProperty, gax.WithClientMetrics(metrics))
+		callOpts.CreateFirebaseLink = append(callOpts.CreateFirebaseLink, gax.WithClientMetrics(metrics))
+		callOpts.DeleteFirebaseLink = append(callOpts.DeleteFirebaseLink, gax.WithClientMetrics(metrics))
+		callOpts.ListFirebaseLinks = append(callOpts.ListFirebaseLinks, gax.WithClientMetrics(metrics))
+		callOpts.GetGlobalSiteTag = append(callOpts.GetGlobalSiteTag, gax.WithClientMetrics(metrics))
+		callOpts.CreateGoogleAdsLink = append(callOpts.CreateGoogleAdsLink, gax.WithClientMetrics(metrics))
+		callOpts.UpdateGoogleAdsLink = append(callOpts.UpdateGoogleAdsLink, gax.WithClientMetrics(metrics))
+		callOpts.DeleteGoogleAdsLink = append(callOpts.DeleteGoogleAdsLink, gax.WithClientMetrics(metrics))
+		callOpts.ListGoogleAdsLinks = append(callOpts.ListGoogleAdsLinks, gax.WithClientMetrics(metrics))
+		callOpts.GetDataSharingSettings = append(callOpts.GetDataSharingSettings, gax.WithClientMetrics(metrics))
+		callOpts.GetMeasurementProtocolSecret = append(callOpts.GetMeasurementProtocolSecret, gax.WithClientMetrics(metrics))
+		callOpts.ListMeasurementProtocolSecrets = append(callOpts.ListMeasurementProtocolSecrets, gax.WithClientMetrics(metrics))
+		callOpts.CreateMeasurementProtocolSecret = append(callOpts.CreateMeasurementProtocolSecret, gax.WithClientMetrics(metrics))
+		callOpts.DeleteMeasurementProtocolSecret = append(callOpts.DeleteMeasurementProtocolSecret, gax.WithClientMetrics(metrics))
+		callOpts.UpdateMeasurementProtocolSecret = append(callOpts.UpdateMeasurementProtocolSecret, gax.WithClientMetrics(metrics))
+		callOpts.AcknowledgeUserDataCollection = append(callOpts.AcknowledgeUserDataCollection, gax.WithClientMetrics(metrics))
+		callOpts.GetSKAdNetworkConversionValueSchema = append(callOpts.GetSKAdNetworkConversionValueSchema, gax.WithClientMetrics(metrics))
+		callOpts.CreateSKAdNetworkConversionValueSchema = append(callOpts.CreateSKAdNetworkConversionValueSchema, gax.WithClientMetrics(metrics))
+		callOpts.DeleteSKAdNetworkConversionValueSchema = append(callOpts.DeleteSKAdNetworkConversionValueSchema, gax.WithClientMetrics(metrics))
+		callOpts.UpdateSKAdNetworkConversionValueSchema = append(callOpts.UpdateSKAdNetworkConversionValueSchema, gax.WithClientMetrics(metrics))
+		callOpts.ListSKAdNetworkConversionValueSchemas = append(callOpts.ListSKAdNetworkConversionValueSchemas, gax.WithClientMetrics(metrics))
+		callOpts.SearchChangeHistoryEvents = append(callOpts.SearchChangeHistoryEvents, gax.WithClientMetrics(metrics))
+		callOpts.GetGoogleSignalsSettings = append(callOpts.GetGoogleSignalsSettings, gax.WithClientMetrics(metrics))
+		callOpts.UpdateGoogleSignalsSettings = append(callOpts.UpdateGoogleSignalsSettings, gax.WithClientMetrics(metrics))
+		callOpts.CreateConversionEvent = append(callOpts.CreateConversionEvent, gax.WithClientMetrics(metrics))
+		callOpts.UpdateConversionEvent = append(callOpts.UpdateConversionEvent, gax.WithClientMetrics(metrics))
+		callOpts.GetConversionEvent = append(callOpts.GetConversionEvent, gax.WithClientMetrics(metrics))
+		callOpts.DeleteConversionEvent = append(callOpts.DeleteConversionEvent, gax.WithClientMetrics(metrics))
+		callOpts.ListConversionEvents = append(callOpts.ListConversionEvents, gax.WithClientMetrics(metrics))
+		callOpts.CreateKeyEvent = append(callOpts.CreateKeyEvent, gax.WithClientMetrics(metrics))
+		callOpts.UpdateKeyEvent = append(callOpts.UpdateKeyEvent, gax.WithClientMetrics(metrics))
+		callOpts.GetKeyEvent = append(callOpts.GetKeyEvent, gax.WithClientMetrics(metrics))
+		callOpts.DeleteKeyEvent = append(callOpts.DeleteKeyEvent, gax.WithClientMetrics(metrics))
+		callOpts.ListKeyEvents = append(callOpts.ListKeyEvents, gax.WithClientMetrics(metrics))
+		callOpts.GetDisplayVideo360AdvertiserLink = append(callOpts.GetDisplayVideo360AdvertiserLink, gax.WithClientMetrics(metrics))
+		callOpts.ListDisplayVideo360AdvertiserLinks = append(callOpts.ListDisplayVideo360AdvertiserLinks, gax.WithClientMetrics(metrics))
+		callOpts.CreateDisplayVideo360AdvertiserLink = append(callOpts.CreateDisplayVideo360AdvertiserLink, gax.WithClientMetrics(metrics))
+		callOpts.DeleteDisplayVideo360AdvertiserLink = append(callOpts.DeleteDisplayVideo360AdvertiserLink, gax.WithClientMetrics(metrics))
+		callOpts.UpdateDisplayVideo360AdvertiserLink = append(callOpts.UpdateDisplayVideo360AdvertiserLink, gax.WithClientMetrics(metrics))
+		callOpts.GetDisplayVideo360AdvertiserLinkProposal = append(callOpts.GetDisplayVideo360AdvertiserLinkProposal, gax.WithClientMetrics(metrics))
+		callOpts.ListDisplayVideo360AdvertiserLinkProposals = append(callOpts.ListDisplayVideo360AdvertiserLinkProposals, gax.WithClientMetrics(metrics))
+		callOpts.CreateDisplayVideo360AdvertiserLinkProposal = append(callOpts.CreateDisplayVideo360AdvertiserLinkProposal, gax.WithClientMetrics(metrics))
+		callOpts.DeleteDisplayVideo360AdvertiserLinkProposal = append(callOpts.DeleteDisplayVideo360AdvertiserLinkProposal, gax.WithClientMetrics(metrics))
+		callOpts.ApproveDisplayVideo360AdvertiserLinkProposal = append(callOpts.ApproveDisplayVideo360AdvertiserLinkProposal, gax.WithClientMetrics(metrics))
+		callOpts.CancelDisplayVideo360AdvertiserLinkProposal = append(callOpts.CancelDisplayVideo360AdvertiserLinkProposal, gax.WithClientMetrics(metrics))
+		callOpts.CreateCustomDimension = append(callOpts.CreateCustomDimension, gax.WithClientMetrics(metrics))
+		callOpts.UpdateCustomDimension = append(callOpts.UpdateCustomDimension, gax.WithClientMetrics(metrics))
+		callOpts.ListCustomDimensions = append(callOpts.ListCustomDimensions, gax.WithClientMetrics(metrics))
+		callOpts.ArchiveCustomDimension = append(callOpts.ArchiveCustomDimension, gax.WithClientMetrics(metrics))
+		callOpts.GetCustomDimension = append(callOpts.GetCustomDimension, gax.WithClientMetrics(metrics))
+		callOpts.CreateCustomMetric = append(callOpts.CreateCustomMetric, gax.WithClientMetrics(metrics))
+		callOpts.UpdateCustomMetric = append(callOpts.UpdateCustomMetric, gax.WithClientMetrics(metrics))
+		callOpts.ListCustomMetrics = append(callOpts.ListCustomMetrics, gax.WithClientMetrics(metrics))
+		callOpts.ArchiveCustomMetric = append(callOpts.ArchiveCustomMetric, gax.WithClientMetrics(metrics))
+		callOpts.GetCustomMetric = append(callOpts.GetCustomMetric, gax.WithClientMetrics(metrics))
+		callOpts.GetDataRetentionSettings = append(callOpts.GetDataRetentionSettings, gax.WithClientMetrics(metrics))
+		callOpts.UpdateDataRetentionSettings = append(callOpts.UpdateDataRetentionSettings, gax.WithClientMetrics(metrics))
+		callOpts.CreateDataStream = append(callOpts.CreateDataStream, gax.WithClientMetrics(metrics))
+		callOpts.DeleteDataStream = append(callOpts.DeleteDataStream, gax.WithClientMetrics(metrics))
+		callOpts.UpdateDataStream = append(callOpts.UpdateDataStream, gax.WithClientMetrics(metrics))
+		callOpts.ListDataStreams = append(callOpts.ListDataStreams, gax.WithClientMetrics(metrics))
+		callOpts.GetDataStream = append(callOpts.GetDataStream, gax.WithClientMetrics(metrics))
+		callOpts.GetAudience = append(callOpts.GetAudience, gax.WithClientMetrics(metrics))
+		callOpts.ListAudiences = append(callOpts.ListAudiences, gax.WithClientMetrics(metrics))
+		callOpts.CreateAudience = append(callOpts.CreateAudience, gax.WithClientMetrics(metrics))
+		callOpts.UpdateAudience = append(callOpts.UpdateAudience, gax.WithClientMetrics(metrics))
+		callOpts.ArchiveAudience = append(callOpts.ArchiveAudience, gax.WithClientMetrics(metrics))
+		callOpts.GetSearchAds360Link = append(callOpts.GetSearchAds360Link, gax.WithClientMetrics(metrics))
+		callOpts.ListSearchAds360Links = append(callOpts.ListSearchAds360Links, gax.WithClientMetrics(metrics))
+		callOpts.CreateSearchAds360Link = append(callOpts.CreateSearchAds360Link, gax.WithClientMetrics(metrics))
+		callOpts.DeleteSearchAds360Link = append(callOpts.DeleteSearchAds360Link, gax.WithClientMetrics(metrics))
+		callOpts.UpdateSearchAds360Link = append(callOpts.UpdateSearchAds360Link, gax.WithClientMetrics(metrics))
+		callOpts.GetAttributionSettings = append(callOpts.GetAttributionSettings, gax.WithClientMetrics(metrics))
+		callOpts.UpdateAttributionSettings = append(callOpts.UpdateAttributionSettings, gax.WithClientMetrics(metrics))
+		callOpts.RunAccessReport = append(callOpts.RunAccessReport, gax.WithClientMetrics(metrics))
+		callOpts.CreateAccessBinding = append(callOpts.CreateAccessBinding, gax.WithClientMetrics(metrics))
+		callOpts.GetAccessBinding = append(callOpts.GetAccessBinding, gax.WithClientMetrics(metrics))
+		callOpts.UpdateAccessBinding = append(callOpts.UpdateAccessBinding, gax.WithClientMetrics(metrics))
+		callOpts.DeleteAccessBinding = append(callOpts.DeleteAccessBinding, gax.WithClientMetrics(metrics))
+		callOpts.ListAccessBindings = append(callOpts.ListAccessBindings, gax.WithClientMetrics(metrics))
+		callOpts.BatchCreateAccessBindings = append(callOpts.BatchCreateAccessBindings, gax.WithClientMetrics(metrics))
+		callOpts.BatchGetAccessBindings = append(callOpts.BatchGetAccessBindings, gax.WithClientMetrics(metrics))
+		callOpts.BatchUpdateAccessBindings = append(callOpts.BatchUpdateAccessBindings, gax.WithClientMetrics(metrics))
+		callOpts.BatchDeleteAccessBindings = append(callOpts.BatchDeleteAccessBindings, gax.WithClientMetrics(metrics))
+		callOpts.GetExpandedDataSet = append(callOpts.GetExpandedDataSet, gax.WithClientMetrics(metrics))
+		callOpts.ListExpandedDataSets = append(callOpts.ListExpandedDataSets, gax.WithClientMetrics(metrics))
+		callOpts.CreateExpandedDataSet = append(callOpts.CreateExpandedDataSet, gax.WithClientMetrics(metrics))
+		callOpts.UpdateExpandedDataSet = append(callOpts.UpdateExpandedDataSet, gax.WithClientMetrics(metrics))
+		callOpts.DeleteExpandedDataSet = append(callOpts.DeleteExpandedDataSet, gax.WithClientMetrics(metrics))
+		callOpts.GetChannelGroup = append(callOpts.GetChannelGroup, gax.WithClientMetrics(metrics))
+		callOpts.ListChannelGroups = append(callOpts.ListChannelGroups, gax.WithClientMetrics(metrics))
+		callOpts.CreateChannelGroup = append(callOpts.CreateChannelGroup, gax.WithClientMetrics(metrics))
+		callOpts.UpdateChannelGroup = append(callOpts.UpdateChannelGroup, gax.WithClientMetrics(metrics))
+		callOpts.DeleteChannelGroup = append(callOpts.DeleteChannelGroup, gax.WithClientMetrics(metrics))
+		callOpts.CreateBigQueryLink = append(callOpts.CreateBigQueryLink, gax.WithClientMetrics(metrics))
+		callOpts.GetBigQueryLink = append(callOpts.GetBigQueryLink, gax.WithClientMetrics(metrics))
+		callOpts.ListBigQueryLinks = append(callOpts.ListBigQueryLinks, gax.WithClientMetrics(metrics))
+		callOpts.DeleteBigQueryLink = append(callOpts.DeleteBigQueryLink, gax.WithClientMetrics(metrics))
+		callOpts.UpdateBigQueryLink = append(callOpts.UpdateBigQueryLink, gax.WithClientMetrics(metrics))
+		callOpts.GetEnhancedMeasurementSettings = append(callOpts.GetEnhancedMeasurementSettings, gax.WithClientMetrics(metrics))
+		callOpts.UpdateEnhancedMeasurementSettings = append(callOpts.UpdateEnhancedMeasurementSettings, gax.WithClientMetrics(metrics))
+		callOpts.GetAdSenseLink = append(callOpts.GetAdSenseLink, gax.WithClientMetrics(metrics))
+		callOpts.CreateAdSenseLink = append(callOpts.CreateAdSenseLink, gax.WithClientMetrics(metrics))
+		callOpts.DeleteAdSenseLink = append(callOpts.DeleteAdSenseLink, gax.WithClientMetrics(metrics))
+		callOpts.ListAdSenseLinks = append(callOpts.ListAdSenseLinks, gax.WithClientMetrics(metrics))
+		callOpts.GetEventCreateRule = append(callOpts.GetEventCreateRule, gax.WithClientMetrics(metrics))
+		callOpts.ListEventCreateRules = append(callOpts.ListEventCreateRules, gax.WithClientMetrics(metrics))
+		callOpts.CreateEventCreateRule = append(callOpts.CreateEventCreateRule, gax.WithClientMetrics(metrics))
+		callOpts.UpdateEventCreateRule = append(callOpts.UpdateEventCreateRule, gax.WithClientMetrics(metrics))
+		callOpts.DeleteEventCreateRule = append(callOpts.DeleteEventCreateRule, gax.WithClientMetrics(metrics))
+		callOpts.GetEventEditRule = append(callOpts.GetEventEditRule, gax.WithClientMetrics(metrics))
+		callOpts.ListEventEditRules = append(callOpts.ListEventEditRules, gax.WithClientMetrics(metrics))
+		callOpts.CreateEventEditRule = append(callOpts.CreateEventEditRule, gax.WithClientMetrics(metrics))
+		callOpts.UpdateEventEditRule = append(callOpts.UpdateEventEditRule, gax.WithClientMetrics(metrics))
+		callOpts.DeleteEventEditRule = append(callOpts.DeleteEventEditRule, gax.WithClientMetrics(metrics))
+		callOpts.ReorderEventEditRules = append(callOpts.ReorderEventEditRules, gax.WithClientMetrics(metrics))
+		callOpts.UpdateDataRedactionSettings = append(callOpts.UpdateDataRedactionSettings, gax.WithClientMetrics(metrics))
+		callOpts.GetDataRedactionSettings = append(callOpts.GetDataRedactionSettings, gax.WithClientMetrics(metrics))
+		callOpts.GetCalculatedMetric = append(callOpts.GetCalculatedMetric, gax.WithClientMetrics(metrics))
+		callOpts.CreateCalculatedMetric = append(callOpts.CreateCalculatedMetric, gax.WithClientMetrics(metrics))
+		callOpts.ListCalculatedMetrics = append(callOpts.ListCalculatedMetrics, gax.WithClientMetrics(metrics))
+		callOpts.UpdateCalculatedMetric = append(callOpts.UpdateCalculatedMetric, gax.WithClientMetrics(metrics))
+		callOpts.DeleteCalculatedMetric = append(callOpts.DeleteCalculatedMetric, gax.WithClientMetrics(metrics))
+		callOpts.CreateRollupProperty = append(callOpts.CreateRollupProperty, gax.WithClientMetrics(metrics))
+		callOpts.GetRollupPropertySourceLink = append(callOpts.GetRollupPropertySourceLink, gax.WithClientMetrics(metrics))
+		callOpts.ListRollupPropertySourceLinks = append(callOpts.ListRollupPropertySourceLinks, gax.WithClientMetrics(metrics))
+		callOpts.CreateRollupPropertySourceLink = append(callOpts.CreateRollupPropertySourceLink, gax.WithClientMetrics(metrics))
+		callOpts.DeleteRollupPropertySourceLink = append(callOpts.DeleteRollupPropertySourceLink, gax.WithClientMetrics(metrics))
+		callOpts.ProvisionSubproperty = append(callOpts.ProvisionSubproperty, gax.WithClientMetrics(metrics))
+		callOpts.CreateSubpropertyEventFilter = append(callOpts.CreateSubpropertyEventFilter, gax.WithClientMetrics(metrics))
+		callOpts.GetSubpropertyEventFilter = append(callOpts.GetSubpropertyEventFilter, gax.WithClientMetrics(metrics))
+		callOpts.ListSubpropertyEventFilters = append(callOpts.ListSubpropertyEventFilters, gax.WithClientMetrics(metrics))
+		callOpts.UpdateSubpropertyEventFilter = append(callOpts.UpdateSubpropertyEventFilter, gax.WithClientMetrics(metrics))
+		callOpts.DeleteSubpropertyEventFilter = append(callOpts.DeleteSubpropertyEventFilter, gax.WithClientMetrics(metrics))
+		callOpts.CreateReportingDataAnnotation = append(callOpts.CreateReportingDataAnnotation, gax.WithClientMetrics(metrics))
+		callOpts.GetReportingDataAnnotation = append(callOpts.GetReportingDataAnnotation, gax.WithClientMetrics(metrics))
+		callOpts.ListReportingDataAnnotations = append(callOpts.ListReportingDataAnnotations, gax.WithClientMetrics(metrics))
+		callOpts.UpdateReportingDataAnnotation = append(callOpts.UpdateReportingDataAnnotation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteReportingDataAnnotation = append(callOpts.DeleteReportingDataAnnotation, gax.WithClientMetrics(metrics))
+		callOpts.SubmitUserDeletion = append(callOpts.SubmitUserDeletion, gax.WithClientMetrics(metrics))
+		callOpts.ListSubpropertySyncConfigs = append(callOpts.ListSubpropertySyncConfigs, gax.WithClientMetrics(metrics))
+		callOpts.UpdateSubpropertySyncConfig = append(callOpts.UpdateSubpropertySyncConfig, gax.WithClientMetrics(metrics))
+		callOpts.GetSubpropertySyncConfig = append(callOpts.GetSubpropertySyncConfig, gax.WithClientMetrics(metrics))
+		callOpts.GetReportingIdentitySettings = append(callOpts.GetReportingIdentitySettings, gax.WithClientMetrics(metrics))
+	}
 
 	return &AnalyticsAdminClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -4934,6 +5290,12 @@ func (c *analyticsAdminGRPCClient) GetAccount(ctx context.Context, req *adminpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetAccount")
+	}
 	opts = append((*c.CallOptions).GetAccount[0:len((*c.CallOptions).GetAccount):len((*c.CallOptions).GetAccount)], opts...)
 	var resp *adminpb.Account
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4949,6 +5311,9 @@ func (c *analyticsAdminGRPCClient) GetAccount(ctx context.Context, req *adminpb.
 
 func (c *analyticsAdminGRPCClient) ListAccounts(ctx context.Context, req *adminpb.ListAccountsRequest, opts ...gax.CallOption) *AccountIterator {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ListAccounts")
+	}
 	opts = append((*c.CallOptions).ListAccounts[0:len((*c.CallOptions).ListAccounts):len((*c.CallOptions).ListAccounts)], opts...)
 	it := &AccountIterator{}
 	req = proto.Clone(req).(*adminpb.ListAccountsRequest)
@@ -4995,6 +5360,12 @@ func (c *analyticsAdminGRPCClient) DeleteAccount(ctx context.Context, req *admin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteAccount")
+	}
 	opts = append((*c.CallOptions).DeleteAccount[0:len((*c.CallOptions).DeleteAccount):len((*c.CallOptions).DeleteAccount)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -5009,6 +5380,9 @@ func (c *analyticsAdminGRPCClient) UpdateAccount(ctx context.Context, req *admin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateAccount")
+	}
 	opts = append((*c.CallOptions).UpdateAccount[0:len((*c.CallOptions).UpdateAccount):len((*c.CallOptions).UpdateAccount)], opts...)
 	var resp *adminpb.Account
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5024,6 +5398,9 @@ func (c *analyticsAdminGRPCClient) UpdateAccount(ctx context.Context, req *admin
 
 func (c *analyticsAdminGRPCClient) ProvisionAccountTicket(ctx context.Context, req *adminpb.ProvisionAccountTicketRequest, opts ...gax.CallOption) (*adminpb.ProvisionAccountTicketResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ProvisionAccountTicket")
+	}
 	opts = append((*c.CallOptions).ProvisionAccountTicket[0:len((*c.CallOptions).ProvisionAccountTicket):len((*c.CallOptions).ProvisionAccountTicket)], opts...)
 	var resp *adminpb.ProvisionAccountTicketResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5039,6 +5416,9 @@ func (c *analyticsAdminGRPCClient) ProvisionAccountTicket(ctx context.Context, r
 
 func (c *analyticsAdminGRPCClient) ListAccountSummaries(ctx context.Context, req *adminpb.ListAccountSummariesRequest, opts ...gax.CallOption) *AccountSummaryIterator {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ListAccountSummaries")
+	}
 	opts = append((*c.CallOptions).ListAccountSummaries[0:len((*c.CallOptions).ListAccountSummaries):len((*c.CallOptions).ListAccountSummaries)], opts...)
 	it := &AccountSummaryIterator{}
 	req = proto.Clone(req).(*adminpb.ListAccountSummariesRequest)
@@ -5085,6 +5465,12 @@ func (c *analyticsAdminGRPCClient) GetProperty(ctx context.Context, req *adminpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetProperty")
+	}
 	opts = append((*c.CallOptions).GetProperty[0:len((*c.CallOptions).GetProperty):len((*c.CallOptions).GetProperty)], opts...)
 	var resp *adminpb.Property
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5100,6 +5486,9 @@ func (c *analyticsAdminGRPCClient) GetProperty(ctx context.Context, req *adminpb
 
 func (c *analyticsAdminGRPCClient) ListProperties(ctx context.Context, req *adminpb.ListPropertiesRequest, opts ...gax.CallOption) *PropertyIterator {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ListProperties")
+	}
 	opts = append((*c.CallOptions).ListProperties[0:len((*c.CallOptions).ListProperties):len((*c.CallOptions).ListProperties)], opts...)
 	it := &PropertyIterator{}
 	req = proto.Clone(req).(*adminpb.ListPropertiesRequest)
@@ -5143,6 +5532,9 @@ func (c *analyticsAdminGRPCClient) ListProperties(ctx context.Context, req *admi
 
 func (c *analyticsAdminGRPCClient) CreateProperty(ctx context.Context, req *adminpb.CreatePropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateProperty")
+	}
 	opts = append((*c.CallOptions).CreateProperty[0:len((*c.CallOptions).CreateProperty):len((*c.CallOptions).CreateProperty)], opts...)
 	var resp *adminpb.Property
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5161,6 +5553,12 @@ func (c *analyticsAdminGRPCClient) DeleteProperty(ctx context.Context, req *admi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteProperty")
+	}
 	opts = append((*c.CallOptions).DeleteProperty[0:len((*c.CallOptions).DeleteProperty):len((*c.CallOptions).DeleteProperty)], opts...)
 	var resp *adminpb.Property
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5179,6 +5577,9 @@ func (c *analyticsAdminGRPCClient) UpdateProperty(ctx context.Context, req *admi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateProperty")
+	}
 	opts = append((*c.CallOptions).UpdateProperty[0:len((*c.CallOptions).UpdateProperty):len((*c.CallOptions).UpdateProperty)], opts...)
 	var resp *adminpb.Property
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5197,6 +5598,12 @@ func (c *analyticsAdminGRPCClient) CreateFirebaseLink(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateFirebaseLink")
+	}
 	opts = append((*c.CallOptions).CreateFirebaseLink[0:len((*c.CallOptions).CreateFirebaseLink):len((*c.CallOptions).CreateFirebaseLink)], opts...)
 	var resp *adminpb.FirebaseLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5215,6 +5622,12 @@ func (c *analyticsAdminGRPCClient) DeleteFirebaseLink(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteFirebaseLink")
+	}
 	opts = append((*c.CallOptions).DeleteFirebaseLink[0:len((*c.CallOptions).DeleteFirebaseLink):len((*c.CallOptions).DeleteFirebaseLink)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -5229,6 +5642,12 @@ func (c *analyticsAdminGRPCClient) ListFirebaseLinks(ctx context.Context, req *a
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ListFirebaseLinks")
+	}
 	opts = append((*c.CallOptions).ListFirebaseLinks[0:len((*c.CallOptions).ListFirebaseLinks):len((*c.CallOptions).ListFirebaseLinks)], opts...)
 	it := &FirebaseLinkIterator{}
 	req = proto.Clone(req).(*adminpb.ListFirebaseLinksRequest)
@@ -5275,6 +5694,12 @@ func (c *analyticsAdminGRPCClient) GetGlobalSiteTag(ctx context.Context, req *ad
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetGlobalSiteTag")
+	}
 	opts = append((*c.CallOptions).GetGlobalSiteTag[0:len((*c.CallOptions).GetGlobalSiteTag):len((*c.CallOptions).GetGlobalSiteTag)], opts...)
 	var resp *adminpb.GlobalSiteTag
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5293,6 +5718,12 @@ func (c *analyticsAdminGRPCClient) CreateGoogleAdsLink(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateGoogleAdsLink")
+	}
 	opts = append((*c.CallOptions).CreateGoogleAdsLink[0:len((*c.CallOptions).CreateGoogleAdsLink):len((*c.CallOptions).CreateGoogleAdsLink)], opts...)
 	var resp *adminpb.GoogleAdsLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5311,6 +5742,9 @@ func (c *analyticsAdminGRPCClient) UpdateGoogleAdsLink(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateGoogleAdsLink")
+	}
 	opts = append((*c.CallOptions).UpdateGoogleAdsLink[0:len((*c.CallOptions).UpdateGoogleAdsLink):len((*c.CallOptions).UpdateGoogleAdsLink)], opts...)
 	var resp *adminpb.GoogleAdsLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5329,6 +5763,12 @@ func (c *analyticsAdminGRPCClient) DeleteGoogleAdsLink(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteGoogleAdsLink")
+	}
 	opts = append((*c.CallOptions).DeleteGoogleAdsLink[0:len((*c.CallOptions).DeleteGoogleAdsLink):len((*c.CallOptions).DeleteGoogleAdsLink)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -5343,6 +5783,12 @@ func (c *analyticsAdminGRPCClient) ListGoogleAdsLinks(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ListGoogleAdsLinks")
+	}
 	opts = append((*c.CallOptions).ListGoogleAdsLinks[0:len((*c.CallOptions).ListGoogleAdsLinks):len((*c.CallOptions).ListGoogleAdsLinks)], opts...)
 	it := &GoogleAdsLinkIterator{}
 	req = proto.Clone(req).(*adminpb.ListGoogleAdsLinksRequest)
@@ -5389,6 +5835,12 @@ func (c *analyticsAdminGRPCClient) GetDataSharingSettings(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetDataSharingSettings")
+	}
 	opts = append((*c.CallOptions).GetDataSharingSettings[0:len((*c.CallOptions).GetDataSharingSettings):len((*c.CallOptions).GetDataSharingSettings)], opts...)
 	var resp *adminpb.DataSharingSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5407,6 +5859,12 @@ func (c *analyticsAdminGRPCClient) GetMeasurementProtocolSecret(ctx context.Cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetMeasurementProtocolSecret")
+	}
 	opts = append((*c.CallOptions).GetMeasurementProtocolSecret[0:len((*c.CallOptions).GetMeasurementProtocolSecret):len((*c.CallOptions).GetMeasurementProtocolSecret)], opts...)
 	var resp *adminpb.MeasurementProtocolSecret
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5425,6 +5883,12 @@ func (c *analyticsAdminGRPCClient) ListMeasurementProtocolSecrets(ctx context.Co
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ListMeasurementProtocolSecrets")
+	}
 	opts = append((*c.CallOptions).ListMeasurementProtocolSecrets[0:len((*c.CallOptions).ListMeasurementProtocolSecrets):len((*c.CallOptions).ListMeasurementProtocolSecrets)], opts...)
 	it := &MeasurementProtocolSecretIterator{}
 	req = proto.Clone(req).(*adminpb.ListMeasurementProtocolSecretsRequest)
@@ -5471,6 +5935,12 @@ func (c *analyticsAdminGRPCClient) CreateMeasurementProtocolSecret(ctx context.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateMeasurementProtocolSecret")
+	}
 	opts = append((*c.CallOptions).CreateMeasurementProtocolSecret[0:len((*c.CallOptions).CreateMeasurementProtocolSecret):len((*c.CallOptions).CreateMeasurementProtocolSecret)], opts...)
 	var resp *adminpb.MeasurementProtocolSecret
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5489,6 +5959,12 @@ func (c *analyticsAdminGRPCClient) DeleteMeasurementProtocolSecret(ctx context.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteMeasurementProtocolSecret")
+	}
 	opts = append((*c.CallOptions).DeleteMeasurementProtocolSecret[0:len((*c.CallOptions).DeleteMeasurementProtocolSecret):len((*c.CallOptions).DeleteMeasurementProtocolSecret)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -5503,6 +5979,9 @@ func (c *analyticsAdminGRPCClient) UpdateMeasurementProtocolSecret(ctx context.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateMeasurementProtocolSecret")
+	}
 	opts = append((*c.CallOptions).UpdateMeasurementProtocolSecret[0:len((*c.CallOptions).UpdateMeasurementProtocolSecret):len((*c.CallOptions).UpdateMeasurementProtocolSecret)], opts...)
 	var resp *adminpb.MeasurementProtocolSecret
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5521,6 +6000,12 @@ func (c *analyticsAdminGRPCClient) AcknowledgeUserDataCollection(ctx context.Con
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetProperty()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/AcknowledgeUserDataCollection")
+	}
 	opts = append((*c.CallOptions).AcknowledgeUserDataCollection[0:len((*c.CallOptions).AcknowledgeUserDataCollection):len((*c.CallOptions).AcknowledgeUserDataCollection)], opts...)
 	var resp *adminpb.AcknowledgeUserDataCollectionResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5539,6 +6024,12 @@ func (c *analyticsAdminGRPCClient) GetSKAdNetworkConversionValueSchema(ctx conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetSKAdNetworkConversionValueSchema")
+	}
 	opts = append((*c.CallOptions).GetSKAdNetworkConversionValueSchema[0:len((*c.CallOptions).GetSKAdNetworkConversionValueSchema):len((*c.CallOptions).GetSKAdNetworkConversionValueSchema)], opts...)
 	var resp *adminpb.SKAdNetworkConversionValueSchema
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5557,6 +6048,12 @@ func (c *analyticsAdminGRPCClient) CreateSKAdNetworkConversionValueSchema(ctx co
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateSKAdNetworkConversionValueSchema")
+	}
 	opts = append((*c.CallOptions).CreateSKAdNetworkConversionValueSchema[0:len((*c.CallOptions).CreateSKAdNetworkConversionValueSchema):len((*c.CallOptions).CreateSKAdNetworkConversionValueSchema)], opts...)
 	var resp *adminpb.SKAdNetworkConversionValueSchema
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5575,6 +6072,12 @@ func (c *analyticsAdminGRPCClient) DeleteSKAdNetworkConversionValueSchema(ctx co
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteSKAdNetworkConversionValueSchema")
+	}
 	opts = append((*c.CallOptions).DeleteSKAdNetworkConversionValueSchema[0:len((*c.CallOptions).DeleteSKAdNetworkConversionValueSchema):len((*c.CallOptions).DeleteSKAdNetworkConversionValueSchema)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -5589,6 +6092,9 @@ func (c *analyticsAdminGRPCClient) UpdateSKAdNetworkConversionValueSchema(ctx co
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateSKAdNetworkConversionValueSchema")
+	}
 	opts = append((*c.CallOptions).UpdateSKAdNetworkConversionValueSchema[0:len((*c.CallOptions).UpdateSKAdNetworkConversionValueSchema):len((*c.CallOptions).UpdateSKAdNetworkConversionValueSchema)], opts...)
 	var resp *adminpb.SKAdNetworkConversionValueSchema
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5607,6 +6113,12 @@ func (c *analyticsAdminGRPCClient) ListSKAdNetworkConversionValueSchemas(ctx con
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ListSKAdNetworkConversionValueSchemas")
+	}
 	opts = append((*c.CallOptions).ListSKAdNetworkConversionValueSchemas[0:len((*c.CallOptions).ListSKAdNetworkConversionValueSchemas):len((*c.CallOptions).ListSKAdNetworkConversionValueSchemas)], opts...)
 	it := &SKAdNetworkConversionValueSchemaIterator{}
 	req = proto.Clone(req).(*adminpb.ListSKAdNetworkConversionValueSchemasRequest)
@@ -5653,6 +6165,12 @@ func (c *analyticsAdminGRPCClient) SearchChangeHistoryEvents(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetAccount()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/SearchChangeHistoryEvents")
+	}
 	opts = append((*c.CallOptions).SearchChangeHistoryEvents[0:len((*c.CallOptions).SearchChangeHistoryEvents):len((*c.CallOptions).SearchChangeHistoryEvents)], opts...)
 	it := &ChangeHistoryEventIterator{}
 	req = proto.Clone(req).(*adminpb.SearchChangeHistoryEventsRequest)
@@ -5699,6 +6217,12 @@ func (c *analyticsAdminGRPCClient) GetGoogleSignalsSettings(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetGoogleSignalsSettings")
+	}
 	opts = append((*c.CallOptions).GetGoogleSignalsSettings[0:len((*c.CallOptions).GetGoogleSignalsSettings):len((*c.CallOptions).GetGoogleSignalsSettings)], opts...)
 	var resp *adminpb.GoogleSignalsSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5717,6 +6241,9 @@ func (c *analyticsAdminGRPCClient) UpdateGoogleSignalsSettings(ctx context.Conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateGoogleSignalsSettings")
+	}
 	opts = append((*c.CallOptions).UpdateGoogleSignalsSettings[0:len((*c.CallOptions).UpdateGoogleSignalsSettings):len((*c.CallOptions).UpdateGoogleSignalsSettings)], opts...)
 	var resp *adminpb.GoogleSignalsSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5735,6 +6262,12 @@ func (c *analyticsAdminGRPCClient) CreateConversionEvent(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateConversionEvent")
+	}
 	opts = append((*c.CallOptions).CreateConversionEvent[0:len((*c.CallOptions).CreateConversionEvent):len((*c.CallOptions).CreateConversionEvent)], opts...)
 	var resp *adminpb.ConversionEvent
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5753,6 +6286,9 @@ func (c *analyticsAdminGRPCClient) UpdateConversionEvent(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateConversionEvent")
+	}
 	opts = append((*c.CallOptions).UpdateConversionEvent[0:len((*c.CallOptions).UpdateConversionEvent):len((*c.CallOptions).UpdateConversionEvent)], opts...)
 	var resp *adminpb.ConversionEvent
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5771,6 +6307,12 @@ func (c *analyticsAdminGRPCClient) GetConversionEvent(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetConversionEvent")
+	}
 	opts = append((*c.CallOptions).GetConversionEvent[0:len((*c.CallOptions).GetConversionEvent):len((*c.CallOptions).GetConversionEvent)], opts...)
 	var resp *adminpb.ConversionEvent
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5789,6 +6331,12 @@ func (c *analyticsAdminGRPCClient) DeleteConversionEvent(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteConversionEvent")
+	}
 	opts = append((*c.CallOptions).DeleteConversionEvent[0:len((*c.CallOptions).DeleteConversionEvent):len((*c.CallOptions).DeleteConversionEvent)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -5803,6 +6351,12 @@ func (c *analyticsAdminGRPCClient) ListConversionEvents(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ListConversionEvents")
+	}
 	opts = append((*c.CallOptions).ListConversionEvents[0:len((*c.CallOptions).ListConversionEvents):len((*c.CallOptions).ListConversionEvents)], opts...)
 	it := &ConversionEventIterator{}
 	req = proto.Clone(req).(*adminpb.ListConversionEventsRequest)
@@ -5849,6 +6403,12 @@ func (c *analyticsAdminGRPCClient) CreateKeyEvent(ctx context.Context, req *admi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateKeyEvent")
+	}
 	opts = append((*c.CallOptions).CreateKeyEvent[0:len((*c.CallOptions).CreateKeyEvent):len((*c.CallOptions).CreateKeyEvent)], opts...)
 	var resp *adminpb.KeyEvent
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5867,6 +6427,9 @@ func (c *analyticsAdminGRPCClient) UpdateKeyEvent(ctx context.Context, req *admi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateKeyEvent")
+	}
 	opts = append((*c.CallOptions).UpdateKeyEvent[0:len((*c.CallOptions).UpdateKeyEvent):len((*c.CallOptions).UpdateKeyEvent)], opts...)
 	var resp *adminpb.KeyEvent
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5885,6 +6448,12 @@ func (c *analyticsAdminGRPCClient) GetKeyEvent(ctx context.Context, req *adminpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetKeyEvent")
+	}
 	opts = append((*c.CallOptions).GetKeyEvent[0:len((*c.CallOptions).GetKeyEvent):len((*c.CallOptions).GetKeyEvent)], opts...)
 	var resp *adminpb.KeyEvent
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5903,6 +6472,12 @@ func (c *analyticsAdminGRPCClient) DeleteKeyEvent(ctx context.Context, req *admi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteKeyEvent")
+	}
 	opts = append((*c.CallOptions).DeleteKeyEvent[0:len((*c.CallOptions).DeleteKeyEvent):len((*c.CallOptions).DeleteKeyEvent)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -5917,6 +6492,12 @@ func (c *analyticsAdminGRPCClient) ListKeyEvents(ctx context.Context, req *admin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ListKeyEvents")
+	}
 	opts = append((*c.CallOptions).ListKeyEvents[0:len((*c.CallOptions).ListKeyEvents):len((*c.CallOptions).ListKeyEvents)], opts...)
 	it := &KeyEventIterator{}
 	req = proto.Clone(req).(*adminpb.ListKeyEventsRequest)
@@ -5963,6 +6544,12 @@ func (c *analyticsAdminGRPCClient) GetDisplayVideo360AdvertiserLink(ctx context.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetDisplayVideo360AdvertiserLink")
+	}
 	opts = append((*c.CallOptions).GetDisplayVideo360AdvertiserLink[0:len((*c.CallOptions).GetDisplayVideo360AdvertiserLink):len((*c.CallOptions).GetDisplayVideo360AdvertiserLink)], opts...)
 	var resp *adminpb.DisplayVideo360AdvertiserLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5981,6 +6568,12 @@ func (c *analyticsAdminGRPCClient) ListDisplayVideo360AdvertiserLinks(ctx contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ListDisplayVideo360AdvertiserLinks")
+	}
 	opts = append((*c.CallOptions).ListDisplayVideo360AdvertiserLinks[0:len((*c.CallOptions).ListDisplayVideo360AdvertiserLinks):len((*c.CallOptions).ListDisplayVideo360AdvertiserLinks)], opts...)
 	it := &DisplayVideo360AdvertiserLinkIterator{}
 	req = proto.Clone(req).(*adminpb.ListDisplayVideo360AdvertiserLinksRequest)
@@ -6027,6 +6620,12 @@ func (c *analyticsAdminGRPCClient) CreateDisplayVideo360AdvertiserLink(ctx conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateDisplayVideo360AdvertiserLink")
+	}
 	opts = append((*c.CallOptions).CreateDisplayVideo360AdvertiserLink[0:len((*c.CallOptions).CreateDisplayVideo360AdvertiserLink):len((*c.CallOptions).CreateDisplayVideo360AdvertiserLink)], opts...)
 	var resp *adminpb.DisplayVideo360AdvertiserLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6045,6 +6644,12 @@ func (c *analyticsAdminGRPCClient) DeleteDisplayVideo360AdvertiserLink(ctx conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteDisplayVideo360AdvertiserLink")
+	}
 	opts = append((*c.CallOptions).DeleteDisplayVideo360AdvertiserLink[0:len((*c.CallOptions).DeleteDisplayVideo360AdvertiserLink):len((*c.CallOptions).DeleteDisplayVideo360AdvertiserLink)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -6059,6 +6664,9 @@ func (c *analyticsAdminGRPCClient) UpdateDisplayVideo360AdvertiserLink(ctx conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateDisplayVideo360AdvertiserLink")
+	}
 	opts = append((*c.CallOptions).UpdateDisplayVideo360AdvertiserLink[0:len((*c.CallOptions).UpdateDisplayVideo360AdvertiserLink):len((*c.CallOptions).UpdateDisplayVideo360AdvertiserLink)], opts...)
 	var resp *adminpb.DisplayVideo360AdvertiserLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6077,6 +6685,12 @@ func (c *analyticsAdminGRPCClient) GetDisplayVideo360AdvertiserLinkProposal(ctx 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetDisplayVideo360AdvertiserLinkProposal")
+	}
 	opts = append((*c.CallOptions).GetDisplayVideo360AdvertiserLinkProposal[0:len((*c.CallOptions).GetDisplayVideo360AdvertiserLinkProposal):len((*c.CallOptions).GetDisplayVideo360AdvertiserLinkProposal)], opts...)
 	var resp *adminpb.DisplayVideo360AdvertiserLinkProposal
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6095,6 +6709,12 @@ func (c *analyticsAdminGRPCClient) ListDisplayVideo360AdvertiserLinkProposals(ct
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ListDisplayVideo360AdvertiserLinkProposals")
+	}
 	opts = append((*c.CallOptions).ListDisplayVideo360AdvertiserLinkProposals[0:len((*c.CallOptions).ListDisplayVideo360AdvertiserLinkProposals):len((*c.CallOptions).ListDisplayVideo360AdvertiserLinkProposals)], opts...)
 	it := &DisplayVideo360AdvertiserLinkProposalIterator{}
 	req = proto.Clone(req).(*adminpb.ListDisplayVideo360AdvertiserLinkProposalsRequest)
@@ -6141,6 +6761,12 @@ func (c *analyticsAdminGRPCClient) CreateDisplayVideo360AdvertiserLinkProposal(c
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateDisplayVideo360AdvertiserLinkProposal")
+	}
 	opts = append((*c.CallOptions).CreateDisplayVideo360AdvertiserLinkProposal[0:len((*c.CallOptions).CreateDisplayVideo360AdvertiserLinkProposal):len((*c.CallOptions).CreateDisplayVideo360AdvertiserLinkProposal)], opts...)
 	var resp *adminpb.DisplayVideo360AdvertiserLinkProposal
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6159,6 +6785,12 @@ func (c *analyticsAdminGRPCClient) DeleteDisplayVideo360AdvertiserLinkProposal(c
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteDisplayVideo360AdvertiserLinkProposal")
+	}
 	opts = append((*c.CallOptions).DeleteDisplayVideo360AdvertiserLinkProposal[0:len((*c.CallOptions).DeleteDisplayVideo360AdvertiserLinkProposal):len((*c.CallOptions).DeleteDisplayVideo360AdvertiserLinkProposal)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -6173,6 +6805,12 @@ func (c *analyticsAdminGRPCClient) ApproveDisplayVideo360AdvertiserLinkProposal(
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ApproveDisplayVideo360AdvertiserLinkProposal")
+	}
 	opts = append((*c.CallOptions).ApproveDisplayVideo360AdvertiserLinkProposal[0:len((*c.CallOptions).ApproveDisplayVideo360AdvertiserLinkProposal):len((*c.CallOptions).ApproveDisplayVideo360AdvertiserLinkProposal)], opts...)
 	var resp *adminpb.ApproveDisplayVideo360AdvertiserLinkProposalResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6191,6 +6829,12 @@ func (c *analyticsAdminGRPCClient) CancelDisplayVideo360AdvertiserLinkProposal(c
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CancelDisplayVideo360AdvertiserLinkProposal")
+	}
 	opts = append((*c.CallOptions).CancelDisplayVideo360AdvertiserLinkProposal[0:len((*c.CallOptions).CancelDisplayVideo360AdvertiserLinkProposal):len((*c.CallOptions).CancelDisplayVideo360AdvertiserLinkProposal)], opts...)
 	var resp *adminpb.DisplayVideo360AdvertiserLinkProposal
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6209,6 +6853,12 @@ func (c *analyticsAdminGRPCClient) CreateCustomDimension(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateCustomDimension")
+	}
 	opts = append((*c.CallOptions).CreateCustomDimension[0:len((*c.CallOptions).CreateCustomDimension):len((*c.CallOptions).CreateCustomDimension)], opts...)
 	var resp *adminpb.CustomDimension
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6227,6 +6877,9 @@ func (c *analyticsAdminGRPCClient) UpdateCustomDimension(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateCustomDimension")
+	}
 	opts = append((*c.CallOptions).UpdateCustomDimension[0:len((*c.CallOptions).UpdateCustomDimension):len((*c.CallOptions).UpdateCustomDimension)], opts...)
 	var resp *adminpb.CustomDimension
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6245,6 +6898,12 @@ func (c *analyticsAdminGRPCClient) ListCustomDimensions(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ListCustomDimensions")
+	}
 	opts = append((*c.CallOptions).ListCustomDimensions[0:len((*c.CallOptions).ListCustomDimensions):len((*c.CallOptions).ListCustomDimensions)], opts...)
 	it := &CustomDimensionIterator{}
 	req = proto.Clone(req).(*adminpb.ListCustomDimensionsRequest)
@@ -6291,6 +6950,12 @@ func (c *analyticsAdminGRPCClient) ArchiveCustomDimension(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ArchiveCustomDimension")
+	}
 	opts = append((*c.CallOptions).ArchiveCustomDimension[0:len((*c.CallOptions).ArchiveCustomDimension):len((*c.CallOptions).ArchiveCustomDimension)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -6305,6 +6970,12 @@ func (c *analyticsAdminGRPCClient) GetCustomDimension(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetCustomDimension")
+	}
 	opts = append((*c.CallOptions).GetCustomDimension[0:len((*c.CallOptions).GetCustomDimension):len((*c.CallOptions).GetCustomDimension)], opts...)
 	var resp *adminpb.CustomDimension
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6323,6 +6994,12 @@ func (c *analyticsAdminGRPCClient) CreateCustomMetric(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateCustomMetric")
+	}
 	opts = append((*c.CallOptions).CreateCustomMetric[0:len((*c.CallOptions).CreateCustomMetric):len((*c.CallOptions).CreateCustomMetric)], opts...)
 	var resp *adminpb.CustomMetric
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6341,6 +7018,9 @@ func (c *analyticsAdminGRPCClient) UpdateCustomMetric(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateCustomMetric")
+	}
 	opts = append((*c.CallOptions).UpdateCustomMetric[0:len((*c.CallOptions).UpdateCustomMetric):len((*c.CallOptions).UpdateCustomMetric)], opts...)
 	var resp *adminpb.CustomMetric
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6359,6 +7039,12 @@ func (c *analyticsAdminGRPCClient) ListCustomMetrics(ctx context.Context, req *a
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ListCustomMetrics")
+	}
 	opts = append((*c.CallOptions).ListCustomMetrics[0:len((*c.CallOptions).ListCustomMetrics):len((*c.CallOptions).ListCustomMetrics)], opts...)
 	it := &CustomMetricIterator{}
 	req = proto.Clone(req).(*adminpb.ListCustomMetricsRequest)
@@ -6405,6 +7091,12 @@ func (c *analyticsAdminGRPCClient) ArchiveCustomMetric(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ArchiveCustomMetric")
+	}
 	opts = append((*c.CallOptions).ArchiveCustomMetric[0:len((*c.CallOptions).ArchiveCustomMetric):len((*c.CallOptions).ArchiveCustomMetric)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -6419,6 +7111,12 @@ func (c *analyticsAdminGRPCClient) GetCustomMetric(ctx context.Context, req *adm
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetCustomMetric")
+	}
 	opts = append((*c.CallOptions).GetCustomMetric[0:len((*c.CallOptions).GetCustomMetric):len((*c.CallOptions).GetCustomMetric)], opts...)
 	var resp *adminpb.CustomMetric
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6437,6 +7135,12 @@ func (c *analyticsAdminGRPCClient) GetDataRetentionSettings(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetDataRetentionSettings")
+	}
 	opts = append((*c.CallOptions).GetDataRetentionSettings[0:len((*c.CallOptions).GetDataRetentionSettings):len((*c.CallOptions).GetDataRetentionSettings)], opts...)
 	var resp *adminpb.DataRetentionSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6455,6 +7159,9 @@ func (c *analyticsAdminGRPCClient) UpdateDataRetentionSettings(ctx context.Conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateDataRetentionSettings")
+	}
 	opts = append((*c.CallOptions).UpdateDataRetentionSettings[0:len((*c.CallOptions).UpdateDataRetentionSettings):len((*c.CallOptions).UpdateDataRetentionSettings)], opts...)
 	var resp *adminpb.DataRetentionSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6473,6 +7180,12 @@ func (c *analyticsAdminGRPCClient) CreateDataStream(ctx context.Context, req *ad
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateDataStream")
+	}
 	opts = append((*c.CallOptions).CreateDataStream[0:len((*c.CallOptions).CreateDataStream):len((*c.CallOptions).CreateDataStream)], opts...)
 	var resp *adminpb.DataStream
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6491,6 +7204,12 @@ func (c *analyticsAdminGRPCClient) DeleteDataStream(ctx context.Context, req *ad
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteDataStream")
+	}
 	opts = append((*c.CallOptions).DeleteDataStream[0:len((*c.CallOptions).DeleteDataStream):len((*c.CallOptions).DeleteDataStream)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -6505,6 +7224,9 @@ func (c *analyticsAdminGRPCClient) UpdateDataStream(ctx context.Context, req *ad
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateDataStream")
+	}
 	opts = append((*c.CallOptions).UpdateDataStream[0:len((*c.CallOptions).UpdateDataStream):len((*c.CallOptions).UpdateDataStream)], opts...)
 	var resp *adminpb.DataStream
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6523,6 +7245,12 @@ func (c *analyticsAdminGRPCClient) ListDataStreams(ctx context.Context, req *adm
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ListDataStreams")
+	}
 	opts = append((*c.CallOptions).ListDataStreams[0:len((*c.CallOptions).ListDataStreams):len((*c.CallOptions).ListDataStreams)], opts...)
 	it := &DataStreamIterator{}
 	req = proto.Clone(req).(*adminpb.ListDataStreamsRequest)
@@ -6569,6 +7297,12 @@ func (c *analyticsAdminGRPCClient) GetDataStream(ctx context.Context, req *admin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetDataStream")
+	}
 	opts = append((*c.CallOptions).GetDataStream[0:len((*c.CallOptions).GetDataStream):len((*c.CallOptions).GetDataStream)], opts...)
 	var resp *adminpb.DataStream
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6587,6 +7321,12 @@ func (c *analyticsAdminGRPCClient) GetAudience(ctx context.Context, req *adminpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetAudience")
+	}
 	opts = append((*c.CallOptions).GetAudience[0:len((*c.CallOptions).GetAudience):len((*c.CallOptions).GetAudience)], opts...)
 	var resp *adminpb.Audience
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6605,6 +7345,12 @@ func (c *analyticsAdminGRPCClient) ListAudiences(ctx context.Context, req *admin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ListAudiences")
+	}
 	opts = append((*c.CallOptions).ListAudiences[0:len((*c.CallOptions).ListAudiences):len((*c.CallOptions).ListAudiences)], opts...)
 	it := &AudienceIterator{}
 	req = proto.Clone(req).(*adminpb.ListAudiencesRequest)
@@ -6651,6 +7397,12 @@ func (c *analyticsAdminGRPCClient) CreateAudience(ctx context.Context, req *admi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateAudience")
+	}
 	opts = append((*c.CallOptions).CreateAudience[0:len((*c.CallOptions).CreateAudience):len((*c.CallOptions).CreateAudience)], opts...)
 	var resp *adminpb.Audience
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6669,6 +7421,9 @@ func (c *analyticsAdminGRPCClient) UpdateAudience(ctx context.Context, req *admi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateAudience")
+	}
 	opts = append((*c.CallOptions).UpdateAudience[0:len((*c.CallOptions).UpdateAudience):len((*c.CallOptions).UpdateAudience)], opts...)
 	var resp *adminpb.Audience
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6687,6 +7442,12 @@ func (c *analyticsAdminGRPCClient) ArchiveAudience(ctx context.Context, req *adm
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ArchiveAudience")
+	}
 	opts = append((*c.CallOptions).ArchiveAudience[0:len((*c.CallOptions).ArchiveAudience):len((*c.CallOptions).ArchiveAudience)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -6701,6 +7462,12 @@ func (c *analyticsAdminGRPCClient) GetSearchAds360Link(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetSearchAds360Link")
+	}
 	opts = append((*c.CallOptions).GetSearchAds360Link[0:len((*c.CallOptions).GetSearchAds360Link):len((*c.CallOptions).GetSearchAds360Link)], opts...)
 	var resp *adminpb.SearchAds360Link
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6719,6 +7486,12 @@ func (c *analyticsAdminGRPCClient) ListSearchAds360Links(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ListSearchAds360Links")
+	}
 	opts = append((*c.CallOptions).ListSearchAds360Links[0:len((*c.CallOptions).ListSearchAds360Links):len((*c.CallOptions).ListSearchAds360Links)], opts...)
 	it := &SearchAds360LinkIterator{}
 	req = proto.Clone(req).(*adminpb.ListSearchAds360LinksRequest)
@@ -6765,6 +7538,12 @@ func (c *analyticsAdminGRPCClient) CreateSearchAds360Link(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateSearchAds360Link")
+	}
 	opts = append((*c.CallOptions).CreateSearchAds360Link[0:len((*c.CallOptions).CreateSearchAds360Link):len((*c.CallOptions).CreateSearchAds360Link)], opts...)
 	var resp *adminpb.SearchAds360Link
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6783,6 +7562,12 @@ func (c *analyticsAdminGRPCClient) DeleteSearchAds360Link(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteSearchAds360Link")
+	}
 	opts = append((*c.CallOptions).DeleteSearchAds360Link[0:len((*c.CallOptions).DeleteSearchAds360Link):len((*c.CallOptions).DeleteSearchAds360Link)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -6797,6 +7582,9 @@ func (c *analyticsAdminGRPCClient) UpdateSearchAds360Link(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateSearchAds360Link")
+	}
 	opts = append((*c.CallOptions).UpdateSearchAds360Link[0:len((*c.CallOptions).UpdateSearchAds360Link):len((*c.CallOptions).UpdateSearchAds360Link)], opts...)
 	var resp *adminpb.SearchAds360Link
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6815,6 +7603,12 @@ func (c *analyticsAdminGRPCClient) GetAttributionSettings(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetAttributionSettings")
+	}
 	opts = append((*c.CallOptions).GetAttributionSettings[0:len((*c.CallOptions).GetAttributionSettings):len((*c.CallOptions).GetAttributionSettings)], opts...)
 	var resp *adminpb.AttributionSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6833,6 +7627,9 @@ func (c *analyticsAdminGRPCClient) UpdateAttributionSettings(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateAttributionSettings")
+	}
 	opts = append((*c.CallOptions).UpdateAttributionSettings[0:len((*c.CallOptions).UpdateAttributionSettings):len((*c.CallOptions).UpdateAttributionSettings)], opts...)
 	var resp *adminpb.AttributionSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6851,6 +7648,9 @@ func (c *analyticsAdminGRPCClient) RunAccessReport(ctx context.Context, req *adm
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/RunAccessReport")
+	}
 	opts = append((*c.CallOptions).RunAccessReport[0:len((*c.CallOptions).RunAccessReport):len((*c.CallOptions).RunAccessReport)], opts...)
 	var resp *adminpb.RunAccessReportResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6869,6 +7669,12 @@ func (c *analyticsAdminGRPCClient) CreateAccessBinding(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateAccessBinding")
+	}
 	opts = append((*c.CallOptions).CreateAccessBinding[0:len((*c.CallOptions).CreateAccessBinding):len((*c.CallOptions).CreateAccessBinding)], opts...)
 	var resp *adminpb.AccessBinding
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6887,6 +7693,12 @@ func (c *analyticsAdminGRPCClient) GetAccessBinding(ctx context.Context, req *ad
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetAccessBinding")
+	}
 	opts = append((*c.CallOptions).GetAccessBinding[0:len((*c.CallOptions).GetAccessBinding):len((*c.CallOptions).GetAccessBinding)], opts...)
 	var resp *adminpb.AccessBinding
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6905,6 +7717,9 @@ func (c *analyticsAdminGRPCClient) UpdateAccessBinding(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateAccessBinding")
+	}
 	opts = append((*c.CallOptions).UpdateAccessBinding[0:len((*c.CallOptions).UpdateAccessBinding):len((*c.CallOptions).UpdateAccessBinding)], opts...)
 	var resp *adminpb.AccessBinding
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6923,6 +7738,12 @@ func (c *analyticsAdminGRPCClient) DeleteAccessBinding(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteAccessBinding")
+	}
 	opts = append((*c.CallOptions).DeleteAccessBinding[0:len((*c.CallOptions).DeleteAccessBinding):len((*c.CallOptions).DeleteAccessBinding)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -6937,6 +7758,12 @@ func (c *analyticsAdminGRPCClient) ListAccessBindings(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ListAccessBindings")
+	}
 	opts = append((*c.CallOptions).ListAccessBindings[0:len((*c.CallOptions).ListAccessBindings):len((*c.CallOptions).ListAccessBindings)], opts...)
 	it := &AccessBindingIterator{}
 	req = proto.Clone(req).(*adminpb.ListAccessBindingsRequest)
@@ -6983,6 +7810,12 @@ func (c *analyticsAdminGRPCClient) BatchCreateAccessBindings(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/BatchCreateAccessBindings")
+	}
 	opts = append((*c.CallOptions).BatchCreateAccessBindings[0:len((*c.CallOptions).BatchCreateAccessBindings):len((*c.CallOptions).BatchCreateAccessBindings)], opts...)
 	var resp *adminpb.BatchCreateAccessBindingsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7001,6 +7834,12 @@ func (c *analyticsAdminGRPCClient) BatchGetAccessBindings(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/BatchGetAccessBindings")
+	}
 	opts = append((*c.CallOptions).BatchGetAccessBindings[0:len((*c.CallOptions).BatchGetAccessBindings):len((*c.CallOptions).BatchGetAccessBindings)], opts...)
 	var resp *adminpb.BatchGetAccessBindingsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7019,6 +7858,12 @@ func (c *analyticsAdminGRPCClient) BatchUpdateAccessBindings(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/BatchUpdateAccessBindings")
+	}
 	opts = append((*c.CallOptions).BatchUpdateAccessBindings[0:len((*c.CallOptions).BatchUpdateAccessBindings):len((*c.CallOptions).BatchUpdateAccessBindings)], opts...)
 	var resp *adminpb.BatchUpdateAccessBindingsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7037,6 +7882,12 @@ func (c *analyticsAdminGRPCClient) BatchDeleteAccessBindings(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/BatchDeleteAccessBindings")
+	}
 	opts = append((*c.CallOptions).BatchDeleteAccessBindings[0:len((*c.CallOptions).BatchDeleteAccessBindings):len((*c.CallOptions).BatchDeleteAccessBindings)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -7051,6 +7902,12 @@ func (c *analyticsAdminGRPCClient) GetExpandedDataSet(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetExpandedDataSet")
+	}
 	opts = append((*c.CallOptions).GetExpandedDataSet[0:len((*c.CallOptions).GetExpandedDataSet):len((*c.CallOptions).GetExpandedDataSet)], opts...)
 	var resp *adminpb.ExpandedDataSet
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7069,6 +7926,12 @@ func (c *analyticsAdminGRPCClient) ListExpandedDataSets(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ListExpandedDataSets")
+	}
 	opts = append((*c.CallOptions).ListExpandedDataSets[0:len((*c.CallOptions).ListExpandedDataSets):len((*c.CallOptions).ListExpandedDataSets)], opts...)
 	it := &ExpandedDataSetIterator{}
 	req = proto.Clone(req).(*adminpb.ListExpandedDataSetsRequest)
@@ -7115,6 +7978,12 @@ func (c *analyticsAdminGRPCClient) CreateExpandedDataSet(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateExpandedDataSet")
+	}
 	opts = append((*c.CallOptions).CreateExpandedDataSet[0:len((*c.CallOptions).CreateExpandedDataSet):len((*c.CallOptions).CreateExpandedDataSet)], opts...)
 	var resp *adminpb.ExpandedDataSet
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7133,6 +8002,9 @@ func (c *analyticsAdminGRPCClient) UpdateExpandedDataSet(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateExpandedDataSet")
+	}
 	opts = append((*c.CallOptions).UpdateExpandedDataSet[0:len((*c.CallOptions).UpdateExpandedDataSet):len((*c.CallOptions).UpdateExpandedDataSet)], opts...)
 	var resp *adminpb.ExpandedDataSet
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7151,6 +8023,12 @@ func (c *analyticsAdminGRPCClient) DeleteExpandedDataSet(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteExpandedDataSet")
+	}
 	opts = append((*c.CallOptions).DeleteExpandedDataSet[0:len((*c.CallOptions).DeleteExpandedDataSet):len((*c.CallOptions).DeleteExpandedDataSet)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -7165,6 +8043,12 @@ func (c *analyticsAdminGRPCClient) GetChannelGroup(ctx context.Context, req *adm
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetChannelGroup")
+	}
 	opts = append((*c.CallOptions).GetChannelGroup[0:len((*c.CallOptions).GetChannelGroup):len((*c.CallOptions).GetChannelGroup)], opts...)
 	var resp *adminpb.ChannelGroup
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7183,6 +8067,12 @@ func (c *analyticsAdminGRPCClient) ListChannelGroups(ctx context.Context, req *a
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ListChannelGroups")
+	}
 	opts = append((*c.CallOptions).ListChannelGroups[0:len((*c.CallOptions).ListChannelGroups):len((*c.CallOptions).ListChannelGroups)], opts...)
 	it := &ChannelGroupIterator{}
 	req = proto.Clone(req).(*adminpb.ListChannelGroupsRequest)
@@ -7229,6 +8119,12 @@ func (c *analyticsAdminGRPCClient) CreateChannelGroup(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateChannelGroup")
+	}
 	opts = append((*c.CallOptions).CreateChannelGroup[0:len((*c.CallOptions).CreateChannelGroup):len((*c.CallOptions).CreateChannelGroup)], opts...)
 	var resp *adminpb.ChannelGroup
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7247,6 +8143,9 @@ func (c *analyticsAdminGRPCClient) UpdateChannelGroup(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateChannelGroup")
+	}
 	opts = append((*c.CallOptions).UpdateChannelGroup[0:len((*c.CallOptions).UpdateChannelGroup):len((*c.CallOptions).UpdateChannelGroup)], opts...)
 	var resp *adminpb.ChannelGroup
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7265,6 +8164,12 @@ func (c *analyticsAdminGRPCClient) DeleteChannelGroup(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteChannelGroup")
+	}
 	opts = append((*c.CallOptions).DeleteChannelGroup[0:len((*c.CallOptions).DeleteChannelGroup):len((*c.CallOptions).DeleteChannelGroup)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -7279,6 +8184,12 @@ func (c *analyticsAdminGRPCClient) CreateBigQueryLink(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateBigQueryLink")
+	}
 	opts = append((*c.CallOptions).CreateBigQueryLink[0:len((*c.CallOptions).CreateBigQueryLink):len((*c.CallOptions).CreateBigQueryLink)], opts...)
 	var resp *adminpb.BigQueryLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7297,6 +8208,12 @@ func (c *analyticsAdminGRPCClient) GetBigQueryLink(ctx context.Context, req *adm
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetBigQueryLink")
+	}
 	opts = append((*c.CallOptions).GetBigQueryLink[0:len((*c.CallOptions).GetBigQueryLink):len((*c.CallOptions).GetBigQueryLink)], opts...)
 	var resp *adminpb.BigQueryLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7315,6 +8232,12 @@ func (c *analyticsAdminGRPCClient) ListBigQueryLinks(ctx context.Context, req *a
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ListBigQueryLinks")
+	}
 	opts = append((*c.CallOptions).ListBigQueryLinks[0:len((*c.CallOptions).ListBigQueryLinks):len((*c.CallOptions).ListBigQueryLinks)], opts...)
 	it := &BigQueryLinkIterator{}
 	req = proto.Clone(req).(*adminpb.ListBigQueryLinksRequest)
@@ -7361,6 +8284,12 @@ func (c *analyticsAdminGRPCClient) DeleteBigQueryLink(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteBigQueryLink")
+	}
 	opts = append((*c.CallOptions).DeleteBigQueryLink[0:len((*c.CallOptions).DeleteBigQueryLink):len((*c.CallOptions).DeleteBigQueryLink)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -7375,6 +8304,9 @@ func (c *analyticsAdminGRPCClient) UpdateBigQueryLink(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateBigQueryLink")
+	}
 	opts = append((*c.CallOptions).UpdateBigQueryLink[0:len((*c.CallOptions).UpdateBigQueryLink):len((*c.CallOptions).UpdateBigQueryLink)], opts...)
 	var resp *adminpb.BigQueryLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7393,6 +8325,12 @@ func (c *analyticsAdminGRPCClient) GetEnhancedMeasurementSettings(ctx context.Co
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetEnhancedMeasurementSettings")
+	}
 	opts = append((*c.CallOptions).GetEnhancedMeasurementSettings[0:len((*c.CallOptions).GetEnhancedMeasurementSettings):len((*c.CallOptions).GetEnhancedMeasurementSettings)], opts...)
 	var resp *adminpb.EnhancedMeasurementSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7411,6 +8349,9 @@ func (c *analyticsAdminGRPCClient) UpdateEnhancedMeasurementSettings(ctx context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateEnhancedMeasurementSettings")
+	}
 	opts = append((*c.CallOptions).UpdateEnhancedMeasurementSettings[0:len((*c.CallOptions).UpdateEnhancedMeasurementSettings):len((*c.CallOptions).UpdateEnhancedMeasurementSettings)], opts...)
 	var resp *adminpb.EnhancedMeasurementSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7429,6 +8370,12 @@ func (c *analyticsAdminGRPCClient) GetAdSenseLink(ctx context.Context, req *admi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetAdSenseLink")
+	}
 	opts = append((*c.CallOptions).GetAdSenseLink[0:len((*c.CallOptions).GetAdSenseLink):len((*c.CallOptions).GetAdSenseLink)], opts...)
 	var resp *adminpb.AdSenseLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7447,6 +8394,12 @@ func (c *analyticsAdminGRPCClient) CreateAdSenseLink(ctx context.Context, req *a
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateAdSenseLink")
+	}
 	opts = append((*c.CallOptions).CreateAdSenseLink[0:len((*c.CallOptions).CreateAdSenseLink):len((*c.CallOptions).CreateAdSenseLink)], opts...)
 	var resp *adminpb.AdSenseLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7465,6 +8418,12 @@ func (c *analyticsAdminGRPCClient) DeleteAdSenseLink(ctx context.Context, req *a
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteAdSenseLink")
+	}
 	opts = append((*c.CallOptions).DeleteAdSenseLink[0:len((*c.CallOptions).DeleteAdSenseLink):len((*c.CallOptions).DeleteAdSenseLink)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -7479,6 +8438,12 @@ func (c *analyticsAdminGRPCClient) ListAdSenseLinks(ctx context.Context, req *ad
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ListAdSenseLinks")
+	}
 	opts = append((*c.CallOptions).ListAdSenseLinks[0:len((*c.CallOptions).ListAdSenseLinks):len((*c.CallOptions).ListAdSenseLinks)], opts...)
 	it := &AdSenseLinkIterator{}
 	req = proto.Clone(req).(*adminpb.ListAdSenseLinksRequest)
@@ -7525,6 +8490,12 @@ func (c *analyticsAdminGRPCClient) GetEventCreateRule(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetEventCreateRule")
+	}
 	opts = append((*c.CallOptions).GetEventCreateRule[0:len((*c.CallOptions).GetEventCreateRule):len((*c.CallOptions).GetEventCreateRule)], opts...)
 	var resp *adminpb.EventCreateRule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7543,6 +8514,12 @@ func (c *analyticsAdminGRPCClient) ListEventCreateRules(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ListEventCreateRules")
+	}
 	opts = append((*c.CallOptions).ListEventCreateRules[0:len((*c.CallOptions).ListEventCreateRules):len((*c.CallOptions).ListEventCreateRules)], opts...)
 	it := &EventCreateRuleIterator{}
 	req = proto.Clone(req).(*adminpb.ListEventCreateRulesRequest)
@@ -7589,6 +8566,12 @@ func (c *analyticsAdminGRPCClient) CreateEventCreateRule(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateEventCreateRule")
+	}
 	opts = append((*c.CallOptions).CreateEventCreateRule[0:len((*c.CallOptions).CreateEventCreateRule):len((*c.CallOptions).CreateEventCreateRule)], opts...)
 	var resp *adminpb.EventCreateRule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7607,6 +8590,9 @@ func (c *analyticsAdminGRPCClient) UpdateEventCreateRule(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateEventCreateRule")
+	}
 	opts = append((*c.CallOptions).UpdateEventCreateRule[0:len((*c.CallOptions).UpdateEventCreateRule):len((*c.CallOptions).UpdateEventCreateRule)], opts...)
 	var resp *adminpb.EventCreateRule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7625,6 +8611,12 @@ func (c *analyticsAdminGRPCClient) DeleteEventCreateRule(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteEventCreateRule")
+	}
 	opts = append((*c.CallOptions).DeleteEventCreateRule[0:len((*c.CallOptions).DeleteEventCreateRule):len((*c.CallOptions).DeleteEventCreateRule)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -7639,6 +8631,12 @@ func (c *analyticsAdminGRPCClient) GetEventEditRule(ctx context.Context, req *ad
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetEventEditRule")
+	}
 	opts = append((*c.CallOptions).GetEventEditRule[0:len((*c.CallOptions).GetEventEditRule):len((*c.CallOptions).GetEventEditRule)], opts...)
 	var resp *adminpb.EventEditRule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7657,6 +8655,12 @@ func (c *analyticsAdminGRPCClient) ListEventEditRules(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ListEventEditRules")
+	}
 	opts = append((*c.CallOptions).ListEventEditRules[0:len((*c.CallOptions).ListEventEditRules):len((*c.CallOptions).ListEventEditRules)], opts...)
 	it := &EventEditRuleIterator{}
 	req = proto.Clone(req).(*adminpb.ListEventEditRulesRequest)
@@ -7703,6 +8707,12 @@ func (c *analyticsAdminGRPCClient) CreateEventEditRule(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateEventEditRule")
+	}
 	opts = append((*c.CallOptions).CreateEventEditRule[0:len((*c.CallOptions).CreateEventEditRule):len((*c.CallOptions).CreateEventEditRule)], opts...)
 	var resp *adminpb.EventEditRule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7721,6 +8731,9 @@ func (c *analyticsAdminGRPCClient) UpdateEventEditRule(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateEventEditRule")
+	}
 	opts = append((*c.CallOptions).UpdateEventEditRule[0:len((*c.CallOptions).UpdateEventEditRule):len((*c.CallOptions).UpdateEventEditRule)], opts...)
 	var resp *adminpb.EventEditRule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7739,6 +8752,12 @@ func (c *analyticsAdminGRPCClient) DeleteEventEditRule(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteEventEditRule")
+	}
 	opts = append((*c.CallOptions).DeleteEventEditRule[0:len((*c.CallOptions).DeleteEventEditRule):len((*c.CallOptions).DeleteEventEditRule)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -7753,6 +8772,12 @@ func (c *analyticsAdminGRPCClient) ReorderEventEditRules(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ReorderEventEditRules")
+	}
 	opts = append((*c.CallOptions).ReorderEventEditRules[0:len((*c.CallOptions).ReorderEventEditRules):len((*c.CallOptions).ReorderEventEditRules)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -7767,6 +8792,9 @@ func (c *analyticsAdminGRPCClient) UpdateDataRedactionSettings(ctx context.Conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateDataRedactionSettings")
+	}
 	opts = append((*c.CallOptions).UpdateDataRedactionSettings[0:len((*c.CallOptions).UpdateDataRedactionSettings):len((*c.CallOptions).UpdateDataRedactionSettings)], opts...)
 	var resp *adminpb.DataRedactionSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7785,6 +8813,12 @@ func (c *analyticsAdminGRPCClient) GetDataRedactionSettings(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetDataRedactionSettings")
+	}
 	opts = append((*c.CallOptions).GetDataRedactionSettings[0:len((*c.CallOptions).GetDataRedactionSettings):len((*c.CallOptions).GetDataRedactionSettings)], opts...)
 	var resp *adminpb.DataRedactionSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7803,6 +8837,12 @@ func (c *analyticsAdminGRPCClient) GetCalculatedMetric(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetCalculatedMetric")
+	}
 	opts = append((*c.CallOptions).GetCalculatedMetric[0:len((*c.CallOptions).GetCalculatedMetric):len((*c.CallOptions).GetCalculatedMetric)], opts...)
 	var resp *adminpb.CalculatedMetric
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7821,6 +8861,12 @@ func (c *analyticsAdminGRPCClient) CreateCalculatedMetric(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateCalculatedMetric")
+	}
 	opts = append((*c.CallOptions).CreateCalculatedMetric[0:len((*c.CallOptions).CreateCalculatedMetric):len((*c.CallOptions).CreateCalculatedMetric)], opts...)
 	var resp *adminpb.CalculatedMetric
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7839,6 +8885,12 @@ func (c *analyticsAdminGRPCClient) ListCalculatedMetrics(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ListCalculatedMetrics")
+	}
 	opts = append((*c.CallOptions).ListCalculatedMetrics[0:len((*c.CallOptions).ListCalculatedMetrics):len((*c.CallOptions).ListCalculatedMetrics)], opts...)
 	it := &CalculatedMetricIterator{}
 	req = proto.Clone(req).(*adminpb.ListCalculatedMetricsRequest)
@@ -7885,6 +8937,9 @@ func (c *analyticsAdminGRPCClient) UpdateCalculatedMetric(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateCalculatedMetric")
+	}
 	opts = append((*c.CallOptions).UpdateCalculatedMetric[0:len((*c.CallOptions).UpdateCalculatedMetric):len((*c.CallOptions).UpdateCalculatedMetric)], opts...)
 	var resp *adminpb.CalculatedMetric
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7903,6 +8958,12 @@ func (c *analyticsAdminGRPCClient) DeleteCalculatedMetric(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteCalculatedMetric")
+	}
 	opts = append((*c.CallOptions).DeleteCalculatedMetric[0:len((*c.CallOptions).DeleteCalculatedMetric):len((*c.CallOptions).DeleteCalculatedMetric)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -7914,6 +8975,9 @@ func (c *analyticsAdminGRPCClient) DeleteCalculatedMetric(ctx context.Context, r
 
 func (c *analyticsAdminGRPCClient) CreateRollupProperty(ctx context.Context, req *adminpb.CreateRollupPropertyRequest, opts ...gax.CallOption) (*adminpb.CreateRollupPropertyResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateRollupProperty")
+	}
 	opts = append((*c.CallOptions).CreateRollupProperty[0:len((*c.CallOptions).CreateRollupProperty):len((*c.CallOptions).CreateRollupProperty)], opts...)
 	var resp *adminpb.CreateRollupPropertyResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7932,6 +8996,12 @@ func (c *analyticsAdminGRPCClient) GetRollupPropertySourceLink(ctx context.Conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetRollupPropertySourceLink")
+	}
 	opts = append((*c.CallOptions).GetRollupPropertySourceLink[0:len((*c.CallOptions).GetRollupPropertySourceLink):len((*c.CallOptions).GetRollupPropertySourceLink)], opts...)
 	var resp *adminpb.RollupPropertySourceLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7950,6 +9020,12 @@ func (c *analyticsAdminGRPCClient) ListRollupPropertySourceLinks(ctx context.Con
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ListRollupPropertySourceLinks")
+	}
 	opts = append((*c.CallOptions).ListRollupPropertySourceLinks[0:len((*c.CallOptions).ListRollupPropertySourceLinks):len((*c.CallOptions).ListRollupPropertySourceLinks)], opts...)
 	it := &RollupPropertySourceLinkIterator{}
 	req = proto.Clone(req).(*adminpb.ListRollupPropertySourceLinksRequest)
@@ -7996,6 +9072,12 @@ func (c *analyticsAdminGRPCClient) CreateRollupPropertySourceLink(ctx context.Co
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateRollupPropertySourceLink")
+	}
 	opts = append((*c.CallOptions).CreateRollupPropertySourceLink[0:len((*c.CallOptions).CreateRollupPropertySourceLink):len((*c.CallOptions).CreateRollupPropertySourceLink)], opts...)
 	var resp *adminpb.RollupPropertySourceLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -8014,6 +9096,12 @@ func (c *analyticsAdminGRPCClient) DeleteRollupPropertySourceLink(ctx context.Co
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteRollupPropertySourceLink")
+	}
 	opts = append((*c.CallOptions).DeleteRollupPropertySourceLink[0:len((*c.CallOptions).DeleteRollupPropertySourceLink):len((*c.CallOptions).DeleteRollupPropertySourceLink)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -8025,6 +9113,9 @@ func (c *analyticsAdminGRPCClient) DeleteRollupPropertySourceLink(ctx context.Co
 
 func (c *analyticsAdminGRPCClient) ProvisionSubproperty(ctx context.Context, req *adminpb.ProvisionSubpropertyRequest, opts ...gax.CallOption) (*adminpb.ProvisionSubpropertyResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ProvisionSubproperty")
+	}
 	opts = append((*c.CallOptions).ProvisionSubproperty[0:len((*c.CallOptions).ProvisionSubproperty):len((*c.CallOptions).ProvisionSubproperty)], opts...)
 	var resp *adminpb.ProvisionSubpropertyResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -8043,6 +9134,12 @@ func (c *analyticsAdminGRPCClient) CreateSubpropertyEventFilter(ctx context.Cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateSubpropertyEventFilter")
+	}
 	opts = append((*c.CallOptions).CreateSubpropertyEventFilter[0:len((*c.CallOptions).CreateSubpropertyEventFilter):len((*c.CallOptions).CreateSubpropertyEventFilter)], opts...)
 	var resp *adminpb.SubpropertyEventFilter
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -8061,6 +9158,12 @@ func (c *analyticsAdminGRPCClient) GetSubpropertyEventFilter(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetSubpropertyEventFilter")
+	}
 	opts = append((*c.CallOptions).GetSubpropertyEventFilter[0:len((*c.CallOptions).GetSubpropertyEventFilter):len((*c.CallOptions).GetSubpropertyEventFilter)], opts...)
 	var resp *adminpb.SubpropertyEventFilter
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -8079,6 +9182,12 @@ func (c *analyticsAdminGRPCClient) ListSubpropertyEventFilters(ctx context.Conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ListSubpropertyEventFilters")
+	}
 	opts = append((*c.CallOptions).ListSubpropertyEventFilters[0:len((*c.CallOptions).ListSubpropertyEventFilters):len((*c.CallOptions).ListSubpropertyEventFilters)], opts...)
 	it := &SubpropertyEventFilterIterator{}
 	req = proto.Clone(req).(*adminpb.ListSubpropertyEventFiltersRequest)
@@ -8125,6 +9234,9 @@ func (c *analyticsAdminGRPCClient) UpdateSubpropertyEventFilter(ctx context.Cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateSubpropertyEventFilter")
+	}
 	opts = append((*c.CallOptions).UpdateSubpropertyEventFilter[0:len((*c.CallOptions).UpdateSubpropertyEventFilter):len((*c.CallOptions).UpdateSubpropertyEventFilter)], opts...)
 	var resp *adminpb.SubpropertyEventFilter
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -8143,6 +9255,12 @@ func (c *analyticsAdminGRPCClient) DeleteSubpropertyEventFilter(ctx context.Cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteSubpropertyEventFilter")
+	}
 	opts = append((*c.CallOptions).DeleteSubpropertyEventFilter[0:len((*c.CallOptions).DeleteSubpropertyEventFilter):len((*c.CallOptions).DeleteSubpropertyEventFilter)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -8157,6 +9275,12 @@ func (c *analyticsAdminGRPCClient) CreateReportingDataAnnotation(ctx context.Con
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateReportingDataAnnotation")
+	}
 	opts = append((*c.CallOptions).CreateReportingDataAnnotation[0:len((*c.CallOptions).CreateReportingDataAnnotation):len((*c.CallOptions).CreateReportingDataAnnotation)], opts...)
 	var resp *adminpb.ReportingDataAnnotation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -8175,6 +9299,12 @@ func (c *analyticsAdminGRPCClient) GetReportingDataAnnotation(ctx context.Contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetReportingDataAnnotation")
+	}
 	opts = append((*c.CallOptions).GetReportingDataAnnotation[0:len((*c.CallOptions).GetReportingDataAnnotation):len((*c.CallOptions).GetReportingDataAnnotation)], opts...)
 	var resp *adminpb.ReportingDataAnnotation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -8193,6 +9323,12 @@ func (c *analyticsAdminGRPCClient) ListReportingDataAnnotations(ctx context.Cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ListReportingDataAnnotations")
+	}
 	opts = append((*c.CallOptions).ListReportingDataAnnotations[0:len((*c.CallOptions).ListReportingDataAnnotations):len((*c.CallOptions).ListReportingDataAnnotations)], opts...)
 	it := &ReportingDataAnnotationIterator{}
 	req = proto.Clone(req).(*adminpb.ListReportingDataAnnotationsRequest)
@@ -8239,6 +9375,9 @@ func (c *analyticsAdminGRPCClient) UpdateReportingDataAnnotation(ctx context.Con
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateReportingDataAnnotation")
+	}
 	opts = append((*c.CallOptions).UpdateReportingDataAnnotation[0:len((*c.CallOptions).UpdateReportingDataAnnotation):len((*c.CallOptions).UpdateReportingDataAnnotation)], opts...)
 	var resp *adminpb.ReportingDataAnnotation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -8257,6 +9396,12 @@ func (c *analyticsAdminGRPCClient) DeleteReportingDataAnnotation(ctx context.Con
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteReportingDataAnnotation")
+	}
 	opts = append((*c.CallOptions).DeleteReportingDataAnnotation[0:len((*c.CallOptions).DeleteReportingDataAnnotation):len((*c.CallOptions).DeleteReportingDataAnnotation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -8271,6 +9416,12 @@ func (c *analyticsAdminGRPCClient) SubmitUserDeletion(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/SubmitUserDeletion")
+	}
 	opts = append((*c.CallOptions).SubmitUserDeletion[0:len((*c.CallOptions).SubmitUserDeletion):len((*c.CallOptions).SubmitUserDeletion)], opts...)
 	var resp *adminpb.SubmitUserDeletionResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -8289,6 +9440,12 @@ func (c *analyticsAdminGRPCClient) ListSubpropertySyncConfigs(ctx context.Contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ListSubpropertySyncConfigs")
+	}
 	opts = append((*c.CallOptions).ListSubpropertySyncConfigs[0:len((*c.CallOptions).ListSubpropertySyncConfigs):len((*c.CallOptions).ListSubpropertySyncConfigs)], opts...)
 	it := &SubpropertySyncConfigIterator{}
 	req = proto.Clone(req).(*adminpb.ListSubpropertySyncConfigsRequest)
@@ -8335,6 +9492,9 @@ func (c *analyticsAdminGRPCClient) UpdateSubpropertySyncConfig(ctx context.Conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateSubpropertySyncConfig")
+	}
 	opts = append((*c.CallOptions).UpdateSubpropertySyncConfig[0:len((*c.CallOptions).UpdateSubpropertySyncConfig):len((*c.CallOptions).UpdateSubpropertySyncConfig)], opts...)
 	var resp *adminpb.SubpropertySyncConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -8353,6 +9513,12 @@ func (c *analyticsAdminGRPCClient) GetSubpropertySyncConfig(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetSubpropertySyncConfig")
+	}
 	opts = append((*c.CallOptions).GetSubpropertySyncConfig[0:len((*c.CallOptions).GetSubpropertySyncConfig):len((*c.CallOptions).GetSubpropertySyncConfig)], opts...)
 	var resp *adminpb.SubpropertySyncConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -8371,6 +9537,12 @@ func (c *analyticsAdminGRPCClient) GetReportingIdentitySettings(ctx context.Cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetReportingIdentitySettings")
+	}
 	opts = append((*c.CallOptions).GetReportingIdentitySettings[0:len((*c.CallOptions).GetReportingIdentitySettings):len((*c.CallOptions).GetReportingIdentitySettings)], opts...)
 	var resp *adminpb.ReportingIdentitySettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -8403,6 +9575,13 @@ func (c *analyticsAdminRESTClient) GetAccount(ctx context.Context, req *adminpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetAccount")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=accounts/*}")
+	}
 	opts = append((*c.CallOptions).GetAccount[0:len((*c.CallOptions).GetAccount):len((*c.CallOptions).GetAccount)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.Account{}
@@ -8548,6 +9727,13 @@ func (c *analyticsAdminRESTClient) DeleteAccount(ctx context.Context, req *admin
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteAccount")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=accounts/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -8597,6 +9783,10 @@ func (c *analyticsAdminRESTClient) UpdateAccount(ctx context.Context, req *admin
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateAccount")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{account.name=accounts/*}")
+	}
 	opts = append((*c.CallOptions).UpdateAccount[0:len((*c.CallOptions).UpdateAccount):len((*c.CallOptions).UpdateAccount)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.Account{}
@@ -8650,6 +9840,10 @@ func (c *analyticsAdminRESTClient) ProvisionAccountTicket(ctx context.Context, r
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ProvisionAccountTicket")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/accounts:provisionAccountTicket")
+	}
 	opts = append((*c.CallOptions).ProvisionAccountTicket[0:len((*c.CallOptions).ProvisionAccountTicket):len((*c.CallOptions).ProvisionAccountTicket)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.ProvisionAccountTicketResponse{}
@@ -8778,6 +9972,13 @@ func (c *analyticsAdminRESTClient) GetProperty(ctx context.Context, req *adminpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetProperty")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*}")
+	}
 	opts = append((*c.CallOptions).GetProperty[0:len((*c.CallOptions).GetProperty):len((*c.CallOptions).GetProperty)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.Property{}
@@ -8919,6 +10120,10 @@ func (c *analyticsAdminRESTClient) CreateProperty(ctx context.Context, req *admi
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateProperty")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/properties")
+	}
 	opts = append((*c.CallOptions).CreateProperty[0:len((*c.CallOptions).CreateProperty):len((*c.CallOptions).CreateProperty)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.Property{}
@@ -8979,6 +10184,13 @@ func (c *analyticsAdminRESTClient) DeleteProperty(ctx context.Context, req *admi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteProperty")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*}")
+	}
 	opts = append((*c.CallOptions).DeleteProperty[0:len((*c.CallOptions).DeleteProperty):len((*c.CallOptions).DeleteProperty)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.Property{}
@@ -9043,6 +10255,10 @@ func (c *analyticsAdminRESTClient) UpdateProperty(ctx context.Context, req *admi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateProperty")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{property.name=properties/*}")
+	}
 	opts = append((*c.CallOptions).UpdateProperty[0:len((*c.CallOptions).UpdateProperty):len((*c.CallOptions).UpdateProperty)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.Property{}
@@ -9102,6 +10318,13 @@ func (c *analyticsAdminRESTClient) CreateFirebaseLink(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateFirebaseLink")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=properties/*}/firebaseLinks")
+	}
 	opts = append((*c.CallOptions).CreateFirebaseLink[0:len((*c.CallOptions).CreateFirebaseLink):len((*c.CallOptions).CreateFirebaseLink)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.FirebaseLink{}
@@ -9152,6 +10375,13 @@ func (c *analyticsAdminRESTClient) DeleteFirebaseLink(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteFirebaseLink")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/firebaseLinks/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -9267,6 +10497,13 @@ func (c *analyticsAdminRESTClient) GetGlobalSiteTag(ctx context.Context, req *ad
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetGlobalSiteTag")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/dataStreams/*/globalSiteTag}")
+	}
 	opts = append((*c.CallOptions).GetGlobalSiteTag[0:len((*c.CallOptions).GetGlobalSiteTag):len((*c.CallOptions).GetGlobalSiteTag)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.GlobalSiteTag{}
@@ -9324,6 +10561,13 @@ func (c *analyticsAdminRESTClient) CreateGoogleAdsLink(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateGoogleAdsLink")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=properties/*}/googleAdsLinks")
+	}
 	opts = append((*c.CallOptions).CreateGoogleAdsLink[0:len((*c.CallOptions).CreateGoogleAdsLink):len((*c.CallOptions).CreateGoogleAdsLink)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.GoogleAdsLink{}
@@ -9388,6 +10632,10 @@ func (c *analyticsAdminRESTClient) UpdateGoogleAdsLink(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateGoogleAdsLink")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{google_ads_link.name=properties/*/googleAdsLinks/*}")
+	}
 	opts = append((*c.CallOptions).UpdateGoogleAdsLink[0:len((*c.CallOptions).UpdateGoogleAdsLink):len((*c.CallOptions).UpdateGoogleAdsLink)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.GoogleAdsLink{}
@@ -9438,6 +10686,13 @@ func (c *analyticsAdminRESTClient) DeleteGoogleAdsLink(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteGoogleAdsLink")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/googleAdsLinks/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -9552,6 +10807,13 @@ func (c *analyticsAdminRESTClient) GetDataSharingSettings(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetDataSharingSettings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=accounts/*/dataSharingSettings}")
+	}
 	opts = append((*c.CallOptions).GetDataSharingSettings[0:len((*c.CallOptions).GetDataSharingSettings):len((*c.CallOptions).GetDataSharingSettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.DataSharingSettings{}
@@ -9602,6 +10864,13 @@ func (c *analyticsAdminRESTClient) GetMeasurementProtocolSecret(ctx context.Cont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetMeasurementProtocolSecret")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/dataStreams/*/measurementProtocolSecrets/*}")
+	}
 	opts = append((*c.CallOptions).GetMeasurementProtocolSecret[0:len((*c.CallOptions).GetMeasurementProtocolSecret):len((*c.CallOptions).GetMeasurementProtocolSecret)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.MeasurementProtocolSecret{}
@@ -9738,6 +11007,13 @@ func (c *analyticsAdminRESTClient) CreateMeasurementProtocolSecret(ctx context.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateMeasurementProtocolSecret")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=properties/*/dataStreams/*}/measurementProtocolSecrets")
+	}
 	opts = append((*c.CallOptions).CreateMeasurementProtocolSecret[0:len((*c.CallOptions).CreateMeasurementProtocolSecret):len((*c.CallOptions).CreateMeasurementProtocolSecret)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.MeasurementProtocolSecret{}
@@ -9788,6 +11064,13 @@ func (c *analyticsAdminRESTClient) DeleteMeasurementProtocolSecret(ctx context.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteMeasurementProtocolSecret")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/dataStreams/*/measurementProtocolSecrets/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -9837,6 +11120,10 @@ func (c *analyticsAdminRESTClient) UpdateMeasurementProtocolSecret(ctx context.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateMeasurementProtocolSecret")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{measurement_protocol_secret.name=properties/*/dataStreams/*/measurementProtocolSecrets/*}")
+	}
 	opts = append((*c.CallOptions).UpdateMeasurementProtocolSecret[0:len((*c.CallOptions).UpdateMeasurementProtocolSecret):len((*c.CallOptions).UpdateMeasurementProtocolSecret)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.MeasurementProtocolSecret{}
@@ -9897,6 +11184,13 @@ func (c *analyticsAdminRESTClient) AcknowledgeUserDataCollection(ctx context.Con
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetProperty()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/AcknowledgeUserDataCollection")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{property=properties/*}:acknowledgeUserDataCollection")
+	}
 	opts = append((*c.CallOptions).AcknowledgeUserDataCollection[0:len((*c.CallOptions).AcknowledgeUserDataCollection):len((*c.CallOptions).AcknowledgeUserDataCollection)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.AcknowledgeUserDataCollectionResponse{}
@@ -9947,6 +11241,13 @@ func (c *analyticsAdminRESTClient) GetSKAdNetworkConversionValueSchema(ctx conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetSKAdNetworkConversionValueSchema")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/dataStreams/*/sKAdNetworkConversionValueSchema/*}")
+	}
 	opts = append((*c.CallOptions).GetSKAdNetworkConversionValueSchema[0:len((*c.CallOptions).GetSKAdNetworkConversionValueSchema):len((*c.CallOptions).GetSKAdNetworkConversionValueSchema)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.SKAdNetworkConversionValueSchema{}
@@ -10004,6 +11305,13 @@ func (c *analyticsAdminRESTClient) CreateSKAdNetworkConversionValueSchema(ctx co
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateSKAdNetworkConversionValueSchema")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=properties/*/dataStreams/*}/sKAdNetworkConversionValueSchema")
+	}
 	opts = append((*c.CallOptions).CreateSKAdNetworkConversionValueSchema[0:len((*c.CallOptions).CreateSKAdNetworkConversionValueSchema):len((*c.CallOptions).CreateSKAdNetworkConversionValueSchema)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.SKAdNetworkConversionValueSchema{}
@@ -10054,6 +11362,13 @@ func (c *analyticsAdminRESTClient) DeleteSKAdNetworkConversionValueSchema(ctx co
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteSKAdNetworkConversionValueSchema")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/dataStreams/*/sKAdNetworkConversionValueSchema/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -10103,6 +11418,10 @@ func (c *analyticsAdminRESTClient) UpdateSKAdNetworkConversionValueSchema(ctx co
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateSKAdNetworkConversionValueSchema")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{skadnetwork_conversion_value_schema.name=properties/*/dataStreams/*/sKAdNetworkConversionValueSchema/*}")
+	}
 	opts = append((*c.CallOptions).UpdateSKAdNetworkConversionValueSchema[0:len((*c.CallOptions).UpdateSKAdNetworkConversionValueSchema):len((*c.CallOptions).UpdateSKAdNetworkConversionValueSchema)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.SKAdNetworkConversionValueSchema{}
@@ -10314,6 +11633,13 @@ func (c *analyticsAdminRESTClient) GetGoogleSignalsSettings(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetGoogleSignalsSettings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/googleSignalsSettings}")
+	}
 	opts = append((*c.CallOptions).GetGoogleSignalsSettings[0:len((*c.CallOptions).GetGoogleSignalsSettings):len((*c.CallOptions).GetGoogleSignalsSettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.GoogleSignalsSettings{}
@@ -10378,6 +11704,10 @@ func (c *analyticsAdminRESTClient) UpdateGoogleSignalsSettings(ctx context.Conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateGoogleSignalsSettings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{google_signals_settings.name=properties/*/googleSignalsSettings}")
+	}
 	opts = append((*c.CallOptions).UpdateGoogleSignalsSettings[0:len((*c.CallOptions).UpdateGoogleSignalsSettings):len((*c.CallOptions).UpdateGoogleSignalsSettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.GoogleSignalsSettings{}
@@ -10438,6 +11768,13 @@ func (c *analyticsAdminRESTClient) CreateConversionEvent(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateConversionEvent")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=properties/*}/conversionEvents")
+	}
 	opts = append((*c.CallOptions).CreateConversionEvent[0:len((*c.CallOptions).CreateConversionEvent):len((*c.CallOptions).CreateConversionEvent)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.ConversionEvent{}
@@ -10505,6 +11842,10 @@ func (c *analyticsAdminRESTClient) UpdateConversionEvent(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateConversionEvent")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{conversion_event.name=properties/*/conversionEvents/*}")
+	}
 	opts = append((*c.CallOptions).UpdateConversionEvent[0:len((*c.CallOptions).UpdateConversionEvent):len((*c.CallOptions).UpdateConversionEvent)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.ConversionEvent{}
@@ -10558,6 +11899,13 @@ func (c *analyticsAdminRESTClient) GetConversionEvent(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetConversionEvent")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/conversionEvents/*}")
+	}
 	opts = append((*c.CallOptions).GetConversionEvent[0:len((*c.CallOptions).GetConversionEvent):len((*c.CallOptions).GetConversionEvent)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.ConversionEvent{}
@@ -10611,6 +11959,13 @@ func (c *analyticsAdminRESTClient) DeleteConversionEvent(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteConversionEvent")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/conversionEvents/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -10736,6 +12091,13 @@ func (c *analyticsAdminRESTClient) CreateKeyEvent(ctx context.Context, req *admi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateKeyEvent")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=properties/*}/keyEvents")
+	}
 	opts = append((*c.CallOptions).CreateKeyEvent[0:len((*c.CallOptions).CreateKeyEvent):len((*c.CallOptions).CreateKeyEvent)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.KeyEvent{}
@@ -10800,6 +12162,10 @@ func (c *analyticsAdminRESTClient) UpdateKeyEvent(ctx context.Context, req *admi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateKeyEvent")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{key_event.name=properties/*/keyEvents/*}")
+	}
 	opts = append((*c.CallOptions).UpdateKeyEvent[0:len((*c.CallOptions).UpdateKeyEvent):len((*c.CallOptions).UpdateKeyEvent)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.KeyEvent{}
@@ -10850,6 +12216,13 @@ func (c *analyticsAdminRESTClient) GetKeyEvent(ctx context.Context, req *adminpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetKeyEvent")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/keyEvents/*}")
+	}
 	opts = append((*c.CallOptions).GetKeyEvent[0:len((*c.CallOptions).GetKeyEvent):len((*c.CallOptions).GetKeyEvent)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.KeyEvent{}
@@ -10900,6 +12273,13 @@ func (c *analyticsAdminRESTClient) DeleteKeyEvent(ctx context.Context, req *admi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteKeyEvent")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/keyEvents/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -11014,6 +12394,13 @@ func (c *analyticsAdminRESTClient) GetDisplayVideo360AdvertiserLink(ctx context.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetDisplayVideo360AdvertiserLink")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/displayVideo360AdvertiserLinks/*}")
+	}
 	opts = append((*c.CallOptions).GetDisplayVideo360AdvertiserLink[0:len((*c.CallOptions).GetDisplayVideo360AdvertiserLink):len((*c.CallOptions).GetDisplayVideo360AdvertiserLink)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.DisplayVideo360AdvertiserLink{}
@@ -11153,6 +12540,13 @@ func (c *analyticsAdminRESTClient) CreateDisplayVideo360AdvertiserLink(ctx conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateDisplayVideo360AdvertiserLink")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=properties/*}/displayVideo360AdvertiserLinks")
+	}
 	opts = append((*c.CallOptions).CreateDisplayVideo360AdvertiserLink[0:len((*c.CallOptions).CreateDisplayVideo360AdvertiserLink):len((*c.CallOptions).CreateDisplayVideo360AdvertiserLink)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.DisplayVideo360AdvertiserLink{}
@@ -11203,6 +12597,13 @@ func (c *analyticsAdminRESTClient) DeleteDisplayVideo360AdvertiserLink(ctx conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteDisplayVideo360AdvertiserLink")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/displayVideo360AdvertiserLinks/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -11252,6 +12653,10 @@ func (c *analyticsAdminRESTClient) UpdateDisplayVideo360AdvertiserLink(ctx conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateDisplayVideo360AdvertiserLink")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{display_video_360_advertiser_link.name=properties/*/displayVideo360AdvertiserLinks/*}")
+	}
 	opts = append((*c.CallOptions).UpdateDisplayVideo360AdvertiserLink[0:len((*c.CallOptions).UpdateDisplayVideo360AdvertiserLink):len((*c.CallOptions).UpdateDisplayVideo360AdvertiserLink)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.DisplayVideo360AdvertiserLink{}
@@ -11302,6 +12707,13 @@ func (c *analyticsAdminRESTClient) GetDisplayVideo360AdvertiserLinkProposal(ctx 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetDisplayVideo360AdvertiserLinkProposal")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/displayVideo360AdvertiserLinkProposals/*}")
+	}
 	opts = append((*c.CallOptions).GetDisplayVideo360AdvertiserLinkProposal[0:len((*c.CallOptions).GetDisplayVideo360AdvertiserLinkProposal):len((*c.CallOptions).GetDisplayVideo360AdvertiserLinkProposal)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.DisplayVideo360AdvertiserLinkProposal{}
@@ -11437,6 +12849,13 @@ func (c *analyticsAdminRESTClient) CreateDisplayVideo360AdvertiserLinkProposal(c
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateDisplayVideo360AdvertiserLinkProposal")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=properties/*}/displayVideo360AdvertiserLinkProposals")
+	}
 	opts = append((*c.CallOptions).CreateDisplayVideo360AdvertiserLinkProposal[0:len((*c.CallOptions).CreateDisplayVideo360AdvertiserLinkProposal):len((*c.CallOptions).CreateDisplayVideo360AdvertiserLinkProposal)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.DisplayVideo360AdvertiserLinkProposal{}
@@ -11488,6 +12907,13 @@ func (c *analyticsAdminRESTClient) DeleteDisplayVideo360AdvertiserLinkProposal(c
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteDisplayVideo360AdvertiserLinkProposal")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/displayVideo360AdvertiserLinkProposals/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -11531,6 +12957,13 @@ func (c *analyticsAdminRESTClient) ApproveDisplayVideo360AdvertiserLinkProposal(
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ApproveDisplayVideo360AdvertiserLinkProposal")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/displayVideo360AdvertiserLinkProposals/*}:approve")
+	}
 	opts = append((*c.CallOptions).ApproveDisplayVideo360AdvertiserLinkProposal[0:len((*c.CallOptions).ApproveDisplayVideo360AdvertiserLinkProposal):len((*c.CallOptions).ApproveDisplayVideo360AdvertiserLinkProposal)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.ApproveDisplayVideo360AdvertiserLinkProposalResponse{}
@@ -11593,6 +13026,13 @@ func (c *analyticsAdminRESTClient) CancelDisplayVideo360AdvertiserLinkProposal(c
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CancelDisplayVideo360AdvertiserLinkProposal")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/displayVideo360AdvertiserLinkProposals/*}:cancel")
+	}
 	opts = append((*c.CallOptions).CancelDisplayVideo360AdvertiserLinkProposal[0:len((*c.CallOptions).CancelDisplayVideo360AdvertiserLinkProposal):len((*c.CallOptions).CancelDisplayVideo360AdvertiserLinkProposal)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.DisplayVideo360AdvertiserLinkProposal{}
@@ -11650,6 +13090,13 @@ func (c *analyticsAdminRESTClient) CreateCustomDimension(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateCustomDimension")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=properties/*}/customDimensions")
+	}
 	opts = append((*c.CallOptions).CreateCustomDimension[0:len((*c.CallOptions).CreateCustomDimension):len((*c.CallOptions).CreateCustomDimension)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.CustomDimension{}
@@ -11714,6 +13161,10 @@ func (c *analyticsAdminRESTClient) UpdateCustomDimension(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateCustomDimension")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{custom_dimension.name=properties/*/customDimensions/*}")
+	}
 	opts = append((*c.CallOptions).UpdateCustomDimension[0:len((*c.CallOptions).UpdateCustomDimension):len((*c.CallOptions).UpdateCustomDimension)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.CustomDimension{}
@@ -11848,6 +13299,13 @@ func (c *analyticsAdminRESTClient) ArchiveCustomDimension(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ArchiveCustomDimension")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/customDimensions/*}:archive")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -11883,6 +13341,13 @@ func (c *analyticsAdminRESTClient) GetCustomDimension(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetCustomDimension")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/customDimensions/*}")
+	}
 	opts = append((*c.CallOptions).GetCustomDimension[0:len((*c.CallOptions).GetCustomDimension):len((*c.CallOptions).GetCustomDimension)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.CustomDimension{}
@@ -11940,6 +13405,13 @@ func (c *analyticsAdminRESTClient) CreateCustomMetric(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateCustomMetric")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=properties/*}/customMetrics")
+	}
 	opts = append((*c.CallOptions).CreateCustomMetric[0:len((*c.CallOptions).CreateCustomMetric):len((*c.CallOptions).CreateCustomMetric)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.CustomMetric{}
@@ -12004,6 +13476,10 @@ func (c *analyticsAdminRESTClient) UpdateCustomMetric(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateCustomMetric")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{custom_metric.name=properties/*/customMetrics/*}")
+	}
 	opts = append((*c.CallOptions).UpdateCustomMetric[0:len((*c.CallOptions).UpdateCustomMetric):len((*c.CallOptions).UpdateCustomMetric)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.CustomMetric{}
@@ -12138,6 +13614,13 @@ func (c *analyticsAdminRESTClient) ArchiveCustomMetric(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ArchiveCustomMetric")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/customMetrics/*}:archive")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -12173,6 +13656,13 @@ func (c *analyticsAdminRESTClient) GetCustomMetric(ctx context.Context, req *adm
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetCustomMetric")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/customMetrics/*}")
+	}
 	opts = append((*c.CallOptions).GetCustomMetric[0:len((*c.CallOptions).GetCustomMetric):len((*c.CallOptions).GetCustomMetric)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.CustomMetric{}
@@ -12223,6 +13713,13 @@ func (c *analyticsAdminRESTClient) GetDataRetentionSettings(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetDataRetentionSettings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/dataRetentionSettings}")
+	}
 	opts = append((*c.CallOptions).GetDataRetentionSettings[0:len((*c.CallOptions).GetDataRetentionSettings):len((*c.CallOptions).GetDataRetentionSettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.DataRetentionSettings{}
@@ -12287,6 +13784,10 @@ func (c *analyticsAdminRESTClient) UpdateDataRetentionSettings(ctx context.Conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateDataRetentionSettings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{data_retention_settings.name=properties/*/dataRetentionSettings}")
+	}
 	opts = append((*c.CallOptions).UpdateDataRetentionSettings[0:len((*c.CallOptions).UpdateDataRetentionSettings):len((*c.CallOptions).UpdateDataRetentionSettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.DataRetentionSettings{}
@@ -12344,6 +13845,13 @@ func (c *analyticsAdminRESTClient) CreateDataStream(ctx context.Context, req *ad
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateDataStream")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=properties/*}/dataStreams")
+	}
 	opts = append((*c.CallOptions).CreateDataStream[0:len((*c.CallOptions).CreateDataStream):len((*c.CallOptions).CreateDataStream)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.DataStream{}
@@ -12394,6 +13902,13 @@ func (c *analyticsAdminRESTClient) DeleteDataStream(ctx context.Context, req *ad
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteDataStream")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/dataStreams/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -12443,6 +13958,10 @@ func (c *analyticsAdminRESTClient) UpdateDataStream(ctx context.Context, req *ad
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateDataStream")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{data_stream.name=properties/*/dataStreams/*}")
+	}
 	opts = append((*c.CallOptions).UpdateDataStream[0:len((*c.CallOptions).UpdateDataStream):len((*c.CallOptions).UpdateDataStream)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.DataStream{}
@@ -12571,6 +14090,13 @@ func (c *analyticsAdminRESTClient) GetDataStream(ctx context.Context, req *admin
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetDataStream")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/dataStreams/*}")
+	}
 	opts = append((*c.CallOptions).GetDataStream[0:len((*c.CallOptions).GetDataStream):len((*c.CallOptions).GetDataStream)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.DataStream{}
@@ -12623,6 +14149,13 @@ func (c *analyticsAdminRESTClient) GetAudience(ctx context.Context, req *adminpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetAudience")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/audiences/*}")
+	}
 	opts = append((*c.CallOptions).GetAudience[0:len((*c.CallOptions).GetAudience):len((*c.CallOptions).GetAudience)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.Audience{}
@@ -12760,6 +14293,13 @@ func (c *analyticsAdminRESTClient) CreateAudience(ctx context.Context, req *admi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateAudience")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=properties/*}/audiences")
+	}
 	opts = append((*c.CallOptions).CreateAudience[0:len((*c.CallOptions).CreateAudience):len((*c.CallOptions).CreateAudience)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.Audience{}
@@ -12824,6 +14364,10 @@ func (c *analyticsAdminRESTClient) UpdateAudience(ctx context.Context, req *admi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateAudience")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{audience.name=properties/*/audiences/*}")
+	}
 	opts = append((*c.CallOptions).UpdateAudience[0:len((*c.CallOptions).UpdateAudience):len((*c.CallOptions).UpdateAudience)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.Audience{}
@@ -12880,6 +14424,13 @@ func (c *analyticsAdminRESTClient) ArchiveAudience(ctx context.Context, req *adm
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ArchiveAudience")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/audiences/*}:archive")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -12915,6 +14466,13 @@ func (c *analyticsAdminRESTClient) GetSearchAds360Link(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetSearchAds360Link")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/searchAds360Links/*}")
+	}
 	opts = append((*c.CallOptions).GetSearchAds360Link[0:len((*c.CallOptions).GetSearchAds360Link):len((*c.CallOptions).GetSearchAds360Link)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.SearchAds360Link{}
@@ -13050,6 +14608,13 @@ func (c *analyticsAdminRESTClient) CreateSearchAds360Link(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateSearchAds360Link")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=properties/*}/searchAds360Links")
+	}
 	opts = append((*c.CallOptions).CreateSearchAds360Link[0:len((*c.CallOptions).CreateSearchAds360Link):len((*c.CallOptions).CreateSearchAds360Link)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.SearchAds360Link{}
@@ -13100,6 +14665,13 @@ func (c *analyticsAdminRESTClient) DeleteSearchAds360Link(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteSearchAds360Link")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/searchAds360Links/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -13149,6 +14721,10 @@ func (c *analyticsAdminRESTClient) UpdateSearchAds360Link(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateSearchAds360Link")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{search_ads_360_link.name=properties/*/searchAds360Links/*}")
+	}
 	opts = append((*c.CallOptions).UpdateSearchAds360Link[0:len((*c.CallOptions).UpdateSearchAds360Link):len((*c.CallOptions).UpdateSearchAds360Link)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.SearchAds360Link{}
@@ -13199,6 +14775,13 @@ func (c *analyticsAdminRESTClient) GetAttributionSettings(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetAttributionSettings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/attributionSettings}")
+	}
 	opts = append((*c.CallOptions).GetAttributionSettings[0:len((*c.CallOptions).GetAttributionSettings):len((*c.CallOptions).GetAttributionSettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.AttributionSettings{}
@@ -13263,6 +14846,10 @@ func (c *analyticsAdminRESTClient) UpdateAttributionSettings(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateAttributionSettings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{attribution_settings.name=properties/*/attributionSettings}")
+	}
 	opts = append((*c.CallOptions).UpdateAttributionSettings[0:len((*c.CallOptions).UpdateAttributionSettings):len((*c.CallOptions).UpdateAttributionSettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.AttributionSettings{}
@@ -13338,6 +14925,10 @@ func (c *analyticsAdminRESTClient) RunAccessReport(ctx context.Context, req *adm
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/RunAccessReport")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{entity=properties/*}:runAccessReport")
+	}
 	opts = append((*c.CallOptions).RunAccessReport[0:len((*c.CallOptions).RunAccessReport):len((*c.CallOptions).RunAccessReport)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.RunAccessReportResponse{}
@@ -13395,6 +14986,13 @@ func (c *analyticsAdminRESTClient) CreateAccessBinding(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateAccessBinding")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=accounts/*}/accessBindings")
+	}
 	opts = append((*c.CallOptions).CreateAccessBinding[0:len((*c.CallOptions).CreateAccessBinding):len((*c.CallOptions).CreateAccessBinding)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.AccessBinding{}
@@ -13445,6 +15043,13 @@ func (c *analyticsAdminRESTClient) GetAccessBinding(ctx context.Context, req *ad
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetAccessBinding")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=accounts/*/accessBindings/*}")
+	}
 	opts = append((*c.CallOptions).GetAccessBinding[0:len((*c.CallOptions).GetAccessBinding):len((*c.CallOptions).GetAccessBinding)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.AccessBinding{}
@@ -13502,6 +15107,10 @@ func (c *analyticsAdminRESTClient) UpdateAccessBinding(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateAccessBinding")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{access_binding.name=accounts/*/accessBindings/*}")
+	}
 	opts = append((*c.CallOptions).UpdateAccessBinding[0:len((*c.CallOptions).UpdateAccessBinding):len((*c.CallOptions).UpdateAccessBinding)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.AccessBinding{}
@@ -13552,6 +15161,13 @@ func (c *analyticsAdminRESTClient) DeleteAccessBinding(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteAccessBinding")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=accounts/*/accessBindings/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -13675,6 +15291,13 @@ func (c *analyticsAdminRESTClient) BatchCreateAccessBindings(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/BatchCreateAccessBindings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=accounts/*}/accessBindings:batchCreate")
+	}
 	opts = append((*c.CallOptions).BatchCreateAccessBindings[0:len((*c.CallOptions).BatchCreateAccessBindings):len((*c.CallOptions).BatchCreateAccessBindings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.BatchCreateAccessBindingsResponse{}
@@ -13730,6 +15353,13 @@ func (c *analyticsAdminRESTClient) BatchGetAccessBindings(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/BatchGetAccessBindings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=accounts/*}/accessBindings:batchGet")
+	}
 	opts = append((*c.CallOptions).BatchGetAccessBindings[0:len((*c.CallOptions).BatchGetAccessBindings):len((*c.CallOptions).BatchGetAccessBindings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.BatchGetAccessBindingsResponse{}
@@ -13787,6 +15417,13 @@ func (c *analyticsAdminRESTClient) BatchUpdateAccessBindings(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/BatchUpdateAccessBindings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=accounts/*}/accessBindings:batchUpdate")
+	}
 	opts = append((*c.CallOptions).BatchUpdateAccessBindings[0:len((*c.CallOptions).BatchUpdateAccessBindings):len((*c.CallOptions).BatchUpdateAccessBindings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.BatchUpdateAccessBindingsResponse{}
@@ -13843,6 +15480,13 @@ func (c *analyticsAdminRESTClient) BatchDeleteAccessBindings(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/BatchDeleteAccessBindings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=accounts/*}/accessBindings:batchDelete")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -13878,6 +15522,13 @@ func (c *analyticsAdminRESTClient) GetExpandedDataSet(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetExpandedDataSet")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/expandedDataSets/*}")
+	}
 	opts = append((*c.CallOptions).GetExpandedDataSet[0:len((*c.CallOptions).GetExpandedDataSet):len((*c.CallOptions).GetExpandedDataSet)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.ExpandedDataSet{}
@@ -14013,6 +15664,13 @@ func (c *analyticsAdminRESTClient) CreateExpandedDataSet(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateExpandedDataSet")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=properties/*}/expandedDataSets")
+	}
 	opts = append((*c.CallOptions).CreateExpandedDataSet[0:len((*c.CallOptions).CreateExpandedDataSet):len((*c.CallOptions).CreateExpandedDataSet)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.ExpandedDataSet{}
@@ -14077,6 +15735,10 @@ func (c *analyticsAdminRESTClient) UpdateExpandedDataSet(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateExpandedDataSet")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{expanded_data_set.name=properties/*/expandedDataSets/*}")
+	}
 	opts = append((*c.CallOptions).UpdateExpandedDataSet[0:len((*c.CallOptions).UpdateExpandedDataSet):len((*c.CallOptions).UpdateExpandedDataSet)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.ExpandedDataSet{}
@@ -14127,6 +15789,13 @@ func (c *analyticsAdminRESTClient) DeleteExpandedDataSet(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteExpandedDataSet")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/expandedDataSets/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -14162,6 +15831,13 @@ func (c *analyticsAdminRESTClient) GetChannelGroup(ctx context.Context, req *adm
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetChannelGroup")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/channelGroups/*}")
+	}
 	opts = append((*c.CallOptions).GetChannelGroup[0:len((*c.CallOptions).GetChannelGroup):len((*c.CallOptions).GetChannelGroup)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.ChannelGroup{}
@@ -14297,6 +15973,13 @@ func (c *analyticsAdminRESTClient) CreateChannelGroup(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateChannelGroup")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=properties/*}/channelGroups")
+	}
 	opts = append((*c.CallOptions).CreateChannelGroup[0:len((*c.CallOptions).CreateChannelGroup):len((*c.CallOptions).CreateChannelGroup)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.ChannelGroup{}
@@ -14361,6 +16044,10 @@ func (c *analyticsAdminRESTClient) UpdateChannelGroup(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateChannelGroup")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{channel_group.name=properties/*/channelGroups/*}")
+	}
 	opts = append((*c.CallOptions).UpdateChannelGroup[0:len((*c.CallOptions).UpdateChannelGroup):len((*c.CallOptions).UpdateChannelGroup)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.ChannelGroup{}
@@ -14411,6 +16098,13 @@ func (c *analyticsAdminRESTClient) DeleteChannelGroup(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteChannelGroup")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/channelGroups/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -14453,6 +16147,13 @@ func (c *analyticsAdminRESTClient) CreateBigQueryLink(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateBigQueryLink")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=properties/*}/bigQueryLinks")
+	}
 	opts = append((*c.CallOptions).CreateBigQueryLink[0:len((*c.CallOptions).CreateBigQueryLink):len((*c.CallOptions).CreateBigQueryLink)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.BigQueryLink{}
@@ -14503,6 +16204,13 @@ func (c *analyticsAdminRESTClient) GetBigQueryLink(ctx context.Context, req *adm
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetBigQueryLink")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/bigQueryLinks/*}")
+	}
 	opts = append((*c.CallOptions).GetBigQueryLink[0:len((*c.CallOptions).GetBigQueryLink):len((*c.CallOptions).GetBigQueryLink)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.BigQueryLink{}
@@ -14631,6 +16339,13 @@ func (c *analyticsAdminRESTClient) DeleteBigQueryLink(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteBigQueryLink")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/bigQueryLinks/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -14680,6 +16395,10 @@ func (c *analyticsAdminRESTClient) UpdateBigQueryLink(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateBigQueryLink")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{bigquery_link.name=properties/*/bigQueryLinks/*}")
+	}
 	opts = append((*c.CallOptions).UpdateBigQueryLink[0:len((*c.CallOptions).UpdateBigQueryLink):len((*c.CallOptions).UpdateBigQueryLink)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.BigQueryLink{}
@@ -14732,6 +16451,13 @@ func (c *analyticsAdminRESTClient) GetEnhancedMeasurementSettings(ctx context.Co
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetEnhancedMeasurementSettings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/dataStreams/*/enhancedMeasurementSettings}")
+	}
 	opts = append((*c.CallOptions).GetEnhancedMeasurementSettings[0:len((*c.CallOptions).GetEnhancedMeasurementSettings):len((*c.CallOptions).GetEnhancedMeasurementSettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.EnhancedMeasurementSettings{}
@@ -14798,6 +16524,10 @@ func (c *analyticsAdminRESTClient) UpdateEnhancedMeasurementSettings(ctx context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateEnhancedMeasurementSettings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{enhanced_measurement_settings.name=properties/*/dataStreams/*/enhancedMeasurementSettings}")
+	}
 	opts = append((*c.CallOptions).UpdateEnhancedMeasurementSettings[0:len((*c.CallOptions).UpdateEnhancedMeasurementSettings):len((*c.CallOptions).UpdateEnhancedMeasurementSettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.EnhancedMeasurementSettings{}
@@ -14848,6 +16578,13 @@ func (c *analyticsAdminRESTClient) GetAdSenseLink(ctx context.Context, req *admi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetAdSenseLink")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/adSenseLinks/*}")
+	}
 	opts = append((*c.CallOptions).GetAdSenseLink[0:len((*c.CallOptions).GetAdSenseLink):len((*c.CallOptions).GetAdSenseLink)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.AdSenseLink{}
@@ -14905,6 +16642,13 @@ func (c *analyticsAdminRESTClient) CreateAdSenseLink(ctx context.Context, req *a
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateAdSenseLink")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=properties/*}/adSenseLinks")
+	}
 	opts = append((*c.CallOptions).CreateAdSenseLink[0:len((*c.CallOptions).CreateAdSenseLink):len((*c.CallOptions).CreateAdSenseLink)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.AdSenseLink{}
@@ -14955,6 +16699,13 @@ func (c *analyticsAdminRESTClient) DeleteAdSenseLink(ctx context.Context, req *a
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteAdSenseLink")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/adSenseLinks/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -15068,6 +16819,13 @@ func (c *analyticsAdminRESTClient) GetEventCreateRule(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetEventCreateRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/dataStreams/*/eventCreateRules/*}")
+	}
 	opts = append((*c.CallOptions).GetEventCreateRule[0:len((*c.CallOptions).GetEventCreateRule):len((*c.CallOptions).GetEventCreateRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.EventCreateRule{}
@@ -15203,6 +16961,13 @@ func (c *analyticsAdminRESTClient) CreateEventCreateRule(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateEventCreateRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=properties/*/dataStreams/*}/eventCreateRules")
+	}
 	opts = append((*c.CallOptions).CreateEventCreateRule[0:len((*c.CallOptions).CreateEventCreateRule):len((*c.CallOptions).CreateEventCreateRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.EventCreateRule{}
@@ -15267,6 +17032,10 @@ func (c *analyticsAdminRESTClient) UpdateEventCreateRule(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateEventCreateRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{event_create_rule.name=properties/*/dataStreams/*/eventCreateRules/*}")
+	}
 	opts = append((*c.CallOptions).UpdateEventCreateRule[0:len((*c.CallOptions).UpdateEventCreateRule):len((*c.CallOptions).UpdateEventCreateRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.EventCreateRule{}
@@ -15317,6 +17086,13 @@ func (c *analyticsAdminRESTClient) DeleteEventCreateRule(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteEventCreateRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/dataStreams/*/eventCreateRules/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -15352,6 +17128,13 @@ func (c *analyticsAdminRESTClient) GetEventEditRule(ctx context.Context, req *ad
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetEventEditRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/dataStreams/*/eventEditRules/*}")
+	}
 	opts = append((*c.CallOptions).GetEventEditRule[0:len((*c.CallOptions).GetEventEditRule):len((*c.CallOptions).GetEventEditRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.EventEditRule{}
@@ -15487,6 +17270,13 @@ func (c *analyticsAdminRESTClient) CreateEventEditRule(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateEventEditRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=properties/*/dataStreams/*}/eventEditRules")
+	}
 	opts = append((*c.CallOptions).CreateEventEditRule[0:len((*c.CallOptions).CreateEventEditRule):len((*c.CallOptions).CreateEventEditRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.EventEditRule{}
@@ -15551,6 +17341,10 @@ func (c *analyticsAdminRESTClient) UpdateEventEditRule(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateEventEditRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{event_edit_rule.name=properties/*/dataStreams/*/eventEditRules/*}")
+	}
 	opts = append((*c.CallOptions).UpdateEventEditRule[0:len((*c.CallOptions).UpdateEventEditRule):len((*c.CallOptions).UpdateEventEditRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.EventEditRule{}
@@ -15601,6 +17395,13 @@ func (c *analyticsAdminRESTClient) DeleteEventEditRule(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteEventEditRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/dataStreams/*/eventEditRules/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -15642,6 +17443,13 @@ func (c *analyticsAdminRESTClient) ReorderEventEditRules(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ReorderEventEditRules")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=properties/*/dataStreams/*}/eventEditRules:reorder")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -15691,6 +17499,10 @@ func (c *analyticsAdminRESTClient) UpdateDataRedactionSettings(ctx context.Conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateDataRedactionSettings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{data_redaction_settings.name=properties/*/dataStreams/*/dataRedactionSettings}")
+	}
 	opts = append((*c.CallOptions).UpdateDataRedactionSettings[0:len((*c.CallOptions).UpdateDataRedactionSettings):len((*c.CallOptions).UpdateDataRedactionSettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.DataRedactionSettings{}
@@ -15741,6 +17553,13 @@ func (c *analyticsAdminRESTClient) GetDataRedactionSettings(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetDataRedactionSettings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/dataStreams/*/dataRedactionSettings}")
+	}
 	opts = append((*c.CallOptions).GetDataRedactionSettings[0:len((*c.CallOptions).GetDataRedactionSettings):len((*c.CallOptions).GetDataRedactionSettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.DataRedactionSettings{}
@@ -15791,6 +17610,13 @@ func (c *analyticsAdminRESTClient) GetCalculatedMetric(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetCalculatedMetric")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/calculatedMetrics/*}")
+	}
 	opts = append((*c.CallOptions).GetCalculatedMetric[0:len((*c.CallOptions).GetCalculatedMetric):len((*c.CallOptions).GetCalculatedMetric)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.CalculatedMetric{}
@@ -15849,6 +17675,13 @@ func (c *analyticsAdminRESTClient) CreateCalculatedMetric(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateCalculatedMetric")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=properties/*}/calculatedMetrics")
+	}
 	opts = append((*c.CallOptions).CreateCalculatedMetric[0:len((*c.CallOptions).CreateCalculatedMetric):len((*c.CallOptions).CreateCalculatedMetric)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.CalculatedMetric{}
@@ -15991,6 +17824,10 @@ func (c *analyticsAdminRESTClient) UpdateCalculatedMetric(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateCalculatedMetric")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{calculated_metric.name=properties/*/calculatedMetrics/*}")
+	}
 	opts = append((*c.CallOptions).UpdateCalculatedMetric[0:len((*c.CallOptions).UpdateCalculatedMetric):len((*c.CallOptions).UpdateCalculatedMetric)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.CalculatedMetric{}
@@ -16041,6 +17878,13 @@ func (c *analyticsAdminRESTClient) DeleteCalculatedMetric(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteCalculatedMetric")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/calculatedMetrics/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -16079,6 +17923,10 @@ func (c *analyticsAdminRESTClient) CreateRollupProperty(ctx context.Context, req
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateRollupProperty")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/properties:createRollupProperty")
+	}
 	opts = append((*c.CallOptions).CreateRollupProperty[0:len((*c.CallOptions).CreateRollupProperty):len((*c.CallOptions).CreateRollupProperty)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.CreateRollupPropertyResponse{}
@@ -16131,6 +17979,13 @@ func (c *analyticsAdminRESTClient) GetRollupPropertySourceLink(ctx context.Conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetRollupPropertySourceLink")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/rollupPropertySourceLinks/*}")
+	}
 	opts = append((*c.CallOptions).GetRollupPropertySourceLink[0:len((*c.CallOptions).GetRollupPropertySourceLink):len((*c.CallOptions).GetRollupPropertySourceLink)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.RollupPropertySourceLink{}
@@ -16270,6 +18125,13 @@ func (c *analyticsAdminRESTClient) CreateRollupPropertySourceLink(ctx context.Co
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateRollupPropertySourceLink")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=properties/*}/rollupPropertySourceLinks")
+	}
 	opts = append((*c.CallOptions).CreateRollupPropertySourceLink[0:len((*c.CallOptions).CreateRollupPropertySourceLink):len((*c.CallOptions).CreateRollupPropertySourceLink)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.RollupPropertySourceLink{}
@@ -16322,6 +18184,13 @@ func (c *analyticsAdminRESTClient) DeleteRollupPropertySourceLink(ctx context.Co
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteRollupPropertySourceLink")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/rollupPropertySourceLinks/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -16361,6 +18230,10 @@ func (c *analyticsAdminRESTClient) ProvisionSubproperty(ctx context.Context, req
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/ProvisionSubproperty")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/properties:provisionSubproperty")
+	}
 	opts = append((*c.CallOptions).ProvisionSubproperty[0:len((*c.CallOptions).ProvisionSubproperty):len((*c.CallOptions).ProvisionSubproperty)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.ProvisionSubpropertyResponse{}
@@ -16418,6 +18291,13 @@ func (c *analyticsAdminRESTClient) CreateSubpropertyEventFilter(ctx context.Cont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateSubpropertyEventFilter")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=properties/*}/subpropertyEventFilters")
+	}
 	opts = append((*c.CallOptions).CreateSubpropertyEventFilter[0:len((*c.CallOptions).CreateSubpropertyEventFilter):len((*c.CallOptions).CreateSubpropertyEventFilter)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.SubpropertyEventFilter{}
@@ -16468,6 +18348,13 @@ func (c *analyticsAdminRESTClient) GetSubpropertyEventFilter(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetSubpropertyEventFilter")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/subpropertyEventFilters/*}")
+	}
 	opts = append((*c.CallOptions).GetSubpropertyEventFilter[0:len((*c.CallOptions).GetSubpropertyEventFilter):len((*c.CallOptions).GetSubpropertyEventFilter)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.SubpropertyEventFilter{}
@@ -16610,6 +18497,10 @@ func (c *analyticsAdminRESTClient) UpdateSubpropertyEventFilter(ctx context.Cont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateSubpropertyEventFilter")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{subproperty_event_filter.name=properties/*/subpropertyEventFilters/*}")
+	}
 	opts = append((*c.CallOptions).UpdateSubpropertyEventFilter[0:len((*c.CallOptions).UpdateSubpropertyEventFilter):len((*c.CallOptions).UpdateSubpropertyEventFilter)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.SubpropertyEventFilter{}
@@ -16660,6 +18551,13 @@ func (c *analyticsAdminRESTClient) DeleteSubpropertyEventFilter(ctx context.Cont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteSubpropertyEventFilter")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/subpropertyEventFilters/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -16702,6 +18600,13 @@ func (c *analyticsAdminRESTClient) CreateReportingDataAnnotation(ctx context.Con
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/CreateReportingDataAnnotation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=properties/*}/reportingDataAnnotations")
+	}
 	opts = append((*c.CallOptions).CreateReportingDataAnnotation[0:len((*c.CallOptions).CreateReportingDataAnnotation):len((*c.CallOptions).CreateReportingDataAnnotation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.ReportingDataAnnotation{}
@@ -16752,6 +18657,13 @@ func (c *analyticsAdminRESTClient) GetReportingDataAnnotation(ctx context.Contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetReportingDataAnnotation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/reportingDataAnnotations/*}")
+	}
 	opts = append((*c.CallOptions).GetReportingDataAnnotation[0:len((*c.CallOptions).GetReportingDataAnnotation):len((*c.CallOptions).GetReportingDataAnnotation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.ReportingDataAnnotation{}
@@ -16897,6 +18809,10 @@ func (c *analyticsAdminRESTClient) UpdateReportingDataAnnotation(ctx context.Con
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateReportingDataAnnotation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{reporting_data_annotation.name=properties/*/reportingDataAnnotations/*}")
+	}
 	opts = append((*c.CallOptions).UpdateReportingDataAnnotation[0:len((*c.CallOptions).UpdateReportingDataAnnotation):len((*c.CallOptions).UpdateReportingDataAnnotation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.ReportingDataAnnotation{}
@@ -16947,6 +18863,13 @@ func (c *analyticsAdminRESTClient) DeleteReportingDataAnnotation(ctx context.Con
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteReportingDataAnnotation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/reportingDataAnnotations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -16988,6 +18911,13 @@ func (c *analyticsAdminRESTClient) SubmitUserDeletion(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/SubmitUserDeletion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*}:submitUserDeletion")
+	}
 	opts = append((*c.CallOptions).SubmitUserDeletion[0:len((*c.CallOptions).SubmitUserDeletion):len((*c.CallOptions).SubmitUserDeletion)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.SubmitUserDeletionResponse{}
@@ -17130,6 +19060,10 @@ func (c *analyticsAdminRESTClient) UpdateSubpropertySyncConfig(ctx context.Conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateSubpropertySyncConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{subproperty_sync_config.name=properties/*/subpropertySyncConfigs/*}")
+	}
 	opts = append((*c.CallOptions).UpdateSubpropertySyncConfig[0:len((*c.CallOptions).UpdateSubpropertySyncConfig):len((*c.CallOptions).UpdateSubpropertySyncConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.SubpropertySyncConfig{}
@@ -17180,6 +19114,13 @@ func (c *analyticsAdminRESTClient) GetSubpropertySyncConfig(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetSubpropertySyncConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/subpropertySyncConfigs/*}")
+	}
 	opts = append((*c.CallOptions).GetSubpropertySyncConfig[0:len((*c.CallOptions).GetSubpropertySyncConfig):len((*c.CallOptions).GetSubpropertySyncConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.SubpropertySyncConfig{}
@@ -17230,6 +19171,13 @@ func (c *analyticsAdminRESTClient) GetReportingIdentitySettings(ctx context.Cont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetReportingIdentitySettings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/reportingIdentitySettings}")
+	}
 	opts = append((*c.CallOptions).GetReportingIdentitySettings[0:len((*c.CallOptions).GetReportingIdentitySettings):len((*c.CallOptions).GetReportingIdentitySettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.ReportingIdentitySettings{}

@@ -31,6 +31,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	optimizationpb "cloud.google.com/go/optimization/apiv1/optimizationpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -300,6 +301,16 @@ type fleetRoutingGRPCClient struct {
 //	  at least one of latitude and longitude must be non-zero.
 func NewFleetRoutingClient(ctx context.Context, opts ...option.ClientOption) (*FleetRoutingClient, error) {
 	clientOpts := defaultFleetRoutingGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudoptimization",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/optimization/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudoptimization.googleapis.com",
+		}))
+	}
 	if newFleetRoutingClientHook != nil {
 		hookOpts, err := newFleetRoutingClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -322,6 +333,22 @@ func NewFleetRoutingClient(ctx context.Context, opts ...option.ClientOption) (*F
 		operationsClient:   longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudoptimization",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/optimization/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudoptimization.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.OptimizeTours = append(client.CallOptions.OptimizeTours, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchOptimizeTours = append(client.CallOptions.BatchOptimizeTours, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -417,6 +444,16 @@ type fleetRoutingRESTClient struct {
 //	  at least one of latitude and longitude must be non-zero.
 func NewFleetRoutingRESTClient(ctx context.Context, opts ...option.ClientOption) (*FleetRoutingClient, error) {
 	clientOpts := append(defaultFleetRoutingRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudoptimization",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/optimization/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudoptimization.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -430,6 +467,23 @@ func NewFleetRoutingRESTClient(ctx context.Context, opts ...option.ClientOption)
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudoptimization",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/optimization/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudoptimization.googleapis.com",
+			}),
+		)
+
+		callOpts.OptimizeTours = append(callOpts.OptimizeTours, gax.WithClientMetrics(metrics))
+		callOpts.BatchOptimizeTours = append(callOpts.BatchOptimizeTours, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -486,6 +540,9 @@ func (c *fleetRoutingGRPCClient) OptimizeTours(ctx context.Context, req *optimiz
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.optimization.v1.FleetRouting/OptimizeTours")
+	}
 	opts = append((*c.CallOptions).OptimizeTours[0:len((*c.CallOptions).OptimizeTours):len((*c.CallOptions).OptimizeTours)], opts...)
 	var resp *optimizationpb.OptimizeToursResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -504,6 +561,9 @@ func (c *fleetRoutingGRPCClient) BatchOptimizeTours(ctx context.Context, req *op
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.optimization.v1.FleetRouting/BatchOptimizeTours")
+	}
 	opts = append((*c.CallOptions).BatchOptimizeTours[0:len((*c.CallOptions).BatchOptimizeTours):len((*c.CallOptions).BatchOptimizeTours)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -524,6 +584,9 @@ func (c *fleetRoutingGRPCClient) GetOperation(ctx context.Context, req *longrunn
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -575,6 +638,10 @@ func (c *fleetRoutingRESTClient) OptimizeTours(ctx context.Context, req *optimiz
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.optimization.v1.FleetRouting/OptimizeTours")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}:optimizeTours")
+	}
 	opts = append((*c.CallOptions).OptimizeTours[0:len((*c.CallOptions).OptimizeTours):len((*c.CallOptions).OptimizeTours)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &optimizationpb.OptimizeToursResponse{}
@@ -640,6 +707,10 @@ func (c *fleetRoutingRESTClient) BatchOptimizeTours(ctx context.Context, req *op
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.optimization.v1.FleetRouting/BatchOptimizeTours")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}:batchOptimizeTours")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -693,6 +764,10 @@ func (c *fleetRoutingRESTClient) GetOperation(ctx context.Context, req *longrunn
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}

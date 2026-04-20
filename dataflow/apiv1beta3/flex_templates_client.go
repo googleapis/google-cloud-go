@@ -27,6 +27,7 @@ import (
 
 	dataflowpb "cloud.google.com/go/dataflow/apiv1beta3/dataflowpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -143,6 +144,16 @@ type flexTemplatesGRPCClient struct {
 // Provides a service for Flex templates.
 func NewFlexTemplatesClient(ctx context.Context, opts ...option.ClientOption) (*FlexTemplatesClient, error) {
 	clientOpts := defaultFlexTemplatesGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "dataflow",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/dataflow/apiv1beta3",
+			"gcp.client.language": "go",
+			"url.domain":          "dataflow.googleapis.com",
+		}))
+	}
 	if newFlexTemplatesClientHook != nil {
 		hookOpts, err := newFlexTemplatesClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -164,6 +175,20 @@ func NewFlexTemplatesClient(ctx context.Context, opts ...option.ClientOption) (*
 		logger:              internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "dataflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataflow/apiv1beta3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dataflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.LaunchFlexTemplate = append(client.CallOptions.LaunchFlexTemplate, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -217,6 +242,16 @@ type flexTemplatesRESTClient struct {
 // Provides a service for Flex templates.
 func NewFlexTemplatesRESTClient(ctx context.Context, opts ...option.ClientOption) (*FlexTemplatesClient, error) {
 	clientOpts := append(defaultFlexTemplatesRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "dataflow",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/dataflow/apiv1beta3",
+			"gcp.client.language": "go",
+			"url.domain":          "dataflow.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -230,6 +265,21 @@ func NewFlexTemplatesRESTClient(ctx context.Context, opts ...option.ClientOption
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "dataflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataflow/apiv1beta3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dataflow.googleapis.com",
+			}),
+		)
+
+		callOpts.LaunchFlexTemplate = append(callOpts.LaunchFlexTemplate, gax.WithClientMetrics(metrics))
+	}
 
 	return &FlexTemplatesClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -276,6 +326,9 @@ func (c *flexTemplatesGRPCClient) LaunchFlexTemplate(ctx context.Context, req *d
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.dataflow.v1beta3.FlexTemplatesService/LaunchFlexTemplate")
+	}
 	opts = append((*c.CallOptions).LaunchFlexTemplate[0:len((*c.CallOptions).LaunchFlexTemplate):len((*c.CallOptions).LaunchFlexTemplate)], opts...)
 	var resp *dataflowpb.LaunchFlexTemplateResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -314,6 +367,10 @@ func (c *flexTemplatesRESTClient) LaunchFlexTemplate(ctx context.Context, req *d
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.dataflow.v1beta3.FlexTemplatesService/LaunchFlexTemplate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1b3/projects/{project_id}/locations/{location}/flexTemplates:launch")
+	}
 	opts = append((*c.CallOptions).LaunchFlexTemplate[0:len((*c.CallOptions).LaunchFlexTemplate):len((*c.CallOptions).LaunchFlexTemplate)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataflowpb.LaunchFlexTemplateResponse{}

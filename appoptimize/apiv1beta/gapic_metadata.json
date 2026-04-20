@@ -1,0 +1,133 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.appoptimize.v1beta",
+  "libraryPackage": "cloud.google.com/go/appoptimize/apiv1beta",
+  "services": {
+    "AppOptimize": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateReport": {
+              "methods": [
+                "CreateReport"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteReport": {
+              "methods": [
+                "DeleteReport"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetReport": {
+              "methods": [
+                "GetReport"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListReports": {
+              "methods": [
+                "ListReports"
+              ]
+            },
+            "ReadReport": {
+              "methods": [
+                "ReadReport"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateReport": {
+              "methods": [
+                "CreateReport"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteReport": {
+              "methods": [
+                "DeleteReport"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetReport": {
+              "methods": [
+                "GetReport"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListReports": {
+              "methods": [
+                "ListReports"
+              ]
+            },
+            "ReadReport": {
+              "methods": [
+                "ReadReport"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

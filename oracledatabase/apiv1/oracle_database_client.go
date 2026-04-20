@@ -31,6 +31,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	oracledatabasepb "cloud.google.com/go/oracledatabase/apiv1/oracledatabasepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1756,6 +1757,16 @@ type gRPCClient struct {
 // Service describing handlers for resources
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "oracledatabase",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/oracledatabase/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "oracledatabase.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -1779,6 +1790,83 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "oracledatabase",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/oracledatabase/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "oracledatabase.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListCloudExadataInfrastructures = append(client.CallOptions.ListCloudExadataInfrastructures, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetCloudExadataInfrastructure = append(client.CallOptions.GetCloudExadataInfrastructure, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateCloudExadataInfrastructure = append(client.CallOptions.CreateCloudExadataInfrastructure, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteCloudExadataInfrastructure = append(client.CallOptions.DeleteCloudExadataInfrastructure, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListCloudVmClusters = append(client.CallOptions.ListCloudVmClusters, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetCloudVmCluster = append(client.CallOptions.GetCloudVmCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateCloudVmCluster = append(client.CallOptions.CreateCloudVmCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteCloudVmCluster = append(client.CallOptions.DeleteCloudVmCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListEntitlements = append(client.CallOptions.ListEntitlements, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListDbServers = append(client.CallOptions.ListDbServers, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListDbNodes = append(client.CallOptions.ListDbNodes, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListGiVersions = append(client.CallOptions.ListGiVersions, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListMinorVersions = append(client.CallOptions.ListMinorVersions, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListDbSystemShapes = append(client.CallOptions.ListDbSystemShapes, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAutonomousDatabases = append(client.CallOptions.ListAutonomousDatabases, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAutonomousDatabase = append(client.CallOptions.GetAutonomousDatabase, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateAutonomousDatabase = append(client.CallOptions.CreateAutonomousDatabase, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateAutonomousDatabase = append(client.CallOptions.UpdateAutonomousDatabase, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteAutonomousDatabase = append(client.CallOptions.DeleteAutonomousDatabase, gax.WithClientMetrics(metrics))
+		client.CallOptions.RestoreAutonomousDatabase = append(client.CallOptions.RestoreAutonomousDatabase, gax.WithClientMetrics(metrics))
+		client.CallOptions.GenerateAutonomousDatabaseWallet = append(client.CallOptions.GenerateAutonomousDatabaseWallet, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAutonomousDbVersions = append(client.CallOptions.ListAutonomousDbVersions, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAutonomousDatabaseCharacterSets = append(client.CallOptions.ListAutonomousDatabaseCharacterSets, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAutonomousDatabaseBackups = append(client.CallOptions.ListAutonomousDatabaseBackups, gax.WithClientMetrics(metrics))
+		client.CallOptions.StopAutonomousDatabase = append(client.CallOptions.StopAutonomousDatabase, gax.WithClientMetrics(metrics))
+		client.CallOptions.StartAutonomousDatabase = append(client.CallOptions.StartAutonomousDatabase, gax.WithClientMetrics(metrics))
+		client.CallOptions.RestartAutonomousDatabase = append(client.CallOptions.RestartAutonomousDatabase, gax.WithClientMetrics(metrics))
+		client.CallOptions.SwitchoverAutonomousDatabase = append(client.CallOptions.SwitchoverAutonomousDatabase, gax.WithClientMetrics(metrics))
+		client.CallOptions.FailoverAutonomousDatabase = append(client.CallOptions.FailoverAutonomousDatabase, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOdbNetworks = append(client.CallOptions.ListOdbNetworks, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOdbNetwork = append(client.CallOptions.GetOdbNetwork, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateOdbNetwork = append(client.CallOptions.CreateOdbNetwork, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOdbNetwork = append(client.CallOptions.DeleteOdbNetwork, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOdbSubnets = append(client.CallOptions.ListOdbSubnets, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOdbSubnet = append(client.CallOptions.GetOdbSubnet, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateOdbSubnet = append(client.CallOptions.CreateOdbSubnet, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOdbSubnet = append(client.CallOptions.DeleteOdbSubnet, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListExadbVmClusters = append(client.CallOptions.ListExadbVmClusters, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetExadbVmCluster = append(client.CallOptions.GetExadbVmCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateExadbVmCluster = append(client.CallOptions.CreateExadbVmCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteExadbVmCluster = append(client.CallOptions.DeleteExadbVmCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateExadbVmCluster = append(client.CallOptions.UpdateExadbVmCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.RemoveVirtualMachineExadbVmCluster = append(client.CallOptions.RemoveVirtualMachineExadbVmCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListExascaleDbStorageVaults = append(client.CallOptions.ListExascaleDbStorageVaults, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetExascaleDbStorageVault = append(client.CallOptions.GetExascaleDbStorageVault, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateExascaleDbStorageVault = append(client.CallOptions.CreateExascaleDbStorageVault, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteExascaleDbStorageVault = append(client.CallOptions.DeleteExascaleDbStorageVault, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListDbSystemInitialStorageSizes = append(client.CallOptions.ListDbSystemInitialStorageSizes, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListDatabases = append(client.CallOptions.ListDatabases, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetDatabase = append(client.CallOptions.GetDatabase, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListPluggableDatabases = append(client.CallOptions.ListPluggableDatabases, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetPluggableDatabase = append(client.CallOptions.GetPluggableDatabase, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListDbSystems = append(client.CallOptions.ListDbSystems, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetDbSystem = append(client.CallOptions.GetDbSystem, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateDbSystem = append(client.CallOptions.CreateDbSystem, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteDbSystem = append(client.CallOptions.DeleteDbSystem, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListDbVersions = append(client.CallOptions.ListDbVersions, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListDatabaseCharacterSets = append(client.CallOptions.ListDatabaseCharacterSets, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -1848,6 +1936,16 @@ type restClient struct {
 // Service describing handlers for resources
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "oracledatabase",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/oracledatabase/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "oracledatabase.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -1861,6 +1959,84 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "oracledatabase",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/oracledatabase/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "oracledatabase.googleapis.com",
+			}),
+		)
+
+		callOpts.ListCloudExadataInfrastructures = append(callOpts.ListCloudExadataInfrastructures, gax.WithClientMetrics(metrics))
+		callOpts.GetCloudExadataInfrastructure = append(callOpts.GetCloudExadataInfrastructure, gax.WithClientMetrics(metrics))
+		callOpts.CreateCloudExadataInfrastructure = append(callOpts.CreateCloudExadataInfrastructure, gax.WithClientMetrics(metrics))
+		callOpts.DeleteCloudExadataInfrastructure = append(callOpts.DeleteCloudExadataInfrastructure, gax.WithClientMetrics(metrics))
+		callOpts.ListCloudVmClusters = append(callOpts.ListCloudVmClusters, gax.WithClientMetrics(metrics))
+		callOpts.GetCloudVmCluster = append(callOpts.GetCloudVmCluster, gax.WithClientMetrics(metrics))
+		callOpts.CreateCloudVmCluster = append(callOpts.CreateCloudVmCluster, gax.WithClientMetrics(metrics))
+		callOpts.DeleteCloudVmCluster = append(callOpts.DeleteCloudVmCluster, gax.WithClientMetrics(metrics))
+		callOpts.ListEntitlements = append(callOpts.ListEntitlements, gax.WithClientMetrics(metrics))
+		callOpts.ListDbServers = append(callOpts.ListDbServers, gax.WithClientMetrics(metrics))
+		callOpts.ListDbNodes = append(callOpts.ListDbNodes, gax.WithClientMetrics(metrics))
+		callOpts.ListGiVersions = append(callOpts.ListGiVersions, gax.WithClientMetrics(metrics))
+		callOpts.ListMinorVersions = append(callOpts.ListMinorVersions, gax.WithClientMetrics(metrics))
+		callOpts.ListDbSystemShapes = append(callOpts.ListDbSystemShapes, gax.WithClientMetrics(metrics))
+		callOpts.ListAutonomousDatabases = append(callOpts.ListAutonomousDatabases, gax.WithClientMetrics(metrics))
+		callOpts.GetAutonomousDatabase = append(callOpts.GetAutonomousDatabase, gax.WithClientMetrics(metrics))
+		callOpts.CreateAutonomousDatabase = append(callOpts.CreateAutonomousDatabase, gax.WithClientMetrics(metrics))
+		callOpts.UpdateAutonomousDatabase = append(callOpts.UpdateAutonomousDatabase, gax.WithClientMetrics(metrics))
+		callOpts.DeleteAutonomousDatabase = append(callOpts.DeleteAutonomousDatabase, gax.WithClientMetrics(metrics))
+		callOpts.RestoreAutonomousDatabase = append(callOpts.RestoreAutonomousDatabase, gax.WithClientMetrics(metrics))
+		callOpts.GenerateAutonomousDatabaseWallet = append(callOpts.GenerateAutonomousDatabaseWallet, gax.WithClientMetrics(metrics))
+		callOpts.ListAutonomousDbVersions = append(callOpts.ListAutonomousDbVersions, gax.WithClientMetrics(metrics))
+		callOpts.ListAutonomousDatabaseCharacterSets = append(callOpts.ListAutonomousDatabaseCharacterSets, gax.WithClientMetrics(metrics))
+		callOpts.ListAutonomousDatabaseBackups = append(callOpts.ListAutonomousDatabaseBackups, gax.WithClientMetrics(metrics))
+		callOpts.StopAutonomousDatabase = append(callOpts.StopAutonomousDatabase, gax.WithClientMetrics(metrics))
+		callOpts.StartAutonomousDatabase = append(callOpts.StartAutonomousDatabase, gax.WithClientMetrics(metrics))
+		callOpts.RestartAutonomousDatabase = append(callOpts.RestartAutonomousDatabase, gax.WithClientMetrics(metrics))
+		callOpts.SwitchoverAutonomousDatabase = append(callOpts.SwitchoverAutonomousDatabase, gax.WithClientMetrics(metrics))
+		callOpts.FailoverAutonomousDatabase = append(callOpts.FailoverAutonomousDatabase, gax.WithClientMetrics(metrics))
+		callOpts.ListOdbNetworks = append(callOpts.ListOdbNetworks, gax.WithClientMetrics(metrics))
+		callOpts.GetOdbNetwork = append(callOpts.GetOdbNetwork, gax.WithClientMetrics(metrics))
+		callOpts.CreateOdbNetwork = append(callOpts.CreateOdbNetwork, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOdbNetwork = append(callOpts.DeleteOdbNetwork, gax.WithClientMetrics(metrics))
+		callOpts.ListOdbSubnets = append(callOpts.ListOdbSubnets, gax.WithClientMetrics(metrics))
+		callOpts.GetOdbSubnet = append(callOpts.GetOdbSubnet, gax.WithClientMetrics(metrics))
+		callOpts.CreateOdbSubnet = append(callOpts.CreateOdbSubnet, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOdbSubnet = append(callOpts.DeleteOdbSubnet, gax.WithClientMetrics(metrics))
+		callOpts.ListExadbVmClusters = append(callOpts.ListExadbVmClusters, gax.WithClientMetrics(metrics))
+		callOpts.GetExadbVmCluster = append(callOpts.GetExadbVmCluster, gax.WithClientMetrics(metrics))
+		callOpts.CreateExadbVmCluster = append(callOpts.CreateExadbVmCluster, gax.WithClientMetrics(metrics))
+		callOpts.DeleteExadbVmCluster = append(callOpts.DeleteExadbVmCluster, gax.WithClientMetrics(metrics))
+		callOpts.UpdateExadbVmCluster = append(callOpts.UpdateExadbVmCluster, gax.WithClientMetrics(metrics))
+		callOpts.RemoveVirtualMachineExadbVmCluster = append(callOpts.RemoveVirtualMachineExadbVmCluster, gax.WithClientMetrics(metrics))
+		callOpts.ListExascaleDbStorageVaults = append(callOpts.ListExascaleDbStorageVaults, gax.WithClientMetrics(metrics))
+		callOpts.GetExascaleDbStorageVault = append(callOpts.GetExascaleDbStorageVault, gax.WithClientMetrics(metrics))
+		callOpts.CreateExascaleDbStorageVault = append(callOpts.CreateExascaleDbStorageVault, gax.WithClientMetrics(metrics))
+		callOpts.DeleteExascaleDbStorageVault = append(callOpts.DeleteExascaleDbStorageVault, gax.WithClientMetrics(metrics))
+		callOpts.ListDbSystemInitialStorageSizes = append(callOpts.ListDbSystemInitialStorageSizes, gax.WithClientMetrics(metrics))
+		callOpts.ListDatabases = append(callOpts.ListDatabases, gax.WithClientMetrics(metrics))
+		callOpts.GetDatabase = append(callOpts.GetDatabase, gax.WithClientMetrics(metrics))
+		callOpts.ListPluggableDatabases = append(callOpts.ListPluggableDatabases, gax.WithClientMetrics(metrics))
+		callOpts.GetPluggableDatabase = append(callOpts.GetPluggableDatabase, gax.WithClientMetrics(metrics))
+		callOpts.ListDbSystems = append(callOpts.ListDbSystems, gax.WithClientMetrics(metrics))
+		callOpts.GetDbSystem = append(callOpts.GetDbSystem, gax.WithClientMetrics(metrics))
+		callOpts.CreateDbSystem = append(callOpts.CreateDbSystem, gax.WithClientMetrics(metrics))
+		callOpts.DeleteDbSystem = append(callOpts.DeleteDbSystem, gax.WithClientMetrics(metrics))
+		callOpts.ListDbVersions = append(callOpts.ListDbVersions, gax.WithClientMetrics(metrics))
+		callOpts.ListDatabaseCharacterSets = append(callOpts.ListDatabaseCharacterSets, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -1917,6 +2093,12 @@ func (c *gRPCClient) ListCloudExadataInfrastructures(ctx context.Context, req *o
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/ListCloudExadataInfrastructures")
+	}
 	opts = append((*c.CallOptions).ListCloudExadataInfrastructures[0:len((*c.CallOptions).ListCloudExadataInfrastructures):len((*c.CallOptions).ListCloudExadataInfrastructures)], opts...)
 	it := &CloudExadataInfrastructureIterator{}
 	req = proto.Clone(req).(*oracledatabasepb.ListCloudExadataInfrastructuresRequest)
@@ -1963,6 +2145,12 @@ func (c *gRPCClient) GetCloudExadataInfrastructure(ctx context.Context, req *ora
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GetCloudExadataInfrastructure")
+	}
 	opts = append((*c.CallOptions).GetCloudExadataInfrastructure[0:len((*c.CallOptions).GetCloudExadataInfrastructure):len((*c.CallOptions).GetCloudExadataInfrastructure)], opts...)
 	var resp *oracledatabasepb.CloudExadataInfrastructure
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1981,6 +2169,12 @@ func (c *gRPCClient) CreateCloudExadataInfrastructure(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/CreateCloudExadataInfrastructure")
+	}
 	opts = append((*c.CallOptions).CreateCloudExadataInfrastructure[0:len((*c.CallOptions).CreateCloudExadataInfrastructure):len((*c.CallOptions).CreateCloudExadataInfrastructure)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2001,6 +2195,12 @@ func (c *gRPCClient) DeleteCloudExadataInfrastructure(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/DeleteCloudExadataInfrastructure")
+	}
 	opts = append((*c.CallOptions).DeleteCloudExadataInfrastructure[0:len((*c.CallOptions).DeleteCloudExadataInfrastructure):len((*c.CallOptions).DeleteCloudExadataInfrastructure)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2021,6 +2221,12 @@ func (c *gRPCClient) ListCloudVmClusters(ctx context.Context, req *oracledatabas
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/ListCloudVmClusters")
+	}
 	opts = append((*c.CallOptions).ListCloudVmClusters[0:len((*c.CallOptions).ListCloudVmClusters):len((*c.CallOptions).ListCloudVmClusters)], opts...)
 	it := &CloudVmClusterIterator{}
 	req = proto.Clone(req).(*oracledatabasepb.ListCloudVmClustersRequest)
@@ -2067,6 +2273,12 @@ func (c *gRPCClient) GetCloudVmCluster(ctx context.Context, req *oracledatabasep
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GetCloudVmCluster")
+	}
 	opts = append((*c.CallOptions).GetCloudVmCluster[0:len((*c.CallOptions).GetCloudVmCluster):len((*c.CallOptions).GetCloudVmCluster)], opts...)
 	var resp *oracledatabasepb.CloudVmCluster
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2085,6 +2297,12 @@ func (c *gRPCClient) CreateCloudVmCluster(ctx context.Context, req *oracledataba
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/CreateCloudVmCluster")
+	}
 	opts = append((*c.CallOptions).CreateCloudVmCluster[0:len((*c.CallOptions).CreateCloudVmCluster):len((*c.CallOptions).CreateCloudVmCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2105,6 +2323,12 @@ func (c *gRPCClient) DeleteCloudVmCluster(ctx context.Context, req *oracledataba
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/DeleteCloudVmCluster")
+	}
 	opts = append((*c.CallOptions).DeleteCloudVmCluster[0:len((*c.CallOptions).DeleteCloudVmCluster):len((*c.CallOptions).DeleteCloudVmCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2125,6 +2349,12 @@ func (c *gRPCClient) ListEntitlements(ctx context.Context, req *oracledatabasepb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/ListEntitlements")
+	}
 	opts = append((*c.CallOptions).ListEntitlements[0:len((*c.CallOptions).ListEntitlements):len((*c.CallOptions).ListEntitlements)], opts...)
 	it := &EntitlementIterator{}
 	req = proto.Clone(req).(*oracledatabasepb.ListEntitlementsRequest)
@@ -2171,6 +2401,12 @@ func (c *gRPCClient) ListDbServers(ctx context.Context, req *oracledatabasepb.Li
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/ListDbServers")
+	}
 	opts = append((*c.CallOptions).ListDbServers[0:len((*c.CallOptions).ListDbServers):len((*c.CallOptions).ListDbServers)], opts...)
 	it := &DbServerIterator{}
 	req = proto.Clone(req).(*oracledatabasepb.ListDbServersRequest)
@@ -2217,6 +2453,12 @@ func (c *gRPCClient) ListDbNodes(ctx context.Context, req *oracledatabasepb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/ListDbNodes")
+	}
 	opts = append((*c.CallOptions).ListDbNodes[0:len((*c.CallOptions).ListDbNodes):len((*c.CallOptions).ListDbNodes)], opts...)
 	it := &DbNodeIterator{}
 	req = proto.Clone(req).(*oracledatabasepb.ListDbNodesRequest)
@@ -2263,6 +2505,12 @@ func (c *gRPCClient) ListGiVersions(ctx context.Context, req *oracledatabasepb.L
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/ListGiVersions")
+	}
 	opts = append((*c.CallOptions).ListGiVersions[0:len((*c.CallOptions).ListGiVersions):len((*c.CallOptions).ListGiVersions)], opts...)
 	it := &GiVersionIterator{}
 	req = proto.Clone(req).(*oracledatabasepb.ListGiVersionsRequest)
@@ -2309,6 +2557,12 @@ func (c *gRPCClient) ListMinorVersions(ctx context.Context, req *oracledatabasep
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/ListMinorVersions")
+	}
 	opts = append((*c.CallOptions).ListMinorVersions[0:len((*c.CallOptions).ListMinorVersions):len((*c.CallOptions).ListMinorVersions)], opts...)
 	it := &MinorVersionIterator{}
 	req = proto.Clone(req).(*oracledatabasepb.ListMinorVersionsRequest)
@@ -2355,6 +2609,12 @@ func (c *gRPCClient) ListDbSystemShapes(ctx context.Context, req *oracledatabase
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/ListDbSystemShapes")
+	}
 	opts = append((*c.CallOptions).ListDbSystemShapes[0:len((*c.CallOptions).ListDbSystemShapes):len((*c.CallOptions).ListDbSystemShapes)], opts...)
 	it := &DbSystemShapeIterator{}
 	req = proto.Clone(req).(*oracledatabasepb.ListDbSystemShapesRequest)
@@ -2401,6 +2661,12 @@ func (c *gRPCClient) ListAutonomousDatabases(ctx context.Context, req *oracledat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/ListAutonomousDatabases")
+	}
 	opts = append((*c.CallOptions).ListAutonomousDatabases[0:len((*c.CallOptions).ListAutonomousDatabases):len((*c.CallOptions).ListAutonomousDatabases)], opts...)
 	it := &AutonomousDatabaseIterator{}
 	req = proto.Clone(req).(*oracledatabasepb.ListAutonomousDatabasesRequest)
@@ -2447,6 +2713,12 @@ func (c *gRPCClient) GetAutonomousDatabase(ctx context.Context, req *oracledatab
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GetAutonomousDatabase")
+	}
 	opts = append((*c.CallOptions).GetAutonomousDatabase[0:len((*c.CallOptions).GetAutonomousDatabase):len((*c.CallOptions).GetAutonomousDatabase)], opts...)
 	var resp *oracledatabasepb.AutonomousDatabase
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2465,6 +2737,12 @@ func (c *gRPCClient) CreateAutonomousDatabase(ctx context.Context, req *oracleda
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/CreateAutonomousDatabase")
+	}
 	opts = append((*c.CallOptions).CreateAutonomousDatabase[0:len((*c.CallOptions).CreateAutonomousDatabase):len((*c.CallOptions).CreateAutonomousDatabase)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2485,6 +2763,9 @@ func (c *gRPCClient) UpdateAutonomousDatabase(ctx context.Context, req *oracleda
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/UpdateAutonomousDatabase")
+	}
 	opts = append((*c.CallOptions).UpdateAutonomousDatabase[0:len((*c.CallOptions).UpdateAutonomousDatabase):len((*c.CallOptions).UpdateAutonomousDatabase)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2505,6 +2786,12 @@ func (c *gRPCClient) DeleteAutonomousDatabase(ctx context.Context, req *oracleda
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/DeleteAutonomousDatabase")
+	}
 	opts = append((*c.CallOptions).DeleteAutonomousDatabase[0:len((*c.CallOptions).DeleteAutonomousDatabase):len((*c.CallOptions).DeleteAutonomousDatabase)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2525,6 +2812,12 @@ func (c *gRPCClient) RestoreAutonomousDatabase(ctx context.Context, req *oracled
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/RestoreAutonomousDatabase")
+	}
 	opts = append((*c.CallOptions).RestoreAutonomousDatabase[0:len((*c.CallOptions).RestoreAutonomousDatabase):len((*c.CallOptions).RestoreAutonomousDatabase)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2545,6 +2838,12 @@ func (c *gRPCClient) GenerateAutonomousDatabaseWallet(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GenerateAutonomousDatabaseWallet")
+	}
 	opts = append((*c.CallOptions).GenerateAutonomousDatabaseWallet[0:len((*c.CallOptions).GenerateAutonomousDatabaseWallet):len((*c.CallOptions).GenerateAutonomousDatabaseWallet)], opts...)
 	var resp *oracledatabasepb.GenerateAutonomousDatabaseWalletResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2563,6 +2862,12 @@ func (c *gRPCClient) ListAutonomousDbVersions(ctx context.Context, req *oracleda
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/ListAutonomousDbVersions")
+	}
 	opts = append((*c.CallOptions).ListAutonomousDbVersions[0:len((*c.CallOptions).ListAutonomousDbVersions):len((*c.CallOptions).ListAutonomousDbVersions)], opts...)
 	it := &AutonomousDbVersionIterator{}
 	req = proto.Clone(req).(*oracledatabasepb.ListAutonomousDbVersionsRequest)
@@ -2609,6 +2914,12 @@ func (c *gRPCClient) ListAutonomousDatabaseCharacterSets(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/ListAutonomousDatabaseCharacterSets")
+	}
 	opts = append((*c.CallOptions).ListAutonomousDatabaseCharacterSets[0:len((*c.CallOptions).ListAutonomousDatabaseCharacterSets):len((*c.CallOptions).ListAutonomousDatabaseCharacterSets)], opts...)
 	it := &AutonomousDatabaseCharacterSetIterator{}
 	req = proto.Clone(req).(*oracledatabasepb.ListAutonomousDatabaseCharacterSetsRequest)
@@ -2655,6 +2966,12 @@ func (c *gRPCClient) ListAutonomousDatabaseBackups(ctx context.Context, req *ora
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/ListAutonomousDatabaseBackups")
+	}
 	opts = append((*c.CallOptions).ListAutonomousDatabaseBackups[0:len((*c.CallOptions).ListAutonomousDatabaseBackups):len((*c.CallOptions).ListAutonomousDatabaseBackups)], opts...)
 	it := &AutonomousDatabaseBackupIterator{}
 	req = proto.Clone(req).(*oracledatabasepb.ListAutonomousDatabaseBackupsRequest)
@@ -2701,6 +3018,12 @@ func (c *gRPCClient) StopAutonomousDatabase(ctx context.Context, req *oracledata
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/StopAutonomousDatabase")
+	}
 	opts = append((*c.CallOptions).StopAutonomousDatabase[0:len((*c.CallOptions).StopAutonomousDatabase):len((*c.CallOptions).StopAutonomousDatabase)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2721,6 +3044,12 @@ func (c *gRPCClient) StartAutonomousDatabase(ctx context.Context, req *oracledat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/StartAutonomousDatabase")
+	}
 	opts = append((*c.CallOptions).StartAutonomousDatabase[0:len((*c.CallOptions).StartAutonomousDatabase):len((*c.CallOptions).StartAutonomousDatabase)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2741,6 +3070,12 @@ func (c *gRPCClient) RestartAutonomousDatabase(ctx context.Context, req *oracled
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/RestartAutonomousDatabase")
+	}
 	opts = append((*c.CallOptions).RestartAutonomousDatabase[0:len((*c.CallOptions).RestartAutonomousDatabase):len((*c.CallOptions).RestartAutonomousDatabase)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2761,6 +3096,12 @@ func (c *gRPCClient) SwitchoverAutonomousDatabase(ctx context.Context, req *orac
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/SwitchoverAutonomousDatabase")
+	}
 	opts = append((*c.CallOptions).SwitchoverAutonomousDatabase[0:len((*c.CallOptions).SwitchoverAutonomousDatabase):len((*c.CallOptions).SwitchoverAutonomousDatabase)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2781,6 +3122,12 @@ func (c *gRPCClient) FailoverAutonomousDatabase(ctx context.Context, req *oracle
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/FailoverAutonomousDatabase")
+	}
 	opts = append((*c.CallOptions).FailoverAutonomousDatabase[0:len((*c.CallOptions).FailoverAutonomousDatabase):len((*c.CallOptions).FailoverAutonomousDatabase)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2801,6 +3148,12 @@ func (c *gRPCClient) ListOdbNetworks(ctx context.Context, req *oracledatabasepb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/ListOdbNetworks")
+	}
 	opts = append((*c.CallOptions).ListOdbNetworks[0:len((*c.CallOptions).ListOdbNetworks):len((*c.CallOptions).ListOdbNetworks)], opts...)
 	it := &OdbNetworkIterator{}
 	req = proto.Clone(req).(*oracledatabasepb.ListOdbNetworksRequest)
@@ -2847,6 +3200,12 @@ func (c *gRPCClient) GetOdbNetwork(ctx context.Context, req *oracledatabasepb.Ge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GetOdbNetwork")
+	}
 	opts = append((*c.CallOptions).GetOdbNetwork[0:len((*c.CallOptions).GetOdbNetwork):len((*c.CallOptions).GetOdbNetwork)], opts...)
 	var resp *oracledatabasepb.OdbNetwork
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2865,6 +3224,12 @@ func (c *gRPCClient) CreateOdbNetwork(ctx context.Context, req *oracledatabasepb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/CreateOdbNetwork")
+	}
 	opts = append((*c.CallOptions).CreateOdbNetwork[0:len((*c.CallOptions).CreateOdbNetwork):len((*c.CallOptions).CreateOdbNetwork)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2885,6 +3250,12 @@ func (c *gRPCClient) DeleteOdbNetwork(ctx context.Context, req *oracledatabasepb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/DeleteOdbNetwork")
+	}
 	opts = append((*c.CallOptions).DeleteOdbNetwork[0:len((*c.CallOptions).DeleteOdbNetwork):len((*c.CallOptions).DeleteOdbNetwork)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2905,6 +3276,12 @@ func (c *gRPCClient) ListOdbSubnets(ctx context.Context, req *oracledatabasepb.L
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/ListOdbSubnets")
+	}
 	opts = append((*c.CallOptions).ListOdbSubnets[0:len((*c.CallOptions).ListOdbSubnets):len((*c.CallOptions).ListOdbSubnets)], opts...)
 	it := &OdbSubnetIterator{}
 	req = proto.Clone(req).(*oracledatabasepb.ListOdbSubnetsRequest)
@@ -2951,6 +3328,12 @@ func (c *gRPCClient) GetOdbSubnet(ctx context.Context, req *oracledatabasepb.Get
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GetOdbSubnet")
+	}
 	opts = append((*c.CallOptions).GetOdbSubnet[0:len((*c.CallOptions).GetOdbSubnet):len((*c.CallOptions).GetOdbSubnet)], opts...)
 	var resp *oracledatabasepb.OdbSubnet
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2969,6 +3352,12 @@ func (c *gRPCClient) CreateOdbSubnet(ctx context.Context, req *oracledatabasepb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/CreateOdbSubnet")
+	}
 	opts = append((*c.CallOptions).CreateOdbSubnet[0:len((*c.CallOptions).CreateOdbSubnet):len((*c.CallOptions).CreateOdbSubnet)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2989,6 +3378,12 @@ func (c *gRPCClient) DeleteOdbSubnet(ctx context.Context, req *oracledatabasepb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/DeleteOdbSubnet")
+	}
 	opts = append((*c.CallOptions).DeleteOdbSubnet[0:len((*c.CallOptions).DeleteOdbSubnet):len((*c.CallOptions).DeleteOdbSubnet)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3009,6 +3404,12 @@ func (c *gRPCClient) ListExadbVmClusters(ctx context.Context, req *oracledatabas
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/ListExadbVmClusters")
+	}
 	opts = append((*c.CallOptions).ListExadbVmClusters[0:len((*c.CallOptions).ListExadbVmClusters):len((*c.CallOptions).ListExadbVmClusters)], opts...)
 	it := &ExadbVmClusterIterator{}
 	req = proto.Clone(req).(*oracledatabasepb.ListExadbVmClustersRequest)
@@ -3055,6 +3456,12 @@ func (c *gRPCClient) GetExadbVmCluster(ctx context.Context, req *oracledatabasep
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GetExadbVmCluster")
+	}
 	opts = append((*c.CallOptions).GetExadbVmCluster[0:len((*c.CallOptions).GetExadbVmCluster):len((*c.CallOptions).GetExadbVmCluster)], opts...)
 	var resp *oracledatabasepb.ExadbVmCluster
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3073,6 +3480,12 @@ func (c *gRPCClient) CreateExadbVmCluster(ctx context.Context, req *oracledataba
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/CreateExadbVmCluster")
+	}
 	opts = append((*c.CallOptions).CreateExadbVmCluster[0:len((*c.CallOptions).CreateExadbVmCluster):len((*c.CallOptions).CreateExadbVmCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3093,6 +3506,12 @@ func (c *gRPCClient) DeleteExadbVmCluster(ctx context.Context, req *oracledataba
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/DeleteExadbVmCluster")
+	}
 	opts = append((*c.CallOptions).DeleteExadbVmCluster[0:len((*c.CallOptions).DeleteExadbVmCluster):len((*c.CallOptions).DeleteExadbVmCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3113,6 +3532,9 @@ func (c *gRPCClient) UpdateExadbVmCluster(ctx context.Context, req *oracledataba
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/UpdateExadbVmCluster")
+	}
 	opts = append((*c.CallOptions).UpdateExadbVmCluster[0:len((*c.CallOptions).UpdateExadbVmCluster):len((*c.CallOptions).UpdateExadbVmCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3133,6 +3555,12 @@ func (c *gRPCClient) RemoveVirtualMachineExadbVmCluster(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/RemoveVirtualMachineExadbVmCluster")
+	}
 	opts = append((*c.CallOptions).RemoveVirtualMachineExadbVmCluster[0:len((*c.CallOptions).RemoveVirtualMachineExadbVmCluster):len((*c.CallOptions).RemoveVirtualMachineExadbVmCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3153,6 +3581,12 @@ func (c *gRPCClient) ListExascaleDbStorageVaults(ctx context.Context, req *oracl
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/ListExascaleDbStorageVaults")
+	}
 	opts = append((*c.CallOptions).ListExascaleDbStorageVaults[0:len((*c.CallOptions).ListExascaleDbStorageVaults):len((*c.CallOptions).ListExascaleDbStorageVaults)], opts...)
 	it := &ExascaleDbStorageVaultIterator{}
 	req = proto.Clone(req).(*oracledatabasepb.ListExascaleDbStorageVaultsRequest)
@@ -3199,6 +3633,12 @@ func (c *gRPCClient) GetExascaleDbStorageVault(ctx context.Context, req *oracled
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GetExascaleDbStorageVault")
+	}
 	opts = append((*c.CallOptions).GetExascaleDbStorageVault[0:len((*c.CallOptions).GetExascaleDbStorageVault):len((*c.CallOptions).GetExascaleDbStorageVault)], opts...)
 	var resp *oracledatabasepb.ExascaleDbStorageVault
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3217,6 +3657,12 @@ func (c *gRPCClient) CreateExascaleDbStorageVault(ctx context.Context, req *orac
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/CreateExascaleDbStorageVault")
+	}
 	opts = append((*c.CallOptions).CreateExascaleDbStorageVault[0:len((*c.CallOptions).CreateExascaleDbStorageVault):len((*c.CallOptions).CreateExascaleDbStorageVault)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3237,6 +3683,12 @@ func (c *gRPCClient) DeleteExascaleDbStorageVault(ctx context.Context, req *orac
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/DeleteExascaleDbStorageVault")
+	}
 	opts = append((*c.CallOptions).DeleteExascaleDbStorageVault[0:len((*c.CallOptions).DeleteExascaleDbStorageVault):len((*c.CallOptions).DeleteExascaleDbStorageVault)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3257,6 +3709,12 @@ func (c *gRPCClient) ListDbSystemInitialStorageSizes(ctx context.Context, req *o
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/ListDbSystemInitialStorageSizes")
+	}
 	opts = append((*c.CallOptions).ListDbSystemInitialStorageSizes[0:len((*c.CallOptions).ListDbSystemInitialStorageSizes):len((*c.CallOptions).ListDbSystemInitialStorageSizes)], opts...)
 	it := &DbSystemInitialStorageSizeIterator{}
 	req = proto.Clone(req).(*oracledatabasepb.ListDbSystemInitialStorageSizesRequest)
@@ -3303,6 +3761,12 @@ func (c *gRPCClient) ListDatabases(ctx context.Context, req *oracledatabasepb.Li
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/ListDatabases")
+	}
 	opts = append((*c.CallOptions).ListDatabases[0:len((*c.CallOptions).ListDatabases):len((*c.CallOptions).ListDatabases)], opts...)
 	it := &DatabaseIterator{}
 	req = proto.Clone(req).(*oracledatabasepb.ListDatabasesRequest)
@@ -3349,6 +3813,12 @@ func (c *gRPCClient) GetDatabase(ctx context.Context, req *oracledatabasepb.GetD
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GetDatabase")
+	}
 	opts = append((*c.CallOptions).GetDatabase[0:len((*c.CallOptions).GetDatabase):len((*c.CallOptions).GetDatabase)], opts...)
 	var resp *oracledatabasepb.Database
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3367,6 +3837,12 @@ func (c *gRPCClient) ListPluggableDatabases(ctx context.Context, req *oracledata
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/ListPluggableDatabases")
+	}
 	opts = append((*c.CallOptions).ListPluggableDatabases[0:len((*c.CallOptions).ListPluggableDatabases):len((*c.CallOptions).ListPluggableDatabases)], opts...)
 	it := &PluggableDatabaseIterator{}
 	req = proto.Clone(req).(*oracledatabasepb.ListPluggableDatabasesRequest)
@@ -3413,6 +3889,12 @@ func (c *gRPCClient) GetPluggableDatabase(ctx context.Context, req *oracledataba
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GetPluggableDatabase")
+	}
 	opts = append((*c.CallOptions).GetPluggableDatabase[0:len((*c.CallOptions).GetPluggableDatabase):len((*c.CallOptions).GetPluggableDatabase)], opts...)
 	var resp *oracledatabasepb.PluggableDatabase
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3431,6 +3913,12 @@ func (c *gRPCClient) ListDbSystems(ctx context.Context, req *oracledatabasepb.Li
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/ListDbSystems")
+	}
 	opts = append((*c.CallOptions).ListDbSystems[0:len((*c.CallOptions).ListDbSystems):len((*c.CallOptions).ListDbSystems)], opts...)
 	it := &DbSystemIterator{}
 	req = proto.Clone(req).(*oracledatabasepb.ListDbSystemsRequest)
@@ -3477,6 +3965,12 @@ func (c *gRPCClient) GetDbSystem(ctx context.Context, req *oracledatabasepb.GetD
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GetDbSystem")
+	}
 	opts = append((*c.CallOptions).GetDbSystem[0:len((*c.CallOptions).GetDbSystem):len((*c.CallOptions).GetDbSystem)], opts...)
 	var resp *oracledatabasepb.DbSystem
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3495,6 +3989,12 @@ func (c *gRPCClient) CreateDbSystem(ctx context.Context, req *oracledatabasepb.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/CreateDbSystem")
+	}
 	opts = append((*c.CallOptions).CreateDbSystem[0:len((*c.CallOptions).CreateDbSystem):len((*c.CallOptions).CreateDbSystem)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3515,6 +4015,12 @@ func (c *gRPCClient) DeleteDbSystem(ctx context.Context, req *oracledatabasepb.D
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/DeleteDbSystem")
+	}
 	opts = append((*c.CallOptions).DeleteDbSystem[0:len((*c.CallOptions).DeleteDbSystem):len((*c.CallOptions).DeleteDbSystem)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3535,6 +4041,12 @@ func (c *gRPCClient) ListDbVersions(ctx context.Context, req *oracledatabasepb.L
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/ListDbVersions")
+	}
 	opts = append((*c.CallOptions).ListDbVersions[0:len((*c.CallOptions).ListDbVersions):len((*c.CallOptions).ListDbVersions)], opts...)
 	it := &DbVersionIterator{}
 	req = proto.Clone(req).(*oracledatabasepb.ListDbVersionsRequest)
@@ -3581,6 +4093,12 @@ func (c *gRPCClient) ListDatabaseCharacterSets(ctx context.Context, req *oracled
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/ListDatabaseCharacterSets")
+	}
 	opts = append((*c.CallOptions).ListDatabaseCharacterSets[0:len((*c.CallOptions).ListDatabaseCharacterSets):len((*c.CallOptions).ListDatabaseCharacterSets)], opts...)
 	it := &DatabaseCharacterSetIterator{}
 	req = proto.Clone(req).(*oracledatabasepb.ListDatabaseCharacterSetsRequest)
@@ -3627,6 +4145,9 @@ func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3645,6 +4166,9 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
@@ -3691,6 +4215,9 @@ func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -3705,6 +4232,9 @@ func (c *gRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -3719,6 +4249,9 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3737,6 +4270,9 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
@@ -3881,6 +4417,13 @@ func (c *restClient) GetCloudExadataInfrastructure(ctx context.Context, req *ora
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GetCloudExadataInfrastructure")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/cloudExadataInfrastructures/*}")
+	}
 	opts = append((*c.CallOptions).GetCloudExadataInfrastructure[0:len((*c.CallOptions).GetCloudExadataInfrastructure):len((*c.CallOptions).GetCloudExadataInfrastructure)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &oracledatabasepb.CloudExadataInfrastructure{}
@@ -3942,6 +4485,13 @@ func (c *restClient) CreateCloudExadataInfrastructure(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/CreateCloudExadataInfrastructure")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/cloudExadataInfrastructures")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4001,6 +4551,13 @@ func (c *restClient) DeleteCloudExadataInfrastructure(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/DeleteCloudExadataInfrastructure")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/cloudExadataInfrastructures/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4135,6 +4692,13 @@ func (c *restClient) GetCloudVmCluster(ctx context.Context, req *oracledatabasep
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GetCloudVmCluster")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/cloudVmClusters/*}")
+	}
 	opts = append((*c.CallOptions).GetCloudVmCluster[0:len((*c.CallOptions).GetCloudVmCluster):len((*c.CallOptions).GetCloudVmCluster)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &oracledatabasepb.CloudVmCluster{}
@@ -4196,6 +4760,13 @@ func (c *restClient) CreateCloudVmCluster(ctx context.Context, req *oracledataba
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/CreateCloudVmCluster")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/cloudVmClusters")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4255,6 +4826,13 @@ func (c *restClient) DeleteCloudVmCluster(ctx context.Context, req *oracledataba
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/DeleteCloudVmCluster")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/cloudVmClusters/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4871,6 +5449,13 @@ func (c *restClient) GetAutonomousDatabase(ctx context.Context, req *oracledatab
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GetAutonomousDatabase")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/autonomousDatabases/*}")
+	}
 	opts = append((*c.CallOptions).GetAutonomousDatabase[0:len((*c.CallOptions).GetAutonomousDatabase):len((*c.CallOptions).GetAutonomousDatabase)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &oracledatabasepb.AutonomousDatabase{}
@@ -4932,6 +5517,13 @@ func (c *restClient) CreateAutonomousDatabase(ctx context.Context, req *oracleda
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/CreateAutonomousDatabase")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/autonomousDatabases")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5002,6 +5594,10 @@ func (c *restClient) UpdateAutonomousDatabase(ctx context.Context, req *oracleda
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/UpdateAutonomousDatabase")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{autonomous_database.name=projects/*/locations/*/autonomousDatabases/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5058,6 +5654,13 @@ func (c *restClient) DeleteAutonomousDatabase(ctx context.Context, req *oracleda
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/DeleteAutonomousDatabase")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/autonomousDatabases/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5117,6 +5720,13 @@ func (c *restClient) RestoreAutonomousDatabase(ctx context.Context, req *oracled
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/RestoreAutonomousDatabase")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/autonomousDatabases/*}:restore")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5176,6 +5786,13 @@ func (c *restClient) GenerateAutonomousDatabaseWallet(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GenerateAutonomousDatabaseWallet")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/autonomousDatabases/*}:generateWallet")
+	}
 	opts = append((*c.CallOptions).GenerateAutonomousDatabaseWallet[0:len((*c.CallOptions).GenerateAutonomousDatabaseWallet):len((*c.CallOptions).GenerateAutonomousDatabaseWallet)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &oracledatabasepb.GenerateAutonomousDatabaseWalletResponse{}
@@ -5473,6 +6090,13 @@ func (c *restClient) StopAutonomousDatabase(ctx context.Context, req *oracledata
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/StopAutonomousDatabase")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/autonomousDatabases/*}:stop")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5532,6 +6156,13 @@ func (c *restClient) StartAutonomousDatabase(ctx context.Context, req *oracledat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/StartAutonomousDatabase")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/autonomousDatabases/*}:start")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5591,6 +6222,13 @@ func (c *restClient) RestartAutonomousDatabase(ctx context.Context, req *oracled
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/RestartAutonomousDatabase")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/autonomousDatabases/*}:restart")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5651,6 +6289,13 @@ func (c *restClient) SwitchoverAutonomousDatabase(ctx context.Context, req *orac
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/SwitchoverAutonomousDatabase")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/autonomousDatabases/*}:switchover")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5711,6 +6356,13 @@ func (c *restClient) FailoverAutonomousDatabase(ctx context.Context, req *oracle
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/FailoverAutonomousDatabase")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/autonomousDatabases/*}:failover")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5848,6 +6500,13 @@ func (c *restClient) GetOdbNetwork(ctx context.Context, req *oracledatabasepb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GetOdbNetwork")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/odbNetworks/*}")
+	}
 	opts = append((*c.CallOptions).GetOdbNetwork[0:len((*c.CallOptions).GetOdbNetwork):len((*c.CallOptions).GetOdbNetwork)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &oracledatabasepb.OdbNetwork{}
@@ -5909,6 +6568,13 @@ func (c *restClient) CreateOdbNetwork(ctx context.Context, req *oracledatabasepb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/CreateOdbNetwork")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/odbNetworks")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5965,6 +6631,13 @@ func (c *restClient) DeleteOdbNetwork(ctx context.Context, req *oracledatabasepb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/DeleteOdbNetwork")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/odbNetworks/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6102,6 +6775,13 @@ func (c *restClient) GetOdbSubnet(ctx context.Context, req *oracledatabasepb.Get
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GetOdbSubnet")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/odbNetworks/*/odbSubnets/*}")
+	}
 	opts = append((*c.CallOptions).GetOdbSubnet[0:len((*c.CallOptions).GetOdbSubnet):len((*c.CallOptions).GetOdbSubnet)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &oracledatabasepb.OdbSubnet{}
@@ -6163,6 +6843,13 @@ func (c *restClient) CreateOdbSubnet(ctx context.Context, req *oracledatabasepb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/CreateOdbSubnet")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/odbNetworks/*}/odbSubnets")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6219,6 +6906,13 @@ func (c *restClient) DeleteOdbSubnet(ctx context.Context, req *oracledatabasepb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/DeleteOdbSubnet")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/odbNetworks/*/odbSubnets/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6357,6 +7051,13 @@ func (c *restClient) GetExadbVmCluster(ctx context.Context, req *oracledatabasep
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GetExadbVmCluster")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/exadbVmClusters/*}")
+	}
 	opts = append((*c.CallOptions).GetExadbVmCluster[0:len((*c.CallOptions).GetExadbVmCluster):len((*c.CallOptions).GetExadbVmCluster)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &oracledatabasepb.ExadbVmCluster{}
@@ -6418,6 +7119,13 @@ func (c *restClient) CreateExadbVmCluster(ctx context.Context, req *oracledataba
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/CreateExadbVmCluster")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/exadbVmClusters")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6474,6 +7182,13 @@ func (c *restClient) DeleteExadbVmCluster(ctx context.Context, req *oracledataba
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/DeleteExadbVmCluster")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/exadbVmClusters/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6545,6 +7260,10 @@ func (c *restClient) UpdateExadbVmCluster(ctx context.Context, req *oracledataba
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/UpdateExadbVmCluster")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{exadb_vm_cluster.name=projects/*/locations/*/exadbVmClusters/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6604,6 +7323,13 @@ func (c *restClient) RemoveVirtualMachineExadbVmCluster(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/RemoveVirtualMachineExadbVmCluster")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/exadbVmClusters/*}:removeVirtualMachine")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6742,6 +7468,13 @@ func (c *restClient) GetExascaleDbStorageVault(ctx context.Context, req *oracled
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GetExascaleDbStorageVault")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/exascaleDbStorageVaults/*}")
+	}
 	opts = append((*c.CallOptions).GetExascaleDbStorageVault[0:len((*c.CallOptions).GetExascaleDbStorageVault):len((*c.CallOptions).GetExascaleDbStorageVault)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &oracledatabasepb.ExascaleDbStorageVault{}
@@ -6803,6 +7536,13 @@ func (c *restClient) CreateExascaleDbStorageVault(ctx context.Context, req *orac
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/CreateExascaleDbStorageVault")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/exascaleDbStorageVaults")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6859,6 +7599,13 @@ func (c *restClient) DeleteExascaleDbStorageVault(ctx context.Context, req *orac
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/DeleteExascaleDbStorageVault")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/exascaleDbStorageVaults/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7072,6 +7819,13 @@ func (c *restClient) GetDatabase(ctx context.Context, req *oracledatabasepb.GetD
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GetDatabase")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/databases/*}")
+	}
 	opts = append((*c.CallOptions).GetDatabase[0:len((*c.CallOptions).GetDatabase):len((*c.CallOptions).GetDatabase)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &oracledatabasepb.Database{}
@@ -7204,6 +7958,13 @@ func (c *restClient) GetPluggableDatabase(ctx context.Context, req *oracledataba
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GetPluggableDatabase")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/pluggableDatabases/*}")
+	}
 	opts = append((*c.CallOptions).GetPluggableDatabase[0:len((*c.CallOptions).GetPluggableDatabase):len((*c.CallOptions).GetPluggableDatabase)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &oracledatabasepb.PluggableDatabase{}
@@ -7338,6 +8099,13 @@ func (c *restClient) GetDbSystem(ctx context.Context, req *oracledatabasepb.GetD
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GetDbSystem")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/dbSystems/*}")
+	}
 	opts = append((*c.CallOptions).GetDbSystem[0:len((*c.CallOptions).GetDbSystem):len((*c.CallOptions).GetDbSystem)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &oracledatabasepb.DbSystem{}
@@ -7399,6 +8167,13 @@ func (c *restClient) CreateDbSystem(ctx context.Context, req *oracledatabasepb.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/CreateDbSystem")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/dbSystems")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7455,6 +8230,13 @@ func (c *restClient) DeleteDbSystem(ctx context.Context, req *oracledatabasepb.D
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/DeleteDbSystem")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/dbSystems/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7670,6 +8452,10 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -7807,6 +8593,10 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -7842,6 +8632,10 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -7877,6 +8671,10 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}

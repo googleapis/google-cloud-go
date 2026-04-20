@@ -1,6 +1,12 @@
 # Changes
 
 
+## [0.15.0](https://github.com/googleapis/google-cloud-go/releases/tag/parallelstore%2Fv0.15.0) (2026-04-13)
+
+## [0.14.0](https://github.com/googleapis/google-cloud-go/releases/tag/parallelstore%2Fv0.14.0) (2026-04-09)
+
+## [0.13.0](https://github.com/googleapis/google-cloud-go/releases/tag/parallelstore%2Fv0.13.0) (2026-04-02)
+
 ## [0.12.0](https://github.com/googleapis/google-cloud-go/releases/tag/parallelstore%2Fv0.12.0) (2025-12-04)
 
 ### Features

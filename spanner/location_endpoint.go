@@ -19,17 +19,24 @@ package spanner
 import (
 	"context"
 	"sync"
+
+	"google.golang.org/grpc"
 )
 
 // channelEndpoint represents a routable server endpoint.
 type channelEndpoint interface {
 	Address() string
 	IsHealthy() bool
+	IsTransientFailure() bool
+	GetConn() *grpc.ClientConn
 }
 
 // channelEndpointCache caches endpoints by server address.
 type channelEndpointCache interface {
 	Get(ctx context.Context, address string) channelEndpoint
+	GetIfPresent(address string) channelEndpoint
+	Evict(address string)
+	DefaultChannel() channelEndpoint
 	ClientFor(ep channelEndpoint) spannerClient
 	Close() error
 }
@@ -37,6 +44,11 @@ type channelEndpointCache interface {
 type passthroughChannelEndpoint struct {
 	address string
 }
+
+var (
+	_ channelEndpoint      = (*passthroughChannelEndpoint)(nil)
+	_ channelEndpointCache = (*passthroughChannelEndpointCache)(nil)
+)
 
 func (e *passthroughChannelEndpoint) Address() string {
 	return e.address
@@ -46,16 +58,31 @@ func (*passthroughChannelEndpoint) IsHealthy() bool {
 	return true
 }
 
+func (*passthroughChannelEndpoint) IsTransientFailure() bool {
+	return false
+}
+
+func (*passthroughChannelEndpoint) GetConn() *grpc.ClientConn {
+	return nil
+}
+
 type passthroughChannelEndpointCache struct {
-	mu        sync.Mutex
-	endpoints map[string]*passthroughChannelEndpoint
+	mu              sync.Mutex
+	endpoints       map[string]*passthroughChannelEndpoint
+	defaultEndpoint *passthroughChannelEndpoint
 }
 
 func newPassthroughChannelEndpointCache() *passthroughChannelEndpointCache {
-	return &passthroughChannelEndpointCache{endpoints: make(map[string]*passthroughChannelEndpoint)}
+	return &passthroughChannelEndpointCache{
+		endpoints:       make(map[string]*passthroughChannelEndpoint),
+		defaultEndpoint: &passthroughChannelEndpoint{address: ""},
+	}
 }
 
 func (c *passthroughChannelEndpointCache) Get(_ context.Context, address string) channelEndpoint {
+	if address == "" {
+		return c.defaultEndpoint
+	}
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	if endpoint, ok := c.endpoints[address]; ok {
@@ -64,6 +91,32 @@ func (c *passthroughChannelEndpointCache) Get(_ context.Context, address string)
 	endpoint := &passthroughChannelEndpoint{address: address}
 	c.endpoints[address] = endpoint
 	return endpoint
+}
+
+func (c *passthroughChannelEndpointCache) GetIfPresent(address string) channelEndpoint {
+	if address == "" {
+		return c.defaultEndpoint
+	}
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	endpoint, ok := c.endpoints[address]
+	if !ok {
+		return nil
+	}
+	return endpoint
+}
+
+func (c *passthroughChannelEndpointCache) Evict(address string) {
+	if address == c.defaultEndpoint.Address() {
+		return
+	}
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	delete(c.endpoints, address)
+}
+
+func (c *passthroughChannelEndpointCache) DefaultChannel() channelEndpoint {
+	return c.defaultEndpoint
 }
 
 func (c *passthroughChannelEndpointCache) ClientFor(_ channelEndpoint) spannerClient {

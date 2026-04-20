@@ -60,11 +60,6 @@ FROM marketplace.gcr.io/google/debian12:latest
 
 # Set environment variables for tool versions for easy updates.
 ENV GO_VERSION=1.24.0
-ENV PROTOC_VERSION=25.7
-ENV GO_PROTOC_PLUGIN_V2_VERSION=1.36.11
-ENV GO_GRPC_PLUGIN_VERSION=1.3.0
-ENV GAPIC_GENERATOR_VERSION=0.57.0
-ENV STATICCHECK_VERSION=2023.1.6
 
 # Set up a home directory for the non-root user that will be running this container.
 # Go tools will use this directory for caches, which resolves permission issues.
@@ -89,20 +84,6 @@ RUN apt-get update && \
 RUN wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz -O go.tar.gz && \
     tar -C /usr/local -xzf go.tar.gz && \
     rm go.tar.gz
-
-# Install the specific protoc (Protobuf Compiler) version required for compatibility.
-RUN wget https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC_VERSION}/protoc-${PROTOC_VERSION}-linux-x86_64.zip -O protoc.zip && \
-    unzip protoc.zip -d /usr/local && \
-    rm protoc.zip && \
-    protoc --version
-
-# Install required Go tools for protoc and the post-processor.
-RUN (export GOTOOLCHAIN='auto' && \
-    go install google.golang.org/protobuf/cmd/protoc-gen-go@v${GO_PROTOC_PLUGIN_V2_VERSION} && \
-    go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v${GO_GRPC_PLUGIN_VERSION} && \
-    go install github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic@v${GAPIC_GENERATOR_VERSION} && \
-    go install golang.org/x/tools/cmd/goimports@latest && \
-    go install honnef.co/go/tools/cmd/staticcheck@${STATICCHECK_VERSION})
 
 # Create and set permissions for the home directory so it is writable by any user.
 RUN mkdir -p ${HOME} && chmod -R 777 ${HOME}

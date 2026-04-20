@@ -35,6 +35,11 @@
                 "CreateReaction"
               ]
             },
+            "CreateSection": {
+              "methods": [
+                "CreateSection"
+              ]
+            },
             "CreateSpace": {
               "methods": [
                 "CreateSpace"
@@ -58,6 +63,11 @@
             "DeleteReaction": {
               "methods": [
                 "DeleteReaction"
+              ]
+            },
+            "DeleteSection": {
+              "methods": [
+                "DeleteSection"
               ]
             },
             "DeleteSpace": {
@@ -135,6 +145,16 @@
                 "ListReactions"
               ]
             },
+            "ListSectionItems": {
+              "methods": [
+                "ListSectionItems"
+              ]
+            },
+            "ListSections": {
+              "methods": [
+                "ListSections"
+              ]
+            },
             "ListSpaceEvents": {
               "methods": [
                 "ListSpaceEvents"
@@ -143,6 +163,16 @@
             "ListSpaces": {
               "methods": [
                 "ListSpaces"
+              ]
+            },
+            "MoveSectionItem": {
+              "methods": [
+                "MoveSectionItem"
+              ]
+            },
+            "PositionSection": {
+              "methods": [
+                "PositionSection"
               ]
             },
             "SearchSpaces": {
@@ -163,6 +193,11 @@
             "UpdateMessage": {
               "methods": [
                 "UpdateMessage"
+              ]
+            },
+            "UpdateSection": {
+              "methods": [
+                "UpdateSection"
               ]
             },
             "UpdateSpace": {
@@ -215,6 +250,11 @@
                 "CreateReaction"
               ]
             },
+            "CreateSection": {
+              "methods": [
+                "CreateSection"
+              ]
+            },
             "CreateSpace": {
               "methods": [
                 "CreateSpace"
@@ -238,6 +278,11 @@
             "DeleteReaction": {
               "methods": [
                 "DeleteReaction"
+              ]
+            },
+            "DeleteSection": {
+              "methods": [
+                "DeleteSection"
               ]
             },
             "DeleteSpace": {
@@ -315,6 +360,16 @@
                 "ListReactions"
               ]
             },
+            "ListSectionItems": {
+              "methods": [
+                "ListSectionItems"
+              ]
+            },
+            "ListSections": {
+              "methods": [
+                "ListSections"
+              ]
+            },
             "ListSpaceEvents": {
               "methods": [
                 "ListSpaceEvents"
@@ -323,6 +378,16 @@
             "ListSpaces": {
               "methods": [
                 "ListSpaces"
+              ]
+            },
+            "MoveSectionItem": {
+              "methods": [
+                "MoveSectionItem"
+              ]
+            },
+            "PositionSection": {
+              "methods": [
+                "PositionSection"
               ]
             },
             "SearchSpaces": {
@@ -343,6 +408,11 @@
             "UpdateMessage": {
               "methods": [
                 "UpdateMessage"
+              ]
+            },
+            "UpdateSection": {
+              "methods": [
+                "UpdateSection"
               ]
             },
             "UpdateSpace": {

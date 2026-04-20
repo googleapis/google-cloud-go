@@ -31,6 +31,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	texttospeechpb "cloud.google.com/go/texttospeech/apiv1/texttospeechpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -189,6 +190,16 @@ type textToSpeechLongAudioSynthesizeGRPCClient struct {
 // Service that implements Google Cloud Text-to-Speech API.
 func NewTextToSpeechLongAudioSynthesizeClient(ctx context.Context, opts ...option.ClientOption) (*TextToSpeechLongAudioSynthesizeClient, error) {
 	clientOpts := defaultTextToSpeechLongAudioSynthesizeGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "texttospeech",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/texttospeech/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "texttospeech.googleapis.com",
+		}))
+	}
 	if newTextToSpeechLongAudioSynthesizeClientHook != nil {
 		hookOpts, err := newTextToSpeechLongAudioSynthesizeClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -211,6 +222,22 @@ func NewTextToSpeechLongAudioSynthesizeClient(ctx context.Context, opts ...optio
 		operationsClient:                      longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "texttospeech",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/texttospeech/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "texttospeech.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.SynthesizeLongAudio = append(client.CallOptions.SynthesizeLongAudio, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -280,6 +307,16 @@ type textToSpeechLongAudioSynthesizeRESTClient struct {
 // Service that implements Google Cloud Text-to-Speech API.
 func NewTextToSpeechLongAudioSynthesizeRESTClient(ctx context.Context, opts ...option.ClientOption) (*TextToSpeechLongAudioSynthesizeClient, error) {
 	clientOpts := append(defaultTextToSpeechLongAudioSynthesizeRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "texttospeech",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/texttospeech/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "texttospeech.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -293,6 +330,23 @@ func NewTextToSpeechLongAudioSynthesizeRESTClient(ctx context.Context, opts ...o
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "texttospeech",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/texttospeech/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "texttospeech.googleapis.com",
+			}),
+		)
+
+		callOpts.SynthesizeLongAudio = append(callOpts.SynthesizeLongAudio, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -349,6 +403,9 @@ func (c *textToSpeechLongAudioSynthesizeGRPCClient) SynthesizeLongAudio(ctx cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.texttospeech.v1.TextToSpeechLongAudioSynthesize/SynthesizeLongAudio")
+	}
 	opts = append((*c.CallOptions).SynthesizeLongAudio[0:len((*c.CallOptions).SynthesizeLongAudio):len((*c.CallOptions).SynthesizeLongAudio)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -369,6 +426,9 @@ func (c *textToSpeechLongAudioSynthesizeGRPCClient) GetOperation(ctx context.Con
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -387,6 +447,9 @@ func (c *textToSpeechLongAudioSynthesizeGRPCClient) ListOperations(ctx context.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
@@ -453,6 +516,10 @@ func (c *textToSpeechLongAudioSynthesizeRESTClient) SynthesizeLongAudio(ctx cont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.texttospeech.v1.TextToSpeechLongAudioSynthesize/SynthesizeLongAudio")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}:synthesizeLongAudio")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -506,6 +573,10 @@ func (c *textToSpeechLongAudioSynthesizeRESTClient) GetOperation(ctx context.Con
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}

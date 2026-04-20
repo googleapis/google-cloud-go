@@ -28,6 +28,7 @@ import (
 
 	productstudiopb "cloud.google.com/go/shopping/merchant/productstudio/apiv1alpha/productstudiopb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -170,6 +171,16 @@ type textSuggestionsGRPCClient struct {
 // enhancing product text content, such as titles, descriptions, etc.
 func NewTextSuggestionsClient(ctx context.Context, opts ...option.ClientOption) (*TextSuggestionsClient, error) {
 	clientOpts := defaultTextSuggestionsGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/productstudio/apiv1alpha",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	if newTextSuggestionsClientHook != nil {
 		hookOpts, err := newTextSuggestionsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -191,6 +202,20 @@ func NewTextSuggestionsClient(ctx context.Context, opts ...option.ClientOption) 
 		logger:                internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/productstudio/apiv1alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GenerateProductTextSuggestions = append(client.CallOptions.GenerateProductTextSuggestions, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -245,6 +270,16 @@ type textSuggestionsRESTClient struct {
 // enhancing product text content, such as titles, descriptions, etc.
 func NewTextSuggestionsRESTClient(ctx context.Context, opts ...option.ClientOption) (*TextSuggestionsClient, error) {
 	clientOpts := append(defaultTextSuggestionsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/productstudio/apiv1alpha",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -258,6 +293,21 @@ func NewTextSuggestionsRESTClient(ctx context.Context, opts ...option.ClientOpti
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/productstudio/apiv1alpha",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GenerateProductTextSuggestions = append(callOpts.GenerateProductTextSuggestions, gax.WithClientMetrics(metrics))
+	}
 
 	return &TextSuggestionsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -304,6 +354,9 @@ func (c *textSuggestionsGRPCClient) GenerateProductTextSuggestions(ctx context.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.productstudio.v1alpha.TextSuggestionsService/GenerateProductTextSuggestions")
+	}
 	opts = append((*c.CallOptions).GenerateProductTextSuggestions[0:len((*c.CallOptions).GenerateProductTextSuggestions):len((*c.CallOptions).GenerateProductTextSuggestions)], opts...)
 	var resp *productstudiopb.GenerateProductTextSuggestionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -345,6 +398,10 @@ func (c *textSuggestionsRESTClient) GenerateProductTextSuggestions(ctx context.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.productstudio.v1alpha.TextSuggestionsService/GenerateProductTextSuggestions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/productstudio/v1alpha/{name=accounts/*}:generateProductTextSuggestions")
+	}
 	opts = append((*c.CallOptions).GenerateProductTextSuggestions[0:len((*c.CallOptions).GenerateProductTextSuggestions):len((*c.CallOptions).GenerateProductTextSuggestions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &productstudiopb.GenerateProductTextSuggestionsResponse{}

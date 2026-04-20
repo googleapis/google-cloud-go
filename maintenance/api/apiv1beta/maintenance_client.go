@@ -26,6 +26,7 @@ import (
 
 	apipb "cloud.google.com/go/maintenance/api/apiv1beta/apipb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -182,6 +183,16 @@ type maintenanceGRPCClient struct {
 // Unified Maintenance service
 func NewMaintenanceClient(ctx context.Context, opts ...option.ClientOption) (*MaintenanceClient, error) {
 	clientOpts := defaultMaintenanceGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "maintenance",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/maintenance/api/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "maintenance.googleapis.com",
+		}))
+	}
 	if newMaintenanceClientHook != nil {
 		hookOpts, err := newMaintenanceClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -204,6 +215,24 @@ func NewMaintenanceClient(ctx context.Context, opts ...option.ClientOption) (*Ma
 		locationsClient:   locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "maintenance",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maintenance/api/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "maintenance.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.SummarizeMaintenances = append(client.CallOptions.SummarizeMaintenances, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListResourceMaintenances = append(client.CallOptions.ListResourceMaintenances, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetResourceMaintenance = append(client.CallOptions.GetResourceMaintenance, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -257,6 +286,16 @@ type maintenanceRESTClient struct {
 // Unified Maintenance service
 func NewMaintenanceRESTClient(ctx context.Context, opts ...option.ClientOption) (*MaintenanceClient, error) {
 	clientOpts := append(defaultMaintenanceRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "maintenance",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/maintenance/api/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "maintenance.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -270,6 +309,25 @@ func NewMaintenanceRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "maintenance",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maintenance/api/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "maintenance.googleapis.com",
+			}),
+		)
+
+		callOpts.SummarizeMaintenances = append(callOpts.SummarizeMaintenances, gax.WithClientMetrics(metrics))
+		callOpts.ListResourceMaintenances = append(callOpts.ListResourceMaintenances, gax.WithClientMetrics(metrics))
+		callOpts.GetResourceMaintenance = append(callOpts.GetResourceMaintenance, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+	}
 
 	return &MaintenanceClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -316,6 +374,12 @@ func (c *maintenanceGRPCClient) SummarizeMaintenances(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//maintenance.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.maintenance.api.v1beta.Maintenance/SummarizeMaintenances")
+	}
 	opts = append((*c.CallOptions).SummarizeMaintenances[0:len((*c.CallOptions).SummarizeMaintenances):len((*c.CallOptions).SummarizeMaintenances)], opts...)
 	it := &MaintenanceSummaryIterator{}
 	req = proto.Clone(req).(*apipb.SummarizeMaintenancesRequest)
@@ -362,6 +426,12 @@ func (c *maintenanceGRPCClient) ListResourceMaintenances(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//maintenance.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.maintenance.api.v1beta.Maintenance/ListResourceMaintenances")
+	}
 	opts = append((*c.CallOptions).ListResourceMaintenances[0:len((*c.CallOptions).ListResourceMaintenances):len((*c.CallOptions).ListResourceMaintenances)], opts...)
 	it := &ResourceMaintenanceIterator{}
 	req = proto.Clone(req).(*apipb.ListResourceMaintenancesRequest)
@@ -408,6 +478,12 @@ func (c *maintenanceGRPCClient) GetResourceMaintenance(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//maintenance.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.maintenance.api.v1beta.Maintenance/GetResourceMaintenance")
+	}
 	opts = append((*c.CallOptions).GetResourceMaintenance[0:len((*c.CallOptions).GetResourceMaintenance):len((*c.CallOptions).GetResourceMaintenance)], opts...)
 	var resp *apipb.ResourceMaintenance
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -426,6 +502,9 @@ func (c *maintenanceGRPCClient) GetLocation(ctx context.Context, req *locationpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -444,6 +523,9 @@ func (c *maintenanceGRPCClient) ListLocations(ctx context.Context, req *location
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
@@ -672,6 +754,13 @@ func (c *maintenanceRESTClient) GetResourceMaintenance(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//maintenance.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.maintenance.api.v1beta.Maintenance/GetResourceMaintenance")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/resourceMaintenances/*}")
+	}
 	opts = append((*c.CallOptions).GetResourceMaintenance[0:len((*c.CallOptions).GetResourceMaintenance):len((*c.CallOptions).GetResourceMaintenance)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &apipb.ResourceMaintenance{}
@@ -722,6 +811,10 @@ func (c *maintenanceRESTClient) GetLocation(ctx context.Context, req *locationpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}

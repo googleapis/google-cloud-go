@@ -28,6 +28,7 @@ import (
 
 	iappb "cloud.google.com/go/iap/apiv1/iappb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -257,6 +258,16 @@ type identityAwareProxyOAuthGRPCClient struct {
 // clients.
 func NewIdentityAwareProxyOAuthClient(ctx context.Context, opts ...option.ClientOption) (*IdentityAwareProxyOAuthClient, error) {
 	clientOpts := defaultIdentityAwareProxyOAuthGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "iap",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/iap/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "iap.googleapis.com",
+		}))
+	}
 	if newIdentityAwareProxyOAuthClientHook != nil {
 		hookOpts, err := newIdentityAwareProxyOAuthClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -278,6 +289,27 @@ func NewIdentityAwareProxyOAuthClient(ctx context.Context, opts ...option.Client
 		logger:                        internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "iap",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/iap/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "iap.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListBrands = append(client.CallOptions.ListBrands, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateBrand = append(client.CallOptions.CreateBrand, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetBrand = append(client.CallOptions.GetBrand, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateIdentityAwareProxyClient = append(client.CallOptions.CreateIdentityAwareProxyClient, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListIdentityAwareProxyClients = append(client.CallOptions.ListIdentityAwareProxyClients, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIdentityAwareProxyClient = append(client.CallOptions.GetIdentityAwareProxyClient, gax.WithClientMetrics(metrics))
+		client.CallOptions.ResetIdentityAwareProxyClientSecret = append(client.CallOptions.ResetIdentityAwareProxyClientSecret, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteIdentityAwareProxyClient = append(client.CallOptions.DeleteIdentityAwareProxyClient, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -333,6 +365,16 @@ type identityAwareProxyOAuthRESTClient struct {
 // clients.
 func NewIdentityAwareProxyOAuthRESTClient(ctx context.Context, opts ...option.ClientOption) (*IdentityAwareProxyOAuthClient, error) {
 	clientOpts := append(defaultIdentityAwareProxyOAuthRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "iap",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/iap/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "iap.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -346,6 +388,28 @@ func NewIdentityAwareProxyOAuthRESTClient(ctx context.Context, opts ...option.Cl
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "iap",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/iap/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "iap.googleapis.com",
+			}),
+		)
+
+		callOpts.ListBrands = append(callOpts.ListBrands, gax.WithClientMetrics(metrics))
+		callOpts.CreateBrand = append(callOpts.CreateBrand, gax.WithClientMetrics(metrics))
+		callOpts.GetBrand = append(callOpts.GetBrand, gax.WithClientMetrics(metrics))
+		callOpts.CreateIdentityAwareProxyClient = append(callOpts.CreateIdentityAwareProxyClient, gax.WithClientMetrics(metrics))
+		callOpts.ListIdentityAwareProxyClients = append(callOpts.ListIdentityAwareProxyClients, gax.WithClientMetrics(metrics))
+		callOpts.GetIdentityAwareProxyClient = append(callOpts.GetIdentityAwareProxyClient, gax.WithClientMetrics(metrics))
+		callOpts.ResetIdentityAwareProxyClientSecret = append(callOpts.ResetIdentityAwareProxyClientSecret, gax.WithClientMetrics(metrics))
+		callOpts.DeleteIdentityAwareProxyClient = append(callOpts.DeleteIdentityAwareProxyClient, gax.WithClientMetrics(metrics))
+	}
 
 	return &IdentityAwareProxyOAuthClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -392,6 +456,9 @@ func (c *identityAwareProxyOAuthGRPCClient) ListBrands(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iap.v1.IdentityAwareProxyOAuthService/ListBrands")
+	}
 	opts = append((*c.CallOptions).ListBrands[0:len((*c.CallOptions).ListBrands):len((*c.CallOptions).ListBrands)], opts...)
 	var resp *iappb.ListBrandsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -410,6 +477,9 @@ func (c *identityAwareProxyOAuthGRPCClient) CreateBrand(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iap.v1.IdentityAwareProxyOAuthService/CreateBrand")
+	}
 	opts = append((*c.CallOptions).CreateBrand[0:len((*c.CallOptions).CreateBrand):len((*c.CallOptions).CreateBrand)], opts...)
 	var resp *iappb.Brand
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -428,6 +498,9 @@ func (c *identityAwareProxyOAuthGRPCClient) GetBrand(ctx context.Context, req *i
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iap.v1.IdentityAwareProxyOAuthService/GetBrand")
+	}
 	opts = append((*c.CallOptions).GetBrand[0:len((*c.CallOptions).GetBrand):len((*c.CallOptions).GetBrand)], opts...)
 	var resp *iappb.Brand
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -446,6 +519,9 @@ func (c *identityAwareProxyOAuthGRPCClient) CreateIdentityAwareProxyClient(ctx c
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iap.v1.IdentityAwareProxyOAuthService/CreateIdentityAwareProxyClient")
+	}
 	opts = append((*c.CallOptions).CreateIdentityAwareProxyClient[0:len((*c.CallOptions).CreateIdentityAwareProxyClient):len((*c.CallOptions).CreateIdentityAwareProxyClient)], opts...)
 	var resp *iappb.IdentityAwareProxyClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -464,6 +540,9 @@ func (c *identityAwareProxyOAuthGRPCClient) ListIdentityAwareProxyClients(ctx co
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iap.v1.IdentityAwareProxyOAuthService/ListIdentityAwareProxyClients")
+	}
 	opts = append((*c.CallOptions).ListIdentityAwareProxyClients[0:len((*c.CallOptions).ListIdentityAwareProxyClients):len((*c.CallOptions).ListIdentityAwareProxyClients)], opts...)
 	it := &IdentityAwareProxyClientIterator{}
 	req = proto.Clone(req).(*iappb.ListIdentityAwareProxyClientsRequest)
@@ -510,6 +589,9 @@ func (c *identityAwareProxyOAuthGRPCClient) GetIdentityAwareProxyClient(ctx cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iap.v1.IdentityAwareProxyOAuthService/GetIdentityAwareProxyClient")
+	}
 	opts = append((*c.CallOptions).GetIdentityAwareProxyClient[0:len((*c.CallOptions).GetIdentityAwareProxyClient):len((*c.CallOptions).GetIdentityAwareProxyClient)], opts...)
 	var resp *iappb.IdentityAwareProxyClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -528,6 +610,9 @@ func (c *identityAwareProxyOAuthGRPCClient) ResetIdentityAwareProxyClientSecret(
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iap.v1.IdentityAwareProxyOAuthService/ResetIdentityAwareProxyClientSecret")
+	}
 	opts = append((*c.CallOptions).ResetIdentityAwareProxyClientSecret[0:len((*c.CallOptions).ResetIdentityAwareProxyClientSecret):len((*c.CallOptions).ResetIdentityAwareProxyClientSecret)], opts...)
 	var resp *iappb.IdentityAwareProxyClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -546,6 +631,9 @@ func (c *identityAwareProxyOAuthGRPCClient) DeleteIdentityAwareProxyClient(ctx c
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iap.v1.IdentityAwareProxyOAuthService/DeleteIdentityAwareProxyClient")
+	}
 	opts = append((*c.CallOptions).DeleteIdentityAwareProxyClient[0:len((*c.CallOptions).DeleteIdentityAwareProxyClient):len((*c.CallOptions).DeleteIdentityAwareProxyClient)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -574,6 +662,10 @@ func (c *identityAwareProxyOAuthRESTClient) ListBrands(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iap.v1.IdentityAwareProxyOAuthService/ListBrands")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*}/brands")
+	}
 	opts = append((*c.CallOptions).ListBrands[0:len((*c.CallOptions).ListBrands):len((*c.CallOptions).ListBrands)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iappb.ListBrandsResponse{}
@@ -638,6 +730,10 @@ func (c *identityAwareProxyOAuthRESTClient) CreateBrand(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iap.v1.IdentityAwareProxyOAuthService/CreateBrand")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*}/brands")
+	}
 	opts = append((*c.CallOptions).CreateBrand[0:len((*c.CallOptions).CreateBrand):len((*c.CallOptions).CreateBrand)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iappb.Brand{}
@@ -688,6 +784,10 @@ func (c *identityAwareProxyOAuthRESTClient) GetBrand(ctx context.Context, req *i
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iap.v1.IdentityAwareProxyOAuthService/GetBrand")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/brands/*}")
+	}
 	opts = append((*c.CallOptions).GetBrand[0:len((*c.CallOptions).GetBrand):len((*c.CallOptions).GetBrand)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iappb.Brand{}
@@ -747,6 +847,10 @@ func (c *identityAwareProxyOAuthRESTClient) CreateIdentityAwareProxyClient(ctx c
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iap.v1.IdentityAwareProxyOAuthService/CreateIdentityAwareProxyClient")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/brands/*}/identityAwareProxyClients")
+	}
 	opts = append((*c.CallOptions).CreateIdentityAwareProxyClient[0:len((*c.CallOptions).CreateIdentityAwareProxyClient):len((*c.CallOptions).CreateIdentityAwareProxyClient)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iappb.IdentityAwareProxyClient{}
@@ -876,6 +980,10 @@ func (c *identityAwareProxyOAuthRESTClient) GetIdentityAwareProxyClient(ctx cont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iap.v1.IdentityAwareProxyOAuthService/GetIdentityAwareProxyClient")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/brands/*/identityAwareProxyClients/*}")
+	}
 	opts = append((*c.CallOptions).GetIdentityAwareProxyClient[0:len((*c.CallOptions).GetIdentityAwareProxyClient):len((*c.CallOptions).GetIdentityAwareProxyClient)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iappb.IdentityAwareProxyClient{}
@@ -933,6 +1041,10 @@ func (c *identityAwareProxyOAuthRESTClient) ResetIdentityAwareProxyClientSecret(
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iap.v1.IdentityAwareProxyOAuthService/ResetIdentityAwareProxyClientSecret")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/brands/*/identityAwareProxyClients/*}:resetSecret")
+	}
 	opts = append((*c.CallOptions).ResetIdentityAwareProxyClientSecret[0:len((*c.CallOptions).ResetIdentityAwareProxyClientSecret):len((*c.CallOptions).ResetIdentityAwareProxyClientSecret)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iappb.IdentityAwareProxyClient{}
@@ -985,6 +1097,10 @@ func (c *identityAwareProxyOAuthRESTClient) DeleteIdentityAwareProxyClient(ctx c
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iap.v1.IdentityAwareProxyOAuthService/DeleteIdentityAwareProxyClient")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/brands/*/identityAwareProxyClients/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path

@@ -58,12 +58,12 @@ func TestPipelineStages(t *testing.T) {
 		},
 		{
 			desc:  "inputStageDatabase",
-			stage: newInputStageDatabase(),
+			stage: newInputStageDatabase(nil),
 			want:  &pb.Pipeline_Stage{Name: "database"},
 		},
 		{
 			desc:  "inputStageDocuments",
-			stage: newInputStageDocuments(docRef1, docRef2),
+			stage: newInputStageDocuments([]*DocumentRef{docRef1, docRef2}, nil),
 			want: &pb.Pipeline_Stage{
 				Name: "documents",
 				Args: []*pb.Value{
@@ -74,7 +74,7 @@ func TestPipelineStages(t *testing.T) {
 		},
 		{
 			desc:  "limitStage",
-			stage: newLimitStage(10),
+			stage: newLimitStage(10, nil),
 			want: &pb.Pipeline_Stage{
 				Name: "limit",
 				Args: []*pb.Value{{ValueType: &pb.Value_IntegerValue{IntegerValue: 10}}},
@@ -82,7 +82,7 @@ func TestPipelineStages(t *testing.T) {
 		},
 		{
 			desc:  "offsetStage",
-			stage: newOffsetStage(5),
+			stage: newOffsetStage(5, nil),
 			want: &pb.Pipeline_Stage{
 				Name: "offset",
 				Args: []*pb.Value{{ValueType: &pb.Value_IntegerValue{IntegerValue: 5}}},
@@ -90,7 +90,7 @@ func TestPipelineStages(t *testing.T) {
 		},
 		{
 			desc:  "sortStage",
-			stage: newSortStage(Ascending(FieldOf("name")), Descending(FieldOf("age"))),
+			stage: newSortStage([]Ordering{Ascending(FieldOf("name")), Descending(FieldOf("age"))}, nil),
 			want: &pb.Pipeline_Stage{
 				Name: "sort",
 				Args: []*pb.Value{
@@ -121,7 +121,7 @@ func TestPipelineStages(t *testing.T) {
 }
 
 func TestSelectStage(t *testing.T) {
-	stage, err := newSelectStage("name", FieldOf("age"), Add(FieldOf("score"), 10).As("new_score"))
+	stage, err := newSelectStage([]any{"name", FieldOf("age"), Add(FieldOf("score"), 10).As("new_score")}, nil)
 	if err != nil {
 		t.Fatalf("newSelectStage() failed: %v", err)
 	}
@@ -154,7 +154,7 @@ func TestSelectStage(t *testing.T) {
 
 func TestWhereStage(t *testing.T) {
 	condition := Equal(FieldOf("genre"), "Sci-Fi")
-	stage, err := newWhereStage(condition)
+	stage, err := newWhereStage(condition, nil)
 	if err != nil {
 		t.Fatalf("newWhereStage() failed: %v", err)
 	}
@@ -182,7 +182,7 @@ func TestWhereStage(t *testing.T) {
 }
 
 func TestAddFieldsStage(t *testing.T) {
-	stage, err := newAddFieldsStage(FieldOf("name").As("name"), Add(FieldOf("score"), 10).As("new_score"))
+	stage, err := newAddFieldsStage([]Selectable{FieldOf("name").As("name"), Add(FieldOf("score"), 10).As("new_score")}, nil)
 	if err != nil {
 		t.Fatalf("newAddFieldsStage() failed: %v", err)
 	}
@@ -213,8 +213,7 @@ func TestAddFieldsStage(t *testing.T) {
 }
 
 func TestAggregateStage(t *testing.T) {
-	spec := NewAggregateSpec(Sum("score").As("total_score")).WithGroups("category")
-	stage, err := newAggregateStage(spec)
+	stage, err := newAggregateStage([]*AliasedAggregate{Sum("score").As("total_score")}, map[string]any{"groups": []any{"category"}})
 	if err != nil {
 		t.Fatalf("newAggregateStage() failed: %v", err)
 	}
@@ -246,7 +245,7 @@ func TestAggregateStage(t *testing.T) {
 }
 
 func TestDistinctStage(t *testing.T) {
-	stage, err := newDistinctStage("category", FieldOf("author"))
+	stage, err := newDistinctStage([]any{"category", FieldOf("author")}, nil)
 	if err != nil {
 		t.Fatalf("newDistinctStage() failed: %v", err)
 	}
@@ -271,9 +270,7 @@ func TestDistinctStage(t *testing.T) {
 }
 
 func TestFindNearestStage(t *testing.T) {
-	limit := 10
-	distanceField := "distance"
-	stage, err := newFindNearestStage("embedding", []float64{1, 2, 3}, PipelineDistanceMeasureEuclidean, &PipelineFindNearestOptions{Limit: &limit, DistanceField: &distanceField})
+	stage, err := newFindNearestStage("embedding", []float64{1, 2, 3}, PipelineDistanceMeasureEuclidean, map[string]any{"limit": 10, "distance_field": "distance"})
 	if err != nil {
 		t.Fatalf("newFindNearestStage() failed: %v", err)
 	}
@@ -301,7 +298,7 @@ func TestFindNearestStage(t *testing.T) {
 }
 
 func TestRemoveFieldsStage(t *testing.T) {
-	stage, err := newRemoveFieldsStage("price", FieldPath{"author", "name"})
+	stage, err := newRemoveFieldsStage([]any{"price", FieldPath{"author", "name"}}, nil)
 	if err != nil {
 		t.Fatalf("newRemoveFieldsStage() failed: %v", err)
 	}
@@ -324,7 +321,7 @@ func TestRemoveFieldsStage(t *testing.T) {
 }
 
 func TestReplaceStage(t *testing.T) {
-	stage, err := newReplaceWithStage("metadata")
+	stage, err := newReplaceWithStage("metadata", nil)
 	if err != nil {
 		t.Fatalf("newReplaceStage() failed: %v", err)
 	}
@@ -347,8 +344,8 @@ func TestReplaceStage(t *testing.T) {
 }
 
 func TestSampleStage(t *testing.T) {
-	spec := ByDocuments(100)
-	stage, err := newSampleStage(spec)
+	spec := WithDocLimit(100)
+	stage, err := newSampleStage(spec, nil)
 	if err != nil {
 		t.Fatalf("newSampleStage() failed: %v", err)
 	}
@@ -376,7 +373,7 @@ func TestUnionStage(t *testing.T) {
 		t.Fatalf("NewClient: %v", err)
 	}
 	otherPipeline := newPipeline(client, newInputStageCollection("other_collection", nil))
-	stage, err := newUnionStage(otherPipeline)
+	stage, err := newUnionStage(otherPipeline, nil)
 	if err != nil {
 		t.Fatalf("newUnionStage() failed: %v", err)
 	}
@@ -405,7 +402,7 @@ func TestUnionStage(t *testing.T) {
 }
 
 func TestUnnestStage(t *testing.T) {
-	stage, err := newUnnestStage("Unnest", FieldOf("tags").As("tag"), &unnestSettings{IndexField: "index"})
+	stage, err := newUnnestStage("Unnest", FieldOf("tags").As("tag"), map[string]any{"index_field": "index"})
 	if err != nil {
 		t.Fatalf("newUnnestStage() failed: %v", err)
 	}

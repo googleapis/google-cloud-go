@@ -1,5 +1,11 @@
 # Changes
 
+## [1.80.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.80.0) (2026-04-13)
+
+## [1.79.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.79.0) (2026-04-09)
+
+## [1.78.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.78.0) (2026-04-02)
+
 ## [1.77.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.77.0) (2026-03-26)
 
 ### Features

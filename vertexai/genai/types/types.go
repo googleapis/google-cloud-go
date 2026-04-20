@@ -54,28 +54,28 @@ const (
 	AgentServerModeExperimental AgentServerMode = "EXPERIMENTAL"
 )
 
-// The managed memory topic.
+// Represents the managed memory topic.
 type ManagedTopicEnum string
 
 const (
-	// Unspecified topic. This value should not be used.
+	// Represents an unspecified topic. This value should not be used.
 	ManagedTopicEnumUnspecified ManagedTopicEnum = "MANAGED_TOPIC_ENUM_UNSPECIFIED"
-	// Significant personal information about the User like first names, relationships,
+	// Represents significant personal information about the User like first names, relationships,
 	// hobbies, important dates.
 	ManagedTopicEnumUserPersonalInfo ManagedTopicEnum = "USER_PERSONAL_INFO"
-	// Stated or implied likes, dislikes, preferred styles, or patterns.
+	// Represents stated or implied likes, dislikes, preferred styles, or patterns.
 	ManagedTopicEnumUserPreferences ManagedTopicEnum = "USER_PREFERENCES"
-	// Important milestones or conclusions within the dialogue.
+	// Represents important milestones or conclusions within the dialogue.
 	ManagedTopicEnumKeyConversationDetails ManagedTopicEnum = "KEY_CONVERSATION_DETAILS"
-	// Information that the user explicitly requested to remember or forget.
+	// Represents information that the user explicitly requested to remember or forget.
 	ManagedTopicEnumExplicitInstructions ManagedTopicEnum = "EXPLICIT_INSTRUCTIONS"
 )
 
-// Operator to apply to the filter. If not set, then EQUAL will be used.
+// Represents the operator to apply to the filter. If not set, then EQUAL will be used.
 type Operator string
 
 const (
-	// Unspecified operator. Defaults to EQUAL.
+	// Represents an unspecified operator. Defaults to EQUAL.
 	OperatorUnspecified Operator = "OPERATOR_UNSPECIFIED"
 	// Equal to.
 	OperatorEqual Operator = "EQUAL"
@@ -228,6 +228,51 @@ type SecretEnvVar struct {
 	SecretRef *SecretRef `json:"secretRef,omitempty"`
 }
 
+// Configuration for traffic originating from a Reasoning Engine.
+type ReasoningEngineSpecDeploymentSpecAgentGatewayConfigAgentToAnywhereConfig struct {
+	// Required. The resource name of the Agent Gateway for outbound traffic. It must be
+	// set to a Google-managed gateway whose `governed_access_path` is `AGENT_TO_ANYWHERE`.
+	// Format: `projects/{project}/locations/{location}/agentGateways/{agent_gateway}`
+	AgentGateway string `json:"agentGateway,omitempty"`
+}
+
+// Configuration for traffic targeting a Reasoning Engine.
+type ReasoningEngineSpecDeploymentSpecAgentGatewayConfigClientToAgentConfig struct {
+	// Required. The resource name of the Agent Gateway to use for inbound traffic. It must
+	// be set to a Google-managed gateway whose `governed_access_path` is `CLIENT_TO_AGENT`.
+	// Format: `projects/{project}/locations/{location}/agentGateways/{agent_gateway}`
+	AgentGateway string `json:"agentGateway,omitempty"`
+}
+
+// Agent Gateway configuration for a Reasoning Engine deployment.
+type ReasoningEngineSpecDeploymentSpecAgentGatewayConfig struct {
+	// Optional. Configuration for traffic originating from the Reasoning Engine. When unset,
+	// outgoing traffic is not routed through an Agent Gateway.
+	AgentToAnywhereConfig *ReasoningEngineSpecDeploymentSpecAgentGatewayConfigAgentToAnywhereConfig `json:"agentToAnywhereConfig,omitempty"`
+	// Optional. Configuration for traffic targeting the Reasoning Engine. When unset, incoming
+	// traffic is not routed through an Agent Gateway.
+	ClientToAgentConfig *ReasoningEngineSpecDeploymentSpecAgentGatewayConfigClientToAgentConfig `json:"clientToAgentConfig,omitempty"`
+}
+
+// Specifies the HTTP GET configuration for the probe.
+type KeepAliveProbeHTTPGet struct {
+	// Required. Specifies the path of the HTTP GET request (e.g., `"/is_busy"`).
+	Path string `json:"path,omitempty"`
+	// Optional. Specifies the port number on the container to which the request is sent.
+	Port *int32 `json:"port,omitempty"`
+}
+
+// Represents the configuration for keep-alive probe. Contains configuration on a specified
+// endpoint that a deployment host should use to keep the container alive based on the
+// probe settings.
+type KeepAliveProbe struct {
+	// Optional. Specifies the HTTP GET configuration for the probe.
+	HTTPGet *KeepAliveProbeHTTPGet `json:"httpGet,omitempty"`
+	// Optional. Specifies the maximum duration (in seconds) to keep the instance alive
+	// via this probe. Can be a maximum of 3600 seconds (1 hour).
+	MaxSeconds *int32 `json:"maxSeconds,omitempty"`
+}
+
 // The specification of a Reasoning Engine deployment.
 type ReasoningEngineSpecDeploymentSpec struct {
 	// The agent server mode.
@@ -257,6 +302,12 @@ type ReasoningEngineSpecDeploymentSpec struct {
 	// To use this feature, add 'Secret Manager Secret Accessor' role (roles/secretmanager.secretAccessor)
 	// to AI Platform Reasoning Engine Service Agent.
 	SecretEnv []*SecretEnvVar `json:"secretEnv,omitempty"`
+	// Optional. Agent Gateway configuration for the Reasoning Engine deployment.
+	AgentGatewayConfig *ReasoningEngineSpecDeploymentSpecAgentGatewayConfig `json:"agentGatewayConfig,omitempty"`
+	// Optional. Specifies the configuration for keep-alive probe. Contains configuration
+	// on a specified endpoint that a deployment host should use to keep the container alive
+	// based on the probe settings.
+	KeepAliveProbe *KeepAliveProbe `json:"keepAliveProbe,omitempty"`
 }
 
 // User-provided package specification, containing pickled object and package requirements.
@@ -404,31 +455,31 @@ type ReasoningEngineSpec struct {
 
 // The conversation source event for generating memories.
 type MemoryBankCustomizationConfigGenerateMemoriesExampleConversationSourceEvent struct {
-	// Optional. Required. The content of the event.
+	// Optional. Required. Represents the content of the event.
 	Content *genai_types.Content `json:"content,omitempty"`
 }
 
 // A conversation source for the example. This is similar to `DirectContentsSource`.
 type MemoryBankCustomizationConfigGenerateMemoriesExampleConversationSource struct {
-	// Optional. The input conversation events for the example.
+	// Optional. Represents the input conversation events for the example.
 	Events []*MemoryBankCustomizationConfigGenerateMemoriesExampleConversationSourceEvent `json:"events,omitempty"`
 }
 
 // The topic ID for a memory.
 type MemoryTopicID struct {
-	// Optional. The custom memory topic label.
+	// Optional. Represents the custom memory topic label.
 	CustomMemoryTopicLabel string `json:"customMemoryTopicLabel,omitempty"`
-	// Optional. The managed memory topic.
+	// Optional. Represents the managed memory topic.
 	ManagedMemoryTopic ManagedTopicEnum `json:"managedMemoryTopic,omitempty"`
 }
 
 // A memory generated by the operation.
 type MemoryBankCustomizationConfigGenerateMemoriesExampleGeneratedMemory struct {
-	// Required. The fact to generate a memory from.
+	// Required. Represents the fact to generate a memory from.
 	Fact string `json:"fact,omitempty"`
-	// Optional. The list of topics that the memory should be associated with. For example,
-	// use `custom_memory_topic_label = "jargon"` if the extracted memory is an example
-	// of memory extraction for the custom topic `jargon`.
+	// Optional. Represents the list of topics that the memory should be associated with.
+	// For example, use `custom_memory_topic_label = "jargon"` if the extracted memory is
+	// an example of memory extraction for the custom topic `jargon`.
 	Topics []*MemoryTopicID `json:"topics,omitempty"`
 }
 
@@ -436,24 +487,24 @@ type MemoryBankCustomizationConfigGenerateMemoriesExampleGeneratedMemory struct 
 type MemoryBankCustomizationConfigGenerateMemoriesExample struct {
 	// A conversation source for the example.
 	ConversationSource *MemoryBankCustomizationConfigGenerateMemoriesExampleConversationSource `json:"conversationSource,omitempty"`
-	// Optional. The memories that are expected to be generated from the input conversation.
-	// An empty list indicates that no memories are expected to be generated for the input
-	// conversation.
+	// Optional. Represents the memories that are expected to be generated from the input
+	// conversation. An empty list indicates that no memories are expected to be generated
+	// for the input conversation.
 	GeneratedMemories []*MemoryBankCustomizationConfigGenerateMemoriesExampleGeneratedMemory `json:"generatedMemories,omitempty"`
 }
 
 // A custom memory topic defined by the developer.
 type MemoryBankCustomizationConfigMemoryTopicCustomMemoryTopic struct {
-	// Required. The label of the topic.
+	// Required. Represents the label of the topic.
 	Label string `json:"label,omitempty"`
-	// Required. Description of the memory topic. This should explain what information should
-	// be extracted for this topic.
+	// Required. Represents the description of the memory topic. This should explain what
+	// information should be extracted for this topic.
 	Description string `json:"description,omitempty"`
 }
 
 // A managed memory topic defined by the system.
 type MemoryBankCustomizationConfigMemoryTopicManagedMemoryTopic struct {
-	// Required. The managed topic.
+	// Required. Represents the managed topic.
 	ManagedTopicEnum ManagedTopicEnum `json:"managedTopicEnum,omitempty"`
 }
 
@@ -466,28 +517,111 @@ type MemoryBankCustomizationConfigMemoryTopic struct {
 	ManagedMemoryTopic *MemoryBankCustomizationConfigMemoryTopicManagedMemoryTopic `json:"managedMemoryTopic,omitempty"`
 }
 
-// Configuration for organizing memories for a particular scope.
+// Represents configuration for customizing how memories are consolidated.
+type MemoryBankCustomizationConfigConsolidationConfig struct {
+	// Optional. Represents the maximum number of revisions to consider for each candidate
+	// memory. If not set, then the default value (1) will be used, which means that only
+	// the latest revision will be considered.
+	RevisionsPerCandidateCount *int32 `json:"revisionsPerCandidateCount,omitempty"`
+}
+
+// Represents configuration for organizing natural language memories for a particular
+// scope.
 type MemoryBankCustomizationConfig struct {
-	// Optional. If true, then the memories will be generated in the third person (i.e.
+	// Optional. Indicates whether the memories will be generated in the third person (i.e.
 	// "The user generates memories with Memory Bank."). By default, the memories will be
 	// generated in the first person (i.e. "I generate memories with Memory Bank.")
 	EnableThirdPersonMemories *bool `json:"enableThirdPersonMemories,omitempty"`
-	// Optional. Examples of how to generate memories for a particular scope.
+	// Optional. Provides examples of how to generate memories for a particular scope.
 	GenerateMemoriesExamples []*MemoryBankCustomizationConfigGenerateMemoriesExample `json:"generateMemoriesExamples,omitempty"`
-	// Optional. Topics of information that should be extracted from conversations and stored
-	// as memories. If not set, then Memory Bank's default topics will be used.
+	// Optional. Represents topics of information that should be extracted from conversations
+	// and stored as memories. If not set, then Memory Bank's default topics will be used.
 	MemoryTopics []*MemoryBankCustomizationConfigMemoryTopic `json:"memoryTopics,omitempty"`
-	// Optional. The scope keys (i.e. 'user_id') for which to use this config. A request's
-	// scope must include all of the provided keys for the config to be used (order does
-	// not matter). If empty, then the config will be used for all requests that do not
-	// have a more specific config. Only one default config is allowed per Memory Bank.
+	// Optional. Represents the scope keys (i.e. 'user_id') for which to use this config.
+	// A request's scope must include all of the provided keys for the config to be used
+	// (order does not matter). If empty, then the config will be used for all requests
+	// that do not have a more specific config. Only one default config is allowed per Memory
+	// Bank.
 	ScopeKeys []string `json:"scopeKeys,omitempty"`
+	// Optional. Represents configuration for customizing how memories are consolidated
+	// together.
+	ConsolidationConfig *MemoryBankCustomizationConfigConsolidationConfig `json:"consolidationConfig,omitempty"`
+}
+
+// Represents the active rule that determines when to flush the buffer.
+type MemoryGenerationTriggerConfigGenerationTriggerRule struct {
+	// Specifies to trigger generation if the stream is inactive for the specified duration
+	// after the most recent event. The duration must have a minute-level granularity.
+	IdleDuration time.Duration `json:"idleDuration,omitempty"`
+	// Specifies to trigger generation at a fixed interval. The duration must have a minute-level
+	// granularity.
+	FixedInterval time.Duration `json:"fixedInterval,omitempty"`
+	// Specifies to trigger generation when the token count reaches this limit.
+	TokenLimit *int32 `json:"tokenLimit,omitempty"`
+	// Specifies to trigger generation when the event count reaches this limit.
+	EventCount *int32 `json:"eventCount,omitempty"`
+}
+
+func (m *MemoryGenerationTriggerConfigGenerationTriggerRule) UnmarshalJSON(data []byte) error {
+	type Alias MemoryGenerationTriggerConfigGenerationTriggerRule
+	aux := &struct {
+		IdleDuration  *genai_types.InternalDurationJSON `json:"idleDuration,omitempty"`
+		FixedInterval *genai_types.InternalDurationJSON `json:"fixedInterval,omitempty"`
+		*Alias
+	}{
+		Alias: (*Alias)(m),
+	}
+
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+
+	if !reflect.ValueOf(aux.IdleDuration).IsZero() {
+		m.IdleDuration = time.Duration(*aux.IdleDuration)
+	}
+
+	if !reflect.ValueOf(aux.FixedInterval).IsZero() {
+		m.FixedInterval = time.Duration(*aux.FixedInterval)
+	}
+
+	return nil
+}
+
+func (m *MemoryGenerationTriggerConfigGenerationTriggerRule) MarshalJSON() ([]byte, error) {
+	type Alias MemoryGenerationTriggerConfigGenerationTriggerRule
+	aux := &struct {
+		IdleDuration  *genai_types.InternalDurationJSON `json:"idleDuration,omitempty"`
+		FixedInterval *genai_types.InternalDurationJSON `json:"fixedInterval,omitempty"`
+		*Alias
+	}{
+		Alias: (*Alias)(m),
+	}
+
+	if !reflect.ValueOf(m.IdleDuration).IsZero() {
+		aux.IdleDuration = (*genai_types.InternalDurationJSON)(&m.IdleDuration)
+	}
+
+	if !reflect.ValueOf(m.FixedInterval).IsZero() {
+		aux.FixedInterval = (*genai_types.InternalDurationJSON)(&m.FixedInterval)
+	}
+
+	return json.Marshal(aux)
+}
+
+// Represents configuration for triggering generation.
+type MemoryGenerationTriggerConfig struct {
+	// Optional. Represents the active rule that determines when to flush the buffer. If
+	// not set, then the stream will be force flushed immediately.
+	GenerationRule *MemoryGenerationTriggerConfigGenerationTriggerRule `json:"generationRule,omitempty"`
 }
 
 // Configuration for how to generate memories.
 type ReasoningEngineContextSpecMemoryBankConfigGenerationConfig struct {
-	// Required. The model used to generate memories. Format: `projects/{project}/locations/{location}/publishers/google/models/{model}`.
+	// Optional. The model used to generate memories. Format: `projects/{project}/locations/{location}/publishers/google/models/{model}`.
 	Model string `json:"model,omitempty"`
+	// Optional. Specifies the default trigger configuration for generating memories using
+	// `IngestEvents`.
+	GenerationTriggerConfig *MemoryGenerationTriggerConfig `json:"generationTriggerConfig,omitempty"`
 }
 
 // Configuration for how to perform similarity search on memories.
@@ -744,6 +878,41 @@ type CreateAgentEngineConfig struct {
 	//     The scripts must be located in the `installation_scripts`
 	//     subdirectory and the path must be added to `extra_packages`.
 	BuildOptions map[string][]string `json:"buildOptions,omitempty"`
+	// Optional. Agent Gateway configuration for a Reasoning Engine deployment.
+	AgentGatewayConfig *ReasoningEngineSpecDeploymentSpecAgentGatewayConfig `json:"agentGatewayConfig,omitempty"`
+}
+
+// Traffic distribution configuration, where all traffic is sent to the latest Runtime
+// Revision.
+type ReasoningEngineTrafficConfigTrafficSplitAlwaysLatest struct {
+}
+
+// A single target for the traffic split, specifying a Runtime Revision and the percentage
+// of traffic to send to it.
+type ReasoningEngineTrafficConfigTrafficSplitManualTarget struct {
+	// Required. Specifies percent of the traffic to this Runtime Revision.
+	Percent int32 `json:"percent,omitempty"`
+	// Required. The Runtime Revision name to which to send this portion of traffic, if
+	// traffic allocation is by Runtime Revision.
+	RuntimeRevisionName string `json:"runtimeRevisionName,omitempty"`
+}
+
+// Manual traffic distribution configuration, where the user specifies the Runtime Revision
+// IDs and the percentage of traffic to send to each.
+type ReasoningEngineTrafficConfigTrafficSplitManual struct {
+	// A list of traffic targets for the Runtimes Revisions. The sum of percentages must
+	// equal to 100.
+	Targets []*ReasoningEngineTrafficConfigTrafficSplitManualTarget `json:"targets,omitempty"`
+}
+
+// Traffic distribution configuration.
+type ReasoningEngineTrafficConfig struct {
+	// Optional. Traffic distribution configuration, where all traffic is sent to the latest
+	// Runtime Revision.
+	TrafficSplitAlwaysLatest *ReasoningEngineTrafficConfigTrafficSplitAlwaysLatest `json:"trafficSplitAlwaysLatest,omitempty"`
+	// Optional. Manual traffic distribution configuration, where the user specifies the
+	// Runtime Revision IDs and the percentage of traffic to send to each.
+	TrafficSplitManual *ReasoningEngineTrafficConfigTrafficSplitManual `json:"trafficSplitManual,omitempty"`
 }
 
 // An agent engine.
@@ -770,6 +939,8 @@ type ReasoningEngine struct {
 	Spec *ReasoningEngineSpec `json:"spec,omitempty"`
 	// Output only. Timestamp when this ReasoningEngine was most recently updated.
 	UpdateTime time.Time `json:"updateTime,omitempty"`
+	// Optional. Traffic distribution configuration for the Reasoning Engine.
+	TrafficConfig *ReasoningEngineTrafficConfig `json:"trafficConfig,omitempty"`
 }
 
 func (r *ReasoningEngine) UnmarshalJSON(data []byte) error {
@@ -1012,6 +1183,8 @@ type UpdateAgentEngineConfig struct {
 	//     The scripts must be located in the `installation_scripts`
 	//     subdirectory and the path must be added to `extra_packages`.
 	BuildOptions map[string][]string `json:"buildOptions,omitempty"`
+	// Optional. Agent Gateway configuration for a Reasoning Engine deployment.
+	AgentGatewayConfig *ReasoningEngineSpecDeploymentSpecAgentGatewayConfig `json:"agentGatewayConfig,omitempty"`
 	// Optional. The update mask to apply. For the `FieldMask` definition, see
 	// https://protobuf.dev/reference/protobuf/google.protobuf/#field-mask.
 	UpdateMask string `json:"updateMask,omitempty"`
@@ -1019,14 +1192,14 @@ type UpdateAgentEngineConfig struct {
 
 // The metadata values for memories.
 type MemoryMetadataValue struct {
-	// Boolean value.
+	// Represents a boolean value.
 	BoolValue *bool `json:"boolValue,omitempty"`
-	// Double value.
+	// Represents a double value.
 	DoubleValue *float64 `json:"doubleValue,omitempty"`
-	// String value.
+	// Represents a string value.
 	StringValue string `json:"stringValue,omitempty"`
-	// Timestamp value. When filtering on timestamp values, only the seconds field will
-	// be compared.
+	// Represents a timestamp value. When filtering on timestamp values, only the seconds
+	// field will be compared.
 	TimestampValue time.Time `json:"timestampValue,omitempty"`
 }
 
@@ -1171,44 +1344,45 @@ func (a *AgentEngineMemoryConfig) MarshalJSON() ([]byte, error) {
 
 // A memory.
 type Memory struct {
-	// Output only. Timestamp when this Memory was created.
+	// Output only. Represents the timestamp when this Memory was created.
 	CreateTime time.Time `json:"createTime,omitempty"`
-	// Optional. Description of the Memory.
+	// Optional. Represents the description of the Memory.
 	Description string `json:"description,omitempty"`
-	// Optional. Input only. If true, no revision will be created for this request.
+	// Optional. Input only. Indicates whether no revision will be created for this request.
 	DisableMemoryRevisions bool `json:"disableMemoryRevisions,omitempty"`
-	// Optional. Display name of the Memory.
+	// Optional. Represents the display name of the Memory.
 	DisplayName string `json:"displayName,omitempty"`
-	// Optional. Timestamp of when this resource is considered expired. This is *always*
-	// provided on output when `expiration` is set on input, regardless of whether `expire_time`
-	// or `ttl` was provided.
+	// Optional. Represents the timestamp of when this resource is considered expired. This
+	// is *always* provided on output when `expiration` is set on input, regardless of whether
+	// `expire_time` or `ttl` was provided.
 	ExpireTime time.Time `json:"expireTime,omitempty"`
-	// Required. Semantic knowledge extracted from the source content.
+	// Optional. Represents semantic knowledge extracted from the source content.
 	Fact string `json:"fact,omitempty"`
-	// Optional. User-provided metadata for the Memory. This information was provided when
-	// creating, updating, or generating the Memory. It was not generated by Memory Bank.
+	// Optional. Represents user-provided metadata for the Memory. This information was
+	// provided when creating, updating, or generating the Memory. It was not generated
+	// by Memory Bank.
 	Metadata map[string]*MemoryMetadataValue `json:"metadata,omitempty"`
-	// Identifier. The resource name of the Memory. Format: `projects/{project}/locations/{location}/reasoningEngines/{reasoning_engine}/memories/{memory}`
+	// Identifier. Represents the resource name of the Memory. Format: `projects/{project}/locations/{location}/reasoningEngines/{reasoning_engine}/memories/{memory}`
 	Name string `json:"name,omitempty"`
-	// Optional. Input only. Timestamp of when the revision is considered expired. If not
-	// set, the memory revision will be kept until manually deleted.
+	// Optional. Input only. Represents the timestamp of when the revision is considered
+	// expired. If not set, the memory revision will be kept until manually deleted.
 	RevisionExpireTime time.Time `json:"revisionExpireTime,omitempty"`
-	// Optional. Input only. The labels to apply to the Memory Revision created as a result
-	// of this request.
+	// Optional. Input only. Represents the labels to apply to the Memory Revision created
+	// as a result of this request.
 	RevisionLabels map[string]string `json:"revisionLabels,omitempty"`
-	// Optional. Input only. The TTL for the revision. The expiration time is computed:
-	// now + TTL.
+	// Optional. Input only. Represents the TTL for the revision. The expiration time is
+	// computed: now + TTL.
 	RevisionTTL time.Duration `json:"revisionTtl,omitempty"`
-	// Required. Immutable. The scope of the Memory. Memories are isolated within their
-	// scope. The scope is defined when creating or generating memories. Scope values cannot
-	// contain the wildcard character '*'.
+	// Required. Immutable. Represents the scope of the Memory. Memories are isolated within
+	// their scope. The scope is defined when creating or generating memories. Scope values
+	// cannot contain the wildcard character '*'.
 	Scope map[string]string `json:"scope,omitempty"`
-	// Optional. The Topics of the Memory.
+	// Optional. Represents the Topics of the Memory.
 	Topics []*MemoryTopicID `json:"topics,omitempty"`
-	// Optional. Input only. The TTL for this resource. The expiration time is computed:
-	// now + TTL.
+	// Optional. Input only. Represents the TTL for this resource. The expiration time is
+	// computed: now + TTL.
 	TTL time.Duration `json:"ttl,omitempty"`
-	// Output only. Timestamp when this Memory was most recently updated.
+	// Output only. Represents the timestamp when this Memory was most recently updated.
 	UpdateTime time.Time `json:"updateTime,omitempty"`
 }
 
@@ -1453,6 +1627,8 @@ type GenerateAgentEngineMemoriesConfig struct {
 	Metadata map[string]*MemoryMetadataValue `json:"metadata,omitempty"`
 	// Optional. The strategy to use when applying metadata to existing memories.
 	MetadataMergeStrategy MemoryMetadataMergeStrategy `json:"metadataMergeStrategy,omitempty"`
+	// Optional. Restricts memory generation to a subset of memory topics.
+	AllowedTopics []*MemoryTopicID `json:"allowedTopics,omitempty"`
 }
 
 func (g *GenerateAgentEngineMemoriesConfig) UnmarshalJSON(data []byte) error {
@@ -1547,6 +1723,53 @@ type GetAgentEngineMemoryConfig struct {
 	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
 }
 
+// The direct contents source event for ingesting events.
+type IngestionDirectContentsSourceEvent struct {
+	// Optional.
+	Content *genai_types.Content `json:"content,omitempty"`
+}
+
+// The direct contents source for ingesting events.
+type IngestionDirectContentsSource struct {
+	Events []*IngestionDirectContentsSourceEvent `json:"events,omitempty"`
+}
+
+// The configuration for the memory generation trigger.
+type GenerationTriggerConfig struct {
+}
+
+// Config for ingesting events.
+type IngestEventsConfig struct {
+	// Optional. Used to override HTTP request options.
+	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
+	// Optional. Waits for the underlying memory generation operation to complete
+	// before returning. Defaults to false.
+	WaitForCompletion *bool `json:"waitForCompletion,omitempty"`
+	// Optional. Forces a flush of all pending events in the stream and triggers memory
+	// generation immediately bypassing any conditions configured in the `generation_trigger_config`.
+	ForceFlush *bool `json:"forceFlush,omitempty"`
+}
+
+// Operation that ingests events into a memory bank.
+type MemoryBankIngestEventsOperation struct {
+	// The server-assigned name, which is only unique within the same service that originally
+	// returns it. If you use the default HTTP mapping, the `name` should be a resource
+	// name ending with `operations/{unique_id}`.
+	Name string `json:"name,omitempty"`
+	// Optional. Service-specific metadata associated with the operation. It typically contains
+	// progress information and common metadata such as create time. Some services might
+	// not provide such metadata. Any method that returns a long-running operation should
+	// document the metadata type, if any.
+	Metadata map[string]any `json:"metadata,omitempty"`
+	// If the value is `false`, it means the operation is still in progress. If `true`,
+	// the operation is completed, and either `error` or `response` is available.
+	Done bool `json:"done,omitempty"`
+	// Optional. The error result of the operation in case of failure or cancellation.
+	Error map[string]any `json:"error,omitempty"`
+	// Optional. The response for ingesting events.
+	Response *GenerateMemoriesResponse `json:"response,omitempty"`
+}
+
 // Config for listing agent engine memories.
 type ListAgentEngineMemoryConfig struct {
 	// Optional. Used to override HTTP request options.
@@ -1607,20 +1830,20 @@ type RetrieveMemoriesRequestSimpleRetrievalParams struct {
 
 // Filter to apply when retrieving memories.
 type MemoryFilter struct {
-	// Key of the filter. For example, "author" would apply to `metadata` entries with the
-	// key "author".
+	// Represents the key of the filter. For example, "author" would apply to `metadata`
+	// entries with the key "author".
 	Key string `json:"key,omitempty"`
-	// If true, the filter will be negated.
+	// Indicates whether the filter will be negated.
 	Negate *bool `json:"negate,omitempty"`
-	// Operator to apply to the filter. If not set, then EQUAL will be used.
+	// Represents the operator to apply to the filter. If not set, then EQUAL will be used.
 	Op Operator `json:"op,omitempty"`
-	// Value to compare to.
+	// Represents the value to compare to.
 	Value *MemoryMetadataValue `json:"value,omitempty"`
 }
 
 // The conjunction filter for memories.
 type MemoryConjunctionFilter struct {
-	// Filters that will combined using AND logic.
+	// Represents filters that will be combined using AND logic.
 	Filters []*MemoryFilter `json:"filters,omitempty"`
 }
 
@@ -1842,27 +2065,27 @@ type GetAgentEngineMemoryRevisionConfig struct {
 
 // An extracted memory that is the intermediate result before consolidation.
 type IntermediateExtractedMemory struct {
-	// Output only. The fact of the extracted memory.
+	// Output only. Represents the fact of the extracted memory.
 	Fact string `json:"fact,omitempty"`
 }
 
 // A memory revision.
 type MemoryRevision struct {
-	// Output only. Timestamp when this Memory Revision was created.
+	// Output only. Represents the timestamp when this Memory Revision was created.
 	CreateTime time.Time `json:"createTime,omitempty"`
-	// Output only. Timestamp of when this resource is considered expired.
+	// Output only. Represents the timestamp of when this resource is considered expired.
 	ExpireTime time.Time `json:"expireTime,omitempty"`
-	// Output only. The extracted memories from the source content before consolidation
+	// Output only. Represents the extracted memories from the source content before consolidation
 	// when the memory was updated via GenerateMemories. This information was used to modify
 	// an existing Memory via Consolidation.
 	ExtractedMemories []*IntermediateExtractedMemory `json:"extractedMemories,omitempty"`
-	// Output only. The fact of the Memory Revision. This corresponds to the `fact` field
-	// of the parent Memory at the time of revision creation.
+	// Output only. Represents the fact of the Memory Revision. This corresponds to the
+	// `fact` field of the parent Memory at the time of revision creation.
 	Fact string `json:"fact,omitempty"`
-	// Output only. The labels of the Memory Revision. These labels are applied to the MemoryRevision
-	// when it is created based on `GenerateMemoriesRequest.revision_labels`.
+	// Output only. Represents the labels of the Memory Revision. These labels are applied
+	// to the MemoryRevision when it is created based on `GenerateMemoriesRequest.revision_labels`.
 	Labels map[string]string `json:"labels,omitempty"`
-	// Identifier. The resource name of the Memory Revision. Format: `projects/{project}/locations/{location}/reasoningEngines/{reasoning_engine}/memories/{memory}/revisions/{memory_revision}`
+	// Identifier. Represents the resource name of the Memory Revision. Format: `projects/{project}/locations/{location}/reasoningEngines/{reasoning_engine}/memories/{memory}/revisions/{memory_revision}`
 	Name string `json:"name,omitempty"`
 }
 
@@ -2017,6 +2240,8 @@ type SandboxEnvironmentConnectionInfo struct {
 	LoadBalancerIp string `json:"loadBalancerIp,omitempty"`
 	// Output only. The internal IP address of the SandboxEnvironment.
 	SandboxInternalIp string `json:"sandboxInternalIp,omitempty"`
+	// Output only. The hostname of the SandboxEnvironment.
+	SandboxHostname string `json:"sandboxHostname,omitempty"`
 }
 
 // A sandbox environment.
@@ -2238,6 +2463,12 @@ type CreateAgentEngineSessionConfig struct {
 	// characters are allowed. See https://goo.gl/xmQnxf for more information and examples
 	// of labels.
 	Labels map[string]string `json:"labels,omitempty"`
+	// Optional. The user defined ID to use for session, which will become the final component
+	// of the session resource name. If not provided, Vertex AI will generate a value for
+	// this ID. This value may be up to 63 characters, and valid characters are `[a-z0-9-]`.
+	// The first character must be a letter, and the last character must be a letter or
+	// number.
+	SessionID string `json:"sessionId,omitempty"`
 }
 
 func (c *CreateAgentEngineSessionConfig) UnmarshalJSON(data []byte) error {
@@ -2478,6 +2709,12 @@ type UpdateAgentEngineSessionConfig struct {
 	// characters are allowed. See https://goo.gl/xmQnxf for more information and examples
 	// of labels.
 	Labels map[string]string `json:"labels,omitempty"`
+	// Optional. The user defined ID to use for session, which will become the final component
+	// of the session resource name. If not provided, Vertex AI will generate a value for
+	// this ID. This value may be up to 63 characters, and valid characters are `[a-z0-9-]`.
+	// The first character must be a letter, and the last character must be a letter or
+	// number.
+	SessionID string `json:"sessionId,omitempty"`
 	// Optional. The update mask to apply. For the `FieldMask` definition, see
 	// https://protobuf.dev/reference/protobuf/google.protobuf/#field-mask.
 	UpdateMask string `json:"updateMask,omitempty"`
@@ -2823,6 +3060,8 @@ type AgentEngineConfig struct {
 	AgentConfigSource *ReasoningEngineSpecSourceCodeSpecAgentConfigSource `json:"agentConfigSource,omitempty"`
 	// Optional. The container spec for the Agent Engine.
 	ContainerSpec *ReasoningEngineSpecContainerSpec `json:"containerSpec,omitempty"`
+	// Optional. Agent Gateway configuration for a Reasoning Engine deployment.
+	AgentGatewayConfig *ReasoningEngineSpecDeploymentSpecAgentGatewayConfig `json:"agentGatewayConfig,omitempty"`
 }
 
 // Config for checking a query job on an agent engine.
@@ -2831,8 +3070,13 @@ type RunQueryJobAgentEngineConfig struct {
 	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
 	// The query to send to the agent engine.
 	Query string `json:"query,omitempty"`
-	// The GCS bucket to use for the query.
-	GCSBucket string `json:"gcsBucket,omitempty"`
+	// The GCS URI to use for the output.
+	// If it is a file, the system use this file to store the response.
+	// If it represents a directory, the system automatically generate a file
+	// for the response.
+	// In both cases, the input query will be stored in the same directory under
+	// the same file name prefix as the output file.
+	OutputGCSURI string `json:"outputGcsUri,omitempty"`
 }
 
 // Result of running a query job.

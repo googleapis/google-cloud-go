@@ -20,8 +20,11 @@ import (
 	"context"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 type channelFinder struct {
@@ -30,17 +33,59 @@ type channelFinder struct {
 	databaseID  atomic.Uint64
 	recipeCache *keyRecipeCache
 	rangeCache  *keyRangeCache
+
+	coalescingMu    sync.Mutex
+	pendingUpdates  []*sppb.CacheUpdate
+	flushScheduled  bool
+	coalescingDelay time.Duration
+	scheduleFlush   func(time.Duration, func())
+}
+
+const cacheUpdateCoalescingWindow = 5 * time.Millisecond
+
+func defaultChannelFinderFlushScheduler(delay time.Duration, fn func()) {
+	time.AfterFunc(delay, fn)
 }
 
 func newChannelFinder(endpointCache channelEndpointCache) *channelFinder {
 	return &channelFinder{
-		recipeCache: newKeyRecipeCache(),
-		rangeCache:  newKeyRangeCache(endpointCache),
+		recipeCache:     newKeyRecipeCache(),
+		rangeCache:      newKeyRangeCache(endpointCache),
+		coalescingDelay: cacheUpdateCoalescingWindow,
+		scheduleFlush:   defaultChannelFinderFlushScheduler,
 	}
 }
 
 func (f *channelFinder) useDeterministicRandom() {
 	f.rangeCache.useDeterministicRandom()
+}
+
+func (f *channelFinder) setLifecycleManager(lifecycleManager *endpointLifecycleManager) {
+	if f == nil {
+		return
+	}
+	f.rangeCache.setLifecycleManager(lifecycleManager)
+}
+
+func (f *channelFinder) setCoalescingDelayForTest(delay time.Duration) {
+	if f == nil {
+		return
+	}
+	f.coalescingMu.Lock()
+	defer f.coalescingMu.Unlock()
+	f.coalescingDelay = delay
+}
+
+func (f *channelFinder) setFlushSchedulerForTest(schedule func(time.Duration, func())) {
+	if f == nil {
+		return
+	}
+	if schedule == nil {
+		schedule = defaultChannelFinderFlushScheduler
+	}
+	f.coalescingMu.Lock()
+	defer f.coalescingMu.Unlock()
+	f.scheduleFlush = schedule
 }
 
 func (f *channelFinder) update(update *sppb.CacheUpdate) {
@@ -49,7 +94,25 @@ func (f *channelFinder) update(update *sppb.CacheUpdate) {
 	}
 	f.updateMu.Lock()
 	defer f.updateMu.Unlock()
+	f.applyUpdateLocked(update)
+}
 
+func (f *channelFinder) applyUpdates(updates []*sppb.CacheUpdate) {
+	if len(updates) == 0 {
+		return
+	}
+	f.updateMu.Lock()
+	defer f.updateMu.Unlock()
+
+	for _, update := range updates {
+		f.applyUpdateLocked(update)
+	}
+}
+
+func (f *channelFinder) applyUpdateLocked(update *sppb.CacheUpdate) {
+	if update == nil {
+		return
+	}
 	currentID := f.databaseID.Load()
 	if currentID != update.GetDatabaseId() {
 		if currentID != 0 {
@@ -64,13 +127,103 @@ func (f *channelFinder) update(update *sppb.CacheUpdate) {
 	f.rangeCache.addRanges(update)
 }
 
-func (f *channelFinder) findServerRead(ctx context.Context, req *sppb.ReadRequest, preferLeader bool) channelEndpoint {
-	if req == nil {
+func (f *channelFinder) updateAsync(update *sppb.CacheUpdate) {
+	if !f.shouldProcessUpdate(update) {
+		return
+	}
+	f.enqueueCoalescedUpdate(update)
+}
+
+func (f *channelFinder) shouldProcessUpdate(update *sppb.CacheUpdate) bool {
+	if update == nil {
+		return false
+	}
+	// Apply any material cache update and let applyUpdateLocked handle a database
+	// switch by clearing stale state before storing the new database ID. For
+	// database-ID-only messages, only process them when they indicate that this
+	// finder has switched to a different database; database IDs are treated as
+	// identity values, not an ordered sequence.
+	if f.isMaterialUpdate(update) {
+		return true
+	}
+	updateDatabaseID := update.GetDatabaseId()
+	return updateDatabaseID != 0 && f.databaseID.Load() != updateDatabaseID
+}
+
+func (*channelFinder) isMaterialUpdate(update *sppb.CacheUpdate) bool {
+	if update == nil {
+		return false
+	}
+	return len(update.GetGroup()) > 0 ||
+		len(update.GetRange()) > 0 ||
+		(update.GetKeyRecipes() != nil && len(update.GetKeyRecipes().GetRecipe()) > 0)
+}
+
+func (f *channelFinder) enqueueCoalescedUpdate(update *sppb.CacheUpdate) {
+	if f == nil || update == nil {
+		return
+	}
+
+	f.coalescingMu.Lock()
+	f.pendingUpdates = append(f.pendingUpdates, cloneCacheUpdate(update))
+	if f.flushScheduled {
+		f.coalescingMu.Unlock()
+		return
+	}
+	f.flushScheduled = true
+	delay := f.coalescingDelay
+	scheduleFlush := f.scheduleFlush
+	f.coalescingMu.Unlock()
+
+	scheduleFlush(delay, f.flushCoalescedUpdates)
+}
+
+func (f *channelFinder) flushCoalescedUpdates() {
+	if f == nil {
+		return
+	}
+	f.coalescingMu.Lock()
+	updates := f.pendingUpdates
+	f.pendingUpdates = nil
+	f.flushScheduled = false
+	f.coalescingMu.Unlock()
+
+	f.applyUpdates(updates)
+}
+
+func cloneCacheUpdate(update *sppb.CacheUpdate) *sppb.CacheUpdate {
+	if update == nil {
 		return nil
+	}
+	return cloneProto(update)
+}
+
+func cloneProto[M interface{ ProtoReflect() protoreflect.Message }](msg M) M {
+	if any(msg) == nil {
+		var zero M
+		return zero
+	}
+	return proto.Clone(msg).(M)
+}
+
+func (f *channelFinder) findServerRead(ctx context.Context, req *sppb.ReadRequest, preferLeader bool) channelEndpoint {
+	return f.findServerReadWithExclusions(ctx, req, preferLeader, nil)
+}
+
+func (f *channelFinder) findServerReadWithExclusions(ctx context.Context, req *sppb.ReadRequest, preferLeader bool, excludedEndpoints endpointExcluder) channelEndpoint {
+	endpoint, _ := f.findServerReadWithExclusionsAndDetails(ctx, req, preferLeader, excludedEndpoints)
+	return endpoint
+}
+
+func (f *channelFinder) findServerReadWithExclusionsAndDetails(ctx context.Context, req *sppb.ReadRequest, preferLeader bool, excludedEndpoints endpointExcluder) (channelEndpoint, routeSelectionDetails) {
+	details := newRouteSelectionDetails()
+	if req == nil {
+		details.defaultReasonCode = routeReasonRangeCacheMiss
+		return nil, details
 	}
 	f.recipeCache.computeReadKeys(req)
 	hint := ensureReadRoutingHint(req)
-	return f.fillRoutingHint(ctx, preferLeader, rangeModeCoveringSplit, req.GetDirectedReadOptions(), hint)
+	return f.fillRoutingHintWithExclusionsAndDetails(ctx, preferLeader, rangeModeCoveringSplit, req.GetDirectedReadOptions(), hint, excludedEndpoints)
 }
 
 func (f *channelFinder) findServerReadWithTransaction(ctx context.Context, req *sppb.ReadRequest) channelEndpoint {
@@ -81,12 +234,23 @@ func (f *channelFinder) findServerReadWithTransaction(ctx context.Context, req *
 }
 
 func (f *channelFinder) findServerExecuteSQL(ctx context.Context, req *sppb.ExecuteSqlRequest, preferLeader bool) channelEndpoint {
+	return f.findServerExecuteSQLWithExclusions(ctx, req, preferLeader, nil)
+}
+
+func (f *channelFinder) findServerExecuteSQLWithExclusions(ctx context.Context, req *sppb.ExecuteSqlRequest, preferLeader bool, excludedEndpoints endpointExcluder) channelEndpoint {
+	endpoint, _ := f.findServerExecuteSQLWithExclusionsAndDetails(ctx, req, preferLeader, excludedEndpoints)
+	return endpoint
+}
+
+func (f *channelFinder) findServerExecuteSQLWithExclusionsAndDetails(ctx context.Context, req *sppb.ExecuteSqlRequest, preferLeader bool, excludedEndpoints endpointExcluder) (channelEndpoint, routeSelectionDetails) {
+	details := newRouteSelectionDetails()
 	if req == nil {
-		return nil
+		details.defaultReasonCode = routeReasonRangeCacheMiss
+		return nil, details
 	}
 	f.recipeCache.computeQueryKeys(req)
 	hint := ensureExecuteSQLRoutingHint(req)
-	return f.fillRoutingHint(ctx, preferLeader, rangeModePickRandom, req.GetDirectedReadOptions(), hint)
+	return f.fillRoutingHintWithExclusionsAndDetails(ctx, preferLeader, rangeModePickRandom, req.GetDirectedReadOptions(), hint, excludedEndpoints)
 }
 
 func (f *channelFinder) findServerExecuteSQLWithTransaction(ctx context.Context, req *sppb.ExecuteSqlRequest) channelEndpoint {
@@ -97,46 +261,93 @@ func (f *channelFinder) findServerExecuteSQLWithTransaction(ctx context.Context,
 }
 
 func (f *channelFinder) findServerBeginTransaction(ctx context.Context, req *sppb.BeginTransactionRequest) channelEndpoint {
+	return f.findServerBeginTransactionWithExclusions(ctx, req, nil)
+}
+
+func (f *channelFinder) findServerBeginTransactionWithExclusions(ctx context.Context, req *sppb.BeginTransactionRequest, excludedEndpoints endpointExcluder) channelEndpoint {
+	endpoint, _ := f.findServerBeginTransactionWithExclusionsAndDetails(ctx, req, excludedEndpoints)
+	return endpoint
+}
+
+func (f *channelFinder) findServerBeginTransactionWithExclusionsAndDetails(ctx context.Context, req *sppb.BeginTransactionRequest, excludedEndpoints endpointExcluder) (channelEndpoint, routeSelectionDetails) {
+	details := newRouteSelectionDetails()
 	if req == nil || req.GetMutationKey() == nil {
-		return nil
+		details.defaultReasonCode = routeReasonRangeCacheMiss
+		return nil, details
 	}
-	return f.routeMutation(ctx, req.GetMutationKey(), preferLeaderFromTransactionOptions(req.GetOptions()), ensureBeginTransactionRoutingHint(req))
+	return f.routeMutationWithExclusionsAndDetails(ctx, req.GetMutationKey(), preferLeaderFromTransactionOptions(req.GetOptions()), ensureBeginTransactionRoutingHint(req), excludedEndpoints)
 }
 
 func (f *channelFinder) fillCommitRoutingHint(ctx context.Context, req *sppb.CommitRequest) channelEndpoint {
+	return f.fillCommitRoutingHintWithExclusions(ctx, req, nil)
+}
+
+func (f *channelFinder) fillCommitRoutingHintWithExclusions(ctx context.Context, req *sppb.CommitRequest, excludedEndpoints endpointExcluder) channelEndpoint {
+	endpoint, _ := f.fillCommitRoutingHintWithExclusionsAndDetails(ctx, req, excludedEndpoints)
+	return endpoint
+}
+
+func (f *channelFinder) fillCommitRoutingHintWithExclusionsAndDetails(ctx context.Context, req *sppb.CommitRequest, excludedEndpoints endpointExcluder) (channelEndpoint, routeSelectionDetails) {
+	details := newRouteSelectionDetails()
 	if req == nil {
-		return nil
+		details.defaultReasonCode = routeReasonRangeCacheMiss
+		return nil, details
 	}
 	mutation := selectMutationProtoForRouting(req.GetMutations())
 	if mutation == nil {
-		return nil
+		details.defaultReasonCode = routeReasonRangeCacheMiss
+		return nil, details
 	}
-	return f.routeMutation(ctx, mutation, true, ensureCommitRoutingHint(req))
+	return f.routeMutationWithExclusionsAndDetails(ctx, mutation, true, ensureCommitRoutingHint(req), excludedEndpoints)
 }
 
 func (f *channelFinder) routeMutation(ctx context.Context, mutation *sppb.Mutation, preferLeader bool, hint *sppb.RoutingHint) channelEndpoint {
+	return f.routeMutationWithExclusions(ctx, mutation, preferLeader, hint, nil)
+}
+
+func (f *channelFinder) routeMutationWithExclusions(ctx context.Context, mutation *sppb.Mutation, preferLeader bool, hint *sppb.RoutingHint, excludedEndpoints endpointExcluder) channelEndpoint {
+	endpoint, _ := f.routeMutationWithExclusionsAndDetails(ctx, mutation, preferLeader, hint, excludedEndpoints)
+	return endpoint
+}
+
+func (f *channelFinder) routeMutationWithExclusionsAndDetails(ctx context.Context, mutation *sppb.Mutation, preferLeader bool, hint *sppb.RoutingHint, excludedEndpoints endpointExcluder) (channelEndpoint, routeSelectionDetails) {
+	details := newRouteSelectionDetails()
 	if mutation == nil || hint == nil {
-		return nil
+		details.defaultReasonCode = routeReasonRangeCacheMiss
+		return nil, details
 	}
 	f.recipeCache.applySchemaGeneration(hint)
 	target := f.recipeCache.mutationToTargetRange(mutation)
 	if target == nil {
-		return nil
+		details.defaultReasonCode = routeReasonRangeCacheMiss
+		return nil, details
 	}
 	f.recipeCache.applyTargetRange(hint, target)
-	return f.fillRoutingHint(ctx, preferLeader, rangeModeCoveringSplit, &sppb.DirectedReadOptions{}, hint)
+	return f.fillRoutingHintWithExclusionsAndDetails(ctx, preferLeader, rangeModeCoveringSplit, &sppb.DirectedReadOptions{}, hint, excludedEndpoints)
 }
 
 func (f *channelFinder) fillRoutingHint(ctx context.Context, preferLeader bool, mode rangeMode, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint) channelEndpoint {
+	return f.fillRoutingHintWithExclusions(ctx, preferLeader, mode, directedReadOptions, hint, nil)
+}
+
+func (f *channelFinder) fillRoutingHintWithExclusions(ctx context.Context, preferLeader bool, mode rangeMode, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint, excludedEndpoints endpointExcluder) channelEndpoint {
+	endpoint, _ := f.fillRoutingHintWithExclusionsAndDetails(ctx, preferLeader, mode, directedReadOptions, hint, excludedEndpoints)
+	return endpoint
+}
+
+func (f *channelFinder) fillRoutingHintWithExclusionsAndDetails(ctx context.Context, preferLeader bool, mode rangeMode, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint, excludedEndpoints endpointExcluder) (channelEndpoint, routeSelectionDetails) {
+	details := newRouteSelectionDetails()
 	if hint == nil {
-		return nil
+		details.defaultReasonCode = routeReasonRangeCacheMiss
+		return nil, details
 	}
 	databaseID := f.databaseID.Load()
 	if databaseID == 0 {
-		return nil
+		details.defaultReasonCode = routeReasonRangeCacheMiss
+		return nil, details
 	}
 	hint.DatabaseId = databaseID
-	return f.rangeCache.fillRoutingHint(ctx, preferLeader, mode, directedReadOptions, hint)
+	return f.rangeCache.fillRoutingHintWithExclusionsAndDetails(ctx, preferLeader, mode, directedReadOptions, hint, excludedEndpoints)
 }
 
 func preferLeaderFromSelector(selector *sppb.TransactionSelector) bool {

@@ -28,6 +28,7 @@ import (
 
 	saasservicemgmtpb "cloud.google.com/go/saasplatform/saasservicemgmt/apiv1beta1/saasservicemgmtpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -854,6 +855,16 @@ type saasDeploymentsGRPCClient struct {
 // Manages the deployment of SaaS services.
 func NewSaasDeploymentsClient(ctx context.Context, opts ...option.ClientOption) (*SaasDeploymentsClient, error) {
 	clientOpts := defaultSaasDeploymentsGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "saasservicemgmt",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/saasplatform/saasservicemgmt/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "saasservicemgmt.googleapis.com",
+		}))
+	}
 	if newSaasDeploymentsClientHook != nil {
 		hookOpts, err := newSaasDeploymentsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -876,6 +887,51 @@ func NewSaasDeploymentsClient(ctx context.Context, opts ...option.ClientOption) 
 		locationsClient:       locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "saasservicemgmt",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/saasplatform/saasservicemgmt/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "saasservicemgmt.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListSaas = append(client.CallOptions.ListSaas, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetSaas = append(client.CallOptions.GetSaas, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateSaas = append(client.CallOptions.CreateSaas, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateSaas = append(client.CallOptions.UpdateSaas, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteSaas = append(client.CallOptions.DeleteSaas, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListTenants = append(client.CallOptions.ListTenants, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetTenant = append(client.CallOptions.GetTenant, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateTenant = append(client.CallOptions.CreateTenant, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateTenant = append(client.CallOptions.UpdateTenant, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteTenant = append(client.CallOptions.DeleteTenant, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListUnitKinds = append(client.CallOptions.ListUnitKinds, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetUnitKind = append(client.CallOptions.GetUnitKind, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateUnitKind = append(client.CallOptions.CreateUnitKind, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateUnitKind = append(client.CallOptions.UpdateUnitKind, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteUnitKind = append(client.CallOptions.DeleteUnitKind, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListUnits = append(client.CallOptions.ListUnits, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetUnit = append(client.CallOptions.GetUnit, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateUnit = append(client.CallOptions.CreateUnit, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateUnit = append(client.CallOptions.UpdateUnit, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteUnit = append(client.CallOptions.DeleteUnit, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListUnitOperations = append(client.CallOptions.ListUnitOperations, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetUnitOperation = append(client.CallOptions.GetUnitOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateUnitOperation = append(client.CallOptions.CreateUnitOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateUnitOperation = append(client.CallOptions.UpdateUnitOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteUnitOperation = append(client.CallOptions.DeleteUnitOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListReleases = append(client.CallOptions.ListReleases, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetRelease = append(client.CallOptions.GetRelease, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateRelease = append(client.CallOptions.CreateRelease, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateRelease = append(client.CallOptions.UpdateRelease, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteRelease = append(client.CallOptions.DeleteRelease, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -929,6 +985,16 @@ type saasDeploymentsRESTClient struct {
 // Manages the deployment of SaaS services.
 func NewSaasDeploymentsRESTClient(ctx context.Context, opts ...option.ClientOption) (*SaasDeploymentsClient, error) {
 	clientOpts := append(defaultSaasDeploymentsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "saasservicemgmt",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/saasplatform/saasservicemgmt/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "saasservicemgmt.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -942,6 +1008,52 @@ func NewSaasDeploymentsRESTClient(ctx context.Context, opts ...option.ClientOpti
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "saasservicemgmt",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/saasplatform/saasservicemgmt/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "saasservicemgmt.googleapis.com",
+			}),
+		)
+
+		callOpts.ListSaas = append(callOpts.ListSaas, gax.WithClientMetrics(metrics))
+		callOpts.GetSaas = append(callOpts.GetSaas, gax.WithClientMetrics(metrics))
+		callOpts.CreateSaas = append(callOpts.CreateSaas, gax.WithClientMetrics(metrics))
+		callOpts.UpdateSaas = append(callOpts.UpdateSaas, gax.WithClientMetrics(metrics))
+		callOpts.DeleteSaas = append(callOpts.DeleteSaas, gax.WithClientMetrics(metrics))
+		callOpts.ListTenants = append(callOpts.ListTenants, gax.WithClientMetrics(metrics))
+		callOpts.GetTenant = append(callOpts.GetTenant, gax.WithClientMetrics(metrics))
+		callOpts.CreateTenant = append(callOpts.CreateTenant, gax.WithClientMetrics(metrics))
+		callOpts.UpdateTenant = append(callOpts.UpdateTenant, gax.WithClientMetrics(metrics))
+		callOpts.DeleteTenant = append(callOpts.DeleteTenant, gax.WithClientMetrics(metrics))
+		callOpts.ListUnitKinds = append(callOpts.ListUnitKinds, gax.WithClientMetrics(metrics))
+		callOpts.GetUnitKind = append(callOpts.GetUnitKind, gax.WithClientMetrics(metrics))
+		callOpts.CreateUnitKind = append(callOpts.CreateUnitKind, gax.WithClientMetrics(metrics))
+		callOpts.UpdateUnitKind = append(callOpts.UpdateUnitKind, gax.WithClientMetrics(metrics))
+		callOpts.DeleteUnitKind = append(callOpts.DeleteUnitKind, gax.WithClientMetrics(metrics))
+		callOpts.ListUnits = append(callOpts.ListUnits, gax.WithClientMetrics(metrics))
+		callOpts.GetUnit = append(callOpts.GetUnit, gax.WithClientMetrics(metrics))
+		callOpts.CreateUnit = append(callOpts.CreateUnit, gax.WithClientMetrics(metrics))
+		callOpts.UpdateUnit = append(callOpts.UpdateUnit, gax.WithClientMetrics(metrics))
+		callOpts.DeleteUnit = append(callOpts.DeleteUnit, gax.WithClientMetrics(metrics))
+		callOpts.ListUnitOperations = append(callOpts.ListUnitOperations, gax.WithClientMetrics(metrics))
+		callOpts.GetUnitOperation = append(callOpts.GetUnitOperation, gax.WithClientMetrics(metrics))
+		callOpts.CreateUnitOperation = append(callOpts.CreateUnitOperation, gax.WithClientMetrics(metrics))
+		callOpts.UpdateUnitOperation = append(callOpts.UpdateUnitOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteUnitOperation = append(callOpts.DeleteUnitOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListReleases = append(callOpts.ListReleases, gax.WithClientMetrics(metrics))
+		callOpts.GetRelease = append(callOpts.GetRelease, gax.WithClientMetrics(metrics))
+		callOpts.CreateRelease = append(callOpts.CreateRelease, gax.WithClientMetrics(metrics))
+		callOpts.UpdateRelease = append(callOpts.UpdateRelease, gax.WithClientMetrics(metrics))
+		callOpts.DeleteRelease = append(callOpts.DeleteRelease, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+	}
 
 	return &SaasDeploymentsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -988,6 +1100,12 @@ func (c *saasDeploymentsGRPCClient) ListSaas(ctx context.Context, req *saasservi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/ListSaas")
+	}
 	opts = append((*c.CallOptions).ListSaas[0:len((*c.CallOptions).ListSaas):len((*c.CallOptions).ListSaas)], opts...)
 	it := &SaasIterator{}
 	req = proto.Clone(req).(*saasservicemgmtpb.ListSaasRequest)
@@ -1034,6 +1152,12 @@ func (c *saasDeploymentsGRPCClient) GetSaas(ctx context.Context, req *saasservic
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/GetSaas")
+	}
 	opts = append((*c.CallOptions).GetSaas[0:len((*c.CallOptions).GetSaas):len((*c.CallOptions).GetSaas)], opts...)
 	var resp *saasservicemgmtpb.Saas
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1052,6 +1176,12 @@ func (c *saasDeploymentsGRPCClient) CreateSaas(ctx context.Context, req *saasser
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/CreateSaas")
+	}
 	opts = append((*c.CallOptions).CreateSaas[0:len((*c.CallOptions).CreateSaas):len((*c.CallOptions).CreateSaas)], opts...)
 	var resp *saasservicemgmtpb.Saas
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1070,6 +1200,9 @@ func (c *saasDeploymentsGRPCClient) UpdateSaas(ctx context.Context, req *saasser
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/UpdateSaas")
+	}
 	opts = append((*c.CallOptions).UpdateSaas[0:len((*c.CallOptions).UpdateSaas):len((*c.CallOptions).UpdateSaas)], opts...)
 	var resp *saasservicemgmtpb.Saas
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1088,6 +1221,12 @@ func (c *saasDeploymentsGRPCClient) DeleteSaas(ctx context.Context, req *saasser
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/DeleteSaas")
+	}
 	opts = append((*c.CallOptions).DeleteSaas[0:len((*c.CallOptions).DeleteSaas):len((*c.CallOptions).DeleteSaas)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1102,6 +1241,12 @@ func (c *saasDeploymentsGRPCClient) ListTenants(ctx context.Context, req *saasse
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/ListTenants")
+	}
 	opts = append((*c.CallOptions).ListTenants[0:len((*c.CallOptions).ListTenants):len((*c.CallOptions).ListTenants)], opts...)
 	it := &TenantIterator{}
 	req = proto.Clone(req).(*saasservicemgmtpb.ListTenantsRequest)
@@ -1148,6 +1293,12 @@ func (c *saasDeploymentsGRPCClient) GetTenant(ctx context.Context, req *saasserv
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/GetTenant")
+	}
 	opts = append((*c.CallOptions).GetTenant[0:len((*c.CallOptions).GetTenant):len((*c.CallOptions).GetTenant)], opts...)
 	var resp *saasservicemgmtpb.Tenant
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1166,6 +1317,12 @@ func (c *saasDeploymentsGRPCClient) CreateTenant(ctx context.Context, req *saass
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/CreateTenant")
+	}
 	opts = append((*c.CallOptions).CreateTenant[0:len((*c.CallOptions).CreateTenant):len((*c.CallOptions).CreateTenant)], opts...)
 	var resp *saasservicemgmtpb.Tenant
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1184,6 +1341,9 @@ func (c *saasDeploymentsGRPCClient) UpdateTenant(ctx context.Context, req *saass
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/UpdateTenant")
+	}
 	opts = append((*c.CallOptions).UpdateTenant[0:len((*c.CallOptions).UpdateTenant):len((*c.CallOptions).UpdateTenant)], opts...)
 	var resp *saasservicemgmtpb.Tenant
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1202,6 +1362,12 @@ func (c *saasDeploymentsGRPCClient) DeleteTenant(ctx context.Context, req *saass
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/DeleteTenant")
+	}
 	opts = append((*c.CallOptions).DeleteTenant[0:len((*c.CallOptions).DeleteTenant):len((*c.CallOptions).DeleteTenant)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1216,6 +1382,12 @@ func (c *saasDeploymentsGRPCClient) ListUnitKinds(ctx context.Context, req *saas
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/ListUnitKinds")
+	}
 	opts = append((*c.CallOptions).ListUnitKinds[0:len((*c.CallOptions).ListUnitKinds):len((*c.CallOptions).ListUnitKinds)], opts...)
 	it := &UnitKindIterator{}
 	req = proto.Clone(req).(*saasservicemgmtpb.ListUnitKindsRequest)
@@ -1262,6 +1434,12 @@ func (c *saasDeploymentsGRPCClient) GetUnitKind(ctx context.Context, req *saasse
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/GetUnitKind")
+	}
 	opts = append((*c.CallOptions).GetUnitKind[0:len((*c.CallOptions).GetUnitKind):len((*c.CallOptions).GetUnitKind)], opts...)
 	var resp *saasservicemgmtpb.UnitKind
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1280,6 +1458,12 @@ func (c *saasDeploymentsGRPCClient) CreateUnitKind(ctx context.Context, req *saa
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/CreateUnitKind")
+	}
 	opts = append((*c.CallOptions).CreateUnitKind[0:len((*c.CallOptions).CreateUnitKind):len((*c.CallOptions).CreateUnitKind)], opts...)
 	var resp *saasservicemgmtpb.UnitKind
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1298,6 +1482,9 @@ func (c *saasDeploymentsGRPCClient) UpdateUnitKind(ctx context.Context, req *saa
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/UpdateUnitKind")
+	}
 	opts = append((*c.CallOptions).UpdateUnitKind[0:len((*c.CallOptions).UpdateUnitKind):len((*c.CallOptions).UpdateUnitKind)], opts...)
 	var resp *saasservicemgmtpb.UnitKind
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1316,6 +1503,12 @@ func (c *saasDeploymentsGRPCClient) DeleteUnitKind(ctx context.Context, req *saa
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/DeleteUnitKind")
+	}
 	opts = append((*c.CallOptions).DeleteUnitKind[0:len((*c.CallOptions).DeleteUnitKind):len((*c.CallOptions).DeleteUnitKind)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1330,6 +1523,12 @@ func (c *saasDeploymentsGRPCClient) ListUnits(ctx context.Context, req *saasserv
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/ListUnits")
+	}
 	opts = append((*c.CallOptions).ListUnits[0:len((*c.CallOptions).ListUnits):len((*c.CallOptions).ListUnits)], opts...)
 	it := &UnitIterator{}
 	req = proto.Clone(req).(*saasservicemgmtpb.ListUnitsRequest)
@@ -1376,6 +1575,12 @@ func (c *saasDeploymentsGRPCClient) GetUnit(ctx context.Context, req *saasservic
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/GetUnit")
+	}
 	opts = append((*c.CallOptions).GetUnit[0:len((*c.CallOptions).GetUnit):len((*c.CallOptions).GetUnit)], opts...)
 	var resp *saasservicemgmtpb.Unit
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1394,6 +1599,12 @@ func (c *saasDeploymentsGRPCClient) CreateUnit(ctx context.Context, req *saasser
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/CreateUnit")
+	}
 	opts = append((*c.CallOptions).CreateUnit[0:len((*c.CallOptions).CreateUnit):len((*c.CallOptions).CreateUnit)], opts...)
 	var resp *saasservicemgmtpb.Unit
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1412,6 +1623,9 @@ func (c *saasDeploymentsGRPCClient) UpdateUnit(ctx context.Context, req *saasser
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/UpdateUnit")
+	}
 	opts = append((*c.CallOptions).UpdateUnit[0:len((*c.CallOptions).UpdateUnit):len((*c.CallOptions).UpdateUnit)], opts...)
 	var resp *saasservicemgmtpb.Unit
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1430,6 +1644,12 @@ func (c *saasDeploymentsGRPCClient) DeleteUnit(ctx context.Context, req *saasser
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/DeleteUnit")
+	}
 	opts = append((*c.CallOptions).DeleteUnit[0:len((*c.CallOptions).DeleteUnit):len((*c.CallOptions).DeleteUnit)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1444,6 +1664,12 @@ func (c *saasDeploymentsGRPCClient) ListUnitOperations(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/ListUnitOperations")
+	}
 	opts = append((*c.CallOptions).ListUnitOperations[0:len((*c.CallOptions).ListUnitOperations):len((*c.CallOptions).ListUnitOperations)], opts...)
 	it := &UnitOperationIterator{}
 	req = proto.Clone(req).(*saasservicemgmtpb.ListUnitOperationsRequest)
@@ -1490,6 +1716,12 @@ func (c *saasDeploymentsGRPCClient) GetUnitOperation(ctx context.Context, req *s
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/GetUnitOperation")
+	}
 	opts = append((*c.CallOptions).GetUnitOperation[0:len((*c.CallOptions).GetUnitOperation):len((*c.CallOptions).GetUnitOperation)], opts...)
 	var resp *saasservicemgmtpb.UnitOperation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1508,6 +1740,12 @@ func (c *saasDeploymentsGRPCClient) CreateUnitOperation(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/CreateUnitOperation")
+	}
 	opts = append((*c.CallOptions).CreateUnitOperation[0:len((*c.CallOptions).CreateUnitOperation):len((*c.CallOptions).CreateUnitOperation)], opts...)
 	var resp *saasservicemgmtpb.UnitOperation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1526,6 +1764,9 @@ func (c *saasDeploymentsGRPCClient) UpdateUnitOperation(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/UpdateUnitOperation")
+	}
 	opts = append((*c.CallOptions).UpdateUnitOperation[0:len((*c.CallOptions).UpdateUnitOperation):len((*c.CallOptions).UpdateUnitOperation)], opts...)
 	var resp *saasservicemgmtpb.UnitOperation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1544,6 +1785,12 @@ func (c *saasDeploymentsGRPCClient) DeleteUnitOperation(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/DeleteUnitOperation")
+	}
 	opts = append((*c.CallOptions).DeleteUnitOperation[0:len((*c.CallOptions).DeleteUnitOperation):len((*c.CallOptions).DeleteUnitOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1558,6 +1805,12 @@ func (c *saasDeploymentsGRPCClient) ListReleases(ctx context.Context, req *saass
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/ListReleases")
+	}
 	opts = append((*c.CallOptions).ListReleases[0:len((*c.CallOptions).ListReleases):len((*c.CallOptions).ListReleases)], opts...)
 	it := &ReleaseIterator{}
 	req = proto.Clone(req).(*saasservicemgmtpb.ListReleasesRequest)
@@ -1604,6 +1857,12 @@ func (c *saasDeploymentsGRPCClient) GetRelease(ctx context.Context, req *saasser
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/GetRelease")
+	}
 	opts = append((*c.CallOptions).GetRelease[0:len((*c.CallOptions).GetRelease):len((*c.CallOptions).GetRelease)], opts...)
 	var resp *saasservicemgmtpb.Release
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1622,6 +1881,12 @@ func (c *saasDeploymentsGRPCClient) CreateRelease(ctx context.Context, req *saas
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/CreateRelease")
+	}
 	opts = append((*c.CallOptions).CreateRelease[0:len((*c.CallOptions).CreateRelease):len((*c.CallOptions).CreateRelease)], opts...)
 	var resp *saasservicemgmtpb.Release
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1640,6 +1905,9 @@ func (c *saasDeploymentsGRPCClient) UpdateRelease(ctx context.Context, req *saas
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/UpdateRelease")
+	}
 	opts = append((*c.CallOptions).UpdateRelease[0:len((*c.CallOptions).UpdateRelease):len((*c.CallOptions).UpdateRelease)], opts...)
 	var resp *saasservicemgmtpb.Release
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1658,6 +1926,12 @@ func (c *saasDeploymentsGRPCClient) DeleteRelease(ctx context.Context, req *saas
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/DeleteRelease")
+	}
 	opts = append((*c.CallOptions).DeleteRelease[0:len((*c.CallOptions).DeleteRelease):len((*c.CallOptions).DeleteRelease)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1672,6 +1946,9 @@ func (c *saasDeploymentsGRPCClient) GetLocation(ctx context.Context, req *locati
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1690,6 +1967,9 @@ func (c *saasDeploymentsGRPCClient) ListLocations(ctx context.Context, req *loca
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
@@ -1834,6 +2114,13 @@ func (c *saasDeploymentsRESTClient) GetSaas(ctx context.Context, req *saasservic
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/GetSaas")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/saas/*}")
+	}
 	opts = append((*c.CallOptions).GetSaas[0:len((*c.CallOptions).GetSaas):len((*c.CallOptions).GetSaas)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &saasservicemgmtpb.Saas{}
@@ -1898,6 +2185,13 @@ func (c *saasDeploymentsRESTClient) CreateSaas(ctx context.Context, req *saasser
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/CreateSaas")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*}/saas")
+	}
 	opts = append((*c.CallOptions).CreateSaas[0:len((*c.CallOptions).CreateSaas):len((*c.CallOptions).CreateSaas)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &saasservicemgmtpb.Saas{}
@@ -1968,6 +2262,10 @@ func (c *saasDeploymentsRESTClient) UpdateSaas(ctx context.Context, req *saasser
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/UpdateSaas")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{saas.name=projects/*/locations/*/saas/*}")
+	}
 	opts = append((*c.CallOptions).UpdateSaas[0:len((*c.CallOptions).UpdateSaas):len((*c.CallOptions).UpdateSaas)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &saasservicemgmtpb.Saas{}
@@ -2027,6 +2325,13 @@ func (c *saasDeploymentsRESTClient) DeleteSaas(ctx context.Context, req *saasser
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/DeleteSaas")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/saas/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2146,6 +2451,13 @@ func (c *saasDeploymentsRESTClient) GetTenant(ctx context.Context, req *saasserv
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/GetTenant")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/tenants/*}")
+	}
 	opts = append((*c.CallOptions).GetTenant[0:len((*c.CallOptions).GetTenant):len((*c.CallOptions).GetTenant)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &saasservicemgmtpb.Tenant{}
@@ -2210,6 +2522,13 @@ func (c *saasDeploymentsRESTClient) CreateTenant(ctx context.Context, req *saass
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/CreateTenant")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*}/tenants")
+	}
 	opts = append((*c.CallOptions).CreateTenant[0:len((*c.CallOptions).CreateTenant):len((*c.CallOptions).CreateTenant)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &saasservicemgmtpb.Tenant{}
@@ -2280,6 +2599,10 @@ func (c *saasDeploymentsRESTClient) UpdateTenant(ctx context.Context, req *saass
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/UpdateTenant")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{tenant.name=projects/*/locations/*/tenants/*}")
+	}
 	opts = append((*c.CallOptions).UpdateTenant[0:len((*c.CallOptions).UpdateTenant):len((*c.CallOptions).UpdateTenant)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &saasservicemgmtpb.Tenant{}
@@ -2339,6 +2662,13 @@ func (c *saasDeploymentsRESTClient) DeleteTenant(ctx context.Context, req *saass
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/DeleteTenant")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/tenants/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2458,6 +2788,13 @@ func (c *saasDeploymentsRESTClient) GetUnitKind(ctx context.Context, req *saasse
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/GetUnitKind")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/unitKinds/*}")
+	}
 	opts = append((*c.CallOptions).GetUnitKind[0:len((*c.CallOptions).GetUnitKind):len((*c.CallOptions).GetUnitKind)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &saasservicemgmtpb.UnitKind{}
@@ -2522,6 +2859,13 @@ func (c *saasDeploymentsRESTClient) CreateUnitKind(ctx context.Context, req *saa
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/CreateUnitKind")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*}/unitKinds")
+	}
 	opts = append((*c.CallOptions).CreateUnitKind[0:len((*c.CallOptions).CreateUnitKind):len((*c.CallOptions).CreateUnitKind)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &saasservicemgmtpb.UnitKind{}
@@ -2592,6 +2936,10 @@ func (c *saasDeploymentsRESTClient) UpdateUnitKind(ctx context.Context, req *saa
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/UpdateUnitKind")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{unit_kind.name=projects/*/locations/*/unitKinds/*}")
+	}
 	opts = append((*c.CallOptions).UpdateUnitKind[0:len((*c.CallOptions).UpdateUnitKind):len((*c.CallOptions).UpdateUnitKind)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &saasservicemgmtpb.UnitKind{}
@@ -2651,6 +2999,13 @@ func (c *saasDeploymentsRESTClient) DeleteUnitKind(ctx context.Context, req *saa
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/DeleteUnitKind")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/unitKinds/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2770,6 +3125,13 @@ func (c *saasDeploymentsRESTClient) GetUnit(ctx context.Context, req *saasservic
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/GetUnit")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/units/*}")
+	}
 	opts = append((*c.CallOptions).GetUnit[0:len((*c.CallOptions).GetUnit):len((*c.CallOptions).GetUnit)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &saasservicemgmtpb.Unit{}
@@ -2834,6 +3196,13 @@ func (c *saasDeploymentsRESTClient) CreateUnit(ctx context.Context, req *saasser
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/CreateUnit")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*}/units")
+	}
 	opts = append((*c.CallOptions).CreateUnit[0:len((*c.CallOptions).CreateUnit):len((*c.CallOptions).CreateUnit)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &saasservicemgmtpb.Unit{}
@@ -2904,6 +3273,10 @@ func (c *saasDeploymentsRESTClient) UpdateUnit(ctx context.Context, req *saasser
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/UpdateUnit")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{unit.name=projects/*/locations/*/units/*}")
+	}
 	opts = append((*c.CallOptions).UpdateUnit[0:len((*c.CallOptions).UpdateUnit):len((*c.CallOptions).UpdateUnit)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &saasservicemgmtpb.Unit{}
@@ -2963,6 +3336,13 @@ func (c *saasDeploymentsRESTClient) DeleteUnit(ctx context.Context, req *saasser
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/DeleteUnit")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/units/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -3082,6 +3462,13 @@ func (c *saasDeploymentsRESTClient) GetUnitOperation(ctx context.Context, req *s
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/GetUnitOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/unitOperations/*}")
+	}
 	opts = append((*c.CallOptions).GetUnitOperation[0:len((*c.CallOptions).GetUnitOperation):len((*c.CallOptions).GetUnitOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &saasservicemgmtpb.UnitOperation{}
@@ -3146,6 +3533,13 @@ func (c *saasDeploymentsRESTClient) CreateUnitOperation(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/CreateUnitOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*}/unitOperations")
+	}
 	opts = append((*c.CallOptions).CreateUnitOperation[0:len((*c.CallOptions).CreateUnitOperation):len((*c.CallOptions).CreateUnitOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &saasservicemgmtpb.UnitOperation{}
@@ -3216,6 +3610,10 @@ func (c *saasDeploymentsRESTClient) UpdateUnitOperation(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/UpdateUnitOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{unit_operation.name=projects/*/locations/*/unitOperations/*}")
+	}
 	opts = append((*c.CallOptions).UpdateUnitOperation[0:len((*c.CallOptions).UpdateUnitOperation):len((*c.CallOptions).UpdateUnitOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &saasservicemgmtpb.UnitOperation{}
@@ -3275,6 +3673,13 @@ func (c *saasDeploymentsRESTClient) DeleteUnitOperation(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/DeleteUnitOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/unitOperations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -3394,6 +3799,13 @@ func (c *saasDeploymentsRESTClient) GetRelease(ctx context.Context, req *saasser
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/GetRelease")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/releases/*}")
+	}
 	opts = append((*c.CallOptions).GetRelease[0:len((*c.CallOptions).GetRelease):len((*c.CallOptions).GetRelease)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &saasservicemgmtpb.Release{}
@@ -3458,6 +3870,13 @@ func (c *saasDeploymentsRESTClient) CreateRelease(ctx context.Context, req *saas
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/CreateRelease")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*}/releases")
+	}
 	opts = append((*c.CallOptions).CreateRelease[0:len((*c.CallOptions).CreateRelease):len((*c.CallOptions).CreateRelease)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &saasservicemgmtpb.Release{}
@@ -3528,6 +3947,10 @@ func (c *saasDeploymentsRESTClient) UpdateRelease(ctx context.Context, req *saas
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/UpdateRelease")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{release.name=projects/*/locations/*/releases/*}")
+	}
 	opts = append((*c.CallOptions).UpdateRelease[0:len((*c.CallOptions).UpdateRelease):len((*c.CallOptions).UpdateRelease)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &saasservicemgmtpb.Release{}
@@ -3587,6 +4010,13 @@ func (c *saasDeploymentsRESTClient) DeleteRelease(ctx context.Context, req *saas
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasDeployments/DeleteRelease")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/releases/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -3622,6 +4052,10 @@ func (c *saasDeploymentsRESTClient) GetLocation(ctx context.Context, req *locati
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}

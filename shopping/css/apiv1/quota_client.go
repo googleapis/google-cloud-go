@@ -27,6 +27,7 @@ import (
 
 	csspb "cloud.google.com/go/shopping/css/apiv1/csspb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -166,6 +167,16 @@ type quotaGRPCClient struct {
 // Service to get method call quota information per CSS API method.
 func NewQuotaClient(ctx context.Context, opts ...option.ClientOption) (*QuotaClient, error) {
 	clientOpts := defaultQuotaGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "css",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/css/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "css.googleapis.com",
+		}))
+	}
 	if newQuotaClientHook != nil {
 		hookOpts, err := newQuotaClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -187,6 +198,20 @@ func NewQuotaClient(ctx context.Context, opts ...option.ClientOption) (*QuotaCli
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "css",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/css/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "css.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListQuotaGroups = append(client.CallOptions.ListQuotaGroups, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -240,6 +265,16 @@ type quotaRESTClient struct {
 // Service to get method call quota information per CSS API method.
 func NewQuotaRESTClient(ctx context.Context, opts ...option.ClientOption) (*QuotaClient, error) {
 	clientOpts := append(defaultQuotaRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "css",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/css/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "css.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -253,6 +288,21 @@ func NewQuotaRESTClient(ctx context.Context, opts ...option.ClientOption) (*Quot
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "css",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/css/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "css.googleapis.com",
+			}),
+		)
+
+		callOpts.ListQuotaGroups = append(callOpts.ListQuotaGroups, gax.WithClientMetrics(metrics))
+	}
 
 	return &QuotaClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -299,6 +349,12 @@ func (c *quotaGRPCClient) ListQuotaGroups(ctx context.Context, req *csspb.ListQu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//css.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.css.v1.QuotaService/ListQuotaGroups")
+	}
 	opts = append((*c.CallOptions).ListQuotaGroups[0:len((*c.CallOptions).ListQuotaGroups):len((*c.CallOptions).ListQuotaGroups)], opts...)
 	it := &QuotaGroupIterator{}
 	req = proto.Clone(req).(*csspb.ListQuotaGroupsRequest)

@@ -564,7 +564,10 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		fbOpts.EnableFallback = true
 		fbOpts.ErrorRateThreshold = 1
 		fbOpts.MinFailedCalls = 1
-		fbOpts.MeterProvider = config.OpenTelemetryMeterProvider
+
+		if metricsTracerFactory != nil && metricsTracerFactory.meterProvider != nil {
+			fbOpts.MeterProvider = metricsTracerFactory.meterProvider
+		}
 
 		gcpFallback, err := grpcgcp.NewGCPFallback(ctx, primaryConn, fallbackConn, fbOpts)
 		if err != nil {
@@ -651,13 +654,22 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	sc.mu.Unlock()
 
 	var locationRouter *locationRouter
-	if isExperimentalLocationAPIEnabled() {
+	if isExperimentalLocationAPIEnabledForConfig(config) {
 		sc.baseClientOpts = endpointClientOpts
+		defaultEndpointAddress := ""
 		if conn := pool.Conn(); conn != nil {
 			sc.endpointAuthority = normalizeAuthorityTarget(conn.Target())
+			defaultEndpointAddress = sc.endpointAuthority
 		}
-		epCache := newEndpointClientCache(sc.createEndpointClient)
+		// Some transport wrappers, such as GCPMultiEndpoint and GCPFallback,
+		// intentionally do not expose a concrete default *grpc.ClientConn and
+		// return nil from Conn(). In that case location-aware routing remains
+		// enabled; we only skip deriving the default endpoint metadata used for
+		// authority preservation and default-endpoint diagnostics.
+		epCache := newEndpointClientCacheWithDefaultAddress(sc.createEndpointClient, defaultEndpointAddress)
 		locationRouter = newLocationRouter(epCache)
+		locationRouter.lifecycleManager = newEndpointLifecycleManager(epCache)
+		locationRouter.finder.setLifecycleManager(locationRouter.lifecycleManager)
 	}
 
 	// Create a session manager.

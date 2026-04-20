@@ -347,7 +347,7 @@ func TestTransactionErrors(t *testing.T) {
 			if err := tx.Delete(c.Doc("C/a")); err != nil {
 				return err
 			}
-			p := c.Pipeline().Collection("C").Select("x")
+			p := c.Pipeline().Collection("C").Select(Fields("x"))
 			it := tx.Execute(p).Results()
 			it.Stop()
 			return it.err

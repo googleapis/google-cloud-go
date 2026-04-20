@@ -28,8 +28,9 @@ import (
 const experimentalLocationAPIEnvVar = "GOOGLE_SPANNER_EXPERIMENTAL_LOCATION_API"
 
 type locationRouter struct {
-	finder        *channelFinder
-	endpointCache channelEndpointCache
+	finder           *channelFinder
+	endpointCache    channelEndpointCache
+	lifecycleManager *endpointLifecycleManager
 
 	affinityMu                      sync.RWMutex
 	transactionAffinity             map[string]channelEndpoint
@@ -37,8 +38,16 @@ type locationRouter struct {
 }
 
 func isExperimentalLocationAPIEnabled() bool {
-	enabled, _ := strconv.ParseBool(os.Getenv(experimentalLocationAPIEnvVar))
-	return enabled
+	return isExperimentalLocationAPIEnabledForConfig(ClientConfig{})
+}
+
+func isExperimentalLocationAPIEnabledForConfig(config ClientConfig) bool {
+	locationAPIEnvValue := os.Getenv(experimentalLocationAPIEnvVar)
+	if locationAPIEnvValue != "" {
+		enabled, _ := strconv.ParseBool(locationAPIEnvValue)
+		return enabled
+	}
+	return config.IsExperimentalHost
 }
 
 func newLocationRouter(endpointCache channelEndpointCache) *locationRouter {
@@ -54,75 +63,121 @@ func newLocationRouter(endpointCache channelEndpointCache) *locationRouter {
 }
 
 func (r *locationRouter) prepareReadRequest(ctx context.Context, req *sppb.ReadRequest) channelEndpoint {
+	return r.prepareReadRequestWithExclusions(ctx, req, nil)
+}
+
+func (r *locationRouter) prepareReadRequestWithExclusions(ctx context.Context, req *sppb.ReadRequest, excludedEndpoints endpointExcluder) channelEndpoint {
+	endpoint, _ := r.prepareReadRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
+	return endpoint
+}
+
+func (r *locationRouter) prepareReadRequestWithExclusionsAndDetails(ctx context.Context, req *sppb.ReadRequest, excludedEndpoints endpointExcluder) (channelEndpoint, routeSelectionDetails) {
+	details := newRouteSelectionDetails()
 	if r == nil || req == nil {
-		return nil
+		details.defaultReasonCode = routeReasonRangeCacheMiss
+		return nil, details
 	}
 	if txID := transactionIDFromSelector(req.GetTransaction()); txID != "" {
 		if preferLeader, ok := r.getReadOnlyTransactionPreferLeader(txID); ok {
-			return r.finder.findServerRead(ctx, req, preferLeader)
+			return r.finder.findServerReadWithExclusionsAndDetails(ctx, req, preferLeader, excludedEndpoints)
 		}
-		if ep := r.getTransactionAffinity(txID); ep != nil {
-			return ep
+		if ep := r.getTransactionAffinity(txID); ep != nil && !isEndpointExcluded(excludedEndpoints, ep.Address()) {
+			details.setSelectedTablet(ep.Address(), false, false)
+			return ep, details
 		}
 	}
-	return r.finder.findServerReadWithTransaction(ctx, req)
+	return r.finder.findServerReadWithExclusionsAndDetails(ctx, req, preferLeaderFromSelector(req.GetTransaction()), excludedEndpoints)
 }
 
 func (r *locationRouter) prepareExecuteSQLRequest(ctx context.Context, req *sppb.ExecuteSqlRequest) channelEndpoint {
+	return r.prepareExecuteSQLRequestWithExclusions(ctx, req, nil)
+}
+
+func (r *locationRouter) prepareExecuteSQLRequestWithExclusions(ctx context.Context, req *sppb.ExecuteSqlRequest, excludedEndpoints endpointExcluder) channelEndpoint {
+	endpoint, _ := r.prepareExecuteSQLRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
+	return endpoint
+}
+
+func (r *locationRouter) prepareExecuteSQLRequestWithExclusionsAndDetails(ctx context.Context, req *sppb.ExecuteSqlRequest, excludedEndpoints endpointExcluder) (channelEndpoint, routeSelectionDetails) {
+	details := newRouteSelectionDetails()
 	if r == nil || req == nil {
-		return nil
+		details.defaultReasonCode = routeReasonRangeCacheMiss
+		return nil, details
 	}
 	if txID := transactionIDFromSelector(req.GetTransaction()); txID != "" {
 		if preferLeader, ok := r.getReadOnlyTransactionPreferLeader(txID); ok {
-			return r.finder.findServerExecuteSQL(ctx, req, preferLeader)
+			return r.finder.findServerExecuteSQLWithExclusionsAndDetails(ctx, req, preferLeader, excludedEndpoints)
 		}
-		if ep := r.getTransactionAffinity(txID); ep != nil {
-			return ep
+		if ep := r.getTransactionAffinity(txID); ep != nil && !isEndpointExcluded(excludedEndpoints, ep.Address()) {
+			details.setSelectedTablet(ep.Address(), false, false)
+			return ep, details
 		}
 	}
-	return r.finder.findServerExecuteSQLWithTransaction(ctx, req)
+	return r.finder.findServerExecuteSQLWithExclusionsAndDetails(ctx, req, preferLeaderFromSelector(req.GetTransaction()), excludedEndpoints)
 }
 
 func (r *locationRouter) prepareBeginTransactionRequest(ctx context.Context, req *sppb.BeginTransactionRequest) channelEndpoint {
+	return r.prepareBeginTransactionRequestWithExclusions(ctx, req, nil)
+}
+
+func (r *locationRouter) prepareBeginTransactionRequestWithExclusions(ctx context.Context, req *sppb.BeginTransactionRequest, excludedEndpoints endpointExcluder) channelEndpoint {
+	endpoint, _ := r.prepareBeginTransactionRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
+	return endpoint
+}
+
+func (r *locationRouter) prepareBeginTransactionRequestWithExclusionsAndDetails(ctx context.Context, req *sppb.BeginTransactionRequest, excludedEndpoints endpointExcluder) (channelEndpoint, routeSelectionDetails) {
+	details := newRouteSelectionDetails()
 	if r == nil || req == nil {
-		return nil
+		details.defaultReasonCode = routeReasonRangeCacheMiss
+		return nil, details
 	}
-	return r.finder.findServerBeginTransaction(ctx, req)
+	return r.finder.findServerBeginTransactionWithExclusionsAndDetails(ctx, req, excludedEndpoints)
 }
 
 func (r *locationRouter) prepareCommitRequest(ctx context.Context, req *sppb.CommitRequest) channelEndpoint {
+	return r.prepareCommitRequestWithExclusions(ctx, req, nil)
+}
+
+func (r *locationRouter) prepareCommitRequestWithExclusions(ctx context.Context, req *sppb.CommitRequest, excludedEndpoints endpointExcluder) channelEndpoint {
+	endpoint, _ := r.prepareCommitRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
+	return endpoint
+}
+
+func (r *locationRouter) prepareCommitRequestWithExclusionsAndDetails(ctx context.Context, req *sppb.CommitRequest, excludedEndpoints endpointExcluder) (channelEndpoint, routeSelectionDetails) {
+	details := newRouteSelectionDetails()
 	if r == nil || req == nil {
-		return nil
+		details.defaultReasonCode = routeReasonRangeCacheMiss
+		return nil, details
 	}
-	return r.finder.fillCommitRoutingHint(ctx, req)
+	return r.finder.fillCommitRoutingHintWithExclusionsAndDetails(ctx, req, excludedEndpoints)
 }
 
 func (r *locationRouter) observePartialResultSet(prs *sppb.PartialResultSet) {
 	if r == nil || prs == nil || prs.GetCacheUpdate() == nil {
 		return
 	}
-	r.finder.update(prs.GetCacheUpdate())
+	r.finder.updateAsync(prs.GetCacheUpdate())
 }
 
 func (r *locationRouter) observeResultSet(rs *sppb.ResultSet) {
 	if r == nil || rs == nil || rs.GetCacheUpdate() == nil {
 		return
 	}
-	r.finder.update(rs.GetCacheUpdate())
+	r.finder.updateAsync(rs.GetCacheUpdate())
 }
 
 func (r *locationRouter) observeTransaction(tx *sppb.Transaction) {
 	if r == nil || tx == nil || tx.GetCacheUpdate() == nil {
 		return
 	}
-	r.finder.update(tx.GetCacheUpdate())
+	r.finder.updateAsync(tx.GetCacheUpdate())
 }
 
 func (r *locationRouter) observeCommitResponse(resp *sppb.CommitResponse) {
 	if r == nil || resp == nil || resp.GetCacheUpdate() == nil {
 		return
 	}
-	r.finder.update(resp.GetCacheUpdate())
+	r.finder.updateAsync(resp.GetCacheUpdate())
 }
 
 func (r *locationRouter) setTransactionAffinity(txID string, ep channelEndpoint) {
@@ -178,7 +233,13 @@ func (r *locationRouter) clearTransactionAffinity(txID string) {
 }
 
 func (r *locationRouter) Close() error {
-	if r == nil || r.endpointCache == nil {
+	if r == nil {
+		return nil
+	}
+	if r.lifecycleManager != nil {
+		r.lifecycleManager.shutdown()
+	}
+	if r.endpointCache == nil {
 		return nil
 	}
 	return r.endpointCache.Close()

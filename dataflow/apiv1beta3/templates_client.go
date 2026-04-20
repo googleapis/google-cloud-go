@@ -28,6 +28,7 @@ import (
 
 	dataflowpb "cloud.google.com/go/dataflow/apiv1beta3/dataflowpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -193,6 +194,16 @@ type templatesGRPCClient struct {
 // Provides a method to create Cloud Dataflow jobs from templates.
 func NewTemplatesClient(ctx context.Context, opts ...option.ClientOption) (*TemplatesClient, error) {
 	clientOpts := defaultTemplatesGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "dataflow",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/dataflow/apiv1beta3",
+			"gcp.client.language": "go",
+			"url.domain":          "dataflow.googleapis.com",
+		}))
+	}
 	if newTemplatesClientHook != nil {
 		hookOpts, err := newTemplatesClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -214,6 +225,22 @@ func NewTemplatesClient(ctx context.Context, opts ...option.ClientOption) (*Temp
 		logger:          internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "dataflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataflow/apiv1beta3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dataflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateJobFromTemplate = append(client.CallOptions.CreateJobFromTemplate, gax.WithClientMetrics(metrics))
+		client.CallOptions.LaunchTemplate = append(client.CallOptions.LaunchTemplate, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetTemplate = append(client.CallOptions.GetTemplate, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -267,6 +294,16 @@ type templatesRESTClient struct {
 // Provides a method to create Cloud Dataflow jobs from templates.
 func NewTemplatesRESTClient(ctx context.Context, opts ...option.ClientOption) (*TemplatesClient, error) {
 	clientOpts := append(defaultTemplatesRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "dataflow",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/dataflow/apiv1beta3",
+			"gcp.client.language": "go",
+			"url.domain":          "dataflow.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -280,6 +317,23 @@ func NewTemplatesRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "dataflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataflow/apiv1beta3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dataflow.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateJobFromTemplate = append(callOpts.CreateJobFromTemplate, gax.WithClientMetrics(metrics))
+		callOpts.LaunchTemplate = append(callOpts.LaunchTemplate, gax.WithClientMetrics(metrics))
+		callOpts.GetTemplate = append(callOpts.GetTemplate, gax.WithClientMetrics(metrics))
+	}
 
 	return &TemplatesClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -326,6 +380,9 @@ func (c *templatesGRPCClient) CreateJobFromTemplate(ctx context.Context, req *da
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.dataflow.v1beta3.TemplatesService/CreateJobFromTemplate")
+	}
 	opts = append((*c.CallOptions).CreateJobFromTemplate[0:len((*c.CallOptions).CreateJobFromTemplate):len((*c.CallOptions).CreateJobFromTemplate)], opts...)
 	var resp *dataflowpb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -344,6 +401,9 @@ func (c *templatesGRPCClient) LaunchTemplate(ctx context.Context, req *dataflowp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.dataflow.v1beta3.TemplatesService/LaunchTemplate")
+	}
 	opts = append((*c.CallOptions).LaunchTemplate[0:len((*c.CallOptions).LaunchTemplate):len((*c.CallOptions).LaunchTemplate)], opts...)
 	var resp *dataflowpb.LaunchTemplateResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -362,6 +422,9 @@ func (c *templatesGRPCClient) GetTemplate(ctx context.Context, req *dataflowpb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.dataflow.v1beta3.TemplatesService/GetTemplate")
+	}
 	opts = append((*c.CallOptions).GetTemplate[0:len((*c.CallOptions).GetTemplate):len((*c.CallOptions).GetTemplate)], opts...)
 	var resp *dataflowpb.GetTemplateResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -407,6 +470,10 @@ func (c *templatesRESTClient) CreateJobFromTemplate(ctx context.Context, req *da
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.dataflow.v1beta3.TemplatesService/CreateJobFromTemplate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1b3/projects/{project_id}/locations/{location}/templates")
+	}
 	opts = append((*c.CallOptions).CreateJobFromTemplate[0:len((*c.CallOptions).CreateJobFromTemplate):len((*c.CallOptions).CreateJobFromTemplate)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataflowpb.Job{}
@@ -482,6 +549,10 @@ func (c *templatesRESTClient) LaunchTemplate(ctx context.Context, req *dataflowp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.dataflow.v1beta3.TemplatesService/LaunchTemplate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1b3/projects/{project_id}/locations/{location}/templates:launch")
+	}
 	opts = append((*c.CallOptions).LaunchTemplate[0:len((*c.CallOptions).LaunchTemplate):len((*c.CallOptions).LaunchTemplate)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataflowpb.LaunchTemplateResponse{}
@@ -544,6 +615,10 @@ func (c *templatesRESTClient) GetTemplate(ctx context.Context, req *dataflowpb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.dataflow.v1beta3.TemplatesService/GetTemplate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1b3/projects/{project_id}/locations/{location}/templates:get")
+	}
 	opts = append((*c.CallOptions).GetTemplate[0:len((*c.CallOptions).GetTemplate):len((*c.CallOptions).GetTemplate)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataflowpb.GetTemplateResponse{}

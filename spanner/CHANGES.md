@@ -1,5 +1,19 @@
 # Changes
 
+## [1.90.0](https://github.com/googleapis/google-cloud-go/releases/tag/spanner%2Fv1.90.0) (2026-04-14)
+
+### Features
+
+* feat(spanner): add EnableDirectAccess field to ClientConfig (#14287) ([6adf5b7](https://github.com/googleapis/google-cloud-go/commit/6adf5b7))
+* feat(spanner): Switch to using builtin open telemetry for EEF (#14193)([751febd](https://github.com/googleapis/google-cloud-go/commit/751febd))
+* feat(spanner): complete location-aware routing resilience and observability (#14418 ) ([77aa4df](https://github.com/googleapis/google-cloud-go/commit/77aa4df))
+
+###  Bug Fixes
+
+
+* fix(spanner): set gauge metric start time to match end time (#14289) ([e0760b5](https://github.com/googleapis/google-cloud-go/commit/e0760b5))
+* fix(spanner): update DirectPath detection logic to use ALTS credentials(#14288)([3cd5716](https://github.com/googleapis/google-cloud-go/commit/3cd5716))
+
 ## [1.89.0](https://github.com/googleapis/google-cloud-go/releases/tag/spanner%2Fv1.89.0) (2026-03-26)
 
 ### Features

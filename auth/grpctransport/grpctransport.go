@@ -22,9 +22,11 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"net"
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/credentials"
@@ -368,7 +370,7 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 	// Add tracing, but before the other options, so that clients can override the
 	// gRPC stats handler.
 	// This assumes that gRPC options are processed in order, left to right.
-	grpcOpts = addOpenTelemetryStatsHandler(grpcOpts, opts)
+	grpcOpts = addOpenTelemetryStatsHandler(grpcOpts, opts, transportCreds.Endpoint)
 	grpcOpts = append(grpcOpts, opts.GRPCDialOpts...)
 
 	return grpc.DialContext(ctx, transportCreds.Endpoint, grpcOpts...)
@@ -456,32 +458,82 @@ func (c *grpcCredentialsProvider) RequireTransportSecurity() bool {
 	return c.secure
 }
 
-func addOpenTelemetryStatsHandler(dialOpts []grpc.DialOption, opts *Options) []grpc.DialOption {
+func addOpenTelemetryStatsHandler(dialOpts []grpc.DialOption, opts *Options, endpoint string) []grpc.DialOption {
 	if opts.DisableTelemetry {
 		return dialOpts
+	}
+	if gax.IsFeatureEnabled("METRICS") {
+		host, port := extractHostPort(endpoint)
+		dialOpts = append(dialOpts, grpc.WithChainUnaryInterceptor(openTelemetryUnaryClientInterceptor(host, port)))
 	}
 	if !gax.IsFeatureEnabled("TRACING") && !gax.IsFeatureEnabled("LOGGING") {
 		return append(dialOpts, grpc.WithStatsHandler(otelgrpc.NewClientHandler()))
 	}
 	var staticAttrs []attribute.KeyValue
 	var scopedLogger *slog.Logger
+
+	if gax.IsFeatureEnabled("LOGGING") && opts.Logger != nil {
+		scopedLogger = opts.Logger
+	}
+
 	if opts.InternalOptions != nil {
 		staticAttrs = transport.StaticTelemetryAttributes(opts.InternalOptions.TelemetryAttributes)
-		if gax.IsFeatureEnabled("LOGGING") && opts.Logger != nil {
+		if scopedLogger != nil {
 			var staticLogAttrs []any
 			for _, attr := range staticAttrs {
 				staticLogAttrs = append(staticLogAttrs, slog.String(string(attr.Key), attr.Value.AsString()))
 			}
-			scopedLogger = opts.Logger.With(staticLogAttrs...)
+			scopedLogger = scopedLogger.With(staticLogAttrs...)
 		}
 	}
-	otelOpts := []otelgrpc.Option{
-		otelgrpc.WithSpanAttributes(staticAttrs...),
+	var otelOpts []otelgrpc.Option
+	if gax.IsFeatureEnabled("TRACING") {
+		otelOpts = append(otelOpts, otelgrpc.WithSpanAttributes(staticAttrs...))
 	}
 	return append(dialOpts, grpc.WithStatsHandler(&otelHandler{
 		Handler: otelgrpc.NewClientHandler(otelOpts...),
 		logger:  scopedLogger,
 	}))
+}
+
+// Extract the host and port from a target address
+func extractHostPort(target string) (string, int) {
+	if idx := strings.Index(target, "://"); idx != -1 {
+		target = target[idx+3:]
+		// Ensure any leading authorities (like 8.8.8.8 in dns://8.8.8.8/foo) are stripped
+		if slashIdx := strings.Index(target, "/"); slashIdx != -1 {
+			target = target[slashIdx+1:]
+		}
+	}
+	host, portStr, err := net.SplitHostPort(target)
+	if err != nil {
+		return target, 0
+	}
+	port, err := strconv.Atoi(portStr)
+	if err != nil {
+		return host, 0
+	}
+	return host, port
+}
+
+// openTelemetryUnaryClientInterceptor returns an interceptor that populates
+// TransportTelemetryData with the server peer address.
+func openTelemetryUnaryClientInterceptor(host string, port int) grpc.UnaryClientInterceptor {
+	return func(ctx context.Context, method string, req, reply any, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+		transportData := gax.ExtractTransportTelemetry(ctx)
+		if transportData != nil {
+			if host != "" {
+				transportData.SetServerAddress(host)
+			}
+			if port != 0 {
+				transportData.SetServerPort(port)
+			}
+		}
+
+		err := invoker(ctx, method, req, reply, cc, opts...)
+
+		return err
+	}
 }
 
 // otelHandler is a wrapper around the OpenTelemetry gRPC client handler that

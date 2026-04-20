@@ -23,6 +23,7 @@ import (
 
 	mediatranslationpb "cloud.google.com/go/mediatranslation/apiv1beta1/mediatranslationpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -131,6 +132,16 @@ type speechTranslationGRPCClient struct {
 // Provides translation from/to media types.
 func NewSpeechTranslationClient(ctx context.Context, opts ...option.ClientOption) (*SpeechTranslationClient, error) {
 	clientOpts := defaultSpeechTranslationGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "mediatranslation",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/mediatranslation/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "mediatranslation.googleapis.com",
+		}))
+	}
 	if newSpeechTranslationClientHook != nil {
 		hookOpts, err := newSpeechTranslationClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -152,6 +163,20 @@ func NewSpeechTranslationClient(ctx context.Context, opts ...option.ClientOption
 		logger:                  internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "mediatranslation",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/mediatranslation/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "mediatranslation.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.StreamingTranslateSpeech = append(client.CallOptions.StreamingTranslateSpeech, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -185,6 +210,9 @@ func (c *speechTranslationGRPCClient) Close() error {
 
 func (c *speechTranslationGRPCClient) StreamingTranslateSpeech(ctx context.Context, opts ...gax.CallOption) (mediatranslationpb.SpeechTranslationService_StreamingTranslateSpeechClient, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.mediatranslation.v1beta1.SpeechTranslationService/StreamingTranslateSpeech")
+	}
 	var resp mediatranslationpb.SpeechTranslationService_StreamingTranslateSpeechClient
 	opts = append((*c.CallOptions).StreamingTranslateSpeech[0:len((*c.CallOptions).StreamingTranslateSpeech):len((*c.CallOptions).StreamingTranslateSpeech)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

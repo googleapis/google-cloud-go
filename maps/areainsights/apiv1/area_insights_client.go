@@ -28,6 +28,7 @@ import (
 
 	areainsightspb "cloud.google.com/go/maps/areainsights/apiv1/areainsightspb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -173,6 +174,16 @@ type gRPCClient struct {
 // Service definition for the Places Aggregate RPC.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "areainsights",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/maps/areainsights/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "areainsights.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -194,6 +205,20 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "areainsights",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/areainsights/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "areainsights.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ComputeInsights = append(client.CallOptions.ComputeInsights, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -247,6 +272,16 @@ type restClient struct {
 // Service definition for the Places Aggregate RPC.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "areainsights",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/maps/areainsights/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "areainsights.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -260,6 +295,21 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "areainsights",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/areainsights/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "areainsights.googleapis.com",
+			}),
+		)
+
+		callOpts.ComputeInsights = append(callOpts.ComputeInsights, gax.WithClientMetrics(metrics))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -303,6 +353,9 @@ func (c *restClient) Connection() *grpc.ClientConn {
 }
 func (c *gRPCClient) ComputeInsights(ctx context.Context, req *areainsightspb.ComputeInsightsRequest, opts ...gax.CallOption) (*areainsightspb.ComputeInsightsResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.areainsights.v1.AreaInsights/ComputeInsights")
+	}
 	opts = append((*c.CallOptions).ComputeInsights[0:len((*c.CallOptions).ComputeInsights):len((*c.CallOptions).ComputeInsights)], opts...)
 	var resp *areainsightspb.ComputeInsightsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -346,6 +399,10 @@ func (c *restClient) ComputeInsights(ctx context.Context, req *areainsightspb.Co
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.areainsights.v1.AreaInsights/ComputeInsights")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1:computeInsights")
+	}
 	opts = append((*c.CallOptions).ComputeInsights[0:len((*c.CallOptions).ComputeInsights):len((*c.CallOptions).ComputeInsights)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &areainsightspb.ComputeInsightsResponse{}

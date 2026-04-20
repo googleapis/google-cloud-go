@@ -28,6 +28,7 @@ import (
 	procurementpb "cloud.google.com/go/commerce/consumer/procurement/apiv1/procurementpb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -192,6 +193,16 @@ type licenseManagementGRPCClient struct {
 // Service for managing licenses.
 func NewLicenseManagementClient(ctx context.Context, opts ...option.ClientOption) (*LicenseManagementClient, error) {
 	clientOpts := defaultLicenseManagementGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudcommerceconsumerprocurement",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/commerce/consumer/procurement/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudcommerceconsumerprocurement.googleapis.com",
+		}))
+	}
 	if newLicenseManagementClientHook != nil {
 		hookOpts, err := newLicenseManagementClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -214,6 +225,25 @@ func NewLicenseManagementClient(ctx context.Context, opts ...option.ClientOption
 		operationsClient:        longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudcommerceconsumerprocurement",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/commerce/consumer/procurement/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudcommerceconsumerprocurement.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetLicensePool = append(client.CallOptions.GetLicensePool, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateLicensePool = append(client.CallOptions.UpdateLicensePool, gax.WithClientMetrics(metrics))
+		client.CallOptions.Assign = append(client.CallOptions.Assign, gax.WithClientMetrics(metrics))
+		client.CallOptions.Unassign = append(client.CallOptions.Unassign, gax.WithClientMetrics(metrics))
+		client.CallOptions.EnumerateLicensedUsers = append(client.CallOptions.EnumerateLicensedUsers, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -267,6 +297,16 @@ type licenseManagementRESTClient struct {
 // Service for managing licenses.
 func NewLicenseManagementRESTClient(ctx context.Context, opts ...option.ClientOption) (*LicenseManagementClient, error) {
 	clientOpts := append(defaultLicenseManagementRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudcommerceconsumerprocurement",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/commerce/consumer/procurement/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudcommerceconsumerprocurement.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -280,6 +320,26 @@ func NewLicenseManagementRESTClient(ctx context.Context, opts ...option.ClientOp
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudcommerceconsumerprocurement",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/commerce/consumer/procurement/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudcommerceconsumerprocurement.googleapis.com",
+			}),
+		)
+
+		callOpts.GetLicensePool = append(callOpts.GetLicensePool, gax.WithClientMetrics(metrics))
+		callOpts.UpdateLicensePool = append(callOpts.UpdateLicensePool, gax.WithClientMetrics(metrics))
+		callOpts.Assign = append(callOpts.Assign, gax.WithClientMetrics(metrics))
+		callOpts.Unassign = append(callOpts.Unassign, gax.WithClientMetrics(metrics))
+		callOpts.EnumerateLicensedUsers = append(callOpts.EnumerateLicensedUsers, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+	}
 
 	return &LicenseManagementClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -326,6 +386,9 @@ func (c *licenseManagementGRPCClient) GetLicensePool(ctx context.Context, req *p
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerce.consumer.procurement.v1.LicenseManagementService/GetLicensePool")
+	}
 	opts = append((*c.CallOptions).GetLicensePool[0:len((*c.CallOptions).GetLicensePool):len((*c.CallOptions).GetLicensePool)], opts...)
 	var resp *procurementpb.LicensePool
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -344,6 +407,9 @@ func (c *licenseManagementGRPCClient) UpdateLicensePool(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerce.consumer.procurement.v1.LicenseManagementService/UpdateLicensePool")
+	}
 	opts = append((*c.CallOptions).UpdateLicensePool[0:len((*c.CallOptions).UpdateLicensePool):len((*c.CallOptions).UpdateLicensePool)], opts...)
 	var resp *procurementpb.LicensePool
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -362,6 +428,9 @@ func (c *licenseManagementGRPCClient) Assign(ctx context.Context, req *procureme
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerce.consumer.procurement.v1.LicenseManagementService/Assign")
+	}
 	opts = append((*c.CallOptions).Assign[0:len((*c.CallOptions).Assign):len((*c.CallOptions).Assign)], opts...)
 	var resp *procurementpb.AssignResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -380,6 +449,9 @@ func (c *licenseManagementGRPCClient) Unassign(ctx context.Context, req *procure
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerce.consumer.procurement.v1.LicenseManagementService/Unassign")
+	}
 	opts = append((*c.CallOptions).Unassign[0:len((*c.CallOptions).Unassign):len((*c.CallOptions).Unassign)], opts...)
 	var resp *procurementpb.UnassignResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -398,6 +470,9 @@ func (c *licenseManagementGRPCClient) EnumerateLicensedUsers(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerce.consumer.procurement.v1.LicenseManagementService/EnumerateLicensedUsers")
+	}
 	opts = append((*c.CallOptions).EnumerateLicensedUsers[0:len((*c.CallOptions).EnumerateLicensedUsers):len((*c.CallOptions).EnumerateLicensedUsers)], opts...)
 	it := &LicensedUserIterator{}
 	req = proto.Clone(req).(*procurementpb.EnumerateLicensedUsersRequest)
@@ -444,6 +519,9 @@ func (c *licenseManagementGRPCClient) GetOperation(ctx context.Context, req *lon
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -476,6 +554,10 @@ func (c *licenseManagementRESTClient) GetLicensePool(ctx context.Context, req *p
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerce.consumer.procurement.v1.LicenseManagementService/GetLicensePool")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=billingAccounts/*/orders/*/licensePool}")
+	}
 	opts = append((*c.CallOptions).GetLicensePool[0:len((*c.CallOptions).GetLicensePool):len((*c.CallOptions).GetLicensePool)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &procurementpb.LicensePool{}
@@ -540,6 +622,10 @@ func (c *licenseManagementRESTClient) UpdateLicensePool(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerce.consumer.procurement.v1.LicenseManagementService/UpdateLicensePool")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{license_pool.name=billingAccounts/*/orders/*/licensePool}")
+	}
 	opts = append((*c.CallOptions).UpdateLicensePool[0:len((*c.CallOptions).UpdateLicensePool):len((*c.CallOptions).UpdateLicensePool)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &procurementpb.LicensePool{}
@@ -596,6 +682,10 @@ func (c *licenseManagementRESTClient) Assign(ctx context.Context, req *procureme
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerce.consumer.procurement.v1.LicenseManagementService/Assign")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=billingAccounts/*/orders/*/licensePool}:assign")
+	}
 	opts = append((*c.CallOptions).Assign[0:len((*c.CallOptions).Assign):len((*c.CallOptions).Assign)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &procurementpb.AssignResponse{}
@@ -652,6 +742,10 @@ func (c *licenseManagementRESTClient) Unassign(ctx context.Context, req *procure
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerce.consumer.procurement.v1.LicenseManagementService/Unassign")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=billingAccounts/*/orders/*/licensePool}:unassign")
+	}
 	opts = append((*c.CallOptions).Unassign[0:len((*c.CallOptions).Unassign):len((*c.CallOptions).Unassign)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &procurementpb.UnassignResponse{}
@@ -780,6 +874,10 @@ func (c *licenseManagementRESTClient) GetOperation(ctx context.Context, req *lon
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=billingAccounts/*/orders/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}

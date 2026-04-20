@@ -28,6 +28,7 @@ import (
 
 	accountspb "cloud.google.com/go/shopping/merchant/accounts/apiv1beta/accountspb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -203,6 +204,16 @@ type lfpProvidersGRPCClient struct {
 //	LfpProvider
 func NewLfpProvidersClient(ctx context.Context, opts ...option.ClientOption) (*LfpProvidersClient, error) {
 	clientOpts := defaultLfpProvidersGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	if newLfpProvidersClientHook != nil {
 		hookOpts, err := newLfpProvidersClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -224,6 +235,21 @@ func NewLfpProvidersClient(ctx context.Context, opts ...option.ClientOption) (*L
 		logger:             internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.FindLfpProviders = append(client.CallOptions.FindLfpProviders, gax.WithClientMetrics(metrics))
+		client.CallOptions.LinkLfpProvider = append(client.CallOptions.LinkLfpProvider, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -280,6 +306,16 @@ type lfpProvidersRESTClient struct {
 //	LfpProvider
 func NewLfpProvidersRESTClient(ctx context.Context, opts ...option.ClientOption) (*LfpProvidersClient, error) {
 	clientOpts := append(defaultLfpProvidersRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -293,6 +329,22 @@ func NewLfpProvidersRESTClient(ctx context.Context, opts ...option.ClientOption)
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.FindLfpProviders = append(callOpts.FindLfpProviders, gax.WithClientMetrics(metrics))
+		callOpts.LinkLfpProvider = append(callOpts.LinkLfpProvider, gax.WithClientMetrics(metrics))
+	}
 
 	return &LfpProvidersClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -339,6 +391,12 @@ func (c *lfpProvidersGRPCClient) FindLfpProviders(ctx context.Context, req *acco
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.LfpProvidersService/FindLfpProviders")
+	}
 	opts = append((*c.CallOptions).FindLfpProviders[0:len((*c.CallOptions).FindLfpProviders):len((*c.CallOptions).FindLfpProviders)], opts...)
 	it := &LfpProviderIterator{}
 	req = proto.Clone(req).(*accountspb.FindLfpProvidersRequest)
@@ -385,6 +443,12 @@ func (c *lfpProvidersGRPCClient) LinkLfpProvider(ctx context.Context, req *accou
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.LfpProvidersService/LinkLfpProvider")
+	}
 	opts = append((*c.CallOptions).LinkLfpProvider[0:len((*c.CallOptions).LinkLfpProvider):len((*c.CallOptions).LinkLfpProvider)], opts...)
 	var resp *accountspb.LinkLfpProviderResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -501,6 +565,13 @@ func (c *lfpProvidersRESTClient) LinkLfpProvider(ctx context.Context, req *accou
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.LfpProvidersService/LinkLfpProvider")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1beta/{name=accounts/*/omnichannelSettings/*/lfpProviders/*}:linkLfpProvider")
+	}
 	opts = append((*c.CallOptions).LinkLfpProvider[0:len((*c.CallOptions).LinkLfpProvider):len((*c.CallOptions).LinkLfpProvider)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &accountspb.LinkLfpProviderResponse{}

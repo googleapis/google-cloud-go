@@ -79,6 +79,15 @@ var (
 		metricLabelKeyStatus:                true,
 	}
 
+	allowedEEFMetricLabels = map[string]bool{
+		metricLabelKeyClientUID:       true,
+		metricLabelKeyClientName:      true,
+		metricLabelKeyFromChannelName: true,
+		metricLabelKeyToChannelName:   true,
+		metricLabelKeyChannelName:     true,
+		metricLabelKeyStatusCode:      true,
+	}
+
 	errShutdown = fmt.Errorf("exporter is shutdown")
 )
 
@@ -215,6 +224,7 @@ func (me *monitoringExporter) recordToMetricAndMonitoredResourcePbs(metrics otel
 		Labels: map[string]string{},
 	}
 	labels := make(map[string]string)
+	isEEFMetric := strings.HasPrefix(metrics.Name, "eef.")
 	addAttributes := func(attr *attribute.Set) {
 		iter := attr.Iter()
 		for iter.Next() {
@@ -228,12 +238,18 @@ func (me *monitoringExporter) recordToMetricAndMonitoredResourcePbs(metrics otel
 				if _, ok := allowedMetricLabels[string(kv.Key)]; ok {
 					labels[labelKey] = kv.Value.Emit()
 				}
+				if _, ok := allowedEEFMetricLabels[string(kv.Key)]; ok && isEEFMetric {
+					labels[labelKey] = kv.Value.Emit()
+				}
 			}
 		}
 		for _, label := range me.clientAttributes {
 			if _, isResLabel := monitoredResLabelsSet[string(label.Key)]; isResLabel {
 				mr.Labels[string(label.Key)] = label.Value.Emit()
 			} else {
+				if ok := allowedEEFMetricLabels[string(label.Key)]; isEEFMetric && !ok {
+					continue
+				}
 				labels[string(label.Key)] = label.Value.Emit()
 			}
 		}
@@ -255,7 +271,7 @@ func (me *monitoringExporter) recordsToTimeSeriesPbs(rm *otelmetricdata.Resource
 		errs []error
 	)
 	for _, scope := range rm.ScopeMetrics {
-		if !(scope.Scope.Name == builtInMetricsMeterName || scope.Scope.Name == grpcMetricMeterName) {
+		if !(scope.Scope.Name == builtInMetricsMeterName || scope.Scope.Name == grpcMetricMeterName || scope.Scope.Name == grpcGcpMetricMeterName) {
 			continue
 		}
 		for _, metrics := range scope.Metrics {

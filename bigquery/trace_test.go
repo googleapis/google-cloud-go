@@ -61,7 +61,6 @@ func TestSetDatasetTraceMetadata(t *testing.T) {
 }
 
 func TestTracingTelemetryAttributes(t *testing.T) {
-	t.Skip("Skipping flaky test pending auth module release: https://github.com/googleapis/google-cloud-go/issues/14205")
 	os.Setenv("GOOGLE_SDK_GO_EXPERIMENTAL_TRACING", "true")
 	defer os.Unsetenv("GOOGLE_SDK_GO_EXPERIMENTAL_TRACING")
 	gax.TestOnlyResetIsFeatureEnabled()

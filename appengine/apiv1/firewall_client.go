@@ -28,6 +28,7 @@ import (
 
 	appenginepb "cloud.google.com/go/appengine/apiv1/appenginepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -236,6 +237,16 @@ type firewallGRPCClient struct {
 // set to “allow” if not otherwise specified by the user.
 func NewFirewallClient(ctx context.Context, opts ...option.ClientOption) (*FirewallClient, error) {
 	clientOpts := defaultFirewallGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "appengine",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/appengine/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "appengine.googleapis.com",
+		}))
+	}
 	if newFirewallClientHook != nil {
 		hookOpts, err := newFirewallClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -257,6 +268,25 @@ func NewFirewallClient(ctx context.Context, opts ...option.ClientOption) (*Firew
 		logger:         internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListIngressRules = append(client.CallOptions.ListIngressRules, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchUpdateIngressRules = append(client.CallOptions.BatchUpdateIngressRules, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateIngressRule = append(client.CallOptions.CreateIngressRule, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIngressRule = append(client.CallOptions.GetIngressRule, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateIngressRule = append(client.CallOptions.UpdateIngressRule, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteIngressRule = append(client.CallOptions.DeleteIngressRule, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -319,6 +349,16 @@ type firewallRESTClient struct {
 // set to “allow” if not otherwise specified by the user.
 func NewFirewallRESTClient(ctx context.Context, opts ...option.ClientOption) (*FirewallClient, error) {
 	clientOpts := append(defaultFirewallRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "appengine",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/appengine/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "appengine.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -332,6 +372,26 @@ func NewFirewallRESTClient(ctx context.Context, opts ...option.ClientOption) (*F
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		callOpts.ListIngressRules = append(callOpts.ListIngressRules, gax.WithClientMetrics(metrics))
+		callOpts.BatchUpdateIngressRules = append(callOpts.BatchUpdateIngressRules, gax.WithClientMetrics(metrics))
+		callOpts.CreateIngressRule = append(callOpts.CreateIngressRule, gax.WithClientMetrics(metrics))
+		callOpts.GetIngressRule = append(callOpts.GetIngressRule, gax.WithClientMetrics(metrics))
+		callOpts.UpdateIngressRule = append(callOpts.UpdateIngressRule, gax.WithClientMetrics(metrics))
+		callOpts.DeleteIngressRule = append(callOpts.DeleteIngressRule, gax.WithClientMetrics(metrics))
+	}
 
 	return &FirewallClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -378,6 +438,9 @@ func (c *firewallGRPCClient) ListIngressRules(ctx context.Context, req *appengin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Firewall/ListIngressRules")
+	}
 	opts = append((*c.CallOptions).ListIngressRules[0:len((*c.CallOptions).ListIngressRules):len((*c.CallOptions).ListIngressRules)], opts...)
 	it := &FirewallRuleIterator{}
 	req = proto.Clone(req).(*appenginepb.ListIngressRulesRequest)
@@ -424,6 +487,9 @@ func (c *firewallGRPCClient) BatchUpdateIngressRules(ctx context.Context, req *a
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Firewall/BatchUpdateIngressRules")
+	}
 	opts = append((*c.CallOptions).BatchUpdateIngressRules[0:len((*c.CallOptions).BatchUpdateIngressRules):len((*c.CallOptions).BatchUpdateIngressRules)], opts...)
 	var resp *appenginepb.BatchUpdateIngressRulesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -442,6 +508,9 @@ func (c *firewallGRPCClient) CreateIngressRule(ctx context.Context, req *appengi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Firewall/CreateIngressRule")
+	}
 	opts = append((*c.CallOptions).CreateIngressRule[0:len((*c.CallOptions).CreateIngressRule):len((*c.CallOptions).CreateIngressRule)], opts...)
 	var resp *appenginepb.FirewallRule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -460,6 +529,9 @@ func (c *firewallGRPCClient) GetIngressRule(ctx context.Context, req *appenginep
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Firewall/GetIngressRule")
+	}
 	opts = append((*c.CallOptions).GetIngressRule[0:len((*c.CallOptions).GetIngressRule):len((*c.CallOptions).GetIngressRule)], opts...)
 	var resp *appenginepb.FirewallRule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -478,6 +550,9 @@ func (c *firewallGRPCClient) UpdateIngressRule(ctx context.Context, req *appengi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Firewall/UpdateIngressRule")
+	}
 	opts = append((*c.CallOptions).UpdateIngressRule[0:len((*c.CallOptions).UpdateIngressRule):len((*c.CallOptions).UpdateIngressRule)], opts...)
 	var resp *appenginepb.FirewallRule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -496,6 +571,9 @@ func (c *firewallGRPCClient) DeleteIngressRule(ctx context.Context, req *appengi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Firewall/DeleteIngressRule")
+	}
 	opts = append((*c.CallOptions).DeleteIngressRule[0:len((*c.CallOptions).DeleteIngressRule):len((*c.CallOptions).DeleteIngressRule)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -615,6 +693,10 @@ func (c *firewallRESTClient) BatchUpdateIngressRules(ctx context.Context, req *a
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Firewall/BatchUpdateIngressRules")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=apps/*/firewall/ingressRules}:batchUpdate")
+	}
 	opts = append((*c.CallOptions).BatchUpdateIngressRules[0:len((*c.CallOptions).BatchUpdateIngressRules):len((*c.CallOptions).BatchUpdateIngressRules)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &appenginepb.BatchUpdateIngressRulesResponse{}
@@ -672,6 +754,10 @@ func (c *firewallRESTClient) CreateIngressRule(ctx context.Context, req *appengi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Firewall/CreateIngressRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=apps/*}/firewall/ingressRules")
+	}
 	opts = append((*c.CallOptions).CreateIngressRule[0:len((*c.CallOptions).CreateIngressRule):len((*c.CallOptions).CreateIngressRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &appenginepb.FirewallRule{}
@@ -722,6 +808,10 @@ func (c *firewallRESTClient) GetIngressRule(ctx context.Context, req *appenginep
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Firewall/GetIngressRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=apps/*/firewall/ingressRules/*}")
+	}
 	opts = append((*c.CallOptions).GetIngressRule[0:len((*c.CallOptions).GetIngressRule):len((*c.CallOptions).GetIngressRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &appenginepb.FirewallRule{}
@@ -786,6 +876,10 @@ func (c *firewallRESTClient) UpdateIngressRule(ctx context.Context, req *appengi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Firewall/UpdateIngressRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=apps/*/firewall/ingressRules/*}")
+	}
 	opts = append((*c.CallOptions).UpdateIngressRule[0:len((*c.CallOptions).UpdateIngressRule):len((*c.CallOptions).UpdateIngressRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &appenginepb.FirewallRule{}
@@ -836,6 +930,10 @@ func (c *firewallRESTClient) DeleteIngressRule(ctx context.Context, req *appengi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Firewall/DeleteIngressRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=apps/*/firewall/ingressRules/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path

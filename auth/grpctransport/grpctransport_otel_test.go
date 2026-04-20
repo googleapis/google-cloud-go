@@ -123,11 +123,10 @@ func TestDial_OpenTelemetry_Enabled(t *testing.T) {
 					Code: codes.Unset,
 				},
 				Attributes: []attribute.KeyValue{
-					keyRPCStatusCode.Int64(0),
-					keyRPCMethod.String("Echo"),
-					keyRPCService.String("echo.Echoer"),
-					keyRPCSystem.String(valRPCSystemGRPC),
+					keyRPCMethod.String("echo.Echoer/Echo"),
+					attribute.String("rpc.system.name", "grpc"),
 					keyServerAddr.String(valLocalhost),
+					attribute.String("rpc.response.status_code", "OK"),
 				},
 			}.Snapshot(),
 			wantAttrKeys: []attribute.Key{keyServerPort},
@@ -146,10 +145,8 @@ func TestDial_OpenTelemetry_Enabled(t *testing.T) {
 					Description: "test error",
 				},
 				Attributes: []attribute.KeyValue{
-					keyRPCStatusCode.Int64(13),
-					keyRPCMethod.String("Echo"),
-					keyRPCService.String("echo.Echoer"),
-					keyRPCSystem.String(valRPCSystemGRPC),
+					keyRPCMethod.String("echo.Echoer/Echo"),
+					attribute.String("rpc.system.name", "grpc"),
 					keyServerAddr.String(valLocalhost),
 					attribute.String("error.type", "*status.Error"),
 					attribute.String("status.message", "test error"),
@@ -173,10 +170,8 @@ func TestDial_OpenTelemetry_Enabled(t *testing.T) {
 					Description: "context deadline exceeded",
 				},
 				Attributes: []attribute.KeyValue{
-					keyRPCStatusCode.Int64(4),
-					keyRPCMethod.String("Echo"),
-					keyRPCService.String("echo.Echoer"),
-					keyRPCSystem.String(valRPCSystemGRPC),
+					keyRPCMethod.String("echo.Echoer/Echo"),
+					attribute.String("rpc.system.name", "grpc"),
 					keyServerAddr.String(valLocalhost),
 					attribute.String("error.type", "CLIENT_TIMEOUT"),
 					attribute.String("rpc.response.status_code", "DEADLINE_EXCEEDED"),
@@ -199,13 +194,11 @@ func TestDial_OpenTelemetry_Enabled(t *testing.T) {
 					Description: "context canceled",
 				},
 				Attributes: []attribute.KeyValue{
-					keyRPCStatusCode.Int64(1),
-					keyRPCMethod.String("Echo"),
-					keyRPCService.String("echo.Echoer"),
-					keyRPCSystem.String(valRPCSystemGRPC),
+					keyRPCMethod.String("echo.Echoer/Echo"),
+					attribute.String("rpc.system.name", "grpc"),
 					keyServerAddr.String(valLocalhost),
 					attribute.String("error.type", "CLIENT_CANCELLED"),
-					attribute.String("rpc.response.status_code", "CANCELED"),
+					attribute.String("rpc.response.status_code", "CANCELLED"),
 				},
 			}.Snapshot(),
 			wantAttrKeys: []attribute.Key{keyServerPort, attribute.Key("status.message"), attribute.Key("exception.type")},
@@ -245,10 +238,8 @@ func TestDial_OpenTelemetry_Enabled(t *testing.T) {
 					Code: codes.Unset,
 				},
 				Attributes: []attribute.KeyValue{
-					keyRPCStatusCode.Int64(0),
-					keyRPCMethod.String("Echo"),
-					keyRPCService.String("echo.Echoer"),
-					keyRPCSystem.String(valRPCSystemGRPC),
+					keyRPCMethod.String("echo.Echoer/Echo"),
+					attribute.String("rpc.system.name", "grpc"),
 					keyServerAddr.String(valLocalhost),
 					attribute.String("gcp.resource.destination.id", "my-resource"),
 					attribute.String("gcp.client.service", "echo"),
@@ -412,11 +403,10 @@ func TestDial_OpenTelemetry_Disabled(t *testing.T) {
 					Code: codes.Unset,
 				},
 				Attributes: []attribute.KeyValue{
-					keyRPCStatusCode.Int64(0),
-					keyRPCMethod.String("Echo"),
-					keyRPCService.String("echo.Echoer"),
-					keyRPCSystem.String(valRPCSystemGRPC),
+					keyRPCMethod.String("echo.Echoer/Echo"),
+					attribute.String("rpc.system.name", "grpc"),
 					keyServerAddr.String(valLocalhost),
+					attribute.String("rpc.response.status_code", "OK"),
 				},
 			}.Snapshot(),
 			wantAttrKeys: []attribute.Key{keyServerPort},
@@ -435,11 +425,10 @@ func TestDial_OpenTelemetry_Disabled(t *testing.T) {
 					Description: "test error",
 				},
 				Attributes: []attribute.KeyValue{
-					keyRPCStatusCode.Int64(13),
-					keyRPCMethod.String("Echo"),
-					keyRPCService.String("echo.Echoer"),
-					keyRPCSystem.String(valRPCSystemGRPC),
+					keyRPCMethod.String("echo.Echoer/Echo"),
+					attribute.String("rpc.system.name", "grpc"),
 					keyServerAddr.String(valLocalhost),
+					attribute.String("rpc.response.status_code", "INTERNAL"),
 					// Standard OTel attributes only, NO strict error.type/status.message/grpc.status
 				},
 			}.Snapshot(),
@@ -460,11 +449,10 @@ func TestDial_OpenTelemetry_Disabled(t *testing.T) {
 					Description: "context deadline exceeded",
 				},
 				Attributes: []attribute.KeyValue{
-					keyRPCStatusCode.Int64(4),
-					keyRPCMethod.String("Echo"),
-					keyRPCService.String("echo.Echoer"),
-					keyRPCSystem.String(valRPCSystemGRPC),
+					keyRPCMethod.String("echo.Echoer/Echo"),
+					attribute.String("rpc.system.name", "grpc"),
 					keyServerAddr.String(valLocalhost),
+					attribute.String("rpc.response.status_code", "DEADLINE_EXCEEDED"),
 				},
 			}.Snapshot(),
 			wantAttrKeys: []attribute.Key{keyServerPort},
@@ -484,11 +472,10 @@ func TestDial_OpenTelemetry_Disabled(t *testing.T) {
 					Description: "context canceled",
 				},
 				Attributes: []attribute.KeyValue{
-					keyRPCStatusCode.Int64(1),
-					keyRPCMethod.String("Echo"),
-					keyRPCService.String("echo.Echoer"),
-					keyRPCSystem.String(valRPCSystemGRPC),
+					keyRPCMethod.String("echo.Echoer/Echo"),
+					attribute.String("rpc.system.name", "grpc"),
 					keyServerAddr.String(valLocalhost),
+					attribute.String("rpc.response.status_code", "CANCELLED"),
 				},
 			}.Snapshot(),
 			wantAttrKeys: []attribute.Key{keyServerPort},
@@ -523,11 +510,10 @@ func TestDial_OpenTelemetry_Disabled(t *testing.T) {
 					Code: codes.Unset,
 				},
 				Attributes: []attribute.KeyValue{
-					keyRPCStatusCode.Int64(0),
-					keyRPCMethod.String("Echo"),
-					keyRPCService.String("echo.Echoer"),
-					keyRPCSystem.String(valRPCSystemGRPC),
+					keyRPCMethod.String("echo.Echoer/Echo"),
+					attribute.String("rpc.system.name", "grpc"),
 					keyServerAddr.String(valLocalhost),
+					attribute.String("rpc.response.status_code", "OK"),
 					// NO gcp.* attributes
 				},
 			}.Snapshot(),
@@ -845,7 +831,7 @@ func TestHandleRPC_ActionableErrors(t *testing.T) {
 	}
 }
 
-func TestDial_TracingAndLogging_Combinations(t *testing.T) {
+func TestDial_Telemetry_Combinations(t *testing.T) {
 	// Ensure any lingering HTTP/2 connections are closed to avoid goroutine leaks.
 	defer http.DefaultTransport.(*http.Transport).CloseIdleConnections()
 
@@ -867,36 +853,82 @@ func TestDial_TracingAndLogging_Combinations(t *testing.T) {
 		name             string
 		logging          bool
 		tracing          bool
+		metrics          bool
 		wantLog          bool
 		wantTracingAttrs bool
+		wantMetricsAttrs bool
 	}{
 		{
-			name:             "both disabled",
+			name:             "all disabled",
 			logging:          false,
 			tracing:          false,
+			metrics:          false,
 			wantLog:          false,
 			wantTracingAttrs: false,
+			wantMetricsAttrs: false,
 		},
 		{
-			name:             "tracing enabled, logging disabled",
+			name:             "tracing enabled",
 			logging:          false,
 			tracing:          true,
+			metrics:          false,
 			wantLog:          false,
 			wantTracingAttrs: true,
+			wantMetricsAttrs: false,
 		},
 		{
-			name:             "tracing disabled, logging enabled",
+			name:             "logging enabled",
 			logging:          true,
 			tracing:          false,
+			metrics:          false,
 			wantLog:          true,
-			wantTracingAttrs: true,
+			wantTracingAttrs: false,
+			wantMetricsAttrs: false,
 		},
 		{
-			name:             "both enabled",
+			name:             "metrics enabled",
+			logging:          false,
+			tracing:          false,
+			metrics:          true,
+			wantLog:          false,
+			wantTracingAttrs: false,
+			wantMetricsAttrs: true,
+		},
+		{
+			name:             "tracing and logging enabled",
 			logging:          true,
 			tracing:          true,
+			metrics:          false,
 			wantLog:          true,
 			wantTracingAttrs: true,
+			wantMetricsAttrs: false,
+		},
+		{
+			name:             "tracing and metrics enabled",
+			logging:          false,
+			tracing:          true,
+			metrics:          true,
+			wantLog:          false,
+			wantTracingAttrs: true,
+			wantMetricsAttrs: true,
+		},
+		{
+			name:             "logging and metrics enabled",
+			logging:          true,
+			tracing:          false,
+			metrics:          true,
+			wantLog:          true,
+			wantTracingAttrs: false,
+			wantMetricsAttrs: true,
+		},
+		{
+			name:             "all enabled",
+			logging:          true,
+			tracing:          true,
+			metrics:          true,
+			wantLog:          true,
+			wantTracingAttrs: true,
+			wantMetricsAttrs: true,
 		},
 	}
 
@@ -915,6 +947,11 @@ func TestDial_TracingAndLogging_Combinations(t *testing.T) {
 				t.Setenv("GOOGLE_SDK_GO_EXPERIMENTAL_TRACING", "true")
 			} else {
 				t.Setenv("GOOGLE_SDK_GO_EXPERIMENTAL_TRACING", "false")
+			}
+			if tt.metrics {
+				t.Setenv("GOOGLE_SDK_GO_EXPERIMENTAL_METRICS", "true")
+			} else {
+				t.Setenv("GOOGLE_SDK_GO_EXPERIMENTAL_METRICS", "false")
 			}
 
 			l, err := net.Listen("tcp", "localhost:0")
@@ -951,8 +988,11 @@ func TestDial_TracingAndLogging_Combinations(t *testing.T) {
 			}
 			defer pool.Close()
 
+			data := &gax.TransportTelemetryData{}
+			ctx := gax.InjectTransportTelemetry(context.Background(), data)
+
 			client := echo.NewEchoerClient(pool)
-			_, _ = client.Echo(context.Background(), &echo.EchoRequest{Message: "hello"})
+			_, _ = client.Echo(ctx, &echo.EchoRequest{Message: "hello"})
 
 			logOutput := logBuf.String()
 			hasLog := strings.TrimSpace(logOutput) != ""
@@ -961,16 +1001,19 @@ func TestDial_TracingAndLogging_Combinations(t *testing.T) {
 				t.Errorf("got log: %v, want: %v\noutput: %s", hasLog, tt.wantLog, logOutput)
 			}
 
-			spans := exporter.GetSpans()
-			if len(spans) != 1 {
-				t.Fatalf("len(spans) = %d, want 1", len(spans))
+			hasMetricsAttrs := data.ServerAddress() != ""
+			if hasMetricsAttrs != tt.wantMetricsAttrs {
+				t.Errorf("got metrics attrs: %v, want: %v", hasMetricsAttrs, tt.wantMetricsAttrs)
 			}
 
+			spans := exporter.GetSpans()
 			hasTracingAttrs := false
-			for _, attr := range spans[0].Attributes {
-				if attr.Key == "gcp.client.version" && attr.Value.AsString() == "1.2.3" {
-					hasTracingAttrs = true
-					break
+			for _, span := range spans {
+				for _, attr := range span.Attributes {
+					if attr.Key == "gcp.client.version" && attr.Value.AsString() == "1.2.3" {
+						hasTracingAttrs = true
+						break
+					}
 				}
 			}
 
@@ -994,3 +1037,33 @@ func (m *mockStatsHandler) TagConn(ctx context.Context, info *stats.ConnTagInfo)
 }
 
 func (m *mockStatsHandler) HandleConn(ctx context.Context, cs stats.ConnStats) {}
+
+func TestExtractHostPort(t *testing.T) {
+	tests := []struct {
+		target   string
+		wantHost string
+		wantPort int
+	}{
+		{"localhost:8080", "localhost", 8080},
+		{"[::1]:443", "::1", 443},
+		{"google.com", "google.com", 0},
+		{"dns:///localhost:8080", "localhost", 8080},
+		{"dns:///google.com:443", "google.com", 443},
+		{"xds:///my-service:80", "my-service", 80},
+		{"dns:///[::1]:8080", "::1", 8080},
+		{"google.com:foo", "google.com", 0},
+		{"dns://8.8.8.8/lb.example.com:443", "lb.example.com", 443},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.target, func(t *testing.T) {
+			gotHost, gotPort := extractHostPort(tt.target)
+			if gotHost != tt.wantHost {
+				t.Errorf("extractHostPort(%q) host = %q, want %q", tt.target, gotHost, tt.wantHost)
+			}
+			if gotPort != tt.wantPort {
+				t.Errorf("extractHostPort(%q) port = %v, want %v", tt.target, gotPort, tt.wantPort)
+			}
+		})
+	}
+}

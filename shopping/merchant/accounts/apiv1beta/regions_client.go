@@ -28,6 +28,7 @@ import (
 
 	accountspb "cloud.google.com/go/shopping/merchant/accounts/apiv1beta/accountspb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -298,6 +299,16 @@ type regionsGRPCClient struct {
 //	Region
 func NewRegionsClient(ctx context.Context, opts ...option.ClientOption) (*RegionsClient, error) {
 	clientOpts := defaultRegionsGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	if newRegionsClientHook != nil {
 		hookOpts, err := newRegionsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -319,6 +330,24 @@ func NewRegionsClient(ctx context.Context, opts ...option.ClientOption) (*Region
 		logger:        internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetRegion = append(client.CallOptions.GetRegion, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateRegion = append(client.CallOptions.CreateRegion, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateRegion = append(client.CallOptions.UpdateRegion, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteRegion = append(client.CallOptions.DeleteRegion, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListRegions = append(client.CallOptions.ListRegions, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -376,6 +405,16 @@ type regionsRESTClient struct {
 //	Region
 func NewRegionsRESTClient(ctx context.Context, opts ...option.ClientOption) (*RegionsClient, error) {
 	clientOpts := append(defaultRegionsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -389,6 +428,25 @@ func NewRegionsRESTClient(ctx context.Context, opts ...option.ClientOption) (*Re
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetRegion = append(callOpts.GetRegion, gax.WithClientMetrics(metrics))
+		callOpts.CreateRegion = append(callOpts.CreateRegion, gax.WithClientMetrics(metrics))
+		callOpts.UpdateRegion = append(callOpts.UpdateRegion, gax.WithClientMetrics(metrics))
+		callOpts.DeleteRegion = append(callOpts.DeleteRegion, gax.WithClientMetrics(metrics))
+		callOpts.ListRegions = append(callOpts.ListRegions, gax.WithClientMetrics(metrics))
+	}
 
 	return &RegionsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -435,6 +493,12 @@ func (c *regionsGRPCClient) GetRegion(ctx context.Context, req *accountspb.GetRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.RegionsService/GetRegion")
+	}
 	opts = append((*c.CallOptions).GetRegion[0:len((*c.CallOptions).GetRegion):len((*c.CallOptions).GetRegion)], opts...)
 	var resp *accountspb.Region
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -453,6 +517,12 @@ func (c *regionsGRPCClient) CreateRegion(ctx context.Context, req *accountspb.Cr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.RegionsService/CreateRegion")
+	}
 	opts = append((*c.CallOptions).CreateRegion[0:len((*c.CallOptions).CreateRegion):len((*c.CallOptions).CreateRegion)], opts...)
 	var resp *accountspb.Region
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -471,6 +541,9 @@ func (c *regionsGRPCClient) UpdateRegion(ctx context.Context, req *accountspb.Up
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.RegionsService/UpdateRegion")
+	}
 	opts = append((*c.CallOptions).UpdateRegion[0:len((*c.CallOptions).UpdateRegion):len((*c.CallOptions).UpdateRegion)], opts...)
 	var resp *accountspb.Region
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -489,6 +562,12 @@ func (c *regionsGRPCClient) DeleteRegion(ctx context.Context, req *accountspb.De
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.RegionsService/DeleteRegion")
+	}
 	opts = append((*c.CallOptions).DeleteRegion[0:len((*c.CallOptions).DeleteRegion):len((*c.CallOptions).DeleteRegion)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -503,6 +582,12 @@ func (c *regionsGRPCClient) ListRegions(ctx context.Context, req *accountspb.Lis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.RegionsService/ListRegions")
+	}
 	opts = append((*c.CallOptions).ListRegions[0:len((*c.CallOptions).ListRegions):len((*c.CallOptions).ListRegions)], opts...)
 	it := &RegionIterator{}
 	req = proto.Clone(req).(*accountspb.ListRegionsRequest)
@@ -563,6 +648,13 @@ func (c *regionsRESTClient) GetRegion(ctx context.Context, req *accountspb.GetRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.RegionsService/GetRegion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1beta/{name=accounts/*/regions/*}")
+	}
 	opts = append((*c.CallOptions).GetRegion[0:len((*c.CallOptions).GetRegion):len((*c.CallOptions).GetRegion)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &accountspb.Region{}
@@ -622,6 +714,13 @@ func (c *regionsRESTClient) CreateRegion(ctx context.Context, req *accountspb.Cr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.RegionsService/CreateRegion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1beta/{parent=accounts/*}/regions")
+	}
 	opts = append((*c.CallOptions).CreateRegion[0:len((*c.CallOptions).CreateRegion):len((*c.CallOptions).CreateRegion)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &accountspb.Region{}
@@ -687,6 +786,10 @@ func (c *regionsRESTClient) UpdateRegion(ctx context.Context, req *accountspb.Up
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.RegionsService/UpdateRegion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1beta/{region.name=accounts/*/regions/*}")
+	}
 	opts = append((*c.CallOptions).UpdateRegion[0:len((*c.CallOptions).UpdateRegion):len((*c.CallOptions).UpdateRegion)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &accountspb.Region{}
@@ -738,6 +841,13 @@ func (c *regionsRESTClient) DeleteRegion(ctx context.Context, req *accountspb.De
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.RegionsService/DeleteRegion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1beta/{name=accounts/*/regions/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path

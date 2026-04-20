@@ -31,8 +31,8 @@ jobs:
       - name: Update library versions and regenerate
         if: failure()
         run: |
-          echo "Library version is different between state.yaml and librarian.yaml.
-          Update versions in the configs according to the error message and
+          echo "Library configuration is different between state.yaml and librarian.yaml.
+          Update library configuration in the configs according to the error message and
           regenerate libraries using:
           
           V=\$(sed -n 's/^version: *//p' librarian.yaml)

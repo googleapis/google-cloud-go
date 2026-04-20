@@ -5,6 +5,7 @@
 
 /ai/                    @googleapis/vertexai-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
 /aiplatform/            @googleapis/vertexai-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
+/auth/                  @googleapis/aion-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
 /bigtable/              @googleapis/bigtable-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
 /bigtable/cmd/cbt       @googleapis/bigtable-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
 /bigtable/cmd/emulator  @googleapis/bigtable-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team

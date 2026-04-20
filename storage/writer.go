@@ -183,9 +183,9 @@ type Writer struct {
 	// parallel. Supported exclusively for gRPC clients. If used with a JSON
 	// client, the configuration is ignored and a standard upload is performed.
 	//
-	// Upon completion of a parallel upload, the Writer makes a best-effort attempt to clean up any temporary parts created.
-	// It is recommended to set appropriate bucket lifecycle policies to reliably clean up any leftover objects to avoid unnecessary storage costs.
-	// Temporary parts have the prefix: "gcs-go-sdk-pu-tmp".
+	// Parallel uploads can yield higher throughput when uploading large objects,
+	// but there are several considerations and trade-offs. Please refer to
+	// the [Parallel Uploads] section in the package documentation for details.
 	//
 	// **Note:** This feature is currently experimental and its API surface may change
 	// in future releases. It is not yet recommended for production use.

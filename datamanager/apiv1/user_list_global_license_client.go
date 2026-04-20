@@ -27,6 +27,7 @@ import (
 
 	datamanagerpb "cloud.google.com/go/datamanager/apiv1/datamanagerpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -198,6 +199,16 @@ type userListGlobalLicenseGRPCClient struct {
 // This feature is only available to data partners.
 func NewUserListGlobalLicenseClient(ctx context.Context, opts ...option.ClientOption) (*UserListGlobalLicenseClient, error) {
 	clientOpts := defaultUserListGlobalLicenseGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "datamanager",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/datamanager/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "datamanager.googleapis.com",
+		}))
+	}
 	if newUserListGlobalLicenseClientHook != nil {
 		hookOpts, err := newUserListGlobalLicenseClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -219,6 +230,24 @@ func NewUserListGlobalLicenseClient(ctx context.Context, opts ...option.ClientOp
 		logger:                      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "datamanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datamanager/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "datamanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateUserListGlobalLicense = append(client.CallOptions.CreateUserListGlobalLicense, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateUserListGlobalLicense = append(client.CallOptions.UpdateUserListGlobalLicense, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetUserListGlobalLicense = append(client.CallOptions.GetUserListGlobalLicense, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListUserListGlobalLicenses = append(client.CallOptions.ListUserListGlobalLicenses, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListUserListGlobalLicenseCustomerInfos = append(client.CallOptions.ListUserListGlobalLicenseCustomerInfos, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -276,6 +305,16 @@ type userListGlobalLicenseRESTClient struct {
 // This feature is only available to data partners.
 func NewUserListGlobalLicenseRESTClient(ctx context.Context, opts ...option.ClientOption) (*UserListGlobalLicenseClient, error) {
 	clientOpts := append(defaultUserListGlobalLicenseRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "datamanager",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/datamanager/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "datamanager.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -289,6 +328,25 @@ func NewUserListGlobalLicenseRESTClient(ctx context.Context, opts ...option.Clie
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "datamanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datamanager/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "datamanager.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateUserListGlobalLicense = append(callOpts.CreateUserListGlobalLicense, gax.WithClientMetrics(metrics))
+		callOpts.UpdateUserListGlobalLicense = append(callOpts.UpdateUserListGlobalLicense, gax.WithClientMetrics(metrics))
+		callOpts.GetUserListGlobalLicense = append(callOpts.GetUserListGlobalLicense, gax.WithClientMetrics(metrics))
+		callOpts.ListUserListGlobalLicenses = append(callOpts.ListUserListGlobalLicenses, gax.WithClientMetrics(metrics))
+		callOpts.ListUserListGlobalLicenseCustomerInfos = append(callOpts.ListUserListGlobalLicenseCustomerInfos, gax.WithClientMetrics(metrics))
+	}
 
 	return &UserListGlobalLicenseClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -335,6 +393,12 @@ func (c *userListGlobalLicenseGRPCClient) CreateUserListGlobalLicense(ctx contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.UserListGlobalLicenseService/CreateUserListGlobalLicense")
+	}
 	opts = append((*c.CallOptions).CreateUserListGlobalLicense[0:len((*c.CallOptions).CreateUserListGlobalLicense):len((*c.CallOptions).CreateUserListGlobalLicense)], opts...)
 	var resp *datamanagerpb.UserListGlobalLicense
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -353,6 +417,9 @@ func (c *userListGlobalLicenseGRPCClient) UpdateUserListGlobalLicense(ctx contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.UserListGlobalLicenseService/UpdateUserListGlobalLicense")
+	}
 	opts = append((*c.CallOptions).UpdateUserListGlobalLicense[0:len((*c.CallOptions).UpdateUserListGlobalLicense):len((*c.CallOptions).UpdateUserListGlobalLicense)], opts...)
 	var resp *datamanagerpb.UserListGlobalLicense
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -371,6 +438,12 @@ func (c *userListGlobalLicenseGRPCClient) GetUserListGlobalLicense(ctx context.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.UserListGlobalLicenseService/GetUserListGlobalLicense")
+	}
 	opts = append((*c.CallOptions).GetUserListGlobalLicense[0:len((*c.CallOptions).GetUserListGlobalLicense):len((*c.CallOptions).GetUserListGlobalLicense)], opts...)
 	var resp *datamanagerpb.UserListGlobalLicense
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -389,6 +462,12 @@ func (c *userListGlobalLicenseGRPCClient) ListUserListGlobalLicenses(ctx context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.UserListGlobalLicenseService/ListUserListGlobalLicenses")
+	}
 	opts = append((*c.CallOptions).ListUserListGlobalLicenses[0:len((*c.CallOptions).ListUserListGlobalLicenses):len((*c.CallOptions).ListUserListGlobalLicenses)], opts...)
 	it := &UserListGlobalLicenseIterator{}
 	req = proto.Clone(req).(*datamanagerpb.ListUserListGlobalLicensesRequest)
@@ -435,6 +514,12 @@ func (c *userListGlobalLicenseGRPCClient) ListUserListGlobalLicenseCustomerInfos
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.UserListGlobalLicenseService/ListUserListGlobalLicenseCustomerInfos")
+	}
 	opts = append((*c.CallOptions).ListUserListGlobalLicenseCustomerInfos[0:len((*c.CallOptions).ListUserListGlobalLicenseCustomerInfos):len((*c.CallOptions).ListUserListGlobalLicenseCustomerInfos)], opts...)
 	it := &UserListGlobalLicenseCustomerInfoIterator{}
 	req = proto.Clone(req).(*datamanagerpb.ListUserListGlobalLicenseCustomerInfosRequest)
@@ -504,6 +589,13 @@ func (c *userListGlobalLicenseRESTClient) CreateUserListGlobalLicense(ctx contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.UserListGlobalLicenseService/CreateUserListGlobalLicense")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=accountTypes/*/accounts/*}/userListGlobalLicenses")
+	}
 	opts = append((*c.CallOptions).CreateUserListGlobalLicense[0:len((*c.CallOptions).CreateUserListGlobalLicense):len((*c.CallOptions).CreateUserListGlobalLicense)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datamanagerpb.UserListGlobalLicense{}
@@ -570,6 +662,10 @@ func (c *userListGlobalLicenseRESTClient) UpdateUserListGlobalLicense(ctx contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.UserListGlobalLicenseService/UpdateUserListGlobalLicense")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{user_list_global_license.name=accountTypes/*/accounts/*/userListGlobalLicenses/*}")
+	}
 	opts = append((*c.CallOptions).UpdateUserListGlobalLicense[0:len((*c.CallOptions).UpdateUserListGlobalLicense):len((*c.CallOptions).UpdateUserListGlobalLicense)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datamanagerpb.UserListGlobalLicense{}
@@ -622,6 +718,13 @@ func (c *userListGlobalLicenseRESTClient) GetUserListGlobalLicense(ctx context.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.UserListGlobalLicenseService/GetUserListGlobalLicense")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=accountTypes/*/accounts/*/userListGlobalLicenses/*}")
+	}
 	opts = append((*c.CallOptions).GetUserListGlobalLicense[0:len((*c.CallOptions).GetUserListGlobalLicense):len((*c.CallOptions).GetUserListGlobalLicense)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datamanagerpb.UserListGlobalLicense{}

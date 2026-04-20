@@ -28,6 +28,7 @@ import (
 
 	languagepb "cloud.google.com/go/language/apiv1beta2/languagepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -346,6 +347,16 @@ type gRPCClient struct {
 // recognition.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "language",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/language/apiv1beta2",
+			"gcp.client.language": "go",
+			"url.domain":          "language.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -367,6 +378,26 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "language",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/language/apiv1beta2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "language.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.AnalyzeSentiment = append(client.CallOptions.AnalyzeSentiment, gax.WithClientMetrics(metrics))
+		client.CallOptions.AnalyzeEntities = append(client.CallOptions.AnalyzeEntities, gax.WithClientMetrics(metrics))
+		client.CallOptions.AnalyzeEntitySentiment = append(client.CallOptions.AnalyzeEntitySentiment, gax.WithClientMetrics(metrics))
+		client.CallOptions.AnalyzeSyntax = append(client.CallOptions.AnalyzeSyntax, gax.WithClientMetrics(metrics))
+		client.CallOptions.ClassifyText = append(client.CallOptions.ClassifyText, gax.WithClientMetrics(metrics))
+		client.CallOptions.ModerateText = append(client.CallOptions.ModerateText, gax.WithClientMetrics(metrics))
+		client.CallOptions.AnnotateText = append(client.CallOptions.AnnotateText, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -421,6 +452,16 @@ type restClient struct {
 // recognition.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "language",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/language/apiv1beta2",
+			"gcp.client.language": "go",
+			"url.domain":          "language.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -434,6 +475,27 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "language",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/language/apiv1beta2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "language.googleapis.com",
+			}),
+		)
+
+		callOpts.AnalyzeSentiment = append(callOpts.AnalyzeSentiment, gax.WithClientMetrics(metrics))
+		callOpts.AnalyzeEntities = append(callOpts.AnalyzeEntities, gax.WithClientMetrics(metrics))
+		callOpts.AnalyzeEntitySentiment = append(callOpts.AnalyzeEntitySentiment, gax.WithClientMetrics(metrics))
+		callOpts.AnalyzeSyntax = append(callOpts.AnalyzeSyntax, gax.WithClientMetrics(metrics))
+		callOpts.ClassifyText = append(callOpts.ClassifyText, gax.WithClientMetrics(metrics))
+		callOpts.ModerateText = append(callOpts.ModerateText, gax.WithClientMetrics(metrics))
+		callOpts.AnnotateText = append(callOpts.AnnotateText, gax.WithClientMetrics(metrics))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -477,6 +539,9 @@ func (c *restClient) Connection() *grpc.ClientConn {
 }
 func (c *gRPCClient) AnalyzeSentiment(ctx context.Context, req *languagepb.AnalyzeSentimentRequest, opts ...gax.CallOption) (*languagepb.AnalyzeSentimentResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.language.v1beta2.LanguageService/AnalyzeSentiment")
+	}
 	opts = append((*c.CallOptions).AnalyzeSentiment[0:len((*c.CallOptions).AnalyzeSentiment):len((*c.CallOptions).AnalyzeSentiment)], opts...)
 	var resp *languagepb.AnalyzeSentimentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -492,6 +557,9 @@ func (c *gRPCClient) AnalyzeSentiment(ctx context.Context, req *languagepb.Analy
 
 func (c *gRPCClient) AnalyzeEntities(ctx context.Context, req *languagepb.AnalyzeEntitiesRequest, opts ...gax.CallOption) (*languagepb.AnalyzeEntitiesResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.language.v1beta2.LanguageService/AnalyzeEntities")
+	}
 	opts = append((*c.CallOptions).AnalyzeEntities[0:len((*c.CallOptions).AnalyzeEntities):len((*c.CallOptions).AnalyzeEntities)], opts...)
 	var resp *languagepb.AnalyzeEntitiesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -507,6 +575,9 @@ func (c *gRPCClient) AnalyzeEntities(ctx context.Context, req *languagepb.Analyz
 
 func (c *gRPCClient) AnalyzeEntitySentiment(ctx context.Context, req *languagepb.AnalyzeEntitySentimentRequest, opts ...gax.CallOption) (*languagepb.AnalyzeEntitySentimentResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.language.v1beta2.LanguageService/AnalyzeEntitySentiment")
+	}
 	opts = append((*c.CallOptions).AnalyzeEntitySentiment[0:len((*c.CallOptions).AnalyzeEntitySentiment):len((*c.CallOptions).AnalyzeEntitySentiment)], opts...)
 	var resp *languagepb.AnalyzeEntitySentimentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -522,6 +593,9 @@ func (c *gRPCClient) AnalyzeEntitySentiment(ctx context.Context, req *languagepb
 
 func (c *gRPCClient) AnalyzeSyntax(ctx context.Context, req *languagepb.AnalyzeSyntaxRequest, opts ...gax.CallOption) (*languagepb.AnalyzeSyntaxResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.language.v1beta2.LanguageService/AnalyzeSyntax")
+	}
 	opts = append((*c.CallOptions).AnalyzeSyntax[0:len((*c.CallOptions).AnalyzeSyntax):len((*c.CallOptions).AnalyzeSyntax)], opts...)
 	var resp *languagepb.AnalyzeSyntaxResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -537,6 +611,9 @@ func (c *gRPCClient) AnalyzeSyntax(ctx context.Context, req *languagepb.AnalyzeS
 
 func (c *gRPCClient) ClassifyText(ctx context.Context, req *languagepb.ClassifyTextRequest, opts ...gax.CallOption) (*languagepb.ClassifyTextResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.language.v1beta2.LanguageService/ClassifyText")
+	}
 	opts = append((*c.CallOptions).ClassifyText[0:len((*c.CallOptions).ClassifyText):len((*c.CallOptions).ClassifyText)], opts...)
 	var resp *languagepb.ClassifyTextResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -552,6 +629,9 @@ func (c *gRPCClient) ClassifyText(ctx context.Context, req *languagepb.ClassifyT
 
 func (c *gRPCClient) ModerateText(ctx context.Context, req *languagepb.ModerateTextRequest, opts ...gax.CallOption) (*languagepb.ModerateTextResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.language.v1beta2.LanguageService/ModerateText")
+	}
 	opts = append((*c.CallOptions).ModerateText[0:len((*c.CallOptions).ModerateText):len((*c.CallOptions).ModerateText)], opts...)
 	var resp *languagepb.ModerateTextResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -567,6 +647,9 @@ func (c *gRPCClient) ModerateText(ctx context.Context, req *languagepb.ModerateT
 
 func (c *gRPCClient) AnnotateText(ctx context.Context, req *languagepb.AnnotateTextRequest, opts ...gax.CallOption) (*languagepb.AnnotateTextResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.language.v1beta2.LanguageService/AnnotateText")
+	}
 	opts = append((*c.CallOptions).AnnotateText[0:len((*c.CallOptions).AnnotateText):len((*c.CallOptions).AnnotateText)], opts...)
 	var resp *languagepb.AnnotateTextResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -602,6 +685,10 @@ func (c *restClient) AnalyzeSentiment(ctx context.Context, req *languagepb.Analy
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.language.v1beta2.LanguageService/AnalyzeSentiment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta2/documents:analyzeSentiment")
+	}
 	opts = append((*c.CallOptions).AnalyzeSentiment[0:len((*c.CallOptions).AnalyzeSentiment):len((*c.CallOptions).AnalyzeSentiment)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &languagepb.AnalyzeSentimentResponse{}
@@ -657,6 +744,10 @@ func (c *restClient) AnalyzeEntities(ctx context.Context, req *languagepb.Analyz
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.language.v1beta2.LanguageService/AnalyzeEntities")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta2/documents:analyzeEntities")
+	}
 	opts = append((*c.CallOptions).AnalyzeEntities[0:len((*c.CallOptions).AnalyzeEntities):len((*c.CallOptions).AnalyzeEntities)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &languagepb.AnalyzeEntitiesResponse{}
@@ -713,6 +804,10 @@ func (c *restClient) AnalyzeEntitySentiment(ctx context.Context, req *languagepb
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.language.v1beta2.LanguageService/AnalyzeEntitySentiment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta2/documents:analyzeEntitySentiment")
+	}
 	opts = append((*c.CallOptions).AnalyzeEntitySentiment[0:len((*c.CallOptions).AnalyzeEntitySentiment):len((*c.CallOptions).AnalyzeEntitySentiment)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &languagepb.AnalyzeEntitySentimentResponse{}
@@ -768,6 +863,10 @@ func (c *restClient) AnalyzeSyntax(ctx context.Context, req *languagepb.AnalyzeS
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.language.v1beta2.LanguageService/AnalyzeSyntax")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta2/documents:analyzeSyntax")
+	}
 	opts = append((*c.CallOptions).AnalyzeSyntax[0:len((*c.CallOptions).AnalyzeSyntax):len((*c.CallOptions).AnalyzeSyntax)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &languagepb.AnalyzeSyntaxResponse{}
@@ -821,6 +920,10 @@ func (c *restClient) ClassifyText(ctx context.Context, req *languagepb.ClassifyT
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.language.v1beta2.LanguageService/ClassifyText")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta2/documents:classifyText")
+	}
 	opts = append((*c.CallOptions).ClassifyText[0:len((*c.CallOptions).ClassifyText):len((*c.CallOptions).ClassifyText)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &languagepb.ClassifyTextResponse{}
@@ -874,6 +977,10 @@ func (c *restClient) ModerateText(ctx context.Context, req *languagepb.ModerateT
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.language.v1beta2.LanguageService/ModerateText")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta2/documents:moderateText")
+	}
 	opts = append((*c.CallOptions).ModerateText[0:len((*c.CallOptions).ModerateText):len((*c.CallOptions).ModerateText)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &languagepb.ModerateTextResponse{}
@@ -928,6 +1035,10 @@ func (c *restClient) AnnotateText(ctx context.Context, req *languagepb.AnnotateT
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.language.v1beta2.LanguageService/AnnotateText")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta2/documents:annotateText")
+	}
 	opts = append((*c.CallOptions).AnnotateText[0:len((*c.CallOptions).AnnotateText):len((*c.CallOptions).AnnotateText)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &languagepb.AnnotateTextResponse{}

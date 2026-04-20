@@ -28,6 +28,7 @@ import (
 
 	conversionspb "cloud.google.com/go/shopping/merchant/conversions/apiv1beta/conversionspb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -322,6 +323,16 @@ type conversionSourcesGRPCClient struct {
 // Service for managing conversion sources for a merchant account.
 func NewConversionSourcesClient(ctx context.Context, opts ...option.ClientOption) (*ConversionSourcesClient, error) {
 	clientOpts := defaultConversionSourcesGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/conversions/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	if newConversionSourcesClientHook != nil {
 		hookOpts, err := newConversionSourcesClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -343,6 +354,25 @@ func NewConversionSourcesClient(ctx context.Context, opts ...option.ClientOption
 		logger:                  internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/conversions/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateConversionSource = append(client.CallOptions.CreateConversionSource, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateConversionSource = append(client.CallOptions.UpdateConversionSource, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteConversionSource = append(client.CallOptions.DeleteConversionSource, gax.WithClientMetrics(metrics))
+		client.CallOptions.UndeleteConversionSource = append(client.CallOptions.UndeleteConversionSource, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetConversionSource = append(client.CallOptions.GetConversionSource, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListConversionSources = append(client.CallOptions.ListConversionSources, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -396,6 +426,16 @@ type conversionSourcesRESTClient struct {
 // Service for managing conversion sources for a merchant account.
 func NewConversionSourcesRESTClient(ctx context.Context, opts ...option.ClientOption) (*ConversionSourcesClient, error) {
 	clientOpts := append(defaultConversionSourcesRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/conversions/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -409,6 +449,26 @@ func NewConversionSourcesRESTClient(ctx context.Context, opts ...option.ClientOp
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/conversions/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateConversionSource = append(callOpts.CreateConversionSource, gax.WithClientMetrics(metrics))
+		callOpts.UpdateConversionSource = append(callOpts.UpdateConversionSource, gax.WithClientMetrics(metrics))
+		callOpts.DeleteConversionSource = append(callOpts.DeleteConversionSource, gax.WithClientMetrics(metrics))
+		callOpts.UndeleteConversionSource = append(callOpts.UndeleteConversionSource, gax.WithClientMetrics(metrics))
+		callOpts.GetConversionSource = append(callOpts.GetConversionSource, gax.WithClientMetrics(metrics))
+		callOpts.ListConversionSources = append(callOpts.ListConversionSources, gax.WithClientMetrics(metrics))
+	}
 
 	return &ConversionSourcesClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -455,6 +515,12 @@ func (c *conversionSourcesGRPCClient) CreateConversionSource(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.conversions.v1beta.ConversionSourcesService/CreateConversionSource")
+	}
 	opts = append((*c.CallOptions).CreateConversionSource[0:len((*c.CallOptions).CreateConversionSource):len((*c.CallOptions).CreateConversionSource)], opts...)
 	var resp *conversionspb.ConversionSource
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -473,6 +539,9 @@ func (c *conversionSourcesGRPCClient) UpdateConversionSource(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.conversions.v1beta.ConversionSourcesService/UpdateConversionSource")
+	}
 	opts = append((*c.CallOptions).UpdateConversionSource[0:len((*c.CallOptions).UpdateConversionSource):len((*c.CallOptions).UpdateConversionSource)], opts...)
 	var resp *conversionspb.ConversionSource
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -491,6 +560,12 @@ func (c *conversionSourcesGRPCClient) DeleteConversionSource(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.conversions.v1beta.ConversionSourcesService/DeleteConversionSource")
+	}
 	opts = append((*c.CallOptions).DeleteConversionSource[0:len((*c.CallOptions).DeleteConversionSource):len((*c.CallOptions).DeleteConversionSource)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -505,6 +580,12 @@ func (c *conversionSourcesGRPCClient) UndeleteConversionSource(ctx context.Conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.conversions.v1beta.ConversionSourcesService/UndeleteConversionSource")
+	}
 	opts = append((*c.CallOptions).UndeleteConversionSource[0:len((*c.CallOptions).UndeleteConversionSource):len((*c.CallOptions).UndeleteConversionSource)], opts...)
 	var resp *conversionspb.ConversionSource
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -523,6 +604,12 @@ func (c *conversionSourcesGRPCClient) GetConversionSource(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.conversions.v1beta.ConversionSourcesService/GetConversionSource")
+	}
 	opts = append((*c.CallOptions).GetConversionSource[0:len((*c.CallOptions).GetConversionSource):len((*c.CallOptions).GetConversionSource)], opts...)
 	var resp *conversionspb.ConversionSource
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -541,6 +628,12 @@ func (c *conversionSourcesGRPCClient) ListConversionSources(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.conversions.v1beta.ConversionSourcesService/ListConversionSources")
+	}
 	opts = append((*c.CallOptions).ListConversionSources[0:len((*c.CallOptions).ListConversionSources):len((*c.CallOptions).ListConversionSources)], opts...)
 	it := &ConversionSourceIterator{}
 	req = proto.Clone(req).(*conversionspb.ListConversionSourcesRequest)
@@ -608,6 +701,13 @@ func (c *conversionSourcesRESTClient) CreateConversionSource(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.conversions.v1beta.ConversionSourcesService/CreateConversionSource")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/conversions/v1beta/{parent=accounts/*}/conversionSources")
+	}
 	opts = append((*c.CallOptions).CreateConversionSource[0:len((*c.CallOptions).CreateConversionSource):len((*c.CallOptions).CreateConversionSource)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &conversionspb.ConversionSource{}
@@ -673,6 +773,10 @@ func (c *conversionSourcesRESTClient) UpdateConversionSource(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.conversions.v1beta.ConversionSourcesService/UpdateConversionSource")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/conversions/v1beta/{conversion_source.name=accounts/*/conversionSources/*}")
+	}
 	opts = append((*c.CallOptions).UpdateConversionSource[0:len((*c.CallOptions).UpdateConversionSource):len((*c.CallOptions).UpdateConversionSource)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &conversionspb.ConversionSource{}
@@ -726,6 +830,13 @@ func (c *conversionSourcesRESTClient) DeleteConversionSource(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.conversions.v1beta.ConversionSourcesService/DeleteConversionSource")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/conversions/v1beta/{name=accounts/*/conversionSources/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -768,6 +879,13 @@ func (c *conversionSourcesRESTClient) UndeleteConversionSource(ctx context.Conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.conversions.v1beta.ConversionSourcesService/UndeleteConversionSource")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/conversions/v1beta/{name=accounts/*/conversionSources/*}:undelete")
+	}
 	opts = append((*c.CallOptions).UndeleteConversionSource[0:len((*c.CallOptions).UndeleteConversionSource):len((*c.CallOptions).UndeleteConversionSource)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &conversionspb.ConversionSource{}
@@ -818,6 +936,13 @@ func (c *conversionSourcesRESTClient) GetConversionSource(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.conversions.v1beta.ConversionSourcesService/GetConversionSource")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/conversions/v1beta/{name=accounts/*/conversionSources/*}")
+	}
 	opts = append((*c.CallOptions).GetConversionSource[0:len((*c.CallOptions).GetConversionSource):len((*c.CallOptions).GetConversionSource)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &conversionspb.ConversionSource{}

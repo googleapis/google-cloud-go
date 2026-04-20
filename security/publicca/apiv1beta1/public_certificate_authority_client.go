@@ -28,6 +28,7 @@ import (
 
 	publiccapb "cloud.google.com/go/security/publicca/apiv1beta1/publiccapb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -171,6 +172,16 @@ type publicCertificateAuthorityGRPCClient struct {
 // the public certificate authority service.
 func NewPublicCertificateAuthorityClient(ctx context.Context, opts ...option.ClientOption) (*PublicCertificateAuthorityClient, error) {
 	clientOpts := defaultPublicCertificateAuthorityGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "publicca",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/security/publicca/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "publicca.googleapis.com",
+		}))
+	}
 	if newPublicCertificateAuthorityClientHook != nil {
 		hookOpts, err := newPublicCertificateAuthorityClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -192,6 +203,20 @@ func NewPublicCertificateAuthorityClient(ctx context.Context, opts ...option.Cli
 		logger:                           internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "publicca",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/security/publicca/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "publicca.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateExternalAccountKey = append(client.CallOptions.CreateExternalAccountKey, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -247,6 +272,16 @@ type publicCertificateAuthorityRESTClient struct {
 // the public certificate authority service.
 func NewPublicCertificateAuthorityRESTClient(ctx context.Context, opts ...option.ClientOption) (*PublicCertificateAuthorityClient, error) {
 	clientOpts := append(defaultPublicCertificateAuthorityRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "publicca",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/security/publicca/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "publicca.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -260,6 +295,21 @@ func NewPublicCertificateAuthorityRESTClient(ctx context.Context, opts ...option
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "publicca",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/security/publicca/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "publicca.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateExternalAccountKey = append(callOpts.CreateExternalAccountKey, gax.WithClientMetrics(metrics))
+	}
 
 	return &PublicCertificateAuthorityClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -306,6 +356,12 @@ func (c *publicCertificateAuthorityGRPCClient) CreateExternalAccountKey(ctx cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//publicca.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.publicca.v1beta1.PublicCertificateAuthorityService/CreateExternalAccountKey")
+	}
 	opts = append((*c.CallOptions).CreateExternalAccountKey[0:len((*c.CallOptions).CreateExternalAccountKey):len((*c.CallOptions).CreateExternalAccountKey)], opts...)
 	var resp *publiccapb.ExternalAccountKey
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -347,6 +403,13 @@ func (c *publicCertificateAuthorityRESTClient) CreateExternalAccountKey(ctx cont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//publicca.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.publicca.v1beta1.PublicCertificateAuthorityService/CreateExternalAccountKey")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*}/externalAccountKeys")
+	}
 	opts = append((*c.CallOptions).CreateExternalAccountKey[0:len((*c.CallOptions).CreateExternalAccountKey):len((*c.CallOptions).CreateExternalAccountKey)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &publiccapb.ExternalAccountKey{}

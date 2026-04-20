@@ -28,6 +28,7 @@ import (
 
 	tablespb "cloud.google.com/go/area120/tables/apiv1alpha1/tablespb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -314,6 +315,16 @@ type gRPCClient struct {
 //	resources, named workspaces/*.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "area120tables",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/area120/tables/apiv1alpha1",
+			"gcp.client.language": "go",
+			"url.domain":          "area120tables.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -335,6 +346,31 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "area120tables",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/area120/tables/apiv1alpha1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "area120tables.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetTable = append(client.CallOptions.GetTable, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListTables = append(client.CallOptions.ListTables, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetWorkspace = append(client.CallOptions.GetWorkspace, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListWorkspaces = append(client.CallOptions.ListWorkspaces, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetRow = append(client.CallOptions.GetRow, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListRows = append(client.CallOptions.ListRows, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateRow = append(client.CallOptions.CreateRow, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchCreateRows = append(client.CallOptions.BatchCreateRows, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateRow = append(client.CallOptions.UpdateRow, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchUpdateRows = append(client.CallOptions.BatchUpdateRows, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteRow = append(client.CallOptions.DeleteRow, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchDeleteRows = append(client.CallOptions.BatchDeleteRows, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -399,6 +435,16 @@ type restClient struct {
 //	resources, named workspaces/*.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "area120tables",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/area120/tables/apiv1alpha1",
+			"gcp.client.language": "go",
+			"url.domain":          "area120tables.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -412,6 +458,32 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "area120tables",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/area120/tables/apiv1alpha1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "area120tables.googleapis.com",
+			}),
+		)
+
+		callOpts.GetTable = append(callOpts.GetTable, gax.WithClientMetrics(metrics))
+		callOpts.ListTables = append(callOpts.ListTables, gax.WithClientMetrics(metrics))
+		callOpts.GetWorkspace = append(callOpts.GetWorkspace, gax.WithClientMetrics(metrics))
+		callOpts.ListWorkspaces = append(callOpts.ListWorkspaces, gax.WithClientMetrics(metrics))
+		callOpts.GetRow = append(callOpts.GetRow, gax.WithClientMetrics(metrics))
+		callOpts.ListRows = append(callOpts.ListRows, gax.WithClientMetrics(metrics))
+		callOpts.CreateRow = append(callOpts.CreateRow, gax.WithClientMetrics(metrics))
+		callOpts.BatchCreateRows = append(callOpts.BatchCreateRows, gax.WithClientMetrics(metrics))
+		callOpts.UpdateRow = append(callOpts.UpdateRow, gax.WithClientMetrics(metrics))
+		callOpts.BatchUpdateRows = append(callOpts.BatchUpdateRows, gax.WithClientMetrics(metrics))
+		callOpts.DeleteRow = append(callOpts.DeleteRow, gax.WithClientMetrics(metrics))
+		callOpts.BatchDeleteRows = append(callOpts.BatchDeleteRows, gax.WithClientMetrics(metrics))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -458,6 +530,12 @@ func (c *gRPCClient) GetTable(ctx context.Context, req *tablespb.GetTableRequest
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//area120tables.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.area120.tables.v1alpha1.TablesService/GetTable")
+	}
 	opts = append((*c.CallOptions).GetTable[0:len((*c.CallOptions).GetTable):len((*c.CallOptions).GetTable)], opts...)
 	var resp *tablespb.Table
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -473,6 +551,9 @@ func (c *gRPCClient) GetTable(ctx context.Context, req *tablespb.GetTableRequest
 
 func (c *gRPCClient) ListTables(ctx context.Context, req *tablespb.ListTablesRequest, opts ...gax.CallOption) *TableIterator {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.area120.tables.v1alpha1.TablesService/ListTables")
+	}
 	opts = append((*c.CallOptions).ListTables[0:len((*c.CallOptions).ListTables):len((*c.CallOptions).ListTables)], opts...)
 	it := &TableIterator{}
 	req = proto.Clone(req).(*tablespb.ListTablesRequest)
@@ -519,6 +600,12 @@ func (c *gRPCClient) GetWorkspace(ctx context.Context, req *tablespb.GetWorkspac
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//area120tables.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.area120.tables.v1alpha1.TablesService/GetWorkspace")
+	}
 	opts = append((*c.CallOptions).GetWorkspace[0:len((*c.CallOptions).GetWorkspace):len((*c.CallOptions).GetWorkspace)], opts...)
 	var resp *tablespb.Workspace
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -534,6 +621,9 @@ func (c *gRPCClient) GetWorkspace(ctx context.Context, req *tablespb.GetWorkspac
 
 func (c *gRPCClient) ListWorkspaces(ctx context.Context, req *tablespb.ListWorkspacesRequest, opts ...gax.CallOption) *WorkspaceIterator {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.area120.tables.v1alpha1.TablesService/ListWorkspaces")
+	}
 	opts = append((*c.CallOptions).ListWorkspaces[0:len((*c.CallOptions).ListWorkspaces):len((*c.CallOptions).ListWorkspaces)], opts...)
 	it := &WorkspaceIterator{}
 	req = proto.Clone(req).(*tablespb.ListWorkspacesRequest)
@@ -580,6 +670,12 @@ func (c *gRPCClient) GetRow(ctx context.Context, req *tablespb.GetRowRequest, op
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//area120tables.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.area120.tables.v1alpha1.TablesService/GetRow")
+	}
 	opts = append((*c.CallOptions).GetRow[0:len((*c.CallOptions).GetRow):len((*c.CallOptions).GetRow)], opts...)
 	var resp *tablespb.Row
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -598,6 +694,9 @@ func (c *gRPCClient) ListRows(ctx context.Context, req *tablespb.ListRowsRequest
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.area120.tables.v1alpha1.TablesService/ListRows")
+	}
 	opts = append((*c.CallOptions).ListRows[0:len((*c.CallOptions).ListRows):len((*c.CallOptions).ListRows)], opts...)
 	it := &RowIterator{}
 	req = proto.Clone(req).(*tablespb.ListRowsRequest)
@@ -644,6 +743,9 @@ func (c *gRPCClient) CreateRow(ctx context.Context, req *tablespb.CreateRowReque
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.area120.tables.v1alpha1.TablesService/CreateRow")
+	}
 	opts = append((*c.CallOptions).CreateRow[0:len((*c.CallOptions).CreateRow):len((*c.CallOptions).CreateRow)], opts...)
 	var resp *tablespb.Row
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -662,6 +764,9 @@ func (c *gRPCClient) BatchCreateRows(ctx context.Context, req *tablespb.BatchCre
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.area120.tables.v1alpha1.TablesService/BatchCreateRows")
+	}
 	opts = append((*c.CallOptions).BatchCreateRows[0:len((*c.CallOptions).BatchCreateRows):len((*c.CallOptions).BatchCreateRows)], opts...)
 	var resp *tablespb.BatchCreateRowsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -680,6 +785,9 @@ func (c *gRPCClient) UpdateRow(ctx context.Context, req *tablespb.UpdateRowReque
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.area120.tables.v1alpha1.TablesService/UpdateRow")
+	}
 	opts = append((*c.CallOptions).UpdateRow[0:len((*c.CallOptions).UpdateRow):len((*c.CallOptions).UpdateRow)], opts...)
 	var resp *tablespb.Row
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -698,6 +806,9 @@ func (c *gRPCClient) BatchUpdateRows(ctx context.Context, req *tablespb.BatchUpd
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.area120.tables.v1alpha1.TablesService/BatchUpdateRows")
+	}
 	opts = append((*c.CallOptions).BatchUpdateRows[0:len((*c.CallOptions).BatchUpdateRows):len((*c.CallOptions).BatchUpdateRows)], opts...)
 	var resp *tablespb.BatchUpdateRowsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -716,6 +827,12 @@ func (c *gRPCClient) DeleteRow(ctx context.Context, req *tablespb.DeleteRowReque
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//area120tables.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.area120.tables.v1alpha1.TablesService/DeleteRow")
+	}
 	opts = append((*c.CallOptions).DeleteRow[0:len((*c.CallOptions).DeleteRow):len((*c.CallOptions).DeleteRow)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -730,6 +847,12 @@ func (c *gRPCClient) BatchDeleteRows(ctx context.Context, req *tablespb.BatchDel
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//area120tables.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.area120.tables.v1alpha1.TablesService/BatchDeleteRows")
+	}
 	opts = append((*c.CallOptions).BatchDeleteRows[0:len((*c.CallOptions).BatchDeleteRows):len((*c.CallOptions).BatchDeleteRows)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -758,6 +881,13 @@ func (c *restClient) GetTable(ctx context.Context, req *tablespb.GetTableRequest
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//area120tables.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.area120.tables.v1alpha1.TablesService/GetTable")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{name=tables/*}")
+	}
 	opts = append((*c.CallOptions).GetTable[0:len((*c.CallOptions).GetTable):len((*c.CallOptions).GetTable)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &tablespb.Table{}
@@ -886,6 +1016,13 @@ func (c *restClient) GetWorkspace(ctx context.Context, req *tablespb.GetWorkspac
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//area120tables.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.area120.tables.v1alpha1.TablesService/GetWorkspace")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{name=workspaces/*}")
+	}
 	opts = append((*c.CallOptions).GetWorkspace[0:len((*c.CallOptions).GetWorkspace):len((*c.CallOptions).GetWorkspace)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &tablespb.Workspace{}
@@ -1017,6 +1154,13 @@ func (c *restClient) GetRow(ctx context.Context, req *tablespb.GetRowRequest, op
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//area120tables.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.area120.tables.v1alpha1.TablesService/GetRow")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{name=tables/*/rows/*}")
+	}
 	opts = append((*c.CallOptions).GetRow[0:len((*c.CallOptions).GetRow):len((*c.CallOptions).GetRow)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &tablespb.Row{}
@@ -1161,6 +1305,10 @@ func (c *restClient) CreateRow(ctx context.Context, req *tablespb.CreateRowReque
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.area120.tables.v1alpha1.TablesService/CreateRow")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{parent=tables/*}/rows")
+	}
 	opts = append((*c.CallOptions).CreateRow[0:len((*c.CallOptions).CreateRow):len((*c.CallOptions).CreateRow)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &tablespb.Row{}
@@ -1217,6 +1365,10 @@ func (c *restClient) BatchCreateRows(ctx context.Context, req *tablespb.BatchCre
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.area120.tables.v1alpha1.TablesService/BatchCreateRows")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{parent=tables/*}/rows:batchCreate")
+	}
 	opts = append((*c.CallOptions).BatchCreateRows[0:len((*c.CallOptions).BatchCreateRows):len((*c.CallOptions).BatchCreateRows)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &tablespb.BatchCreateRowsResponse{}
@@ -1284,6 +1436,10 @@ func (c *restClient) UpdateRow(ctx context.Context, req *tablespb.UpdateRowReque
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.area120.tables.v1alpha1.TablesService/UpdateRow")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{row.name=tables/*/rows/*}")
+	}
 	opts = append((*c.CallOptions).UpdateRow[0:len((*c.CallOptions).UpdateRow):len((*c.CallOptions).UpdateRow)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &tablespb.Row{}
@@ -1340,6 +1496,10 @@ func (c *restClient) BatchUpdateRows(ctx context.Context, req *tablespb.BatchUpd
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.area120.tables.v1alpha1.TablesService/BatchUpdateRows")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{parent=tables/*}/rows:batchUpdate")
+	}
 	opts = append((*c.CallOptions).BatchUpdateRows[0:len((*c.CallOptions).BatchUpdateRows):len((*c.CallOptions).BatchUpdateRows)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &tablespb.BatchUpdateRowsResponse{}
@@ -1390,6 +1550,13 @@ func (c *restClient) DeleteRow(ctx context.Context, req *tablespb.DeleteRowReque
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//area120tables.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.area120.tables.v1alpha1.TablesService/DeleteRow")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{name=tables/*/rows/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1431,6 +1598,13 @@ func (c *restClient) BatchDeleteRows(ctx context.Context, req *tablespb.BatchDel
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//area120tables.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.area120.tables.v1alpha1.TablesService/BatchDeleteRows")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{parent=tables/*}/rows:batchDelete")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path

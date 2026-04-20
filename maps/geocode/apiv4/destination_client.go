@@ -28,6 +28,7 @@ import (
 
 	geocodepb "cloud.google.com/go/maps/geocode/apiv4/geocodepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -176,6 +177,16 @@ type destinationGRPCClient struct {
 // for use cases such as ridesharing or delivery.
 func NewDestinationClient(ctx context.Context, opts ...option.ClientOption) (*DestinationClient, error) {
 	clientOpts := defaultDestinationGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "geocoding-backend",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/maps/geocode/apiv4",
+			"gcp.client.language": "go",
+			"url.domain":          "geocoding-backend.googleapis.com",
+		}))
+	}
 	if newDestinationClientHook != nil {
 		hookOpts, err := newDestinationClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -197,6 +208,20 @@ func NewDestinationClient(ctx context.Context, opts ...option.ClientOption) (*De
 		logger:            internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "geocoding-backend",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/geocode/apiv4",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "geocoding-backend.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.SearchDestinations = append(client.CallOptions.SearchDestinations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -255,6 +280,16 @@ type destinationRESTClient struct {
 // for use cases such as ridesharing or delivery.
 func NewDestinationRESTClient(ctx context.Context, opts ...option.ClientOption) (*DestinationClient, error) {
 	clientOpts := append(defaultDestinationRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "geocoding-backend",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/maps/geocode/apiv4",
+			"gcp.client.language": "go",
+			"url.domain":          "geocoding-backend.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -268,6 +303,21 @@ func NewDestinationRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "geocoding-backend",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/geocode/apiv4",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "geocoding-backend.googleapis.com",
+			}),
+		)
+
+		callOpts.SearchDestinations = append(callOpts.SearchDestinations, gax.WithClientMetrics(metrics))
+	}
 
 	return &DestinationClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -311,6 +361,9 @@ func (c *destinationRESTClient) Connection() *grpc.ClientConn {
 }
 func (c *destinationGRPCClient) SearchDestinations(ctx context.Context, req *geocodepb.SearchDestinationsRequest, opts ...gax.CallOption) (*geocodepb.SearchDestinationsResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.geocode.v4.DestinationService/SearchDestinations")
+	}
 	opts = append((*c.CallOptions).SearchDestinations[0:len((*c.CallOptions).SearchDestinations):len((*c.CallOptions).SearchDestinations)], opts...)
 	var resp *geocodepb.SearchDestinationsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -347,6 +400,10 @@ func (c *destinationRESTClient) SearchDestinations(ctx context.Context, req *geo
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.geocode.v4.DestinationService/SearchDestinations")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v4/geocode/destinations")
+	}
 	opts = append((*c.CallOptions).SearchDestinations[0:len((*c.CallOptions).SearchDestinations):len((*c.CallOptions).SearchDestinations)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &geocodepb.SearchDestinationsResponse{}

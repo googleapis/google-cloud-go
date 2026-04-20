@@ -27,6 +27,7 @@ import (
 
 	supportpb "cloud.google.com/go/support/apiv2/supportpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -166,6 +167,16 @@ type caseAttachmentGRPCClient struct {
 // A service to manage file attachments for Google Cloud support cases.
 func NewCaseAttachmentClient(ctx context.Context, opts ...option.ClientOption) (*CaseAttachmentClient, error) {
 	clientOpts := defaultCaseAttachmentGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudsupport",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/support/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudsupport.googleapis.com",
+		}))
+	}
 	if newCaseAttachmentClientHook != nil {
 		hookOpts, err := newCaseAttachmentClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -187,6 +198,20 @@ func NewCaseAttachmentClient(ctx context.Context, opts ...option.ClientOption) (
 		logger:               internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudsupport",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/support/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudsupport.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListAttachments = append(client.CallOptions.ListAttachments, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -240,6 +265,16 @@ type caseAttachmentRESTClient struct {
 // A service to manage file attachments for Google Cloud support cases.
 func NewCaseAttachmentRESTClient(ctx context.Context, opts ...option.ClientOption) (*CaseAttachmentClient, error) {
 	clientOpts := append(defaultCaseAttachmentRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudsupport",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/support/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudsupport.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -253,6 +288,21 @@ func NewCaseAttachmentRESTClient(ctx context.Context, opts ...option.ClientOptio
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudsupport",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/support/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudsupport.googleapis.com",
+			}),
+		)
+
+		callOpts.ListAttachments = append(callOpts.ListAttachments, gax.WithClientMetrics(metrics))
+	}
 
 	return &CaseAttachmentClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -299,6 +349,12 @@ func (c *caseAttachmentGRPCClient) ListAttachments(ctx context.Context, req *sup
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudsupport.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.support.v2.CaseAttachmentService/ListAttachments")
+	}
 	opts = append((*c.CallOptions).ListAttachments[0:len((*c.CallOptions).ListAttachments):len((*c.CallOptions).ListAttachments)], opts...)
 	it := &AttachmentIterator{}
 	req = proto.Clone(req).(*supportpb.ListAttachmentsRequest)

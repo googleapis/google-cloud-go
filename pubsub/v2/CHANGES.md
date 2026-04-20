@@ -1,5 +1,7 @@
 # Changes
 
+## [2.6.0](https://github.com/googleapis/google-cloud-go/releases/tag/pubsub%2Fv2.6.0) (2026-04-14)
+
 ## [2.5.1](https://github.com/googleapis/google-cloud-go/releases/tag/pubsub%2Fv2.5.1) (2026-03-31)
 
 ### Bug Fixes

@@ -31,6 +31,7 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -955,6 +956,16 @@ type gRPCClient struct {
 // tables in BigQuery.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "dataform",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/dataform/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "dataform.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -978,6 +989,98 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "dataform",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataform/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dataform.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetTeamFolder = append(client.CallOptions.GetTeamFolder, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateTeamFolder = append(client.CallOptions.CreateTeamFolder, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateTeamFolder = append(client.CallOptions.UpdateTeamFolder, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteTeamFolder = append(client.CallOptions.DeleteTeamFolder, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteTeamFolderTree = append(client.CallOptions.DeleteTeamFolderTree, gax.WithClientMetrics(metrics))
+		client.CallOptions.QueryTeamFolderContents = append(client.CallOptions.QueryTeamFolderContents, gax.WithClientMetrics(metrics))
+		client.CallOptions.SearchTeamFolders = append(client.CallOptions.SearchTeamFolders, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetFolder = append(client.CallOptions.GetFolder, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateFolder = append(client.CallOptions.CreateFolder, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateFolder = append(client.CallOptions.UpdateFolder, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteFolder = append(client.CallOptions.DeleteFolder, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteFolderTree = append(client.CallOptions.DeleteFolderTree, gax.WithClientMetrics(metrics))
+		client.CallOptions.QueryFolderContents = append(client.CallOptions.QueryFolderContents, gax.WithClientMetrics(metrics))
+		client.CallOptions.QueryUserRootContents = append(client.CallOptions.QueryUserRootContents, gax.WithClientMetrics(metrics))
+		client.CallOptions.MoveFolder = append(client.CallOptions.MoveFolder, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListRepositories = append(client.CallOptions.ListRepositories, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetRepository = append(client.CallOptions.GetRepository, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateRepository = append(client.CallOptions.CreateRepository, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateRepository = append(client.CallOptions.UpdateRepository, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteRepository = append(client.CallOptions.DeleteRepository, gax.WithClientMetrics(metrics))
+		client.CallOptions.MoveRepository = append(client.CallOptions.MoveRepository, gax.WithClientMetrics(metrics))
+		client.CallOptions.CommitRepositoryChanges = append(client.CallOptions.CommitRepositoryChanges, gax.WithClientMetrics(metrics))
+		client.CallOptions.ReadRepositoryFile = append(client.CallOptions.ReadRepositoryFile, gax.WithClientMetrics(metrics))
+		client.CallOptions.QueryRepositoryDirectoryContents = append(client.CallOptions.QueryRepositoryDirectoryContents, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchRepositoryHistory = append(client.CallOptions.FetchRepositoryHistory, gax.WithClientMetrics(metrics))
+		client.CallOptions.ComputeRepositoryAccessTokenStatus = append(client.CallOptions.ComputeRepositoryAccessTokenStatus, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchRemoteBranches = append(client.CallOptions.FetchRemoteBranches, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListWorkspaces = append(client.CallOptions.ListWorkspaces, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetWorkspace = append(client.CallOptions.GetWorkspace, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateWorkspace = append(client.CallOptions.CreateWorkspace, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteWorkspace = append(client.CallOptions.DeleteWorkspace, gax.WithClientMetrics(metrics))
+		client.CallOptions.InstallNpmPackages = append(client.CallOptions.InstallNpmPackages, gax.WithClientMetrics(metrics))
+		client.CallOptions.PullGitCommits = append(client.CallOptions.PullGitCommits, gax.WithClientMetrics(metrics))
+		client.CallOptions.PushGitCommits = append(client.CallOptions.PushGitCommits, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchFileGitStatuses = append(client.CallOptions.FetchFileGitStatuses, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchGitAheadBehind = append(client.CallOptions.FetchGitAheadBehind, gax.WithClientMetrics(metrics))
+		client.CallOptions.CommitWorkspaceChanges = append(client.CallOptions.CommitWorkspaceChanges, gax.WithClientMetrics(metrics))
+		client.CallOptions.ResetWorkspaceChanges = append(client.CallOptions.ResetWorkspaceChanges, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchFileDiff = append(client.CallOptions.FetchFileDiff, gax.WithClientMetrics(metrics))
+		client.CallOptions.QueryDirectoryContents = append(client.CallOptions.QueryDirectoryContents, gax.WithClientMetrics(metrics))
+		client.CallOptions.SearchFiles = append(client.CallOptions.SearchFiles, gax.WithClientMetrics(metrics))
+		client.CallOptions.MakeDirectory = append(client.CallOptions.MakeDirectory, gax.WithClientMetrics(metrics))
+		client.CallOptions.RemoveDirectory = append(client.CallOptions.RemoveDirectory, gax.WithClientMetrics(metrics))
+		client.CallOptions.MoveDirectory = append(client.CallOptions.MoveDirectory, gax.WithClientMetrics(metrics))
+		client.CallOptions.ReadFile = append(client.CallOptions.ReadFile, gax.WithClientMetrics(metrics))
+		client.CallOptions.RemoveFile = append(client.CallOptions.RemoveFile, gax.WithClientMetrics(metrics))
+		client.CallOptions.MoveFile = append(client.CallOptions.MoveFile, gax.WithClientMetrics(metrics))
+		client.CallOptions.WriteFile = append(client.CallOptions.WriteFile, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListReleaseConfigs = append(client.CallOptions.ListReleaseConfigs, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetReleaseConfig = append(client.CallOptions.GetReleaseConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateReleaseConfig = append(client.CallOptions.CreateReleaseConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateReleaseConfig = append(client.CallOptions.UpdateReleaseConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteReleaseConfig = append(client.CallOptions.DeleteReleaseConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListCompilationResults = append(client.CallOptions.ListCompilationResults, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetCompilationResult = append(client.CallOptions.GetCompilationResult, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateCompilationResult = append(client.CallOptions.CreateCompilationResult, gax.WithClientMetrics(metrics))
+		client.CallOptions.QueryCompilationResultActions = append(client.CallOptions.QueryCompilationResultActions, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListWorkflowConfigs = append(client.CallOptions.ListWorkflowConfigs, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetWorkflowConfig = append(client.CallOptions.GetWorkflowConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateWorkflowConfig = append(client.CallOptions.CreateWorkflowConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateWorkflowConfig = append(client.CallOptions.UpdateWorkflowConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteWorkflowConfig = append(client.CallOptions.DeleteWorkflowConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListWorkflowInvocations = append(client.CallOptions.ListWorkflowInvocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetWorkflowInvocation = append(client.CallOptions.GetWorkflowInvocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateWorkflowInvocation = append(client.CallOptions.CreateWorkflowInvocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteWorkflowInvocation = append(client.CallOptions.DeleteWorkflowInvocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelWorkflowInvocation = append(client.CallOptions.CancelWorkflowInvocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.QueryWorkflowInvocationActions = append(client.CallOptions.QueryWorkflowInvocationActions, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetConfig = append(client.CallOptions.GetConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateConfig = append(client.CallOptions.UpdateConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -1048,6 +1151,16 @@ type restClient struct {
 // tables in BigQuery.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "dataform",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/dataform/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "dataform.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -1061,6 +1174,99 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "dataform",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataform/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dataform.googleapis.com",
+			}),
+		)
+
+		callOpts.GetTeamFolder = append(callOpts.GetTeamFolder, gax.WithClientMetrics(metrics))
+		callOpts.CreateTeamFolder = append(callOpts.CreateTeamFolder, gax.WithClientMetrics(metrics))
+		callOpts.UpdateTeamFolder = append(callOpts.UpdateTeamFolder, gax.WithClientMetrics(metrics))
+		callOpts.DeleteTeamFolder = append(callOpts.DeleteTeamFolder, gax.WithClientMetrics(metrics))
+		callOpts.DeleteTeamFolderTree = append(callOpts.DeleteTeamFolderTree, gax.WithClientMetrics(metrics))
+		callOpts.QueryTeamFolderContents = append(callOpts.QueryTeamFolderContents, gax.WithClientMetrics(metrics))
+		callOpts.SearchTeamFolders = append(callOpts.SearchTeamFolders, gax.WithClientMetrics(metrics))
+		callOpts.GetFolder = append(callOpts.GetFolder, gax.WithClientMetrics(metrics))
+		callOpts.CreateFolder = append(callOpts.CreateFolder, gax.WithClientMetrics(metrics))
+		callOpts.UpdateFolder = append(callOpts.UpdateFolder, gax.WithClientMetrics(metrics))
+		callOpts.DeleteFolder = append(callOpts.DeleteFolder, gax.WithClientMetrics(metrics))
+		callOpts.DeleteFolderTree = append(callOpts.DeleteFolderTree, gax.WithClientMetrics(metrics))
+		callOpts.QueryFolderContents = append(callOpts.QueryFolderContents, gax.WithClientMetrics(metrics))
+		callOpts.QueryUserRootContents = append(callOpts.QueryUserRootContents, gax.WithClientMetrics(metrics))
+		callOpts.MoveFolder = append(callOpts.MoveFolder, gax.WithClientMetrics(metrics))
+		callOpts.ListRepositories = append(callOpts.ListRepositories, gax.WithClientMetrics(metrics))
+		callOpts.GetRepository = append(callOpts.GetRepository, gax.WithClientMetrics(metrics))
+		callOpts.CreateRepository = append(callOpts.CreateRepository, gax.WithClientMetrics(metrics))
+		callOpts.UpdateRepository = append(callOpts.UpdateRepository, gax.WithClientMetrics(metrics))
+		callOpts.DeleteRepository = append(callOpts.DeleteRepository, gax.WithClientMetrics(metrics))
+		callOpts.MoveRepository = append(callOpts.MoveRepository, gax.WithClientMetrics(metrics))
+		callOpts.CommitRepositoryChanges = append(callOpts.CommitRepositoryChanges, gax.WithClientMetrics(metrics))
+		callOpts.ReadRepositoryFile = append(callOpts.ReadRepositoryFile, gax.WithClientMetrics(metrics))
+		callOpts.QueryRepositoryDirectoryContents = append(callOpts.QueryRepositoryDirectoryContents, gax.WithClientMetrics(metrics))
+		callOpts.FetchRepositoryHistory = append(callOpts.FetchRepositoryHistory, gax.WithClientMetrics(metrics))
+		callOpts.ComputeRepositoryAccessTokenStatus = append(callOpts.ComputeRepositoryAccessTokenStatus, gax.WithClientMetrics(metrics))
+		callOpts.FetchRemoteBranches = append(callOpts.FetchRemoteBranches, gax.WithClientMetrics(metrics))
+		callOpts.ListWorkspaces = append(callOpts.ListWorkspaces, gax.WithClientMetrics(metrics))
+		callOpts.GetWorkspace = append(callOpts.GetWorkspace, gax.WithClientMetrics(metrics))
+		callOpts.CreateWorkspace = append(callOpts.CreateWorkspace, gax.WithClientMetrics(metrics))
+		callOpts.DeleteWorkspace = append(callOpts.DeleteWorkspace, gax.WithClientMetrics(metrics))
+		callOpts.InstallNpmPackages = append(callOpts.InstallNpmPackages, gax.WithClientMetrics(metrics))
+		callOpts.PullGitCommits = append(callOpts.PullGitCommits, gax.WithClientMetrics(metrics))
+		callOpts.PushGitCommits = append(callOpts.PushGitCommits, gax.WithClientMetrics(metrics))
+		callOpts.FetchFileGitStatuses = append(callOpts.FetchFileGitStatuses, gax.WithClientMetrics(metrics))
+		callOpts.FetchGitAheadBehind = append(callOpts.FetchGitAheadBehind, gax.WithClientMetrics(metrics))
+		callOpts.CommitWorkspaceChanges = append(callOpts.CommitWorkspaceChanges, gax.WithClientMetrics(metrics))
+		callOpts.ResetWorkspaceChanges = append(callOpts.ResetWorkspaceChanges, gax.WithClientMetrics(metrics))
+		callOpts.FetchFileDiff = append(callOpts.FetchFileDiff, gax.WithClientMetrics(metrics))
+		callOpts.QueryDirectoryContents = append(callOpts.QueryDirectoryContents, gax.WithClientMetrics(metrics))
+		callOpts.SearchFiles = append(callOpts.SearchFiles, gax.WithClientMetrics(metrics))
+		callOpts.MakeDirectory = append(callOpts.MakeDirectory, gax.WithClientMetrics(metrics))
+		callOpts.RemoveDirectory = append(callOpts.RemoveDirectory, gax.WithClientMetrics(metrics))
+		callOpts.MoveDirectory = append(callOpts.MoveDirectory, gax.WithClientMetrics(metrics))
+		callOpts.ReadFile = append(callOpts.ReadFile, gax.WithClientMetrics(metrics))
+		callOpts.RemoveFile = append(callOpts.RemoveFile, gax.WithClientMetrics(metrics))
+		callOpts.MoveFile = append(callOpts.MoveFile, gax.WithClientMetrics(metrics))
+		callOpts.WriteFile = append(callOpts.WriteFile, gax.WithClientMetrics(metrics))
+		callOpts.ListReleaseConfigs = append(callOpts.ListReleaseConfigs, gax.WithClientMetrics(metrics))
+		callOpts.GetReleaseConfig = append(callOpts.GetReleaseConfig, gax.WithClientMetrics(metrics))
+		callOpts.CreateReleaseConfig = append(callOpts.CreateReleaseConfig, gax.WithClientMetrics(metrics))
+		callOpts.UpdateReleaseConfig = append(callOpts.UpdateReleaseConfig, gax.WithClientMetrics(metrics))
+		callOpts.DeleteReleaseConfig = append(callOpts.DeleteReleaseConfig, gax.WithClientMetrics(metrics))
+		callOpts.ListCompilationResults = append(callOpts.ListCompilationResults, gax.WithClientMetrics(metrics))
+		callOpts.GetCompilationResult = append(callOpts.GetCompilationResult, gax.WithClientMetrics(metrics))
+		callOpts.CreateCompilationResult = append(callOpts.CreateCompilationResult, gax.WithClientMetrics(metrics))
+		callOpts.QueryCompilationResultActions = append(callOpts.QueryCompilationResultActions, gax.WithClientMetrics(metrics))
+		callOpts.ListWorkflowConfigs = append(callOpts.ListWorkflowConfigs, gax.WithClientMetrics(metrics))
+		callOpts.GetWorkflowConfig = append(callOpts.GetWorkflowConfig, gax.WithClientMetrics(metrics))
+		callOpts.CreateWorkflowConfig = append(callOpts.CreateWorkflowConfig, gax.WithClientMetrics(metrics))
+		callOpts.UpdateWorkflowConfig = append(callOpts.UpdateWorkflowConfig, gax.WithClientMetrics(metrics))
+		callOpts.DeleteWorkflowConfig = append(callOpts.DeleteWorkflowConfig, gax.WithClientMetrics(metrics))
+		callOpts.ListWorkflowInvocations = append(callOpts.ListWorkflowInvocations, gax.WithClientMetrics(metrics))
+		callOpts.GetWorkflowInvocation = append(callOpts.GetWorkflowInvocation, gax.WithClientMetrics(metrics))
+		callOpts.CreateWorkflowInvocation = append(callOpts.CreateWorkflowInvocation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteWorkflowInvocation = append(callOpts.DeleteWorkflowInvocation, gax.WithClientMetrics(metrics))
+		callOpts.CancelWorkflowInvocation = append(callOpts.CancelWorkflowInvocation, gax.WithClientMetrics(metrics))
+		callOpts.QueryWorkflowInvocationActions = append(callOpts.QueryWorkflowInvocationActions, gax.WithClientMetrics(metrics))
+		callOpts.GetConfig = append(callOpts.GetConfig, gax.WithClientMetrics(metrics))
+		callOpts.UpdateConfig = append(callOpts.UpdateConfig, gax.WithClientMetrics(metrics))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -1117,6 +1323,12 @@ func (c *gRPCClient) GetTeamFolder(ctx context.Context, req *dataformpb.GetTeamF
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetTeamFolder")
+	}
 	opts = append((*c.CallOptions).GetTeamFolder[0:len((*c.CallOptions).GetTeamFolder):len((*c.CallOptions).GetTeamFolder)], opts...)
 	var resp *dataformpb.TeamFolder
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1135,6 +1347,12 @@ func (c *gRPCClient) CreateTeamFolder(ctx context.Context, req *dataformpb.Creat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CreateTeamFolder")
+	}
 	opts = append((*c.CallOptions).CreateTeamFolder[0:len((*c.CallOptions).CreateTeamFolder):len((*c.CallOptions).CreateTeamFolder)], opts...)
 	var resp *dataformpb.TeamFolder
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1153,6 +1371,9 @@ func (c *gRPCClient) UpdateTeamFolder(ctx context.Context, req *dataformpb.Updat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/UpdateTeamFolder")
+	}
 	opts = append((*c.CallOptions).UpdateTeamFolder[0:len((*c.CallOptions).UpdateTeamFolder):len((*c.CallOptions).UpdateTeamFolder)], opts...)
 	var resp *dataformpb.TeamFolder
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1171,6 +1392,12 @@ func (c *gRPCClient) DeleteTeamFolder(ctx context.Context, req *dataformpb.Delet
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/DeleteTeamFolder")
+	}
 	opts = append((*c.CallOptions).DeleteTeamFolder[0:len((*c.CallOptions).DeleteTeamFolder):len((*c.CallOptions).DeleteTeamFolder)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1185,6 +1412,12 @@ func (c *gRPCClient) DeleteTeamFolderTree(ctx context.Context, req *dataformpb.D
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/DeleteTeamFolderTree")
+	}
 	opts = append((*c.CallOptions).DeleteTeamFolderTree[0:len((*c.CallOptions).DeleteTeamFolderTree):len((*c.CallOptions).DeleteTeamFolderTree)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1205,6 +1438,12 @@ func (c *gRPCClient) QueryTeamFolderContents(ctx context.Context, req *dataformp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetTeamFolder()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/QueryTeamFolderContents")
+	}
 	opts = append((*c.CallOptions).QueryTeamFolderContents[0:len((*c.CallOptions).QueryTeamFolderContents):len((*c.CallOptions).QueryTeamFolderContents)], opts...)
 	it := &QueryTeamFolderContentsResponse_TeamFolderContentsEntryIterator{}
 	req = proto.Clone(req).(*dataformpb.QueryTeamFolderContentsRequest)
@@ -1251,6 +1490,12 @@ func (c *gRPCClient) SearchTeamFolders(ctx context.Context, req *dataformpb.Sear
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetLocation()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/SearchTeamFolders")
+	}
 	opts = append((*c.CallOptions).SearchTeamFolders[0:len((*c.CallOptions).SearchTeamFolders):len((*c.CallOptions).SearchTeamFolders)], opts...)
 	it := &SearchTeamFoldersResponse_TeamFolderSearchResultIterator{}
 	req = proto.Clone(req).(*dataformpb.SearchTeamFoldersRequest)
@@ -1297,6 +1542,12 @@ func (c *gRPCClient) GetFolder(ctx context.Context, req *dataformpb.GetFolderReq
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetFolder")
+	}
 	opts = append((*c.CallOptions).GetFolder[0:len((*c.CallOptions).GetFolder):len((*c.CallOptions).GetFolder)], opts...)
 	var resp *dataformpb.Folder
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1315,6 +1566,12 @@ func (c *gRPCClient) CreateFolder(ctx context.Context, req *dataformpb.CreateFol
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CreateFolder")
+	}
 	opts = append((*c.CallOptions).CreateFolder[0:len((*c.CallOptions).CreateFolder):len((*c.CallOptions).CreateFolder)], opts...)
 	var resp *dataformpb.Folder
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1333,6 +1590,9 @@ func (c *gRPCClient) UpdateFolder(ctx context.Context, req *dataformpb.UpdateFol
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/UpdateFolder")
+	}
 	opts = append((*c.CallOptions).UpdateFolder[0:len((*c.CallOptions).UpdateFolder):len((*c.CallOptions).UpdateFolder)], opts...)
 	var resp *dataformpb.Folder
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1351,6 +1611,12 @@ func (c *gRPCClient) DeleteFolder(ctx context.Context, req *dataformpb.DeleteFol
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/DeleteFolder")
+	}
 	opts = append((*c.CallOptions).DeleteFolder[0:len((*c.CallOptions).DeleteFolder):len((*c.CallOptions).DeleteFolder)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1365,6 +1631,12 @@ func (c *gRPCClient) DeleteFolderTree(ctx context.Context, req *dataformpb.Delet
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/DeleteFolderTree")
+	}
 	opts = append((*c.CallOptions).DeleteFolderTree[0:len((*c.CallOptions).DeleteFolderTree):len((*c.CallOptions).DeleteFolderTree)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1385,6 +1657,12 @@ func (c *gRPCClient) QueryFolderContents(ctx context.Context, req *dataformpb.Qu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetFolder()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/QueryFolderContents")
+	}
 	opts = append((*c.CallOptions).QueryFolderContents[0:len((*c.CallOptions).QueryFolderContents):len((*c.CallOptions).QueryFolderContents)], opts...)
 	it := &QueryFolderContentsResponse_FolderContentsEntryIterator{}
 	req = proto.Clone(req).(*dataformpb.QueryFolderContentsRequest)
@@ -1431,6 +1709,12 @@ func (c *gRPCClient) QueryUserRootContents(ctx context.Context, req *dataformpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetLocation()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/QueryUserRootContents")
+	}
 	opts = append((*c.CallOptions).QueryUserRootContents[0:len((*c.CallOptions).QueryUserRootContents):len((*c.CallOptions).QueryUserRootContents)], opts...)
 	it := &QueryUserRootContentsResponse_RootContentsEntryIterator{}
 	req = proto.Clone(req).(*dataformpb.QueryUserRootContentsRequest)
@@ -1477,6 +1761,12 @@ func (c *gRPCClient) MoveFolder(ctx context.Context, req *dataformpb.MoveFolderR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/MoveFolder")
+	}
 	opts = append((*c.CallOptions).MoveFolder[0:len((*c.CallOptions).MoveFolder):len((*c.CallOptions).MoveFolder)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1497,6 +1787,12 @@ func (c *gRPCClient) ListRepositories(ctx context.Context, req *dataformpb.ListR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/ListRepositories")
+	}
 	opts = append((*c.CallOptions).ListRepositories[0:len((*c.CallOptions).ListRepositories):len((*c.CallOptions).ListRepositories)], opts...)
 	it := &RepositoryIterator{}
 	req = proto.Clone(req).(*dataformpb.ListRepositoriesRequest)
@@ -1543,6 +1839,12 @@ func (c *gRPCClient) GetRepository(ctx context.Context, req *dataformpb.GetRepos
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetRepository")
+	}
 	opts = append((*c.CallOptions).GetRepository[0:len((*c.CallOptions).GetRepository):len((*c.CallOptions).GetRepository)], opts...)
 	var resp *dataformpb.Repository
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1561,6 +1863,12 @@ func (c *gRPCClient) CreateRepository(ctx context.Context, req *dataformpb.Creat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CreateRepository")
+	}
 	opts = append((*c.CallOptions).CreateRepository[0:len((*c.CallOptions).CreateRepository):len((*c.CallOptions).CreateRepository)], opts...)
 	var resp *dataformpb.Repository
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1579,6 +1887,9 @@ func (c *gRPCClient) UpdateRepository(ctx context.Context, req *dataformpb.Updat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/UpdateRepository")
+	}
 	opts = append((*c.CallOptions).UpdateRepository[0:len((*c.CallOptions).UpdateRepository):len((*c.CallOptions).UpdateRepository)], opts...)
 	var resp *dataformpb.Repository
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1597,6 +1908,12 @@ func (c *gRPCClient) DeleteRepository(ctx context.Context, req *dataformpb.Delet
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/DeleteRepository")
+	}
 	opts = append((*c.CallOptions).DeleteRepository[0:len((*c.CallOptions).DeleteRepository):len((*c.CallOptions).DeleteRepository)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1611,6 +1928,12 @@ func (c *gRPCClient) MoveRepository(ctx context.Context, req *dataformpb.MoveRep
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/MoveRepository")
+	}
 	opts = append((*c.CallOptions).MoveRepository[0:len((*c.CallOptions).MoveRepository):len((*c.CallOptions).MoveRepository)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1631,6 +1954,12 @@ func (c *gRPCClient) CommitRepositoryChanges(ctx context.Context, req *dataformp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CommitRepositoryChanges")
+	}
 	opts = append((*c.CallOptions).CommitRepositoryChanges[0:len((*c.CallOptions).CommitRepositoryChanges):len((*c.CallOptions).CommitRepositoryChanges)], opts...)
 	var resp *dataformpb.CommitRepositoryChangesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1649,6 +1978,12 @@ func (c *gRPCClient) ReadRepositoryFile(ctx context.Context, req *dataformpb.Rea
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/ReadRepositoryFile")
+	}
 	opts = append((*c.CallOptions).ReadRepositoryFile[0:len((*c.CallOptions).ReadRepositoryFile):len((*c.CallOptions).ReadRepositoryFile)], opts...)
 	var resp *dataformpb.ReadRepositoryFileResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1667,6 +2002,12 @@ func (c *gRPCClient) QueryRepositoryDirectoryContents(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/QueryRepositoryDirectoryContents")
+	}
 	opts = append((*c.CallOptions).QueryRepositoryDirectoryContents[0:len((*c.CallOptions).QueryRepositoryDirectoryContents):len((*c.CallOptions).QueryRepositoryDirectoryContents)], opts...)
 	it := &DirectoryEntryIterator{}
 	req = proto.Clone(req).(*dataformpb.QueryRepositoryDirectoryContentsRequest)
@@ -1713,6 +2054,12 @@ func (c *gRPCClient) FetchRepositoryHistory(ctx context.Context, req *dataformpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/FetchRepositoryHistory")
+	}
 	opts = append((*c.CallOptions).FetchRepositoryHistory[0:len((*c.CallOptions).FetchRepositoryHistory):len((*c.CallOptions).FetchRepositoryHistory)], opts...)
 	it := &CommitLogEntryIterator{}
 	req = proto.Clone(req).(*dataformpb.FetchRepositoryHistoryRequest)
@@ -1759,6 +2106,12 @@ func (c *gRPCClient) ComputeRepositoryAccessTokenStatus(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/ComputeRepositoryAccessTokenStatus")
+	}
 	opts = append((*c.CallOptions).ComputeRepositoryAccessTokenStatus[0:len((*c.CallOptions).ComputeRepositoryAccessTokenStatus):len((*c.CallOptions).ComputeRepositoryAccessTokenStatus)], opts...)
 	var resp *dataformpb.ComputeRepositoryAccessTokenStatusResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1777,6 +2130,12 @@ func (c *gRPCClient) FetchRemoteBranches(ctx context.Context, req *dataformpb.Fe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/FetchRemoteBranches")
+	}
 	opts = append((*c.CallOptions).FetchRemoteBranches[0:len((*c.CallOptions).FetchRemoteBranches):len((*c.CallOptions).FetchRemoteBranches)], opts...)
 	var resp *dataformpb.FetchRemoteBranchesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1795,6 +2154,12 @@ func (c *gRPCClient) ListWorkspaces(ctx context.Context, req *dataformpb.ListWor
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/ListWorkspaces")
+	}
 	opts = append((*c.CallOptions).ListWorkspaces[0:len((*c.CallOptions).ListWorkspaces):len((*c.CallOptions).ListWorkspaces)], opts...)
 	it := &WorkspaceIterator{}
 	req = proto.Clone(req).(*dataformpb.ListWorkspacesRequest)
@@ -1841,6 +2206,12 @@ func (c *gRPCClient) GetWorkspace(ctx context.Context, req *dataformpb.GetWorksp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetWorkspace")
+	}
 	opts = append((*c.CallOptions).GetWorkspace[0:len((*c.CallOptions).GetWorkspace):len((*c.CallOptions).GetWorkspace)], opts...)
 	var resp *dataformpb.Workspace
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1859,6 +2230,12 @@ func (c *gRPCClient) CreateWorkspace(ctx context.Context, req *dataformpb.Create
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CreateWorkspace")
+	}
 	opts = append((*c.CallOptions).CreateWorkspace[0:len((*c.CallOptions).CreateWorkspace):len((*c.CallOptions).CreateWorkspace)], opts...)
 	var resp *dataformpb.Workspace
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1877,6 +2254,12 @@ func (c *gRPCClient) DeleteWorkspace(ctx context.Context, req *dataformpb.Delete
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/DeleteWorkspace")
+	}
 	opts = append((*c.CallOptions).DeleteWorkspace[0:len((*c.CallOptions).DeleteWorkspace):len((*c.CallOptions).DeleteWorkspace)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1891,6 +2274,12 @@ func (c *gRPCClient) InstallNpmPackages(ctx context.Context, req *dataformpb.Ins
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/InstallNpmPackages")
+	}
 	opts = append((*c.CallOptions).InstallNpmPackages[0:len((*c.CallOptions).InstallNpmPackages):len((*c.CallOptions).InstallNpmPackages)], opts...)
 	var resp *dataformpb.InstallNpmPackagesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1909,6 +2298,12 @@ func (c *gRPCClient) PullGitCommits(ctx context.Context, req *dataformpb.PullGit
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/PullGitCommits")
+	}
 	opts = append((*c.CallOptions).PullGitCommits[0:len((*c.CallOptions).PullGitCommits):len((*c.CallOptions).PullGitCommits)], opts...)
 	var resp *dataformpb.PullGitCommitsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1927,6 +2322,12 @@ func (c *gRPCClient) PushGitCommits(ctx context.Context, req *dataformpb.PushGit
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/PushGitCommits")
+	}
 	opts = append((*c.CallOptions).PushGitCommits[0:len((*c.CallOptions).PushGitCommits):len((*c.CallOptions).PushGitCommits)], opts...)
 	var resp *dataformpb.PushGitCommitsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1945,6 +2346,12 @@ func (c *gRPCClient) FetchFileGitStatuses(ctx context.Context, req *dataformpb.F
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/FetchFileGitStatuses")
+	}
 	opts = append((*c.CallOptions).FetchFileGitStatuses[0:len((*c.CallOptions).FetchFileGitStatuses):len((*c.CallOptions).FetchFileGitStatuses)], opts...)
 	var resp *dataformpb.FetchFileGitStatusesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1963,6 +2370,12 @@ func (c *gRPCClient) FetchGitAheadBehind(ctx context.Context, req *dataformpb.Fe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/FetchGitAheadBehind")
+	}
 	opts = append((*c.CallOptions).FetchGitAheadBehind[0:len((*c.CallOptions).FetchGitAheadBehind):len((*c.CallOptions).FetchGitAheadBehind)], opts...)
 	var resp *dataformpb.FetchGitAheadBehindResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1981,6 +2394,12 @@ func (c *gRPCClient) CommitWorkspaceChanges(ctx context.Context, req *dataformpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CommitWorkspaceChanges")
+	}
 	opts = append((*c.CallOptions).CommitWorkspaceChanges[0:len((*c.CallOptions).CommitWorkspaceChanges):len((*c.CallOptions).CommitWorkspaceChanges)], opts...)
 	var resp *dataformpb.CommitWorkspaceChangesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1999,6 +2418,12 @@ func (c *gRPCClient) ResetWorkspaceChanges(ctx context.Context, req *dataformpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/ResetWorkspaceChanges")
+	}
 	opts = append((*c.CallOptions).ResetWorkspaceChanges[0:len((*c.CallOptions).ResetWorkspaceChanges):len((*c.CallOptions).ResetWorkspaceChanges)], opts...)
 	var resp *dataformpb.ResetWorkspaceChangesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2017,6 +2442,12 @@ func (c *gRPCClient) FetchFileDiff(ctx context.Context, req *dataformpb.FetchFil
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/FetchFileDiff")
+	}
 	opts = append((*c.CallOptions).FetchFileDiff[0:len((*c.CallOptions).FetchFileDiff):len((*c.CallOptions).FetchFileDiff)], opts...)
 	var resp *dataformpb.FetchFileDiffResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2035,6 +2466,12 @@ func (c *gRPCClient) QueryDirectoryContents(ctx context.Context, req *dataformpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/QueryDirectoryContents")
+	}
 	opts = append((*c.CallOptions).QueryDirectoryContents[0:len((*c.CallOptions).QueryDirectoryContents):len((*c.CallOptions).QueryDirectoryContents)], opts...)
 	it := &DirectoryEntryIterator{}
 	req = proto.Clone(req).(*dataformpb.QueryDirectoryContentsRequest)
@@ -2081,6 +2518,12 @@ func (c *gRPCClient) SearchFiles(ctx context.Context, req *dataformpb.SearchFile
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/SearchFiles")
+	}
 	opts = append((*c.CallOptions).SearchFiles[0:len((*c.CallOptions).SearchFiles):len((*c.CallOptions).SearchFiles)], opts...)
 	it := &SearchResultIterator{}
 	req = proto.Clone(req).(*dataformpb.SearchFilesRequest)
@@ -2127,6 +2570,12 @@ func (c *gRPCClient) MakeDirectory(ctx context.Context, req *dataformpb.MakeDire
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/MakeDirectory")
+	}
 	opts = append((*c.CallOptions).MakeDirectory[0:len((*c.CallOptions).MakeDirectory):len((*c.CallOptions).MakeDirectory)], opts...)
 	var resp *dataformpb.MakeDirectoryResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2145,6 +2594,12 @@ func (c *gRPCClient) RemoveDirectory(ctx context.Context, req *dataformpb.Remove
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/RemoveDirectory")
+	}
 	opts = append((*c.CallOptions).RemoveDirectory[0:len((*c.CallOptions).RemoveDirectory):len((*c.CallOptions).RemoveDirectory)], opts...)
 	var resp *dataformpb.RemoveDirectoryResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2163,6 +2618,12 @@ func (c *gRPCClient) MoveDirectory(ctx context.Context, req *dataformpb.MoveDire
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/MoveDirectory")
+	}
 	opts = append((*c.CallOptions).MoveDirectory[0:len((*c.CallOptions).MoveDirectory):len((*c.CallOptions).MoveDirectory)], opts...)
 	var resp *dataformpb.MoveDirectoryResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2181,6 +2642,12 @@ func (c *gRPCClient) ReadFile(ctx context.Context, req *dataformpb.ReadFileReque
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/ReadFile")
+	}
 	opts = append((*c.CallOptions).ReadFile[0:len((*c.CallOptions).ReadFile):len((*c.CallOptions).ReadFile)], opts...)
 	var resp *dataformpb.ReadFileResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2199,6 +2666,12 @@ func (c *gRPCClient) RemoveFile(ctx context.Context, req *dataformpb.RemoveFileR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/RemoveFile")
+	}
 	opts = append((*c.CallOptions).RemoveFile[0:len((*c.CallOptions).RemoveFile):len((*c.CallOptions).RemoveFile)], opts...)
 	var resp *dataformpb.RemoveFileResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2217,6 +2690,12 @@ func (c *gRPCClient) MoveFile(ctx context.Context, req *dataformpb.MoveFileReque
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/MoveFile")
+	}
 	opts = append((*c.CallOptions).MoveFile[0:len((*c.CallOptions).MoveFile):len((*c.CallOptions).MoveFile)], opts...)
 	var resp *dataformpb.MoveFileResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2235,6 +2714,12 @@ func (c *gRPCClient) WriteFile(ctx context.Context, req *dataformpb.WriteFileReq
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/WriteFile")
+	}
 	opts = append((*c.CallOptions).WriteFile[0:len((*c.CallOptions).WriteFile):len((*c.CallOptions).WriteFile)], opts...)
 	var resp *dataformpb.WriteFileResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2253,6 +2738,12 @@ func (c *gRPCClient) ListReleaseConfigs(ctx context.Context, req *dataformpb.Lis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/ListReleaseConfigs")
+	}
 	opts = append((*c.CallOptions).ListReleaseConfigs[0:len((*c.CallOptions).ListReleaseConfigs):len((*c.CallOptions).ListReleaseConfigs)], opts...)
 	it := &ReleaseConfigIterator{}
 	req = proto.Clone(req).(*dataformpb.ListReleaseConfigsRequest)
@@ -2299,6 +2790,12 @@ func (c *gRPCClient) GetReleaseConfig(ctx context.Context, req *dataformpb.GetRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetReleaseConfig")
+	}
 	opts = append((*c.CallOptions).GetReleaseConfig[0:len((*c.CallOptions).GetReleaseConfig):len((*c.CallOptions).GetReleaseConfig)], opts...)
 	var resp *dataformpb.ReleaseConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2317,6 +2814,12 @@ func (c *gRPCClient) CreateReleaseConfig(ctx context.Context, req *dataformpb.Cr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CreateReleaseConfig")
+	}
 	opts = append((*c.CallOptions).CreateReleaseConfig[0:len((*c.CallOptions).CreateReleaseConfig):len((*c.CallOptions).CreateReleaseConfig)], opts...)
 	var resp *dataformpb.ReleaseConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2335,6 +2838,9 @@ func (c *gRPCClient) UpdateReleaseConfig(ctx context.Context, req *dataformpb.Up
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/UpdateReleaseConfig")
+	}
 	opts = append((*c.CallOptions).UpdateReleaseConfig[0:len((*c.CallOptions).UpdateReleaseConfig):len((*c.CallOptions).UpdateReleaseConfig)], opts...)
 	var resp *dataformpb.ReleaseConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2353,6 +2859,12 @@ func (c *gRPCClient) DeleteReleaseConfig(ctx context.Context, req *dataformpb.De
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/DeleteReleaseConfig")
+	}
 	opts = append((*c.CallOptions).DeleteReleaseConfig[0:len((*c.CallOptions).DeleteReleaseConfig):len((*c.CallOptions).DeleteReleaseConfig)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2367,6 +2879,12 @@ func (c *gRPCClient) ListCompilationResults(ctx context.Context, req *dataformpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/ListCompilationResults")
+	}
 	opts = append((*c.CallOptions).ListCompilationResults[0:len((*c.CallOptions).ListCompilationResults):len((*c.CallOptions).ListCompilationResults)], opts...)
 	it := &CompilationResultIterator{}
 	req = proto.Clone(req).(*dataformpb.ListCompilationResultsRequest)
@@ -2413,6 +2931,12 @@ func (c *gRPCClient) GetCompilationResult(ctx context.Context, req *dataformpb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetCompilationResult")
+	}
 	opts = append((*c.CallOptions).GetCompilationResult[0:len((*c.CallOptions).GetCompilationResult):len((*c.CallOptions).GetCompilationResult)], opts...)
 	var resp *dataformpb.CompilationResult
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2431,6 +2955,12 @@ func (c *gRPCClient) CreateCompilationResult(ctx context.Context, req *dataformp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CreateCompilationResult")
+	}
 	opts = append((*c.CallOptions).CreateCompilationResult[0:len((*c.CallOptions).CreateCompilationResult):len((*c.CallOptions).CreateCompilationResult)], opts...)
 	var resp *dataformpb.CompilationResult
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2449,6 +2979,12 @@ func (c *gRPCClient) QueryCompilationResultActions(ctx context.Context, req *dat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/QueryCompilationResultActions")
+	}
 	opts = append((*c.CallOptions).QueryCompilationResultActions[0:len((*c.CallOptions).QueryCompilationResultActions):len((*c.CallOptions).QueryCompilationResultActions)], opts...)
 	it := &CompilationResultActionIterator{}
 	req = proto.Clone(req).(*dataformpb.QueryCompilationResultActionsRequest)
@@ -2495,6 +3031,12 @@ func (c *gRPCClient) ListWorkflowConfigs(ctx context.Context, req *dataformpb.Li
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/ListWorkflowConfigs")
+	}
 	opts = append((*c.CallOptions).ListWorkflowConfigs[0:len((*c.CallOptions).ListWorkflowConfigs):len((*c.CallOptions).ListWorkflowConfigs)], opts...)
 	it := &WorkflowConfigIterator{}
 	req = proto.Clone(req).(*dataformpb.ListWorkflowConfigsRequest)
@@ -2541,6 +3083,12 @@ func (c *gRPCClient) GetWorkflowConfig(ctx context.Context, req *dataformpb.GetW
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetWorkflowConfig")
+	}
 	opts = append((*c.CallOptions).GetWorkflowConfig[0:len((*c.CallOptions).GetWorkflowConfig):len((*c.CallOptions).GetWorkflowConfig)], opts...)
 	var resp *dataformpb.WorkflowConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2559,6 +3107,12 @@ func (c *gRPCClient) CreateWorkflowConfig(ctx context.Context, req *dataformpb.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CreateWorkflowConfig")
+	}
 	opts = append((*c.CallOptions).CreateWorkflowConfig[0:len((*c.CallOptions).CreateWorkflowConfig):len((*c.CallOptions).CreateWorkflowConfig)], opts...)
 	var resp *dataformpb.WorkflowConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2577,6 +3131,9 @@ func (c *gRPCClient) UpdateWorkflowConfig(ctx context.Context, req *dataformpb.U
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/UpdateWorkflowConfig")
+	}
 	opts = append((*c.CallOptions).UpdateWorkflowConfig[0:len((*c.CallOptions).UpdateWorkflowConfig):len((*c.CallOptions).UpdateWorkflowConfig)], opts...)
 	var resp *dataformpb.WorkflowConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2595,6 +3152,12 @@ func (c *gRPCClient) DeleteWorkflowConfig(ctx context.Context, req *dataformpb.D
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/DeleteWorkflowConfig")
+	}
 	opts = append((*c.CallOptions).DeleteWorkflowConfig[0:len((*c.CallOptions).DeleteWorkflowConfig):len((*c.CallOptions).DeleteWorkflowConfig)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2609,6 +3172,12 @@ func (c *gRPCClient) ListWorkflowInvocations(ctx context.Context, req *dataformp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/ListWorkflowInvocations")
+	}
 	opts = append((*c.CallOptions).ListWorkflowInvocations[0:len((*c.CallOptions).ListWorkflowInvocations):len((*c.CallOptions).ListWorkflowInvocations)], opts...)
 	it := &WorkflowInvocationIterator{}
 	req = proto.Clone(req).(*dataformpb.ListWorkflowInvocationsRequest)
@@ -2655,6 +3224,12 @@ func (c *gRPCClient) GetWorkflowInvocation(ctx context.Context, req *dataformpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetWorkflowInvocation")
+	}
 	opts = append((*c.CallOptions).GetWorkflowInvocation[0:len((*c.CallOptions).GetWorkflowInvocation):len((*c.CallOptions).GetWorkflowInvocation)], opts...)
 	var resp *dataformpb.WorkflowInvocation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2673,6 +3248,12 @@ func (c *gRPCClient) CreateWorkflowInvocation(ctx context.Context, req *dataform
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CreateWorkflowInvocation")
+	}
 	opts = append((*c.CallOptions).CreateWorkflowInvocation[0:len((*c.CallOptions).CreateWorkflowInvocation):len((*c.CallOptions).CreateWorkflowInvocation)], opts...)
 	var resp *dataformpb.WorkflowInvocation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2691,6 +3272,12 @@ func (c *gRPCClient) DeleteWorkflowInvocation(ctx context.Context, req *dataform
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/DeleteWorkflowInvocation")
+	}
 	opts = append((*c.CallOptions).DeleteWorkflowInvocation[0:len((*c.CallOptions).DeleteWorkflowInvocation):len((*c.CallOptions).DeleteWorkflowInvocation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2705,6 +3292,12 @@ func (c *gRPCClient) CancelWorkflowInvocation(ctx context.Context, req *dataform
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CancelWorkflowInvocation")
+	}
 	opts = append((*c.CallOptions).CancelWorkflowInvocation[0:len((*c.CallOptions).CancelWorkflowInvocation):len((*c.CallOptions).CancelWorkflowInvocation)], opts...)
 	var resp *dataformpb.CancelWorkflowInvocationResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2723,6 +3316,12 @@ func (c *gRPCClient) QueryWorkflowInvocationActions(ctx context.Context, req *da
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/QueryWorkflowInvocationActions")
+	}
 	opts = append((*c.CallOptions).QueryWorkflowInvocationActions[0:len((*c.CallOptions).QueryWorkflowInvocationActions):len((*c.CallOptions).QueryWorkflowInvocationActions)], opts...)
 	it := &WorkflowInvocationActionIterator{}
 	req = proto.Clone(req).(*dataformpb.QueryWorkflowInvocationActionsRequest)
@@ -2769,6 +3368,12 @@ func (c *gRPCClient) GetConfig(ctx context.Context, req *dataformpb.GetConfigReq
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetConfig")
+	}
 	opts = append((*c.CallOptions).GetConfig[0:len((*c.CallOptions).GetConfig):len((*c.CallOptions).GetConfig)], opts...)
 	var resp *dataformpb.Config
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2787,6 +3392,9 @@ func (c *gRPCClient) UpdateConfig(ctx context.Context, req *dataformpb.UpdateCon
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/UpdateConfig")
+	}
 	opts = append((*c.CallOptions).UpdateConfig[0:len((*c.CallOptions).UpdateConfig):len((*c.CallOptions).UpdateConfig)], opts...)
 	var resp *dataformpb.Config
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2805,6 +3413,12 @@ func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2823,6 +3437,12 @@ func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/SetIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2841,6 +3461,12 @@ func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/TestIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2859,6 +3485,9 @@ func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2877,6 +3506,9 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
@@ -2923,6 +3555,9 @@ func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2937,6 +3572,9 @@ func (c *gRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2951,6 +3589,9 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2969,6 +3610,9 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
@@ -3029,6 +3673,13 @@ func (c *restClient) GetTeamFolder(ctx context.Context, req *dataformpb.GetTeamF
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetTeamFolder")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/teamFolders/*}")
+	}
 	opts = append((*c.CallOptions).GetTeamFolder[0:len((*c.CallOptions).GetTeamFolder):len((*c.CallOptions).GetTeamFolder)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.TeamFolder{}
@@ -3086,6 +3737,13 @@ func (c *restClient) CreateTeamFolder(ctx context.Context, req *dataformpb.Creat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CreateTeamFolder")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/teamFolders")
+	}
 	opts = append((*c.CallOptions).CreateTeamFolder[0:len((*c.CallOptions).CreateTeamFolder):len((*c.CallOptions).CreateTeamFolder)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.TeamFolder{}
@@ -3150,6 +3808,10 @@ func (c *restClient) UpdateTeamFolder(ctx context.Context, req *dataformpb.Updat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/UpdateTeamFolder")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{team_folder.name=projects/*/locations/*/teamFolders/*}")
+	}
 	opts = append((*c.CallOptions).UpdateTeamFolder[0:len((*c.CallOptions).UpdateTeamFolder):len((*c.CallOptions).UpdateTeamFolder)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.TeamFolder{}
@@ -3200,6 +3862,13 @@ func (c *restClient) DeleteTeamFolder(ctx context.Context, req *dataformpb.Delet
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/DeleteTeamFolder")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/teamFolders/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -3242,6 +3911,13 @@ func (c *restClient) DeleteTeamFolderTree(ctx context.Context, req *dataformpb.D
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/DeleteTeamFolderTree")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/teamFolders/*}:deleteTree")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3464,6 +4140,13 @@ func (c *restClient) GetFolder(ctx context.Context, req *dataformpb.GetFolderReq
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetFolder")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/folders/*}")
+	}
 	opts = append((*c.CallOptions).GetFolder[0:len((*c.CallOptions).GetFolder):len((*c.CallOptions).GetFolder)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.Folder{}
@@ -3521,6 +4204,13 @@ func (c *restClient) CreateFolder(ctx context.Context, req *dataformpb.CreateFol
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CreateFolder")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/folders")
+	}
 	opts = append((*c.CallOptions).CreateFolder[0:len((*c.CallOptions).CreateFolder):len((*c.CallOptions).CreateFolder)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.Folder{}
@@ -3585,6 +4275,10 @@ func (c *restClient) UpdateFolder(ctx context.Context, req *dataformpb.UpdateFol
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/UpdateFolder")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{folder.name=projects/*/locations/*/folders/*}")
+	}
 	opts = append((*c.CallOptions).UpdateFolder[0:len((*c.CallOptions).UpdateFolder):len((*c.CallOptions).UpdateFolder)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.Folder{}
@@ -3635,6 +4329,13 @@ func (c *restClient) DeleteFolder(ctx context.Context, req *dataformpb.DeleteFol
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/DeleteFolder")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/folders/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -3677,6 +4378,13 @@ func (c *restClient) DeleteFolderTree(ctx context.Context, req *dataformpb.Delet
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/DeleteFolderTree")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/folders/*}:deleteTree")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3906,6 +4614,13 @@ func (c *restClient) MoveFolder(ctx context.Context, req *dataformpb.MoveFolderR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/MoveFolder")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/folders/*}:move")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4046,6 +4761,13 @@ func (c *restClient) GetRepository(ctx context.Context, req *dataformpb.GetRepos
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetRepository")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*}")
+	}
 	opts = append((*c.CallOptions).GetRepository[0:len((*c.CallOptions).GetRepository):len((*c.CallOptions).GetRepository)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.Repository{}
@@ -4104,6 +4826,13 @@ func (c *restClient) CreateRepository(ctx context.Context, req *dataformpb.Creat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CreateRepository")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/repositories")
+	}
 	opts = append((*c.CallOptions).CreateRepository[0:len((*c.CallOptions).CreateRepository):len((*c.CallOptions).CreateRepository)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.Repository{}
@@ -4173,6 +4902,10 @@ func (c *restClient) UpdateRepository(ctx context.Context, req *dataformpb.Updat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/UpdateRepository")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{repository.name=projects/*/locations/*/repositories/*}")
+	}
 	opts = append((*c.CallOptions).UpdateRepository[0:len((*c.CallOptions).UpdateRepository):len((*c.CallOptions).UpdateRepository)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.Repository{}
@@ -4226,6 +4959,13 @@ func (c *restClient) DeleteRepository(ctx context.Context, req *dataformpb.Delet
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/DeleteRepository")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -4267,6 +5007,13 @@ func (c *restClient) MoveRepository(ctx context.Context, req *dataformpb.MoveRep
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/MoveRepository")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*}:move")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4327,6 +5074,13 @@ func (c *restClient) CommitRepositoryChanges(ctx context.Context, req *dataformp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CommitRepositoryChanges")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*}:commit")
+	}
 	opts = append((*c.CallOptions).CommitRepositoryChanges[0:len((*c.CallOptions).CommitRepositoryChanges):len((*c.CallOptions).CommitRepositoryChanges)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.CommitRepositoryChangesResponse{}
@@ -4382,6 +5136,13 @@ func (c *restClient) ReadRepositoryFile(ctx context.Context, req *dataformpb.Rea
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/ReadRepositoryFile")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*}:readFile")
+	}
 	opts = append((*c.CallOptions).ReadRepositoryFile[0:len((*c.CallOptions).ReadRepositoryFile):len((*c.CallOptions).ReadRepositoryFile)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.ReadRepositoryFileResponse{}
@@ -4596,6 +5357,13 @@ func (c *restClient) ComputeRepositoryAccessTokenStatus(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/ComputeRepositoryAccessTokenStatus")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*}:computeAccessTokenStatus")
+	}
 	opts = append((*c.CallOptions).ComputeRepositoryAccessTokenStatus[0:len((*c.CallOptions).ComputeRepositoryAccessTokenStatus):len((*c.CallOptions).ComputeRepositoryAccessTokenStatus)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.ComputeRepositoryAccessTokenStatusResponse{}
@@ -4646,6 +5414,13 @@ func (c *restClient) FetchRemoteBranches(ctx context.Context, req *dataformpb.Fe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/FetchRemoteBranches")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*}:fetchRemoteBranches")
+	}
 	opts = append((*c.CallOptions).FetchRemoteBranches[0:len((*c.CallOptions).FetchRemoteBranches):len((*c.CallOptions).FetchRemoteBranches)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.FetchRemoteBranchesResponse{}
@@ -4780,6 +5555,13 @@ func (c *restClient) GetWorkspace(ctx context.Context, req *dataformpb.GetWorksp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetWorkspace")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/workspaces/*}")
+	}
 	opts = append((*c.CallOptions).GetWorkspace[0:len((*c.CallOptions).GetWorkspace):len((*c.CallOptions).GetWorkspace)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.Workspace{}
@@ -4838,6 +5620,13 @@ func (c *restClient) CreateWorkspace(ctx context.Context, req *dataformpb.Create
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CreateWorkspace")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/repositories/*}/workspaces")
+	}
 	opts = append((*c.CallOptions).CreateWorkspace[0:len((*c.CallOptions).CreateWorkspace):len((*c.CallOptions).CreateWorkspace)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.Workspace{}
@@ -4888,6 +5677,13 @@ func (c *restClient) DeleteWorkspace(ctx context.Context, req *dataformpb.Delete
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/DeleteWorkspace")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/workspaces/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -4929,6 +5725,13 @@ func (c *restClient) InstallNpmPackages(ctx context.Context, req *dataformpb.Ins
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/InstallNpmPackages")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{workspace=projects/*/locations/*/repositories/*/workspaces/*}:installNpmPackages")
+	}
 	opts = append((*c.CallOptions).InstallNpmPackages[0:len((*c.CallOptions).InstallNpmPackages):len((*c.CallOptions).InstallNpmPackages)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.InstallNpmPackagesResponse{}
@@ -4985,6 +5788,13 @@ func (c *restClient) PullGitCommits(ctx context.Context, req *dataformpb.PullGit
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/PullGitCommits")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/workspaces/*}:pull")
+	}
 	opts = append((*c.CallOptions).PullGitCommits[0:len((*c.CallOptions).PullGitCommits):len((*c.CallOptions).PullGitCommits)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.PullGitCommitsResponse{}
@@ -5041,6 +5851,13 @@ func (c *restClient) PushGitCommits(ctx context.Context, req *dataformpb.PushGit
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/PushGitCommits")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/workspaces/*}:push")
+	}
 	opts = append((*c.CallOptions).PushGitCommits[0:len((*c.CallOptions).PushGitCommits):len((*c.CallOptions).PushGitCommits)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.PushGitCommitsResponse{}
@@ -5091,6 +5908,13 @@ func (c *restClient) FetchFileGitStatuses(ctx context.Context, req *dataformpb.F
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/FetchFileGitStatuses")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/workspaces/*}:fetchFileGitStatuses")
+	}
 	opts = append((*c.CallOptions).FetchFileGitStatuses[0:len((*c.CallOptions).FetchFileGitStatuses):len((*c.CallOptions).FetchFileGitStatuses)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.FetchFileGitStatusesResponse{}
@@ -5144,6 +5968,13 @@ func (c *restClient) FetchGitAheadBehind(ctx context.Context, req *dataformpb.Fe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/FetchGitAheadBehind")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/workspaces/*}:fetchGitAheadBehind")
+	}
 	opts = append((*c.CallOptions).FetchGitAheadBehind[0:len((*c.CallOptions).FetchGitAheadBehind):len((*c.CallOptions).FetchGitAheadBehind)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.FetchGitAheadBehindResponse{}
@@ -5200,6 +6031,13 @@ func (c *restClient) CommitWorkspaceChanges(ctx context.Context, req *dataformpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CommitWorkspaceChanges")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/workspaces/*}:commit")
+	}
 	opts = append((*c.CallOptions).CommitWorkspaceChanges[0:len((*c.CallOptions).CommitWorkspaceChanges):len((*c.CallOptions).CommitWorkspaceChanges)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.CommitWorkspaceChangesResponse{}
@@ -5256,6 +6094,13 @@ func (c *restClient) ResetWorkspaceChanges(ctx context.Context, req *dataformpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/ResetWorkspaceChanges")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/workspaces/*}:reset")
+	}
 	opts = append((*c.CallOptions).ResetWorkspaceChanges[0:len((*c.CallOptions).ResetWorkspaceChanges):len((*c.CallOptions).ResetWorkspaceChanges)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.ResetWorkspaceChangesResponse{}
@@ -5307,6 +6152,13 @@ func (c *restClient) FetchFileDiff(ctx context.Context, req *dataformpb.FetchFil
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/FetchFileDiff")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{workspace=projects/*/locations/*/repositories/*/workspaces/*}:fetchFileDiff")
+	}
 	opts = append((*c.CallOptions).FetchFileDiff[0:len((*c.CallOptions).FetchFileDiff):len((*c.CallOptions).FetchFileDiff)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.FetchFileDiffResponse{}
@@ -5528,6 +6380,13 @@ func (c *restClient) MakeDirectory(ctx context.Context, req *dataformpb.MakeDire
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/MakeDirectory")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{workspace=projects/*/locations/*/repositories/*/workspaces/*}:makeDirectory")
+	}
 	opts = append((*c.CallOptions).MakeDirectory[0:len((*c.CallOptions).MakeDirectory):len((*c.CallOptions).MakeDirectory)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.MakeDirectoryResponse{}
@@ -5584,6 +6443,13 @@ func (c *restClient) RemoveDirectory(ctx context.Context, req *dataformpb.Remove
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/RemoveDirectory")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{workspace=projects/*/locations/*/repositories/*/workspaces/*}:removeDirectory")
+	}
 	opts = append((*c.CallOptions).RemoveDirectory[0:len((*c.CallOptions).RemoveDirectory):len((*c.CallOptions).RemoveDirectory)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.RemoveDirectoryResponse{}
@@ -5641,6 +6507,13 @@ func (c *restClient) MoveDirectory(ctx context.Context, req *dataformpb.MoveDire
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/MoveDirectory")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{workspace=projects/*/locations/*/repositories/*/workspaces/*}:moveDirectory")
+	}
 	opts = append((*c.CallOptions).MoveDirectory[0:len((*c.CallOptions).MoveDirectory):len((*c.CallOptions).MoveDirectory)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.MoveDirectoryResponse{}
@@ -5695,6 +6568,13 @@ func (c *restClient) ReadFile(ctx context.Context, req *dataformpb.ReadFileReque
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/ReadFile")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{workspace=projects/*/locations/*/repositories/*/workspaces/*}:readFile")
+	}
 	opts = append((*c.CallOptions).ReadFile[0:len((*c.CallOptions).ReadFile):len((*c.CallOptions).ReadFile)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.ReadFileResponse{}
@@ -5751,6 +6631,13 @@ func (c *restClient) RemoveFile(ctx context.Context, req *dataformpb.RemoveFileR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/RemoveFile")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{workspace=projects/*/locations/*/repositories/*/workspaces/*}:removeFile")
+	}
 	opts = append((*c.CallOptions).RemoveFile[0:len((*c.CallOptions).RemoveFile):len((*c.CallOptions).RemoveFile)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.RemoveFileResponse{}
@@ -5807,6 +6694,13 @@ func (c *restClient) MoveFile(ctx context.Context, req *dataformpb.MoveFileReque
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/MoveFile")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{workspace=projects/*/locations/*/repositories/*/workspaces/*}:moveFile")
+	}
 	opts = append((*c.CallOptions).MoveFile[0:len((*c.CallOptions).MoveFile):len((*c.CallOptions).MoveFile)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.MoveFileResponse{}
@@ -5863,6 +6757,13 @@ func (c *restClient) WriteFile(ctx context.Context, req *dataformpb.WriteFileReq
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/WriteFile")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{workspace=projects/*/locations/*/repositories/*/workspaces/*}:writeFile")
+	}
 	opts = append((*c.CallOptions).WriteFile[0:len((*c.CallOptions).WriteFile):len((*c.CallOptions).WriteFile)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.WriteFileResponse{}
@@ -5991,6 +6892,13 @@ func (c *restClient) GetReleaseConfig(ctx context.Context, req *dataformpb.GetRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetReleaseConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/releaseConfigs/*}")
+	}
 	opts = append((*c.CallOptions).GetReleaseConfig[0:len((*c.CallOptions).GetReleaseConfig):len((*c.CallOptions).GetReleaseConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.ReleaseConfig{}
@@ -6049,6 +6957,13 @@ func (c *restClient) CreateReleaseConfig(ctx context.Context, req *dataformpb.Cr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CreateReleaseConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/repositories/*}/releaseConfigs")
+	}
 	opts = append((*c.CallOptions).CreateReleaseConfig[0:len((*c.CallOptions).CreateReleaseConfig):len((*c.CallOptions).CreateReleaseConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.ReleaseConfig{}
@@ -6118,6 +7033,10 @@ func (c *restClient) UpdateReleaseConfig(ctx context.Context, req *dataformpb.Up
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/UpdateReleaseConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{release_config.name=projects/*/locations/*/repositories/*/releaseConfigs/*}")
+	}
 	opts = append((*c.CallOptions).UpdateReleaseConfig[0:len((*c.CallOptions).UpdateReleaseConfig):len((*c.CallOptions).UpdateReleaseConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.ReleaseConfig{}
@@ -6168,6 +7087,13 @@ func (c *restClient) DeleteReleaseConfig(ctx context.Context, req *dataformpb.De
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/DeleteReleaseConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/releaseConfigs/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -6287,6 +7213,13 @@ func (c *restClient) GetCompilationResult(ctx context.Context, req *dataformpb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetCompilationResult")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/compilationResults/*}")
+	}
 	opts = append((*c.CallOptions).GetCompilationResult[0:len((*c.CallOptions).GetCompilationResult):len((*c.CallOptions).GetCompilationResult)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.CompilationResult{}
@@ -6344,6 +7277,13 @@ func (c *restClient) CreateCompilationResult(ctx context.Context, req *dataformp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CreateCompilationResult")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/repositories/*}/compilationResults")
+	}
 	opts = append((*c.CallOptions).CreateCompilationResult[0:len((*c.CallOptions).CreateCompilationResult):len((*c.CallOptions).CreateCompilationResult)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.CompilationResult{}
@@ -6553,6 +7493,13 @@ func (c *restClient) GetWorkflowConfig(ctx context.Context, req *dataformpb.GetW
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetWorkflowConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/workflowConfigs/*}")
+	}
 	opts = append((*c.CallOptions).GetWorkflowConfig[0:len((*c.CallOptions).GetWorkflowConfig):len((*c.CallOptions).GetWorkflowConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.WorkflowConfig{}
@@ -6611,6 +7558,13 @@ func (c *restClient) CreateWorkflowConfig(ctx context.Context, req *dataformpb.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CreateWorkflowConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/repositories/*}/workflowConfigs")
+	}
 	opts = append((*c.CallOptions).CreateWorkflowConfig[0:len((*c.CallOptions).CreateWorkflowConfig):len((*c.CallOptions).CreateWorkflowConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.WorkflowConfig{}
@@ -6680,6 +7634,10 @@ func (c *restClient) UpdateWorkflowConfig(ctx context.Context, req *dataformpb.U
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/UpdateWorkflowConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{workflow_config.name=projects/*/locations/*/repositories/*/workflowConfigs/*}")
+	}
 	opts = append((*c.CallOptions).UpdateWorkflowConfig[0:len((*c.CallOptions).UpdateWorkflowConfig):len((*c.CallOptions).UpdateWorkflowConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.WorkflowConfig{}
@@ -6730,6 +7688,13 @@ func (c *restClient) DeleteWorkflowConfig(ctx context.Context, req *dataformpb.D
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/DeleteWorkflowConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/workflowConfigs/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -6849,6 +7814,13 @@ func (c *restClient) GetWorkflowInvocation(ctx context.Context, req *dataformpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetWorkflowInvocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/workflowInvocations/*}")
+	}
 	opts = append((*c.CallOptions).GetWorkflowInvocation[0:len((*c.CallOptions).GetWorkflowInvocation):len((*c.CallOptions).GetWorkflowInvocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.WorkflowInvocation{}
@@ -6906,6 +7878,13 @@ func (c *restClient) CreateWorkflowInvocation(ctx context.Context, req *dataform
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CreateWorkflowInvocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/repositories/*}/workflowInvocations")
+	}
 	opts = append((*c.CallOptions).CreateWorkflowInvocation[0:len((*c.CallOptions).CreateWorkflowInvocation):len((*c.CallOptions).CreateWorkflowInvocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.WorkflowInvocation{}
@@ -6956,6 +7935,13 @@ func (c *restClient) DeleteWorkflowInvocation(ctx context.Context, req *dataform
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/DeleteWorkflowInvocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/workflowInvocations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -6997,6 +7983,13 @@ func (c *restClient) CancelWorkflowInvocation(ctx context.Context, req *dataform
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CancelWorkflowInvocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/workflowInvocations/*}:cancel")
+	}
 	opts = append((*c.CallOptions).CancelWorkflowInvocation[0:len((*c.CallOptions).CancelWorkflowInvocation):len((*c.CallOptions).CancelWorkflowInvocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.CancelWorkflowInvocationResponse{}
@@ -7125,6 +8118,13 @@ func (c *restClient) GetConfig(ctx context.Context, req *dataformpb.GetConfigReq
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/config}")
+	}
 	opts = append((*c.CallOptions).GetConfig[0:len((*c.CallOptions).GetConfig):len((*c.CallOptions).GetConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.Config{}
@@ -7194,6 +8194,10 @@ func (c *restClient) UpdateConfig(ctx context.Context, req *dataformpb.UpdateCon
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/UpdateConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{config.name=projects/*/locations/*/config}")
+	}
 	opts = append((*c.CallOptions).UpdateConfig[0:len((*c.CallOptions).UpdateConfig):len((*c.CallOptions).UpdateConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.Config{}
@@ -7249,6 +8253,13 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/repositories/*}:getIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -7308,6 +8319,13 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/SetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/repositories/*}:setIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -7370,6 +8388,13 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/repositories/*}:testIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.TestIamPermissionsResponse{}
@@ -7420,6 +8445,10 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -7573,6 +8602,10 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -7608,6 +8641,10 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -7643,6 +8680,10 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}

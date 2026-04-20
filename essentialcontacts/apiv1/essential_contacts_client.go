@@ -28,6 +28,7 @@ import (
 
 	essentialcontactspb "cloud.google.com/go/essentialcontacts/apiv1/essentialcontactspb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -267,6 +268,16 @@ type gRPCClient struct {
 // Manages contacts for important Google Cloud notifications.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "essentialcontacts",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/essentialcontacts/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "essentialcontacts.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -288,6 +299,26 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "essentialcontacts",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/essentialcontacts/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "essentialcontacts.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateContact = append(client.CallOptions.CreateContact, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateContact = append(client.CallOptions.UpdateContact, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListContacts = append(client.CallOptions.ListContacts, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetContact = append(client.CallOptions.GetContact, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteContact = append(client.CallOptions.DeleteContact, gax.WithClientMetrics(metrics))
+		client.CallOptions.ComputeContacts = append(client.CallOptions.ComputeContacts, gax.WithClientMetrics(metrics))
+		client.CallOptions.SendTestMessage = append(client.CallOptions.SendTestMessage, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -341,6 +372,16 @@ type restClient struct {
 // Manages contacts for important Google Cloud notifications.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "essentialcontacts",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/essentialcontacts/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "essentialcontacts.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -354,6 +395,27 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "essentialcontacts",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/essentialcontacts/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "essentialcontacts.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateContact = append(callOpts.CreateContact, gax.WithClientMetrics(metrics))
+		callOpts.UpdateContact = append(callOpts.UpdateContact, gax.WithClientMetrics(metrics))
+		callOpts.ListContacts = append(callOpts.ListContacts, gax.WithClientMetrics(metrics))
+		callOpts.GetContact = append(callOpts.GetContact, gax.WithClientMetrics(metrics))
+		callOpts.DeleteContact = append(callOpts.DeleteContact, gax.WithClientMetrics(metrics))
+		callOpts.ComputeContacts = append(callOpts.ComputeContacts, gax.WithClientMetrics(metrics))
+		callOpts.SendTestMessage = append(callOpts.SendTestMessage, gax.WithClientMetrics(metrics))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -400,6 +462,12 @@ func (c *gRPCClient) CreateContact(ctx context.Context, req *essentialcontactspb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//essentialcontacts.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.essentialcontacts.v1.EssentialContactsService/CreateContact")
+	}
 	opts = append((*c.CallOptions).CreateContact[0:len((*c.CallOptions).CreateContact):len((*c.CallOptions).CreateContact)], opts...)
 	var resp *essentialcontactspb.Contact
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -418,6 +486,9 @@ func (c *gRPCClient) UpdateContact(ctx context.Context, req *essentialcontactspb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.essentialcontacts.v1.EssentialContactsService/UpdateContact")
+	}
 	opts = append((*c.CallOptions).UpdateContact[0:len((*c.CallOptions).UpdateContact):len((*c.CallOptions).UpdateContact)], opts...)
 	var resp *essentialcontactspb.Contact
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -436,6 +507,12 @@ func (c *gRPCClient) ListContacts(ctx context.Context, req *essentialcontactspb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//essentialcontacts.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.essentialcontacts.v1.EssentialContactsService/ListContacts")
+	}
 	opts = append((*c.CallOptions).ListContacts[0:len((*c.CallOptions).ListContacts):len((*c.CallOptions).ListContacts)], opts...)
 	it := &ContactIterator{}
 	req = proto.Clone(req).(*essentialcontactspb.ListContactsRequest)
@@ -482,6 +559,12 @@ func (c *gRPCClient) GetContact(ctx context.Context, req *essentialcontactspb.Ge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//essentialcontacts.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.essentialcontacts.v1.EssentialContactsService/GetContact")
+	}
 	opts = append((*c.CallOptions).GetContact[0:len((*c.CallOptions).GetContact):len((*c.CallOptions).GetContact)], opts...)
 	var resp *essentialcontactspb.Contact
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -500,6 +583,12 @@ func (c *gRPCClient) DeleteContact(ctx context.Context, req *essentialcontactspb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//essentialcontacts.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.essentialcontacts.v1.EssentialContactsService/DeleteContact")
+	}
 	opts = append((*c.CallOptions).DeleteContact[0:len((*c.CallOptions).DeleteContact):len((*c.CallOptions).DeleteContact)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -514,6 +603,12 @@ func (c *gRPCClient) ComputeContacts(ctx context.Context, req *essentialcontacts
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//essentialcontacts.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.essentialcontacts.v1.EssentialContactsService/ComputeContacts")
+	}
 	opts = append((*c.CallOptions).ComputeContacts[0:len((*c.CallOptions).ComputeContacts):len((*c.CallOptions).ComputeContacts)], opts...)
 	it := &ContactIterator{}
 	req = proto.Clone(req).(*essentialcontactspb.ComputeContactsRequest)
@@ -560,6 +655,12 @@ func (c *gRPCClient) SendTestMessage(ctx context.Context, req *essentialcontacts
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//essentialcontacts.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.essentialcontacts.v1.EssentialContactsService/SendTestMessage")
+	}
 	opts = append((*c.CallOptions).SendTestMessage[0:len((*c.CallOptions).SendTestMessage):len((*c.CallOptions).SendTestMessage)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -595,6 +696,13 @@ func (c *restClient) CreateContact(ctx context.Context, req *essentialcontactspb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//essentialcontacts.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.essentialcontacts.v1.EssentialContactsService/CreateContact")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*}/contacts")
+	}
 	opts = append((*c.CallOptions).CreateContact[0:len((*c.CallOptions).CreateContact):len((*c.CallOptions).CreateContact)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &essentialcontactspb.Contact{}
@@ -660,6 +768,10 @@ func (c *restClient) UpdateContact(ctx context.Context, req *essentialcontactspb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.essentialcontacts.v1.EssentialContactsService/UpdateContact")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{contact.name=projects/*/contacts/*}")
+	}
 	opts = append((*c.CallOptions).UpdateContact[0:len((*c.CallOptions).UpdateContact):len((*c.CallOptions).UpdateContact)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &essentialcontactspb.Contact{}
@@ -788,6 +900,13 @@ func (c *restClient) GetContact(ctx context.Context, req *essentialcontactspb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//essentialcontacts.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.essentialcontacts.v1.EssentialContactsService/GetContact")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/contacts/*}")
+	}
 	opts = append((*c.CallOptions).GetContact[0:len((*c.CallOptions).GetContact):len((*c.CallOptions).GetContact)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &essentialcontactspb.Contact{}
@@ -838,6 +957,13 @@ func (c *restClient) DeleteContact(ctx context.Context, req *essentialcontactspb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//essentialcontacts.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.essentialcontacts.v1.EssentialContactsService/DeleteContact")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/contacts/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -965,6 +1091,13 @@ func (c *restClient) SendTestMessage(ctx context.Context, req *essentialcontacts
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//essentialcontacts.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.essentialcontacts.v1.EssentialContactsService/SendTestMessage")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*}/contacts:sendTestMessage")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
