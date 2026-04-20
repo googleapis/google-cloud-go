@@ -1518,6 +1518,8 @@ func createQueryRecipeCacheUpdate(operationUID uint64, key string) *sppb.CacheUp
 
 func TestLocationAwareExecuteSql_CooldownRoutesToNextReplicaAndEndpointBecomesEligibleAfterExpiry(t *testing.T) {
 	t.Parallel()
+	clearEndpointLatencyRegistry()
+	t.Cleanup(clearEndpointLatencyRegistry)
 
 	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
 	defer teardown()
@@ -1600,6 +1602,8 @@ func TestLocationAwareExecuteSql_CooldownRoutesToNextReplicaAndEndpointBecomesEl
 	}
 
 	clock.Advance(2 * time.Minute)
+	clearEndpointLatencyRegistry()
+	client.locationRouter.finder.useDeterministicRandom()
 
 	if _, err := lac.ExecuteSql(context.Background(), req, testCallOptionsWithRequestID("1.proc.1.1.80.3")...); err != nil {
 		t.Fatalf("third ExecuteSql() returned unexpected error: %v", err)
@@ -1618,6 +1622,9 @@ func TestLocationAwareExecuteSql_CooldownRoutesToNextReplicaAndEndpointBecomesEl
 	}
 	if got, want := len(replicaBRequests), 2; got != want {
 		t.Fatalf("replica B ExecuteSql request count after cooldown expiry = %d, want %d", got, want)
+	}
+	if got := len(harness.DefaultReplica.Requests(MethodExecuteSql)); got != 0 {
+		t.Fatalf("default replica ExecuteSql request count after cooldown expiry = %d, want 0", got)
 	}
 }
 
@@ -1887,6 +1894,8 @@ func TestClient_Single_StreamingReadUnavailableSkipsReplicaOnNextRequestForBypas
 
 func TestLocationAwareExecuteStreamingSql_CooldownRoutesToNextReplicaAndEndpointBecomesEligibleAfterExpiry(t *testing.T) {
 	t.Parallel()
+	clearEndpointLatencyRegistry()
+	t.Cleanup(clearEndpointLatencyRegistry)
 
 	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
 	defer teardown()
@@ -1979,6 +1988,8 @@ func TestLocationAwareExecuteStreamingSql_CooldownRoutesToNextReplicaAndEndpoint
 	}
 
 	clock.Advance(2 * time.Minute)
+	clearEndpointLatencyRegistry()
+	client.locationRouter.finder.useDeterministicRandom()
 
 	stream, err = lac.ExecuteStreamingSql(context.Background(), req, testCallOptionsWithRequestID("1.proc.1.1.82.3")...)
 	if err != nil {
@@ -2002,6 +2013,9 @@ func TestLocationAwareExecuteStreamingSql_CooldownRoutesToNextReplicaAndEndpoint
 	}
 	if got, want := len(replicaBRequests), 1; got != want {
 		t.Fatalf("replica B ExecuteStreamingSql request count after cooldown expiry = %d, want %d", got, want)
+	}
+	if got := len(harness.DefaultReplica.Requests(MethodExecuteStreamingSql)); got != 0 {
+		t.Fatalf("default replica ExecuteStreamingSql request count after cooldown expiry = %d, want 0", got)
 	}
 }
 
