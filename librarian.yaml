@@ -22,7 +22,7 @@ release: {}
 tools:
   go:
     - name: github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic
-      version: v0.48.0
+      version: v0.58.0
     - name: golang.org/x/tools/cmd/goimports
       version: v0.29.0
     - name: google.golang.org/grpc/cmd/protoc-gen-go-grpc
