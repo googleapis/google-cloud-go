@@ -28,7 +28,7 @@ tools:
     - name: google.golang.org/grpc/cmd/protoc-gen-go-grpc
       version: v1.3.0
     - name: google.golang.org/protobuf/cmd/protoc-gen-go
-      version: v1.36.5
+      version: v1.36.11
 default:
   tag_format: '{name}/v{version}'
 libraries:
