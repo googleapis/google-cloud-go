@@ -19,6 +19,7 @@ package spanner
 import (
 	"context"
 	"fmt"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -32,6 +33,7 @@ type testEndpoint struct {
 	healthy          bool
 	transientFailure bool
 	conn             *grpc.ClientConn
+	active           atomic.Int64
 }
 
 func (e *testEndpoint) Address() string {
@@ -54,6 +56,30 @@ func (e *testEndpoint) IsTransientFailure() bool {
 
 func (e *testEndpoint) GetConn() *grpc.ClientConn {
 	return e.conn
+}
+
+func (e *testEndpoint) IncrementActiveRequests() {
+	e.active.Add(1)
+}
+
+func (e *testEndpoint) DecrementActiveRequests() {
+	for {
+		current := e.active.Load()
+		if current <= 0 {
+			return
+		}
+		if e.active.CompareAndSwap(current, current-1) {
+			return
+		}
+	}
+}
+
+func (e *testEndpoint) ActiveRequestCount() int {
+	current := e.active.Load()
+	if current <= 0 {
+		return 0
+	}
+	return int(current)
 }
 
 type testEndpointCache struct {
@@ -498,8 +524,8 @@ func TestKeyRangeCache_FillRoutingHintWithDetailsTracksSelectionAndSkipReasons(t
 	if got, want := details.transientFailureSkipList(), []string{"server-transient"}; fmt.Sprint(got) != fmt.Sprint(want) {
 		t.Fatalf("transientFailureSkipList=%v, want %v", got, want)
 	}
-	if got, want := details.resourceExhaustedExclusionList(), []string{"server-excluded"}; fmt.Sprint(got) != fmt.Sprint(want) {
-		t.Fatalf("resourceExhaustedExclusionList=%v, want %v", got, want)
+	if got, want := details.cooldownExclusionList(), []string{"server-excluded"}; fmt.Sprint(got) != fmt.Sprint(want) {
+		t.Fatalf("cooldownExclusionList=%v, want %v", got, want)
 	}
 }
 

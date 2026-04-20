@@ -77,7 +77,7 @@ func (opt resourceExhaustedMarkerOption) Resolve(cs *gax.CallSettings) {
 		}
 
 		return wrapRetryFn(func(err error) (time.Duration, bool) {
-			if status.Code(err) == codes.ResourceExhausted {
+			if shouldCooldownEndpointOnRetry(status.Code(err)) {
 				opt.mark(err)
 			}
 			return originalRetryer.Retry(err)

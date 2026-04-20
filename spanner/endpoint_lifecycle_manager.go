@@ -362,7 +362,6 @@ func (m *endpointLifecycleManager) probe(address string) {
 		conn.Connect()
 		return
 	case connectivity.Connecting:
-		lifecycleState.consecutiveTransientFailures = 0
 		m.mu.Unlock()
 		return
 	case connectivity.TransientFailure:

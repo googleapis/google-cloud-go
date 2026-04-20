@@ -29,6 +29,9 @@ type channelEndpoint interface {
 	IsHealthy() bool
 	IsTransientFailure() bool
 	GetConn() *grpc.ClientConn
+	IncrementActiveRequests()
+	DecrementActiveRequests()
+	ActiveRequestCount() int
 }
 
 // channelEndpointCache caches endpoints by server address.
@@ -64,6 +67,14 @@ func (*passthroughChannelEndpoint) IsTransientFailure() bool {
 
 func (*passthroughChannelEndpoint) GetConn() *grpc.ClientConn {
 	return nil
+}
+
+func (*passthroughChannelEndpoint) IncrementActiveRequests() {}
+
+func (*passthroughChannelEndpoint) DecrementActiveRequests() {}
+
+func (*passthroughChannelEndpoint) ActiveRequestCount() int {
+	return 0
 }
 
 type passthroughChannelEndpointCache struct {

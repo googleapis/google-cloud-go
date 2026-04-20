@@ -19,6 +19,7 @@ package spanner
 import (
 	"context"
 	"sync"
+	"sync/atomic"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
@@ -29,6 +30,7 @@ type grpcChannelEndpoint struct {
 	address string
 	client  spannerClient
 	conn    *grpc.ClientConn
+	active  atomic.Int64
 }
 
 var (
@@ -59,6 +61,39 @@ func (e *grpcChannelEndpoint) GetConn() *grpc.ClientConn {
 		return nil
 	}
 	return e.conn
+}
+
+func (e *grpcChannelEndpoint) IncrementActiveRequests() {
+	if e == nil {
+		return
+	}
+	e.active.Add(1)
+}
+
+func (e *grpcChannelEndpoint) DecrementActiveRequests() {
+	if e == nil {
+		return
+	}
+	for {
+		current := e.active.Load()
+		if current <= 0 {
+			return
+		}
+		if e.active.CompareAndSwap(current, current-1) {
+			return
+		}
+	}
+}
+
+func (e *grpcChannelEndpoint) ActiveRequestCount() int {
+	if e == nil {
+		return 0
+	}
+	current := e.active.Load()
+	if current <= 0 {
+		return 0
+	}
+	return int(current)
 }
 
 // endpointClientCache implements channelEndpointCache with actual gRPC

@@ -128,6 +128,25 @@ func (t *endpointOverloadCooldownTracker) isCoolingDown(address string) bool {
 	return false
 }
 
+func (t *endpointOverloadCooldownTracker) remainingCooldown(address string) time.Duration {
+	if t == nil || address == "" {
+		return 0
+	}
+
+	now := t.now()
+
+	t.mu.RLock()
+	state, ok := t.entries[address]
+	t.mu.RUnlock()
+	if !ok {
+		return 0
+	}
+	if state.cooldownUntil.After(now) {
+		return state.cooldownUntil.Sub(now)
+	}
+	return 0
+}
+
 func (t *endpointOverloadCooldownTracker) recordFailure(address string) {
 	if t == nil || address == "" {
 		return
@@ -157,7 +176,19 @@ func (t *endpointOverloadCooldownTracker) cooldownForFailures(failures int) time
 		}
 		cooldown *= 2
 	}
-	return time.Duration(t.randInt63n(int64(cooldown) + 1))
+	cooldownNanos := int64(cooldown)
+	if cooldownNanos < 1 {
+		cooldownNanos = 1
+	}
+	floorNanos := cooldownNanos / 2
+	if floorNanos < 1 {
+		floorNanos = 1
+	}
+	rangeSize := cooldownNanos - floorNanos + 1
+	if rangeSize < 1 {
+		rangeSize = 1
+	}
+	return time.Duration(floorNanos + t.randInt63n(rangeSize))
 }
 
 func (t *endpointOverloadCooldownTracker) pruneStaleEntries(maxAge time.Duration) {

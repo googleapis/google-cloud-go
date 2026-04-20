@@ -72,8 +72,8 @@ func TestEndpointOverloadCooldownTracker_UsesFullJitterWithinCooldownRange(t *te
 
 	state := tracker.entries["replica-a:443"]
 	got := state.cooldownUntil.Sub(clock.Now())
-	if got != 0 {
-		t.Fatalf("cooldown = %v, want 0 from deterministic jitter hook", got)
+	if got != 5*time.Second {
+		t.Fatalf("cooldown = %v, want %v from deterministic jitter floor", got, 5*time.Second)
 	}
 }
 
@@ -85,16 +85,16 @@ func TestEndpointOverloadCooldownTracker_UsesFullJitterWhenCooldownCapsAtMax(t *
 		10*time.Minute,
 		clock.Now,
 		func(n int64) int64 {
-			if n != int64(60*time.Second)+1 {
-				t.Fatalf("randInt63n called with %d, want %d", n, int64(60*time.Second)+1)
+			if n != int64(30*time.Second)+1 {
+				t.Fatalf("randInt63n called with %d, want %d", n, int64(30*time.Second)+1)
 			}
 			return 0
 		},
 	)
 
 	got := tracker.cooldownForFailures(5)
-	if got != 0 {
-		t.Fatalf("cooldown = %v, want 0 from deterministic jitter hook at capped max cooldown", got)
+	if got != 30*time.Second {
+		t.Fatalf("cooldown = %v, want %v from deterministic jitter floor at capped max cooldown", got, 30*time.Second)
 	}
 }
 

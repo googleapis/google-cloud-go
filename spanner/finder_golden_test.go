@@ -74,6 +74,14 @@ func (*finderGoldenEndpoint) GetConn() *grpc.ClientConn {
 	return nil
 }
 
+func (*finderGoldenEndpoint) IncrementActiveRequests() {}
+
+func (*finderGoldenEndpoint) DecrementActiveRequests() {}
+
+func (*finderGoldenEndpoint) ActiveRequestCount() int {
+	return 0
+}
+
 type finderGoldenEndpointCache struct {
 	mu        sync.Mutex
 	endpoints map[string]*finderGoldenEndpoint
