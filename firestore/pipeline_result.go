@@ -146,6 +146,10 @@ type PipelineResultIterator struct {
 // Next returns the next result. Its second return value is iterator.Done if there
 // are no more results. Once Next returns Done, all subsequent calls will return
 // Done.
+//
+// In addition, if Next returns an error other than iterator.Done, all
+// subsequent calls will return the same error. To continue iteration, a new
+// PipelineResultIterator must be created.
 func (it *PipelineResultIterator) Next() (*PipelineResult, error) {
 	if it.err != nil {
 		return nil, it.err

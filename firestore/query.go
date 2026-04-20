@@ -1354,6 +1354,10 @@ func (it *DocumentIterator) ExplainMetrics() (*ExplainMetrics, error) {
 // Next returns the next result. Its second return value is iterator.Done if there
 // are no more results. Once Next returns Done, all subsequent calls will return
 // Done.
+//
+// In addition, if Next returns an error other than iterator.Done, all
+// subsequent calls will return the same error. To continue iteration, a new
+// DocumentIterator must be created.
 func (it *DocumentIterator) Next() (*DocumentSnapshot, error) {
 	if it.err != nil {
 		return nil, it.err
@@ -1540,6 +1544,10 @@ type QuerySnapshotIterator struct {
 //
 // Next is not expected to return iterator.Done unless it is called after Stop.
 // Rarely, networking issues may also cause iterator.Done to be returned.
+//
+// In addition, if Next returns an error other than iterator.Done, all
+// subsequent calls will return the same error. To continue iteration, a new
+// QuerySnapshotIterator must be created.
 func (it *QuerySnapshotIterator) Next() (*QuerySnapshot, error) {
 	if it.err != nil {
 		return nil, it.err
