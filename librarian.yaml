@@ -19,6 +19,16 @@ sources:
     commit: cd090841ab172574e740c214c99df00aef9c0dee
     sha256: 08e4b7744dc23b6e3320a3f1d05db9f40853aaf1089d06bfb8d79044b7a66f21
 release: {}
+tools:
+  go:
+    - name: github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic
+      version: v0.58.0
+    - name: golang.org/x/tools/cmd/goimports
+      version: v0.44.0
+    - name: google.golang.org/grpc/cmd/protoc-gen-go-grpc
+      version: v1.3.0
+    - name: google.golang.org/protobuf/cmd/protoc-gen-go
+      version: v1.36.11
 default:
   tag_format: '{name}/v{version}'
 libraries:
