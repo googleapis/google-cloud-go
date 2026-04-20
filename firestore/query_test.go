@@ -2663,3 +2663,33 @@ func anyMapToValueMap(m map[string]any) map[string]*pb.Value {
 	}
 	return res
 }
+
+func TestVectorQueryFromProtoRoundTrip(t *testing.T) {
+	c := &Client{projectID: "P", databaseID: "DB"}
+	q := Query{c: c, collectionID: "C"}
+	vq := q.FindNearest("vectorField", []float64{1.0, 2.0, 3.0}, 10, DistanceMeasureEuclidean, nil)
+
+	protoBytes, err := vq.Serialize()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	gotvq, err := VectorQuery{q: Query{c: c}}.Deserialize(protoBytes)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	got, err := gotvq.q.toRunQueryRequestProto()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want, err := vq.q.toRunQueryRequestProto()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
+		t.Errorf("mismatch (-want, +got)\n: %s", diff)
+	}
+}

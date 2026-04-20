@@ -587,6 +587,29 @@ func (vq VectorQuery) Documents(ctx context.Context) *DocumentIterator {
 	return vq.q.Documents(ctx)
 }
 
+func (vq VectorQuery) query() *Query {
+	return &vq.q
+}
+
+// Serialize creates a RunQueryRequest wire-format byte slice from a VectorQuery object.
+// This can be used in combination with Deserialize to marshal VectorQuery objects.
+// This could be useful, for instance, if executing a query formed in one
+// process in another.
+func (vq VectorQuery) Serialize() ([]byte, error) {
+	return vq.q.Serialize()
+}
+
+// Deserialize takes a slice of bytes holding the wire-format message of RunQueryRequest,
+// the underlying proto message used by Queries. It then populates and returns a
+// VectorQuery object that can be used to execute that VectorQuery.
+func (vq VectorQuery) Deserialize(bytes []byte) (VectorQuery, error) {
+	q, err := vq.q.Deserialize(bytes)
+	if err != nil {
+		return VectorQuery{q: q}, err
+	}
+	return VectorQuery{q: q}, nil
+}
+
 // FindNearestPath is like [Query.FindNearest] but it accepts a [FieldPath].
 func (q Query) FindNearestPath(vectorFieldPath FieldPath, queryVector any, limit int, measure DistanceMeasure, options *FindNearestOptions) VectorQuery {
 	vq := VectorQuery{q: q}
