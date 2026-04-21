@@ -1306,7 +1306,7 @@ func (o *ObjectHandle) NewWriterFromAppendableObject(ctx context.Context, opts *
 		w.ChunkSize = googleapi.DefaultUploadChunkSize
 	}
 	if w.ChunkRetryDeadline == 0 {
-		w.ChunkRetryDeadline = 32 * time.Second
+		w.ChunkRetryDeadline = defaultWriteChunkRetryDeadline
 	}
 	err := w.openWriter()
 	if err != nil {
