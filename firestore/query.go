@@ -604,10 +604,7 @@ func (vq VectorQuery) Serialize() ([]byte, error) {
 // VectorQuery object that can be used to execute that VectorQuery.
 func (vq VectorQuery) Deserialize(bytes []byte) (VectorQuery, error) {
 	q, err := vq.q.Deserialize(bytes)
-	if err != nil {
-		return VectorQuery{q: q}, err
-	}
-	return VectorQuery{q: q}, nil
+	return VectorQuery{q: q}, err
 }
 
 // FindNearestPath is like [Query.FindNearest] but it accepts a [FieldPath].
