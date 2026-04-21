@@ -103,7 +103,7 @@ func (ar *AppendResult) FullResponse(ctx context.Context) (*storagepb.AppendRows
 			}
 		}
 		if ar.response != nil {
-			return proto.Clone(ar.response).(*storagepb.AppendRowsResponse), err
+			return proto.CloneOf(ar.response), err
 		}
 		return nil, err
 	}
@@ -136,7 +136,7 @@ func (ar *AppendResult) UpdatedSchema(ctx context.Context) (*storagepb.TableSche
 	case <-ar.Ready():
 		if ar.response != nil {
 			if schema := ar.response.GetUpdatedSchema(); schema != nil {
-				return proto.Clone(schema).(*storagepb.TableSchema), nil
+				return proto.CloneOf(schema), nil
 			}
 		}
 		return nil, nil
@@ -229,7 +229,7 @@ func (pw *pendingWrite) markDone(resp *storagepb.AppendRowsResponse, err error) 
 func (pw *pendingWrite) constructFullRequest(addTrace bool) *storagepb.AppendRowsRequest {
 	req := &storagepb.AppendRowsRequest{}
 	if pw.reqTmpl != nil {
-		req = proto.Clone(pw.reqTmpl.tmpl).(*storagepb.AppendRowsRequest)
+		req = proto.CloneOf(pw.reqTmpl.tmpl)
 	}
 	if pw.req != nil {
 		proto.Merge(req, pw.req)

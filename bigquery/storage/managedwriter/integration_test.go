@@ -723,7 +723,7 @@ func testSimpleCDC(ctx context.Context, t *testing.T, mwClient *Client, bqClient
 	defer updateWriter.Close()
 
 	// Change bob via an UPSERT CDC
-	newBob := proto.Clone(initialEmployees[1]).(*testdata.ExampleEmployeeCDC)
+	newBob := proto.CloneOf(initialEmployees[1])
 	newBob.Salary = proto.Int64(105000)
 	newBob.Departments = []string{"research", "product"}
 	newBob.XCHANGE_TYPE = proto.String("UPSERT")
