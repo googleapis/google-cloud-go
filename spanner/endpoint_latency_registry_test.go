@@ -21,6 +21,11 @@ import (
 	"time"
 )
 
+func endpointLatencyRegistryHasScore(operationUID uint64, preferLeader bool, address string) bool {
+	registry := currentEndpointLatencyRegistry()
+	return registry.hasScore(operationUID, preferLeader, address)
+}
+
 func TestEndpointLatencyRegistryKeysByOperationUID(t *testing.T) {
 	clearEndpointLatencyRegistry()
 	defer clearEndpointLatencyRegistry()
@@ -38,10 +43,9 @@ func TestEndpointLatencyRegistryKeysByOperationUID(t *testing.T) {
 	}
 }
 
-func TestEndpointLatencyRegistryLookupRefreshesAccessWhenSampled(t *testing.T) {
+func TestEndpointLatencyRegistryLookupRefreshesAccess(t *testing.T) {
 	now := time.Unix(1_000, 0)
 	registry := newEndpointLatencyRegistry(func() time.Time { return now })
-	registry.accessRefreshInterval = time.Second
 
 	registry.recordLatency(7, false, "server-a:443", 25*time.Millisecond)
 	if !registry.hasScore(7, false, "server-a:443") {
@@ -52,31 +56,33 @@ func TestEndpointLatencyRegistryLookupRefreshesAccessWhenSampled(t *testing.T) {
 	if !ok {
 		t.Fatal("expected valid tracker key")
 	}
-	shard := registry.shardForKey(key)
-	shard.mu.RLock()
-	entry := shard.trackers[key]
-	shard.mu.RUnlock()
+	registry.mu.Lock()
+	entry := registry.trackers[key]
+	registry.mu.Unlock()
 	if entry == nil {
 		t.Fatal("expected tracker entry to exist")
 	}
-	shard.accessReadCounter.Store(0)
-	lastAccess := entry.lastAccessNanos.Load()
+	lastAccess := entry.lastAccess
 
 	now = now.Add(time.Minute)
 
-	// Reads should only refresh access when the coarse sampling condition hits.
-	for i := 0; i < endpointLatencyAccessRefreshMask; i++ {
-		if !registry.hasScore(7, false, "server-a:443") {
-			t.Fatal("expected score to remain present during unsampled lookups")
-		}
+	if !registry.hasScore(7, false, "server-a:443") {
+		t.Fatal("expected score to remain present during lookup")
 	}
-	if touched := entry.lastAccessNanos.Load(); touched != lastAccess {
-		t.Fatal("expected unsampled lookups to leave lastAccess unchanged")
+	registry.mu.Lock()
+	touchedAfterHasScore := entry.lastAccess
+	registry.mu.Unlock()
+	if !touchedAfterHasScore.After(lastAccess) {
+		t.Fatal("expected hasScore lookup to refresh lastAccess")
 	}
+	now = now.Add(time.Second)
 	if cost := registry.selectionCost(7, false, nil, "server-a:443"); cost == 0 {
-		t.Fatal("expected non-zero selection cost during sampled lookup")
+		t.Fatal("expected non-zero selection cost during lookup")
 	}
-	if touched := entry.lastAccessNanos.Load(); touched <= lastAccess {
-		t.Fatal("expected sampled lookup to refresh lastAccess")
+	registry.mu.Lock()
+	touchedAfterSelection := entry.lastAccess
+	registry.mu.Unlock()
+	if !touchedAfterSelection.After(touchedAfterHasScore) {
+		t.Fatal("expected selection lookup to refresh lastAccess")
 	}
 }

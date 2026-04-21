@@ -19,22 +19,21 @@ package spanner
 import (
 	"math"
 	"sync"
-	"sync/atomic"
 	"time"
 )
 
 const defaultEWMADecayTime = 10 * time.Second
 
 type ewmaLatencyTracker struct {
-	updateMu sync.Mutex
+	mu sync.Mutex
 
 	fixedAlpha *float64
 	now        func() time.Time
 	tau        time.Duration
 
-	scoreBits        atomic.Uint64
-	initialized      atomic.Bool
-	lastUpdatedNanos atomic.Int64
+	score            float64
+	initialized      bool
+	lastUpdatedNanos int64
 }
 
 func newEWMALatencyTracker() *ewmaLatencyTracker {
@@ -68,48 +67,53 @@ func newEWMALatencyTrackerWithOptions(decayTime time.Duration, now func() time.T
 	}
 }
 
+func (t *ewmaLatencyTracker) hasScore() bool {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+	return t.initialized
+}
+
 func (t *ewmaLatencyTracker) scoreValue() float64 {
-	if !t.initialized.Load() {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+	if !t.initialized {
 		return math.MaxFloat64
 	}
-	return math.Float64frombits(t.scoreBits.Load())
+	return t.score
 }
 
 func (t *ewmaLatencyTracker) update(latency time.Duration) {
 	latencyMicros := float64(latency.Nanoseconds()) / 1e3
-	now := t.now()
+	now := t.now().UnixNano()
 
-	t.updateMu.Lock()
-	defer t.updateMu.Unlock()
+	t.mu.Lock()
+	defer t.mu.Unlock()
 
-	if !t.initialized.Load() {
-		t.scoreBits.Store(math.Float64bits(latencyMicros))
-		t.initialized.Store(true)
-		t.lastUpdatedNanos.Store(now.UnixNano())
+	if !t.initialized {
+		t.score = latencyMicros
+		t.initialized = true
+		t.lastUpdatedNanos = now
 		return
 	}
 
 	alpha := t.calculateAlphaLocked(now)
-	score := math.Float64frombits(t.scoreBits.Load())
-	score = alpha*latencyMicros + (1-alpha)*score
-	t.scoreBits.Store(math.Float64bits(score))
-	t.lastUpdatedNanos.Store(now.UnixNano())
+	t.score = alpha*latencyMicros + (1-alpha)*t.score
+	t.lastUpdatedNanos = now
 }
 
 func (t *ewmaLatencyTracker) recordError(penalty time.Duration) {
 	t.update(penalty)
 }
 
-func (t *ewmaLatencyTracker) calculateAlphaLocked(now time.Time) float64 {
+func (t *ewmaLatencyTracker) calculateAlphaLocked(nowNanos int64) float64 {
 	if t.fixedAlpha != nil {
 		return *t.fixedAlpha
 	}
-	lastUpdated := time.Unix(0, t.lastUpdatedNanos.Load())
-	delta := now.Sub(lastUpdated)
-	if delta <= 0 {
+	deltaNanos := nowNanos - t.lastUpdatedNanos
+	if deltaNanos <= 0 {
 		return 1
 	}
-	alpha := 1 - math.Exp(-float64(delta)/float64(t.tau))
+	alpha := 1 - math.Exp(-float64(deltaNanos)/float64(t.tau))
 	if alpha < 0 {
 		return 0
 	}

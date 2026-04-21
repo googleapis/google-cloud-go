@@ -25,15 +25,31 @@ import (
 )
 
 type suppressRetryCodesOption struct {
-	codes map[codes.Code]struct{}
+	code1 codes.Code
+	code2 codes.Code
+	len   uint8
 }
 
 func newSuppressRetryCodesOption(suppressedCodes ...codes.Code) suppressRetryCodesOption {
-	suppressed := make(map[codes.Code]struct{}, len(suppressedCodes))
+	opt := suppressRetryCodesOption{}
 	for _, code := range suppressedCodes {
-		suppressed[code] = struct{}{}
+		switch opt.len {
+		case 0:
+			opt.code1 = code
+			opt.len = 1
+		case 1:
+			if code != opt.code1 {
+				opt.code2 = code
+				opt.len = 2
+			}
+		default:
+			if code == opt.code1 || code == opt.code2 {
+				continue
+			}
+			panic("suppressRetryCodesOption supports at most two distinct retry codes")
+		}
 	}
-	return suppressRetryCodesOption{codes: suppressed}
+	return opt
 }
 
 type resourceExhaustedMarkerOption struct {
@@ -86,7 +102,7 @@ func (opt resourceExhaustedMarkerOption) Resolve(cs *gax.CallSettings) {
 }
 
 func (opt suppressRetryCodesOption) Resolve(cs *gax.CallSettings) {
-	if len(opt.codes) == 0 || cs.Retry == nil {
+	if opt.len == 0 || cs.Retry == nil {
 		return
 	}
 
@@ -98,10 +114,21 @@ func (opt suppressRetryCodesOption) Resolve(cs *gax.CallSettings) {
 		}
 
 		return wrapRetryFn(func(err error) (time.Duration, bool) {
-			if _, found := opt.codes[status.Code(err)]; found {
+			if opt.contains(status.Code(err)) {
 				return 0, false
 			}
 			return originalRetryer.Retry(err)
 		})
+	}
+}
+
+func (opt suppressRetryCodesOption) contains(code codes.Code) bool {
+	switch opt.len {
+	case 1:
+		return code == opt.code1
+	case 2:
+		return code == opt.code1 || code == opt.code2
+	default:
+		return false
 	}
 }

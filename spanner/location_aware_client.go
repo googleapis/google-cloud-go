@@ -24,12 +24,13 @@ import (
 	vkit "cloud.google.com/go/spanner/apiv1"
 	"cloud.google.com/go/spanner/apiv1/spannerpb"
 	"github.com/googleapis/gax-go/v2"
-	"go.opentelemetry.io/otel/attribute"
-	otrace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
+
+var suppressResourceExhaustedRetryOption = newSuppressRetryCodesOption(codes.ResourceExhausted)
+var suppressEndpointRetryOptions = newSuppressRetryCodesOption(codes.ResourceExhausted, codes.Unavailable)
 
 type locationAwareState struct {
 	clientPool              []spannerClient
@@ -202,14 +203,21 @@ func (c *locationAwareSpannerClient) rerouteErrorMarker(ep channelEndpoint, oper
 	}
 }
 
-func (c *locationAwareSpannerClient) reroutedUnaryCallOptions(base []gax.CallOption, logicalRequestKey string, attempt uint32, mark func(error), suppressedCodes ...codes.Code) []gax.CallOption {
-	opts := append([]gax.CallOption{}, base...)
+func (c *locationAwareSpannerClient) reroutedUnaryCallOptions(base []gax.CallOption, logicalRequestKey string, attempt uint32, mark func(error), suppressUnavailable bool) []gax.CallOption {
+	extraOptions := 2
+	if logicalRequestKey != "" && attempt > 1 {
+		extraOptions++
+	}
+	opts := make([]gax.CallOption, 0, len(base)+extraOptions)
+	opts = append(opts, base...)
 	if logicalRequestKey != "" && attempt > 1 {
 		opts = append(opts, logicalRequestIDWrap{logicalKey: logicalRequestKey}.withNextRetryAttempt(attempt))
 	}
-	opts = appendResourceExhaustedMarkerOptions(opts, mark, false)
-	if len(suppressedCodes) > 0 {
-		opts = append(opts, newSuppressRetryCodesOption(suppressedCodes...))
+	opts = append(opts, resourceExhaustedMarkerOption{mark: mark})
+	if suppressUnavailable {
+		opts = append(opts, suppressEndpointRetryOptions)
+	} else {
+		opts = append(opts, suppressResourceExhaustedRetryOption)
 	}
 	return opts
 }
@@ -232,39 +240,6 @@ func (c *locationAwareSpannerClient) maybeWaitForReroute(ctx context.Context, ep
 		return true, err
 	}
 	return true, nil
-}
-
-func (c *locationAwareSpannerClient) recordRouteSelectionTrace(ctx context.Context, method string, ep channelEndpoint, usedDefaultEndpoint bool, details routeSelectionDetails) {
-	endpointAddr := details.selectedEndpoint
-	if endpointAddr == "" && ep != nil {
-		endpointAddr = ep.Address()
-	}
-
-	if c == nil {
-		return
-	}
-
-	span := otrace.SpanFromContext(ctx)
-	if !span.IsRecording() {
-		return
-	}
-
-	target := c.defaultEndpointAddress
-	if !usedDefaultEndpoint && ep != nil {
-		target = ep.Address()
-	}
-
-	attrs := []attribute.KeyValue{
-		attribute.String("spanner.target", target),
-		attribute.Bool("spanner.route.used_default_endpoint", usedDefaultEndpoint),
-		attribute.Bool("spanner.route.has_channel_finder", endpointAddr != ""),
-		attribute.String("spanner.route.method", method),
-	}
-	if details.defaultReasonCode != "" {
-		attrs = append(attrs, attribute.String("spanner.route.default_reason_code", details.defaultReasonCode))
-	}
-	span.SetAttributes(attrs...)
-	span.AddEvent("spanner.route.selected", otrace.WithAttributes(attrs...))
 }
 
 func (c *locationAwareSpannerClient) observeExecuteSQLResponse(req *spannerpb.ExecuteSqlRequest, resp *spannerpb.ResultSet, ep channelEndpoint) {
@@ -401,7 +376,7 @@ func (c *locationAwareSpannerClient) StreamingRead(ctx context.Context, req *spa
 	preferLeader := preferLeaderFromSelector(req.GetTransaction())
 	lastRoutedAddress := ""
 	for attempt := uint32(1); ; attempt++ {
-		ep, details := c.router.prepareReadRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
+		ep := c.router.prepareReadRequestWithExclusions(ctx, req, excludedEndpoints)
 		operationUID := req.GetRoutingHint().GetOperationUid()
 		if waited, err := c.maybeWaitForReroute(ctx, ep, lastRoutedAddress); err != nil {
 			return nil, err
@@ -411,12 +386,7 @@ func (c *locationAwareSpannerClient) StreamingRead(ctx context.Context, req *spa
 		client := c.clientForEndpoint(ep)
 		usedDefaultEndpoint := client == c.defaultClient
 		markRetryableError := c.rerouteErrorMarker(ep, operationUID, preferLeader)
-		suppressedCodes := []codes.Code{codes.ResourceExhausted}
-		if !usedDefaultEndpoint {
-			suppressedCodes = append(suppressedCodes, codes.Unavailable)
-		}
-		currentOpts := c.reroutedUnaryCallOptions(opts, logicalRequestKey, attempt, markRetryableError, suppressedCodes...)
-		c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/StreamingRead", ep, usedDefaultEndpoint, details)
+		currentOpts := c.reroutedUnaryCallOptions(opts, logicalRequestKey, attempt, markRetryableError, !usedDefaultEndpoint)
 		if ep != nil {
 			ep.IncrementActiveRequests()
 		}
@@ -457,7 +427,7 @@ func (c *locationAwareSpannerClient) Read(ctx context.Context, req *spannerpb.Re
 	preferLeader := preferLeaderFromSelector(req.GetTransaction())
 	lastRoutedAddress := ""
 	for attempt := uint32(1); ; attempt++ {
-		ep, details := c.router.prepareReadRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
+		ep := c.router.prepareReadRequestWithExclusions(ctx, req, excludedEndpoints)
 		operationUID := req.GetRoutingHint().GetOperationUid()
 		if waited, err := c.maybeWaitForReroute(ctx, ep, lastRoutedAddress); err != nil {
 			return nil, err
@@ -467,12 +437,7 @@ func (c *locationAwareSpannerClient) Read(ctx context.Context, req *spannerpb.Re
 		client := c.clientForEndpoint(ep)
 		usedDefaultEndpoint := client == c.defaultClient
 		markRetryableError := c.rerouteErrorMarker(ep, operationUID, preferLeader)
-		suppressedCodes := []codes.Code{codes.ResourceExhausted}
-		if !usedDefaultEndpoint {
-			suppressedCodes = append(suppressedCodes, codes.Unavailable)
-		}
-		currentOpts := c.reroutedUnaryCallOptions(opts, logicalRequestKey, attempt, markRetryableError, suppressedCodes...)
-		c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/Read", ep, usedDefaultEndpoint, details)
+		currentOpts := c.reroutedUnaryCallOptions(opts, logicalRequestKey, attempt, markRetryableError, !usedDefaultEndpoint)
 		if ep != nil {
 			ep.IncrementActiveRequests()
 		}
@@ -500,7 +465,7 @@ func (c *locationAwareSpannerClient) ExecuteStreamingSql(ctx context.Context, re
 	preferLeader := preferLeaderFromSelector(req.GetTransaction())
 	lastRoutedAddress := ""
 	for attempt := uint32(1); ; attempt++ {
-		ep, details := c.router.prepareExecuteSQLRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
+		ep := c.router.prepareExecuteSQLRequestWithExclusions(ctx, req, excludedEndpoints)
 		operationUID := req.GetRoutingHint().GetOperationUid()
 		if waited, err := c.maybeWaitForReroute(ctx, ep, lastRoutedAddress); err != nil {
 			return nil, err
@@ -510,12 +475,7 @@ func (c *locationAwareSpannerClient) ExecuteStreamingSql(ctx context.Context, re
 		client := c.clientForEndpoint(ep)
 		usedDefaultEndpoint := client == c.defaultClient
 		markRetryableError := c.rerouteErrorMarker(ep, operationUID, preferLeader)
-		suppressedCodes := []codes.Code{codes.ResourceExhausted}
-		if !usedDefaultEndpoint {
-			suppressedCodes = append(suppressedCodes, codes.Unavailable)
-		}
-		currentOpts := c.reroutedUnaryCallOptions(opts, logicalRequestKey, attempt, markRetryableError, suppressedCodes...)
-		c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/ExecuteStreamingSql", ep, usedDefaultEndpoint, details)
+		currentOpts := c.reroutedUnaryCallOptions(opts, logicalRequestKey, attempt, markRetryableError, !usedDefaultEndpoint)
 		if ep != nil {
 			ep.IncrementActiveRequests()
 		}
@@ -556,7 +516,7 @@ func (c *locationAwareSpannerClient) ExecuteSql(ctx context.Context, req *spanne
 	preferLeader := preferLeaderFromSelector(req.GetTransaction())
 	lastRoutedAddress := ""
 	for attempt := uint32(1); ; attempt++ {
-		ep, details := c.router.prepareExecuteSQLRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
+		ep := c.router.prepareExecuteSQLRequestWithExclusions(ctx, req, excludedEndpoints)
 		operationUID := req.GetRoutingHint().GetOperationUid()
 		if waited, err := c.maybeWaitForReroute(ctx, ep, lastRoutedAddress); err != nil {
 			return nil, err
@@ -566,12 +526,7 @@ func (c *locationAwareSpannerClient) ExecuteSql(ctx context.Context, req *spanne
 		client := c.clientForEndpoint(ep)
 		usedDefaultEndpoint := client == c.defaultClient
 		markRetryableError := c.rerouteErrorMarker(ep, operationUID, preferLeader)
-		suppressedCodes := []codes.Code{codes.ResourceExhausted}
-		if !usedDefaultEndpoint {
-			suppressedCodes = append(suppressedCodes, codes.Unavailable)
-		}
-		currentOpts := c.reroutedUnaryCallOptions(opts, logicalRequestKey, attempt, markRetryableError, suppressedCodes...)
-		c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/ExecuteSql", ep, usedDefaultEndpoint, details)
+		currentOpts := c.reroutedUnaryCallOptions(opts, logicalRequestKey, attempt, markRetryableError, !usedDefaultEndpoint)
 		if ep != nil {
 			ep.IncrementActiveRequests()
 		}
@@ -600,7 +555,7 @@ func (c *locationAwareSpannerClient) BeginTransaction(ctx context.Context, req *
 	operationUID := req.GetRoutingHint().GetOperationUid()
 	lastRoutedAddress := ""
 	for attempt := uint32(1); ; attempt++ {
-		ep, details := c.router.prepareBeginTransactionRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
+		ep := c.router.prepareBeginTransactionRequestWithExclusions(ctx, req, excludedEndpoints)
 		if waited, err := c.maybeWaitForReroute(ctx, ep, lastRoutedAddress); err != nil {
 			return nil, err
 		} else if waited {
@@ -609,12 +564,7 @@ func (c *locationAwareSpannerClient) BeginTransaction(ctx context.Context, req *
 		client := c.clientForEndpoint(ep)
 		usedDefaultEndpoint := client == c.defaultClient
 		markRetryableError := c.rerouteErrorMarker(ep, operationUID, preferLeader)
-		suppressedCodes := []codes.Code{codes.ResourceExhausted}
-		if !usedDefaultEndpoint {
-			suppressedCodes = append(suppressedCodes, codes.Unavailable)
-		}
-		currentOpts := c.reroutedUnaryCallOptions(opts, logicalRequestKey, attempt, markRetryableError, suppressedCodes...)
-		c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/BeginTransaction", ep, usedDefaultEndpoint, details)
+		currentOpts := c.reroutedUnaryCallOptions(opts, logicalRequestKey, attempt, markRetryableError, !usedDefaultEndpoint)
 		if ep != nil {
 			ep.IncrementActiveRequests()
 		}
@@ -640,16 +590,14 @@ func (c *locationAwareSpannerClient) BeginTransaction(ctx context.Context, req *
 
 func (c *locationAwareSpannerClient) Commit(ctx context.Context, req *spannerpb.CommitRequest, opts ...gax.CallOption) (*spannerpb.CommitResponse, error) {
 	excludedEndpoints := c.coolingDownEndpointsForCall()
-	ep, details := c.router.prepareCommitRequestWithExclusionsAndDetails(ctx, req, excludedEndpoints)
+	ep := c.router.prepareCommitRequestWithExclusions(ctx, req, excludedEndpoints)
 	if txID := req.GetTransactionId(); len(txID) > 0 {
 		if affinityEndpoint := c.affinityEndpoint(txID, excludedEndpoints); affinityEndpoint != nil {
 			ep = affinityEndpoint
-			details.setSelectedTablet(ep.Address(), false, false)
 		}
 	}
 	markRetryableError := c.rerouteErrorMarker(ep, 0, false)
 	client := c.clientForEndpoint(ep)
-	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/Commit", ep, client == c.defaultClient, details)
 	resp, err := client.Commit(ctx, req, appendResourceExhaustedMarkerOptions(opts, markRetryableError, true)...)
 	markRetryableError(err)
 	c.router.observeCommitResponse(resp)
@@ -661,12 +609,7 @@ func (c *locationAwareSpannerClient) Rollback(ctx context.Context, req *spannerp
 	excludedEndpoints := c.coolingDownEndpointsForCall()
 	ep := c.affinityEndpoint(req.GetTransactionId(), excludedEndpoints)
 	markRetryableError := c.rerouteErrorMarker(ep, 0, false)
-	details := newRouteSelectionDetails()
-	if ep != nil {
-		details.setSelectedTablet(ep.Address(), false, false)
-	}
 	client := c.clientForEndpoint(ep)
-	c.recordRouteSelectionTrace(ctx, "google.spanner.v1.Spanner/Rollback", ep, client == c.defaultClient, details)
 	err := client.Rollback(ctx, req, appendResourceExhaustedMarkerOptions(opts, markRetryableError, true)...)
 	markRetryableError(err)
 	c.router.clearTransactionAffinity(string(req.GetTransactionId()))

@@ -211,19 +211,12 @@ func (f *channelFinder) findServerRead(ctx context.Context, req *sppb.ReadReques
 }
 
 func (f *channelFinder) findServerReadWithExclusions(ctx context.Context, req *sppb.ReadRequest, preferLeader bool, excludedEndpoints endpointExcluder) channelEndpoint {
-	endpoint, _ := f.findServerReadWithExclusionsAndDetails(ctx, req, preferLeader, excludedEndpoints)
-	return endpoint
-}
-
-func (f *channelFinder) findServerReadWithExclusionsAndDetails(ctx context.Context, req *sppb.ReadRequest, preferLeader bool, excludedEndpoints endpointExcluder) (channelEndpoint, routeSelectionDetails) {
-	details := newRouteSelectionDetails()
 	if req == nil {
-		details.defaultReasonCode = routeReasonRangeCacheMiss
-		return nil, details
+		return nil
 	}
 	f.recipeCache.computeReadKeys(req)
 	hint := ensureReadRoutingHint(req)
-	return f.fillRoutingHintWithExclusionsAndDetails(ctx, preferLeader, rangeModeCoveringSplit, req.GetDirectedReadOptions(), hint, excludedEndpoints)
+	return f.fillRoutingHintWithExclusions(ctx, preferLeader, rangeModeCoveringSplit, req.GetDirectedReadOptions(), hint, excludedEndpoints)
 }
 
 func (f *channelFinder) findServerReadWithTransaction(ctx context.Context, req *sppb.ReadRequest) channelEndpoint {
@@ -238,19 +231,12 @@ func (f *channelFinder) findServerExecuteSQL(ctx context.Context, req *sppb.Exec
 }
 
 func (f *channelFinder) findServerExecuteSQLWithExclusions(ctx context.Context, req *sppb.ExecuteSqlRequest, preferLeader bool, excludedEndpoints endpointExcluder) channelEndpoint {
-	endpoint, _ := f.findServerExecuteSQLWithExclusionsAndDetails(ctx, req, preferLeader, excludedEndpoints)
-	return endpoint
-}
-
-func (f *channelFinder) findServerExecuteSQLWithExclusionsAndDetails(ctx context.Context, req *sppb.ExecuteSqlRequest, preferLeader bool, excludedEndpoints endpointExcluder) (channelEndpoint, routeSelectionDetails) {
-	details := newRouteSelectionDetails()
 	if req == nil {
-		details.defaultReasonCode = routeReasonRangeCacheMiss
-		return nil, details
+		return nil
 	}
 	f.recipeCache.computeQueryKeys(req)
 	hint := ensureExecuteSQLRoutingHint(req)
-	return f.fillRoutingHintWithExclusionsAndDetails(ctx, preferLeader, rangeModePickRandom, req.GetDirectedReadOptions(), hint, excludedEndpoints)
+	return f.fillRoutingHintWithExclusions(ctx, preferLeader, rangeModePickRandom, req.GetDirectedReadOptions(), hint, excludedEndpoints)
 }
 
 func (f *channelFinder) findServerExecuteSQLWithTransaction(ctx context.Context, req *sppb.ExecuteSqlRequest) channelEndpoint {
@@ -265,17 +251,10 @@ func (f *channelFinder) findServerBeginTransaction(ctx context.Context, req *spp
 }
 
 func (f *channelFinder) findServerBeginTransactionWithExclusions(ctx context.Context, req *sppb.BeginTransactionRequest, excludedEndpoints endpointExcluder) channelEndpoint {
-	endpoint, _ := f.findServerBeginTransactionWithExclusionsAndDetails(ctx, req, excludedEndpoints)
-	return endpoint
-}
-
-func (f *channelFinder) findServerBeginTransactionWithExclusionsAndDetails(ctx context.Context, req *sppb.BeginTransactionRequest, excludedEndpoints endpointExcluder) (channelEndpoint, routeSelectionDetails) {
-	details := newRouteSelectionDetails()
 	if req == nil || req.GetMutationKey() == nil {
-		details.defaultReasonCode = routeReasonRangeCacheMiss
-		return nil, details
+		return nil
 	}
-	return f.routeMutationWithExclusionsAndDetails(ctx, req.GetMutationKey(), preferLeaderFromTransactionOptions(req.GetOptions()), ensureBeginTransactionRoutingHint(req), excludedEndpoints)
+	return f.routeMutationWithExclusions(ctx, req.GetMutationKey(), preferLeaderFromTransactionOptions(req.GetOptions()), ensureBeginTransactionRoutingHint(req), excludedEndpoints)
 }
 
 func (f *channelFinder) fillCommitRoutingHint(ctx context.Context, req *sppb.CommitRequest) channelEndpoint {
@@ -283,22 +262,14 @@ func (f *channelFinder) fillCommitRoutingHint(ctx context.Context, req *sppb.Com
 }
 
 func (f *channelFinder) fillCommitRoutingHintWithExclusions(ctx context.Context, req *sppb.CommitRequest, excludedEndpoints endpointExcluder) channelEndpoint {
-	endpoint, _ := f.fillCommitRoutingHintWithExclusionsAndDetails(ctx, req, excludedEndpoints)
-	return endpoint
-}
-
-func (f *channelFinder) fillCommitRoutingHintWithExclusionsAndDetails(ctx context.Context, req *sppb.CommitRequest, excludedEndpoints endpointExcluder) (channelEndpoint, routeSelectionDetails) {
-	details := newRouteSelectionDetails()
 	if req == nil {
-		details.defaultReasonCode = routeReasonRangeCacheMiss
-		return nil, details
+		return nil
 	}
 	mutation := selectMutationProtoForRouting(req.GetMutations())
 	if mutation == nil {
-		details.defaultReasonCode = routeReasonRangeCacheMiss
-		return nil, details
+		return nil
 	}
-	return f.routeMutationWithExclusionsAndDetails(ctx, mutation, true, ensureCommitRoutingHint(req), excludedEndpoints)
+	return f.routeMutationWithExclusions(ctx, mutation, true, ensureCommitRoutingHint(req), excludedEndpoints)
 }
 
 func (f *channelFinder) routeMutation(ctx context.Context, mutation *sppb.Mutation, preferLeader bool, hint *sppb.RoutingHint) channelEndpoint {
@@ -306,24 +277,16 @@ func (f *channelFinder) routeMutation(ctx context.Context, mutation *sppb.Mutati
 }
 
 func (f *channelFinder) routeMutationWithExclusions(ctx context.Context, mutation *sppb.Mutation, preferLeader bool, hint *sppb.RoutingHint, excludedEndpoints endpointExcluder) channelEndpoint {
-	endpoint, _ := f.routeMutationWithExclusionsAndDetails(ctx, mutation, preferLeader, hint, excludedEndpoints)
-	return endpoint
-}
-
-func (f *channelFinder) routeMutationWithExclusionsAndDetails(ctx context.Context, mutation *sppb.Mutation, preferLeader bool, hint *sppb.RoutingHint, excludedEndpoints endpointExcluder) (channelEndpoint, routeSelectionDetails) {
-	details := newRouteSelectionDetails()
 	if mutation == nil || hint == nil {
-		details.defaultReasonCode = routeReasonRangeCacheMiss
-		return nil, details
+		return nil
 	}
 	f.recipeCache.applySchemaGeneration(hint)
 	target := f.recipeCache.mutationToTargetRange(mutation)
 	if target == nil {
-		details.defaultReasonCode = routeReasonRangeCacheMiss
-		return nil, details
+		return nil
 	}
 	f.recipeCache.applyTargetRange(hint, target)
-	return f.fillRoutingHintWithExclusionsAndDetails(ctx, preferLeader, rangeModeCoveringSplit, &sppb.DirectedReadOptions{}, hint, excludedEndpoints)
+	return f.fillRoutingHintWithExclusions(ctx, preferLeader, rangeModeCoveringSplit, &sppb.DirectedReadOptions{}, hint, excludedEndpoints)
 }
 
 func (f *channelFinder) fillRoutingHint(ctx context.Context, preferLeader bool, mode rangeMode, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint) channelEndpoint {
@@ -331,23 +294,15 @@ func (f *channelFinder) fillRoutingHint(ctx context.Context, preferLeader bool, 
 }
 
 func (f *channelFinder) fillRoutingHintWithExclusions(ctx context.Context, preferLeader bool, mode rangeMode, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint, excludedEndpoints endpointExcluder) channelEndpoint {
-	endpoint, _ := f.fillRoutingHintWithExclusionsAndDetails(ctx, preferLeader, mode, directedReadOptions, hint, excludedEndpoints)
-	return endpoint
-}
-
-func (f *channelFinder) fillRoutingHintWithExclusionsAndDetails(ctx context.Context, preferLeader bool, mode rangeMode, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint, excludedEndpoints endpointExcluder) (channelEndpoint, routeSelectionDetails) {
-	details := newRouteSelectionDetails()
 	if hint == nil {
-		details.defaultReasonCode = routeReasonRangeCacheMiss
-		return nil, details
+		return nil
 	}
 	databaseID := f.databaseID.Load()
 	if databaseID == 0 {
-		details.defaultReasonCode = routeReasonRangeCacheMiss
-		return nil, details
+		return nil
 	}
 	hint.DatabaseId = databaseID
-	return f.rangeCache.fillRoutingHintWithExclusionsAndDetails(ctx, preferLeader, mode, directedReadOptions, hint, excludedEndpoints)
+	return f.rangeCache.fillRoutingHintWithExclusions(ctx, preferLeader, mode, directedReadOptions, hint, excludedEndpoints)
 }
 
 func preferLeaderFromSelector(selector *sppb.TransactionSelector) bool {

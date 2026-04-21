@@ -29,24 +29,22 @@ func newPowerOfTwoReplicaSelector() powerOfTwoReplicaSelector {
 	return powerOfTwoReplicaSelector{intn: rand.Intn}
 }
 
-func (s powerOfTwoReplicaSelector) choose(candidates []channelEndpoint, scoreLookup func(channelEndpoint) float64) channelEndpoint {
-	if len(candidates) == 0 {
-		return nil
+func (s powerOfTwoReplicaSelector) chooseIndex(candidateCount int, scoreLookup func(int) float64) int {
+	if candidateCount == 0 {
+		return -1
 	}
-	if len(candidates) == 1 {
-		return candidates[0]
+	if candidateCount == 1 {
+		return 0
 	}
 
-	index1 := s.intn(len(candidates))
-	index2 := s.intn(len(candidates) - 1)
+	index1 := s.intn(candidateCount)
+	index2 := s.intn(candidateCount - 1)
 	if index2 >= index1 {
 		index2++
 	}
 
-	candidate1 := candidates[index1]
-	candidate2 := candidates[index2]
-	score1 := scoreLookup(candidate1)
-	score2 := scoreLookup(candidate2)
+	score1 := scoreLookup(index1)
+	score2 := scoreLookup(index2)
 	if math.IsNaN(score1) {
 		score1 = math.MaxFloat64
 	}
@@ -54,7 +52,7 @@ func (s powerOfTwoReplicaSelector) choose(candidates []channelEndpoint, scoreLoo
 		score2 = math.MaxFloat64
 	}
 	if score1 <= score2 {
-		return candidate1
+		return index1
 	}
-	return candidate2
+	return index2
 }
