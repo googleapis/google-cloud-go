@@ -1724,6 +1724,7 @@ libraries:
       - path: google/maps/solar/v1
         service_config: solar_v1.yaml
       - path: google/maps/geocode/v4
+      - path: google/maps/mapmanagement/v2beta
     source_roots:
       - maps
       - internal/generated/snippets/maps

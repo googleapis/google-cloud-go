@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 language: go
-version: v0.10.2-0.20260421180302-dc35d110f9bb
+version: v0.10.2-0.20260421220535-e13512b2b859
 repo: googleapis/google-cloud-go
 sources:
   googleapis:
@@ -1464,6 +1464,7 @@ libraries:
       - path: google/maps/routeoptimization/v1
       - path: google/maps/solar/v1
       - path: google/maps/fleetengine/delivery/v1
+      - path: google/maps/mapmanagement/v2beta
     title_override: Google Maps Platform
     go:
       go_apis:

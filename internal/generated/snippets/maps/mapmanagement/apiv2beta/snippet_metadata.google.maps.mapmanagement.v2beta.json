@@ -1,0 +1,702 @@
+{
+  "clientLibrary": {
+    "apis": [
+      {
+        "id": "google.maps.mapmanagement.v2beta",
+        "version": "v2beta"
+      }
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/maps/mapmanagement/apiv2beta",
+    "version": "1.33.0"
+  },
+  "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.maps.mapmanagement.v2beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.maps.mapmanagement.v2beta.Client.CreateMapConfig",
+        "method": {
+          "fullName": "google.maps.mapmanagement.v2beta.MapManagement.CreateMapConfig",
+          "service": {
+            "fullName": "google.maps.mapmanagement.v2beta.MapManagement",
+            "shortName": "MapManagement"
+          },
+          "shortName": "CreateMapConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "mapmanagementpb.CreateMapConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*mapmanagementpb.MapConfig",
+        "shortName": "CreateMapConfig"
+      },
+      "description": "CreateMapConfig creates a MapConfig in a project.",
+      "file": "Client/CreateMapConfig/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "mapmanagement_v2beta_generated_MapManagement_CreateMapConfig_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "mapmanagement CreateMapConfig Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.maps.mapmanagement.v2beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.maps.mapmanagement.v2beta.Client.CreateMapContextConfig",
+        "method": {
+          "fullName": "google.maps.mapmanagement.v2beta.MapManagement.CreateMapContextConfig",
+          "service": {
+            "fullName": "google.maps.mapmanagement.v2beta.MapManagement",
+            "shortName": "MapManagement"
+          },
+          "shortName": "CreateMapContextConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "mapmanagementpb.CreateMapContextConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*mapmanagementpb.MapContextConfig",
+        "shortName": "CreateMapContextConfig"
+      },
+      "description": "CreateMapContextConfig creates a MapContextConfig.",
+      "file": "Client/CreateMapContextConfig/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "mapmanagement_v2beta_generated_MapManagement_CreateMapContextConfig_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "mapmanagement CreateMapContextConfig Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.maps.mapmanagement.v2beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.maps.mapmanagement.v2beta.Client.CreateStyleConfig",
+        "method": {
+          "fullName": "google.maps.mapmanagement.v2beta.MapManagement.CreateStyleConfig",
+          "service": {
+            "fullName": "google.maps.mapmanagement.v2beta.MapManagement",
+            "shortName": "MapManagement"
+          },
+          "shortName": "CreateStyleConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "mapmanagementpb.CreateStyleConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*mapmanagementpb.StyleConfig",
+        "shortName": "CreateStyleConfig"
+      },
+      "description": "CreateStyleConfig creates a StyleConfig.",
+      "file": "Client/CreateStyleConfig/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "mapmanagement_v2beta_generated_MapManagement_CreateStyleConfig_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "mapmanagement CreateStyleConfig Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.maps.mapmanagement.v2beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.maps.mapmanagement.v2beta.Client.DeleteMapConfig",
+        "method": {
+          "fullName": "google.maps.mapmanagement.v2beta.MapManagement.DeleteMapConfig",
+          "service": {
+            "fullName": "google.maps.mapmanagement.v2beta.MapManagement",
+            "shortName": "MapManagement"
+          },
+          "shortName": "DeleteMapConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "mapmanagementpb.DeleteMapConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteMapConfig"
+      },
+      "description": "DeleteMapConfig deletes a MapConfig.",
+      "file": "Client/DeleteMapConfig/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "mapmanagement_v2beta_generated_MapManagement_DeleteMapConfig_sync",
+      "segments": [
+        {
+          "end": 51,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "mapmanagement DeleteMapConfig Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.maps.mapmanagement.v2beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.maps.mapmanagement.v2beta.Client.DeleteMapContextConfig",
+        "method": {
+          "fullName": "google.maps.mapmanagement.v2beta.MapManagement.DeleteMapContextConfig",
+          "service": {
+            "fullName": "google.maps.mapmanagement.v2beta.MapManagement",
+            "shortName": "MapManagement"
+          },
+          "shortName": "DeleteMapContextConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "mapmanagementpb.DeleteMapContextConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteMapContextConfig"
+      },
+      "description": "DeleteMapContextConfig deletes a MapContextConfig.",
+      "file": "Client/DeleteMapContextConfig/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "mapmanagement_v2beta_generated_MapManagement_DeleteMapContextConfig_sync",
+      "segments": [
+        {
+          "end": 51,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "mapmanagement DeleteMapContextConfig Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.maps.mapmanagement.v2beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.maps.mapmanagement.v2beta.Client.DeleteStyleConfig",
+        "method": {
+          "fullName": "google.maps.mapmanagement.v2beta.MapManagement.DeleteStyleConfig",
+          "service": {
+            "fullName": "google.maps.mapmanagement.v2beta.MapManagement",
+            "shortName": "MapManagement"
+          },
+          "shortName": "DeleteStyleConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "mapmanagementpb.DeleteStyleConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteStyleConfig"
+      },
+      "description": "DeleteStyleConfig deletes a StyleConfig.",
+      "file": "Client/DeleteStyleConfig/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "mapmanagement_v2beta_generated_MapManagement_DeleteStyleConfig_sync",
+      "segments": [
+        {
+          "end": 51,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "mapmanagement DeleteStyleConfig Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.maps.mapmanagement.v2beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.maps.mapmanagement.v2beta.Client.GetMapConfig",
+        "method": {
+          "fullName": "google.maps.mapmanagement.v2beta.MapManagement.GetMapConfig",
+          "service": {
+            "fullName": "google.maps.mapmanagement.v2beta.MapManagement",
+            "shortName": "MapManagement"
+          },
+          "shortName": "GetMapConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "mapmanagementpb.GetMapConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*mapmanagementpb.MapConfig",
+        "shortName": "GetMapConfig"
+      },
+      "description": "GetMapConfig gets a MapConfig.",
+      "file": "Client/GetMapConfig/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "mapmanagement_v2beta_generated_MapManagement_GetMapConfig_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "mapmanagement GetMapConfig Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.maps.mapmanagement.v2beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.maps.mapmanagement.v2beta.Client.GetMapContextConfig",
+        "method": {
+          "fullName": "google.maps.mapmanagement.v2beta.MapManagement.GetMapContextConfig",
+          "service": {
+            "fullName": "google.maps.mapmanagement.v2beta.MapManagement",
+            "shortName": "MapManagement"
+          },
+          "shortName": "GetMapContextConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "mapmanagementpb.GetMapContextConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*mapmanagementpb.MapContextConfig",
+        "shortName": "GetMapContextConfig"
+      },
+      "description": "GetMapContextConfig gets a MapContextConfig.",
+      "file": "Client/GetMapContextConfig/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "mapmanagement_v2beta_generated_MapManagement_GetMapContextConfig_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "mapmanagement GetMapContextConfig Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.maps.mapmanagement.v2beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.maps.mapmanagement.v2beta.Client.GetStyleConfig",
+        "method": {
+          "fullName": "google.maps.mapmanagement.v2beta.MapManagement.GetStyleConfig",
+          "service": {
+            "fullName": "google.maps.mapmanagement.v2beta.MapManagement",
+            "shortName": "MapManagement"
+          },
+          "shortName": "GetStyleConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "mapmanagementpb.GetStyleConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*mapmanagementpb.StyleConfig",
+        "shortName": "GetStyleConfig"
+      },
+      "description": "GetStyleConfig gets a StyleConfig.",
+      "file": "Client/GetStyleConfig/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "mapmanagement_v2beta_generated_MapManagement_GetStyleConfig_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "mapmanagement GetStyleConfig Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.maps.mapmanagement.v2beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.maps.mapmanagement.v2beta.Client.ListMapConfigs",
+        "method": {
+          "fullName": "google.maps.mapmanagement.v2beta.MapManagement.ListMapConfigs",
+          "service": {
+            "fullName": "google.maps.mapmanagement.v2beta.MapManagement",
+            "shortName": "MapManagement"
+          },
+          "shortName": "ListMapConfigs"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "mapmanagementpb.ListMapConfigsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "MapConfigIterator",
+        "shortName": "ListMapConfigs"
+      },
+      "description": "ListMapConfigs lists MapConfigs for a project.",
+      "file": "Client/ListMapConfigs/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "mapmanagement_v2beta_generated_MapManagement_ListMapConfigs_sync",
+      "segments": [
+        {
+          "end": 66,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "mapmanagement ListMapConfigs Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.maps.mapmanagement.v2beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.maps.mapmanagement.v2beta.Client.ListMapContextConfigs",
+        "method": {
+          "fullName": "google.maps.mapmanagement.v2beta.MapManagement.ListMapContextConfigs",
+          "service": {
+            "fullName": "google.maps.mapmanagement.v2beta.MapManagement",
+            "shortName": "MapManagement"
+          },
+          "shortName": "ListMapContextConfigs"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "mapmanagementpb.ListMapContextConfigsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "MapContextConfigIterator",
+        "shortName": "ListMapContextConfigs"
+      },
+      "description": "ListMapContextConfigs lists MapContextConfigs.",
+      "file": "Client/ListMapContextConfigs/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "mapmanagement_v2beta_generated_MapManagement_ListMapContextConfigs_sync",
+      "segments": [
+        {
+          "end": 66,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "mapmanagement ListMapContextConfigs Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.maps.mapmanagement.v2beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.maps.mapmanagement.v2beta.Client.ListStyleConfigs",
+        "method": {
+          "fullName": "google.maps.mapmanagement.v2beta.MapManagement.ListStyleConfigs",
+          "service": {
+            "fullName": "google.maps.mapmanagement.v2beta.MapManagement",
+            "shortName": "MapManagement"
+          },
+          "shortName": "ListStyleConfigs"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "mapmanagementpb.ListStyleConfigsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "StyleConfigIterator",
+        "shortName": "ListStyleConfigs"
+      },
+      "description": "ListStyleConfigs lists StyleConfigs.",
+      "file": "Client/ListStyleConfigs/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "mapmanagement_v2beta_generated_MapManagement_ListStyleConfigs_sync",
+      "segments": [
+        {
+          "end": 66,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "mapmanagement ListStyleConfigs Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.maps.mapmanagement.v2beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.maps.mapmanagement.v2beta.Client.UpdateMapConfig",
+        "method": {
+          "fullName": "google.maps.mapmanagement.v2beta.MapManagement.UpdateMapConfig",
+          "service": {
+            "fullName": "google.maps.mapmanagement.v2beta.MapManagement",
+            "shortName": "MapManagement"
+          },
+          "shortName": "UpdateMapConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "mapmanagementpb.UpdateMapConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*mapmanagementpb.MapConfig",
+        "shortName": "UpdateMapConfig"
+      },
+      "description": "UpdateMapConfig updates a MapConfig.",
+      "file": "Client/UpdateMapConfig/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "mapmanagement_v2beta_generated_MapManagement_UpdateMapConfig_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "mapmanagement UpdateMapConfig Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.maps.mapmanagement.v2beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.maps.mapmanagement.v2beta.Client.UpdateMapContextConfig",
+        "method": {
+          "fullName": "google.maps.mapmanagement.v2beta.MapManagement.UpdateMapContextConfig",
+          "service": {
+            "fullName": "google.maps.mapmanagement.v2beta.MapManagement",
+            "shortName": "MapManagement"
+          },
+          "shortName": "UpdateMapContextConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "mapmanagementpb.UpdateMapContextConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*mapmanagementpb.MapContextConfig",
+        "shortName": "UpdateMapContextConfig"
+      },
+      "description": "UpdateMapContextConfig updates a MapContextConfig.",
+      "file": "Client/UpdateMapContextConfig/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "mapmanagement_v2beta_generated_MapManagement_UpdateMapContextConfig_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "mapmanagement UpdateMapContextConfig Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.maps.mapmanagement.v2beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.maps.mapmanagement.v2beta.Client.UpdateStyleConfig",
+        "method": {
+          "fullName": "google.maps.mapmanagement.v2beta.MapManagement.UpdateStyleConfig",
+          "service": {
+            "fullName": "google.maps.mapmanagement.v2beta.MapManagement",
+            "shortName": "MapManagement"
+          },
+          "shortName": "UpdateStyleConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "mapmanagementpb.UpdateStyleConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*mapmanagementpb.StyleConfig",
+        "shortName": "UpdateStyleConfig"
+      },
+      "description": "UpdateStyleConfig updates a StyleConfig.",
+      "file": "Client/UpdateStyleConfig/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "mapmanagement_v2beta_generated_MapManagement_UpdateStyleConfig_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "mapmanagement UpdateStyleConfig Sample"
+    }
+  ]
+}
