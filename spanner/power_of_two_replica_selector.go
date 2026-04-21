@@ -25,6 +25,8 @@ type powerOfTwoReplicaSelector struct {
 	intn func(int) int
 }
 
+var defaultPowerOfTwoReplicaSelector = newPowerOfTwoReplicaSelector()
+
 func newPowerOfTwoReplicaSelector() powerOfTwoReplicaSelector {
 	return powerOfTwoReplicaSelector{intn: rand.Intn}
 }

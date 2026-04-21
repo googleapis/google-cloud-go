@@ -60,23 +60,11 @@ func (e *lifecycleTestEndpoint) IncrementActiveRequests() {
 }
 
 func (e *lifecycleTestEndpoint) DecrementActiveRequests() {
-	for {
-		current := e.active.Load()
-		if current <= 0 {
-			return
-		}
-		if e.active.CompareAndSwap(current, current-1) {
-			return
-		}
-	}
+	e.active.Add(-1)
 }
 
 func (e *lifecycleTestEndpoint) ActiveRequestCount() int {
-	current := e.active.Load()
-	if current <= 0 {
-		return 0
-	}
-	return int(current)
+	return int(e.active.Load())
 }
 
 type lifecycleTestCache struct {

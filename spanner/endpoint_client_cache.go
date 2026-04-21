@@ -74,26 +74,14 @@ func (e *grpcChannelEndpoint) DecrementActiveRequests() {
 	if e == nil {
 		return
 	}
-	for {
-		current := e.active.Load()
-		if current <= 0 {
-			return
-		}
-		if e.active.CompareAndSwap(current, current-1) {
-			return
-		}
-	}
+	e.active.Add(-1)
 }
 
 func (e *grpcChannelEndpoint) ActiveRequestCount() int {
 	if e == nil {
 		return 0
 	}
-	current := e.active.Load()
-	if current <= 0 {
-		return 0
-	}
-	return int(current)
+	return int(e.active.Load())
 }
 
 // endpointClientCache implements channelEndpointCache with actual gRPC

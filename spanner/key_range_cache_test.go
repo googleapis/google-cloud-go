@@ -63,23 +63,11 @@ func (e *testEndpoint) IncrementActiveRequests() {
 }
 
 func (e *testEndpoint) DecrementActiveRequests() {
-	for {
-		current := e.active.Load()
-		if current <= 0 {
-			return
-		}
-		if e.active.CompareAndSwap(current, current-1) {
-			return
-		}
-	}
+	e.active.Add(-1)
 }
 
 func (e *testEndpoint) ActiveRequestCount() int {
-	current := e.active.Load()
-	if current <= 0 {
-		return 0
-	}
-	return int(current)
+	return int(e.active.Load())
 }
 
 type testEndpointCache struct {
@@ -495,15 +483,23 @@ func TestKeyRangeCache_FillRoutingHintWithDetailsTracksSelectionAndSkipReasons(t
 	endpointCache.setHealthy("server-first", false)
 	endpointCache.setHealthy("server-transient", false)
 	endpointCache.setTransientFailure("server-transient", true)
+	cooldowns := newEndpointOverloadCooldownTrackerWithOptions(
+		time.Minute,
+		time.Minute,
+		10*time.Minute,
+		time.Now,
+		func(n int64) int64 { return n - 1 },
+	)
+	cooldowns.recordFailure("server-excluded")
 
 	hint := &sppb.RoutingHint{Key: []byte("a")}
-	endpoint := cache.fillRoutingHintWithExclusions(
+	endpoint := cache.fillRoutingHintWithCooldownTracker(
 		context.Background(),
 		false,
 		rangeModeCoveringSplit,
 		&sppb.DirectedReadOptions{},
 		hint,
-		func(address string) bool { return address == "server-excluded" },
+		cooldowns,
 	)
 
 	if endpoint == nil || endpoint.Address() != "server-leader" {
@@ -520,7 +516,7 @@ func TestKeyRangeCache_FillRoutingHintWithDetailsTracksSelectionAndSkipReasons(t
 func TestKeyRangeCache_FillRoutingHintReturnsNilOnCacheMiss(t *testing.T) {
 	cache := newKeyRangeCache(newPassthroughChannelEndpointCache())
 
-	endpoint := cache.fillRoutingHintWithExclusions(
+	endpoint := cache.fillRoutingHintWithCooldownTracker(
 		context.Background(),
 		false,
 		rangeModeCoveringSplit,

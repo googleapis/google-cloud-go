@@ -46,6 +46,7 @@ func TestEndpointLatencyRegistryKeysByOperationUID(t *testing.T) {
 func TestEndpointLatencyRegistryLookupRefreshesAccess(t *testing.T) {
 	now := time.Unix(1_000, 0)
 	registry := newEndpointLatencyRegistry(func() time.Time { return now })
+	defer registry.close()
 
 	registry.recordLatency(7, false, "server-a:443", 25*time.Millisecond)
 	if !registry.hasScore(7, false, "server-a:443") {
@@ -56,40 +57,67 @@ func TestEndpointLatencyRegistryLookupRefreshesAccess(t *testing.T) {
 	if !ok {
 		t.Fatal("expected valid tracker key")
 	}
-	registry.mu.Lock()
+	registry.mu.RLock()
 	entry := registry.trackers[key]
-	registry.mu.Unlock()
+	registry.mu.RUnlock()
 	if entry == nil {
 		t.Fatal("expected tracker entry to exist")
 	}
-	lastExpiry := entry.expiresAt
+	lastAccess := entry.lastAccessNanos.Load()
 
 	now = now.Add(time.Minute)
 
 	if !registry.hasScore(7, false, "server-a:443") {
 		t.Fatal("expected score to remain present during lookup")
 	}
-	registry.mu.Lock()
-	touchedAfterHasScore := entry.expiresAt
-	registry.mu.Unlock()
-	if !touchedAfterHasScore.After(lastExpiry) {
-		t.Fatal("expected hasScore lookup to refresh expiry")
+	touchedAfterHasScore := entry.lastAccessNanos.Load()
+	if touchedAfterHasScore <= lastAccess {
+		t.Fatal("expected hasScore lookup to refresh last access")
 	}
+
 	now = now.Add(time.Second)
 	if cost := registry.selectionCost(7, false, nil, "server-a:443"); cost == 0 {
 		t.Fatal("expected non-zero selection cost during lookup")
 	}
-	registry.mu.Lock()
-	touchedAfterSelection := entry.expiresAt
-	registry.mu.Unlock()
-	if !touchedAfterSelection.After(touchedAfterHasScore) {
-		t.Fatal("expected selection lookup to refresh expiry")
+	touchedAfterSelection := entry.lastAccessNanos.Load()
+	if touchedAfterSelection <= touchedAfterHasScore {
+		t.Fatal("expected selection lookup to refresh last access")
 	}
 }
 
-func TestEndpointLatencyRegistryEvictsOldestTrackerWhenBounded(t *testing.T) {
+func TestEndpointLatencyRegistryExpiredEntryIsHiddenBeforeCleanup(t *testing.T) {
+	now := time.Unix(1_500, 0)
+	registry := newEndpointLatencyRegistry(func() time.Time { return now })
+	defer registry.close()
+	registry.expireAfter = time.Minute
+
+	registry.recordLatency(7, false, "server-a:443", 25*time.Millisecond)
+	now = now.Add(2 * time.Minute)
+
+	if registry.hasScore(7, false, "server-a:443") {
+		t.Fatal("expected expired entry to be hidden before janitor cleanup")
+	}
+	if got := registry.selectionCost(7, false, nil, "server-a:443"); got == 0 {
+		t.Fatal("expected fallback selection cost after expiry")
+	}
+
+	registry.cleanup(now)
+	registry.mu.RLock()
+	_, ok := registry.trackers[endpointLatencyTrackerKey{
+		operationUID: 7,
+		preferLeader: false,
+		address:      "server-a:443",
+	}]
+	registry.mu.RUnlock()
+	if ok {
+		t.Fatal("expected cleanup to remove expired entry")
+	}
+}
+
+func TestEndpointLatencyRegistryCleanupEvictsLeastRecentlyAccessedWhenBounded(t *testing.T) {
 	now := time.Unix(2_000, 0)
 	registry := newEndpointLatencyRegistry(func() time.Time { return now })
+	defer registry.close()
 	registry.maxTrackers = 2
 	registry.expireAfter = 10 * time.Minute
 
@@ -104,12 +132,13 @@ func TestEndpointLatencyRegistryEvictsOldestTrackerWhenBounded(t *testing.T) {
 
 	now = now.Add(time.Second)
 	registry.recordLatency(3, false, "server-c:443", 10*time.Millisecond)
+	registry.cleanup(now)
 
 	if !registry.hasScore(1, false, "server-a:443") {
 		t.Fatal("expected refreshed tracker 1 to remain present")
 	}
 	if registry.hasScore(2, false, "server-b:443") {
-		t.Fatal("expected oldest unrefreshed tracker 2 to be evicted")
+		t.Fatal("expected least recently accessed tracker 2 to be evicted")
 	}
 	if !registry.hasScore(3, false, "server-c:443") {
 		t.Fatal("expected newly added tracker 3 to exist")

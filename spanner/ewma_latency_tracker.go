@@ -31,7 +31,7 @@ type ewmaLatencyTracker struct {
 	now        func() time.Time
 	tau        time.Duration
 
-	score            float64
+	scoreMicros      float64
 	initialized      bool
 	lastUpdatedNanos int64
 }
@@ -79,25 +79,25 @@ func (t *ewmaLatencyTracker) scoreValue() float64 {
 	if !t.initialized {
 		return math.MaxFloat64
 	}
-	return t.score
+	return t.scoreMicros
 }
 
 func (t *ewmaLatencyTracker) update(latency time.Duration) {
-	latencyMicros := float64(latency.Nanoseconds()) / 1e3
+	latencyMicros := float64(latency) / float64(time.Microsecond)
 	now := t.now().UnixNano()
 
 	t.mu.Lock()
 	defer t.mu.Unlock()
 
 	if !t.initialized {
-		t.score = latencyMicros
+		t.scoreMicros = latencyMicros
 		t.initialized = true
 		t.lastUpdatedNanos = now
 		return
 	}
 
 	alpha := t.calculateAlphaLocked(now)
-	t.score = alpha*latencyMicros + (1-alpha)*t.score
+	t.scoreMicros = alpha*latencyMicros + (1-alpha)*t.scoreMicros
 	t.lastUpdatedNanos = now
 }
 

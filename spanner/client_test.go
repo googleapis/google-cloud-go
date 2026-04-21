@@ -744,6 +744,193 @@ func waitForLocationAwareEndpointHealthy(t *testing.T, client *Client, address s
 	})
 }
 
+func waitForLocationAwareEndpointActiveRequestCount(t *testing.T, client *Client, address string, want int) {
+	t.Helper()
+
+	waitForCondition(t, time.Second, func() bool {
+		if client == nil || client.locationRouter == nil || client.locationRouter.endpointCache == nil {
+			return false
+		}
+		endpoint := client.locationRouter.endpointCache.Get(context.Background(), address)
+		return endpoint != nil && endpoint.ActiveRequestCount() == want
+	})
+}
+
+func waitForLocationAwareEndpointActiveRequestsAtLeast(t *testing.T, client *Client, address string, min int) {
+	t.Helper()
+
+	waitForCondition(t, time.Second, func() bool {
+		if client == nil || client.locationRouter == nil || client.locationRouter.endpointCache == nil {
+			return false
+		}
+		endpoint := client.locationRouter.endpointCache.Get(context.Background(), address)
+		return endpoint != nil && endpoint.ActiveRequestCount() >= min
+	})
+}
+
+type locationAwareQueryStreamHarness struct {
+	client         *Client
+	replicaHarness *SharedBackendSpannerReplicaHarness
+	leaderAddress  string
+	replicaAddress string
+}
+
+func newLocationAwareQueryStreamHarness(t *testing.T) (*locationAwareQueryStreamHarness, func()) {
+	t.Helper()
+
+	replicaHarness, clientOpts, teardownReplicas := NewSharedBackendSpannerReplicaHarness(t, 2)
+	client, err := makeClientWithConfig(
+		context.Background(),
+		"projects/p/instances/i/databases/d",
+		ClientConfig{
+			DisableNativeMetrics: true,
+			IsExperimentalHost:   true,
+		},
+		replicaHarness.DefaultAddress,
+		clientOpts...,
+	)
+	if err != nil {
+		teardownReplicas()
+		t.Fatalf("makeClientWithConfig() failed: %v", err)
+	}
+	if client.locationRouter == nil {
+		client.Close()
+		teardownReplicas()
+		t.Fatal("expected location router to be enabled")
+	}
+
+	client.locationRouter.finder.useDeterministicRandom()
+
+	routeReq := &sppb.ExecuteSqlRequest{Sql: SelectSingerIDAlbumIDAlbumTitleFromAlbums}
+	client.locationRouter.finder.recipeCache.computeQueryKeys(routeReq)
+	client.locationRouter.finder.update(createQueryRecipeCacheUpdate(routeReq.GetRoutingHint().GetOperationUid(), "b"))
+	client.locationRouter.finder.recipeCache.computeQueryKeys(routeReq)
+	update := createRangeCacheUpdateForHint(routeReq.GetRoutingHint())
+	update.Group[0].Tablets[0].ServerAddress = replicaHarness.ReplicaAddresses[0]
+	update.Group[0].Tablets = append(update.Group[0].Tablets, &sppb.Tablet{
+		TabletUid:     12,
+		ServerAddress: replicaHarness.ReplicaAddresses[1],
+		Role:          sppb.Tablet_READ_WRITE,
+		Incarnation:   []byte("i2"),
+	})
+	client.locationRouter.finder.update(update)
+
+	waitForCondition(t, time.Second, func() bool {
+		prepared := proto.Clone(routeReq).(*sppb.ExecuteSqlRequest)
+		endpoint := client.locationRouter.prepareExecuteSQLRequest(context.Background(), prepared)
+		return endpoint != nil && endpoint.Address() == replicaHarness.ReplicaAddresses[0]
+	})
+	waitForLocationAwareEndpointHealthy(t, client, replicaHarness.ReplicaAddresses[1])
+
+	return &locationAwareQueryStreamHarness{
+			client:         client,
+			replicaHarness: replicaHarness,
+			leaderAddress:  replicaHarness.ReplicaAddresses[0],
+			replicaAddress: replicaHarness.ReplicaAddresses[1],
+		}, func() {
+			client.Close()
+			teardownReplicas()
+		}
+}
+
+func (h *locationAwareQueryStreamHarness) query(ctx context.Context) *RowIterator {
+	return h.client.Single().Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+}
+
+func (h *locationAwareQueryStreamHarness) leaderRequests() []proto.Message {
+	return h.replicaHarness.Replicas[0].Requests(MethodExecuteStreamingSql)
+}
+
+func (h *locationAwareQueryStreamHarness) replicaRequests() []proto.Message {
+	return h.replicaHarness.Replicas[1].Requests(MethodExecuteStreamingSql)
+}
+
+type locationAwareReadStreamHarness struct {
+	client         *Client
+	replicaHarness *SharedBackendSpannerReplicaHarness
+	leaderAddress  string
+	replicaAddress string
+}
+
+func newLocationAwareReadStreamHarness(t *testing.T) (*locationAwareReadStreamHarness, func()) {
+	t.Helper()
+
+	replicaHarness, clientOpts, teardownReplicas := NewSharedBackendSpannerReplicaHarness(t, 2)
+	client, err := makeClientWithConfig(
+		context.Background(),
+		"projects/p/instances/i/databases/d",
+		ClientConfig{
+			DisableNativeMetrics: true,
+			IsExperimentalHost:   true,
+		},
+		replicaHarness.DefaultAddress,
+		clientOpts...,
+	)
+	if err != nil {
+		teardownReplicas()
+		t.Fatalf("makeClientWithConfig() failed: %v", err)
+	}
+	if client.locationRouter == nil {
+		client.Close()
+		teardownReplicas()
+		t.Fatal("expected location router to be enabled")
+	}
+
+	client.locationRouter.finder.useDeterministicRandom()
+	client.locationRouter.finder.update(createReadRecipeCacheUpdate("Albums"))
+
+	kset, err := KeySets(Key{"b"}).keySetProto()
+	if err != nil {
+		client.Close()
+		teardownReplicas()
+		t.Fatalf("keySetProto() failed: %v", err)
+	}
+	routeReq := &sppb.ReadRequest{
+		Table:   "Albums",
+		Columns: []string{"SingerId", "AlbumId", "AlbumTitle"},
+		KeySet:  kset,
+	}
+	client.locationRouter.finder.recipeCache.computeReadKeys(routeReq)
+	update := createRangeCacheUpdateForHint(routeReq.GetRoutingHint())
+	update.Group[0].Tablets[0].ServerAddress = replicaHarness.ReplicaAddresses[0]
+	update.Group[0].Tablets = append(update.Group[0].Tablets, &sppb.Tablet{
+		TabletUid:     12,
+		ServerAddress: replicaHarness.ReplicaAddresses[1],
+		Role:          sppb.Tablet_READ_WRITE,
+		Incarnation:   []byte("i2"),
+	})
+	client.locationRouter.finder.update(update)
+
+	waitForCondition(t, time.Second, func() bool {
+		prepared := proto.Clone(routeReq).(*sppb.ReadRequest)
+		endpoint := client.locationRouter.prepareReadRequest(context.Background(), prepared)
+		return endpoint != nil && endpoint.Address() == replicaHarness.ReplicaAddresses[0]
+	})
+	waitForLocationAwareEndpointHealthy(t, client, replicaHarness.ReplicaAddresses[1])
+
+	return &locationAwareReadStreamHarness{
+			client:         client,
+			replicaHarness: replicaHarness,
+			leaderAddress:  replicaHarness.ReplicaAddresses[0],
+			replicaAddress: replicaHarness.ReplicaAddresses[1],
+		}, func() {
+			client.Close()
+			teardownReplicas()
+		}
+}
+
+func (h *locationAwareReadStreamHarness) read(ctx context.Context) *RowIterator {
+	return h.client.Single().Read(ctx, "Albums", KeySets(Key{"b"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+}
+
+func (h *locationAwareReadStreamHarness) leaderRequests() []proto.Message {
+	return h.replicaHarness.Replicas[0].Requests(MethodStreamingRead)
+}
+
+func (h *locationAwareReadStreamHarness) replicaRequests() []proto.Message {
+	return h.replicaHarness.Replicas[1].Requests(MethodStreamingRead)
+}
+
 func TestLocationAwareExecuteSql_ReroutesToNextReplicaAndMarksCooldownScopes(t *testing.T) {
 	t.Parallel()
 
@@ -1104,7 +1291,7 @@ func TestClient_Single_StreamingReadCooldownSkipsReplicaOnNextRequestForBypassTr
 	cooldownTracker := newEndpointOverloadCooldownTrackerWithOptions(time.Minute, time.Minute, 10*time.Minute, clock.Now, func(n int64) int64 {
 		return n - 1
 	})
-	client.sm.setLocationAwareState(client.locationRouter, client.sm.locationAwareState.excludedEndpoints, cooldownTracker)
+	client.sm.setLocationAwareState(client.locationRouter, cooldownTracker)
 	sh.recycle()
 
 	iter := client.Single().Read(context.Background(), "Albums", KeySets(Key{"b"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
@@ -1211,11 +1398,207 @@ func TestClient_LocationAwareWrappersShareStateAcrossHandles(t *testing.T) {
 	if lac1.endpointCooldowns != lac2.endpointCooldowns {
 		t.Fatalf("expected handles to share cooldown tracker")
 	}
-	if lac1.excludedEndpoints != lac2.excludedEndpoints {
-		t.Fatalf("expected handles to share exclusion cache")
-	}
 	if lac1.state != lac2.state {
 		t.Fatalf("expected handles to share client-level location-aware state")
+	}
+}
+
+func TestClient_Single_QueryActiveRequestCountBalancedOnSuccess(t *testing.T) {
+	t.Parallel()
+
+	h, teardown := newLocationAwareQueryStreamHarness(t)
+	defer teardown()
+
+	iter := h.query(context.Background())
+	defer iter.Stop()
+
+	row, err := iter.Next()
+	if err != nil {
+		t.Fatalf("first iter.Next() returned unexpected error: %v", err)
+	}
+	if row == nil {
+		t.Fatal("first iter.Next() returned nil row")
+	}
+	waitForLocationAwareEndpointActiveRequestsAtLeast(t, h.client, h.leaderAddress, 1)
+
+	for {
+		_, err = iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatalf("iter.Next() returned unexpected error: %v", err)
+		}
+	}
+
+	waitForLocationAwareEndpointActiveRequestCount(t, h.client, h.leaderAddress, 0)
+	waitForLocationAwareEndpointActiveRequestCount(t, h.client, h.replicaAddress, 0)
+}
+
+func TestClient_Single_QueryActiveRequestCountBalancedOnEarlyStop(t *testing.T) {
+	t.Parallel()
+
+	h, teardown := newLocationAwareQueryStreamHarness(t)
+	defer teardown()
+
+	iter := h.query(context.Background())
+
+	row, err := iter.Next()
+	if err != nil {
+		t.Fatalf("first iter.Next() returned unexpected error: %v", err)
+	}
+	if row == nil {
+		t.Fatal("first iter.Next() returned nil row")
+	}
+	waitForLocationAwareEndpointActiveRequestsAtLeast(t, h.client, h.leaderAddress, 1)
+
+	iter.Stop()
+
+	waitForLocationAwareEndpointActiveRequestCount(t, h.client, h.leaderAddress, 0)
+	waitForLocationAwareEndpointActiveRequestCount(t, h.client, h.replicaAddress, 0)
+}
+
+func TestClient_Single_QueryActiveRequestCountBalancedOnOpenFailure(t *testing.T) {
+	t.Parallel()
+
+	h, teardown := newLocationAwareQueryStreamHarness(t)
+	defer teardown()
+	h.replicaHarness.Replicas[0].PutMethodErrors(MethodExecuteStreamingSql, status.Error(codes.FailedPrecondition, "boom"))
+
+	iter := h.query(context.Background())
+	defer iter.Stop()
+
+	_, err := iter.Next()
+	if status.Code(err) != codes.FailedPrecondition {
+		t.Fatalf("iter.Next() error = %v, want FAILED_PRECONDITION", err)
+	}
+
+	waitForLocationAwareEndpointActiveRequestCount(t, h.client, h.leaderAddress, 0)
+	waitForLocationAwareEndpointActiveRequestCount(t, h.client, h.replicaAddress, 0)
+	if got, want := len(h.leaderRequests()), 1; got != want {
+		t.Fatalf("leader ExecuteStreamingSql request count = %d, want %d", got, want)
+	}
+	if got := len(h.replicaRequests()); got != 0 {
+		t.Fatalf("alternate replica ExecuteStreamingSql request count = %d, want 0", got)
+	}
+}
+
+func TestClient_Single_QueryActiveRequestCountBalancedOnMidStreamNonRetryableFailure(t *testing.T) {
+	t.Parallel()
+
+	h, teardown := newLocationAwareQueryStreamHarness(t)
+	defer teardown()
+	h.replicaHarness.Backend.AddPartialResultSetError(
+		SelectSingerIDAlbumIDAlbumTitleFromAlbums,
+		PartialResultSetExecutionTime{
+			ResumeToken: EncodeResumeToken(2),
+			Err:         status.Error(codes.FailedPrecondition, "stream broken"),
+		},
+	)
+
+	iter := h.query(context.Background())
+	defer iter.Stop()
+
+	row, err := iter.Next()
+	if err != nil {
+		t.Fatalf("first iter.Next() returned unexpected error: %v", err)
+	}
+	if row == nil {
+		t.Fatal("first iter.Next() returned nil row")
+	}
+	waitForLocationAwareEndpointActiveRequestsAtLeast(t, h.client, h.leaderAddress, 1)
+
+	for {
+		_, err = iter.Next()
+		if err != nil {
+			break
+		}
+	}
+	if status.Code(err) != codes.FailedPrecondition {
+		t.Fatalf("iter.Next() error = %v, want FAILED_PRECONDITION", err)
+	}
+
+	waitForLocationAwareEndpointActiveRequestCount(t, h.client, h.leaderAddress, 0)
+	waitForLocationAwareEndpointActiveRequestCount(t, h.client, h.replicaAddress, 0)
+	if got, want := len(h.leaderRequests()), 1; got != want {
+		t.Fatalf("leader ExecuteStreamingSql request count = %d, want %d", got, want)
+	}
+	if got := len(h.replicaRequests()); got != 0 {
+		t.Fatalf("alternate replica ExecuteStreamingSql request count = %d, want 0", got)
+	}
+}
+
+func TestClient_Single_QueryActiveRequestCountBalancedOnMidStreamRetryableFailure(t *testing.T) {
+	t.Parallel()
+
+	h, teardown := newLocationAwareQueryStreamHarness(t)
+	defer teardown()
+	h.replicaHarness.Backend.AddPartialResultSetError(
+		SelectSingerIDAlbumIDAlbumTitleFromAlbums,
+		PartialResultSetExecutionTime{
+			ResumeToken: EncodeResumeToken(2),
+			Err:         status.Error(codes.Unavailable, "stream unavailable"),
+		},
+	)
+
+	iter := h.query(context.Background())
+	defer iter.Stop()
+
+	row, err := iter.Next()
+	if err != nil {
+		t.Fatalf("first iter.Next() returned unexpected error: %v", err)
+	}
+	if row == nil {
+		t.Fatal("first iter.Next() returned nil row")
+	}
+	waitForLocationAwareEndpointActiveRequestsAtLeast(t, h.client, h.leaderAddress, 1)
+
+	for {
+		_, err = iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatalf("iter.Next() returned unexpected error: %v", err)
+		}
+	}
+
+	waitForLocationAwareEndpointActiveRequestCount(t, h.client, h.leaderAddress, 0)
+	waitForLocationAwareEndpointActiveRequestCount(t, h.client, h.replicaAddress, 0)
+	if got, want := len(h.leaderRequests()), 1; got != want {
+		t.Fatalf("leader ExecuteStreamingSql request count = %d, want %d", got, want)
+	}
+	if got, want := len(h.replicaRequests()), 1; got != want {
+		t.Fatalf("alternate replica ExecuteStreamingSql request count = %d, want %d", got, want)
+	}
+}
+
+func TestClient_Single_ReadActiveRequestCountBalancedOnEarlyStop(t *testing.T) {
+	t.Parallel()
+
+	h, teardown := newLocationAwareReadStreamHarness(t)
+	defer teardown()
+
+	iter := h.read(context.Background())
+
+	row, err := iter.Next()
+	if err != nil {
+		t.Fatalf("first iter.Next() returned unexpected error: %v", err)
+	}
+	if row == nil {
+		t.Fatal("first iter.Next() returned nil row")
+	}
+	waitForLocationAwareEndpointActiveRequestsAtLeast(t, h.client, h.leaderAddress, 1)
+
+	iter.Stop()
+
+	waitForLocationAwareEndpointActiveRequestCount(t, h.client, h.leaderAddress, 0)
+	waitForLocationAwareEndpointActiveRequestCount(t, h.client, h.replicaAddress, 0)
+	if got, want := len(h.leaderRequests()), 1; got != want {
+		t.Fatalf("leader StreamingRead request count = %d, want %d", got, want)
+	}
+	if got := len(h.replicaRequests()); got != 0 {
+		t.Fatalf("alternate replica StreamingRead request count = %d, want 0", got)
 	}
 }
 
@@ -1849,7 +2232,7 @@ func TestClient_Single_StreamingReadUnavailableSkipsReplicaOnNextRequestForBypas
 	cooldownTracker := newEndpointOverloadCooldownTrackerWithOptions(time.Minute, time.Minute, 10*time.Minute, clock.Now, func(n int64) int64 {
 		return n - 1
 	})
-	client.sm.setLocationAwareState(client.locationRouter, client.sm.locationAwareState.excludedEndpoints, cooldownTracker)
+	client.sm.setLocationAwareState(client.locationRouter, cooldownTracker)
 	sh.recycle()
 
 	iter := client.Single().Read(context.Background(), "Albums", KeySets(Key{"b"}), []string{"SingerId", "AlbumId", "AlbumTitle"})

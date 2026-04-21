@@ -44,6 +44,10 @@ type streamingReceiver interface {
 	Context() context.Context
 }
 
+type streamingFinalizer interface {
+	finish()
+}
+
 func shouldRetryResourceExhaustedInStreaming(_ spannerClient) bool {
 	return true
 }
@@ -304,6 +308,11 @@ func (r *RowIterator) Stop() {
 	}
 	if r.cancel != nil {
 		r.cancel()
+	}
+	if r.streamd != nil && r.streamd.stream != nil {
+		if finalizer, ok := r.streamd.stream.(streamingFinalizer); ok {
+			finalizer.finish()
+		}
 	}
 	if r.release != nil {
 		r.release(r.err)

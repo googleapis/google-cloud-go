@@ -469,7 +469,7 @@ func (p *sessionManager) getRoundRobinClientLocked() (spannerClient, int) {
 	return p.clientPool[idx], idx
 }
 
-func (p *sessionManager) setLocationAwareState(router *locationRouter, excluded *logicalRequestEndpointExclusionCache, cooldowns *endpointOverloadCooldownTracker) {
+func (p *sessionManager) setLocationAwareState(router *locationRouter, cooldowns *endpointOverloadCooldownTracker) {
 	if p == nil {
 		return
 	}
@@ -481,7 +481,7 @@ func (p *sessionManager) setLocationAwareState(router *locationRouter, excluded 
 	if router != nil {
 		endpointCache = router.endpointCache
 	}
-	p.locationAwareState = newLocationAwareState(p.clientPool, router, endpointCache, excluded, cooldowns)
+	p.locationAwareState = newLocationAwareState(p.clientPool, router, endpointCache, cooldowns)
 }
 
 // errGetSessionTimeout returns error for context timeout during session acquisition.

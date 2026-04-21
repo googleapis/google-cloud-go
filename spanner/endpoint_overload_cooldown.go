@@ -91,6 +91,10 @@ func newEndpointOverloadCooldownTrackerWithOptions(
 	}
 }
 
+func isEndpointCoolingDown(cooldowns *endpointOverloadCooldownTracker, address string) bool {
+	return cooldowns != nil && cooldowns.isCoolingDown(address)
+}
+
 func (t *endpointOverloadCooldownTracker) isCoolingDown(address string) bool {
 	if t == nil || address == "" {
 		return false
