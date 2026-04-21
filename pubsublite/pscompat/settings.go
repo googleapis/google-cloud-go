@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -80,6 +80,10 @@ type PublishSettings struct {
 	// If no failover operations need to be performed by the application, it is
 	// recommended to just use the default timeout value to avoid the
 	// PublisherClient terminating during short periods of backend unavailability.
+	//
+	// If no failover operations need to be performed by the application, it is
+	// recommended to just use the default timeout value to avoid the
+	// PublisherClient terminating during short periods of backend unavailability.
 	Timeout time.Duration
 
 	// The maximum number of bytes that the publisher will keep in memory before
@@ -114,6 +118,14 @@ type PublishSettings struct {
 	// The polling interval to watch for topic partition count updates.
 	// Currently internal only and overridden in tests.
 	configPollPeriod time.Duration
+
+	// Backend specifies the messaging backend to use. Default is PubSubLite.
+	// Set to ManagedKafka to publish to Google Managed Kafka.
+	Backend MessagingBackend
+
+	// KafkaConfig holds configuration for connecting to Google Managed Kafka.
+	// Required when Backend is ManagedKafka.
+	KafkaConfig *KafkaPublishConfig
 }
 
 // DefaultPublishSettings holds the default values for PublishSettings.
