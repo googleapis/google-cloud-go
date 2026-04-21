@@ -39,18 +39,19 @@ const (
 
 type keyRecipeCache struct {
 	preparedMu sync.RWMutex
+	queryMu    sync.RWMutex
 
 	nextOperationUID atomic.Uint64
 	schemaSnapshot   atomic.Pointer[keyRecipeSchemaSnapshot]
 
 	preparedReads   *boundedCache[uint64, *preparedRead]
 	preparedQueries *boundedCache[uint64, *preparedQuery]
+	queryRecipes    *boundedCache[uint64, *keyRecipe]
 }
 
 type keyRecipeSchemaSnapshot struct {
 	schemaGeneration []byte
 	schemaRecipes    map[string]*keyRecipe
-	queryRecipes     map[uint64]*keyRecipe
 }
 
 type preparedRead struct {
@@ -81,11 +82,11 @@ func newKeyRecipeCacheWithSizes(preparedReadCacheSize, preparedQueryCacheSize in
 	cache := &keyRecipeCache{
 		preparedReads:   newBoundedCache[uint64, *preparedRead](preparedReadCacheSize),
 		preparedQueries: newBoundedCache[uint64, *preparedQuery](preparedQueryCacheSize),
+		queryRecipes:    newBoundedCache[uint64, *keyRecipe](preparedQueryCacheSize),
 	}
 	cache.nextOperationUID.Store(1)
 	cache.schemaSnapshot.Store(&keyRecipeSchemaSnapshot{
 		schemaRecipes: make(map[string]*keyRecipe, defaultSchemaRecipeCacheSize),
-		queryRecipes:  make(map[uint64]*keyRecipe),
 	})
 	return cache
 }
@@ -146,14 +147,16 @@ func (c *keyRecipeCache) addRecipes(recipeList *sppb.RecipeList) {
 	next := &keyRecipeSchemaSnapshot{
 		schemaGeneration: append([]byte(nil), current.schemaGeneration...),
 		schemaRecipes:    copyRecipeMap(current.schemaRecipes),
-		queryRecipes:     copyQueryRecipeMap(current.queryRecipes),
 	}
 	if cmp > 0 {
 		next.schemaGeneration = append([]byte(nil), recipeList.GetSchemaGeneration()...)
 		next.schemaRecipes = make(map[string]*keyRecipe, defaultSchemaRecipeCacheSize)
-		next.queryRecipes = make(map[uint64]*keyRecipe, len(recipeList.GetRecipe()))
 	}
 
+	c.queryMu.Lock()
+	if cmp > 0 {
+		c.queryRecipes.Clear()
+	}
 	for _, recipeProto := range recipeList.GetRecipe() {
 		recipe, err := newKeyRecipe(recipeProto)
 		if err != nil {
@@ -165,9 +168,10 @@ func (c *keyRecipeCache) addRecipes(recipeList *sppb.RecipeList) {
 		case *sppb.KeyRecipe_IndexName:
 			next.schemaRecipes[recipeProto.GetIndexName()] = recipe
 		case *sppb.KeyRecipe_OperationUid:
-			next.queryRecipes[recipeProto.GetOperationUid()] = recipe
+			c.queryRecipes.Put(recipeProto.GetOperationUid(), recipe)
 		}
 	}
+	c.queryMu.Unlock()
 	c.schemaSnapshot.Store(next)
 }
 
@@ -219,9 +223,11 @@ func (c *keyRecipeCache) computeQueryKeys(req *sppb.ExecuteSqlRequest) {
 		return
 	}
 	hint.OperationUid = prepared.operationUID
-	recipe := schemaSnapshot.queryRecipes[prepared.operationUID]
+	c.queryMu.RLock()
+	recipe, ok := c.queryRecipes.Get(prepared.operationUID)
+	c.queryMu.RUnlock()
 
-	if recipe == nil {
+	if !ok || recipe == nil {
 		return
 	}
 	target := recipe.queryParamsToTargetRange(req.GetParams())
@@ -270,12 +276,14 @@ func (c *keyRecipeCache) applyTargetRange(hint *sppb.RoutingHint, target *target
 func (c *keyRecipeCache) clear() {
 	c.schemaSnapshot.Store(&keyRecipeSchemaSnapshot{
 		schemaRecipes: make(map[string]*keyRecipe, defaultSchemaRecipeCacheSize),
-		queryRecipes:  make(map[uint64]*keyRecipe),
 	})
 	c.preparedMu.Lock()
 	defer c.preparedMu.Unlock()
 	c.preparedReads.Clear()
 	c.preparedQueries.Clear()
+	c.queryMu.Lock()
+	defer c.queryMu.Unlock()
+	c.queryRecipes.Clear()
 }
 
 func (c *keyRecipeCache) loadSchemaSnapshot() *keyRecipeSchemaSnapshot {
@@ -283,7 +291,6 @@ func (c *keyRecipeCache) loadSchemaSnapshot() *keyRecipeSchemaSnapshot {
 	if snapshot == nil {
 		return &keyRecipeSchemaSnapshot{
 			schemaRecipes: make(map[string]*keyRecipe, defaultSchemaRecipeCacheSize),
-			queryRecipes:  make(map[uint64]*keyRecipe),
 		}
 	}
 	return snapshot
@@ -331,14 +338,6 @@ func (c *keyRecipeCache) getOrPrepareQuery(reqFP uint64, req *sppb.ExecuteSqlReq
 
 func copyRecipeMap(src map[string]*keyRecipe) map[string]*keyRecipe {
 	dst := make(map[string]*keyRecipe, len(src))
-	for key, recipe := range src {
-		dst[key] = recipe
-	}
-	return dst
-}
-
-func copyQueryRecipeMap(src map[uint64]*keyRecipe) map[uint64]*keyRecipe {
-	dst := make(map[uint64]*keyRecipe, len(src))
 	for key, recipe := range src {
 		dst[key] = recipe
 	}

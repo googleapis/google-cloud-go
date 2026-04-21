@@ -28,6 +28,7 @@ type suppressRetryCodesOption struct {
 	code1 codes.Code
 	code2 codes.Code
 	len   uint8
+	extra map[codes.Code]struct{}
 }
 
 func newSuppressRetryCodesOption(suppressedCodes ...codes.Code) suppressRetryCodesOption {
@@ -46,7 +47,13 @@ func newSuppressRetryCodesOption(suppressedCodes ...codes.Code) suppressRetryCod
 			if code == opt.code1 || code == opt.code2 {
 				continue
 			}
-			panic("suppressRetryCodesOption supports at most two distinct retry codes")
+			if opt.extra == nil {
+				opt.extra = map[codes.Code]struct{}{
+					opt.code1: {},
+					opt.code2: {},
+				}
+			}
+			opt.extra[code] = struct{}{}
 		}
 	}
 	return opt
@@ -123,6 +130,10 @@ func (opt suppressRetryCodesOption) Resolve(cs *gax.CallSettings) {
 }
 
 func (opt suppressRetryCodesOption) contains(code codes.Code) bool {
+	if opt.extra != nil {
+		_, ok := opt.extra[code]
+		return ok
+	}
 	switch opt.len {
 	case 1:
 		return code == opt.code1

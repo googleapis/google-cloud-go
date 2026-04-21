@@ -62,7 +62,7 @@ func TestEndpointLatencyRegistryLookupRefreshesAccess(t *testing.T) {
 	if entry == nil {
 		t.Fatal("expected tracker entry to exist")
 	}
-	lastAccess := entry.lastAccess
+	lastExpiry := entry.expiresAt
 
 	now = now.Add(time.Minute)
 
@@ -70,19 +70,48 @@ func TestEndpointLatencyRegistryLookupRefreshesAccess(t *testing.T) {
 		t.Fatal("expected score to remain present during lookup")
 	}
 	registry.mu.Lock()
-	touchedAfterHasScore := entry.lastAccess
+	touchedAfterHasScore := entry.expiresAt
 	registry.mu.Unlock()
-	if !touchedAfterHasScore.After(lastAccess) {
-		t.Fatal("expected hasScore lookup to refresh lastAccess")
+	if !touchedAfterHasScore.After(lastExpiry) {
+		t.Fatal("expected hasScore lookup to refresh expiry")
 	}
 	now = now.Add(time.Second)
 	if cost := registry.selectionCost(7, false, nil, "server-a:443"); cost == 0 {
 		t.Fatal("expected non-zero selection cost during lookup")
 	}
 	registry.mu.Lock()
-	touchedAfterSelection := entry.lastAccess
+	touchedAfterSelection := entry.expiresAt
 	registry.mu.Unlock()
 	if !touchedAfterSelection.After(touchedAfterHasScore) {
-		t.Fatal("expected selection lookup to refresh lastAccess")
+		t.Fatal("expected selection lookup to refresh expiry")
+	}
+}
+
+func TestEndpointLatencyRegistryEvictsOldestTrackerWhenBounded(t *testing.T) {
+	now := time.Unix(2_000, 0)
+	registry := newEndpointLatencyRegistry(func() time.Time { return now })
+	registry.maxTrackers = 2
+	registry.expireAfter = 10 * time.Minute
+
+	registry.recordLatency(1, false, "server-a:443", 10*time.Millisecond)
+	now = now.Add(time.Second)
+	registry.recordLatency(2, false, "server-b:443", 10*time.Millisecond)
+
+	now = now.Add(time.Second)
+	if !registry.hasScore(1, false, "server-a:443") {
+		t.Fatal("expected tracker 1 to exist before refresh")
+	}
+
+	now = now.Add(time.Second)
+	registry.recordLatency(3, false, "server-c:443", 10*time.Millisecond)
+
+	if !registry.hasScore(1, false, "server-a:443") {
+		t.Fatal("expected refreshed tracker 1 to remain present")
+	}
+	if registry.hasScore(2, false, "server-b:443") {
+		t.Fatal("expected oldest unrefreshed tracker 2 to be evicted")
+	}
+	if !registry.hasScore(3, false, "server-c:443") {
+		t.Fatal("expected newly added tracker 3 to exist")
 	}
 }

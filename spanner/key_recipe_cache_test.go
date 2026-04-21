@@ -390,3 +390,33 @@ func TestKeyRecipeCache_PreparedQueryCacheIsBounded(t *testing.T) {
 		t.Fatalf("prepared query cache size = %d, want %d", got, want)
 	}
 }
+
+func TestKeyRecipeCache_QueryRecipeCacheIsBounded(t *testing.T) {
+	cache := newKeyRecipeCacheWithSizes(3, 3)
+
+	for i := 0; i < 10; i++ {
+		cache.addRecipes(&sppb.RecipeList{
+			SchemaGeneration: []byte("1"),
+			Recipe: []*sppb.KeyRecipe{
+				{
+					Target: &sppb.KeyRecipe_OperationUid{OperationUid: uint64(i + 1)},
+					Part: []*sppb.KeyRecipe_Part{
+						{Tag: 1},
+						{
+							Order:     sppb.KeyRecipe_Part_ASCENDING,
+							NullOrder: sppb.KeyRecipe_Part_NULLS_FIRST,
+							Type:      &sppb.Type{Code: sppb.TypeCode_STRING},
+							ValueType: &sppb.KeyRecipe_Part_Identifier{Identifier: "p"},
+						},
+					},
+				},
+			},
+		})
+	}
+
+	cache.queryMu.RLock()
+	defer cache.queryMu.RUnlock()
+	if got, want := len(cache.queryRecipes.items), 3; got != want {
+		t.Fatalf("query recipe cache size = %d, want %d", got, want)
+	}
+}

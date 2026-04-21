@@ -17,20 +17,23 @@ limitations under the License.
 package spanner
 
 import (
+	"container/heap"
 	"math"
 	"sync"
 	"sync/atomic"
 	"time"
 )
 
-const endpointLatencyDefaultPenaltyValue = 1_000_000.0
+const (
+	endpointLatencyDefaultPenaltyValue = 1_000_000.0
+	endpointLatencyMaxTrackers         = 100_000
+)
 
 var (
-	endpointLatencyDefaultRTT           = 10 * time.Millisecond
-	endpointLatencyDefaultErrorPenalty  = 10 * time.Second
-	endpointLatencyTrackerExpireAfter   = 10 * time.Minute
-	endpointLatencyTrackerPruneInterval = time.Minute
-	defaultEndpointLatencyRegistry      atomic.Pointer[endpointLatencyRegistry]
+	endpointLatencyDefaultRTT          = 10 * time.Millisecond
+	endpointLatencyDefaultErrorPenalty = 10 * time.Second
+	endpointLatencyTrackerExpireAfter  = 10 * time.Minute
+	defaultEndpointLatencyRegistry     atomic.Pointer[endpointLatencyRegistry]
 )
 
 type endpointLatencyTrackerKey struct {
@@ -40,15 +43,48 @@ type endpointLatencyTrackerKey struct {
 }
 
 type endpointLatencyTrackerEntry struct {
-	tracker    *ewmaLatencyTracker
-	lastAccess time.Time
+	key       endpointLatencyTrackerKey
+	tracker   *ewmaLatencyTracker
+	expiresAt time.Time
+	heapIndex int
+}
+
+type endpointLatencyExpiryHeap []*endpointLatencyTrackerEntry
+
+func (h endpointLatencyExpiryHeap) Len() int { return len(h) }
+
+func (h endpointLatencyExpiryHeap) Less(i, j int) bool {
+	return h[i].expiresAt.Before(h[j].expiresAt)
+}
+
+func (h endpointLatencyExpiryHeap) Swap(i, j int) {
+	h[i], h[j] = h[j], h[i]
+	h[i].heapIndex = i
+	h[j].heapIndex = j
+}
+
+func (h *endpointLatencyExpiryHeap) Push(x any) {
+	entry := x.(*endpointLatencyTrackerEntry)
+	entry.heapIndex = len(*h)
+	*h = append(*h, entry)
+}
+
+func (h *endpointLatencyExpiryHeap) Pop() any {
+	old := *h
+	n := len(old)
+	entry := old[n-1]
+	entry.heapIndex = -1
+	*h = old[:n-1]
+	return entry
 }
 
 type endpointLatencyRegistry struct {
-	mu         sync.Mutex
-	now        func() time.Time
-	lastPruned time.Time
-	trackers   map[endpointLatencyTrackerKey]*endpointLatencyTrackerEntry
+	mu          sync.Mutex
+	now         func() time.Time
+	maxTrackers int
+	expireAfter time.Duration
+	trackers    map[endpointLatencyTrackerKey]*endpointLatencyTrackerEntry
+	expiryHeap  endpointLatencyExpiryHeap
 }
 
 func init() {
@@ -59,10 +95,14 @@ func newEndpointLatencyRegistry(now func() time.Time) *endpointLatencyRegistry {
 	if now == nil {
 		now = time.Now
 	}
-	return &endpointLatencyRegistry{
-		now:      now,
-		trackers: make(map[endpointLatencyTrackerKey]*endpointLatencyTrackerEntry),
+	registry := &endpointLatencyRegistry{
+		now:         now,
+		maxTrackers: endpointLatencyMaxTrackers,
+		expireAfter: endpointLatencyTrackerExpireAfter,
+		trackers:    make(map[endpointLatencyTrackerKey]*endpointLatencyTrackerEntry),
 	}
+	heap.Init(&registry.expiryHeap)
+	return registry
 }
 
 func endpointLatencyRegistrySelectionCost(operationUID uint64, preferLeader bool, endpoint channelEndpoint, address string) float64 {
@@ -100,10 +140,10 @@ func (r *endpointLatencyRegistry) hasScore(operationUID uint64, preferLeader boo
 	}
 	now := r.now()
 	r.mu.Lock()
-	r.maybePruneLocked(now)
+	r.pruneExpiredLocked(now)
 	entry := r.trackers[key]
 	if entry != nil {
-		entry.lastAccess = now
+		r.touchEntryLocked(entry, now)
 	}
 	r.mu.Unlock()
 	return entry != nil && entry.tracker.hasScore()
@@ -122,10 +162,10 @@ func (r *endpointLatencyRegistry) selectionCost(operationUID uint64, preferLeade
 
 	now := r.now()
 	r.mu.Lock()
-	r.maybePruneLocked(now)
+	r.pruneExpiredLocked(now)
 	entry := r.trackers[key]
 	if entry != nil {
-		entry.lastAccess = now
+		r.touchEntryLocked(entry, now)
 	}
 	r.mu.Unlock()
 
@@ -143,8 +183,7 @@ func (r *endpointLatencyRegistry) recordLatency(operationUID uint64, preferLeade
 	if !ok {
 		return
 	}
-	now := r.now()
-	entry := r.getOrCreateTracker(key, now)
+	entry := r.getOrCreateTracker(key, r.now())
 	entry.tracker.update(latency)
 }
 
@@ -153,8 +192,7 @@ func (r *endpointLatencyRegistry) recordError(operationUID uint64, preferLeader 
 	if !ok {
 		return
 	}
-	now := r.now()
-	entry := r.getOrCreateTracker(key, now)
+	entry := r.getOrCreateTracker(key, r.now())
 	entry.tracker.recordError(penalty)
 }
 
@@ -162,30 +200,52 @@ func (r *endpointLatencyRegistry) getOrCreateTracker(key endpointLatencyTrackerK
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	r.maybePruneLocked(now)
+	r.pruneExpiredLocked(now)
 	if entry := r.trackers[key]; entry != nil {
-		entry.lastAccess = now
+		r.touchEntryLocked(entry, now)
 		return entry
 	}
-
+	if r.maxTrackers > 0 && len(r.trackers) >= r.maxTrackers {
+		r.evictOldestLocked()
+	}
 	entry := &endpointLatencyTrackerEntry{
-		tracker:    newEWMALatencyTrackerWithOptions(defaultEWMADecayTime, r.now),
-		lastAccess: now,
+		key:       key,
+		tracker:   newEWMALatencyTrackerWithOptions(defaultEWMADecayTime, r.now),
+		expiresAt: now.Add(r.expireAfter),
+		heapIndex: -1,
 	}
 	r.trackers[key] = entry
+	heap.Push(&r.expiryHeap, entry)
 	return entry
 }
 
-func (r *endpointLatencyRegistry) maybePruneLocked(now time.Time) {
-	if endpointLatencyTrackerPruneInterval > 0 && !r.lastPruned.IsZero() && now.Sub(r.lastPruned) < endpointLatencyTrackerPruneInterval {
+func (r *endpointLatencyRegistry) touchEntryLocked(entry *endpointLatencyTrackerEntry, now time.Time) {
+	if entry == nil {
 		return
 	}
-	r.lastPruned = now
-	for key, entry := range r.trackers {
-		if now.Sub(entry.lastAccess) > endpointLatencyTrackerExpireAfter {
-			delete(r.trackers, key)
-		}
+	entry.expiresAt = now.Add(r.expireAfter)
+	if entry.heapIndex >= 0 {
+		heap.Fix(&r.expiryHeap, entry.heapIndex)
 	}
+}
+
+func (r *endpointLatencyRegistry) pruneExpiredLocked(now time.Time) {
+	for r.expiryHeap.Len() > 0 {
+		entry := r.expiryHeap[0]
+		if entry == nil || entry.expiresAt.After(now) {
+			return
+		}
+		heap.Pop(&r.expiryHeap)
+		delete(r.trackers, entry.key)
+	}
+}
+
+func (r *endpointLatencyRegistry) evictOldestLocked() {
+	if r.expiryHeap.Len() == 0 {
+		return
+	}
+	entry := heap.Pop(&r.expiryHeap).(*endpointLatencyTrackerEntry)
+	delete(r.trackers, entry.key)
 }
 
 func (r *endpointLatencyRegistry) trackerKey(operationUID uint64, preferLeader bool, address string) (endpointLatencyTrackerKey, bool) {
