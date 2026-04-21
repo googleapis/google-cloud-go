@@ -6,5 +6,5 @@
     "distribution_name": "cloud.google.com/go/apigeeregistry/apiv1",
     "language": "go",
     "library_type": "GAPIC_AUTO",
-    "release_level": "stable"
+    "release_level": "preview"
 }
