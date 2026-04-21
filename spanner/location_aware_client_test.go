@@ -380,8 +380,7 @@ func TestLocationAwareSpannerClient_UsesCacheDefaultChannelForAffinityFallback(t
 }
 
 func TestLocationAwareSpannerClient_ExecuteSQLReroutesOnResourceExhaustedAndMarksCooldownScopes(t *testing.T) {
-	clearEndpointLatencyRegistry()
-	t.Cleanup(clearEndpointLatencyRegistry)
+	withIsolatedEndpointLatencyRegistry(t)
 
 	defaultClient := &mockSpannerClient{
 		executeSQLResp: &sppb.ResultSet{},
@@ -451,8 +450,7 @@ func TestLocationAwareSpannerClient_ExecuteSQLReroutesOnResourceExhaustedAndMark
 }
 
 func TestLocationAwareSpannerClient_ReadReroutesOnResourceExhaustedAndMarksCooldownScopes(t *testing.T) {
-	clearEndpointLatencyRegistry()
-	t.Cleanup(clearEndpointLatencyRegistry)
+	withIsolatedEndpointLatencyRegistry(t)
 
 	defaultClient := &mockSpannerClient{
 		readResp: &sppb.ResultSet{},

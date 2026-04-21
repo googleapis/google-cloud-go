@@ -1901,8 +1901,7 @@ func createQueryRecipeCacheUpdate(operationUID uint64, key string) *sppb.CacheUp
 
 func TestLocationAwareExecuteSql_CooldownRoutesToNextReplicaAndEndpointBecomesEligibleAfterExpiry(t *testing.T) {
 	t.Parallel()
-	clearEndpointLatencyRegistry()
-	t.Cleanup(clearEndpointLatencyRegistry)
+	withIsolatedEndpointLatencyRegistry(t)
 
 	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
 	defer teardown()
@@ -2277,9 +2276,7 @@ func TestClient_Single_StreamingReadUnavailableSkipsReplicaOnNextRequestForBypas
 
 func TestClient_Single_StreamingReadConcurrentStrongReadsRecordEndpointScoreForBypassTraffic(t *testing.T) {
 	t.Parallel()
-
-	clearEndpointLatencyRegistry()
-	t.Cleanup(clearEndpointLatencyRegistry)
+	withIsolatedEndpointLatencyRegistry(t)
 
 	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 1)
 	defer teardown()
@@ -2368,8 +2365,7 @@ func TestClient_Single_StreamingReadConcurrentStrongReadsRecordEndpointScoreForB
 
 func TestLocationAwareExecuteStreamingSql_CooldownRoutesToNextReplicaAndEndpointBecomesEligibleAfterExpiry(t *testing.T) {
 	t.Parallel()
-	clearEndpointLatencyRegistry()
-	t.Cleanup(clearEndpointLatencyRegistry)
+	withIsolatedEndpointLatencyRegistry(t)
 
 	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
 	defer teardown()

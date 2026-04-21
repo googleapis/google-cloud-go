@@ -17,9 +17,23 @@ limitations under the License.
 package spanner
 
 import (
+	"sync"
 	"testing"
 	"time"
 )
+
+var endpointLatencyRegistryTestMu sync.Mutex
+
+func withIsolatedEndpointLatencyRegistry(t *testing.T) {
+	t.Helper()
+
+	endpointLatencyRegistryTestMu.Lock()
+	clearEndpointLatencyRegistry()
+	t.Cleanup(func() {
+		clearEndpointLatencyRegistry()
+		endpointLatencyRegistryTestMu.Unlock()
+	})
+}
 
 func endpointLatencyRegistryHasScore(operationUID uint64, preferLeader bool, address string) bool {
 	registry := currentEndpointLatencyRegistry()
@@ -27,8 +41,7 @@ func endpointLatencyRegistryHasScore(operationUID uint64, preferLeader bool, add
 }
 
 func TestEndpointLatencyRegistryKeysByOperationUID(t *testing.T) {
-	clearEndpointLatencyRegistry()
-	defer clearEndpointLatencyRegistry()
+	withIsolatedEndpointLatencyRegistry(t)
 
 	endpointLatencyRegistryRecordLatency(7, false, "server-a:443", 25*time.Millisecond)
 
