@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,7 +28,9 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
 )
 
@@ -446,6 +448,63 @@ func (Routine_Argument_Mode) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_bigquery_v2_routine_proto_rawDescGZIP(), []int{0, 0, 1}
 }
 
+// The build state of a routine.
+type RoutineBuildStatus_BuildState int32
+
+const (
+	// Default value.
+	RoutineBuildStatus_BUILD_STATE_UNSPECIFIED RoutineBuildStatus_BuildState = 0
+	// The build is in progress.
+	RoutineBuildStatus_IN_PROGRESS RoutineBuildStatus_BuildState = 1
+	// The build has succeeded.
+	RoutineBuildStatus_SUCCEEDED RoutineBuildStatus_BuildState = 2
+	// The build has failed.
+	RoutineBuildStatus_FAILED RoutineBuildStatus_BuildState = 3
+)
+
+// Enum value maps for RoutineBuildStatus_BuildState.
+var (
+	RoutineBuildStatus_BuildState_name = map[int32]string{
+		0: "BUILD_STATE_UNSPECIFIED",
+		1: "IN_PROGRESS",
+		2: "SUCCEEDED",
+		3: "FAILED",
+	}
+	RoutineBuildStatus_BuildState_value = map[string]int32{
+		"BUILD_STATE_UNSPECIFIED": 0,
+		"IN_PROGRESS":             1,
+		"SUCCEEDED":               2,
+		"FAILED":                  3,
+	}
+)
+
+func (x RoutineBuildStatus_BuildState) Enum() *RoutineBuildStatus_BuildState {
+	p := new(RoutineBuildStatus_BuildState)
+	*p = x
+	return p
+}
+
+func (x RoutineBuildStatus_BuildState) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (RoutineBuildStatus_BuildState) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_bigquery_v2_routine_proto_enumTypes[7].Descriptor()
+}
+
+func (RoutineBuildStatus_BuildState) Type() protoreflect.EnumType {
+	return &file_google_cloud_bigquery_v2_routine_proto_enumTypes[7]
+}
+
+func (x RoutineBuildStatus_BuildState) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use RoutineBuildStatus_BuildState.Descriptor instead.
+func (RoutineBuildStatus_BuildState) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_bigquery_v2_routine_proto_rawDescGZIP(), []int{4, 0}
+}
+
 // A user-defined function or a stored procedure.
 type Routine struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -565,8 +624,12 @@ type Routine struct {
 	// routine. This field is only applicable for Python UDFs.
 	// [Preview](https://cloud.google.com/products/#product-launch-stages)
 	ExternalRuntimeOptions *ExternalRuntimeOptions `protobuf:"bytes,21,opt,name=external_runtime_options,json=externalRuntimeOptions,proto3" json:"external_runtime_options,omitempty"`
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	// Output only. The build status of the routine. This field is only applicable
+	// to Python UDFs.
+	// [Preview](https://cloud.google.com/products/#product-launch-stages)
+	BuildStatus   *RoutineBuildStatus `protobuf:"bytes,22,opt,name=build_status,json=buildStatus,proto3" json:"build_status,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Routine) Reset() {
@@ -735,6 +798,13 @@ func (x *Routine) GetPythonOptions() *PythonOptions {
 func (x *Routine) GetExternalRuntimeOptions() *ExternalRuntimeOptions {
 	if x != nil {
 		return x.ExternalRuntimeOptions
+	}
+	return nil
+}
+
+func (x *Routine) GetBuildStatus() *RoutineBuildStatus {
+	if x != nil {
+		return x.BuildStatus
 	}
 	return nil
 }
@@ -1037,6 +1107,91 @@ func (x *SparkOptions) GetMainClass() string {
 	return ""
 }
 
+// The status of a routine build.
+type RoutineBuildStatus struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. The current build state of the routine.
+	BuildState RoutineBuildStatus_BuildState `protobuf:"varint,1,opt,name=build_state,json=buildState,proto3,enum=google.cloud.bigquery.v2.RoutineBuildStatus_BuildState" json:"build_state,omitempty"`
+	// Output only. A result object that will be present only if the build has
+	// failed.
+	ErrorResult *ErrorProto `protobuf:"bytes,2,opt,name=error_result,json=errorResult,proto3" json:"error_result,omitempty"`
+	// Output only. The time when the build state was updated last.
+	BuildStateUpdateTime *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=build_state_update_time,json=buildStateUpdateTime,proto3" json:"build_state_update_time,omitempty"`
+	// Output only. The time taken for the image build. Populated only after the
+	// build succeeds or fails.
+	BuildDuration *durationpb.Duration `protobuf:"bytes,4,opt,name=build_duration,json=buildDuration,proto3" json:"build_duration,omitempty"`
+	// Output only. The size of the image in bytes. Populated only after the build
+	// succeeds.
+	ImageSizeBytes int64 `protobuf:"varint,5,opt,name=image_size_bytes,json=imageSizeBytes,proto3" json:"image_size_bytes,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *RoutineBuildStatus) Reset() {
+	*x = RoutineBuildStatus{}
+	mi := &file_google_cloud_bigquery_v2_routine_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RoutineBuildStatus) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RoutineBuildStatus) ProtoMessage() {}
+
+func (x *RoutineBuildStatus) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_bigquery_v2_routine_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RoutineBuildStatus.ProtoReflect.Descriptor instead.
+func (*RoutineBuildStatus) Descriptor() ([]byte, []int) {
+	return file_google_cloud_bigquery_v2_routine_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *RoutineBuildStatus) GetBuildState() RoutineBuildStatus_BuildState {
+	if x != nil {
+		return x.BuildState
+	}
+	return RoutineBuildStatus_BUILD_STATE_UNSPECIFIED
+}
+
+func (x *RoutineBuildStatus) GetErrorResult() *ErrorProto {
+	if x != nil {
+		return x.ErrorResult
+	}
+	return nil
+}
+
+func (x *RoutineBuildStatus) GetBuildStateUpdateTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.BuildStateUpdateTime
+	}
+	return nil
+}
+
+func (x *RoutineBuildStatus) GetBuildDuration() *durationpb.Duration {
+	if x != nil {
+		return x.BuildDuration
+	}
+	return nil
+}
+
+func (x *RoutineBuildStatus) GetImageSizeBytes() int64 {
+	if x != nil {
+		return x.ImageSizeBytes
+	}
+	return 0
+}
+
 // Describes the format for getting information about a routine.
 type GetRoutineRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -1052,7 +1207,7 @@ type GetRoutineRequest struct {
 
 func (x *GetRoutineRequest) Reset() {
 	*x = GetRoutineRequest{}
-	mi := &file_google_cloud_bigquery_v2_routine_proto_msgTypes[4]
+	mi := &file_google_cloud_bigquery_v2_routine_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1064,7 +1219,7 @@ func (x *GetRoutineRequest) String() string {
 func (*GetRoutineRequest) ProtoMessage() {}
 
 func (x *GetRoutineRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_v2_routine_proto_msgTypes[4]
+	mi := &file_google_cloud_bigquery_v2_routine_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1077,7 +1232,7 @@ func (x *GetRoutineRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRoutineRequest.ProtoReflect.Descriptor instead.
 func (*GetRoutineRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_bigquery_v2_routine_proto_rawDescGZIP(), []int{4}
+	return file_google_cloud_bigquery_v2_routine_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *GetRoutineRequest) GetProjectId() string {
@@ -1116,7 +1271,7 @@ type InsertRoutineRequest struct {
 
 func (x *InsertRoutineRequest) Reset() {
 	*x = InsertRoutineRequest{}
-	mi := &file_google_cloud_bigquery_v2_routine_proto_msgTypes[5]
+	mi := &file_google_cloud_bigquery_v2_routine_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1128,7 +1283,7 @@ func (x *InsertRoutineRequest) String() string {
 func (*InsertRoutineRequest) ProtoMessage() {}
 
 func (x *InsertRoutineRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_v2_routine_proto_msgTypes[5]
+	mi := &file_google_cloud_bigquery_v2_routine_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1141,7 +1296,7 @@ func (x *InsertRoutineRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InsertRoutineRequest.ProtoReflect.Descriptor instead.
 func (*InsertRoutineRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_bigquery_v2_routine_proto_rawDescGZIP(), []int{5}
+	return file_google_cloud_bigquery_v2_routine_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *InsertRoutineRequest) GetProjectId() string {
@@ -1182,7 +1337,7 @@ type UpdateRoutineRequest struct {
 
 func (x *UpdateRoutineRequest) Reset() {
 	*x = UpdateRoutineRequest{}
-	mi := &file_google_cloud_bigquery_v2_routine_proto_msgTypes[6]
+	mi := &file_google_cloud_bigquery_v2_routine_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1194,7 +1349,7 @@ func (x *UpdateRoutineRequest) String() string {
 func (*UpdateRoutineRequest) ProtoMessage() {}
 
 func (x *UpdateRoutineRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_v2_routine_proto_msgTypes[6]
+	mi := &file_google_cloud_bigquery_v2_routine_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1207,7 +1362,7 @@ func (x *UpdateRoutineRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateRoutineRequest.ProtoReflect.Descriptor instead.
 func (*UpdateRoutineRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_bigquery_v2_routine_proto_rawDescGZIP(), []int{6}
+	return file_google_cloud_bigquery_v2_routine_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *UpdateRoutineRequest) GetProjectId() string {
@@ -1253,7 +1408,7 @@ type DeleteRoutineRequest struct {
 
 func (x *DeleteRoutineRequest) Reset() {
 	*x = DeleteRoutineRequest{}
-	mi := &file_google_cloud_bigquery_v2_routine_proto_msgTypes[7]
+	mi := &file_google_cloud_bigquery_v2_routine_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1265,7 +1420,7 @@ func (x *DeleteRoutineRequest) String() string {
 func (*DeleteRoutineRequest) ProtoMessage() {}
 
 func (x *DeleteRoutineRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_v2_routine_proto_msgTypes[7]
+	mi := &file_google_cloud_bigquery_v2_routine_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1278,7 +1433,7 @@ func (x *DeleteRoutineRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteRoutineRequest.ProtoReflect.Descriptor instead.
 func (*DeleteRoutineRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_bigquery_v2_routine_proto_rawDescGZIP(), []int{7}
+	return file_google_cloud_bigquery_v2_routine_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *DeleteRoutineRequest) GetProjectId() string {
@@ -1325,7 +1480,7 @@ type ListRoutinesRequest struct {
 
 func (x *ListRoutinesRequest) Reset() {
 	*x = ListRoutinesRequest{}
-	mi := &file_google_cloud_bigquery_v2_routine_proto_msgTypes[8]
+	mi := &file_google_cloud_bigquery_v2_routine_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1337,7 +1492,7 @@ func (x *ListRoutinesRequest) String() string {
 func (*ListRoutinesRequest) ProtoMessage() {}
 
 func (x *ListRoutinesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_v2_routine_proto_msgTypes[8]
+	mi := &file_google_cloud_bigquery_v2_routine_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1350,7 +1505,7 @@ func (x *ListRoutinesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRoutinesRequest.ProtoReflect.Descriptor instead.
 func (*ListRoutinesRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_bigquery_v2_routine_proto_rawDescGZIP(), []int{8}
+	return file_google_cloud_bigquery_v2_routine_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *ListRoutinesRequest) GetProjectId() string {
@@ -1404,7 +1559,7 @@ type ListRoutinesResponse struct {
 
 func (x *ListRoutinesResponse) Reset() {
 	*x = ListRoutinesResponse{}
-	mi := &file_google_cloud_bigquery_v2_routine_proto_msgTypes[9]
+	mi := &file_google_cloud_bigquery_v2_routine_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1416,7 +1571,7 @@ func (x *ListRoutinesResponse) String() string {
 func (*ListRoutinesResponse) ProtoMessage() {}
 
 func (x *ListRoutinesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_v2_routine_proto_msgTypes[9]
+	mi := &file_google_cloud_bigquery_v2_routine_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1429,7 +1584,7 @@ func (x *ListRoutinesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRoutinesResponse.ProtoReflect.Descriptor instead.
 func (*ListRoutinesResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_bigquery_v2_routine_proto_rawDescGZIP(), []int{9}
+	return file_google_cloud_bigquery_v2_routine_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *ListRoutinesResponse) GetRoutines() []*Routine {
@@ -1471,7 +1626,7 @@ type Routine_Argument struct {
 
 func (x *Routine_Argument) Reset() {
 	*x = Routine_Argument{}
-	mi := &file_google_cloud_bigquery_v2_routine_proto_msgTypes[10]
+	mi := &file_google_cloud_bigquery_v2_routine_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1483,7 +1638,7 @@ func (x *Routine_Argument) String() string {
 func (*Routine_Argument) ProtoMessage() {}
 
 func (x *Routine_Argument) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_v2_routine_proto_msgTypes[10]
+	mi := &file_google_cloud_bigquery_v2_routine_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1560,7 +1715,7 @@ type Routine_RemoteFunctionOptions struct {
 
 func (x *Routine_RemoteFunctionOptions) Reset() {
 	*x = Routine_RemoteFunctionOptions{}
-	mi := &file_google_cloud_bigquery_v2_routine_proto_msgTypes[11]
+	mi := &file_google_cloud_bigquery_v2_routine_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1572,7 +1727,7 @@ func (x *Routine_RemoteFunctionOptions) String() string {
 func (*Routine_RemoteFunctionOptions) ProtoMessage() {}
 
 func (x *Routine_RemoteFunctionOptions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_v2_routine_proto_msgTypes[11]
+	mi := &file_google_cloud_bigquery_v2_routine_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1620,7 +1775,7 @@ var File_google_cloud_bigquery_v2_routine_proto protoreflect.FileDescriptor
 
 const file_google_cloud_bigquery_v2_routine_proto_rawDesc = "" +
 	"\n" +
-	"&google/cloud/bigquery/v2/routine.proto\x12\x18google.cloud.bigquery.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a0google/cloud/bigquery/v2/routine_reference.proto\x1a+google/cloud/bigquery/v2/standard_sql.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\x87\x16\n" +
+	"&google/cloud/bigquery/v2/routine.proto\x12\x18google.cloud.bigquery.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a$google/cloud/bigquery/v2/error.proto\x1a0google/cloud/bigquery/v2/routine_reference.proto\x1a+google/cloud/bigquery/v2/standard_sql.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xdd\x16\n" +
 	"\aRoutine\x12\x17\n" +
 	"\x04etag\x18\x01 \x01(\tB\x03\xe0A\x03R\x04etag\x12\\\n" +
 	"\x11routine_reference\x18\x02 \x01(\v2*.google.cloud.bigquery.v2.RoutineReferenceB\x03\xe0A\x02R\x10routineReference\x12U\n" +
@@ -1644,7 +1799,8 @@ const file_google_cloud_bigquery_v2_routine_proto_rawDesc = "" +
 	"\rspark_options\x18\x10 \x01(\v2&.google.cloud.bigquery.v2.SparkOptionsB\x03\xe0A\x01R\fsparkOptions\x12k\n" +
 	"\x14data_governance_type\x18\x11 \x01(\x0e24.google.cloud.bigquery.v2.Routine.DataGovernanceTypeB\x03\xe0A\x01R\x12dataGovernanceType\x12S\n" +
 	"\x0epython_options\x18\x14 \x01(\v2'.google.cloud.bigquery.v2.PythonOptionsB\x03\xe0A\x01R\rpythonOptions\x12o\n" +
-	"\x18external_runtime_options\x18\x15 \x01(\v20.google.cloud.bigquery.v2.ExternalRuntimeOptionsB\x03\xe0A\x01R\x16externalRuntimeOptions\x1a\xe2\x03\n" +
+	"\x18external_runtime_options\x18\x15 \x01(\v20.google.cloud.bigquery.v2.ExternalRuntimeOptionsB\x03\xe0A\x01R\x16externalRuntimeOptions\x12T\n" +
+	"\fbuild_status\x18\x16 \x01(\v2,.google.cloud.bigquery.v2.RoutineBuildStatusB\x03\xe0A\x03R\vbuildStatus\x1a\xe2\x03\n" +
 	"\bArgument\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x01R\x04name\x12a\n" +
 	"\rargument_kind\x18\x02 \x01(\x0e27.google.cloud.bigquery.v2.Routine.Argument.ArgumentKindB\x03\xe0A\x01R\fargumentKind\x12C\n" +
@@ -1727,7 +1883,21 @@ const file_google_cloud_bigquery_v2_routine_proto_rawDesc = "" +
 	" \x01(\tR\tmainClass\x1a=\n" +
 	"\x0fPropertiesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x7f\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xe6\x03\n" +
+	"\x12RoutineBuildStatus\x12]\n" +
+	"\vbuild_state\x18\x01 \x01(\x0e27.google.cloud.bigquery.v2.RoutineBuildStatus.BuildStateB\x03\xe0A\x03R\n" +
+	"buildState\x12L\n" +
+	"\ferror_result\x18\x02 \x01(\v2$.google.cloud.bigquery.v2.ErrorProtoB\x03\xe0A\x03R\verrorResult\x12V\n" +
+	"\x17build_state_update_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x14buildStateUpdateTime\x12E\n" +
+	"\x0ebuild_duration\x18\x04 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x03R\rbuildDuration\x12-\n" +
+	"\x10image_size_bytes\x18\x05 \x01(\x03B\x03\xe0A\x03R\x0eimageSizeBytes\"U\n" +
+	"\n" +
+	"BuildState\x12\x1b\n" +
+	"\x17BUILD_STATE_UNSPECIFIED\x10\x00\x12\x0f\n" +
+	"\vIN_PROGRESS\x10\x01\x12\r\n" +
+	"\tSUCCEEDED\x10\x02\x12\n" +
+	"\n" +
+	"\x06FAILED\x10\x03\"\x7f\n" +
 	"\x11GetRoutineRequest\x12\"\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\"\n" +
@@ -1790,8 +1960,8 @@ func file_google_cloud_bigquery_v2_routine_proto_rawDescGZIP() []byte {
 	return file_google_cloud_bigquery_v2_routine_proto_rawDescData
 }
 
-var file_google_cloud_bigquery_v2_routine_proto_enumTypes = make([]protoimpl.EnumInfo, 7)
-var file_google_cloud_bigquery_v2_routine_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_google_cloud_bigquery_v2_routine_proto_enumTypes = make([]protoimpl.EnumInfo, 8)
+var file_google_cloud_bigquery_v2_routine_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
 var file_google_cloud_bigquery_v2_routine_proto_goTypes = []any{
 	(Routine_RoutineType)(0),              // 0: google.cloud.bigquery.v2.Routine.RoutineType
 	(Routine_Language)(0),                 // 1: google.cloud.bigquery.v2.Routine.Language
@@ -1800,67 +1970,77 @@ var file_google_cloud_bigquery_v2_routine_proto_goTypes = []any{
 	(Routine_DataGovernanceType)(0),       // 4: google.cloud.bigquery.v2.Routine.DataGovernanceType
 	(Routine_Argument_ArgumentKind)(0),    // 5: google.cloud.bigquery.v2.Routine.Argument.ArgumentKind
 	(Routine_Argument_Mode)(0),            // 6: google.cloud.bigquery.v2.Routine.Argument.Mode
-	(*Routine)(nil),                       // 7: google.cloud.bigquery.v2.Routine
-	(*PythonOptions)(nil),                 // 8: google.cloud.bigquery.v2.PythonOptions
-	(*ExternalRuntimeOptions)(nil),        // 9: google.cloud.bigquery.v2.ExternalRuntimeOptions
-	(*SparkOptions)(nil),                  // 10: google.cloud.bigquery.v2.SparkOptions
-	(*GetRoutineRequest)(nil),             // 11: google.cloud.bigquery.v2.GetRoutineRequest
-	(*InsertRoutineRequest)(nil),          // 12: google.cloud.bigquery.v2.InsertRoutineRequest
-	(*UpdateRoutineRequest)(nil),          // 13: google.cloud.bigquery.v2.UpdateRoutineRequest
-	(*DeleteRoutineRequest)(nil),          // 14: google.cloud.bigquery.v2.DeleteRoutineRequest
-	(*ListRoutinesRequest)(nil),           // 15: google.cloud.bigquery.v2.ListRoutinesRequest
-	(*ListRoutinesResponse)(nil),          // 16: google.cloud.bigquery.v2.ListRoutinesResponse
-	(*Routine_Argument)(nil),              // 17: google.cloud.bigquery.v2.Routine.Argument
-	(*Routine_RemoteFunctionOptions)(nil), // 18: google.cloud.bigquery.v2.Routine.RemoteFunctionOptions
-	nil,                                   // 19: google.cloud.bigquery.v2.Routine.RemoteFunctionOptions.UserDefinedContextEntry
-	nil,                                   // 20: google.cloud.bigquery.v2.SparkOptions.PropertiesEntry
-	(*RoutineReference)(nil),              // 21: google.cloud.bigquery.v2.RoutineReference
-	(*StandardSqlDataType)(nil),           // 22: google.cloud.bigquery.v2.StandardSqlDataType
-	(*StandardSqlTableType)(nil),          // 23: google.cloud.bigquery.v2.StandardSqlTableType
-	(*wrapperspb.BoolValue)(nil),          // 24: google.protobuf.BoolValue
-	(*wrapperspb.UInt32Value)(nil),        // 25: google.protobuf.UInt32Value
-	(*emptypb.Empty)(nil),                 // 26: google.protobuf.Empty
+	(RoutineBuildStatus_BuildState)(0),    // 7: google.cloud.bigquery.v2.RoutineBuildStatus.BuildState
+	(*Routine)(nil),                       // 8: google.cloud.bigquery.v2.Routine
+	(*PythonOptions)(nil),                 // 9: google.cloud.bigquery.v2.PythonOptions
+	(*ExternalRuntimeOptions)(nil),        // 10: google.cloud.bigquery.v2.ExternalRuntimeOptions
+	(*SparkOptions)(nil),                  // 11: google.cloud.bigquery.v2.SparkOptions
+	(*RoutineBuildStatus)(nil),            // 12: google.cloud.bigquery.v2.RoutineBuildStatus
+	(*GetRoutineRequest)(nil),             // 13: google.cloud.bigquery.v2.GetRoutineRequest
+	(*InsertRoutineRequest)(nil),          // 14: google.cloud.bigquery.v2.InsertRoutineRequest
+	(*UpdateRoutineRequest)(nil),          // 15: google.cloud.bigquery.v2.UpdateRoutineRequest
+	(*DeleteRoutineRequest)(nil),          // 16: google.cloud.bigquery.v2.DeleteRoutineRequest
+	(*ListRoutinesRequest)(nil),           // 17: google.cloud.bigquery.v2.ListRoutinesRequest
+	(*ListRoutinesResponse)(nil),          // 18: google.cloud.bigquery.v2.ListRoutinesResponse
+	(*Routine_Argument)(nil),              // 19: google.cloud.bigquery.v2.Routine.Argument
+	(*Routine_RemoteFunctionOptions)(nil), // 20: google.cloud.bigquery.v2.Routine.RemoteFunctionOptions
+	nil,                                   // 21: google.cloud.bigquery.v2.Routine.RemoteFunctionOptions.UserDefinedContextEntry
+	nil,                                   // 22: google.cloud.bigquery.v2.SparkOptions.PropertiesEntry
+	(*RoutineReference)(nil),              // 23: google.cloud.bigquery.v2.RoutineReference
+	(*StandardSqlDataType)(nil),           // 24: google.cloud.bigquery.v2.StandardSqlDataType
+	(*StandardSqlTableType)(nil),          // 25: google.cloud.bigquery.v2.StandardSqlTableType
+	(*wrapperspb.BoolValue)(nil),          // 26: google.protobuf.BoolValue
+	(*ErrorProto)(nil),                    // 27: google.cloud.bigquery.v2.ErrorProto
+	(*timestamppb.Timestamp)(nil),         // 28: google.protobuf.Timestamp
+	(*durationpb.Duration)(nil),           // 29: google.protobuf.Duration
+	(*wrapperspb.UInt32Value)(nil),        // 30: google.protobuf.UInt32Value
+	(*emptypb.Empty)(nil),                 // 31: google.protobuf.Empty
 }
 var file_google_cloud_bigquery_v2_routine_proto_depIdxs = []int32{
-	21, // 0: google.cloud.bigquery.v2.Routine.routine_reference:type_name -> google.cloud.bigquery.v2.RoutineReference
+	23, // 0: google.cloud.bigquery.v2.Routine.routine_reference:type_name -> google.cloud.bigquery.v2.RoutineReference
 	0,  // 1: google.cloud.bigquery.v2.Routine.routine_type:type_name -> google.cloud.bigquery.v2.Routine.RoutineType
 	1,  // 2: google.cloud.bigquery.v2.Routine.language:type_name -> google.cloud.bigquery.v2.Routine.Language
-	17, // 3: google.cloud.bigquery.v2.Routine.arguments:type_name -> google.cloud.bigquery.v2.Routine.Argument
-	22, // 4: google.cloud.bigquery.v2.Routine.return_type:type_name -> google.cloud.bigquery.v2.StandardSqlDataType
-	23, // 5: google.cloud.bigquery.v2.Routine.return_table_type:type_name -> google.cloud.bigquery.v2.StandardSqlTableType
+	19, // 3: google.cloud.bigquery.v2.Routine.arguments:type_name -> google.cloud.bigquery.v2.Routine.Argument
+	24, // 4: google.cloud.bigquery.v2.Routine.return_type:type_name -> google.cloud.bigquery.v2.StandardSqlDataType
+	25, // 5: google.cloud.bigquery.v2.Routine.return_table_type:type_name -> google.cloud.bigquery.v2.StandardSqlTableType
 	2,  // 6: google.cloud.bigquery.v2.Routine.determinism_level:type_name -> google.cloud.bigquery.v2.Routine.DeterminismLevel
 	3,  // 7: google.cloud.bigquery.v2.Routine.security_mode:type_name -> google.cloud.bigquery.v2.Routine.SecurityMode
-	24, // 8: google.cloud.bigquery.v2.Routine.strict_mode:type_name -> google.protobuf.BoolValue
-	18, // 9: google.cloud.bigquery.v2.Routine.remote_function_options:type_name -> google.cloud.bigquery.v2.Routine.RemoteFunctionOptions
-	10, // 10: google.cloud.bigquery.v2.Routine.spark_options:type_name -> google.cloud.bigquery.v2.SparkOptions
+	26, // 8: google.cloud.bigquery.v2.Routine.strict_mode:type_name -> google.protobuf.BoolValue
+	20, // 9: google.cloud.bigquery.v2.Routine.remote_function_options:type_name -> google.cloud.bigquery.v2.Routine.RemoteFunctionOptions
+	11, // 10: google.cloud.bigquery.v2.Routine.spark_options:type_name -> google.cloud.bigquery.v2.SparkOptions
 	4,  // 11: google.cloud.bigquery.v2.Routine.data_governance_type:type_name -> google.cloud.bigquery.v2.Routine.DataGovernanceType
-	8,  // 12: google.cloud.bigquery.v2.Routine.python_options:type_name -> google.cloud.bigquery.v2.PythonOptions
-	9,  // 13: google.cloud.bigquery.v2.Routine.external_runtime_options:type_name -> google.cloud.bigquery.v2.ExternalRuntimeOptions
-	20, // 14: google.cloud.bigquery.v2.SparkOptions.properties:type_name -> google.cloud.bigquery.v2.SparkOptions.PropertiesEntry
-	7,  // 15: google.cloud.bigquery.v2.InsertRoutineRequest.routine:type_name -> google.cloud.bigquery.v2.Routine
-	7,  // 16: google.cloud.bigquery.v2.UpdateRoutineRequest.routine:type_name -> google.cloud.bigquery.v2.Routine
-	25, // 17: google.cloud.bigquery.v2.ListRoutinesRequest.max_results:type_name -> google.protobuf.UInt32Value
-	7,  // 18: google.cloud.bigquery.v2.ListRoutinesResponse.routines:type_name -> google.cloud.bigquery.v2.Routine
-	5,  // 19: google.cloud.bigquery.v2.Routine.Argument.argument_kind:type_name -> google.cloud.bigquery.v2.Routine.Argument.ArgumentKind
-	6,  // 20: google.cloud.bigquery.v2.Routine.Argument.mode:type_name -> google.cloud.bigquery.v2.Routine.Argument.Mode
-	22, // 21: google.cloud.bigquery.v2.Routine.Argument.data_type:type_name -> google.cloud.bigquery.v2.StandardSqlDataType
-	24, // 22: google.cloud.bigquery.v2.Routine.Argument.is_aggregate:type_name -> google.protobuf.BoolValue
-	19, // 23: google.cloud.bigquery.v2.Routine.RemoteFunctionOptions.user_defined_context:type_name -> google.cloud.bigquery.v2.Routine.RemoteFunctionOptions.UserDefinedContextEntry
-	11, // 24: google.cloud.bigquery.v2.RoutineService.GetRoutine:input_type -> google.cloud.bigquery.v2.GetRoutineRequest
-	12, // 25: google.cloud.bigquery.v2.RoutineService.InsertRoutine:input_type -> google.cloud.bigquery.v2.InsertRoutineRequest
-	13, // 26: google.cloud.bigquery.v2.RoutineService.UpdateRoutine:input_type -> google.cloud.bigquery.v2.UpdateRoutineRequest
-	14, // 27: google.cloud.bigquery.v2.RoutineService.DeleteRoutine:input_type -> google.cloud.bigquery.v2.DeleteRoutineRequest
-	15, // 28: google.cloud.bigquery.v2.RoutineService.ListRoutines:input_type -> google.cloud.bigquery.v2.ListRoutinesRequest
-	7,  // 29: google.cloud.bigquery.v2.RoutineService.GetRoutine:output_type -> google.cloud.bigquery.v2.Routine
-	7,  // 30: google.cloud.bigquery.v2.RoutineService.InsertRoutine:output_type -> google.cloud.bigquery.v2.Routine
-	7,  // 31: google.cloud.bigquery.v2.RoutineService.UpdateRoutine:output_type -> google.cloud.bigquery.v2.Routine
-	26, // 32: google.cloud.bigquery.v2.RoutineService.DeleteRoutine:output_type -> google.protobuf.Empty
-	16, // 33: google.cloud.bigquery.v2.RoutineService.ListRoutines:output_type -> google.cloud.bigquery.v2.ListRoutinesResponse
-	29, // [29:34] is the sub-list for method output_type
-	24, // [24:29] is the sub-list for method input_type
-	24, // [24:24] is the sub-list for extension type_name
-	24, // [24:24] is the sub-list for extension extendee
-	0,  // [0:24] is the sub-list for field type_name
+	9,  // 12: google.cloud.bigquery.v2.Routine.python_options:type_name -> google.cloud.bigquery.v2.PythonOptions
+	10, // 13: google.cloud.bigquery.v2.Routine.external_runtime_options:type_name -> google.cloud.bigquery.v2.ExternalRuntimeOptions
+	12, // 14: google.cloud.bigquery.v2.Routine.build_status:type_name -> google.cloud.bigquery.v2.RoutineBuildStatus
+	22, // 15: google.cloud.bigquery.v2.SparkOptions.properties:type_name -> google.cloud.bigquery.v2.SparkOptions.PropertiesEntry
+	7,  // 16: google.cloud.bigquery.v2.RoutineBuildStatus.build_state:type_name -> google.cloud.bigquery.v2.RoutineBuildStatus.BuildState
+	27, // 17: google.cloud.bigquery.v2.RoutineBuildStatus.error_result:type_name -> google.cloud.bigquery.v2.ErrorProto
+	28, // 18: google.cloud.bigquery.v2.RoutineBuildStatus.build_state_update_time:type_name -> google.protobuf.Timestamp
+	29, // 19: google.cloud.bigquery.v2.RoutineBuildStatus.build_duration:type_name -> google.protobuf.Duration
+	8,  // 20: google.cloud.bigquery.v2.InsertRoutineRequest.routine:type_name -> google.cloud.bigquery.v2.Routine
+	8,  // 21: google.cloud.bigquery.v2.UpdateRoutineRequest.routine:type_name -> google.cloud.bigquery.v2.Routine
+	30, // 22: google.cloud.bigquery.v2.ListRoutinesRequest.max_results:type_name -> google.protobuf.UInt32Value
+	8,  // 23: google.cloud.bigquery.v2.ListRoutinesResponse.routines:type_name -> google.cloud.bigquery.v2.Routine
+	5,  // 24: google.cloud.bigquery.v2.Routine.Argument.argument_kind:type_name -> google.cloud.bigquery.v2.Routine.Argument.ArgumentKind
+	6,  // 25: google.cloud.bigquery.v2.Routine.Argument.mode:type_name -> google.cloud.bigquery.v2.Routine.Argument.Mode
+	24, // 26: google.cloud.bigquery.v2.Routine.Argument.data_type:type_name -> google.cloud.bigquery.v2.StandardSqlDataType
+	26, // 27: google.cloud.bigquery.v2.Routine.Argument.is_aggregate:type_name -> google.protobuf.BoolValue
+	21, // 28: google.cloud.bigquery.v2.Routine.RemoteFunctionOptions.user_defined_context:type_name -> google.cloud.bigquery.v2.Routine.RemoteFunctionOptions.UserDefinedContextEntry
+	13, // 29: google.cloud.bigquery.v2.RoutineService.GetRoutine:input_type -> google.cloud.bigquery.v2.GetRoutineRequest
+	14, // 30: google.cloud.bigquery.v2.RoutineService.InsertRoutine:input_type -> google.cloud.bigquery.v2.InsertRoutineRequest
+	15, // 31: google.cloud.bigquery.v2.RoutineService.UpdateRoutine:input_type -> google.cloud.bigquery.v2.UpdateRoutineRequest
+	16, // 32: google.cloud.bigquery.v2.RoutineService.DeleteRoutine:input_type -> google.cloud.bigquery.v2.DeleteRoutineRequest
+	17, // 33: google.cloud.bigquery.v2.RoutineService.ListRoutines:input_type -> google.cloud.bigquery.v2.ListRoutinesRequest
+	8,  // 34: google.cloud.bigquery.v2.RoutineService.GetRoutine:output_type -> google.cloud.bigquery.v2.Routine
+	8,  // 35: google.cloud.bigquery.v2.RoutineService.InsertRoutine:output_type -> google.cloud.bigquery.v2.Routine
+	8,  // 36: google.cloud.bigquery.v2.RoutineService.UpdateRoutine:output_type -> google.cloud.bigquery.v2.Routine
+	31, // 37: google.cloud.bigquery.v2.RoutineService.DeleteRoutine:output_type -> google.protobuf.Empty
+	18, // 38: google.cloud.bigquery.v2.RoutineService.ListRoutines:output_type -> google.cloud.bigquery.v2.ListRoutinesResponse
+	34, // [34:39] is the sub-list for method output_type
+	29, // [29:34] is the sub-list for method input_type
+	29, // [29:29] is the sub-list for extension type_name
+	29, // [29:29] is the sub-list for extension extendee
+	0,  // [0:29] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_bigquery_v2_routine_proto_init() }
@@ -1868,6 +2048,7 @@ func file_google_cloud_bigquery_v2_routine_proto_init() {
 	if File_google_cloud_bigquery_v2_routine_proto != nil {
 		return
 	}
+	file_google_cloud_bigquery_v2_error_proto_init()
 	file_google_cloud_bigquery_v2_routine_reference_proto_init()
 	file_google_cloud_bigquery_v2_standard_sql_proto_init()
 	type x struct{}
@@ -1875,8 +2056,8 @@ func file_google_cloud_bigquery_v2_routine_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_bigquery_v2_routine_proto_rawDesc), len(file_google_cloud_bigquery_v2_routine_proto_rawDesc)),
-			NumEnums:      7,
-			NumMessages:   14,
+			NumEnums:      8,
+			NumMessages:   15,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

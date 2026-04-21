@@ -3973,7 +3973,7 @@
         "resultType": "*adminpb.ReportingIdentitySettings",
         "shortName": "GetReportingIdentitySettings"
       },
-      "description": "GetReportingIdentitySettings returns the singleton data retention settings for this property.",
+      "description": "GetReportingIdentitySettings returns the reporting identity settings for this property.",
       "file": "AnalyticsAdminClient/GetReportingIdentitySettings/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -4216,6 +4216,52 @@
         }
       ],
       "title": "analyticsadmin GetSubpropertySyncConfig Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient",
+          "shortName": "AnalyticsAdminClient"
+        },
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.GetUserProvidedDataSettings",
+        "method": {
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetUserProvidedDataSettings",
+          "service": {
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService",
+            "shortName": "AnalyticsAdminService"
+          },
+          "shortName": "GetUserProvidedDataSettings"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "adminpb.GetUserProvidedDataSettingsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*adminpb.UserProvidedDataSettings",
+        "shortName": "GetUserProvidedDataSettings"
+      },
+      "description": "GetUserProvidedDataSettings looks up settings related to user-provided data for a property.",
+      "file": "AnalyticsAdminClient/GetUserProvidedDataSettings/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetUserProvidedDataSettings_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "analyticsadmin GetUserProvidedDataSettings Sample"
     },
     {
       "clientMethod": {

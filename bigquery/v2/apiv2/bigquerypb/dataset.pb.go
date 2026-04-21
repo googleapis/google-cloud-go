@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -640,8 +640,15 @@ type Dataset struct {
 	// * DEFAULT - only accessible by owner and authorized accounts,
 	// * PUBLIC - accessible by everyone,
 	// * LINKED - linked dataset,
-	// * EXTERNAL - dataset with definition in external metadata catalog.
+	// * EXTERNAL - dataset with definition in external metadata catalog,
+	// * BIGLAKE_ICEBERG - a Biglake dataset accessible through the Iceberg API,
+	// * BIGLAKE_HIVE - a Biglake dataset accessible through the Hive API.
 	Type string `protobuf:"bytes,18,opt,name=type,proto3" json:"type,omitempty"`
+	// Output only. The origin of the dataset, one of:
+	//
+	// * (Unset) - Native BigQuery Dataset
+	// * BIGLAKE - Dataset is backed by a namespace stored natively in Biglake
+	CatalogSource *string `protobuf:"bytes,40,opt,name=catalog_source,json=catalogSource,proto3,oneof" json:"catalog_source,omitempty"`
 	// Optional. The source dataset reference when the dataset is of type LINKED.
 	// For all other dataset types it is not set. This field cannot be updated
 	// once it is set. Any attempt to update this field using Update and Patch API
@@ -864,6 +871,13 @@ func (x *Dataset) GetSatisfiesPzi() *wrapperspb.BoolValue {
 func (x *Dataset) GetType() string {
 	if x != nil {
 		return x.Type
+	}
+	return ""
+}
+
+func (x *Dataset) GetCatalogSource() string {
+	if x != nil && x.CatalogSource != nil {
+		return *x.CatalogSource
 	}
 	return ""
 }
@@ -1569,6 +1583,21 @@ type ListFormatDataset struct {
 	FriendlyName *wrapperspb.StringValue `protobuf:"bytes,5,opt,name=friendly_name,json=friendlyName,proto3" json:"friendly_name,omitempty"`
 	// The geographic location where the dataset resides.
 	Location string `protobuf:"bytes,6,opt,name=location,proto3" json:"location,omitempty"`
+	// Output only. Same as `type` in `Dataset`.
+	// The type of the dataset, one of:
+	//
+	// * DEFAULT - only accessible by owner and authorized accounts,
+	// * PUBLIC - accessible by everyone,
+	// * LINKED - linked dataset,
+	// * EXTERNAL - dataset with definition in external metadata catalog,
+	// * BIGLAKE_ICEBERG - a Biglake dataset accessible through the Iceberg API,
+	// * BIGLAKE_HIVE - a Biglake dataset accessible through the Hive API.
+	Type string `protobuf:"bytes,7,opt,name=type,proto3" json:"type,omitempty"`
+	// Output only. The origin of the dataset, one of:
+	//
+	// * (Unset) - Native BigQuery Dataset.
+	// * BIGLAKE - Dataset is backed by a namespace stored natively in Biglake.
+	CatalogSource *string `protobuf:"bytes,12,opt,name=catalog_source,json=catalogSource,proto3,oneof" json:"catalog_source,omitempty"`
 	// Output only. Reference to a read-only external dataset defined in data
 	// catalogs outside of BigQuery. Filled out when the dataset type is EXTERNAL.
 	ExternalDatasetReference *ExternalDatasetReference `protobuf:"bytes,11,opt,name=external_dataset_reference,json=externalDatasetReference,proto3" json:"external_dataset_reference,omitempty"`
@@ -1644,6 +1673,20 @@ func (x *ListFormatDataset) GetFriendlyName() *wrapperspb.StringValue {
 func (x *ListFormatDataset) GetLocation() string {
 	if x != nil {
 		return x.Location
+	}
+	return ""
+}
+
+func (x *ListFormatDataset) GetType() string {
+	if x != nil {
+		return x.Type
+	}
+	return ""
+}
+
+func (x *ListFormatDataset) GetCatalogSource() string {
+	if x != nil && x.CatalogSource != nil {
+		return *x.CatalogSource
 	}
 	return ""
 }
@@ -1837,7 +1880,7 @@ const file_google_cloud_bigquery_v2_dataset_proto_rawDesc = "" +
 	"\aroutine\x18\b \x01(\v2*.google.cloud.bigquery.v2.RoutineReferenceR\aroutine\x12F\n" +
 	"\adataset\x18\t \x01(\v2,.google.cloud.bigquery.v2.DatasetAccessEntryR\adataset\x124\n" +
 	"\tcondition\x18\n" +
-	" \x01(\v2\x11.google.type.ExprB\x03\xe0A\x01R\tcondition\"\xba\x13\n" +
+	" \x01(\v2\x11.google.type.ExprB\x03\xe0A\x01R\tcondition\"\xfe\x13\n" +
 	"\aDataset\x12\x17\n" +
 	"\x04kind\x18\x01 \x01(\tB\x03\xe0A\x03R\x04kind\x12\x17\n" +
 	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x03R\x04etag\x12\x13\n" +
@@ -1857,7 +1900,8 @@ const file_google_cloud_bigquery_v2_dataset_proto_rawDesc = "" +
 	" default_encryption_configuration\x18\x10 \x01(\v21.google.cloud.bigquery.v2.EncryptionConfigurationR\x1edefaultEncryptionConfiguration\x12D\n" +
 	"\rsatisfies_pzs\x18\x11 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x03R\fsatisfiesPzs\x12D\n" +
 	"\rsatisfies_pzi\x18\x1f \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x03R\fsatisfiesPzi\x12\x17\n" +
-	"\x04type\x18\x12 \x01(\tB\x03\xe0A\x03R\x04type\x12f\n" +
+	"\x04type\x18\x12 \x01(\tB\x03\xe0A\x03R\x04type\x12/\n" +
+	"\x0ecatalog_source\x18( \x01(\tB\x03\xe0A\x03H\x00R\rcatalogSource\x88\x01\x01\x12f\n" +
 	"\x15linked_dataset_source\x18\x13 \x01(\v2-.google.cloud.bigquery.v2.LinkedDatasetSourceB\x03\xe0A\x01R\x13linkedDatasetSource\x12l\n" +
 	"\x17linked_dataset_metadata\x18\x1d \x01(\v2/.google.cloud.bigquery.v2.LinkedDatasetMetadataB\x03\xe0A\x03R\x15linkedDatasetMetadata\x12u\n" +
 	"\x1aexternal_dataset_reference\x18\x14 \x01(\v22.google.cloud.bigquery.v2.ExternalDatasetReferenceB\x03\xe0A\x01R\x18externalDatasetReference\x12\x85\x01\n" +
@@ -1879,7 +1923,8 @@ const file_google_cloud_bigquery_v2_dataset_proto_rawDesc = "" +
 	"\x13StorageBillingModel\x12%\n" +
 	"!STORAGE_BILLING_MODEL_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aLOGICAL\x10\x01\x12\f\n" +
-	"\bPHYSICAL\x10\x02\"H\n" +
+	"\bPHYSICAL\x10\x02B\x11\n" +
+	"\x0f_catalog_source\"H\n" +
 	"\x06GcpTag\x12\x1c\n" +
 	"\atag_key\x18\x01 \x01(\tB\x03\xe0A\x02R\x06tagKey\x12 \n" +
 	"\ttag_value\x18\x02 \x01(\tB\x03\xe0A\x02R\btagValue\"h\n" +
@@ -1940,18 +1985,21 @@ const file_google_cloud_bigquery_v2_dataset_proto_rawDesc = "" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x10\n" +
 	"\x03all\x18\x04 \x01(\bR\x03all\x12\x16\n" +
-	"\x06filter\x18\x05 \x01(\tR\x06filter\"\xf2\x03\n" +
+	"\x06filter\x18\x05 \x01(\tR\x06filter\"\xcf\x04\n" +
 	"\x11ListFormatDataset\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12\x0e\n" +
 	"\x02id\x18\x02 \x01(\tR\x02id\x12W\n" +
 	"\x11dataset_reference\x18\x03 \x01(\v2*.google.cloud.bigquery.v2.DatasetReferenceR\x10datasetReference\x12O\n" +
 	"\x06labels\x18\x04 \x03(\v27.google.cloud.bigquery.v2.ListFormatDataset.LabelsEntryR\x06labels\x12A\n" +
 	"\rfriendly_name\x18\x05 \x01(\v2\x1c.google.protobuf.StringValueR\ffriendlyName\x12\x1a\n" +
-	"\blocation\x18\x06 \x01(\tR\blocation\x12u\n" +
+	"\blocation\x18\x06 \x01(\tR\blocation\x12\x17\n" +
+	"\x04type\x18\a \x01(\tB\x03\xe0A\x03R\x04type\x12/\n" +
+	"\x0ecatalog_source\x18\f \x01(\tB\x03\xe0A\x03H\x00R\rcatalogSource\x88\x01\x01\x12u\n" +
 	"\x1aexternal_dataset_reference\x18\v \x01(\v22.google.cloud.bigquery.v2.ExternalDatasetReferenceB\x03\xe0A\x03R\x18externalDatasetReference\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xd2\x01\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\x11\n" +
+	"\x0f_catalog_source\"\xd2\x01\n" +
 	"\vDatasetList\x12\x17\n" +
 	"\x04kind\x18\x01 \x01(\tB\x03\xe0A\x03R\x04kind\x12\x17\n" +
 	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x03R\x04etag\x12&\n" +
@@ -2105,6 +2153,8 @@ func file_google_cloud_bigquery_v2_dataset_proto_init() {
 	file_google_cloud_bigquery_v2_routine_reference_proto_init()
 	file_google_cloud_bigquery_v2_table_reference_proto_init()
 	file_google_cloud_bigquery_v2_table_schema_proto_init()
+	file_google_cloud_bigquery_v2_dataset_proto_msgTypes[2].OneofWrappers = []any{}
+	file_google_cloud_bigquery_v2_dataset_proto_msgTypes[11].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

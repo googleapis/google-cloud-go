@@ -672,7 +672,10 @@ type StoragePool struct {
 	// the user can perform the ONTAP operations on the storage pool using the
 	// GCNV ONTAP Mode APIs. If not specified during creation, it defaults to
 	// `DEFAULT`.
-	Mode          *Mode `protobuf:"varint,36,opt,name=mode,proto3,enum=google.cloud.netapp.v1.Mode,oneof" json:"mode,omitempty"`
+	Mode *Mode `protobuf:"varint,36,opt,name=mode,proto3,enum=google.cloud.netapp.v1.Mode,oneof" json:"mode,omitempty"`
+	// Optional. The scale type of the storage pool. Defaults to
+	// `SCALE_TYPE_DEFAULT` if not specified.
+	ScaleType     ScaleType `protobuf:"varint,38,opt,name=scale_type,json=scaleType,proto3,enum=google.cloud.netapp.v1.ScaleType" json:"scale_type,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -939,6 +942,13 @@ func (x *StoragePool) GetMode() Mode {
 	return Mode_MODE_UNSPECIFIED
 }
 
+func (x *StoragePool) GetScaleType() ScaleType {
+	if x != nil {
+		return x.ScaleType
+	}
+	return ScaleType_SCALE_TYPE_UNSPECIFIED
+}
+
 // ValidateDirectoryServiceRequest validates the directory service policy
 // attached to the storage pool.
 type ValidateDirectoryServiceRequest struct {
@@ -1027,7 +1037,7 @@ const file_google_cloud_netapp_v1_storage_pool_proto_rawDesc = "" +
 	"!netapp.googleapis.com/StoragePoolR\x04name\"_\n" +
 	"\x1eSwitchActiveReplicaZoneRequest\x12=\n" +
 	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!netapp.googleapis.com/StoragePoolR\x04name\"\xce\x11\n" +
+	"!netapp.googleapis.com/StoragePoolR\x04name\"\x95\x12\n" +
 	"\vStoragePool\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12N\n" +
 	"\rservice_level\x18\x02 \x01(\x0e2$.google.cloud.netapp.v1.ServiceLevelB\x03\xe0A\x02R\fserviceLevel\x12&\n" +
@@ -1068,7 +1078,9 @@ const file_google_cloud_netapp_v1_storage_pool_proto_rawDesc = "" +
 	"\x17cold_tier_size_used_gib\x18! \x01(\x03B\x03\xe0A\x03R\x13coldTierSizeUsedGib\x127\n" +
 	"\x16hot_tier_size_used_gib\x18\" \x01(\x03B\x03\xe0A\x03R\x12hotTierSizeUsedGib\x12E\n" +
 	"\x04type\x18# \x01(\x0e2'.google.cloud.netapp.v1.StoragePoolTypeB\x03\xe0A\x01H\x02R\x04type\x88\x01\x01\x12:\n" +
-	"\x04mode\x18$ \x01(\x0e2\x1c.google.cloud.netapp.v1.ModeB\x03\xe0A\x01H\x03R\x04mode\x88\x01\x01\x1a9\n" +
+	"\x04mode\x18$ \x01(\x0e2\x1c.google.cloud.netapp.v1.ModeB\x03\xe0A\x01H\x03R\x04mode\x88\x01\x01\x12E\n" +
+	"\n" +
+	"scale_type\x18& \x01(\x0e2!.google.cloud.netapp.v1.ScaleTypeB\x03\xe0A\x01R\tscaleType\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"{\n" +
@@ -1129,7 +1141,8 @@ var file_google_cloud_netapp_v1_storage_pool_proto_goTypes = []any{
 	(EncryptionType)(0),                     // 15: google.cloud.netapp.v1.EncryptionType
 	(QosType)(0),                            // 16: google.cloud.netapp.v1.QosType
 	(StoragePoolType)(0),                    // 17: google.cloud.netapp.v1.StoragePoolType
-	(DirectoryServiceType)(0),               // 18: google.cloud.netapp.v1.DirectoryServiceType
+	(ScaleType)(0),                          // 18: google.cloud.netapp.v1.ScaleType
+	(DirectoryServiceType)(0),               // 19: google.cloud.netapp.v1.DirectoryServiceType
 }
 var file_google_cloud_netapp_v1_storage_pool_proto_depIdxs = []int32{
 	9,  // 0: google.cloud.netapp.v1.ListStoragePoolsResponse.storage_pools:type_name -> google.cloud.netapp.v1.StoragePool
@@ -1144,12 +1157,13 @@ var file_google_cloud_netapp_v1_storage_pool_proto_depIdxs = []int32{
 	16, // 9: google.cloud.netapp.v1.StoragePool.qos_type:type_name -> google.cloud.netapp.v1.QosType
 	17, // 10: google.cloud.netapp.v1.StoragePool.type:type_name -> google.cloud.netapp.v1.StoragePoolType
 	0,  // 11: google.cloud.netapp.v1.StoragePool.mode:type_name -> google.cloud.netapp.v1.Mode
-	18, // 12: google.cloud.netapp.v1.ValidateDirectoryServiceRequest.directory_service_type:type_name -> google.cloud.netapp.v1.DirectoryServiceType
-	13, // [13:13] is the sub-list for method output_type
-	13, // [13:13] is the sub-list for method input_type
-	13, // [13:13] is the sub-list for extension type_name
-	13, // [13:13] is the sub-list for extension extendee
-	0,  // [0:13] is the sub-list for field type_name
+	18, // 12: google.cloud.netapp.v1.StoragePool.scale_type:type_name -> google.cloud.netapp.v1.ScaleType
+	19, // 13: google.cloud.netapp.v1.ValidateDirectoryServiceRequest.directory_service_type:type_name -> google.cloud.netapp.v1.DirectoryServiceType
+	14, // [14:14] is the sub-list for method output_type
+	14, // [14:14] is the sub-list for method input_type
+	14, // [14:14] is the sub-list for extension type_name
+	14, // [14:14] is the sub-list for extension extendee
+	0,  // [0:14] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_netapp_v1_storage_pool_proto_init() }

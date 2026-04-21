@@ -62,6 +62,7 @@ type CallOptions struct {
 	DeleteSpace                    []gax.CallOption
 	CompleteImportSpace            []gax.CallOption
 	FindDirectMessage              []gax.CallOption
+	FindGroupChats                 []gax.CallOption
 	CreateMembership               []gax.CallOption
 	UpdateMembership               []gax.CallOption
 	DeleteMembership               []gax.CallOption
@@ -310,6 +311,18 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		FindDirectMessage: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		FindGroupChats: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -812,6 +825,17 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		FindGroupChats: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		CreateMembership: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -1102,6 +1126,7 @@ type internalClient interface {
 	DeleteSpace(context.Context, *chatpb.DeleteSpaceRequest, ...gax.CallOption) error
 	CompleteImportSpace(context.Context, *chatpb.CompleteImportSpaceRequest, ...gax.CallOption) (*chatpb.CompleteImportSpaceResponse, error)
 	FindDirectMessage(context.Context, *chatpb.FindDirectMessageRequest, ...gax.CallOption) (*chatpb.Space, error)
+	FindGroupChats(context.Context, *chatpb.FindGroupChatsRequest, ...gax.CallOption) *SpaceIterator
 	CreateMembership(context.Context, *chatpb.CreateMembershipRequest, ...gax.CallOption) (*chatpb.Membership, error)
 	UpdateMembership(context.Context, *chatpb.UpdateMembershipRequest, ...gax.CallOption) (*chatpb.Membership, error)
 	DeleteMembership(context.Context, *chatpb.DeleteMembershipRequest, ...gax.CallOption) (*chatpb.Membership, error)
@@ -1802,6 +1827,31 @@ func (c *Client) FindDirectMessage(ctx context.Context, req *chatpb.FindDirectMe
 	return c.internalClient.FindDirectMessage(ctx, req, opts...)
 }
 
+// FindGroupChats returns all spaces with spaceType == GROUP_CHAT, whose
+// human memberships contain exactly the calling user, and the users specified
+// in FindGroupChatsRequest.users. Only members that have joined the
+// conversation are supported. For an example, see Find group
+// chats (at https://developers.google.com/workspace/chat/find-group-chats).
+//
+// If the calling user blocks, or is blocked by, some users, and no spaces
+// with the entire specified set of users are found, this method returns
+// spaces that don’t include the blocked or blocking users.
+//
+// The specified set of users must contain only human (non-app) memberships.
+// A request that contains non-human users doesn’t return any spaces.
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+// with one of the following authorization
+// scopes (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	https://www.googleapis.com/auth/chat.memberships.readonly
+//
+//	https://www.googleapis.com/auth/chat.memberships
+func (c *Client) FindGroupChats(ctx context.Context, req *chatpb.FindGroupChatsRequest, opts ...gax.CallOption) *SpaceIterator {
+	return c.internalClient.FindGroupChats(ctx, req, opts...)
+}
+
 // CreateMembership creates a membership for the calling Chat app, a user, or a Google Group.
 // Creating memberships for other Chat apps isn’t supported.
 // When creating a membership, if the specified member has their auto-accept
@@ -2475,6 +2525,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.DeleteSpace = append(client.CallOptions.DeleteSpace, gax.WithClientMetrics(metrics))
 		client.CallOptions.CompleteImportSpace = append(client.CallOptions.CompleteImportSpace, gax.WithClientMetrics(metrics))
 		client.CallOptions.FindDirectMessage = append(client.CallOptions.FindDirectMessage, gax.WithClientMetrics(metrics))
+		client.CallOptions.FindGroupChats = append(client.CallOptions.FindGroupChats, gax.WithClientMetrics(metrics))
 		client.CallOptions.CreateMembership = append(client.CallOptions.CreateMembership, gax.WithClientMetrics(metrics))
 		client.CallOptions.UpdateMembership = append(client.CallOptions.UpdateMembership, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteMembership = append(client.CallOptions.DeleteMembership, gax.WithClientMetrics(metrics))
@@ -2608,6 +2659,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.DeleteSpace = append(callOpts.DeleteSpace, gax.WithClientMetrics(metrics))
 		callOpts.CompleteImportSpace = append(callOpts.CompleteImportSpace, gax.WithClientMetrics(metrics))
 		callOpts.FindDirectMessage = append(callOpts.FindDirectMessage, gax.WithClientMetrics(metrics))
+		callOpts.FindGroupChats = append(callOpts.FindGroupChats, gax.WithClientMetrics(metrics))
 		callOpts.CreateMembership = append(callOpts.CreateMembership, gax.WithClientMetrics(metrics))
 		callOpts.UpdateMembership = append(callOpts.UpdateMembership, gax.WithClientMetrics(metrics))
 		callOpts.DeleteMembership = append(callOpts.DeleteMembership, gax.WithClientMetrics(metrics))
@@ -3172,6 +3224,52 @@ func (c *gRPCClient) FindDirectMessage(ctx context.Context, req *chatpb.FindDire
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *gRPCClient) FindGroupChats(ctx context.Context, req *chatpb.FindGroupChatsRequest, opts ...gax.CallOption) *SpaceIterator {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/FindGroupChats")
+	}
+	opts = append((*c.CallOptions).FindGroupChats[0:len((*c.CallOptions).FindGroupChats):len((*c.CallOptions).FindGroupChats)], opts...)
+	it := &SpaceIterator{}
+	req = proto.Clone(req).(*chatpb.FindGroupChatsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*chatpb.Space, string, error) {
+		resp := &chatpb.FindGroupChatsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.FindGroupChats, req, settings.GRPC, c.logger, "FindGroupChats")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetSpaces(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 func (c *gRPCClient) CreateMembership(ctx context.Context, req *chatpb.CreateMembershipRequest, opts ...gax.CallOption) (*chatpb.Membership, error) {
@@ -5581,6 +5679,112 @@ func (c *restClient) FindDirectMessage(ctx context.Context, req *chatpb.FindDire
 		return nil, e
 	}
 	return resp, nil
+}
+
+// FindGroupChats returns all spaces with spaceType == GROUP_CHAT, whose
+// human memberships contain exactly the calling user, and the users specified
+// in FindGroupChatsRequest.users. Only members that have joined the
+// conversation are supported. For an example, see Find group
+// chats (at https://developers.google.com/workspace/chat/find-group-chats).
+//
+// If the calling user blocks, or is blocked by, some users, and no spaces
+// with the entire specified set of users are found, this method returns
+// spaces that don’t include the blocked or blocking users.
+//
+// The specified set of users must contain only human (non-app) memberships.
+// A request that contains non-human users doesn’t return any spaces.
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+// with one of the following authorization
+// scopes (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	https://www.googleapis.com/auth/chat.memberships.readonly
+//
+//	https://www.googleapis.com/auth/chat.memberships
+func (c *restClient) FindGroupChats(ctx context.Context, req *chatpb.FindGroupChatsRequest, opts ...gax.CallOption) *SpaceIterator {
+	it := &SpaceIterator{}
+	req = proto.Clone(req).(*chatpb.FindGroupChatsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*chatpb.Space, string, error) {
+		resp := &chatpb.FindGroupChatsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/spaces:findGroupChats")
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetSpaceView() != 0 {
+			params.Add("spaceView", fmt.Sprintf("%v", req.GetSpaceView()))
+		}
+		if items := req.GetUsers(); len(items) > 0 {
+			for _, item := range items {
+				params.Add("users", fmt.Sprintf("%v", item))
+			}
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FindGroupChats")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetSpaces(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // CreateMembership creates a membership for the calling Chat app, a user, or a Google Group.

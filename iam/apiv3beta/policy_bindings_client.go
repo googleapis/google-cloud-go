@@ -252,7 +252,7 @@ func (c *PolicyBindingsClient) Connection() *grpc.ClientConn {
 
 // CreatePolicyBinding creates a policy binding and returns a long-running operation.
 // Callers will need the IAM permissions on both the policy and target.
-// Once the binding is created, the policy is applied to the target.
+// After the binding is created, the policy is applied to the target.
 func (c *PolicyBindingsClient) CreatePolicyBinding(ctx context.Context, req *iampb.CreatePolicyBindingRequest, opts ...gax.CallOption) (*CreatePolicyBindingOperation, error) {
 	return c.internalClient.CreatePolicyBinding(ctx, req, opts...)
 }
@@ -270,9 +270,7 @@ func (c *PolicyBindingsClient) GetPolicyBinding(ctx context.Context, req *iampb.
 
 // UpdatePolicyBinding updates a policy binding and returns a long-running operation.
 // Callers will need the IAM permissions on the policy and target in the
-// binding to update, and the IAM permission to remove the existing policy
-// from the binding. Target is immutable and cannot be updated. Once the
-// binding is updated, the new policy is applied to the target.
+// binding to update. Target and policy are immutable and cannot be updated.
 func (c *PolicyBindingsClient) UpdatePolicyBinding(ctx context.Context, req *iampb.UpdatePolicyBindingRequest, opts ...gax.CallOption) (*UpdatePolicyBindingOperation, error) {
 	return c.internalClient.UpdatePolicyBinding(ctx, req, opts...)
 }
@@ -285,7 +283,7 @@ func (c *PolicyBindingsClient) UpdatePolicyBindingOperation(name string) *Update
 
 // DeletePolicyBinding deletes a policy binding and returns a long-running operation.
 // Callers will need the IAM permissions on both the policy and target.
-// Once the binding is deleted, the policy no longer applies to the target.
+// After the binding is deleted, the policy no longer applies to the target.
 func (c *PolicyBindingsClient) DeletePolicyBinding(ctx context.Context, req *iampb.DeletePolicyBindingRequest, opts ...gax.CallOption) (*DeletePolicyBindingOperation, error) {
 	return c.internalClient.DeletePolicyBinding(ctx, req, opts...)
 }
@@ -788,7 +786,7 @@ func (c *policyBindingsGRPCClient) GetOperation(ctx context.Context, req *longru
 
 // CreatePolicyBinding creates a policy binding and returns a long-running operation.
 // Callers will need the IAM permissions on both the policy and target.
-// Once the binding is created, the policy is applied to the target.
+// After the binding is created, the policy is applied to the target.
 func (c *policyBindingsRESTClient) CreatePolicyBinding(ctx context.Context, req *iampb.CreatePolicyBindingRequest, opts ...gax.CallOption) (*CreatePolicyBindingOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetPolicyBinding()
@@ -918,9 +916,7 @@ func (c *policyBindingsRESTClient) GetPolicyBinding(ctx context.Context, req *ia
 
 // UpdatePolicyBinding updates a policy binding and returns a long-running operation.
 // Callers will need the IAM permissions on the policy and target in the
-// binding to update, and the IAM permission to remove the existing policy
-// from the binding. Target is immutable and cannot be updated. Once the
-// binding is updated, the new policy is applied to the target.
+// binding to update. Target and policy are immutable and cannot be updated.
 func (c *policyBindingsRESTClient) UpdatePolicyBinding(ctx context.Context, req *iampb.UpdatePolicyBindingRequest, opts ...gax.CallOption) (*UpdatePolicyBindingOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetPolicyBinding()
@@ -996,7 +992,7 @@ func (c *policyBindingsRESTClient) UpdatePolicyBinding(ctx context.Context, req 
 
 // DeletePolicyBinding deletes a policy binding and returns a long-running operation.
 // Callers will need the IAM permissions on both the policy and target.
-// Once the binding is deleted, the policy no longer applies to the target.
+// After the binding is deleted, the policy no longer applies to the target.
 func (c *policyBindingsRESTClient) DeletePolicyBinding(ctx context.Context, req *iampb.DeletePolicyBindingRequest, opts ...gax.CallOption) (*DeletePolicyBindingOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1167,6 +1163,9 @@ func (c *policyBindingsRESTClient) SearchTargetPolicyBindings(ctx context.Contex
 
 		params := url.Values{}
 		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}

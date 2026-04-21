@@ -172,6 +172,8 @@ const (
 	VeoHyperParameters_TUNING_TASK_I2V VeoHyperParameters_TuningTask = 1
 	// Tuning task for text to video.
 	VeoHyperParameters_TUNING_TASK_T2V VeoHyperParameters_TuningTask = 2
+	// Tuning task for reference to video.
+	VeoHyperParameters_TUNING_TASK_R2V VeoHyperParameters_TuningTask = 3
 )
 
 // Enum value maps for VeoHyperParameters_TuningTask.
@@ -180,11 +182,13 @@ var (
 		0: "TUNING_TASK_UNSPECIFIED",
 		1: "TUNING_TASK_I2V",
 		2: "TUNING_TASK_T2V",
+		3: "TUNING_TASK_R2V",
 	}
 	VeoHyperParameters_TuningTask_value = map[string]int32{
 		"TUNING_TASK_UNSPECIFIED": 0,
 		"TUNING_TASK_I2V":         1,
 		"TUNING_TASK_T2V":         2,
+		"TUNING_TASK_R2V":         3,
 	}
 )
 
@@ -215,6 +219,117 @@ func (VeoHyperParameters_TuningTask) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_aiplatform_v1beta1_tuning_job_proto_rawDescGZIP(), []int{14, 0}
 }
 
+// The speed of the tuning job. Only supported for Veo 3.0 models.
+type VeoHyperParameters_TuningSpeed int32
+
+const (
+	// The default / unset value. For Veo 3.0 models, this defaults to FAST.
+	VeoHyperParameters_TUNING_SPEED_UNSPECIFIED VeoHyperParameters_TuningSpeed = 0
+	// Regular tuning speed.
+	VeoHyperParameters_REGULAR VeoHyperParameters_TuningSpeed = 1
+	// Fast tuning speed.
+	VeoHyperParameters_FAST VeoHyperParameters_TuningSpeed = 2
+)
+
+// Enum value maps for VeoHyperParameters_TuningSpeed.
+var (
+	VeoHyperParameters_TuningSpeed_name = map[int32]string{
+		0: "TUNING_SPEED_UNSPECIFIED",
+		1: "REGULAR",
+		2: "FAST",
+	}
+	VeoHyperParameters_TuningSpeed_value = map[string]int32{
+		"TUNING_SPEED_UNSPECIFIED": 0,
+		"REGULAR":                  1,
+		"FAST":                     2,
+	}
+)
+
+func (x VeoHyperParameters_TuningSpeed) Enum() *VeoHyperParameters_TuningSpeed {
+	p := new(VeoHyperParameters_TuningSpeed)
+	*p = x
+	return p
+}
+
+func (x VeoHyperParameters_TuningSpeed) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (VeoHyperParameters_TuningSpeed) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_aiplatform_v1beta1_tuning_job_proto_enumTypes[3].Descriptor()
+}
+
+func (VeoHyperParameters_TuningSpeed) Type() protoreflect.EnumType {
+	return &file_google_cloud_aiplatform_v1beta1_tuning_job_proto_enumTypes[3]
+}
+
+func (x VeoHyperParameters_TuningSpeed) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use VeoHyperParameters_TuningSpeed.Descriptor instead.
+func (VeoHyperParameters_TuningSpeed) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1beta1_tuning_job_proto_rawDescGZIP(), []int{14, 1}
+}
+
+// Adapter size for LoRA tuning.
+type VeoHyperParameters_AdapterSize int32
+
+const (
+	// Adapter size is unspecified.
+	VeoHyperParameters_ADAPTER_SIZE_UNSPECIFIED VeoHyperParameters_AdapterSize = 0
+	// Adapter size 8.
+	// This is the default adapter size for Veo LoRA tuning.
+	VeoHyperParameters_ADAPTER_SIZE_EIGHT VeoHyperParameters_AdapterSize = 8
+	// Adapter size 16.
+	VeoHyperParameters_ADAPTER_SIZE_SIXTEEN VeoHyperParameters_AdapterSize = 16
+	// Adapter size 32.
+	VeoHyperParameters_ADAPTER_SIZE_THIRTY_TWO VeoHyperParameters_AdapterSize = 32
+)
+
+// Enum value maps for VeoHyperParameters_AdapterSize.
+var (
+	VeoHyperParameters_AdapterSize_name = map[int32]string{
+		0:  "ADAPTER_SIZE_UNSPECIFIED",
+		8:  "ADAPTER_SIZE_EIGHT",
+		16: "ADAPTER_SIZE_SIXTEEN",
+		32: "ADAPTER_SIZE_THIRTY_TWO",
+	}
+	VeoHyperParameters_AdapterSize_value = map[string]int32{
+		"ADAPTER_SIZE_UNSPECIFIED": 0,
+		"ADAPTER_SIZE_EIGHT":       8,
+		"ADAPTER_SIZE_SIXTEEN":     16,
+		"ADAPTER_SIZE_THIRTY_TWO":  32,
+	}
+)
+
+func (x VeoHyperParameters_AdapterSize) Enum() *VeoHyperParameters_AdapterSize {
+	p := new(VeoHyperParameters_AdapterSize)
+	*p = x
+	return p
+}
+
+func (x VeoHyperParameters_AdapterSize) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (VeoHyperParameters_AdapterSize) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_aiplatform_v1beta1_tuning_job_proto_enumTypes[4].Descriptor()
+}
+
+func (VeoHyperParameters_AdapterSize) Type() protoreflect.EnumType {
+	return &file_google_cloud_aiplatform_v1beta1_tuning_job_proto_enumTypes[4]
+}
+
+func (x VeoHyperParameters_AdapterSize) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use VeoHyperParameters_AdapterSize.Descriptor instead.
+func (VeoHyperParameters_AdapterSize) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1beta1_tuning_job_proto_rawDescGZIP(), []int{14, 2}
+}
+
 // Represents a TuningJob that runs with Google owned models.
 type TuningJob struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -229,6 +344,7 @@ type TuningJob struct {
 	//	*TuningJob_DistillationSpec
 	//	*TuningJob_PartnerModelTuningSpec
 	//	*TuningJob_VeoTuningSpec
+	//	*TuningJob_VeoLoraTuningSpec
 	TuningSpec isTuningJob_TuningSpec `protobuf_oneof:"tuning_spec"`
 	// Output only. Identifier. Resource name of a TuningJob. Format:
 	// `projects/{project}/locations/{location}/tuningJobs/{tuning_job}`
@@ -411,6 +527,15 @@ func (x *TuningJob) GetVeoTuningSpec() *VeoTuningSpec {
 	return nil
 }
 
+func (x *TuningJob) GetVeoLoraTuningSpec() *VeoLoraTuningSpec {
+	if x != nil {
+		if x, ok := x.TuningSpec.(*TuningJob_VeoLoraTuningSpec); ok {
+			return x.VeoLoraTuningSpec
+		}
+	}
+	return nil
+}
+
 func (x *TuningJob) GetName() string {
 	if x != nil {
 		return x.Name
@@ -587,6 +712,11 @@ type TuningJob_VeoTuningSpec struct {
 	VeoTuningSpec *VeoTuningSpec `protobuf:"bytes,33,opt,name=veo_tuning_spec,json=veoTuningSpec,proto3,oneof"`
 }
 
+type TuningJob_VeoLoraTuningSpec struct {
+	// Tuning Spec for Veo LoRA Tuning.
+	VeoLoraTuningSpec *VeoLoraTuningSpec `protobuf:"bytes,38,opt,name=veo_lora_tuning_spec,json=veoLoraTuningSpec,proto3,oneof"`
+}
+
 func (*TuningJob_SupervisedTuningSpec) isTuningJob_TuningSpec() {}
 
 func (*TuningJob_DistillationSpec) isTuningJob_TuningSpec() {}
@@ -594,6 +724,8 @@ func (*TuningJob_DistillationSpec) isTuningJob_TuningSpec() {}
 func (*TuningJob_PartnerModelTuningSpec) isTuningJob_TuningSpec() {}
 
 func (*TuningJob_VeoTuningSpec) isTuningJob_TuningSpec() {}
+
+func (*TuningJob_VeoLoraTuningSpec) isTuningJob_TuningSpec() {}
 
 // The Model Registry Model and Online Prediction Endpoint associated with
 // this [TuningJob][google.cloud.aiplatform.v1.TuningJob].
@@ -1862,7 +1994,16 @@ type VeoHyperParameters struct {
 	// Optional. Multiplier for adjusting the default learning rate.
 	LearningRateMultiplier float64 `protobuf:"fixed64,2,opt,name=learning_rate_multiplier,json=learningRateMultiplier,proto3" json:"learning_rate_multiplier,omitempty"`
 	// Optional. The tuning task. Either I2V or T2V.
-	TuningTask    VeoHyperParameters_TuningTask `protobuf:"varint,3,opt,name=tuning_task,json=tuningTask,proto3,enum=google.cloud.aiplatform.v1beta1.VeoHyperParameters_TuningTask" json:"tuning_task,omitempty"`
+	TuningTask VeoHyperParameters_TuningTask `protobuf:"varint,3,opt,name=tuning_task,json=tuningTask,proto3,enum=google.cloud.aiplatform.v1beta1.VeoHyperParameters_TuningTask" json:"tuning_task,omitempty"`
+	// Optional. The ratio of Google internal dataset to use in the training
+	// mixture, in range of `[0, 1)`. If `0.2`, it means 20% of Google internal
+	// dataset and 80% of user dataset will be used for training. If not set, the
+	// default value is 0.1.
+	VeoDataMixtureRatio *float64 `protobuf:"fixed64,4,opt,name=veo_data_mixture_ratio,json=veoDataMixtureRatio,proto3,oneof" json:"veo_data_mixture_ratio,omitempty"`
+	// The speed of the tuning job. Only supported for Veo 3.0 models.
+	TuningSpeed *VeoHyperParameters_TuningSpeed `protobuf:"varint,5,opt,name=tuning_speed,json=tuningSpeed,proto3,enum=google.cloud.aiplatform.v1beta1.VeoHyperParameters_TuningSpeed,oneof" json:"tuning_speed,omitempty"`
+	// Optional. The adapter size for LoRA tuning.
+	AdapterSize   VeoHyperParameters_AdapterSize `protobuf:"varint,6,opt,name=adapter_size,json=adapterSize,proto3,enum=google.cloud.aiplatform.v1beta1.VeoHyperParameters_AdapterSize" json:"adapter_size,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1916,6 +2057,27 @@ func (x *VeoHyperParameters) GetTuningTask() VeoHyperParameters_TuningTask {
 		return x.TuningTask
 	}
 	return VeoHyperParameters_TUNING_TASK_UNSPECIFIED
+}
+
+func (x *VeoHyperParameters) GetVeoDataMixtureRatio() float64 {
+	if x != nil && x.VeoDataMixtureRatio != nil {
+		return *x.VeoDataMixtureRatio
+	}
+	return 0
+}
+
+func (x *VeoHyperParameters) GetTuningSpeed() VeoHyperParameters_TuningSpeed {
+	if x != nil && x.TuningSpeed != nil {
+		return *x.TuningSpeed
+	}
+	return VeoHyperParameters_TUNING_SPEED_UNSPECIFIED
+}
+
+func (x *VeoHyperParameters) GetAdapterSize() VeoHyperParameters_AdapterSize {
+	if x != nil {
+		return x.AdapterSize
+	}
+	return VeoHyperParameters_ADAPTER_SIZE_UNSPECIFIED
 }
 
 // Tuning Spec for Veo Model Tuning.
@@ -1986,6 +2148,74 @@ func (x *VeoTuningSpec) GetHyperParameters() *VeoHyperParameters {
 	return nil
 }
 
+// Tuning Spec for Veo LoRA Model Tuning.
+type VeoLoraTuningSpec struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Training dataset used for tuning. The dataset can be specified as
+	// either a Cloud Storage path to a JSONL file or as the resource name of a
+	// Vertex Multimodal Dataset.
+	TrainingDatasetUri string `protobuf:"bytes,1,opt,name=training_dataset_uri,json=trainingDatasetUri,proto3" json:"training_dataset_uri,omitempty"`
+	// Optional. Validation dataset used for tuning. The dataset can be specified
+	// as either a Cloud Storage path to a JSONL file or as the resource name of a
+	// Vertex Multimodal Dataset.
+	ValidationDatasetUri string `protobuf:"bytes,2,opt,name=validation_dataset_uri,json=validationDatasetUri,proto3" json:"validation_dataset_uri,omitempty"`
+	// Optional. Hyperparameters for Veo LoRA.
+	HyperParameters *VeoHyperParameters `protobuf:"bytes,3,opt,name=hyper_parameters,json=hyperParameters,proto3" json:"hyper_parameters,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *VeoLoraTuningSpec) Reset() {
+	*x = VeoLoraTuningSpec{}
+	mi := &file_google_cloud_aiplatform_v1beta1_tuning_job_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *VeoLoraTuningSpec) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*VeoLoraTuningSpec) ProtoMessage() {}
+
+func (x *VeoLoraTuningSpec) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1beta1_tuning_job_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use VeoLoraTuningSpec.ProtoReflect.Descriptor instead.
+func (*VeoLoraTuningSpec) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1beta1_tuning_job_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *VeoLoraTuningSpec) GetTrainingDatasetUri() string {
+	if x != nil {
+		return x.TrainingDatasetUri
+	}
+	return ""
+}
+
+func (x *VeoLoraTuningSpec) GetValidationDatasetUri() string {
+	if x != nil {
+		return x.ValidationDatasetUri
+	}
+	return ""
+}
+
+func (x *VeoLoraTuningSpec) GetHyperParameters() *VeoHyperParameters {
+	if x != nil {
+		return x.HyperParameters
+	}
+	return nil
+}
+
 // Evaluation Config for Tuning Job.
 type EvaluationConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -2004,7 +2234,7 @@ type EvaluationConfig struct {
 
 func (x *EvaluationConfig) Reset() {
 	*x = EvaluationConfig{}
-	mi := &file_google_cloud_aiplatform_v1beta1_tuning_job_proto_msgTypes[16]
+	mi := &file_google_cloud_aiplatform_v1beta1_tuning_job_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2016,7 +2246,7 @@ func (x *EvaluationConfig) String() string {
 func (*EvaluationConfig) ProtoMessage() {}
 
 func (x *EvaluationConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1beta1_tuning_job_proto_msgTypes[16]
+	mi := &file_google_cloud_aiplatform_v1beta1_tuning_job_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2029,7 +2259,7 @@ func (x *EvaluationConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EvaluationConfig.ProtoReflect.Descriptor instead.
 func (*EvaluationConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1beta1_tuning_job_proto_rawDescGZIP(), []int{16}
+	return file_google_cloud_aiplatform_v1beta1_tuning_job_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *EvaluationConfig) GetMetrics() []*Metric {
@@ -2082,7 +2312,7 @@ type EvaluateDatasetRun struct {
 
 func (x *EvaluateDatasetRun) Reset() {
 	*x = EvaluateDatasetRun{}
-	mi := &file_google_cloud_aiplatform_v1beta1_tuning_job_proto_msgTypes[17]
+	mi := &file_google_cloud_aiplatform_v1beta1_tuning_job_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2094,7 +2324,7 @@ func (x *EvaluateDatasetRun) String() string {
 func (*EvaluateDatasetRun) ProtoMessage() {}
 
 func (x *EvaluateDatasetRun) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1beta1_tuning_job_proto_msgTypes[17]
+	mi := &file_google_cloud_aiplatform_v1beta1_tuning_job_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2107,7 +2337,7 @@ func (x *EvaluateDatasetRun) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EvaluateDatasetRun.ProtoReflect.Descriptor instead.
 func (*EvaluateDatasetRun) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1beta1_tuning_job_proto_rawDescGZIP(), []int{17}
+	return file_google_cloud_aiplatform_v1beta1_tuning_job_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *EvaluateDatasetRun) GetOperationName() string {
@@ -2163,7 +2393,7 @@ type TunedModelCheckpoint struct {
 
 func (x *TunedModelCheckpoint) Reset() {
 	*x = TunedModelCheckpoint{}
-	mi := &file_google_cloud_aiplatform_v1beta1_tuning_job_proto_msgTypes[18]
+	mi := &file_google_cloud_aiplatform_v1beta1_tuning_job_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2175,7 +2405,7 @@ func (x *TunedModelCheckpoint) String() string {
 func (*TunedModelCheckpoint) ProtoMessage() {}
 
 func (x *TunedModelCheckpoint) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1beta1_tuning_job_proto_msgTypes[18]
+	mi := &file_google_cloud_aiplatform_v1beta1_tuning_job_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2188,7 +2418,7 @@ func (x *TunedModelCheckpoint) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TunedModelCheckpoint.ProtoReflect.Descriptor instead.
 func (*TunedModelCheckpoint) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1beta1_tuning_job_proto_rawDescGZIP(), []int{18}
+	return file_google_cloud_aiplatform_v1beta1_tuning_job_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *TunedModelCheckpoint) GetCheckpointId() string {
@@ -2246,7 +2476,7 @@ type PreTunedModel struct {
 
 func (x *PreTunedModel) Reset() {
 	*x = PreTunedModel{}
-	mi := &file_google_cloud_aiplatform_v1beta1_tuning_job_proto_msgTypes[19]
+	mi := &file_google_cloud_aiplatform_v1beta1_tuning_job_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2258,7 +2488,7 @@ func (x *PreTunedModel) String() string {
 func (*PreTunedModel) ProtoMessage() {}
 
 func (x *PreTunedModel) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1beta1_tuning_job_proto_msgTypes[19]
+	mi := &file_google_cloud_aiplatform_v1beta1_tuning_job_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2271,7 +2501,7 @@ func (x *PreTunedModel) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PreTunedModel.ProtoReflect.Descriptor instead.
 func (*PreTunedModel) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1beta1_tuning_job_proto_rawDescGZIP(), []int{19}
+	return file_google_cloud_aiplatform_v1beta1_tuning_job_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *PreTunedModel) GetTunedModelName() string {
@@ -2311,7 +2541,7 @@ type SupervisedTuningDatasetDistribution_DatasetBucket struct {
 
 func (x *SupervisedTuningDatasetDistribution_DatasetBucket) Reset() {
 	*x = SupervisedTuningDatasetDistribution_DatasetBucket{}
-	mi := &file_google_cloud_aiplatform_v1beta1_tuning_job_proto_msgTypes[21]
+	mi := &file_google_cloud_aiplatform_v1beta1_tuning_job_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2323,7 +2553,7 @@ func (x *SupervisedTuningDatasetDistribution_DatasetBucket) String() string {
 func (*SupervisedTuningDatasetDistribution_DatasetBucket) ProtoMessage() {}
 
 func (x *SupervisedTuningDatasetDistribution_DatasetBucket) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1beta1_tuning_job_proto_msgTypes[21]
+	mi := &file_google_cloud_aiplatform_v1beta1_tuning_job_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2376,7 +2606,7 @@ type DatasetDistribution_DistributionBucket struct {
 
 func (x *DatasetDistribution_DistributionBucket) Reset() {
 	*x = DatasetDistribution_DistributionBucket{}
-	mi := &file_google_cloud_aiplatform_v1beta1_tuning_job_proto_msgTypes[22]
+	mi := &file_google_cloud_aiplatform_v1beta1_tuning_job_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2388,7 +2618,7 @@ func (x *DatasetDistribution_DistributionBucket) String() string {
 func (*DatasetDistribution_DistributionBucket) ProtoMessage() {}
 
 func (x *DatasetDistribution_DistributionBucket) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1beta1_tuning_job_proto_msgTypes[22]
+	mi := &file_google_cloud_aiplatform_v1beta1_tuning_job_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2429,7 +2659,7 @@ var File_google_cloud_aiplatform_v1beta1_tuning_job_proto protoreflect.FileDescr
 
 const file_google_cloud_aiplatform_v1beta1_tuning_job_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/aiplatform/v1beta1/tuning_job.proto\x12\x1fgoogle.cloud.aiplatform.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/aiplatform/v1beta1/content.proto\x1a5google/cloud/aiplatform/v1beta1/encryption_spec.proto\x1a8google/cloud/aiplatform/v1beta1/evaluation_service.proto\x1a/google/cloud/aiplatform/v1beta1/job_state.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xe8\x0f\n" +
+	"0google/cloud/aiplatform/v1beta1/tuning_job.proto\x12\x1fgoogle.cloud.aiplatform.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/aiplatform/v1beta1/content.proto\x1a5google/cloud/aiplatform/v1beta1/encryption_spec.proto\x1a8google/cloud/aiplatform/v1beta1/evaluation_service.proto\x1a/google/cloud/aiplatform/v1beta1/job_state.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xcf\x10\n" +
 	"\tTuningJob\x12\x1f\n" +
 	"\n" +
 	"base_model\x18\x04 \x01(\tH\x00R\tbaseModel\x12X\n" +
@@ -2437,7 +2667,8 @@ const file_google_cloud_aiplatform_v1beta1_tuning_job_proto_rawDesc = "" +
 	"\x16supervised_tuning_spec\x18\x05 \x01(\v25.google.cloud.aiplatform.v1beta1.SupervisedTuningSpecH\x01R\x14supervisedTuningSpec\x12`\n" +
 	"\x11distillation_spec\x18\x11 \x01(\v21.google.cloud.aiplatform.v1beta1.DistillationSpecH\x01R\x10distillationSpec\x12t\n" +
 	"\x19partner_model_tuning_spec\x18\x15 \x01(\v27.google.cloud.aiplatform.v1beta1.PartnerModelTuningSpecH\x01R\x16partnerModelTuningSpec\x12X\n" +
-	"\x0fveo_tuning_spec\x18! \x01(\v2..google.cloud.aiplatform.v1beta1.VeoTuningSpecH\x01R\rveoTuningSpec\x12\x1a\n" +
+	"\x0fveo_tuning_spec\x18! \x01(\v2..google.cloud.aiplatform.v1beta1.VeoTuningSpecH\x01R\rveoTuningSpec\x12e\n" +
+	"\x14veo_lora_tuning_spec\x18& \x01(\v22.google.cloud.aiplatform.v1beta1.VeoLoraTuningSpecH\x01R\x11veoLoraTuningSpec\x12\x1a\n" +
 	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x03R\x04name\x12<\n" +
 	"\x18tuned_model_display_name\x18\x02 \x01(\tB\x03\xe0A\x01R\x15tunedModelDisplayName\x12%\n" +
 	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12/\n" +
@@ -2601,19 +2832,38 @@ const file_google_cloud_aiplatform_v1beta1_tuning_job_proto_rawDesc = "" +
 	"#aiplatform.googleapis.com/TuningJobH\x00R\ttuningJob\x12O\n" +
 	"\fpipeline_job\x18\x03 \x01(\tB*\xfaA'\n" +
 	"%aiplatform.googleapis.com/PipelineJobH\x00R\vpipelineJobB\x11\n" +
-	"\x0ftuned_model_ref\"\xb4\x02\n" +
+	"\x0ftuned_model_ref\"\xc6\x06\n" +
 	"\x12VeoHyperParameters\x12$\n" +
 	"\vepoch_count\x18\x01 \x01(\x03B\x03\xe0A\x01R\n" +
 	"epochCount\x12=\n" +
 	"\x18learning_rate_multiplier\x18\x02 \x01(\x01B\x03\xe0A\x01R\x16learningRateMultiplier\x12d\n" +
 	"\vtuning_task\x18\x03 \x01(\x0e2>.google.cloud.aiplatform.v1beta1.VeoHyperParameters.TuningTaskB\x03\xe0A\x01R\n" +
-	"tuningTask\"S\n" +
+	"tuningTask\x12=\n" +
+	"\x16veo_data_mixture_ratio\x18\x04 \x01(\x01B\x03\xe0A\x01H\x00R\x13veoDataMixtureRatio\x88\x01\x01\x12g\n" +
+	"\ftuning_speed\x18\x05 \x01(\x0e2?.google.cloud.aiplatform.v1beta1.VeoHyperParameters.TuningSpeedH\x01R\vtuningSpeed\x88\x01\x01\x12g\n" +
+	"\fadapter_size\x18\x06 \x01(\x0e2?.google.cloud.aiplatform.v1beta1.VeoHyperParameters.AdapterSizeB\x03\xe0A\x01R\vadapterSize\"h\n" +
 	"\n" +
 	"TuningTask\x12\x1b\n" +
 	"\x17TUNING_TASK_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fTUNING_TASK_I2V\x10\x01\x12\x13\n" +
-	"\x0fTUNING_TASK_T2V\x10\x02\"\xe6\x01\n" +
+	"\x0fTUNING_TASK_T2V\x10\x02\x12\x13\n" +
+	"\x0fTUNING_TASK_R2V\x10\x03\"B\n" +
+	"\vTuningSpeed\x12\x1c\n" +
+	"\x18TUNING_SPEED_UNSPECIFIED\x10\x00\x12\v\n" +
+	"\aREGULAR\x10\x01\x12\b\n" +
+	"\x04FAST\x10\x02\"z\n" +
+	"\vAdapterSize\x12\x1c\n" +
+	"\x18ADAPTER_SIZE_UNSPECIFIED\x10\x00\x12\x16\n" +
+	"\x12ADAPTER_SIZE_EIGHT\x10\b\x12\x18\n" +
+	"\x14ADAPTER_SIZE_SIXTEEN\x10\x10\x12\x1b\n" +
+	"\x17ADAPTER_SIZE_THIRTY_TWO\x10 B\x19\n" +
+	"\x17_veo_data_mixture_ratioB\x0f\n" +
+	"\r_tuning_speed\"\xe6\x01\n" +
 	"\rVeoTuningSpec\x125\n" +
+	"\x14training_dataset_uri\x18\x01 \x01(\tB\x03\xe0A\x02R\x12trainingDatasetUri\x129\n" +
+	"\x16validation_dataset_uri\x18\x02 \x01(\tB\x03\xe0A\x01R\x14validationDatasetUri\x12c\n" +
+	"\x10hyper_parameters\x18\x03 \x01(\v23.google.cloud.aiplatform.v1beta1.VeoHyperParametersB\x03\xe0A\x01R\x0fhyperParameters\"\xea\x01\n" +
+	"\x11VeoLoraTuningSpec\x125\n" +
 	"\x14training_dataset_uri\x18\x01 \x01(\tB\x03\xe0A\x02R\x12trainingDatasetUri\x129\n" +
 	"\x16validation_dataset_uri\x18\x02 \x01(\tB\x03\xe0A\x01R\x14validationDatasetUri\x12c\n" +
 	"\x10hyper_parameters\x18\x03 \x01(\v23.google.cloud.aiplatform.v1beta1.VeoHyperParametersB\x03\xe0A\x01R\x0fhyperParameters\"\x8d\x03\n" +
@@ -2653,100 +2903,107 @@ func file_google_cloud_aiplatform_v1beta1_tuning_job_proto_rawDescGZIP() []byte 
 	return file_google_cloud_aiplatform_v1beta1_tuning_job_proto_rawDescData
 }
 
-var file_google_cloud_aiplatform_v1beta1_tuning_job_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_google_cloud_aiplatform_v1beta1_tuning_job_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
+var file_google_cloud_aiplatform_v1beta1_tuning_job_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
+var file_google_cloud_aiplatform_v1beta1_tuning_job_proto_msgTypes = make([]protoimpl.MessageInfo, 25)
 var file_google_cloud_aiplatform_v1beta1_tuning_job_proto_goTypes = []any{
 	(SupervisedHyperParameters_AdapterSize)(0),                // 0: google.cloud.aiplatform.v1beta1.SupervisedHyperParameters.AdapterSize
 	(SupervisedTuningSpec_TuningMode)(0),                      // 1: google.cloud.aiplatform.v1beta1.SupervisedTuningSpec.TuningMode
 	(VeoHyperParameters_TuningTask)(0),                        // 2: google.cloud.aiplatform.v1beta1.VeoHyperParameters.TuningTask
-	(*TuningJob)(nil),                                         // 3: google.cloud.aiplatform.v1beta1.TuningJob
-	(*TunedModel)(nil),                                        // 4: google.cloud.aiplatform.v1beta1.TunedModel
-	(*SupervisedTuningDatasetDistribution)(nil),               // 5: google.cloud.aiplatform.v1beta1.SupervisedTuningDatasetDistribution
-	(*SupervisedTuningDataStats)(nil),                         // 6: google.cloud.aiplatform.v1beta1.SupervisedTuningDataStats
-	(*DatasetDistribution)(nil),                               // 7: google.cloud.aiplatform.v1beta1.DatasetDistribution
-	(*DatasetStats)(nil),                                      // 8: google.cloud.aiplatform.v1beta1.DatasetStats
-	(*DistillationDataStats)(nil),                             // 9: google.cloud.aiplatform.v1beta1.DistillationDataStats
-	(*TuningDataStats)(nil),                                   // 10: google.cloud.aiplatform.v1beta1.TuningDataStats
-	(*SupervisedHyperParameters)(nil),                         // 11: google.cloud.aiplatform.v1beta1.SupervisedHyperParameters
-	(*SupervisedTuningSpec)(nil),                              // 12: google.cloud.aiplatform.v1beta1.SupervisedTuningSpec
-	(*DistillationSpec)(nil),                                  // 13: google.cloud.aiplatform.v1beta1.DistillationSpec
-	(*DistillationHyperParameters)(nil),                       // 14: google.cloud.aiplatform.v1beta1.DistillationHyperParameters
-	(*PartnerModelTuningSpec)(nil),                            // 15: google.cloud.aiplatform.v1beta1.PartnerModelTuningSpec
-	(*TunedModelRef)(nil),                                     // 16: google.cloud.aiplatform.v1beta1.TunedModelRef
-	(*VeoHyperParameters)(nil),                                // 17: google.cloud.aiplatform.v1beta1.VeoHyperParameters
-	(*VeoTuningSpec)(nil),                                     // 18: google.cloud.aiplatform.v1beta1.VeoTuningSpec
-	(*EvaluationConfig)(nil),                                  // 19: google.cloud.aiplatform.v1beta1.EvaluationConfig
-	(*EvaluateDatasetRun)(nil),                                // 20: google.cloud.aiplatform.v1beta1.EvaluateDatasetRun
-	(*TunedModelCheckpoint)(nil),                              // 21: google.cloud.aiplatform.v1beta1.TunedModelCheckpoint
-	(*PreTunedModel)(nil),                                     // 22: google.cloud.aiplatform.v1beta1.PreTunedModel
-	nil,                                                       // 23: google.cloud.aiplatform.v1beta1.TuningJob.LabelsEntry
-	(*SupervisedTuningDatasetDistribution_DatasetBucket)(nil), // 24: google.cloud.aiplatform.v1beta1.SupervisedTuningDatasetDistribution.DatasetBucket
-	(*DatasetDistribution_DistributionBucket)(nil),            // 25: google.cloud.aiplatform.v1beta1.DatasetDistribution.DistributionBucket
-	nil,                             // 26: google.cloud.aiplatform.v1beta1.PartnerModelTuningSpec.HyperParametersEntry
-	(JobState)(0),                   // 27: google.cloud.aiplatform.v1beta1.JobState
-	(*timestamppb.Timestamp)(nil),   // 28: google.protobuf.Timestamp
-	(*status.Status)(nil),           // 29: google.rpc.Status
-	(*EncryptionSpec)(nil),          // 30: google.cloud.aiplatform.v1beta1.EncryptionSpec
-	(*Content)(nil),                 // 31: google.cloud.aiplatform.v1beta1.Content
-	(*Metric)(nil),                  // 32: google.cloud.aiplatform.v1beta1.Metric
-	(*OutputConfig)(nil),            // 33: google.cloud.aiplatform.v1beta1.OutputConfig
-	(*AutoraterConfig)(nil),         // 34: google.cloud.aiplatform.v1beta1.AutoraterConfig
-	(*GenerationConfig)(nil),        // 35: google.cloud.aiplatform.v1beta1.GenerationConfig
-	(*EvaluateDatasetResponse)(nil), // 36: google.cloud.aiplatform.v1beta1.EvaluateDatasetResponse
-	(*structpb.Value)(nil),          // 37: google.protobuf.Value
+	(VeoHyperParameters_TuningSpeed)(0),                       // 3: google.cloud.aiplatform.v1beta1.VeoHyperParameters.TuningSpeed
+	(VeoHyperParameters_AdapterSize)(0),                       // 4: google.cloud.aiplatform.v1beta1.VeoHyperParameters.AdapterSize
+	(*TuningJob)(nil),                                         // 5: google.cloud.aiplatform.v1beta1.TuningJob
+	(*TunedModel)(nil),                                        // 6: google.cloud.aiplatform.v1beta1.TunedModel
+	(*SupervisedTuningDatasetDistribution)(nil),               // 7: google.cloud.aiplatform.v1beta1.SupervisedTuningDatasetDistribution
+	(*SupervisedTuningDataStats)(nil),                         // 8: google.cloud.aiplatform.v1beta1.SupervisedTuningDataStats
+	(*DatasetDistribution)(nil),                               // 9: google.cloud.aiplatform.v1beta1.DatasetDistribution
+	(*DatasetStats)(nil),                                      // 10: google.cloud.aiplatform.v1beta1.DatasetStats
+	(*DistillationDataStats)(nil),                             // 11: google.cloud.aiplatform.v1beta1.DistillationDataStats
+	(*TuningDataStats)(nil),                                   // 12: google.cloud.aiplatform.v1beta1.TuningDataStats
+	(*SupervisedHyperParameters)(nil),                         // 13: google.cloud.aiplatform.v1beta1.SupervisedHyperParameters
+	(*SupervisedTuningSpec)(nil),                              // 14: google.cloud.aiplatform.v1beta1.SupervisedTuningSpec
+	(*DistillationSpec)(nil),                                  // 15: google.cloud.aiplatform.v1beta1.DistillationSpec
+	(*DistillationHyperParameters)(nil),                       // 16: google.cloud.aiplatform.v1beta1.DistillationHyperParameters
+	(*PartnerModelTuningSpec)(nil),                            // 17: google.cloud.aiplatform.v1beta1.PartnerModelTuningSpec
+	(*TunedModelRef)(nil),                                     // 18: google.cloud.aiplatform.v1beta1.TunedModelRef
+	(*VeoHyperParameters)(nil),                                // 19: google.cloud.aiplatform.v1beta1.VeoHyperParameters
+	(*VeoTuningSpec)(nil),                                     // 20: google.cloud.aiplatform.v1beta1.VeoTuningSpec
+	(*VeoLoraTuningSpec)(nil),                                 // 21: google.cloud.aiplatform.v1beta1.VeoLoraTuningSpec
+	(*EvaluationConfig)(nil),                                  // 22: google.cloud.aiplatform.v1beta1.EvaluationConfig
+	(*EvaluateDatasetRun)(nil),                                // 23: google.cloud.aiplatform.v1beta1.EvaluateDatasetRun
+	(*TunedModelCheckpoint)(nil),                              // 24: google.cloud.aiplatform.v1beta1.TunedModelCheckpoint
+	(*PreTunedModel)(nil),                                     // 25: google.cloud.aiplatform.v1beta1.PreTunedModel
+	nil,                                                       // 26: google.cloud.aiplatform.v1beta1.TuningJob.LabelsEntry
+	(*SupervisedTuningDatasetDistribution_DatasetBucket)(nil), // 27: google.cloud.aiplatform.v1beta1.SupervisedTuningDatasetDistribution.DatasetBucket
+	(*DatasetDistribution_DistributionBucket)(nil),            // 28: google.cloud.aiplatform.v1beta1.DatasetDistribution.DistributionBucket
+	nil,                             // 29: google.cloud.aiplatform.v1beta1.PartnerModelTuningSpec.HyperParametersEntry
+	(JobState)(0),                   // 30: google.cloud.aiplatform.v1beta1.JobState
+	(*timestamppb.Timestamp)(nil),   // 31: google.protobuf.Timestamp
+	(*status.Status)(nil),           // 32: google.rpc.Status
+	(*EncryptionSpec)(nil),          // 33: google.cloud.aiplatform.v1beta1.EncryptionSpec
+	(*Content)(nil),                 // 34: google.cloud.aiplatform.v1beta1.Content
+	(*Metric)(nil),                  // 35: google.cloud.aiplatform.v1beta1.Metric
+	(*OutputConfig)(nil),            // 36: google.cloud.aiplatform.v1beta1.OutputConfig
+	(*AutoraterConfig)(nil),         // 37: google.cloud.aiplatform.v1beta1.AutoraterConfig
+	(*GenerationConfig)(nil),        // 38: google.cloud.aiplatform.v1beta1.GenerationConfig
+	(*EvaluateDatasetResponse)(nil), // 39: google.cloud.aiplatform.v1beta1.EvaluateDatasetResponse
+	(*structpb.Value)(nil),          // 40: google.protobuf.Value
 }
 var file_google_cloud_aiplatform_v1beta1_tuning_job_proto_depIdxs = []int32{
-	22, // 0: google.cloud.aiplatform.v1beta1.TuningJob.pre_tuned_model:type_name -> google.cloud.aiplatform.v1beta1.PreTunedModel
-	12, // 1: google.cloud.aiplatform.v1beta1.TuningJob.supervised_tuning_spec:type_name -> google.cloud.aiplatform.v1beta1.SupervisedTuningSpec
-	13, // 2: google.cloud.aiplatform.v1beta1.TuningJob.distillation_spec:type_name -> google.cloud.aiplatform.v1beta1.DistillationSpec
-	15, // 3: google.cloud.aiplatform.v1beta1.TuningJob.partner_model_tuning_spec:type_name -> google.cloud.aiplatform.v1beta1.PartnerModelTuningSpec
-	18, // 4: google.cloud.aiplatform.v1beta1.TuningJob.veo_tuning_spec:type_name -> google.cloud.aiplatform.v1beta1.VeoTuningSpec
-	27, // 5: google.cloud.aiplatform.v1beta1.TuningJob.state:type_name -> google.cloud.aiplatform.v1beta1.JobState
-	28, // 6: google.cloud.aiplatform.v1beta1.TuningJob.create_time:type_name -> google.protobuf.Timestamp
-	28, // 7: google.cloud.aiplatform.v1beta1.TuningJob.start_time:type_name -> google.protobuf.Timestamp
-	28, // 8: google.cloud.aiplatform.v1beta1.TuningJob.end_time:type_name -> google.protobuf.Timestamp
-	28, // 9: google.cloud.aiplatform.v1beta1.TuningJob.update_time:type_name -> google.protobuf.Timestamp
-	29, // 10: google.cloud.aiplatform.v1beta1.TuningJob.error:type_name -> google.rpc.Status
-	23, // 11: google.cloud.aiplatform.v1beta1.TuningJob.labels:type_name -> google.cloud.aiplatform.v1beta1.TuningJob.LabelsEntry
-	4,  // 12: google.cloud.aiplatform.v1beta1.TuningJob.tuned_model:type_name -> google.cloud.aiplatform.v1beta1.TunedModel
-	10, // 13: google.cloud.aiplatform.v1beta1.TuningJob.tuning_data_stats:type_name -> google.cloud.aiplatform.v1beta1.TuningDataStats
-	30, // 14: google.cloud.aiplatform.v1beta1.TuningJob.encryption_spec:type_name -> google.cloud.aiplatform.v1beta1.EncryptionSpec
-	20, // 15: google.cloud.aiplatform.v1beta1.TuningJob.evaluate_dataset_runs:type_name -> google.cloud.aiplatform.v1beta1.EvaluateDatasetRun
-	21, // 16: google.cloud.aiplatform.v1beta1.TunedModel.checkpoints:type_name -> google.cloud.aiplatform.v1beta1.TunedModelCheckpoint
-	24, // 17: google.cloud.aiplatform.v1beta1.SupervisedTuningDatasetDistribution.buckets:type_name -> google.cloud.aiplatform.v1beta1.SupervisedTuningDatasetDistribution.DatasetBucket
-	5,  // 18: google.cloud.aiplatform.v1beta1.SupervisedTuningDataStats.user_input_token_distribution:type_name -> google.cloud.aiplatform.v1beta1.SupervisedTuningDatasetDistribution
-	5,  // 19: google.cloud.aiplatform.v1beta1.SupervisedTuningDataStats.user_output_token_distribution:type_name -> google.cloud.aiplatform.v1beta1.SupervisedTuningDatasetDistribution
-	5,  // 20: google.cloud.aiplatform.v1beta1.SupervisedTuningDataStats.user_message_per_example_distribution:type_name -> google.cloud.aiplatform.v1beta1.SupervisedTuningDatasetDistribution
-	31, // 21: google.cloud.aiplatform.v1beta1.SupervisedTuningDataStats.user_dataset_examples:type_name -> google.cloud.aiplatform.v1beta1.Content
-	25, // 22: google.cloud.aiplatform.v1beta1.DatasetDistribution.buckets:type_name -> google.cloud.aiplatform.v1beta1.DatasetDistribution.DistributionBucket
-	7,  // 23: google.cloud.aiplatform.v1beta1.DatasetStats.user_input_token_distribution:type_name -> google.cloud.aiplatform.v1beta1.DatasetDistribution
-	7,  // 24: google.cloud.aiplatform.v1beta1.DatasetStats.user_output_token_distribution:type_name -> google.cloud.aiplatform.v1beta1.DatasetDistribution
-	7,  // 25: google.cloud.aiplatform.v1beta1.DatasetStats.user_message_per_example_distribution:type_name -> google.cloud.aiplatform.v1beta1.DatasetDistribution
-	31, // 26: google.cloud.aiplatform.v1beta1.DatasetStats.user_dataset_examples:type_name -> google.cloud.aiplatform.v1beta1.Content
-	8,  // 27: google.cloud.aiplatform.v1beta1.DistillationDataStats.training_dataset_stats:type_name -> google.cloud.aiplatform.v1beta1.DatasetStats
-	6,  // 28: google.cloud.aiplatform.v1beta1.TuningDataStats.supervised_tuning_data_stats:type_name -> google.cloud.aiplatform.v1beta1.SupervisedTuningDataStats
-	9,  // 29: google.cloud.aiplatform.v1beta1.TuningDataStats.distillation_data_stats:type_name -> google.cloud.aiplatform.v1beta1.DistillationDataStats
-	0,  // 30: google.cloud.aiplatform.v1beta1.SupervisedHyperParameters.adapter_size:type_name -> google.cloud.aiplatform.v1beta1.SupervisedHyperParameters.AdapterSize
-	11, // 31: google.cloud.aiplatform.v1beta1.SupervisedTuningSpec.hyper_parameters:type_name -> google.cloud.aiplatform.v1beta1.SupervisedHyperParameters
-	19, // 32: google.cloud.aiplatform.v1beta1.SupervisedTuningSpec.evaluation_config:type_name -> google.cloud.aiplatform.v1beta1.EvaluationConfig
-	1,  // 33: google.cloud.aiplatform.v1beta1.SupervisedTuningSpec.tuning_mode:type_name -> google.cloud.aiplatform.v1beta1.SupervisedTuningSpec.TuningMode
-	14, // 34: google.cloud.aiplatform.v1beta1.DistillationSpec.hyper_parameters:type_name -> google.cloud.aiplatform.v1beta1.DistillationHyperParameters
-	0,  // 35: google.cloud.aiplatform.v1beta1.DistillationHyperParameters.adapter_size:type_name -> google.cloud.aiplatform.v1beta1.SupervisedHyperParameters.AdapterSize
-	26, // 36: google.cloud.aiplatform.v1beta1.PartnerModelTuningSpec.hyper_parameters:type_name -> google.cloud.aiplatform.v1beta1.PartnerModelTuningSpec.HyperParametersEntry
-	2,  // 37: google.cloud.aiplatform.v1beta1.VeoHyperParameters.tuning_task:type_name -> google.cloud.aiplatform.v1beta1.VeoHyperParameters.TuningTask
-	17, // 38: google.cloud.aiplatform.v1beta1.VeoTuningSpec.hyper_parameters:type_name -> google.cloud.aiplatform.v1beta1.VeoHyperParameters
-	32, // 39: google.cloud.aiplatform.v1beta1.EvaluationConfig.metrics:type_name -> google.cloud.aiplatform.v1beta1.Metric
-	33, // 40: google.cloud.aiplatform.v1beta1.EvaluationConfig.output_config:type_name -> google.cloud.aiplatform.v1beta1.OutputConfig
-	34, // 41: google.cloud.aiplatform.v1beta1.EvaluationConfig.autorater_config:type_name -> google.cloud.aiplatform.v1beta1.AutoraterConfig
-	35, // 42: google.cloud.aiplatform.v1beta1.EvaluationConfig.inference_generation_config:type_name -> google.cloud.aiplatform.v1beta1.GenerationConfig
-	36, // 43: google.cloud.aiplatform.v1beta1.EvaluateDatasetRun.evaluate_dataset_response:type_name -> google.cloud.aiplatform.v1beta1.EvaluateDatasetResponse
-	29, // 44: google.cloud.aiplatform.v1beta1.EvaluateDatasetRun.error:type_name -> google.rpc.Status
-	37, // 45: google.cloud.aiplatform.v1beta1.PartnerModelTuningSpec.HyperParametersEntry.value:type_name -> google.protobuf.Value
-	46, // [46:46] is the sub-list for method output_type
-	46, // [46:46] is the sub-list for method input_type
-	46, // [46:46] is the sub-list for extension type_name
-	46, // [46:46] is the sub-list for extension extendee
-	0,  // [0:46] is the sub-list for field type_name
+	25, // 0: google.cloud.aiplatform.v1beta1.TuningJob.pre_tuned_model:type_name -> google.cloud.aiplatform.v1beta1.PreTunedModel
+	14, // 1: google.cloud.aiplatform.v1beta1.TuningJob.supervised_tuning_spec:type_name -> google.cloud.aiplatform.v1beta1.SupervisedTuningSpec
+	15, // 2: google.cloud.aiplatform.v1beta1.TuningJob.distillation_spec:type_name -> google.cloud.aiplatform.v1beta1.DistillationSpec
+	17, // 3: google.cloud.aiplatform.v1beta1.TuningJob.partner_model_tuning_spec:type_name -> google.cloud.aiplatform.v1beta1.PartnerModelTuningSpec
+	20, // 4: google.cloud.aiplatform.v1beta1.TuningJob.veo_tuning_spec:type_name -> google.cloud.aiplatform.v1beta1.VeoTuningSpec
+	21, // 5: google.cloud.aiplatform.v1beta1.TuningJob.veo_lora_tuning_spec:type_name -> google.cloud.aiplatform.v1beta1.VeoLoraTuningSpec
+	30, // 6: google.cloud.aiplatform.v1beta1.TuningJob.state:type_name -> google.cloud.aiplatform.v1beta1.JobState
+	31, // 7: google.cloud.aiplatform.v1beta1.TuningJob.create_time:type_name -> google.protobuf.Timestamp
+	31, // 8: google.cloud.aiplatform.v1beta1.TuningJob.start_time:type_name -> google.protobuf.Timestamp
+	31, // 9: google.cloud.aiplatform.v1beta1.TuningJob.end_time:type_name -> google.protobuf.Timestamp
+	31, // 10: google.cloud.aiplatform.v1beta1.TuningJob.update_time:type_name -> google.protobuf.Timestamp
+	32, // 11: google.cloud.aiplatform.v1beta1.TuningJob.error:type_name -> google.rpc.Status
+	26, // 12: google.cloud.aiplatform.v1beta1.TuningJob.labels:type_name -> google.cloud.aiplatform.v1beta1.TuningJob.LabelsEntry
+	6,  // 13: google.cloud.aiplatform.v1beta1.TuningJob.tuned_model:type_name -> google.cloud.aiplatform.v1beta1.TunedModel
+	12, // 14: google.cloud.aiplatform.v1beta1.TuningJob.tuning_data_stats:type_name -> google.cloud.aiplatform.v1beta1.TuningDataStats
+	33, // 15: google.cloud.aiplatform.v1beta1.TuningJob.encryption_spec:type_name -> google.cloud.aiplatform.v1beta1.EncryptionSpec
+	23, // 16: google.cloud.aiplatform.v1beta1.TuningJob.evaluate_dataset_runs:type_name -> google.cloud.aiplatform.v1beta1.EvaluateDatasetRun
+	24, // 17: google.cloud.aiplatform.v1beta1.TunedModel.checkpoints:type_name -> google.cloud.aiplatform.v1beta1.TunedModelCheckpoint
+	27, // 18: google.cloud.aiplatform.v1beta1.SupervisedTuningDatasetDistribution.buckets:type_name -> google.cloud.aiplatform.v1beta1.SupervisedTuningDatasetDistribution.DatasetBucket
+	7,  // 19: google.cloud.aiplatform.v1beta1.SupervisedTuningDataStats.user_input_token_distribution:type_name -> google.cloud.aiplatform.v1beta1.SupervisedTuningDatasetDistribution
+	7,  // 20: google.cloud.aiplatform.v1beta1.SupervisedTuningDataStats.user_output_token_distribution:type_name -> google.cloud.aiplatform.v1beta1.SupervisedTuningDatasetDistribution
+	7,  // 21: google.cloud.aiplatform.v1beta1.SupervisedTuningDataStats.user_message_per_example_distribution:type_name -> google.cloud.aiplatform.v1beta1.SupervisedTuningDatasetDistribution
+	34, // 22: google.cloud.aiplatform.v1beta1.SupervisedTuningDataStats.user_dataset_examples:type_name -> google.cloud.aiplatform.v1beta1.Content
+	28, // 23: google.cloud.aiplatform.v1beta1.DatasetDistribution.buckets:type_name -> google.cloud.aiplatform.v1beta1.DatasetDistribution.DistributionBucket
+	9,  // 24: google.cloud.aiplatform.v1beta1.DatasetStats.user_input_token_distribution:type_name -> google.cloud.aiplatform.v1beta1.DatasetDistribution
+	9,  // 25: google.cloud.aiplatform.v1beta1.DatasetStats.user_output_token_distribution:type_name -> google.cloud.aiplatform.v1beta1.DatasetDistribution
+	9,  // 26: google.cloud.aiplatform.v1beta1.DatasetStats.user_message_per_example_distribution:type_name -> google.cloud.aiplatform.v1beta1.DatasetDistribution
+	34, // 27: google.cloud.aiplatform.v1beta1.DatasetStats.user_dataset_examples:type_name -> google.cloud.aiplatform.v1beta1.Content
+	10, // 28: google.cloud.aiplatform.v1beta1.DistillationDataStats.training_dataset_stats:type_name -> google.cloud.aiplatform.v1beta1.DatasetStats
+	8,  // 29: google.cloud.aiplatform.v1beta1.TuningDataStats.supervised_tuning_data_stats:type_name -> google.cloud.aiplatform.v1beta1.SupervisedTuningDataStats
+	11, // 30: google.cloud.aiplatform.v1beta1.TuningDataStats.distillation_data_stats:type_name -> google.cloud.aiplatform.v1beta1.DistillationDataStats
+	0,  // 31: google.cloud.aiplatform.v1beta1.SupervisedHyperParameters.adapter_size:type_name -> google.cloud.aiplatform.v1beta1.SupervisedHyperParameters.AdapterSize
+	13, // 32: google.cloud.aiplatform.v1beta1.SupervisedTuningSpec.hyper_parameters:type_name -> google.cloud.aiplatform.v1beta1.SupervisedHyperParameters
+	22, // 33: google.cloud.aiplatform.v1beta1.SupervisedTuningSpec.evaluation_config:type_name -> google.cloud.aiplatform.v1beta1.EvaluationConfig
+	1,  // 34: google.cloud.aiplatform.v1beta1.SupervisedTuningSpec.tuning_mode:type_name -> google.cloud.aiplatform.v1beta1.SupervisedTuningSpec.TuningMode
+	16, // 35: google.cloud.aiplatform.v1beta1.DistillationSpec.hyper_parameters:type_name -> google.cloud.aiplatform.v1beta1.DistillationHyperParameters
+	0,  // 36: google.cloud.aiplatform.v1beta1.DistillationHyperParameters.adapter_size:type_name -> google.cloud.aiplatform.v1beta1.SupervisedHyperParameters.AdapterSize
+	29, // 37: google.cloud.aiplatform.v1beta1.PartnerModelTuningSpec.hyper_parameters:type_name -> google.cloud.aiplatform.v1beta1.PartnerModelTuningSpec.HyperParametersEntry
+	2,  // 38: google.cloud.aiplatform.v1beta1.VeoHyperParameters.tuning_task:type_name -> google.cloud.aiplatform.v1beta1.VeoHyperParameters.TuningTask
+	3,  // 39: google.cloud.aiplatform.v1beta1.VeoHyperParameters.tuning_speed:type_name -> google.cloud.aiplatform.v1beta1.VeoHyperParameters.TuningSpeed
+	4,  // 40: google.cloud.aiplatform.v1beta1.VeoHyperParameters.adapter_size:type_name -> google.cloud.aiplatform.v1beta1.VeoHyperParameters.AdapterSize
+	19, // 41: google.cloud.aiplatform.v1beta1.VeoTuningSpec.hyper_parameters:type_name -> google.cloud.aiplatform.v1beta1.VeoHyperParameters
+	19, // 42: google.cloud.aiplatform.v1beta1.VeoLoraTuningSpec.hyper_parameters:type_name -> google.cloud.aiplatform.v1beta1.VeoHyperParameters
+	35, // 43: google.cloud.aiplatform.v1beta1.EvaluationConfig.metrics:type_name -> google.cloud.aiplatform.v1beta1.Metric
+	36, // 44: google.cloud.aiplatform.v1beta1.EvaluationConfig.output_config:type_name -> google.cloud.aiplatform.v1beta1.OutputConfig
+	37, // 45: google.cloud.aiplatform.v1beta1.EvaluationConfig.autorater_config:type_name -> google.cloud.aiplatform.v1beta1.AutoraterConfig
+	38, // 46: google.cloud.aiplatform.v1beta1.EvaluationConfig.inference_generation_config:type_name -> google.cloud.aiplatform.v1beta1.GenerationConfig
+	39, // 47: google.cloud.aiplatform.v1beta1.EvaluateDatasetRun.evaluate_dataset_response:type_name -> google.cloud.aiplatform.v1beta1.EvaluateDatasetResponse
+	32, // 48: google.cloud.aiplatform.v1beta1.EvaluateDatasetRun.error:type_name -> google.rpc.Status
+	40, // 49: google.cloud.aiplatform.v1beta1.PartnerModelTuningSpec.HyperParametersEntry.value:type_name -> google.protobuf.Value
+	50, // [50:50] is the sub-list for method output_type
+	50, // [50:50] is the sub-list for method input_type
+	50, // [50:50] is the sub-list for extension type_name
+	50, // [50:50] is the sub-list for extension extendee
+	0,  // [0:50] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_aiplatform_v1beta1_tuning_job_proto_init() }
@@ -2765,6 +3022,7 @@ func file_google_cloud_aiplatform_v1beta1_tuning_job_proto_init() {
 		(*TuningJob_DistillationSpec)(nil),
 		(*TuningJob_PartnerModelTuningSpec)(nil),
 		(*TuningJob_VeoTuningSpec)(nil),
+		(*TuningJob_VeoLoraTuningSpec)(nil),
 	}
 	file_google_cloud_aiplatform_v1beta1_tuning_job_proto_msgTypes[5].OneofWrappers = []any{}
 	file_google_cloud_aiplatform_v1beta1_tuning_job_proto_msgTypes[7].OneofWrappers = []any{
@@ -2781,13 +3039,14 @@ func file_google_cloud_aiplatform_v1beta1_tuning_job_proto_init() {
 		(*TunedModelRef_TuningJob)(nil),
 		(*TunedModelRef_PipelineJob)(nil),
 	}
+	file_google_cloud_aiplatform_v1beta1_tuning_job_proto_msgTypes[14].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_aiplatform_v1beta1_tuning_job_proto_rawDesc), len(file_google_cloud_aiplatform_v1beta1_tuning_job_proto_rawDesc)),
-			NumEnums:      3,
-			NumMessages:   24,
+			NumEnums:      5,
+			NumMessages:   25,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

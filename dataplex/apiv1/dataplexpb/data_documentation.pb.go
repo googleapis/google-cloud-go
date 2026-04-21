@@ -96,6 +96,114 @@ func (DataDocumentationSpec_GenerationScope) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_dataplex_v1_data_documentation_proto_rawDescGZIP(), []int{0, 0}
 }
 
+// Source which generated the schema relation edge.
+type DataDocumentationResult_SchemaRelationship_Source int32
+
+const (
+	// The source of the schema relationship is unspecified.
+	DataDocumentationResult_SchemaRelationship_SOURCE_UNSPECIFIED DataDocumentationResult_SchemaRelationship_Source = 0
+	// The source of the schema relationship is agent.
+	DataDocumentationResult_SchemaRelationship_AGENT DataDocumentationResult_SchemaRelationship_Source = 4
+	// The source of the schema relationship is query history from the source
+	// system.
+	DataDocumentationResult_SchemaRelationship_QUERY_HISTORY DataDocumentationResult_SchemaRelationship_Source = 5
+	// The source of the schema relationship is table constraints added in
+	// the source system.
+	DataDocumentationResult_SchemaRelationship_TABLE_CONSTRAINTS DataDocumentationResult_SchemaRelationship_Source = 6
+)
+
+// Enum value maps for DataDocumentationResult_SchemaRelationship_Source.
+var (
+	DataDocumentationResult_SchemaRelationship_Source_name = map[int32]string{
+		0: "SOURCE_UNSPECIFIED",
+		4: "AGENT",
+		5: "QUERY_HISTORY",
+		6: "TABLE_CONSTRAINTS",
+	}
+	DataDocumentationResult_SchemaRelationship_Source_value = map[string]int32{
+		"SOURCE_UNSPECIFIED": 0,
+		"AGENT":              4,
+		"QUERY_HISTORY":      5,
+		"TABLE_CONSTRAINTS":  6,
+	}
+)
+
+func (x DataDocumentationResult_SchemaRelationship_Source) Enum() *DataDocumentationResult_SchemaRelationship_Source {
+	p := new(DataDocumentationResult_SchemaRelationship_Source)
+	*p = x
+	return p
+}
+
+func (x DataDocumentationResult_SchemaRelationship_Source) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (DataDocumentationResult_SchemaRelationship_Source) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_dataplex_v1_data_documentation_proto_enumTypes[1].Descriptor()
+}
+
+func (DataDocumentationResult_SchemaRelationship_Source) Type() protoreflect.EnumType {
+	return &file_google_cloud_dataplex_v1_data_documentation_proto_enumTypes[1]
+}
+
+func (x DataDocumentationResult_SchemaRelationship_Source) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use DataDocumentationResult_SchemaRelationship_Source.Descriptor instead.
+func (DataDocumentationResult_SchemaRelationship_Source) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_dataplex_v1_data_documentation_proto_rawDescGZIP(), []int{1, 2, 0}
+}
+
+// The type of relationship.
+type DataDocumentationResult_SchemaRelationship_Type int32
+
+const (
+	// The type of the schema relationship is unspecified.
+	DataDocumentationResult_SchemaRelationship_TYPE_UNSPECIFIED DataDocumentationResult_SchemaRelationship_Type = 0
+	// Indicates a join relationship between the schema fields.
+	DataDocumentationResult_SchemaRelationship_SCHEMA_JOIN DataDocumentationResult_SchemaRelationship_Type = 1
+)
+
+// Enum value maps for DataDocumentationResult_SchemaRelationship_Type.
+var (
+	DataDocumentationResult_SchemaRelationship_Type_name = map[int32]string{
+		0: "TYPE_UNSPECIFIED",
+		1: "SCHEMA_JOIN",
+	}
+	DataDocumentationResult_SchemaRelationship_Type_value = map[string]int32{
+		"TYPE_UNSPECIFIED": 0,
+		"SCHEMA_JOIN":      1,
+	}
+)
+
+func (x DataDocumentationResult_SchemaRelationship_Type) Enum() *DataDocumentationResult_SchemaRelationship_Type {
+	p := new(DataDocumentationResult_SchemaRelationship_Type)
+	*p = x
+	return p
+}
+
+func (x DataDocumentationResult_SchemaRelationship_Type) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (DataDocumentationResult_SchemaRelationship_Type) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_dataplex_v1_data_documentation_proto_enumTypes[2].Descriptor()
+}
+
+func (DataDocumentationResult_SchemaRelationship_Type) Type() protoreflect.EnumType {
+	return &file_google_cloud_dataplex_v1_data_documentation_proto_enumTypes[2]
+}
+
+func (x DataDocumentationResult_SchemaRelationship_Type) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use DataDocumentationResult_SchemaRelationship_Type.Descriptor instead.
+func (DataDocumentationResult_SchemaRelationship_Type) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_dataplex_v1_data_documentation_proto_rawDescGZIP(), []int{1, 2, 1}
+}
+
 // DataDocumentation scan related spec.
 type DataDocumentationSpec struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -161,6 +269,7 @@ type DataDocumentationResult struct {
 	//
 	// Types that are valid to be assigned to Result:
 	//
+	//	*DataDocumentationResult_DatasetResult_
 	//	*DataDocumentationResult_TableResult_
 	Result        isDataDocumentationResult_Result `protobuf_oneof:"result"`
 	unknownFields protoimpl.UnknownFields
@@ -204,6 +313,15 @@ func (x *DataDocumentationResult) GetResult() isDataDocumentationResult_Result {
 	return nil
 }
 
+func (x *DataDocumentationResult) GetDatasetResult() *DataDocumentationResult_DatasetResult {
+	if x != nil {
+		if x, ok := x.Result.(*DataDocumentationResult_DatasetResult_); ok {
+			return x.DatasetResult
+		}
+	}
+	return nil
+}
+
 func (x *DataDocumentationResult) GetTableResult() *DataDocumentationResult_TableResult {
 	if x != nil {
 		if x, ok := x.Result.(*DataDocumentationResult_TableResult_); ok {
@@ -217,14 +335,86 @@ type isDataDocumentationResult_Result interface {
 	isDataDocumentationResult_Result()
 }
 
+type DataDocumentationResult_DatasetResult_ struct {
+	// Output only. Insights for a Dataset resource.
+	DatasetResult *DataDocumentationResult_DatasetResult `protobuf:"bytes,7,opt,name=dataset_result,json=datasetResult,proto3,oneof"`
+}
+
 type DataDocumentationResult_TableResult_ struct {
-	// Output only. Table result for insights.
+	// Output only. Insights for a Table resource.
 	TableResult *DataDocumentationResult_TableResult `protobuf:"bytes,8,opt,name=table_result,json=tableResult,proto3,oneof"`
 }
 
+func (*DataDocumentationResult_DatasetResult_) isDataDocumentationResult_Result() {}
+
 func (*DataDocumentationResult_TableResult_) isDataDocumentationResult_Result() {}
 
-// Generated metadata about the table.
+// Insights for a dataset resource.
+type DataDocumentationResult_DatasetResult struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. Generated Dataset description.
+	Overview string `protobuf:"bytes,1,opt,name=overview,proto3" json:"overview,omitempty"`
+	// Output only. Relationships suggesting how tables in the dataset are
+	// related to each other, based on their schema.
+	SchemaRelationships []*DataDocumentationResult_SchemaRelationship `protobuf:"bytes,3,rep,name=schema_relationships,json=schemaRelationships,proto3" json:"schema_relationships,omitempty"`
+	// Output only. Sample SQL queries for the dataset.
+	Queries       []*DataDocumentationResult_Query `protobuf:"bytes,4,rep,name=queries,proto3" json:"queries,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DataDocumentationResult_DatasetResult) Reset() {
+	*x = DataDocumentationResult_DatasetResult{}
+	mi := &file_google_cloud_dataplex_v1_data_documentation_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DataDocumentationResult_DatasetResult) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DataDocumentationResult_DatasetResult) ProtoMessage() {}
+
+func (x *DataDocumentationResult_DatasetResult) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_dataplex_v1_data_documentation_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DataDocumentationResult_DatasetResult.ProtoReflect.Descriptor instead.
+func (*DataDocumentationResult_DatasetResult) Descriptor() ([]byte, []int) {
+	return file_google_cloud_dataplex_v1_data_documentation_proto_rawDescGZIP(), []int{1, 0}
+}
+
+func (x *DataDocumentationResult_DatasetResult) GetOverview() string {
+	if x != nil {
+		return x.Overview
+	}
+	return ""
+}
+
+func (x *DataDocumentationResult_DatasetResult) GetSchemaRelationships() []*DataDocumentationResult_SchemaRelationship {
+	if x != nil {
+		return x.SchemaRelationships
+	}
+	return nil
+}
+
+func (x *DataDocumentationResult_DatasetResult) GetQueries() []*DataDocumentationResult_Query {
+	if x != nil {
+		return x.Queries
+	}
+	return nil
+}
+
+// Insights for a table resource.
 type DataDocumentationResult_TableResult struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Output only. The service-qualified full resource name of the cloud
@@ -244,7 +434,7 @@ type DataDocumentationResult_TableResult struct {
 
 func (x *DataDocumentationResult_TableResult) Reset() {
 	*x = DataDocumentationResult_TableResult{}
-	mi := &file_google_cloud_dataplex_v1_data_documentation_proto_msgTypes[2]
+	mi := &file_google_cloud_dataplex_v1_data_documentation_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -256,7 +446,7 @@ func (x *DataDocumentationResult_TableResult) String() string {
 func (*DataDocumentationResult_TableResult) ProtoMessage() {}
 
 func (x *DataDocumentationResult_TableResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_data_documentation_proto_msgTypes[2]
+	mi := &file_google_cloud_dataplex_v1_data_documentation_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -269,7 +459,7 @@ func (x *DataDocumentationResult_TableResult) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use DataDocumentationResult_TableResult.ProtoReflect.Descriptor instead.
 func (*DataDocumentationResult_TableResult) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_data_documentation_proto_rawDescGZIP(), []int{1, 0}
+	return file_google_cloud_dataplex_v1_data_documentation_proto_rawDescGZIP(), []int{1, 1}
 }
 
 func (x *DataDocumentationResult_TableResult) GetName() string {
@@ -300,6 +490,85 @@ func (x *DataDocumentationResult_TableResult) GetQueries() []*DataDocumentationR
 	return nil
 }
 
+// Details of the relationship between the schema of two resources.
+type DataDocumentationResult_SchemaRelationship struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. An ordered list of fields for the join from the first table.
+	// The size of this list must be the same as `right_schema_paths`.
+	// Each field at index i in this list must correspond to a field at the same
+	// index in the `right_schema_paths` list.
+	LeftSchemaPaths *DataDocumentationResult_SchemaRelationship_SchemaPaths `protobuf:"bytes,1,opt,name=left_schema_paths,json=leftSchemaPaths,proto3" json:"left_schema_paths,omitempty"`
+	// Output only. An ordered list of fields for the join from the second
+	// table. The size of this list must be the same as `left_schema_paths`.
+	// Each field at index i in this list must correspond to a field at the same
+	// index in the `left_schema_paths` list.
+	RightSchemaPaths *DataDocumentationResult_SchemaRelationship_SchemaPaths `protobuf:"bytes,2,opt,name=right_schema_paths,json=rightSchemaPaths,proto3" json:"right_schema_paths,omitempty"`
+	// Output only. Sources which generated the schema relation edge.
+	Sources []DataDocumentationResult_SchemaRelationship_Source `protobuf:"varint,4,rep,packed,name=sources,proto3,enum=google.cloud.dataplex.v1.DataDocumentationResult_SchemaRelationship_Source" json:"sources,omitempty"`
+	// Output only. The type of relationship between the schema paths.
+	Type          DataDocumentationResult_SchemaRelationship_Type `protobuf:"varint,6,opt,name=type,proto3,enum=google.cloud.dataplex.v1.DataDocumentationResult_SchemaRelationship_Type" json:"type,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DataDocumentationResult_SchemaRelationship) Reset() {
+	*x = DataDocumentationResult_SchemaRelationship{}
+	mi := &file_google_cloud_dataplex_v1_data_documentation_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DataDocumentationResult_SchemaRelationship) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DataDocumentationResult_SchemaRelationship) ProtoMessage() {}
+
+func (x *DataDocumentationResult_SchemaRelationship) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_dataplex_v1_data_documentation_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DataDocumentationResult_SchemaRelationship.ProtoReflect.Descriptor instead.
+func (*DataDocumentationResult_SchemaRelationship) Descriptor() ([]byte, []int) {
+	return file_google_cloud_dataplex_v1_data_documentation_proto_rawDescGZIP(), []int{1, 2}
+}
+
+func (x *DataDocumentationResult_SchemaRelationship) GetLeftSchemaPaths() *DataDocumentationResult_SchemaRelationship_SchemaPaths {
+	if x != nil {
+		return x.LeftSchemaPaths
+	}
+	return nil
+}
+
+func (x *DataDocumentationResult_SchemaRelationship) GetRightSchemaPaths() *DataDocumentationResult_SchemaRelationship_SchemaPaths {
+	if x != nil {
+		return x.RightSchemaPaths
+	}
+	return nil
+}
+
+func (x *DataDocumentationResult_SchemaRelationship) GetSources() []DataDocumentationResult_SchemaRelationship_Source {
+	if x != nil {
+		return x.Sources
+	}
+	return nil
+}
+
+func (x *DataDocumentationResult_SchemaRelationship) GetType() DataDocumentationResult_SchemaRelationship_Type {
+	if x != nil {
+		return x.Type
+	}
+	return DataDocumentationResult_SchemaRelationship_TYPE_UNSPECIFIED
+}
+
 // A sample SQL query in data documentation.
 type DataDocumentationResult_Query struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -313,7 +582,7 @@ type DataDocumentationResult_Query struct {
 
 func (x *DataDocumentationResult_Query) Reset() {
 	*x = DataDocumentationResult_Query{}
-	mi := &file_google_cloud_dataplex_v1_data_documentation_proto_msgTypes[3]
+	mi := &file_google_cloud_dataplex_v1_data_documentation_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -325,7 +594,7 @@ func (x *DataDocumentationResult_Query) String() string {
 func (*DataDocumentationResult_Query) ProtoMessage() {}
 
 func (x *DataDocumentationResult_Query) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_data_documentation_proto_msgTypes[3]
+	mi := &file_google_cloud_dataplex_v1_data_documentation_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -338,7 +607,7 @@ func (x *DataDocumentationResult_Query) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DataDocumentationResult_Query.ProtoReflect.Descriptor instead.
 func (*DataDocumentationResult_Query) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_data_documentation_proto_rawDescGZIP(), []int{1, 1}
+	return file_google_cloud_dataplex_v1_data_documentation_proto_rawDescGZIP(), []int{1, 3}
 }
 
 func (x *DataDocumentationResult_Query) GetSql() string {
@@ -366,7 +635,7 @@ type DataDocumentationResult_Schema struct {
 
 func (x *DataDocumentationResult_Schema) Reset() {
 	*x = DataDocumentationResult_Schema{}
-	mi := &file_google_cloud_dataplex_v1_data_documentation_proto_msgTypes[4]
+	mi := &file_google_cloud_dataplex_v1_data_documentation_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -378,7 +647,7 @@ func (x *DataDocumentationResult_Schema) String() string {
 func (*DataDocumentationResult_Schema) ProtoMessage() {}
 
 func (x *DataDocumentationResult_Schema) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_data_documentation_proto_msgTypes[4]
+	mi := &file_google_cloud_dataplex_v1_data_documentation_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -391,7 +660,7 @@ func (x *DataDocumentationResult_Schema) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DataDocumentationResult_Schema.ProtoReflect.Descriptor instead.
 func (*DataDocumentationResult_Schema) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_data_documentation_proto_rawDescGZIP(), []int{1, 2}
+	return file_google_cloud_dataplex_v1_data_documentation_proto_rawDescGZIP(), []int{1, 4}
 }
 
 func (x *DataDocumentationResult_Schema) GetFields() []*DataDocumentationResult_Field {
@@ -416,7 +685,7 @@ type DataDocumentationResult_Field struct {
 
 func (x *DataDocumentationResult_Field) Reset() {
 	*x = DataDocumentationResult_Field{}
-	mi := &file_google_cloud_dataplex_v1_data_documentation_proto_msgTypes[5]
+	mi := &file_google_cloud_dataplex_v1_data_documentation_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -428,7 +697,7 @@ func (x *DataDocumentationResult_Field) String() string {
 func (*DataDocumentationResult_Field) ProtoMessage() {}
 
 func (x *DataDocumentationResult_Field) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_data_documentation_proto_msgTypes[5]
+	mi := &file_google_cloud_dataplex_v1_data_documentation_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -441,7 +710,7 @@ func (x *DataDocumentationResult_Field) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DataDocumentationResult_Field.ProtoReflect.Descriptor instead.
 func (*DataDocumentationResult_Field) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_data_documentation_proto_rawDescGZIP(), []int{1, 3}
+	return file_google_cloud_dataplex_v1_data_documentation_proto_rawDescGZIP(), []int{1, 5}
 }
 
 func (x *DataDocumentationResult_Field) GetName() string {
@@ -465,6 +734,66 @@ func (x *DataDocumentationResult_Field) GetFields() []*DataDocumentationResult_F
 	return nil
 }
 
+// Represents an ordered set of paths within a table's schema.
+type DataDocumentationResult_SchemaRelationship_SchemaPaths struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. The service-qualified full resource name of the table
+	// Ex:
+	// //bigquery.googleapis.com/projects/PROJECT_ID/datasets/DATASET_ID/tables/TABLE_ID
+	TableFqn string `protobuf:"bytes,1,opt,name=table_fqn,json=tableFqn,proto3" json:"table_fqn,omitempty"`
+	// Output only. An ordered set of Paths to fields within the schema of the
+	// table. For fields nested within a top level field of type record, use
+	// '.' to separate field names. Examples: Top level field - `top_level`
+	// Nested field - `top_level.child.sub_field`
+	Paths         []string `protobuf:"bytes,2,rep,name=paths,proto3" json:"paths,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DataDocumentationResult_SchemaRelationship_SchemaPaths) Reset() {
+	*x = DataDocumentationResult_SchemaRelationship_SchemaPaths{}
+	mi := &file_google_cloud_dataplex_v1_data_documentation_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DataDocumentationResult_SchemaRelationship_SchemaPaths) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DataDocumentationResult_SchemaRelationship_SchemaPaths) ProtoMessage() {}
+
+func (x *DataDocumentationResult_SchemaRelationship_SchemaPaths) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_dataplex_v1_data_documentation_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DataDocumentationResult_SchemaRelationship_SchemaPaths.ProtoReflect.Descriptor instead.
+func (*DataDocumentationResult_SchemaRelationship_SchemaPaths) Descriptor() ([]byte, []int) {
+	return file_google_cloud_dataplex_v1_data_documentation_proto_rawDescGZIP(), []int{1, 2, 0}
+}
+
+func (x *DataDocumentationResult_SchemaRelationship_SchemaPaths) GetTableFqn() string {
+	if x != nil {
+		return x.TableFqn
+	}
+	return ""
+}
+
+func (x *DataDocumentationResult_SchemaRelationship_SchemaPaths) GetPaths() []string {
+	if x != nil {
+		return x.Paths
+	}
+	return nil
+}
+
 var File_google_cloud_dataplex_v1_data_documentation_proto protoreflect.FileDescriptor
 
 const file_google_cloud_dataplex_v1_data_documentation_proto_rawDesc = "" +
@@ -477,14 +806,35 @@ const file_google_cloud_dataplex_v1_data_documentation_proto_rawDesc = "" +
 	"\x1cGENERATION_SCOPE_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03ALL\x10\x01\x12!\n" +
 	"\x1dTABLE_AND_COLUMN_DESCRIPTIONS\x10\x02\x12\x0f\n" +
-	"\vSQL_QUERIES\x10\x03\"\xcc\x05\n" +
-	"\x17DataDocumentationResult\x12g\n" +
-	"\ftable_result\x18\b \x01(\v2=.google.cloud.dataplex.v1.DataDocumentationResult.TableResultB\x03\xe0A\x03H\x00R\vtableResult\x1a\xf6\x01\n" +
+	"\vSQL_QUERIES\x10\x03\"\x87\x0e\n" +
+	"\x17DataDocumentationResult\x12m\n" +
+	"\x0edataset_result\x18\a \x01(\v2?.google.cloud.dataplex.v1.DataDocumentationResult.DatasetResultB\x03\xe0A\x03H\x00R\rdatasetResult\x12g\n" +
+	"\ftable_result\x18\b \x01(\v2=.google.cloud.dataplex.v1.DataDocumentationResult.TableResultB\x03\xe0A\x03H\x00R\vtableResult\x1a\x86\x02\n" +
+	"\rDatasetResult\x12\x1f\n" +
+	"\boverview\x18\x01 \x01(\tB\x03\xe0A\x03R\boverview\x12|\n" +
+	"\x14schema_relationships\x18\x03 \x03(\v2D.google.cloud.dataplex.v1.DataDocumentationResult.SchemaRelationshipB\x03\xe0A\x03R\x13schemaRelationships\x12V\n" +
+	"\aqueries\x18\x04 \x03(\v27.google.cloud.dataplex.v1.DataDocumentationResult.QueryB\x03\xe0A\x03R\aqueries\x1a\xf6\x01\n" +
 	"\vTableResult\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x1f\n" +
 	"\boverview\x18\x02 \x01(\tB\x03\xe0A\x03R\boverview\x12U\n" +
 	"\x06schema\x18\x03 \x01(\v28.google.cloud.dataplex.v1.DataDocumentationResult.SchemaB\x03\xe0A\x03R\x06schema\x12V\n" +
-	"\aqueries\x18\x04 \x03(\v27.google.cloud.dataplex.v1.DataDocumentationResult.QueryB\x03\xe0A\x03R\aqueries\x1aE\n" +
+	"\aqueries\x18\x04 \x03(\v27.google.cloud.dataplex.v1.DataDocumentationResult.QueryB\x03\xe0A\x03R\aqueries\x1a\xc0\x05\n" +
+	"\x12SchemaRelationship\x12\x81\x01\n" +
+	"\x11left_schema_paths\x18\x01 \x01(\v2P.google.cloud.dataplex.v1.DataDocumentationResult.SchemaRelationship.SchemaPathsB\x03\xe0A\x03R\x0fleftSchemaPaths\x12\x83\x01\n" +
+	"\x12right_schema_paths\x18\x02 \x01(\v2P.google.cloud.dataplex.v1.DataDocumentationResult.SchemaRelationship.SchemaPathsB\x03\xe0A\x03R\x10rightSchemaPaths\x12j\n" +
+	"\asources\x18\x04 \x03(\x0e2K.google.cloud.dataplex.v1.DataDocumentationResult.SchemaRelationship.SourceB\x03\xe0A\x03R\asources\x12b\n" +
+	"\x04type\x18\x06 \x01(\x0e2I.google.cloud.dataplex.v1.DataDocumentationResult.SchemaRelationship.TypeB\x03\xe0A\x03R\x04type\x1aJ\n" +
+	"\vSchemaPaths\x12 \n" +
+	"\ttable_fqn\x18\x01 \x01(\tB\x03\xe0A\x03R\btableFqn\x12\x19\n" +
+	"\x05paths\x18\x02 \x03(\tB\x03\xe0A\x03R\x05paths\"U\n" +
+	"\x06Source\x12\x16\n" +
+	"\x12SOURCE_UNSPECIFIED\x10\x00\x12\t\n" +
+	"\x05AGENT\x10\x04\x12\x11\n" +
+	"\rQUERY_HISTORY\x10\x05\x12\x15\n" +
+	"\x11TABLE_CONSTRAINTS\x10\x06\"-\n" +
+	"\x04Type\x12\x14\n" +
+	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x0f\n" +
+	"\vSCHEMA_JOIN\x10\x01\x1aE\n" +
 	"\x05Query\x12\x15\n" +
 	"\x03sql\x18\x01 \x01(\tB\x03\xe0A\x03R\x03sql\x12%\n" +
 	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x03R\vdescription\x1a^\n" +
@@ -509,29 +859,41 @@ func file_google_cloud_dataplex_v1_data_documentation_proto_rawDescGZIP() []byte
 	return file_google_cloud_dataplex_v1_data_documentation_proto_rawDescData
 }
 
-var file_google_cloud_dataplex_v1_data_documentation_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_google_cloud_dataplex_v1_data_documentation_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_google_cloud_dataplex_v1_data_documentation_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_google_cloud_dataplex_v1_data_documentation_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_google_cloud_dataplex_v1_data_documentation_proto_goTypes = []any{
-	(DataDocumentationSpec_GenerationScope)(0),  // 0: google.cloud.dataplex.v1.DataDocumentationSpec.GenerationScope
-	(*DataDocumentationSpec)(nil),               // 1: google.cloud.dataplex.v1.DataDocumentationSpec
-	(*DataDocumentationResult)(nil),             // 2: google.cloud.dataplex.v1.DataDocumentationResult
-	(*DataDocumentationResult_TableResult)(nil), // 3: google.cloud.dataplex.v1.DataDocumentationResult.TableResult
-	(*DataDocumentationResult_Query)(nil),       // 4: google.cloud.dataplex.v1.DataDocumentationResult.Query
-	(*DataDocumentationResult_Schema)(nil),      // 5: google.cloud.dataplex.v1.DataDocumentationResult.Schema
-	(*DataDocumentationResult_Field)(nil),       // 6: google.cloud.dataplex.v1.DataDocumentationResult.Field
+	(DataDocumentationSpec_GenerationScope)(0),                     // 0: google.cloud.dataplex.v1.DataDocumentationSpec.GenerationScope
+	(DataDocumentationResult_SchemaRelationship_Source)(0),         // 1: google.cloud.dataplex.v1.DataDocumentationResult.SchemaRelationship.Source
+	(DataDocumentationResult_SchemaRelationship_Type)(0),           // 2: google.cloud.dataplex.v1.DataDocumentationResult.SchemaRelationship.Type
+	(*DataDocumentationSpec)(nil),                                  // 3: google.cloud.dataplex.v1.DataDocumentationSpec
+	(*DataDocumentationResult)(nil),                                // 4: google.cloud.dataplex.v1.DataDocumentationResult
+	(*DataDocumentationResult_DatasetResult)(nil),                  // 5: google.cloud.dataplex.v1.DataDocumentationResult.DatasetResult
+	(*DataDocumentationResult_TableResult)(nil),                    // 6: google.cloud.dataplex.v1.DataDocumentationResult.TableResult
+	(*DataDocumentationResult_SchemaRelationship)(nil),             // 7: google.cloud.dataplex.v1.DataDocumentationResult.SchemaRelationship
+	(*DataDocumentationResult_Query)(nil),                          // 8: google.cloud.dataplex.v1.DataDocumentationResult.Query
+	(*DataDocumentationResult_Schema)(nil),                         // 9: google.cloud.dataplex.v1.DataDocumentationResult.Schema
+	(*DataDocumentationResult_Field)(nil),                          // 10: google.cloud.dataplex.v1.DataDocumentationResult.Field
+	(*DataDocumentationResult_SchemaRelationship_SchemaPaths)(nil), // 11: google.cloud.dataplex.v1.DataDocumentationResult.SchemaRelationship.SchemaPaths
 }
 var file_google_cloud_dataplex_v1_data_documentation_proto_depIdxs = []int32{
-	0, // 0: google.cloud.dataplex.v1.DataDocumentationSpec.generation_scopes:type_name -> google.cloud.dataplex.v1.DataDocumentationSpec.GenerationScope
-	3, // 1: google.cloud.dataplex.v1.DataDocumentationResult.table_result:type_name -> google.cloud.dataplex.v1.DataDocumentationResult.TableResult
-	5, // 2: google.cloud.dataplex.v1.DataDocumentationResult.TableResult.schema:type_name -> google.cloud.dataplex.v1.DataDocumentationResult.Schema
-	4, // 3: google.cloud.dataplex.v1.DataDocumentationResult.TableResult.queries:type_name -> google.cloud.dataplex.v1.DataDocumentationResult.Query
-	6, // 4: google.cloud.dataplex.v1.DataDocumentationResult.Schema.fields:type_name -> google.cloud.dataplex.v1.DataDocumentationResult.Field
-	6, // 5: google.cloud.dataplex.v1.DataDocumentationResult.Field.fields:type_name -> google.cloud.dataplex.v1.DataDocumentationResult.Field
-	6, // [6:6] is the sub-list for method output_type
-	6, // [6:6] is the sub-list for method input_type
-	6, // [6:6] is the sub-list for extension type_name
-	6, // [6:6] is the sub-list for extension extendee
-	0, // [0:6] is the sub-list for field type_name
+	0,  // 0: google.cloud.dataplex.v1.DataDocumentationSpec.generation_scopes:type_name -> google.cloud.dataplex.v1.DataDocumentationSpec.GenerationScope
+	5,  // 1: google.cloud.dataplex.v1.DataDocumentationResult.dataset_result:type_name -> google.cloud.dataplex.v1.DataDocumentationResult.DatasetResult
+	6,  // 2: google.cloud.dataplex.v1.DataDocumentationResult.table_result:type_name -> google.cloud.dataplex.v1.DataDocumentationResult.TableResult
+	7,  // 3: google.cloud.dataplex.v1.DataDocumentationResult.DatasetResult.schema_relationships:type_name -> google.cloud.dataplex.v1.DataDocumentationResult.SchemaRelationship
+	8,  // 4: google.cloud.dataplex.v1.DataDocumentationResult.DatasetResult.queries:type_name -> google.cloud.dataplex.v1.DataDocumentationResult.Query
+	9,  // 5: google.cloud.dataplex.v1.DataDocumentationResult.TableResult.schema:type_name -> google.cloud.dataplex.v1.DataDocumentationResult.Schema
+	8,  // 6: google.cloud.dataplex.v1.DataDocumentationResult.TableResult.queries:type_name -> google.cloud.dataplex.v1.DataDocumentationResult.Query
+	11, // 7: google.cloud.dataplex.v1.DataDocumentationResult.SchemaRelationship.left_schema_paths:type_name -> google.cloud.dataplex.v1.DataDocumentationResult.SchemaRelationship.SchemaPaths
+	11, // 8: google.cloud.dataplex.v1.DataDocumentationResult.SchemaRelationship.right_schema_paths:type_name -> google.cloud.dataplex.v1.DataDocumentationResult.SchemaRelationship.SchemaPaths
+	1,  // 9: google.cloud.dataplex.v1.DataDocumentationResult.SchemaRelationship.sources:type_name -> google.cloud.dataplex.v1.DataDocumentationResult.SchemaRelationship.Source
+	2,  // 10: google.cloud.dataplex.v1.DataDocumentationResult.SchemaRelationship.type:type_name -> google.cloud.dataplex.v1.DataDocumentationResult.SchemaRelationship.Type
+	10, // 11: google.cloud.dataplex.v1.DataDocumentationResult.Schema.fields:type_name -> google.cloud.dataplex.v1.DataDocumentationResult.Field
+	10, // 12: google.cloud.dataplex.v1.DataDocumentationResult.Field.fields:type_name -> google.cloud.dataplex.v1.DataDocumentationResult.Field
+	13, // [13:13] is the sub-list for method output_type
+	13, // [13:13] is the sub-list for method input_type
+	13, // [13:13] is the sub-list for extension type_name
+	13, // [13:13] is the sub-list for extension extendee
+	0,  // [0:13] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_dataplex_v1_data_documentation_proto_init() }
@@ -540,6 +902,7 @@ func file_google_cloud_dataplex_v1_data_documentation_proto_init() {
 		return
 	}
 	file_google_cloud_dataplex_v1_data_documentation_proto_msgTypes[1].OneofWrappers = []any{
+		(*DataDocumentationResult_DatasetResult_)(nil),
 		(*DataDocumentationResult_TableResult_)(nil),
 	}
 	type x struct{}
@@ -547,8 +910,8 @@ func file_google_cloud_dataplex_v1_data_documentation_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_dataplex_v1_data_documentation_proto_rawDesc), len(file_google_cloud_dataplex_v1_data_documentation_proto_rawDesc)),
-			NumEnums:      1,
-			NumMessages:   6,
+			NumEnums:      3,
+			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

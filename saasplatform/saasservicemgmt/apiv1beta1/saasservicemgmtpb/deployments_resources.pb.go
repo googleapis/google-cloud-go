@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -479,13 +479,13 @@ type Tenant struct {
 	// Optional. Immutable. A reference to the consumer resource this SaaS Tenant
 	// is representing.
 	//
-	// The relationship with a consumer resource can be used by SaaS Runtime for
-	// retrieving consumer-defined settings and policies such as maintenance
-	// policies (using Unified Maintenance Policy API).
+	// The relationship with a consumer resource can be used by App Lifecycle
+	// Manager for retrieving consumer-defined settings and policies such as
+	// maintenance policies (using Unified Maintenance Policy API).
 	ConsumerResource string `protobuf:"bytes,2,opt,name=consumer_resource,json=consumerResource,proto3" json:"consumer_resource,omitempty"`
 	// Required. Immutable. A reference to the Saas that defines the product
-	// (managed service) that the producer wants to manage with SaaS Runtime. Part
-	// of the SaaS Runtime common data model.
+	// (managed service) that the producer wants to manage with App Lifecycle
+	// Manager. Part of the App Lifecycle Manager common data model.
 	Saas string `protobuf:"bytes,3,opt,name=saas,proto3" json:"saas,omitempty"`
 	// Optional. The labels on the resource, which can be used for categorization.
 	// similar to Kubernetes resource labels.
@@ -638,8 +638,9 @@ type UnitKind struct {
 	// unit's outputVariables. Maximum 100.
 	OutputVariableMappings []*VariableMapping `protobuf:"bytes,6,rep,name=output_variable_mappings,json=outputVariableMappings,proto3" json:"output_variable_mappings,omitempty"`
 	// Required. Immutable. A reference to the Saas that defines the product
-	// (managed service) that the producer wants to manage with SaaS Runtime. Part
-	// of the SaaS Runtime common data model. Immutable once set.
+	// (managed service) that the producer wants to manage with App Lifecycle
+	// Manager. Part of the App Lifecycle Manager common data model. Immutable
+	// once set.
 	Saas string `protobuf:"bytes,8,opt,name=saas,proto3" json:"saas,omitempty"`
 	// Optional. The labels on the resource, which can be used for categorization.
 	// similar to Kubernetes resource labels.
@@ -1941,8 +1942,8 @@ type ToMapping struct {
 	Dependency string `protobuf:"bytes,1,opt,name=dependency,proto3" json:"dependency,omitempty"`
 	// Required. Name of the inputVariable on the dependency
 	InputVariable string `protobuf:"bytes,2,opt,name=input_variable,json=inputVariable,proto3" json:"input_variable,omitempty"`
-	// Optional. Tells SaaS Runtime if this mapping should be used during lookup
-	// or not
+	// Optional. Tells App Lifecycle Manager if this mapping should be used during
+	// lookup or not
 	IgnoreForLookup bool `protobuf:"varint,3,opt,name=ignore_for_lookup,json=ignoreForLookup,proto3" json:"ignore_for_lookup,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache

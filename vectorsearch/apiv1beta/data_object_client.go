@@ -355,14 +355,22 @@ func (c *DataObjectClient) GetLocation(ctx context.Context, req *locationpb.GetL
 }
 
 // ListLocations lists information about the supported locations for this service.
-// This method can be called in two ways:
 //
-//	List all public locations: Use the path GET /v1/locations.
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)] field:
 //
-//	List project-visible locations: Use the path
-//	GET /v1/projects/{project_id}/locations. This may include public
-//	locations as well as private or other locations specifically visible
-//	to the project.
+//	Global locations: If name is empty, the method lists the
+//	public locations available to all projects. * Project-specific
+//	locations: If name follows the format
+//	projects/{project}, the method lists locations visible to that
+//	specific project. This includes public, private, or other
+//	project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *DataObjectClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -1414,14 +1422,22 @@ func (c *dataObjectRESTClient) GetLocation(ctx context.Context, req *locationpb.
 }
 
 // ListLocations lists information about the supported locations for this service.
-// This method can be called in two ways:
 //
-//	List all public locations: Use the path GET /v1/locations.
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)] field:
 //
-//	List project-visible locations: Use the path
-//	GET /v1/projects/{project_id}/locations. This may include public
-//	locations as well as private or other locations specifically visible
-//	to the project.
+//	Global locations: If name is empty, the method lists the
+//	public locations available to all projects. * Project-specific
+//	locations: If name follows the format
+//	projects/{project}, the method lists locations visible to that
+//	specific project. This includes public, private, or other
+//	project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *dataObjectRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)

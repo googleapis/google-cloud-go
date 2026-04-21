@@ -64,6 +64,17 @@ type Product struct {
 	// of: `channel~content_language~feed_label~offer_id`, for example:
 	// `accounts/123/products/online~en~US~sku123`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Output only. The **unpadded base64url encoded name** of the product.
+	// Format:
+	// `accounts/{account}/products/{product}` where the last
+	// section `product` is the unpadded base64url encoding of the
+	// `content_language~feed_label~offer_id` name.
+	// Example: `accounts/123/products/ZW5-VVN-c2t1LzEyMw` for the decoded product
+	// name `accounts/123/products/en~US~sku/123`. This field can be used directly
+	// as input to the API methods that require the product name to be encoded if
+	// it contains special characters, for example
+	// [`GetProduct`](https://developers.google.com/merchant/api/reference/rest/products_v1/accounts.products/get).
+	Base64EncodedName string `protobuf:"bytes,15,opt,name=base64_encoded_name,json=base64EncodedName,proto3" json:"base64_encoded_name,omitempty"`
 	// Output only. Determines whether the product is **only** targeting
 	// local destinations and whether the product name should be distinguished
 	// with a `local~` prefix. For example,
@@ -153,6 +164,13 @@ func (*Product) Descriptor() ([]byte, []int) {
 func (x *Product) GetName() string {
 	if x != nil {
 		return x.Name
+	}
+	return ""
+}
+
+func (x *Product) GetBase64EncodedName() string {
+	if x != nil {
+		return x.Base64EncodedName
 	}
 	return ""
 }
@@ -248,10 +266,10 @@ type GetProductRequest struct {
 	//     MUST be used if any part of the product identifier (like `offer_id`)
 	//     contains characters such as `/`, `%`, or `~`.
 	//     *   Example: To represent the product ID `en~US~sku/123`, the
-	//     `{product}` segment must be the base64url encoding of this
-	//     string, which is `ZW5-VVMtc2t1LzEyMw`. The full resource name
+	//     `{product}` segment must be the unpadded base64url encoding of this
+	//     string, which is `ZW5-VVN-c2t1LzEyMw`. The full resource name
 	//     for the product would be
-	//     `accounts/123/products/ZW5-VVMtc2t1LzEyMw`.
+	//     `accounts/123/products/ZW5-VVN-c2t1LzEyMw`.
 	//
 	//  2. **Plain Format**: The `{product}` segment is the tilde-separated string
 	//     `content_language~feed_label~offer_id`. This format is suitable only
@@ -442,9 +460,10 @@ var File_google_shopping_merchant_products_v1_products_proto protoreflect.FileDe
 
 const file_google_shopping_merchant_products_v1_products_proto_rawDesc = "" +
 	"\n" +
-	"3google/shopping/merchant/products/v1/products.proto\x12$google.shopping.merchant.products.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a:google/shopping/merchant/products/v1/products_common.proto\x1a google/shopping/type/types.proto\"\x8a\x06\n" +
+	"3google/shopping/merchant/products/v1/products.proto\x12$google.shopping.merchant.products.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a:google/shopping/merchant/products/v1/products_common.proto\x1a google/shopping/type/types.proto\"\xbf\x06\n" +
 	"\aProduct\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12&\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x123\n" +
+	"\x13base64_encoded_name\x18\x0f \x01(\tB\x03\xe0A\x03R\x11base64EncodedName\x12&\n" +
 	"\flegacy_local\x18\v \x01(\bB\x03\xe0A\x03R\vlegacyLocal\x12\x1e\n" +
 	"\boffer_id\x18\x03 \x01(\tB\x03\xe0A\x03R\aofferId\x12.\n" +
 	"\x10content_language\x18\x04 \x01(\tB\x03\xe0A\x03R\x0fcontentLanguage\x12\"\n" +

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ package aiplatformpb
 import (
 	context "context"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -37,6 +38,7 @@ const _ = grpc.SupportPackageIsVersion7
 const (
 	ReasoningEngineExecutionService_QueryReasoningEngine_FullMethodName       = "/google.cloud.aiplatform.v1beta1.ReasoningEngineExecutionService/QueryReasoningEngine"
 	ReasoningEngineExecutionService_StreamQueryReasoningEngine_FullMethodName = "/google.cloud.aiplatform.v1beta1.ReasoningEngineExecutionService/StreamQueryReasoningEngine"
+	ReasoningEngineExecutionService_AsyncQueryReasoningEngine_FullMethodName  = "/google.cloud.aiplatform.v1beta1.ReasoningEngineExecutionService/AsyncQueryReasoningEngine"
 )
 
 // ReasoningEngineExecutionServiceClient is the client API for ReasoningEngineExecutionService service.
@@ -47,6 +49,8 @@ type ReasoningEngineExecutionServiceClient interface {
 	QueryReasoningEngine(ctx context.Context, in *QueryReasoningEngineRequest, opts ...grpc.CallOption) (*QueryReasoningEngineResponse, error)
 	// Streams queries using a reasoning engine.
 	StreamQueryReasoningEngine(ctx context.Context, in *StreamQueryReasoningEngineRequest, opts ...grpc.CallOption) (ReasoningEngineExecutionService_StreamQueryReasoningEngineClient, error)
+	// Async query using a reasoning engine.
+	AsyncQueryReasoningEngine(ctx context.Context, in *AsyncQueryReasoningEngineRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type reasoningEngineExecutionServiceClient struct {
@@ -98,6 +102,15 @@ func (x *reasoningEngineExecutionServiceStreamQueryReasoningEngineClient) Recv()
 	return m, nil
 }
 
+func (c *reasoningEngineExecutionServiceClient) AsyncQueryReasoningEngine(ctx context.Context, in *AsyncQueryReasoningEngineRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, ReasoningEngineExecutionService_AsyncQueryReasoningEngine_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ReasoningEngineExecutionServiceServer is the server API for ReasoningEngineExecutionService service.
 // All implementations should embed UnimplementedReasoningEngineExecutionServiceServer
 // for forward compatibility
@@ -106,6 +119,8 @@ type ReasoningEngineExecutionServiceServer interface {
 	QueryReasoningEngine(context.Context, *QueryReasoningEngineRequest) (*QueryReasoningEngineResponse, error)
 	// Streams queries using a reasoning engine.
 	StreamQueryReasoningEngine(*StreamQueryReasoningEngineRequest, ReasoningEngineExecutionService_StreamQueryReasoningEngineServer) error
+	// Async query using a reasoning engine.
+	AsyncQueryReasoningEngine(context.Context, *AsyncQueryReasoningEngineRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedReasoningEngineExecutionServiceServer should be embedded to have forward compatible implementations.
@@ -117,6 +132,9 @@ func (UnimplementedReasoningEngineExecutionServiceServer) QueryReasoningEngine(c
 }
 func (UnimplementedReasoningEngineExecutionServiceServer) StreamQueryReasoningEngine(*StreamQueryReasoningEngineRequest, ReasoningEngineExecutionService_StreamQueryReasoningEngineServer) error {
 	return status.Errorf(codes.Unimplemented, "method StreamQueryReasoningEngine not implemented")
+}
+func (UnimplementedReasoningEngineExecutionServiceServer) AsyncQueryReasoningEngine(context.Context, *AsyncQueryReasoningEngineRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AsyncQueryReasoningEngine not implemented")
 }
 
 // UnsafeReasoningEngineExecutionServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -169,6 +187,24 @@ func (x *reasoningEngineExecutionServiceStreamQueryReasoningEngineServer) Send(m
 	return x.ServerStream.SendMsg(m)
 }
 
+func _ReasoningEngineExecutionService_AsyncQueryReasoningEngine_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AsyncQueryReasoningEngineRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ReasoningEngineExecutionServiceServer).AsyncQueryReasoningEngine(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ReasoningEngineExecutionService_AsyncQueryReasoningEngine_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ReasoningEngineExecutionServiceServer).AsyncQueryReasoningEngine(ctx, req.(*AsyncQueryReasoningEngineRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ReasoningEngineExecutionService_ServiceDesc is the grpc.ServiceDesc for ReasoningEngineExecutionService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -179,6 +215,10 @@ var ReasoningEngineExecutionService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "QueryReasoningEngine",
 			Handler:    _ReasoningEngineExecutionService_QueryReasoningEngine_Handler,
+		},
+		{
+			MethodName: "AsyncQueryReasoningEngine",
+			Handler:    _ReasoningEngineExecutionService_AsyncQueryReasoningEngine_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

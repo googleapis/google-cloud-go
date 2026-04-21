@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,15 +35,17 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	ModelArmor_ListTemplates_FullMethodName         = "/google.cloud.modelarmor.v1beta.ModelArmor/ListTemplates"
-	ModelArmor_GetTemplate_FullMethodName           = "/google.cloud.modelarmor.v1beta.ModelArmor/GetTemplate"
-	ModelArmor_CreateTemplate_FullMethodName        = "/google.cloud.modelarmor.v1beta.ModelArmor/CreateTemplate"
-	ModelArmor_UpdateTemplate_FullMethodName        = "/google.cloud.modelarmor.v1beta.ModelArmor/UpdateTemplate"
-	ModelArmor_DeleteTemplate_FullMethodName        = "/google.cloud.modelarmor.v1beta.ModelArmor/DeleteTemplate"
-	ModelArmor_GetFloorSetting_FullMethodName       = "/google.cloud.modelarmor.v1beta.ModelArmor/GetFloorSetting"
-	ModelArmor_UpdateFloorSetting_FullMethodName    = "/google.cloud.modelarmor.v1beta.ModelArmor/UpdateFloorSetting"
-	ModelArmor_SanitizeUserPrompt_FullMethodName    = "/google.cloud.modelarmor.v1beta.ModelArmor/SanitizeUserPrompt"
-	ModelArmor_SanitizeModelResponse_FullMethodName = "/google.cloud.modelarmor.v1beta.ModelArmor/SanitizeModelResponse"
+	ModelArmor_ListTemplates_FullMethodName               = "/google.cloud.modelarmor.v1beta.ModelArmor/ListTemplates"
+	ModelArmor_GetTemplate_FullMethodName                 = "/google.cloud.modelarmor.v1beta.ModelArmor/GetTemplate"
+	ModelArmor_CreateTemplate_FullMethodName              = "/google.cloud.modelarmor.v1beta.ModelArmor/CreateTemplate"
+	ModelArmor_UpdateTemplate_FullMethodName              = "/google.cloud.modelarmor.v1beta.ModelArmor/UpdateTemplate"
+	ModelArmor_DeleteTemplate_FullMethodName              = "/google.cloud.modelarmor.v1beta.ModelArmor/DeleteTemplate"
+	ModelArmor_GetFloorSetting_FullMethodName             = "/google.cloud.modelarmor.v1beta.ModelArmor/GetFloorSetting"
+	ModelArmor_UpdateFloorSetting_FullMethodName          = "/google.cloud.modelarmor.v1beta.ModelArmor/UpdateFloorSetting"
+	ModelArmor_SanitizeUserPrompt_FullMethodName          = "/google.cloud.modelarmor.v1beta.ModelArmor/SanitizeUserPrompt"
+	ModelArmor_SanitizeModelResponse_FullMethodName       = "/google.cloud.modelarmor.v1beta.ModelArmor/SanitizeModelResponse"
+	ModelArmor_StreamSanitizeUserPrompt_FullMethodName    = "/google.cloud.modelarmor.v1beta.ModelArmor/StreamSanitizeUserPrompt"
+	ModelArmor_StreamSanitizeModelResponse_FullMethodName = "/google.cloud.modelarmor.v1beta.ModelArmor/StreamSanitizeModelResponse"
 )
 
 // ModelArmorClient is the client API for ModelArmor service.
@@ -68,6 +70,10 @@ type ModelArmorClient interface {
 	SanitizeUserPrompt(ctx context.Context, in *SanitizeUserPromptRequest, opts ...grpc.CallOption) (*SanitizeUserPromptResponse, error)
 	// Sanitizes Model Response.
 	SanitizeModelResponse(ctx context.Context, in *SanitizeModelResponseRequest, opts ...grpc.CallOption) (*SanitizeModelResponseResponse, error)
+	// Streaming version of Sanitize User Prompt.
+	StreamSanitizeUserPrompt(ctx context.Context, opts ...grpc.CallOption) (ModelArmor_StreamSanitizeUserPromptClient, error)
+	// Streaming version of Sanitizes Model Response.
+	StreamSanitizeModelResponse(ctx context.Context, opts ...grpc.CallOption) (ModelArmor_StreamSanitizeModelResponseClient, error)
 }
 
 type modelArmorClient struct {
@@ -159,6 +165,68 @@ func (c *modelArmorClient) SanitizeModelResponse(ctx context.Context, in *Saniti
 	return out, nil
 }
 
+func (c *modelArmorClient) StreamSanitizeUserPrompt(ctx context.Context, opts ...grpc.CallOption) (ModelArmor_StreamSanitizeUserPromptClient, error) {
+	stream, err := c.cc.NewStream(ctx, &ModelArmor_ServiceDesc.Streams[0], ModelArmor_StreamSanitizeUserPrompt_FullMethodName, opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &modelArmorStreamSanitizeUserPromptClient{stream}
+	return x, nil
+}
+
+type ModelArmor_StreamSanitizeUserPromptClient interface {
+	Send(*SanitizeUserPromptRequest) error
+	Recv() (*SanitizeUserPromptResponse, error)
+	grpc.ClientStream
+}
+
+type modelArmorStreamSanitizeUserPromptClient struct {
+	grpc.ClientStream
+}
+
+func (x *modelArmorStreamSanitizeUserPromptClient) Send(m *SanitizeUserPromptRequest) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *modelArmorStreamSanitizeUserPromptClient) Recv() (*SanitizeUserPromptResponse, error) {
+	m := new(SanitizeUserPromptResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *modelArmorClient) StreamSanitizeModelResponse(ctx context.Context, opts ...grpc.CallOption) (ModelArmor_StreamSanitizeModelResponseClient, error) {
+	stream, err := c.cc.NewStream(ctx, &ModelArmor_ServiceDesc.Streams[1], ModelArmor_StreamSanitizeModelResponse_FullMethodName, opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &modelArmorStreamSanitizeModelResponseClient{stream}
+	return x, nil
+}
+
+type ModelArmor_StreamSanitizeModelResponseClient interface {
+	Send(*SanitizeModelResponseRequest) error
+	Recv() (*SanitizeModelResponseResponse, error)
+	grpc.ClientStream
+}
+
+type modelArmorStreamSanitizeModelResponseClient struct {
+	grpc.ClientStream
+}
+
+func (x *modelArmorStreamSanitizeModelResponseClient) Send(m *SanitizeModelResponseRequest) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *modelArmorStreamSanitizeModelResponseClient) Recv() (*SanitizeModelResponseResponse, error) {
+	m := new(SanitizeModelResponseResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // ModelArmorServer is the server API for ModelArmor service.
 // All implementations should embed UnimplementedModelArmorServer
 // for forward compatibility
@@ -181,6 +249,10 @@ type ModelArmorServer interface {
 	SanitizeUserPrompt(context.Context, *SanitizeUserPromptRequest) (*SanitizeUserPromptResponse, error)
 	// Sanitizes Model Response.
 	SanitizeModelResponse(context.Context, *SanitizeModelResponseRequest) (*SanitizeModelResponseResponse, error)
+	// Streaming version of Sanitize User Prompt.
+	StreamSanitizeUserPrompt(ModelArmor_StreamSanitizeUserPromptServer) error
+	// Streaming version of Sanitizes Model Response.
+	StreamSanitizeModelResponse(ModelArmor_StreamSanitizeModelResponseServer) error
 }
 
 // UnimplementedModelArmorServer should be embedded to have forward compatible implementations.
@@ -213,6 +285,12 @@ func (UnimplementedModelArmorServer) SanitizeUserPrompt(context.Context, *Saniti
 }
 func (UnimplementedModelArmorServer) SanitizeModelResponse(context.Context, *SanitizeModelResponseRequest) (*SanitizeModelResponseResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SanitizeModelResponse not implemented")
+}
+func (UnimplementedModelArmorServer) StreamSanitizeUserPrompt(ModelArmor_StreamSanitizeUserPromptServer) error {
+	return status.Errorf(codes.Unimplemented, "method StreamSanitizeUserPrompt not implemented")
+}
+func (UnimplementedModelArmorServer) StreamSanitizeModelResponse(ModelArmor_StreamSanitizeModelResponseServer) error {
+	return status.Errorf(codes.Unimplemented, "method StreamSanitizeModelResponse not implemented")
 }
 
 // UnsafeModelArmorServer may be embedded to opt out of forward compatibility for this service.
@@ -388,6 +466,58 @@ func _ModelArmor_SanitizeModelResponse_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ModelArmor_StreamSanitizeUserPrompt_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(ModelArmorServer).StreamSanitizeUserPrompt(&modelArmorStreamSanitizeUserPromptServer{stream})
+}
+
+type ModelArmor_StreamSanitizeUserPromptServer interface {
+	Send(*SanitizeUserPromptResponse) error
+	Recv() (*SanitizeUserPromptRequest, error)
+	grpc.ServerStream
+}
+
+type modelArmorStreamSanitizeUserPromptServer struct {
+	grpc.ServerStream
+}
+
+func (x *modelArmorStreamSanitizeUserPromptServer) Send(m *SanitizeUserPromptResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *modelArmorStreamSanitizeUserPromptServer) Recv() (*SanitizeUserPromptRequest, error) {
+	m := new(SanitizeUserPromptRequest)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func _ModelArmor_StreamSanitizeModelResponse_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(ModelArmorServer).StreamSanitizeModelResponse(&modelArmorStreamSanitizeModelResponseServer{stream})
+}
+
+type ModelArmor_StreamSanitizeModelResponseServer interface {
+	Send(*SanitizeModelResponseResponse) error
+	Recv() (*SanitizeModelResponseRequest, error)
+	grpc.ServerStream
+}
+
+type modelArmorStreamSanitizeModelResponseServer struct {
+	grpc.ServerStream
+}
+
+func (x *modelArmorStreamSanitizeModelResponseServer) Send(m *SanitizeModelResponseResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *modelArmorStreamSanitizeModelResponseServer) Recv() (*SanitizeModelResponseRequest, error) {
+	m := new(SanitizeModelResponseRequest)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // ModelArmor_ServiceDesc is the grpc.ServiceDesc for ModelArmor service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -432,6 +562,19 @@ var ModelArmor_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ModelArmor_SanitizeModelResponse_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "StreamSanitizeUserPrompt",
+			Handler:       _ModelArmor_StreamSanitizeUserPrompt_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
+		},
+		{
+			StreamName:    "StreamSanitizeModelResponse",
+			Handler:       _ModelArmor_StreamSanitizeModelResponse_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
+		},
+	},
 	Metadata: "google/cloud/modelarmor/v1beta/service.proto",
 }

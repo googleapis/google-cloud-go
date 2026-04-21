@@ -67,6 +67,7 @@ const (
 	EvaluationService_UpdateScheduledEvaluationRun_FullMethodName = "/google.cloud.ces.v1beta.EvaluationService/UpdateScheduledEvaluationRun"
 	EvaluationService_DeleteScheduledEvaluationRun_FullMethodName = "/google.cloud.ces.v1beta.EvaluationService/DeleteScheduledEvaluationRun"
 	EvaluationService_TestPersonaVoice_FullMethodName             = "/google.cloud.ces.v1beta.EvaluationService/TestPersonaVoice"
+	EvaluationService_ExportEvaluations_FullMethodName            = "/google.cloud.ces.v1beta.EvaluationService/ExportEvaluations"
 )
 
 // EvaluationServiceClient is the client API for EvaluationService service.
@@ -138,6 +139,8 @@ type EvaluationServiceClient interface {
 	DeleteScheduledEvaluationRun(ctx context.Context, in *DeleteScheduledEvaluationRunRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Tests the voice of a persona. Also accepts a default persona.
 	TestPersonaVoice(ctx context.Context, in *TestPersonaVoiceRequest, opts ...grpc.CallOption) (*TestPersonaVoiceResponse, error)
+	// Exports evaluations.
+	ExportEvaluations(ctx context.Context, in *ExportEvaluationsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type evaluationServiceClient struct {
@@ -427,6 +430,15 @@ func (c *evaluationServiceClient) TestPersonaVoice(ctx context.Context, in *Test
 	return out, nil
 }
 
+func (c *evaluationServiceClient) ExportEvaluations(ctx context.Context, in *ExportEvaluationsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, EvaluationService_ExportEvaluations_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // EvaluationServiceServer is the server API for EvaluationService service.
 // All implementations should embed UnimplementedEvaluationServiceServer
 // for forward compatibility
@@ -496,6 +508,8 @@ type EvaluationServiceServer interface {
 	DeleteScheduledEvaluationRun(context.Context, *DeleteScheduledEvaluationRunRequest) (*emptypb.Empty, error)
 	// Tests the voice of a persona. Also accepts a default persona.
 	TestPersonaVoice(context.Context, *TestPersonaVoiceRequest) (*TestPersonaVoiceResponse, error)
+	// Exports evaluations.
+	ExportEvaluations(context.Context, *ExportEvaluationsRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedEvaluationServiceServer should be embedded to have forward compatible implementations.
@@ -594,6 +608,9 @@ func (UnimplementedEvaluationServiceServer) DeleteScheduledEvaluationRun(context
 }
 func (UnimplementedEvaluationServiceServer) TestPersonaVoice(context.Context, *TestPersonaVoiceRequest) (*TestPersonaVoiceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TestPersonaVoice not implemented")
+}
+func (UnimplementedEvaluationServiceServer) ExportEvaluations(context.Context, *ExportEvaluationsRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ExportEvaluations not implemented")
 }
 
 // UnsafeEvaluationServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -1165,6 +1182,24 @@ func _EvaluationService_TestPersonaVoice_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _EvaluationService_ExportEvaluations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExportEvaluationsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EvaluationServiceServer).ExportEvaluations(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: EvaluationService_ExportEvaluations_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EvaluationServiceServer).ExportEvaluations(ctx, req.(*ExportEvaluationsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // EvaluationService_ServiceDesc is the grpc.ServiceDesc for EvaluationService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1295,6 +1330,10 @@ var EvaluationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "TestPersonaVoice",
 			Handler:    _EvaluationService_TestPersonaVoice_Handler,
+		},
+		{
+			MethodName: "ExportEvaluations",
+			Handler:    _EvaluationService_ExportEvaluations_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

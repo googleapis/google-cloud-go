@@ -95,6 +95,116 @@ func (AudioEncoding) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{0}
 }
 
+// What to do when a tool call doesn't match any mocked tool calls.
+type MockConfig_UnmatchedToolCallBehavior int32
+
+const (
+	// Default value. This value is unused.
+	MockConfig_UNMATCHED_TOOL_CALL_BEHAVIOR_UNSPECIFIED MockConfig_UnmatchedToolCallBehavior = 0
+	// Throw an error for any tool calls that don't match a mock expected input
+	// pattern.
+	MockConfig_FAIL MockConfig_UnmatchedToolCallBehavior = 1
+	// For unmatched tool calls, pass the tool call through to real tool.
+	MockConfig_PASS_THROUGH MockConfig_UnmatchedToolCallBehavior = 2
+)
+
+// Enum value maps for MockConfig_UnmatchedToolCallBehavior.
+var (
+	MockConfig_UnmatchedToolCallBehavior_name = map[int32]string{
+		0: "UNMATCHED_TOOL_CALL_BEHAVIOR_UNSPECIFIED",
+		1: "FAIL",
+		2: "PASS_THROUGH",
+	}
+	MockConfig_UnmatchedToolCallBehavior_value = map[string]int32{
+		"UNMATCHED_TOOL_CALL_BEHAVIOR_UNSPECIFIED": 0,
+		"FAIL":         1,
+		"PASS_THROUGH": 2,
+	}
+)
+
+func (x MockConfig_UnmatchedToolCallBehavior) Enum() *MockConfig_UnmatchedToolCallBehavior {
+	p := new(MockConfig_UnmatchedToolCallBehavior)
+	*p = x
+	return p
+}
+
+func (x MockConfig_UnmatchedToolCallBehavior) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (MockConfig_UnmatchedToolCallBehavior) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_ces_v1beta_session_service_proto_enumTypes[1].Descriptor()
+}
+
+func (MockConfig_UnmatchedToolCallBehavior) Type() protoreflect.EnumType {
+	return &file_google_cloud_ces_v1beta_session_service_proto_enumTypes[1]
+}
+
+func (x MockConfig_UnmatchedToolCallBehavior) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use MockConfig_UnmatchedToolCallBehavior.Descriptor instead.
+func (MockConfig_UnmatchedToolCallBehavior) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{0, 0}
+}
+
+// Mock tool calls configuration for the session.
+type MockConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. All tool calls to mock for the duration of the session.
+	MockedToolCalls []*MockedToolCall `protobuf:"bytes,1,rep,name=mocked_tool_calls,json=mockedToolCalls,proto3" json:"mocked_tool_calls,omitempty"`
+	// Required. Beavhior for tool calls that don't match any args patterns in
+	// mocked_tool_calls.
+	UnmatchedToolCallBehavior MockConfig_UnmatchedToolCallBehavior `protobuf:"varint,2,opt,name=unmatched_tool_call_behavior,json=unmatchedToolCallBehavior,proto3,enum=google.cloud.ces.v1beta.MockConfig_UnmatchedToolCallBehavior" json:"unmatched_tool_call_behavior,omitempty"`
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
+}
+
+func (x *MockConfig) Reset() {
+	*x = MockConfig{}
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MockConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MockConfig) ProtoMessage() {}
+
+func (x *MockConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MockConfig.ProtoReflect.Descriptor instead.
+func (*MockConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *MockConfig) GetMockedToolCalls() []*MockedToolCall {
+	if x != nil {
+		return x.MockedToolCalls
+	}
+	return nil
+}
+
+func (x *MockConfig) GetUnmatchedToolCallBehavior() MockConfig_UnmatchedToolCallBehavior {
+	if x != nil {
+		return x.UnmatchedToolCallBehavior
+	}
+	return MockConfig_UNMATCHED_TOOL_CALL_BEHAVIOR_UNSPECIFIED
+}
+
 // InputAudioConfig configures how the CES agent should interpret the incoming
 // audio data.
 type InputAudioConfig struct {
@@ -112,7 +222,7 @@ type InputAudioConfig struct {
 
 func (x *InputAudioConfig) Reset() {
 	*x = InputAudioConfig{}
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[0]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -124,7 +234,7 @@ func (x *InputAudioConfig) String() string {
 func (*InputAudioConfig) ProtoMessage() {}
 
 func (x *InputAudioConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[0]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -137,7 +247,7 @@ func (x *InputAudioConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InputAudioConfig.ProtoReflect.Descriptor instead.
 func (*InputAudioConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{0}
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *InputAudioConfig) GetAudioEncoding() AudioEncoding {
@@ -175,7 +285,7 @@ type OutputAudioConfig struct {
 
 func (x *OutputAudioConfig) Reset() {
 	*x = OutputAudioConfig{}
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[1]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -187,7 +297,7 @@ func (x *OutputAudioConfig) String() string {
 func (*OutputAudioConfig) ProtoMessage() {}
 
 func (x *OutputAudioConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[1]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -200,7 +310,7 @@ func (x *OutputAudioConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OutputAudioConfig.ProtoReflect.Descriptor instead.
 func (*OutputAudioConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{1}
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *OutputAudioConfig) GetAudioEncoding() AudioEncoding {
@@ -273,7 +383,7 @@ type SessionConfig struct {
 
 func (x *SessionConfig) Reset() {
 	*x = SessionConfig{}
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[2]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -285,7 +395,7 @@ func (x *SessionConfig) String() string {
 func (*SessionConfig) ProtoMessage() {}
 
 func (x *SessionConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[2]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -298,7 +408,7 @@ func (x *SessionConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SessionConfig.ProtoReflect.Descriptor instead.
 func (*SessionConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{2}
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *SessionConfig) GetSession() string {
@@ -383,7 +493,7 @@ type ToolCalls struct {
 
 func (x *ToolCalls) Reset() {
 	*x = ToolCalls{}
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[3]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -395,7 +505,7 @@ func (x *ToolCalls) String() string {
 func (*ToolCalls) ProtoMessage() {}
 
 func (x *ToolCalls) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[3]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -408,7 +518,7 @@ func (x *ToolCalls) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ToolCalls.ProtoReflect.Descriptor instead.
 func (*ToolCalls) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{3}
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *ToolCalls) GetToolCalls() []*ToolCall {
@@ -429,7 +539,7 @@ type ToolResponses struct {
 
 func (x *ToolResponses) Reset() {
 	*x = ToolResponses{}
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[4]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -441,7 +551,7 @@ func (x *ToolResponses) String() string {
 func (*ToolResponses) ProtoMessage() {}
 
 func (x *ToolResponses) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[4]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -454,7 +564,7 @@ func (x *ToolResponses) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ToolResponses.ProtoReflect.Descriptor instead.
 func (*ToolResponses) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{4}
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *ToolResponses) GetToolResponses() []*ToolResponse {
@@ -475,7 +585,7 @@ type Citations struct {
 
 func (x *Citations) Reset() {
 	*x = Citations{}
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[5]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -487,7 +597,7 @@ func (x *Citations) String() string {
 func (*Citations) ProtoMessage() {}
 
 func (x *Citations) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[5]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -500,7 +610,7 @@ func (x *Citations) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Citations.ProtoReflect.Descriptor instead.
 func (*Citations) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{5}
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *Citations) GetCitedChunks() []*Citations_CitedChunk {
@@ -521,7 +631,7 @@ type Event struct {
 
 func (x *Event) Reset() {
 	*x = Event{}
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[6]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -533,7 +643,7 @@ func (x *Event) String() string {
 func (*Event) ProtoMessage() {}
 
 func (x *Event) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[6]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -546,7 +656,7 @@ func (x *Event) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Event.ProtoReflect.Descriptor instead.
 func (*Event) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{6}
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *Event) GetEvent() string {
@@ -588,7 +698,7 @@ type SessionInput struct {
 
 func (x *SessionInput) Reset() {
 	*x = SessionInput{}
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[7]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -600,7 +710,7 @@ func (x *SessionInput) String() string {
 func (*SessionInput) ProtoMessage() {}
 
 func (x *SessionInput) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[7]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -613,7 +723,7 @@ func (x *SessionInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SessionInput.ProtoReflect.Descriptor instead.
 func (*SessionInput) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{7}
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *SessionInput) GetInputType() isSessionInput_InputType {
@@ -797,7 +907,7 @@ type SessionOutput struct {
 
 func (x *SessionOutput) Reset() {
 	*x = SessionOutput{}
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[8]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -809,7 +919,7 @@ func (x *SessionOutput) String() string {
 func (*SessionOutput) ProtoMessage() {}
 
 func (x *SessionOutput) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[8]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -822,7 +932,7 @@ func (x *SessionOutput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SessionOutput.ProtoReflect.Descriptor instead.
 func (*SessionOutput) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{8}
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *SessionOutput) GetOutputType() isSessionOutput_OutputType {
@@ -983,7 +1093,7 @@ type RecognitionResult struct {
 
 func (x *RecognitionResult) Reset() {
 	*x = RecognitionResult{}
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[9]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -995,7 +1105,7 @@ func (x *RecognitionResult) String() string {
 func (*RecognitionResult) ProtoMessage() {}
 
 func (x *RecognitionResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[9]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1008,7 +1118,7 @@ func (x *RecognitionResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RecognitionResult.ProtoReflect.Descriptor instead.
 func (*RecognitionResult) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{9}
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *RecognitionResult) GetTranscript() string {
@@ -1031,7 +1141,7 @@ type InterruptionSignal struct {
 
 func (x *InterruptionSignal) Reset() {
 	*x = InterruptionSignal{}
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[10]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1043,7 +1153,7 @@ func (x *InterruptionSignal) String() string {
 func (*InterruptionSignal) ProtoMessage() {}
 
 func (x *InterruptionSignal) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[10]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1056,7 +1166,7 @@ func (x *InterruptionSignal) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InterruptionSignal.ProtoReflect.Descriptor instead.
 func (*InterruptionSignal) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{10}
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *InterruptionSignal) GetBargeIn() bool {
@@ -1083,7 +1193,7 @@ type EndSession struct {
 
 func (x *EndSession) Reset() {
 	*x = EndSession{}
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[11]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1095,7 +1205,7 @@ func (x *EndSession) String() string {
 func (*EndSession) ProtoMessage() {}
 
 func (x *EndSession) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[11]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1108,7 +1218,7 @@ func (x *EndSession) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EndSession.ProtoReflect.Descriptor instead.
 func (*EndSession) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{11}
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *EndSession) GetMetadata() *structpb.Struct {
@@ -1128,7 +1238,7 @@ type GoAway struct {
 
 func (x *GoAway) Reset() {
 	*x = GoAway{}
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[12]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1140,7 +1250,7 @@ func (x *GoAway) String() string {
 func (*GoAway) ProtoMessage() {}
 
 func (x *GoAway) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[12]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1153,7 +1263,7 @@ func (x *GoAway) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GoAway.ProtoReflect.Descriptor instead.
 func (*GoAway) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{12}
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{13}
 }
 
 // Request message for
@@ -1170,7 +1280,7 @@ type RunSessionRequest struct {
 
 func (x *RunSessionRequest) Reset() {
 	*x = RunSessionRequest{}
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[13]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1182,7 +1292,7 @@ func (x *RunSessionRequest) String() string {
 func (*RunSessionRequest) ProtoMessage() {}
 
 func (x *RunSessionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[13]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1195,7 +1305,7 @@ func (x *RunSessionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RunSessionRequest.ProtoReflect.Descriptor instead.
 func (*RunSessionRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{13}
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *RunSessionRequest) GetConfig() *SessionConfig {
@@ -1224,7 +1334,7 @@ type RunSessionResponse struct {
 
 func (x *RunSessionResponse) Reset() {
 	*x = RunSessionResponse{}
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[14]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1236,7 +1346,7 @@ func (x *RunSessionResponse) String() string {
 func (*RunSessionResponse) ProtoMessage() {}
 
 func (x *RunSessionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[14]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1249,7 +1359,7 @@ func (x *RunSessionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RunSessionResponse.ProtoReflect.Descriptor instead.
 func (*RunSessionResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{14}
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *RunSessionResponse) GetOutputs() []*SessionOutput {
@@ -1277,7 +1387,7 @@ type BidiSessionClientMessage struct {
 
 func (x *BidiSessionClientMessage) Reset() {
 	*x = BidiSessionClientMessage{}
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[15]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1289,7 +1399,7 @@ func (x *BidiSessionClientMessage) String() string {
 func (*BidiSessionClientMessage) ProtoMessage() {}
 
 func (x *BidiSessionClientMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[15]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1302,7 +1412,7 @@ func (x *BidiSessionClientMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BidiSessionClientMessage.ProtoReflect.Descriptor instead.
 func (*BidiSessionClientMessage) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{15}
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *BidiSessionClientMessage) GetMessageType() isBidiSessionClientMessage_MessageType {
@@ -1369,7 +1479,7 @@ type BidiSessionServerMessage struct {
 
 func (x *BidiSessionServerMessage) Reset() {
 	*x = BidiSessionServerMessage{}
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[16]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1381,7 +1491,7 @@ func (x *BidiSessionServerMessage) String() string {
 func (*BidiSessionServerMessage) ProtoMessage() {}
 
 func (x *BidiSessionServerMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[16]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1394,7 +1504,7 @@ func (x *BidiSessionServerMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BidiSessionServerMessage.ProtoReflect.Descriptor instead.
 func (*BidiSessionServerMessage) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{16}
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *BidiSessionServerMessage) GetMessageType() isBidiSessionServerMessage_MessageType {
@@ -1510,7 +1620,7 @@ type SessionConfig_RemoteDialogflowQueryParameters struct {
 
 func (x *SessionConfig_RemoteDialogflowQueryParameters) Reset() {
 	*x = SessionConfig_RemoteDialogflowQueryParameters{}
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[17]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1522,7 +1632,7 @@ func (x *SessionConfig_RemoteDialogflowQueryParameters) String() string {
 func (*SessionConfig_RemoteDialogflowQueryParameters) ProtoMessage() {}
 
 func (x *SessionConfig_RemoteDialogflowQueryParameters) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[17]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1535,7 +1645,7 @@ func (x *SessionConfig_RemoteDialogflowQueryParameters) ProtoReflect() protorefl
 
 // Deprecated: Use SessionConfig_RemoteDialogflowQueryParameters.ProtoReflect.Descriptor instead.
 func (*SessionConfig_RemoteDialogflowQueryParameters) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{2, 0}
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{3, 0}
 }
 
 func (x *SessionConfig_RemoteDialogflowQueryParameters) GetWebhookHeaders() map[string]string {
@@ -1574,7 +1684,7 @@ type Citations_CitedChunk struct {
 
 func (x *Citations_CitedChunk) Reset() {
 	*x = Citations_CitedChunk{}
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[19]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1586,7 +1696,7 @@ func (x *Citations_CitedChunk) String() string {
 func (*Citations_CitedChunk) ProtoMessage() {}
 
 func (x *Citations_CitedChunk) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[19]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1599,7 +1709,7 @@ func (x *Citations_CitedChunk) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Citations_CitedChunk.ProtoReflect.Descriptor instead.
 func (*Citations_CitedChunk) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{5, 0}
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{6, 0}
 }
 
 func (x *Citations_CitedChunk) GetUri() string {
@@ -1637,7 +1747,7 @@ type SessionOutput_DiagnosticInfo struct {
 
 func (x *SessionOutput_DiagnosticInfo) Reset() {
 	*x = SessionOutput_DiagnosticInfo{}
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[20]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1649,7 +1759,7 @@ func (x *SessionOutput_DiagnosticInfo) String() string {
 func (*SessionOutput_DiagnosticInfo) ProtoMessage() {}
 
 func (x *SessionOutput_DiagnosticInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[20]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1662,7 +1772,7 @@ func (x *SessionOutput_DiagnosticInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SessionOutput_DiagnosticInfo.ProtoReflect.Descriptor instead.
 func (*SessionOutput_DiagnosticInfo) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{8, 0}
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{9, 0}
 }
 
 func (x *SessionOutput_DiagnosticInfo) GetMessages() []*Message {
@@ -1683,7 +1793,15 @@ var File_google_cloud_ces_v1beta_session_service_proto protoreflect.FileDescript
 
 const file_google_cloud_ces_v1beta_session_service_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/ces/v1beta/session_service.proto\x12\x17google.cloud.ces.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a%google/cloud/ces/v1beta/example.proto\x1a0google/cloud/ces/v1beta/search_suggestions.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xd4\x01\n" +
+	"-google/cloud/ces/v1beta/session_service.proto\x12\x17google.cloud.ces.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a%google/cloud/ces/v1beta/example.proto\x1a#google/cloud/ces/v1beta/mocks.proto\x1a0google/cloud/ces/v1beta/search_suggestions.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xd3\x02\n" +
+	"\n" +
+	"MockConfig\x12X\n" +
+	"\x11mocked_tool_calls\x18\x01 \x03(\v2'.google.cloud.ces.v1beta.MockedToolCallB\x03\xe0A\x01R\x0fmockedToolCalls\x12\x83\x01\n" +
+	"\x1cunmatched_tool_call_behavior\x18\x02 \x01(\x0e2=.google.cloud.ces.v1beta.MockConfig.UnmatchedToolCallBehaviorB\x03\xe0A\x02R\x19unmatchedToolCallBehavior\"e\n" +
+	"\x19UnmatchedToolCallBehavior\x12,\n" +
+	"(UNMATCHED_TOOL_CALL_BEHAVIOR_UNSPECIFIED\x10\x00\x12\b\n" +
+	"\x04FAIL\x10\x01\x12\x10\n" +
+	"\fPASS_THROUGH\x10\x02\"\xd4\x01\n" +
 	"\x10InputAudioConfig\x12R\n" +
 	"\x0eaudio_encoding\x18\x01 \x01(\x0e2&.google.cloud.ces.v1beta.AudioEncodingB\x03\xe0A\x02R\raudioEncoding\x12/\n" +
 	"\x11sample_rate_hertz\x18\x02 \x01(\x05B\x03\xe0A\x02R\x0fsampleRateHertz\x12;\n" +
@@ -1811,88 +1929,93 @@ func file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP() []byte {
 	return file_google_cloud_ces_v1beta_session_service_proto_rawDescData
 }
 
-var file_google_cloud_ces_v1beta_session_service_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_google_cloud_ces_v1beta_session_service_proto_msgTypes = make([]protoimpl.MessageInfo, 21)
+var file_google_cloud_ces_v1beta_session_service_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_google_cloud_ces_v1beta_session_service_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
 var file_google_cloud_ces_v1beta_session_service_proto_goTypes = []any{
 	(AudioEncoding)(0),                                    // 0: google.cloud.ces.v1beta.AudioEncoding
-	(*InputAudioConfig)(nil),                              // 1: google.cloud.ces.v1beta.InputAudioConfig
-	(*OutputAudioConfig)(nil),                             // 2: google.cloud.ces.v1beta.OutputAudioConfig
-	(*SessionConfig)(nil),                                 // 3: google.cloud.ces.v1beta.SessionConfig
-	(*ToolCalls)(nil),                                     // 4: google.cloud.ces.v1beta.ToolCalls
-	(*ToolResponses)(nil),                                 // 5: google.cloud.ces.v1beta.ToolResponses
-	(*Citations)(nil),                                     // 6: google.cloud.ces.v1beta.Citations
-	(*Event)(nil),                                         // 7: google.cloud.ces.v1beta.Event
-	(*SessionInput)(nil),                                  // 8: google.cloud.ces.v1beta.SessionInput
-	(*SessionOutput)(nil),                                 // 9: google.cloud.ces.v1beta.SessionOutput
-	(*RecognitionResult)(nil),                             // 10: google.cloud.ces.v1beta.RecognitionResult
-	(*InterruptionSignal)(nil),                            // 11: google.cloud.ces.v1beta.InterruptionSignal
-	(*EndSession)(nil),                                    // 12: google.cloud.ces.v1beta.EndSession
-	(*GoAway)(nil),                                        // 13: google.cloud.ces.v1beta.GoAway
-	(*RunSessionRequest)(nil),                             // 14: google.cloud.ces.v1beta.RunSessionRequest
-	(*RunSessionResponse)(nil),                            // 15: google.cloud.ces.v1beta.RunSessionResponse
-	(*BidiSessionClientMessage)(nil),                      // 16: google.cloud.ces.v1beta.BidiSessionClientMessage
-	(*BidiSessionServerMessage)(nil),                      // 17: google.cloud.ces.v1beta.BidiSessionServerMessage
-	(*SessionConfig_RemoteDialogflowQueryParameters)(nil), // 18: google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters
-	nil,                                  // 19: google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters.WebhookHeadersEntry
-	(*Citations_CitedChunk)(nil),         // 20: google.cloud.ces.v1beta.Citations.CitedChunk
-	(*SessionOutput_DiagnosticInfo)(nil), // 21: google.cloud.ces.v1beta.SessionOutput.DiagnosticInfo
-	(*Message)(nil),                      // 22: google.cloud.ces.v1beta.Message
-	(*ToolCall)(nil),                     // 23: google.cloud.ces.v1beta.ToolCall
-	(*ToolResponse)(nil),                 // 24: google.cloud.ces.v1beta.ToolResponse
-	(*Image)(nil),                        // 25: google.cloud.ces.v1beta.Image
-	(*Blob)(nil),                         // 26: google.cloud.ces.v1beta.Blob
-	(*structpb.Struct)(nil),              // 27: google.protobuf.Struct
-	(*GoogleSearchSuggestions)(nil),      // 28: google.cloud.ces.v1beta.GoogleSearchSuggestions
-	(*Span)(nil),                         // 29: google.cloud.ces.v1beta.Span
+	(MockConfig_UnmatchedToolCallBehavior)(0),             // 1: google.cloud.ces.v1beta.MockConfig.UnmatchedToolCallBehavior
+	(*MockConfig)(nil),                                    // 2: google.cloud.ces.v1beta.MockConfig
+	(*InputAudioConfig)(nil),                              // 3: google.cloud.ces.v1beta.InputAudioConfig
+	(*OutputAudioConfig)(nil),                             // 4: google.cloud.ces.v1beta.OutputAudioConfig
+	(*SessionConfig)(nil),                                 // 5: google.cloud.ces.v1beta.SessionConfig
+	(*ToolCalls)(nil),                                     // 6: google.cloud.ces.v1beta.ToolCalls
+	(*ToolResponses)(nil),                                 // 7: google.cloud.ces.v1beta.ToolResponses
+	(*Citations)(nil),                                     // 8: google.cloud.ces.v1beta.Citations
+	(*Event)(nil),                                         // 9: google.cloud.ces.v1beta.Event
+	(*SessionInput)(nil),                                  // 10: google.cloud.ces.v1beta.SessionInput
+	(*SessionOutput)(nil),                                 // 11: google.cloud.ces.v1beta.SessionOutput
+	(*RecognitionResult)(nil),                             // 12: google.cloud.ces.v1beta.RecognitionResult
+	(*InterruptionSignal)(nil),                            // 13: google.cloud.ces.v1beta.InterruptionSignal
+	(*EndSession)(nil),                                    // 14: google.cloud.ces.v1beta.EndSession
+	(*GoAway)(nil),                                        // 15: google.cloud.ces.v1beta.GoAway
+	(*RunSessionRequest)(nil),                             // 16: google.cloud.ces.v1beta.RunSessionRequest
+	(*RunSessionResponse)(nil),                            // 17: google.cloud.ces.v1beta.RunSessionResponse
+	(*BidiSessionClientMessage)(nil),                      // 18: google.cloud.ces.v1beta.BidiSessionClientMessage
+	(*BidiSessionServerMessage)(nil),                      // 19: google.cloud.ces.v1beta.BidiSessionServerMessage
+	(*SessionConfig_RemoteDialogflowQueryParameters)(nil), // 20: google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters
+	nil,                                  // 21: google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters.WebhookHeadersEntry
+	(*Citations_CitedChunk)(nil),         // 22: google.cloud.ces.v1beta.Citations.CitedChunk
+	(*SessionOutput_DiagnosticInfo)(nil), // 23: google.cloud.ces.v1beta.SessionOutput.DiagnosticInfo
+	(*MockedToolCall)(nil),               // 24: google.cloud.ces.v1beta.MockedToolCall
+	(*Message)(nil),                      // 25: google.cloud.ces.v1beta.Message
+	(*ToolCall)(nil),                     // 26: google.cloud.ces.v1beta.ToolCall
+	(*ToolResponse)(nil),                 // 27: google.cloud.ces.v1beta.ToolResponse
+	(*Image)(nil),                        // 28: google.cloud.ces.v1beta.Image
+	(*Blob)(nil),                         // 29: google.cloud.ces.v1beta.Blob
+	(*structpb.Struct)(nil),              // 30: google.protobuf.Struct
+	(*GoogleSearchSuggestions)(nil),      // 31: google.cloud.ces.v1beta.GoogleSearchSuggestions
+	(*Span)(nil),                         // 32: google.cloud.ces.v1beta.Span
 }
 var file_google_cloud_ces_v1beta_session_service_proto_depIdxs = []int32{
-	0,  // 0: google.cloud.ces.v1beta.InputAudioConfig.audio_encoding:type_name -> google.cloud.ces.v1beta.AudioEncoding
-	0,  // 1: google.cloud.ces.v1beta.OutputAudioConfig.audio_encoding:type_name -> google.cloud.ces.v1beta.AudioEncoding
-	1,  // 2: google.cloud.ces.v1beta.SessionConfig.input_audio_config:type_name -> google.cloud.ces.v1beta.InputAudioConfig
-	2,  // 3: google.cloud.ces.v1beta.SessionConfig.output_audio_config:type_name -> google.cloud.ces.v1beta.OutputAudioConfig
-	22, // 4: google.cloud.ces.v1beta.SessionConfig.historical_contexts:type_name -> google.cloud.ces.v1beta.Message
-	18, // 5: google.cloud.ces.v1beta.SessionConfig.remote_dialogflow_query_parameters:type_name -> google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters
-	23, // 6: google.cloud.ces.v1beta.ToolCalls.tool_calls:type_name -> google.cloud.ces.v1beta.ToolCall
-	24, // 7: google.cloud.ces.v1beta.ToolResponses.tool_responses:type_name -> google.cloud.ces.v1beta.ToolResponse
-	20, // 8: google.cloud.ces.v1beta.Citations.cited_chunks:type_name -> google.cloud.ces.v1beta.Citations.CitedChunk
-	5,  // 9: google.cloud.ces.v1beta.SessionInput.tool_responses:type_name -> google.cloud.ces.v1beta.ToolResponses
-	25, // 10: google.cloud.ces.v1beta.SessionInput.image:type_name -> google.cloud.ces.v1beta.Image
-	26, // 11: google.cloud.ces.v1beta.SessionInput.blob:type_name -> google.cloud.ces.v1beta.Blob
-	27, // 12: google.cloud.ces.v1beta.SessionInput.variables:type_name -> google.protobuf.Struct
-	7,  // 13: google.cloud.ces.v1beta.SessionInput.event:type_name -> google.cloud.ces.v1beta.Event
-	4,  // 14: google.cloud.ces.v1beta.SessionOutput.tool_calls:type_name -> google.cloud.ces.v1beta.ToolCalls
-	6,  // 15: google.cloud.ces.v1beta.SessionOutput.citations:type_name -> google.cloud.ces.v1beta.Citations
-	28, // 16: google.cloud.ces.v1beta.SessionOutput.google_search_suggestions:type_name -> google.cloud.ces.v1beta.GoogleSearchSuggestions
-	12, // 17: google.cloud.ces.v1beta.SessionOutput.end_session:type_name -> google.cloud.ces.v1beta.EndSession
-	27, // 18: google.cloud.ces.v1beta.SessionOutput.payload:type_name -> google.protobuf.Struct
-	21, // 19: google.cloud.ces.v1beta.SessionOutput.diagnostic_info:type_name -> google.cloud.ces.v1beta.SessionOutput.DiagnosticInfo
-	27, // 20: google.cloud.ces.v1beta.EndSession.metadata:type_name -> google.protobuf.Struct
-	3,  // 21: google.cloud.ces.v1beta.RunSessionRequest.config:type_name -> google.cloud.ces.v1beta.SessionConfig
-	8,  // 22: google.cloud.ces.v1beta.RunSessionRequest.inputs:type_name -> google.cloud.ces.v1beta.SessionInput
-	9,  // 23: google.cloud.ces.v1beta.RunSessionResponse.outputs:type_name -> google.cloud.ces.v1beta.SessionOutput
-	3,  // 24: google.cloud.ces.v1beta.BidiSessionClientMessage.config:type_name -> google.cloud.ces.v1beta.SessionConfig
-	8,  // 25: google.cloud.ces.v1beta.BidiSessionClientMessage.realtime_input:type_name -> google.cloud.ces.v1beta.SessionInput
-	9,  // 26: google.cloud.ces.v1beta.BidiSessionServerMessage.session_output:type_name -> google.cloud.ces.v1beta.SessionOutput
-	10, // 27: google.cloud.ces.v1beta.BidiSessionServerMessage.recognition_result:type_name -> google.cloud.ces.v1beta.RecognitionResult
-	11, // 28: google.cloud.ces.v1beta.BidiSessionServerMessage.interruption_signal:type_name -> google.cloud.ces.v1beta.InterruptionSignal
-	12, // 29: google.cloud.ces.v1beta.BidiSessionServerMessage.end_session:type_name -> google.cloud.ces.v1beta.EndSession
-	13, // 30: google.cloud.ces.v1beta.BidiSessionServerMessage.go_away:type_name -> google.cloud.ces.v1beta.GoAway
-	19, // 31: google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters.webhook_headers:type_name -> google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters.WebhookHeadersEntry
-	27, // 32: google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters.payload:type_name -> google.protobuf.Struct
-	27, // 33: google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters.end_user_metadata:type_name -> google.protobuf.Struct
-	22, // 34: google.cloud.ces.v1beta.SessionOutput.DiagnosticInfo.messages:type_name -> google.cloud.ces.v1beta.Message
-	29, // 35: google.cloud.ces.v1beta.SessionOutput.DiagnosticInfo.root_span:type_name -> google.cloud.ces.v1beta.Span
-	14, // 36: google.cloud.ces.v1beta.SessionService.RunSession:input_type -> google.cloud.ces.v1beta.RunSessionRequest
-	14, // 37: google.cloud.ces.v1beta.SessionService.StreamRunSession:input_type -> google.cloud.ces.v1beta.RunSessionRequest
-	16, // 38: google.cloud.ces.v1beta.SessionService.BidiRunSession:input_type -> google.cloud.ces.v1beta.BidiSessionClientMessage
-	15, // 39: google.cloud.ces.v1beta.SessionService.RunSession:output_type -> google.cloud.ces.v1beta.RunSessionResponse
-	15, // 40: google.cloud.ces.v1beta.SessionService.StreamRunSession:output_type -> google.cloud.ces.v1beta.RunSessionResponse
-	17, // 41: google.cloud.ces.v1beta.SessionService.BidiRunSession:output_type -> google.cloud.ces.v1beta.BidiSessionServerMessage
-	39, // [39:42] is the sub-list for method output_type
-	36, // [36:39] is the sub-list for method input_type
-	36, // [36:36] is the sub-list for extension type_name
-	36, // [36:36] is the sub-list for extension extendee
-	0,  // [0:36] is the sub-list for field type_name
+	24, // 0: google.cloud.ces.v1beta.MockConfig.mocked_tool_calls:type_name -> google.cloud.ces.v1beta.MockedToolCall
+	1,  // 1: google.cloud.ces.v1beta.MockConfig.unmatched_tool_call_behavior:type_name -> google.cloud.ces.v1beta.MockConfig.UnmatchedToolCallBehavior
+	0,  // 2: google.cloud.ces.v1beta.InputAudioConfig.audio_encoding:type_name -> google.cloud.ces.v1beta.AudioEncoding
+	0,  // 3: google.cloud.ces.v1beta.OutputAudioConfig.audio_encoding:type_name -> google.cloud.ces.v1beta.AudioEncoding
+	3,  // 4: google.cloud.ces.v1beta.SessionConfig.input_audio_config:type_name -> google.cloud.ces.v1beta.InputAudioConfig
+	4,  // 5: google.cloud.ces.v1beta.SessionConfig.output_audio_config:type_name -> google.cloud.ces.v1beta.OutputAudioConfig
+	25, // 6: google.cloud.ces.v1beta.SessionConfig.historical_contexts:type_name -> google.cloud.ces.v1beta.Message
+	20, // 7: google.cloud.ces.v1beta.SessionConfig.remote_dialogflow_query_parameters:type_name -> google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters
+	26, // 8: google.cloud.ces.v1beta.ToolCalls.tool_calls:type_name -> google.cloud.ces.v1beta.ToolCall
+	27, // 9: google.cloud.ces.v1beta.ToolResponses.tool_responses:type_name -> google.cloud.ces.v1beta.ToolResponse
+	22, // 10: google.cloud.ces.v1beta.Citations.cited_chunks:type_name -> google.cloud.ces.v1beta.Citations.CitedChunk
+	7,  // 11: google.cloud.ces.v1beta.SessionInput.tool_responses:type_name -> google.cloud.ces.v1beta.ToolResponses
+	28, // 12: google.cloud.ces.v1beta.SessionInput.image:type_name -> google.cloud.ces.v1beta.Image
+	29, // 13: google.cloud.ces.v1beta.SessionInput.blob:type_name -> google.cloud.ces.v1beta.Blob
+	30, // 14: google.cloud.ces.v1beta.SessionInput.variables:type_name -> google.protobuf.Struct
+	9,  // 15: google.cloud.ces.v1beta.SessionInput.event:type_name -> google.cloud.ces.v1beta.Event
+	6,  // 16: google.cloud.ces.v1beta.SessionOutput.tool_calls:type_name -> google.cloud.ces.v1beta.ToolCalls
+	8,  // 17: google.cloud.ces.v1beta.SessionOutput.citations:type_name -> google.cloud.ces.v1beta.Citations
+	31, // 18: google.cloud.ces.v1beta.SessionOutput.google_search_suggestions:type_name -> google.cloud.ces.v1beta.GoogleSearchSuggestions
+	14, // 19: google.cloud.ces.v1beta.SessionOutput.end_session:type_name -> google.cloud.ces.v1beta.EndSession
+	30, // 20: google.cloud.ces.v1beta.SessionOutput.payload:type_name -> google.protobuf.Struct
+	23, // 21: google.cloud.ces.v1beta.SessionOutput.diagnostic_info:type_name -> google.cloud.ces.v1beta.SessionOutput.DiagnosticInfo
+	30, // 22: google.cloud.ces.v1beta.EndSession.metadata:type_name -> google.protobuf.Struct
+	5,  // 23: google.cloud.ces.v1beta.RunSessionRequest.config:type_name -> google.cloud.ces.v1beta.SessionConfig
+	10, // 24: google.cloud.ces.v1beta.RunSessionRequest.inputs:type_name -> google.cloud.ces.v1beta.SessionInput
+	11, // 25: google.cloud.ces.v1beta.RunSessionResponse.outputs:type_name -> google.cloud.ces.v1beta.SessionOutput
+	5,  // 26: google.cloud.ces.v1beta.BidiSessionClientMessage.config:type_name -> google.cloud.ces.v1beta.SessionConfig
+	10, // 27: google.cloud.ces.v1beta.BidiSessionClientMessage.realtime_input:type_name -> google.cloud.ces.v1beta.SessionInput
+	11, // 28: google.cloud.ces.v1beta.BidiSessionServerMessage.session_output:type_name -> google.cloud.ces.v1beta.SessionOutput
+	12, // 29: google.cloud.ces.v1beta.BidiSessionServerMessage.recognition_result:type_name -> google.cloud.ces.v1beta.RecognitionResult
+	13, // 30: google.cloud.ces.v1beta.BidiSessionServerMessage.interruption_signal:type_name -> google.cloud.ces.v1beta.InterruptionSignal
+	14, // 31: google.cloud.ces.v1beta.BidiSessionServerMessage.end_session:type_name -> google.cloud.ces.v1beta.EndSession
+	15, // 32: google.cloud.ces.v1beta.BidiSessionServerMessage.go_away:type_name -> google.cloud.ces.v1beta.GoAway
+	21, // 33: google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters.webhook_headers:type_name -> google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters.WebhookHeadersEntry
+	30, // 34: google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters.payload:type_name -> google.protobuf.Struct
+	30, // 35: google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters.end_user_metadata:type_name -> google.protobuf.Struct
+	25, // 36: google.cloud.ces.v1beta.SessionOutput.DiagnosticInfo.messages:type_name -> google.cloud.ces.v1beta.Message
+	32, // 37: google.cloud.ces.v1beta.SessionOutput.DiagnosticInfo.root_span:type_name -> google.cloud.ces.v1beta.Span
+	16, // 38: google.cloud.ces.v1beta.SessionService.RunSession:input_type -> google.cloud.ces.v1beta.RunSessionRequest
+	16, // 39: google.cloud.ces.v1beta.SessionService.StreamRunSession:input_type -> google.cloud.ces.v1beta.RunSessionRequest
+	18, // 40: google.cloud.ces.v1beta.SessionService.BidiRunSession:input_type -> google.cloud.ces.v1beta.BidiSessionClientMessage
+	17, // 41: google.cloud.ces.v1beta.SessionService.RunSession:output_type -> google.cloud.ces.v1beta.RunSessionResponse
+	17, // 42: google.cloud.ces.v1beta.SessionService.StreamRunSession:output_type -> google.cloud.ces.v1beta.RunSessionResponse
+	19, // 43: google.cloud.ces.v1beta.SessionService.BidiRunSession:output_type -> google.cloud.ces.v1beta.BidiSessionServerMessage
+	41, // [41:44] is the sub-list for method output_type
+	38, // [38:41] is the sub-list for method input_type
+	38, // [38:38] is the sub-list for extension type_name
+	38, // [38:38] is the sub-list for extension extendee
+	0,  // [0:38] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_ces_v1beta_session_service_proto_init() }
@@ -1902,8 +2025,9 @@ func file_google_cloud_ces_v1beta_session_service_proto_init() {
 	}
 	file_google_cloud_ces_v1beta_common_proto_init()
 	file_google_cloud_ces_v1beta_example_proto_init()
+	file_google_cloud_ces_v1beta_mocks_proto_init()
 	file_google_cloud_ces_v1beta_search_suggestions_proto_init()
-	file_google_cloud_ces_v1beta_session_service_proto_msgTypes[7].OneofWrappers = []any{
+	file_google_cloud_ces_v1beta_session_service_proto_msgTypes[8].OneofWrappers = []any{
 		(*SessionInput_Text)(nil),
 		(*SessionInput_Dtmf)(nil),
 		(*SessionInput_Audio)(nil),
@@ -1913,7 +2037,7 @@ func file_google_cloud_ces_v1beta_session_service_proto_init() {
 		(*SessionInput_Variables)(nil),
 		(*SessionInput_Event)(nil),
 	}
-	file_google_cloud_ces_v1beta_session_service_proto_msgTypes[8].OneofWrappers = []any{
+	file_google_cloud_ces_v1beta_session_service_proto_msgTypes[9].OneofWrappers = []any{
 		(*SessionOutput_Text)(nil),
 		(*SessionOutput_Audio)(nil),
 		(*SessionOutput_ToolCalls)(nil),
@@ -1922,11 +2046,11 @@ func file_google_cloud_ces_v1beta_session_service_proto_init() {
 		(*SessionOutput_EndSession)(nil),
 		(*SessionOutput_Payload)(nil),
 	}
-	file_google_cloud_ces_v1beta_session_service_proto_msgTypes[15].OneofWrappers = []any{
+	file_google_cloud_ces_v1beta_session_service_proto_msgTypes[16].OneofWrappers = []any{
 		(*BidiSessionClientMessage_Config)(nil),
 		(*BidiSessionClientMessage_RealtimeInput)(nil),
 	}
-	file_google_cloud_ces_v1beta_session_service_proto_msgTypes[16].OneofWrappers = []any{
+	file_google_cloud_ces_v1beta_session_service_proto_msgTypes[17].OneofWrappers = []any{
 		(*BidiSessionServerMessage_SessionOutput)(nil),
 		(*BidiSessionServerMessage_RecognitionResult)(nil),
 		(*BidiSessionServerMessage_InterruptionSignal)(nil),
@@ -1938,8 +2062,8 @@ func file_google_cloud_ces_v1beta_session_service_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_ces_v1beta_session_service_proto_rawDesc), len(file_google_cloud_ces_v1beta_session_service_proto_rawDesc)),
-			NumEnums:      1,
-			NumMessages:   21,
+			NumEnums:      2,
+			NumMessages:   22,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

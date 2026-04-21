@@ -590,8 +590,8 @@ const file_google_cloud_dialogflow_cx_v3_example_proto_rawDesc = "" +
 	"\fListExamples\x122.google.cloud.dialogflow.cx.v3.ListExamplesRequest\x1a3.google.cloud.dialogflow.cx.v3.ListExamplesResponse\"R\xdaA\x06parent\x82\xd3\xe4\x93\x02C\x12A/v3/{parent=projects/*/locations/*/agents/*/playbooks/*}/examples\x12\xb8\x01\n" +
 	"\n" +
 	"GetExample\x120.google.cloud.dialogflow.cx.v3.GetExampleRequest\x1a&.google.cloud.dialogflow.cx.v3.Example\"P\xdaA\x04name\x82\xd3\xe4\x93\x02C\x12A/v3/{name=projects/*/locations/*/agents/*/playbooks/*/examples/*}\x12\xde\x01\n" +
-	"\rUpdateExample\x123.google.cloud.dialogflow.cx.v3.UpdateExampleRequest\x1a&.google.cloud.dialogflow.cx.v3.Example\"p\xdaA\x13example,update_mask\x82\xd3\xe4\x93\x02T:\aexample2I/v3/{example.name=projects/*/locations/*/agents/*/playbooks/*/examples/*}\x1ax\xcaA\x19dialogflow.googleapis.com\xd2AYhttps://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/dialogflowB\x8b\x01\n" +
-	"!com.google.cloud.dialogflow.cx.v3B\fExampleProtoP\x01Z1cloud.google.com/go/dialogflow/cx/apiv3/cxpb;cxpb\xa2\x02\x02DF\xaa\x02\x1dGoogle.Cloud.Dialogflow.Cx.V3b\x06proto3"
+	"\rUpdateExample\x123.google.cloud.dialogflow.cx.v3.UpdateExampleRequest\x1a&.google.cloud.dialogflow.cx.v3.Example\"p\xdaA\x13example,update_mask\x82\xd3\xe4\x93\x02T:\aexample2I/v3/{example.name=projects/*/locations/*/agents/*/playbooks/*/examples/*}\x1ax\xcaA\x19dialogflow.googleapis.com\xd2AYhttps://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/dialogflowB\xaf\x01\n" +
+	"!com.google.cloud.dialogflow.cx.v3B\fExampleProtoP\x01Z1cloud.google.com/go/dialogflow/cx/apiv3/cxpb;cxpb\xa2\x02\x02DF\xaa\x02\x1dGoogle.Cloud.Dialogflow.Cx.V3\xea\x02!Google::Cloud::Dialogflow::CX::V3b\x06proto3"
 
 var (
 	file_google_cloud_dialogflow_cx_v3_example_proto_rawDescOnce sync.Once

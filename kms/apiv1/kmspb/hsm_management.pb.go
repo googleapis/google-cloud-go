@@ -260,7 +260,7 @@ type SingleTenantHsmInstance struct {
 	DeleteTime *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=delete_time,json=deleteTime,proto3" json:"delete_time,omitempty"`
 	// Output only. The system-defined duration that an instance can remain
 	// unrefreshed until it is automatically disabled. This will have a value of
-	// 120 days.
+	// 730 days.
 	UnrefreshedDurationUntilDisable *durationpb.Duration `protobuf:"bytes,6,opt,name=unrefreshed_duration_until_disable,json=unrefreshedDurationUntilDisable,proto3" json:"unrefreshed_duration_until_disable,omitempty"`
 	// Output only. The time at which the instance will be automatically disabled
 	// if not refreshed. This field is updated upon creation and after each
@@ -270,9 +270,14 @@ type SingleTenantHsmInstance struct {
 	// before this time otherwise the
 	// [SingleTenantHsmInstance][google.cloud.kms.v1.SingleTenantHsmInstance] will
 	// become disabled.
-	DisableTime   *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=disable_time,json=disableTime,proto3" json:"disable_time,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	DisableTime *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=disable_time,json=disableTime,proto3" json:"disable_time,omitempty"`
+	// Optional. Immutable. Indicates whether key portability is enabled for the
+	// [SingleTenantHsmInstance][google.cloud.kms.v1.SingleTenantHsmInstance].
+	// This can only be set at creation time. Key portability features are
+	// disabled by default and not yet available in GA.
+	KeyPortabilityEnabled bool `protobuf:"varint,8,opt,name=key_portability_enabled,json=keyPortabilityEnabled,proto3" json:"key_portability_enabled,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
 }
 
 func (x *SingleTenantHsmInstance) Reset() {
@@ -352,6 +357,13 @@ func (x *SingleTenantHsmInstance) GetDisableTime() *timestamppb.Timestamp {
 		return x.DisableTime
 	}
 	return nil
+}
+
+func (x *SingleTenantHsmInstance) GetKeyPortabilityEnabled() bool {
+	if x != nil {
+		return x.KeyPortabilityEnabled
+	}
+	return false
 }
 
 // A
@@ -2599,7 +2611,7 @@ var File_google_cloud_kms_v1_hsm_management_proto protoreflect.FileDescriptor
 
 const file_google_cloud_kms_v1_hsm_management_proto_rawDesc = "" +
 	"\n" +
-	"(google/cloud/kms/v1/hsm_management.proto\x12\x13google.cloud.kms.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcc\b\n" +
+	"(google/cloud/kms/v1/hsm_management.proto\x12\x13google.cloud.kms.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8c\t\n" +
 	"\x17SingleTenantHsmInstance\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
 	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
@@ -2610,7 +2622,8 @@ const file_google_cloud_kms_v1_hsm_management_proto_rawDesc = "" +
 	"\vdelete_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"deleteTime\x12k\n" +
 	"\"unrefreshed_duration_until_disable\x18\x06 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x03R\x1funrefreshedDurationUntilDisable\x12B\n" +
-	"\fdisable_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\vdisableTime\x1a\xc1\x01\n" +
+	"\fdisable_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\vdisableTime\x12>\n" +
+	"\x17key_portability_enabled\x18\b \x01(\bB\x06\xe0A\x01\xe0A\x05R\x15keyPortabilityEnabled\x1a\xc1\x01\n" +
 	"\n" +
 	"QuorumAuth\x125\n" +
 	"\x14total_approver_count\x18\x01 \x01(\x05B\x03\xe0A\x02R\x12totalApproverCount\x12;\n" +

@@ -320,6 +320,71 @@ func (Deployment_LockState) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{0, 2}
 }
 
+// Policy on how to handle referenced deployments when deleting the
+// DeploymentGroup.
+type DeleteDeploymentGroupRequest_DeploymentReferencePolicy int32
+
+const (
+	// The default behavior. If unspecified, the system will act as if
+	// `FAIL_IF_ANY_REFERENCES_EXIST` is specified.
+	DeleteDeploymentGroupRequest_DEPLOYMENT_REFERENCE_POLICY_UNSPECIFIED DeleteDeploymentGroupRequest_DeploymentReferencePolicy = 0
+	// Fail the deletion if any deployments currently referenced in the
+	// `deployment_units` of the DeploymentGroup or in the latest revision
+	// are not deleted.
+	DeleteDeploymentGroupRequest_FAIL_IF_ANY_REFERENCES_EXIST DeleteDeploymentGroupRequest_DeploymentReferencePolicy = 1
+	// Fail the deletion only if any deployments currently referenced in the
+	// `deployment_units` of the DeploymentGroup are not deleted.
+	// The deletion will proceed even if the deployments in the latest revision
+	// of the DeploymentGroup are not deleted.
+	DeleteDeploymentGroupRequest_FAIL_IF_METADATA_REFERENCES_EXIST DeleteDeploymentGroupRequest_DeploymentReferencePolicy = 2
+	// Ignore any deployments currently referenced in the
+	// `deployment_units` of the DeploymentGroup or in the latest revision.
+	DeleteDeploymentGroupRequest_IGNORE_DEPLOYMENT_REFERENCES DeleteDeploymentGroupRequest_DeploymentReferencePolicy = 3
+)
+
+// Enum value maps for DeleteDeploymentGroupRequest_DeploymentReferencePolicy.
+var (
+	DeleteDeploymentGroupRequest_DeploymentReferencePolicy_name = map[int32]string{
+		0: "DEPLOYMENT_REFERENCE_POLICY_UNSPECIFIED",
+		1: "FAIL_IF_ANY_REFERENCES_EXIST",
+		2: "FAIL_IF_METADATA_REFERENCES_EXIST",
+		3: "IGNORE_DEPLOYMENT_REFERENCES",
+	}
+	DeleteDeploymentGroupRequest_DeploymentReferencePolicy_value = map[string]int32{
+		"DEPLOYMENT_REFERENCE_POLICY_UNSPECIFIED": 0,
+		"FAIL_IF_ANY_REFERENCES_EXIST":            1,
+		"FAIL_IF_METADATA_REFERENCES_EXIST":       2,
+		"IGNORE_DEPLOYMENT_REFERENCES":            3,
+	}
+)
+
+func (x DeleteDeploymentGroupRequest_DeploymentReferencePolicy) Enum() *DeleteDeploymentGroupRequest_DeploymentReferencePolicy {
+	p := new(DeleteDeploymentGroupRequest_DeploymentReferencePolicy)
+	*p = x
+	return p
+}
+
+func (x DeleteDeploymentGroupRequest_DeploymentReferencePolicy) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (DeleteDeploymentGroupRequest_DeploymentReferencePolicy) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_config_v1_config_proto_enumTypes[4].Descriptor()
+}
+
+func (DeleteDeploymentGroupRequest_DeploymentReferencePolicy) Type() protoreflect.EnumType {
+	return &file_google_cloud_config_v1_config_proto_enumTypes[4]
+}
+
+func (x DeleteDeploymentGroupRequest_DeploymentReferencePolicy) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use DeleteDeploymentGroupRequest_DeploymentReferencePolicy.Descriptor instead.
+func (DeleteDeploymentGroupRequest_DeploymentReferencePolicy) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{16, 0}
+}
+
 // Policy on how resources actuated by the deployment should be deleted.
 type DeleteDeploymentRequest_DeletePolicy int32
 
@@ -357,11 +422,11 @@ func (x DeleteDeploymentRequest_DeletePolicy) String() string {
 }
 
 func (DeleteDeploymentRequest_DeletePolicy) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_config_v1_config_proto_enumTypes[4].Descriptor()
+	return file_google_cloud_config_v1_config_proto_enumTypes[5].Descriptor()
 }
 
 func (DeleteDeploymentRequest_DeletePolicy) Type() protoreflect.EnumType {
-	return &file_google_cloud_config_v1_config_proto_enumTypes[4]
+	return &file_google_cloud_config_v1_config_proto_enumTypes[5]
 }
 
 func (x DeleteDeploymentRequest_DeletePolicy) Number() protoreflect.EnumNumber {
@@ -370,7 +435,7 @@ func (x DeleteDeploymentRequest_DeletePolicy) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use DeleteDeploymentRequest_DeletePolicy.Descriptor instead.
 func (DeleteDeploymentRequest_DeletePolicy) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{13, 0}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{18, 0}
 }
 
 // Actions that generate a revision.
@@ -414,11 +479,11 @@ func (x Revision_Action) String() string {
 }
 
 func (Revision_Action) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_config_v1_config_proto_enumTypes[5].Descriptor()
+	return file_google_cloud_config_v1_config_proto_enumTypes[6].Descriptor()
 }
 
 func (Revision_Action) Type() protoreflect.EnumType {
-	return &file_google_cloud_config_v1_config_proto_enumTypes[5]
+	return &file_google_cloud_config_v1_config_proto_enumTypes[6]
 }
 
 func (x Revision_Action) Number() protoreflect.EnumNumber {
@@ -427,7 +492,7 @@ func (x Revision_Action) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Revision_Action.Descriptor instead.
 func (Revision_Action) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{15, 0}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{20, 0}
 }
 
 // Possible states of a revision.
@@ -471,11 +536,11 @@ func (x Revision_State) String() string {
 }
 
 func (Revision_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_config_v1_config_proto_enumTypes[6].Descriptor()
+	return file_google_cloud_config_v1_config_proto_enumTypes[7].Descriptor()
 }
 
 func (Revision_State) Type() protoreflect.EnumType {
-	return &file_google_cloud_config_v1_config_proto_enumTypes[6]
+	return &file_google_cloud_config_v1_config_proto_enumTypes[7]
 }
 
 func (x Revision_State) Number() protoreflect.EnumNumber {
@@ -484,7 +549,7 @@ func (x Revision_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Revision_State.Descriptor instead.
 func (Revision_State) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{15, 1}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{20, 1}
 }
 
 // Possible errors if Revision could not be created or updated successfully.
@@ -539,11 +604,11 @@ func (x Revision_ErrorCode) String() string {
 }
 
 func (Revision_ErrorCode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_config_v1_config_proto_enumTypes[7].Descriptor()
+	return file_google_cloud_config_v1_config_proto_enumTypes[8].Descriptor()
 }
 
 func (Revision_ErrorCode) Type() protoreflect.EnumType {
-	return &file_google_cloud_config_v1_config_proto_enumTypes[7]
+	return &file_google_cloud_config_v1_config_proto_enumTypes[8]
 }
 
 func (x Revision_ErrorCode) Number() protoreflect.EnumNumber {
@@ -552,7 +617,7 @@ func (x Revision_ErrorCode) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Revision_ErrorCode.Descriptor instead.
 func (Revision_ErrorCode) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{15, 2}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{20, 2}
 }
 
 // The possible steps a deployment may be running.
@@ -633,11 +698,11 @@ func (x DeploymentOperationMetadata_DeploymentStep) String() string {
 }
 
 func (DeploymentOperationMetadata_DeploymentStep) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_config_v1_config_proto_enumTypes[8].Descriptor()
+	return file_google_cloud_config_v1_config_proto_enumTypes[9].Descriptor()
 }
 
 func (DeploymentOperationMetadata_DeploymentStep) Type() protoreflect.EnumType {
-	return &file_google_cloud_config_v1_config_proto_enumTypes[8]
+	return &file_google_cloud_config_v1_config_proto_enumTypes[9]
 }
 
 func (x DeploymentOperationMetadata_DeploymentStep) Number() protoreflect.EnumNumber {
@@ -646,7 +711,7 @@ func (x DeploymentOperationMetadata_DeploymentStep) Number() protoreflect.EnumNu
 
 // Deprecated: Use DeploymentOperationMetadata_DeploymentStep.Descriptor instead.
 func (DeploymentOperationMetadata_DeploymentStep) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{18, 0}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{23, 0}
 }
 
 // Possible intent of the resource.
@@ -698,11 +763,11 @@ func (x Resource_Intent) String() string {
 }
 
 func (Resource_Intent) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_config_v1_config_proto_enumTypes[9].Descriptor()
+	return file_google_cloud_config_v1_config_proto_enumTypes[10].Descriptor()
 }
 
 func (Resource_Intent) Type() protoreflect.EnumType {
-	return &file_google_cloud_config_v1_config_proto_enumTypes[9]
+	return &file_google_cloud_config_v1_config_proto_enumTypes[10]
 }
 
 func (x Resource_Intent) Number() protoreflect.EnumNumber {
@@ -711,7 +776,7 @@ func (x Resource_Intent) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Resource_Intent.Descriptor instead.
 func (Resource_Intent) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{19, 0}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{24, 0}
 }
 
 // Possible states of a resource.
@@ -759,11 +824,11 @@ func (x Resource_State) String() string {
 }
 
 func (Resource_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_config_v1_config_proto_enumTypes[10].Descriptor()
+	return file_google_cloud_config_v1_config_proto_enumTypes[11].Descriptor()
 }
 
 func (Resource_State) Type() protoreflect.EnumType {
-	return &file_google_cloud_config_v1_config_proto_enumTypes[10]
+	return &file_google_cloud_config_v1_config_proto_enumTypes[11]
 }
 
 func (x Resource_State) Number() protoreflect.EnumNumber {
@@ -772,7 +837,7 @@ func (x Resource_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Resource_State.Descriptor instead.
 func (Resource_State) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{19, 1}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{24, 1}
 }
 
 // Possible states of a preview.
@@ -833,11 +898,11 @@ func (x Preview_State) String() string {
 }
 
 func (Preview_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_config_v1_config_proto_enumTypes[11].Descriptor()
+	return file_google_cloud_config_v1_config_proto_enumTypes[12].Descriptor()
 }
 
 func (Preview_State) Type() protoreflect.EnumType {
-	return &file_google_cloud_config_v1_config_proto_enumTypes[11]
+	return &file_google_cloud_config_v1_config_proto_enumTypes[12]
 }
 
 func (x Preview_State) Number() protoreflect.EnumNumber {
@@ -846,7 +911,7 @@ func (x Preview_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Preview_State.Descriptor instead.
 func (Preview_State) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{34, 0}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{39, 0}
 }
 
 // Preview mode provides options for customizing preview operations.
@@ -887,11 +952,11 @@ func (x Preview_PreviewMode) String() string {
 }
 
 func (Preview_PreviewMode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_config_v1_config_proto_enumTypes[12].Descriptor()
+	return file_google_cloud_config_v1_config_proto_enumTypes[13].Descriptor()
 }
 
 func (Preview_PreviewMode) Type() protoreflect.EnumType {
-	return &file_google_cloud_config_v1_config_proto_enumTypes[12]
+	return &file_google_cloud_config_v1_config_proto_enumTypes[13]
 }
 
 func (x Preview_PreviewMode) Number() protoreflect.EnumNumber {
@@ -900,7 +965,7 @@ func (x Preview_PreviewMode) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Preview_PreviewMode.Descriptor instead.
 func (Preview_PreviewMode) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{34, 1}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{39, 1}
 }
 
 // Possible errors that can occur with previews.
@@ -960,11 +1025,11 @@ func (x Preview_ErrorCode) String() string {
 }
 
 func (Preview_ErrorCode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_config_v1_config_proto_enumTypes[13].Descriptor()
+	return file_google_cloud_config_v1_config_proto_enumTypes[14].Descriptor()
 }
 
 func (Preview_ErrorCode) Type() protoreflect.EnumType {
-	return &file_google_cloud_config_v1_config_proto_enumTypes[13]
+	return &file_google_cloud_config_v1_config_proto_enumTypes[14]
 }
 
 func (x Preview_ErrorCode) Number() protoreflect.EnumNumber {
@@ -973,7 +1038,7 @@ func (x Preview_ErrorCode) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Preview_ErrorCode.Descriptor instead.
 func (Preview_ErrorCode) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{34, 2}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{39, 2}
 }
 
 // The possible steps a preview may be running.
@@ -1046,11 +1111,11 @@ func (x PreviewOperationMetadata_PreviewStep) String() string {
 }
 
 func (PreviewOperationMetadata_PreviewStep) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_config_v1_config_proto_enumTypes[14].Descriptor()
+	return file_google_cloud_config_v1_config_proto_enumTypes[15].Descriptor()
 }
 
 func (PreviewOperationMetadata_PreviewStep) Type() protoreflect.EnumType {
-	return &file_google_cloud_config_v1_config_proto_enumTypes[14]
+	return &file_google_cloud_config_v1_config_proto_enumTypes[15]
 }
 
 func (x PreviewOperationMetadata_PreviewStep) Number() protoreflect.EnumNumber {
@@ -1059,7 +1124,7 @@ func (x PreviewOperationMetadata_PreviewStep) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use PreviewOperationMetadata_PreviewStep.Descriptor instead.
 func (PreviewOperationMetadata_PreviewStep) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{35, 0}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{40, 0}
 }
 
 // Possible states of a TerraformVersion.
@@ -1103,11 +1168,11 @@ func (x TerraformVersion_State) String() string {
 }
 
 func (TerraformVersion_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_config_v1_config_proto_enumTypes[15].Descriptor()
+	return file_google_cloud_config_v1_config_proto_enumTypes[16].Descriptor()
 }
 
 func (TerraformVersion_State) Type() protoreflect.EnumType {
-	return &file_google_cloud_config_v1_config_proto_enumTypes[15]
+	return &file_google_cloud_config_v1_config_proto_enumTypes[16]
 }
 
 func (x TerraformVersion_State) Number() protoreflect.EnumNumber {
@@ -1116,7 +1181,7 @@ func (x TerraformVersion_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use TerraformVersion_State.Descriptor instead.
 func (TerraformVersion_State) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{48, 0}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{53, 0}
 }
 
 // Possible intent of the resource change.
@@ -1168,11 +1233,11 @@ func (x ResourceChange_Intent) String() string {
 }
 
 func (ResourceChange_Intent) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_config_v1_config_proto_enumTypes[16].Descriptor()
+	return file_google_cloud_config_v1_config_proto_enumTypes[17].Descriptor()
 }
 
 func (ResourceChange_Intent) Type() protoreflect.EnumType {
-	return &file_google_cloud_config_v1_config_proto_enumTypes[16]
+	return &file_google_cloud_config_v1_config_proto_enumTypes[17]
 }
 
 func (x ResourceChange_Intent) Number() protoreflect.EnumNumber {
@@ -1181,7 +1246,7 @@ func (x ResourceChange_Intent) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ResourceChange_Intent.Descriptor instead.
 func (ResourceChange_Intent) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{50, 0}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{55, 0}
 }
 
 // ProviderSource represents the source type of the provider.
@@ -1217,11 +1282,11 @@ func (x ProviderConfig_ProviderSource) String() string {
 }
 
 func (ProviderConfig_ProviderSource) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_config_v1_config_proto_enumTypes[17].Descriptor()
+	return file_google_cloud_config_v1_config_proto_enumTypes[18].Descriptor()
 }
 
 func (ProviderConfig_ProviderSource) Type() protoreflect.EnumType {
-	return &file_google_cloud_config_v1_config_proto_enumTypes[17]
+	return &file_google_cloud_config_v1_config_proto_enumTypes[18]
 }
 
 func (x ProviderConfig_ProviderSource) Number() protoreflect.EnumNumber {
@@ -1230,7 +1295,372 @@ func (x ProviderConfig_ProviderSource) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ProviderConfig_ProviderSource.Descriptor instead.
 func (ProviderConfig_ProviderSource) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{61, 0}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{66, 0}
+}
+
+// Possible states of a deployment group.
+type DeploymentGroup_State int32
+
+const (
+	// The default value. This value is used if the state is omitted.
+	DeploymentGroup_STATE_UNSPECIFIED DeploymentGroup_State = 0
+	// The deployment group is being created.
+	DeploymentGroup_CREATING DeploymentGroup_State = 1
+	// The deployment group is healthy.
+	DeploymentGroup_ACTIVE DeploymentGroup_State = 2
+	// The deployment group is being updated.
+	DeploymentGroup_UPDATING DeploymentGroup_State = 3
+	// The deployment group is being deleted.
+	DeploymentGroup_DELETING DeploymentGroup_State = 4
+	// The deployment group has encountered an unexpected error.
+	DeploymentGroup_FAILED DeploymentGroup_State = 5
+	// The deployment group is no longer being actively reconciled.
+	// This may be the result of recovering the project after deletion.
+	DeploymentGroup_SUSPENDED DeploymentGroup_State = 6
+	// The deployment group has been deleted.
+	DeploymentGroup_DELETED DeploymentGroup_State = 7
+)
+
+// Enum value maps for DeploymentGroup_State.
+var (
+	DeploymentGroup_State_name = map[int32]string{
+		0: "STATE_UNSPECIFIED",
+		1: "CREATING",
+		2: "ACTIVE",
+		3: "UPDATING",
+		4: "DELETING",
+		5: "FAILED",
+		6: "SUSPENDED",
+		7: "DELETED",
+	}
+	DeploymentGroup_State_value = map[string]int32{
+		"STATE_UNSPECIFIED": 0,
+		"CREATING":          1,
+		"ACTIVE":            2,
+		"UPDATING":          3,
+		"DELETING":          4,
+		"FAILED":            5,
+		"SUSPENDED":         6,
+		"DELETED":           7,
+	}
+)
+
+func (x DeploymentGroup_State) Enum() *DeploymentGroup_State {
+	p := new(DeploymentGroup_State)
+	*p = x
+	return p
+}
+
+func (x DeploymentGroup_State) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (DeploymentGroup_State) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_config_v1_config_proto_enumTypes[19].Descriptor()
+}
+
+func (DeploymentGroup_State) Type() protoreflect.EnumType {
+	return &file_google_cloud_config_v1_config_proto_enumTypes[19]
+}
+
+func (x DeploymentGroup_State) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use DeploymentGroup_State.Descriptor instead.
+func (DeploymentGroup_State) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{70, 0}
+}
+
+// Possible provisioning states of a deployment group.
+type DeploymentGroup_ProvisioningState int32
+
+const (
+	// Unspecified provisioning state.
+	DeploymentGroup_PROVISIONING_STATE_UNSPECIFIED DeploymentGroup_ProvisioningState = 0
+	// The deployment group is being provisioned.
+	DeploymentGroup_PROVISIONING DeploymentGroup_ProvisioningState = 1
+	// The deployment group is provisioned.
+	DeploymentGroup_PROVISIONED DeploymentGroup_ProvisioningState = 2
+	// The deployment group failed to be provisioned.
+	DeploymentGroup_FAILED_TO_PROVISION DeploymentGroup_ProvisioningState = 3
+	// The deployment group is being deprovisioned.
+	DeploymentGroup_DEPROVISIONING DeploymentGroup_ProvisioningState = 4
+	// The deployment group is deprovisioned.
+	DeploymentGroup_DEPROVISIONED DeploymentGroup_ProvisioningState = 5
+	// The deployment group failed to be deprovisioned.
+	DeploymentGroup_FAILED_TO_DEPROVISION DeploymentGroup_ProvisioningState = 6
+)
+
+// Enum value maps for DeploymentGroup_ProvisioningState.
+var (
+	DeploymentGroup_ProvisioningState_name = map[int32]string{
+		0: "PROVISIONING_STATE_UNSPECIFIED",
+		1: "PROVISIONING",
+		2: "PROVISIONED",
+		3: "FAILED_TO_PROVISION",
+		4: "DEPROVISIONING",
+		5: "DEPROVISIONED",
+		6: "FAILED_TO_DEPROVISION",
+	}
+	DeploymentGroup_ProvisioningState_value = map[string]int32{
+		"PROVISIONING_STATE_UNSPECIFIED": 0,
+		"PROVISIONING":                   1,
+		"PROVISIONED":                    2,
+		"FAILED_TO_PROVISION":            3,
+		"DEPROVISIONING":                 4,
+		"DEPROVISIONED":                  5,
+		"FAILED_TO_DEPROVISION":          6,
+	}
+)
+
+func (x DeploymentGroup_ProvisioningState) Enum() *DeploymentGroup_ProvisioningState {
+	p := new(DeploymentGroup_ProvisioningState)
+	*p = x
+	return p
+}
+
+func (x DeploymentGroup_ProvisioningState) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (DeploymentGroup_ProvisioningState) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_config_v1_config_proto_enumTypes[20].Descriptor()
+}
+
+func (DeploymentGroup_ProvisioningState) Type() protoreflect.EnumType {
+	return &file_google_cloud_config_v1_config_proto_enumTypes[20]
+}
+
+func (x DeploymentGroup_ProvisioningState) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use DeploymentGroup_ProvisioningState.Descriptor instead.
+func (DeploymentGroup_ProvisioningState) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{70, 1}
+}
+
+// The possible steps a deployment unit provisioning may be running.
+type DeploymentUnitProgress_State int32
+
+const (
+	// The default value. This value is unused.
+	DeploymentUnitProgress_STATE_UNSPECIFIED DeploymentUnitProgress_State = 0
+	// The deployment unit is queued for deployment creation or update.
+	DeploymentUnitProgress_QUEUED DeploymentUnitProgress_State = 1
+	// The underlying deployment of the unit is being created or updated.
+	DeploymentUnitProgress_APPLYING_DEPLOYMENT DeploymentUnitProgress_State = 2
+	// The underlying deployment operation of the unit has succeeded.
+	DeploymentUnitProgress_SUCCEEDED DeploymentUnitProgress_State = 4
+	// The underlying deployment operation of the unit has failed.
+	DeploymentUnitProgress_FAILED DeploymentUnitProgress_State = 5
+	// The deployment unit was aborted, likely due to failures in other
+	// dependent deployment units.
+	DeploymentUnitProgress_ABORTED DeploymentUnitProgress_State = 6
+	// The deployment unit was skipped because there were no changes to apply.
+	DeploymentUnitProgress_SKIPPED DeploymentUnitProgress_State = 7
+	// The deployment is being deleted.
+	DeploymentUnitProgress_DELETING_DEPLOYMENT DeploymentUnitProgress_State = 8
+	// The deployment is being previewed.
+	DeploymentUnitProgress_PREVIEWING_DEPLOYMENT DeploymentUnitProgress_State = 9
+)
+
+// Enum value maps for DeploymentUnitProgress_State.
+var (
+	DeploymentUnitProgress_State_name = map[int32]string{
+		0: "STATE_UNSPECIFIED",
+		1: "QUEUED",
+		2: "APPLYING_DEPLOYMENT",
+		4: "SUCCEEDED",
+		5: "FAILED",
+		6: "ABORTED",
+		7: "SKIPPED",
+		8: "DELETING_DEPLOYMENT",
+		9: "PREVIEWING_DEPLOYMENT",
+	}
+	DeploymentUnitProgress_State_value = map[string]int32{
+		"STATE_UNSPECIFIED":     0,
+		"QUEUED":                1,
+		"APPLYING_DEPLOYMENT":   2,
+		"SUCCEEDED":             4,
+		"FAILED":                5,
+		"ABORTED":               6,
+		"SKIPPED":               7,
+		"DELETING_DEPLOYMENT":   8,
+		"PREVIEWING_DEPLOYMENT": 9,
+	}
+)
+
+func (x DeploymentUnitProgress_State) Enum() *DeploymentUnitProgress_State {
+	p := new(DeploymentUnitProgress_State)
+	*p = x
+	return p
+}
+
+func (x DeploymentUnitProgress_State) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (DeploymentUnitProgress_State) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_config_v1_config_proto_enumTypes[21].Descriptor()
+}
+
+func (DeploymentUnitProgress_State) Type() protoreflect.EnumType {
+	return &file_google_cloud_config_v1_config_proto_enumTypes[21]
+}
+
+func (x DeploymentUnitProgress_State) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use DeploymentUnitProgress_State.Descriptor instead.
+func (DeploymentUnitProgress_State) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{79, 0}
+}
+
+// The possible intents of a deployment unit.
+type DeploymentUnitProgress_Intent int32
+
+const (
+	// Unspecified intent.
+	DeploymentUnitProgress_INTENT_UNSPECIFIED DeploymentUnitProgress_Intent = 0
+	// Create deployment in the unit from the deployment spec.
+	DeploymentUnitProgress_CREATE_DEPLOYMENT DeploymentUnitProgress_Intent = 1
+	// Update deployment in the unit.
+	DeploymentUnitProgress_UPDATE_DEPLOYMENT DeploymentUnitProgress_Intent = 2
+	// Delete deployment in the unit.
+	DeploymentUnitProgress_DELETE_DEPLOYMENT DeploymentUnitProgress_Intent = 3
+	// Recreate deployment in the unit.
+	DeploymentUnitProgress_RECREATE_DEPLOYMENT DeploymentUnitProgress_Intent = 4
+	// Delete deployment in latest successful revision while no longer
+	// referenced in any deployment unit in the current deployment group.
+	DeploymentUnitProgress_CLEAN_UP DeploymentUnitProgress_Intent = 5
+	// Expected to be unchanged.
+	DeploymentUnitProgress_UNCHANGED DeploymentUnitProgress_Intent = 6
+)
+
+// Enum value maps for DeploymentUnitProgress_Intent.
+var (
+	DeploymentUnitProgress_Intent_name = map[int32]string{
+		0: "INTENT_UNSPECIFIED",
+		1: "CREATE_DEPLOYMENT",
+		2: "UPDATE_DEPLOYMENT",
+		3: "DELETE_DEPLOYMENT",
+		4: "RECREATE_DEPLOYMENT",
+		5: "CLEAN_UP",
+		6: "UNCHANGED",
+	}
+	DeploymentUnitProgress_Intent_value = map[string]int32{
+		"INTENT_UNSPECIFIED":  0,
+		"CREATE_DEPLOYMENT":   1,
+		"UPDATE_DEPLOYMENT":   2,
+		"DELETE_DEPLOYMENT":   3,
+		"RECREATE_DEPLOYMENT": 4,
+		"CLEAN_UP":            5,
+		"UNCHANGED":           6,
+	}
+)
+
+func (x DeploymentUnitProgress_Intent) Enum() *DeploymentUnitProgress_Intent {
+	p := new(DeploymentUnitProgress_Intent)
+	*p = x
+	return p
+}
+
+func (x DeploymentUnitProgress_Intent) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (DeploymentUnitProgress_Intent) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_config_v1_config_proto_enumTypes[22].Descriptor()
+}
+
+func (DeploymentUnitProgress_Intent) Type() protoreflect.EnumType {
+	return &file_google_cloud_config_v1_config_proto_enumTypes[22]
+}
+
+func (x DeploymentUnitProgress_Intent) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use DeploymentUnitProgress_Intent.Descriptor instead.
+func (DeploymentUnitProgress_Intent) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{79, 1}
+}
+
+// Possible steps during a deployment group provisioning or deprovisioning
+// operation.
+type ProvisionDeploymentGroupOperationMetadata_ProvisionDeploymentGroupStep int32
+
+const (
+	// Unspecified step.
+	ProvisionDeploymentGroupOperationMetadata_PROVISION_DEPLOYMENT_GROUP_STEP_UNSPECIFIED ProvisionDeploymentGroupOperationMetadata_ProvisionDeploymentGroupStep = 0
+	// Validating the deployment group.
+	ProvisionDeploymentGroupOperationMetadata_VALIDATING_DEPLOYMENT_GROUP ProvisionDeploymentGroupOperationMetadata_ProvisionDeploymentGroupStep = 1
+	// Locking the deployments to the deployment group for atomic actuation.
+	ProvisionDeploymentGroupOperationMetadata_ASSOCIATING_DEPLOYMENTS_TO_DEPLOYMENT_GROUP ProvisionDeploymentGroupOperationMetadata_ProvisionDeploymentGroupStep = 2
+	// Provisioning the deployment units.
+	ProvisionDeploymentGroupOperationMetadata_PROVISIONING_DEPLOYMENT_UNITS ProvisionDeploymentGroupOperationMetadata_ProvisionDeploymentGroupStep = 3
+	// Unlocking the deployments from the deployment group after actuation.
+	ProvisionDeploymentGroupOperationMetadata_DISASSOCIATING_DEPLOYMENTS_FROM_DEPLOYMENT_GROUP ProvisionDeploymentGroupOperationMetadata_ProvisionDeploymentGroupStep = 4
+	// The operation has succeeded.
+	ProvisionDeploymentGroupOperationMetadata_SUCCEEDED ProvisionDeploymentGroupOperationMetadata_ProvisionDeploymentGroupStep = 5
+	// The operation has failed.
+	ProvisionDeploymentGroupOperationMetadata_FAILED ProvisionDeploymentGroupOperationMetadata_ProvisionDeploymentGroupStep = 6
+	// Deprovisioning the deployment units.
+	ProvisionDeploymentGroupOperationMetadata_DEPROVISIONING_DEPLOYMENT_UNITS ProvisionDeploymentGroupOperationMetadata_ProvisionDeploymentGroupStep = 7
+)
+
+// Enum value maps for ProvisionDeploymentGroupOperationMetadata_ProvisionDeploymentGroupStep.
+var (
+	ProvisionDeploymentGroupOperationMetadata_ProvisionDeploymentGroupStep_name = map[int32]string{
+		0: "PROVISION_DEPLOYMENT_GROUP_STEP_UNSPECIFIED",
+		1: "VALIDATING_DEPLOYMENT_GROUP",
+		2: "ASSOCIATING_DEPLOYMENTS_TO_DEPLOYMENT_GROUP",
+		3: "PROVISIONING_DEPLOYMENT_UNITS",
+		4: "DISASSOCIATING_DEPLOYMENTS_FROM_DEPLOYMENT_GROUP",
+		5: "SUCCEEDED",
+		6: "FAILED",
+		7: "DEPROVISIONING_DEPLOYMENT_UNITS",
+	}
+	ProvisionDeploymentGroupOperationMetadata_ProvisionDeploymentGroupStep_value = map[string]int32{
+		"PROVISION_DEPLOYMENT_GROUP_STEP_UNSPECIFIED":      0,
+		"VALIDATING_DEPLOYMENT_GROUP":                      1,
+		"ASSOCIATING_DEPLOYMENTS_TO_DEPLOYMENT_GROUP":      2,
+		"PROVISIONING_DEPLOYMENT_UNITS":                    3,
+		"DISASSOCIATING_DEPLOYMENTS_FROM_DEPLOYMENT_GROUP": 4,
+		"SUCCEEDED":                       5,
+		"FAILED":                          6,
+		"DEPROVISIONING_DEPLOYMENT_UNITS": 7,
+	}
+)
+
+func (x ProvisionDeploymentGroupOperationMetadata_ProvisionDeploymentGroupStep) Enum() *ProvisionDeploymentGroupOperationMetadata_ProvisionDeploymentGroupStep {
+	p := new(ProvisionDeploymentGroupOperationMetadata_ProvisionDeploymentGroupStep)
+	*p = x
+	return p
+}
+
+func (x ProvisionDeploymentGroupOperationMetadata_ProvisionDeploymentGroupStep) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ProvisionDeploymentGroupOperationMetadata_ProvisionDeploymentGroupStep) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_config_v1_config_proto_enumTypes[23].Descriptor()
+}
+
+func (ProvisionDeploymentGroupOperationMetadata_ProvisionDeploymentGroupStep) Type() protoreflect.EnumType {
+	return &file_google_cloud_config_v1_config_proto_enumTypes[23]
+}
+
+func (x ProvisionDeploymentGroupOperationMetadata_ProvisionDeploymentGroupStep) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ProvisionDeploymentGroupOperationMetadata_ProvisionDeploymentGroupStep.Descriptor instead.
+func (ProvisionDeploymentGroupOperationMetadata_ProvisionDeploymentGroupStep) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{80, 0}
 }
 
 // A Deployment is a group of resources and configs managed and provisioned by
@@ -1560,9 +1990,12 @@ type TerraformBlueprint struct {
 	//	*TerraformBlueprint_GitSource
 	Source isTerraformBlueprint_Source `protobuf_oneof:"source"`
 	// Optional. Input variable values for the Terraform blueprint.
-	InputValues   map[string]*TerraformVariable `protobuf:"bytes,4,rep,name=input_values,json=inputValues,proto3" json:"input_values,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	InputValues map[string]*TerraformVariable `protobuf:"bytes,4,rep,name=input_values,json=inputValues,proto3" json:"input_values,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Optional. Map of input variable names in this blueprint to configurations
+	// for importing values from external sources.
+	ExternalValues map[string]*ExternalValueSource `protobuf:"bytes,5,rep,name=external_values,json=externalValues,proto3" json:"external_values,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *TerraformBlueprint) Reset() {
@@ -1623,6 +2056,13 @@ func (x *TerraformBlueprint) GetGitSource() *GitSource {
 func (x *TerraformBlueprint) GetInputValues() map[string]*TerraformVariable {
 	if x != nil {
 		return x.InputValues
+	}
+	return nil
+}
+
+func (x *TerraformBlueprint) GetExternalValues() map[string]*ExternalValueSource {
+	if x != nil {
+		return x.ExternalValues
 	}
 	return nil
 }
@@ -1695,6 +2135,135 @@ func (x *TerraformVariable) GetInputValue() *structpb.Value {
 	return nil
 }
 
+// Configuration for a source of an external value.
+type ExternalValueSource struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The source of the external value.
+	//
+	// Types that are valid to be assigned to Source:
+	//
+	//	*ExternalValueSource_DeploymentSource
+	Source        isExternalValueSource_Source `protobuf_oneof:"source"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ExternalValueSource) Reset() {
+	*x = ExternalValueSource{}
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExternalValueSource) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExternalValueSource) ProtoMessage() {}
+
+func (x *ExternalValueSource) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExternalValueSource.ProtoReflect.Descriptor instead.
+func (*ExternalValueSource) Descriptor() ([]byte, []int) {
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *ExternalValueSource) GetSource() isExternalValueSource_Source {
+	if x != nil {
+		return x.Source
+	}
+	return nil
+}
+
+func (x *ExternalValueSource) GetDeploymentSource() *DeploymentSource {
+	if x != nil {
+		if x, ok := x.Source.(*ExternalValueSource_DeploymentSource); ok {
+			return x.DeploymentSource
+		}
+	}
+	return nil
+}
+
+type isExternalValueSource_Source interface {
+	isExternalValueSource_Source()
+}
+
+type ExternalValueSource_DeploymentSource struct {
+	// A source from a Deployment.
+	DeploymentSource *DeploymentSource `protobuf:"bytes,1,opt,name=deployment_source,json=deploymentSource,proto3,oneof"`
+}
+
+func (*ExternalValueSource_DeploymentSource) isExternalValueSource_Source() {}
+
+// Configuration for a value sourced from a Deployment.
+type DeploymentSource struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The resource name of the source Deployment to import the output
+	// from. Format:
+	// projects/{project}/locations/{location}/deployments/{deployment} The source
+	// deployment must be in the same project and location.
+	Deployment string `protobuf:"bytes,1,opt,name=deployment,proto3" json:"deployment,omitempty"`
+	// Required. The name of the output variable in the source deployment's latest
+	// successfully applied revision.
+	OutputName    string `protobuf:"bytes,2,opt,name=output_name,json=outputName,proto3" json:"output_name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeploymentSource) Reset() {
+	*x = DeploymentSource{}
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeploymentSource) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeploymentSource) ProtoMessage() {}
+
+func (x *DeploymentSource) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeploymentSource.ProtoReflect.Descriptor instead.
+func (*DeploymentSource) Descriptor() ([]byte, []int) {
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *DeploymentSource) GetDeployment() string {
+	if x != nil {
+		return x.Deployment
+	}
+	return ""
+}
+
+func (x *DeploymentSource) GetOutputName() string {
+	if x != nil {
+		return x.OutputName
+	}
+	return ""
+}
+
 // Outputs and artifacts from applying a deployment.
 type ApplyResults struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -1712,7 +2281,7 @@ type ApplyResults struct {
 
 func (x *ApplyResults) Reset() {
 	*x = ApplyResults{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[3]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1724,7 +2293,7 @@ func (x *ApplyResults) String() string {
 func (*ApplyResults) ProtoMessage() {}
 
 func (x *ApplyResults) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[3]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1737,7 +2306,7 @@ func (x *ApplyResults) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ApplyResults.ProtoReflect.Descriptor instead.
 func (*ApplyResults) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{3}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *ApplyResults) GetContent() string {
@@ -1775,7 +2344,7 @@ type TerraformOutput struct {
 
 func (x *TerraformOutput) Reset() {
 	*x = TerraformOutput{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[4]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1787,7 +2356,7 @@ func (x *TerraformOutput) String() string {
 func (*TerraformOutput) ProtoMessage() {}
 
 func (x *TerraformOutput) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[4]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1800,7 +2369,7 @@ func (x *TerraformOutput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TerraformOutput.ProtoReflect.Descriptor instead.
 func (*TerraformOutput) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{4}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *TerraformOutput) GetSensitive() bool {
@@ -1860,7 +2429,7 @@ type ListDeploymentsRequest struct {
 
 func (x *ListDeploymentsRequest) Reset() {
 	*x = ListDeploymentsRequest{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[5]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1872,7 +2441,7 @@ func (x *ListDeploymentsRequest) String() string {
 func (*ListDeploymentsRequest) ProtoMessage() {}
 
 func (x *ListDeploymentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[5]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1885,7 +2454,7 @@ func (x *ListDeploymentsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDeploymentsRequest.ProtoReflect.Descriptor instead.
 func (*ListDeploymentsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{5}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *ListDeploymentsRequest) GetParent() string {
@@ -1938,7 +2507,7 @@ type ListDeploymentsResponse struct {
 
 func (x *ListDeploymentsResponse) Reset() {
 	*x = ListDeploymentsResponse{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[6]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1950,7 +2519,7 @@ func (x *ListDeploymentsResponse) String() string {
 func (*ListDeploymentsResponse) ProtoMessage() {}
 
 func (x *ListDeploymentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[6]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1963,7 +2532,7 @@ func (x *ListDeploymentsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDeploymentsResponse.ProtoReflect.Descriptor instead.
 func (*ListDeploymentsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{6}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *ListDeploymentsResponse) GetDeployments() []*Deployment {
@@ -1998,7 +2567,7 @@ type GetDeploymentRequest struct {
 
 func (x *GetDeploymentRequest) Reset() {
 	*x = GetDeploymentRequest{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[7]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2010,7 +2579,7 @@ func (x *GetDeploymentRequest) String() string {
 func (*GetDeploymentRequest) ProtoMessage() {}
 
 func (x *GetDeploymentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[7]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2023,7 +2592,7 @@ func (x *GetDeploymentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDeploymentRequest.ProtoReflect.Descriptor instead.
 func (*GetDeploymentRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{7}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *GetDeploymentRequest) GetName() string {
@@ -2077,7 +2646,7 @@ type ListRevisionsRequest struct {
 
 func (x *ListRevisionsRequest) Reset() {
 	*x = ListRevisionsRequest{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[8]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2089,7 +2658,7 @@ func (x *ListRevisionsRequest) String() string {
 func (*ListRevisionsRequest) ProtoMessage() {}
 
 func (x *ListRevisionsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[8]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2102,7 +2671,7 @@ func (x *ListRevisionsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRevisionsRequest.ProtoReflect.Descriptor instead.
 func (*ListRevisionsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{8}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *ListRevisionsRequest) GetParent() string {
@@ -2157,7 +2726,7 @@ type ListRevisionsResponse struct {
 
 func (x *ListRevisionsResponse) Reset() {
 	*x = ListRevisionsResponse{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[9]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2169,7 +2738,7 @@ func (x *ListRevisionsResponse) String() string {
 func (*ListRevisionsResponse) ProtoMessage() {}
 
 func (x *ListRevisionsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[9]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2182,7 +2751,7 @@ func (x *ListRevisionsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRevisionsResponse.ProtoReflect.Descriptor instead.
 func (*ListRevisionsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{9}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *ListRevisionsResponse) GetRevisions() []*Revision {
@@ -2218,7 +2787,7 @@ type GetRevisionRequest struct {
 
 func (x *GetRevisionRequest) Reset() {
 	*x = GetRevisionRequest{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[10]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2230,7 +2799,7 @@ func (x *GetRevisionRequest) String() string {
 func (*GetRevisionRequest) ProtoMessage() {}
 
 func (x *GetRevisionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[10]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2243,7 +2812,7 @@ func (x *GetRevisionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRevisionRequest.ProtoReflect.Descriptor instead.
 func (*GetRevisionRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{10}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *GetRevisionRequest) GetName() string {
@@ -2283,7 +2852,7 @@ type CreateDeploymentRequest struct {
 
 func (x *CreateDeploymentRequest) Reset() {
 	*x = CreateDeploymentRequest{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[11]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2295,7 +2864,7 @@ func (x *CreateDeploymentRequest) String() string {
 func (*CreateDeploymentRequest) ProtoMessage() {}
 
 func (x *CreateDeploymentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[11]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2308,7 +2877,7 @@ func (x *CreateDeploymentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateDeploymentRequest.ProtoReflect.Descriptor instead.
 func (*CreateDeploymentRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{11}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *CreateDeploymentRequest) GetParent() string {
@@ -2337,6 +2906,270 @@ func (x *CreateDeploymentRequest) GetRequestId() string {
 		return x.RequestId
 	}
 	return ""
+}
+
+// A request to create a deployment group
+type CreateDeploymentGroupRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The parent in whose context the Deployment Group is created. The
+	// parent value is in the format: 'projects/{project_id}/locations/{location}'
+	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	// Required. The deployment group ID.
+	DeploymentGroupId string `protobuf:"bytes,2,opt,name=deployment_group_id,json=deploymentGroupId,proto3" json:"deployment_group_id,omitempty"`
+	// Required. [Deployment Group][] resource to create
+	DeploymentGroup *DeploymentGroup `protobuf:"bytes,3,opt,name=deployment_group,json=deploymentGroup,proto3" json:"deployment_group,omitempty"`
+	// Optional. An optional request ID to identify requests. Specify a unique
+	// request ID so that if you must retry your request, the server will know to
+	// ignore the request if it has already been completed. The server will
+	// guarantee that for at least 60 minutes since the first request.
+	//
+	// For example, consider a situation where you make an initial request and the
+	// request times out. If you make the request again with the same request ID,
+	// the server can check if original operation with the same request ID was
+	// received, and if so, will ignore the second request. This prevents clients
+	// from accidentally creating duplicate commitments.
+	//
+	// The request ID must be a valid UUID with the exception that zero UUID is
+	// not supported (00000000-0000-0000-0000-000000000000).
+	RequestId     string `protobuf:"bytes,4,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateDeploymentGroupRequest) Reset() {
+	*x = CreateDeploymentGroupRequest{}
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateDeploymentGroupRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateDeploymentGroupRequest) ProtoMessage() {}
+
+func (x *CreateDeploymentGroupRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateDeploymentGroupRequest.ProtoReflect.Descriptor instead.
+func (*CreateDeploymentGroupRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *CreateDeploymentGroupRequest) GetParent() string {
+	if x != nil {
+		return x.Parent
+	}
+	return ""
+}
+
+func (x *CreateDeploymentGroupRequest) GetDeploymentGroupId() string {
+	if x != nil {
+		return x.DeploymentGroupId
+	}
+	return ""
+}
+
+func (x *CreateDeploymentGroupRequest) GetDeploymentGroup() *DeploymentGroup {
+	if x != nil {
+		return x.DeploymentGroup
+	}
+	return nil
+}
+
+func (x *CreateDeploymentGroupRequest) GetRequestId() string {
+	if x != nil {
+		return x.RequestId
+	}
+	return ""
+}
+
+// A request message for updating a deployment group
+type UpdateDeploymentGroupRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Field mask used to specify the fields to be overwritten in the
+	// Deployment Group resource by the update.
+	//
+	// The fields specified in the update_mask are relative to the resource, not
+	// the full request. A field will be overwritten if it is in the mask. If the
+	// user does not provide a mask then all fields will be overwritten.
+	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,1,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
+	// Required. [DeploymentGroup][google.cloud.config.v1.DeploymentGroup] to
+	// update.
+	//
+	// The deployment group's `name` field is used to identify the resource to be
+	// updated. Format:
+	// `projects/{project}/locations/{location}/deploymentGroups/{deployment_group_id}`
+	DeploymentGroup *DeploymentGroup `protobuf:"bytes,2,opt,name=deployment_group,json=deploymentGroup,proto3" json:"deployment_group,omitempty"`
+	// Optional. An optional request ID to identify requests. Specify a unique
+	// request ID so that if you must retry your request, the server will know to
+	// ignore the request if it has already been completed. The server will
+	// guarantee that for at least 60 minutes since the first request.
+	//
+	// For example, consider a situation where you make an initial request and the
+	// request times out. If you make the request again with the same request ID,
+	// the server can check if original operation with the same request ID was
+	// received, and if so, will ignore the second request. This prevents clients
+	// from accidentally creating duplicate commitments.
+	//
+	// The request ID must be a valid UUID with the exception that zero UUID is
+	// not supported (00000000-0000-0000-0000-000000000000).
+	RequestId     string `protobuf:"bytes,3,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateDeploymentGroupRequest) Reset() {
+	*x = UpdateDeploymentGroupRequest{}
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateDeploymentGroupRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateDeploymentGroupRequest) ProtoMessage() {}
+
+func (x *UpdateDeploymentGroupRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateDeploymentGroupRequest.ProtoReflect.Descriptor instead.
+func (*UpdateDeploymentGroupRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *UpdateDeploymentGroupRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
+	if x != nil {
+		return x.UpdateMask
+	}
+	return nil
+}
+
+func (x *UpdateDeploymentGroupRequest) GetDeploymentGroup() *DeploymentGroup {
+	if x != nil {
+		return x.DeploymentGroup
+	}
+	return nil
+}
+
+func (x *UpdateDeploymentGroupRequest) GetRequestId() string {
+	if x != nil {
+		return x.RequestId
+	}
+	return ""
+}
+
+// Request message for Delete DeploymentGroup
+type DeleteDeploymentGroupRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The name of DeploymentGroup in the format
+	// projects/{project_id}/locations/{location_id}/deploymentGroups/{deploymentGroup}
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Optional. An optional request ID to identify requests. Specify a unique
+	// request ID so that if you must retry your request, the server will know to
+	// ignore the request if it has already been completed. The server will
+	// guarantee that for at least 60 minutes after the first request.
+	//
+	// For example, consider a situation where you make an initial request and the
+	// request times out. If you make the request again with the same request ID,
+	// the server can check if original operation with the same request ID was
+	// received, and if so, will ignore the second request. This prevents clients
+	// from accidentally creating duplicate commitments.
+	//
+	// The request ID must be a valid UUID with the exception that zero UUID is
+	// not supported (00000000-0000-0000-0000-000000000000).
+	RequestId string `protobuf:"bytes,2,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	// Optional. If set to true, any revisions for this deployment group will also
+	// be deleted. (Otherwise, the request will only work if the deployment group
+	// has no revisions.)
+	Force bool `protobuf:"varint,3,opt,name=force,proto3" json:"force,omitempty"`
+	// Optional. Policy on how to handle referenced deployments when deleting the
+	// DeploymentGroup.
+	// If unspecified, the default behavior is to fail the deletion if any
+	// deployments currently referenced in the `deployment_units` of the
+	// DeploymentGroup or in the latest revision are not deleted.
+	DeploymentReferencePolicy DeleteDeploymentGroupRequest_DeploymentReferencePolicy `protobuf:"varint,4,opt,name=deployment_reference_policy,json=deploymentReferencePolicy,proto3,enum=google.cloud.config.v1.DeleteDeploymentGroupRequest_DeploymentReferencePolicy" json:"deployment_reference_policy,omitempty"`
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
+}
+
+func (x *DeleteDeploymentGroupRequest) Reset() {
+	*x = DeleteDeploymentGroupRequest{}
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteDeploymentGroupRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteDeploymentGroupRequest) ProtoMessage() {}
+
+func (x *DeleteDeploymentGroupRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteDeploymentGroupRequest.ProtoReflect.Descriptor instead.
+func (*DeleteDeploymentGroupRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *DeleteDeploymentGroupRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *DeleteDeploymentGroupRequest) GetRequestId() string {
+	if x != nil {
+		return x.RequestId
+	}
+	return ""
+}
+
+func (x *DeleteDeploymentGroupRequest) GetForce() bool {
+	if x != nil {
+		return x.Force
+	}
+	return false
+}
+
+func (x *DeleteDeploymentGroupRequest) GetDeploymentReferencePolicy() DeleteDeploymentGroupRequest_DeploymentReferencePolicy {
+	if x != nil {
+		return x.DeploymentReferencePolicy
+	}
+	return DeleteDeploymentGroupRequest_DEPLOYMENT_REFERENCE_POLICY_UNSPECIFIED
 }
 
 type UpdateDeploymentRequest struct {
@@ -2374,7 +3207,7 @@ type UpdateDeploymentRequest struct {
 
 func (x *UpdateDeploymentRequest) Reset() {
 	*x = UpdateDeploymentRequest{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[12]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2386,7 +3219,7 @@ func (x *UpdateDeploymentRequest) String() string {
 func (*UpdateDeploymentRequest) ProtoMessage() {}
 
 func (x *UpdateDeploymentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[12]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2399,7 +3232,7 @@ func (x *UpdateDeploymentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateDeploymentRequest.ProtoReflect.Descriptor instead.
 func (*UpdateDeploymentRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{12}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *UpdateDeploymentRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
@@ -2456,7 +3289,7 @@ type DeleteDeploymentRequest struct {
 
 func (x *DeleteDeploymentRequest) Reset() {
 	*x = DeleteDeploymentRequest{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[13]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2468,7 +3301,7 @@ func (x *DeleteDeploymentRequest) String() string {
 func (*DeleteDeploymentRequest) ProtoMessage() {}
 
 func (x *DeleteDeploymentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[13]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2481,7 +3314,7 @@ func (x *DeleteDeploymentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteDeploymentRequest.ProtoReflect.Descriptor instead.
 func (*DeleteDeploymentRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{13}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *DeleteDeploymentRequest) GetName() string {
@@ -2522,6 +3355,7 @@ type OperationMetadata struct {
 	//
 	//	*OperationMetadata_DeploymentMetadata
 	//	*OperationMetadata_PreviewMetadata
+	//	*OperationMetadata_ProvisionDeploymentGroupMetadata
 	ResourceMetadata isOperationMetadata_ResourceMetadata `protobuf_oneof:"resource_metadata"`
 	// Output only. Time when the operation was created.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
@@ -2547,7 +3381,7 @@ type OperationMetadata struct {
 
 func (x *OperationMetadata) Reset() {
 	*x = OperationMetadata{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[14]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2559,7 +3393,7 @@ func (x *OperationMetadata) String() string {
 func (*OperationMetadata) ProtoMessage() {}
 
 func (x *OperationMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[14]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2572,7 +3406,7 @@ func (x *OperationMetadata) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OperationMetadata.ProtoReflect.Descriptor instead.
 func (*OperationMetadata) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{14}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *OperationMetadata) GetResourceMetadata() isOperationMetadata_ResourceMetadata {
@@ -2595,6 +3429,15 @@ func (x *OperationMetadata) GetPreviewMetadata() *PreviewOperationMetadata {
 	if x != nil {
 		if x, ok := x.ResourceMetadata.(*OperationMetadata_PreviewMetadata); ok {
 			return x.PreviewMetadata
+		}
+	}
+	return nil
+}
+
+func (x *OperationMetadata) GetProvisionDeploymentGroupMetadata() *ProvisionDeploymentGroupOperationMetadata {
+	if x != nil {
+		if x, ok := x.ResourceMetadata.(*OperationMetadata_ProvisionDeploymentGroupMetadata); ok {
+			return x.ProvisionDeploymentGroupMetadata
 		}
 	}
 	return nil
@@ -2663,9 +3506,16 @@ type OperationMetadata_PreviewMetadata struct {
 	PreviewMetadata *PreviewOperationMetadata `protobuf:"bytes,9,opt,name=preview_metadata,json=previewMetadata,proto3,oneof"`
 }
 
+type OperationMetadata_ProvisionDeploymentGroupMetadata struct {
+	// Output only. Metadata about ProvisionDeploymentGroup operation state.
+	ProvisionDeploymentGroupMetadata *ProvisionDeploymentGroupOperationMetadata `protobuf:"bytes,10,opt,name=provision_deployment_group_metadata,json=provisionDeploymentGroupMetadata,proto3,oneof"`
+}
+
 func (*OperationMetadata_DeploymentMetadata) isOperationMetadata_ResourceMetadata() {}
 
 func (*OperationMetadata_PreviewMetadata) isOperationMetadata_ResourceMetadata() {}
+
+func (*OperationMetadata_ProvisionDeploymentGroupMetadata) isOperationMetadata_ResourceMetadata() {}
 
 // A child resource of a Deployment generated by a 'CreateDeployment' or
 // 'UpdateDeployment' call. Each Revision contains metadata pertaining to a
@@ -2748,7 +3598,7 @@ type Revision struct {
 
 func (x *Revision) Reset() {
 	*x = Revision{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[15]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2760,7 +3610,7 @@ func (x *Revision) String() string {
 func (*Revision) ProtoMessage() {}
 
 func (x *Revision) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[15]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2773,7 +3623,7 @@ func (x *Revision) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Revision.ProtoReflect.Descriptor instead.
 func (*Revision) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{15}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *Revision) GetBlueprint() isRevision_Blueprint {
@@ -2965,7 +3815,7 @@ type TerraformError struct {
 
 func (x *TerraformError) Reset() {
 	*x = TerraformError{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[16]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2977,7 +3827,7 @@ func (x *TerraformError) String() string {
 func (*TerraformError) ProtoMessage() {}
 
 func (x *TerraformError) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[16]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2990,7 +3840,7 @@ func (x *TerraformError) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TerraformError.ProtoReflect.Descriptor instead.
 func (*TerraformError) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{16}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *TerraformError) GetResourceAddress() string {
@@ -3038,7 +3888,7 @@ type GitSource struct {
 
 func (x *GitSource) Reset() {
 	*x = GitSource{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[17]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3050,7 +3900,7 @@ func (x *GitSource) String() string {
 func (*GitSource) ProtoMessage() {}
 
 func (x *GitSource) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[17]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3063,7 +3913,7 @@ func (x *GitSource) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GitSource.ProtoReflect.Descriptor instead.
 func (*GitSource) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{17}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *GitSource) GetRepo() string {
@@ -3105,7 +3955,7 @@ type DeploymentOperationMetadata struct {
 
 func (x *DeploymentOperationMetadata) Reset() {
 	*x = DeploymentOperationMetadata{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[18]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3117,7 +3967,7 @@ func (x *DeploymentOperationMetadata) String() string {
 func (*DeploymentOperationMetadata) ProtoMessage() {}
 
 func (x *DeploymentOperationMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[18]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3130,7 +3980,7 @@ func (x *DeploymentOperationMetadata) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeploymentOperationMetadata.ProtoReflect.Descriptor instead.
 func (*DeploymentOperationMetadata) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{18}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *DeploymentOperationMetadata) GetStep() DeploymentOperationMetadata_DeploymentStep {
@@ -3186,7 +4036,7 @@ type Resource struct {
 
 func (x *Resource) Reset() {
 	*x = Resource{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[19]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3198,7 +4048,7 @@ func (x *Resource) String() string {
 func (*Resource) ProtoMessage() {}
 
 func (x *Resource) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[19]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3211,7 +4061,7 @@ func (x *Resource) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Resource.ProtoReflect.Descriptor instead.
 func (*Resource) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{19}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *Resource) GetName() string {
@@ -3265,7 +4115,7 @@ type ResourceTerraformInfo struct {
 
 func (x *ResourceTerraformInfo) Reset() {
 	*x = ResourceTerraformInfo{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[20]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3277,7 +4127,7 @@ func (x *ResourceTerraformInfo) String() string {
 func (*ResourceTerraformInfo) ProtoMessage() {}
 
 func (x *ResourceTerraformInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[20]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3290,7 +4140,7 @@ func (x *ResourceTerraformInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResourceTerraformInfo.ProtoReflect.Descriptor instead.
 func (*ResourceTerraformInfo) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{20}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *ResourceTerraformInfo) GetAddress() string {
@@ -3326,7 +4176,7 @@ type ResourceCAIInfo struct {
 
 func (x *ResourceCAIInfo) Reset() {
 	*x = ResourceCAIInfo{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[21]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3338,7 +4188,7 @@ func (x *ResourceCAIInfo) String() string {
 func (*ResourceCAIInfo) ProtoMessage() {}
 
 func (x *ResourceCAIInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[21]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3351,7 +4201,7 @@ func (x *ResourceCAIInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResourceCAIInfo.ProtoReflect.Descriptor instead.
 func (*ResourceCAIInfo) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{21}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *ResourceCAIInfo) GetFullResourceName() string {
@@ -3373,7 +4223,7 @@ type GetResourceRequest struct {
 
 func (x *GetResourceRequest) Reset() {
 	*x = GetResourceRequest{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[22]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3385,7 +4235,7 @@ func (x *GetResourceRequest) String() string {
 func (*GetResourceRequest) ProtoMessage() {}
 
 func (x *GetResourceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[22]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3398,7 +4248,7 @@ func (x *GetResourceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetResourceRequest.ProtoReflect.Descriptor instead.
 func (*GetResourceRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{22}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *GetResourceRequest) GetName() string {
@@ -3444,7 +4294,7 @@ type ListResourcesRequest struct {
 
 func (x *ListResourcesRequest) Reset() {
 	*x = ListResourcesRequest{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[23]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3456,7 +4306,7 @@ func (x *ListResourcesRequest) String() string {
 func (*ListResourcesRequest) ProtoMessage() {}
 
 func (x *ListResourcesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[23]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3469,7 +4319,7 @@ func (x *ListResourcesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListResourcesRequest.ProtoReflect.Descriptor instead.
 func (*ListResourcesRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{23}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *ListResourcesRequest) GetParent() string {
@@ -3524,7 +4374,7 @@ type ListResourcesResponse struct {
 
 func (x *ListResourcesResponse) Reset() {
 	*x = ListResourcesResponse{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[24]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3536,7 +4386,7 @@ func (x *ListResourcesResponse) String() string {
 func (*ListResourcesResponse) ProtoMessage() {}
 
 func (x *ListResourcesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[24]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3549,7 +4399,7 @@ func (x *ListResourcesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListResourcesResponse.ProtoReflect.Descriptor instead.
 func (*ListResourcesResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{24}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *ListResourcesResponse) GetResources() []*Resource {
@@ -3585,7 +4435,7 @@ type Statefile struct {
 
 func (x *Statefile) Reset() {
 	*x = Statefile{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[25]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3597,7 +4447,7 @@ func (x *Statefile) String() string {
 func (*Statefile) ProtoMessage() {}
 
 func (x *Statefile) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[25]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3610,7 +4460,7 @@ func (x *Statefile) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Statefile.ProtoReflect.Descriptor instead.
 func (*Statefile) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{25}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *Statefile) GetSignedUri() string {
@@ -3638,7 +4488,7 @@ type ExportDeploymentStatefileRequest struct {
 
 func (x *ExportDeploymentStatefileRequest) Reset() {
 	*x = ExportDeploymentStatefileRequest{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[26]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3650,7 +4500,7 @@ func (x *ExportDeploymentStatefileRequest) String() string {
 func (*ExportDeploymentStatefileRequest) ProtoMessage() {}
 
 func (x *ExportDeploymentStatefileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[26]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3663,7 +4513,7 @@ func (x *ExportDeploymentStatefileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExportDeploymentStatefileRequest.ProtoReflect.Descriptor instead.
 func (*ExportDeploymentStatefileRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{26}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *ExportDeploymentStatefileRequest) GetParent() string {
@@ -3694,7 +4544,7 @@ type ExportRevisionStatefileRequest struct {
 
 func (x *ExportRevisionStatefileRequest) Reset() {
 	*x = ExportRevisionStatefileRequest{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[27]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3706,7 +4556,7 @@ func (x *ExportRevisionStatefileRequest) String() string {
 func (*ExportRevisionStatefileRequest) ProtoMessage() {}
 
 func (x *ExportRevisionStatefileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[27]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3719,7 +4569,7 @@ func (x *ExportRevisionStatefileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExportRevisionStatefileRequest.ProtoReflect.Descriptor instead.
 func (*ExportRevisionStatefileRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{27}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *ExportRevisionStatefileRequest) GetParent() string {
@@ -3747,7 +4597,7 @@ type ImportStatefileRequest struct {
 
 func (x *ImportStatefileRequest) Reset() {
 	*x = ImportStatefileRequest{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[28]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3759,7 +4609,7 @@ func (x *ImportStatefileRequest) String() string {
 func (*ImportStatefileRequest) ProtoMessage() {}
 
 func (x *ImportStatefileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[28]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3772,7 +4622,7 @@ func (x *ImportStatefileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ImportStatefileRequest.ProtoReflect.Descriptor instead.
 func (*ImportStatefileRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{28}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *ImportStatefileRequest) GetParent() string {
@@ -3811,7 +4661,7 @@ type DeleteStatefileRequest struct {
 
 func (x *DeleteStatefileRequest) Reset() {
 	*x = DeleteStatefileRequest{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[29]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3823,7 +4673,7 @@ func (x *DeleteStatefileRequest) String() string {
 func (*DeleteStatefileRequest) ProtoMessage() {}
 
 func (x *DeleteStatefileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[29]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3836,7 +4686,7 @@ func (x *DeleteStatefileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteStatefileRequest.ProtoReflect.Descriptor instead.
 func (*DeleteStatefileRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{29}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *DeleteStatefileRequest) GetName() string {
@@ -3865,7 +4715,7 @@ type LockDeploymentRequest struct {
 
 func (x *LockDeploymentRequest) Reset() {
 	*x = LockDeploymentRequest{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[30]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3877,7 +4727,7 @@ func (x *LockDeploymentRequest) String() string {
 func (*LockDeploymentRequest) ProtoMessage() {}
 
 func (x *LockDeploymentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[30]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3890,7 +4740,7 @@ func (x *LockDeploymentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LockDeploymentRequest.ProtoReflect.Descriptor instead.
 func (*LockDeploymentRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{30}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *LockDeploymentRequest) GetName() string {
@@ -3914,7 +4764,7 @@ type UnlockDeploymentRequest struct {
 
 func (x *UnlockDeploymentRequest) Reset() {
 	*x = UnlockDeploymentRequest{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[31]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3926,7 +4776,7 @@ func (x *UnlockDeploymentRequest) String() string {
 func (*UnlockDeploymentRequest) ProtoMessage() {}
 
 func (x *UnlockDeploymentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[31]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3939,7 +4789,7 @@ func (x *UnlockDeploymentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UnlockDeploymentRequest.ProtoReflect.Descriptor instead.
 func (*UnlockDeploymentRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{31}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *UnlockDeploymentRequest) GetName() string {
@@ -3968,7 +4818,7 @@ type ExportLockInfoRequest struct {
 
 func (x *ExportLockInfoRequest) Reset() {
 	*x = ExportLockInfoRequest{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[32]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3980,7 +4830,7 @@ func (x *ExportLockInfoRequest) String() string {
 func (*ExportLockInfoRequest) ProtoMessage() {}
 
 func (x *ExportLockInfoRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[32]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3993,7 +4843,7 @@ func (x *ExportLockInfoRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExportLockInfoRequest.ProtoReflect.Descriptor instead.
 func (*ExportLockInfoRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{32}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *ExportLockInfoRequest) GetName() string {
@@ -4024,7 +4874,7 @@ type LockInfo struct {
 
 func (x *LockInfo) Reset() {
 	*x = LockInfo{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[33]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4036,7 +4886,7 @@ func (x *LockInfo) String() string {
 func (*LockInfo) ProtoMessage() {}
 
 func (x *LockInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[33]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4049,7 +4899,7 @@ func (x *LockInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LockInfo.ProtoReflect.Descriptor instead.
 func (*LockInfo) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{33}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *LockInfo) GetLockId() int64 {
@@ -4180,7 +5030,7 @@ type Preview struct {
 
 func (x *Preview) Reset() {
 	*x = Preview{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[34]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4192,7 +5042,7 @@ func (x *Preview) String() string {
 func (*Preview) ProtoMessage() {}
 
 func (x *Preview) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[34]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4205,7 +5055,7 @@ func (x *Preview) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Preview.ProtoReflect.Descriptor instead.
 func (*Preview) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{34}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *Preview) GetBlueprint() isPreview_Blueprint {
@@ -4392,7 +5242,7 @@ type PreviewOperationMetadata struct {
 
 func (x *PreviewOperationMetadata) Reset() {
 	*x = PreviewOperationMetadata{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[35]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4404,7 +5254,7 @@ func (x *PreviewOperationMetadata) String() string {
 func (*PreviewOperationMetadata) ProtoMessage() {}
 
 func (x *PreviewOperationMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[35]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4417,7 +5267,7 @@ func (x *PreviewOperationMetadata) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PreviewOperationMetadata.ProtoReflect.Descriptor instead.
 func (*PreviewOperationMetadata) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{35}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *PreviewOperationMetadata) GetStep() PreviewOperationMetadata_PreviewStep {
@@ -4463,7 +5313,7 @@ type PreviewArtifacts struct {
 
 func (x *PreviewArtifacts) Reset() {
 	*x = PreviewArtifacts{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[36]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4475,7 +5325,7 @@ func (x *PreviewArtifacts) String() string {
 func (*PreviewArtifacts) ProtoMessage() {}
 
 func (x *PreviewArtifacts) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[36]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4488,7 +5338,7 @@ func (x *PreviewArtifacts) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PreviewArtifacts.ProtoReflect.Descriptor instead.
 func (*PreviewArtifacts) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{36}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *PreviewArtifacts) GetContent() string {
@@ -4535,7 +5385,7 @@ type CreatePreviewRequest struct {
 
 func (x *CreatePreviewRequest) Reset() {
 	*x = CreatePreviewRequest{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[37]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4547,7 +5397,7 @@ func (x *CreatePreviewRequest) String() string {
 func (*CreatePreviewRequest) ProtoMessage() {}
 
 func (x *CreatePreviewRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[37]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4560,7 +5410,7 @@ func (x *CreatePreviewRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreatePreviewRequest.ProtoReflect.Descriptor instead.
 func (*CreatePreviewRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{37}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *CreatePreviewRequest) GetParent() string {
@@ -4603,7 +5453,7 @@ type GetPreviewRequest struct {
 
 func (x *GetPreviewRequest) Reset() {
 	*x = GetPreviewRequest{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[38]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4615,7 +5465,7 @@ func (x *GetPreviewRequest) String() string {
 func (*GetPreviewRequest) ProtoMessage() {}
 
 func (x *GetPreviewRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[38]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4628,7 +5478,7 @@ func (x *GetPreviewRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPreviewRequest.ProtoReflect.Descriptor instead.
 func (*GetPreviewRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{38}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *GetPreviewRequest) GetName() string {
@@ -4682,7 +5532,7 @@ type ListPreviewsRequest struct {
 
 func (x *ListPreviewsRequest) Reset() {
 	*x = ListPreviewsRequest{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[39]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4694,7 +5544,7 @@ func (x *ListPreviewsRequest) String() string {
 func (*ListPreviewsRequest) ProtoMessage() {}
 
 func (x *ListPreviewsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[39]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4707,7 +5557,7 @@ func (x *ListPreviewsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListPreviewsRequest.ProtoReflect.Descriptor instead.
 func (*ListPreviewsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{39}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *ListPreviewsRequest) GetParent() string {
@@ -4761,7 +5611,7 @@ type ListPreviewsResponse struct {
 
 func (x *ListPreviewsResponse) Reset() {
 	*x = ListPreviewsResponse{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[40]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4773,7 +5623,7 @@ func (x *ListPreviewsResponse) String() string {
 func (*ListPreviewsResponse) ProtoMessage() {}
 
 func (x *ListPreviewsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[40]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4786,7 +5636,7 @@ func (x *ListPreviewsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListPreviewsResponse.ProtoReflect.Descriptor instead.
 func (*ListPreviewsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{40}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{45}
 }
 
 func (x *ListPreviewsResponse) GetPreviews() []*Preview {
@@ -4836,7 +5686,7 @@ type DeletePreviewRequest struct {
 
 func (x *DeletePreviewRequest) Reset() {
 	*x = DeletePreviewRequest{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[41]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4848,7 +5698,7 @@ func (x *DeletePreviewRequest) String() string {
 func (*DeletePreviewRequest) ProtoMessage() {}
 
 func (x *DeletePreviewRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[41]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4861,7 +5711,7 @@ func (x *DeletePreviewRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeletePreviewRequest.ProtoReflect.Descriptor instead.
 func (*DeletePreviewRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{41}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *DeletePreviewRequest) GetName() string {
@@ -4891,7 +5741,7 @@ type ExportPreviewResultRequest struct {
 
 func (x *ExportPreviewResultRequest) Reset() {
 	*x = ExportPreviewResultRequest{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[42]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4903,7 +5753,7 @@ func (x *ExportPreviewResultRequest) String() string {
 func (*ExportPreviewResultRequest) ProtoMessage() {}
 
 func (x *ExportPreviewResultRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[42]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4916,7 +5766,7 @@ func (x *ExportPreviewResultRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExportPreviewResultRequest.ProtoReflect.Descriptor instead.
 func (*ExportPreviewResultRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{42}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *ExportPreviewResultRequest) GetParent() string {
@@ -4937,7 +5787,7 @@ type ExportPreviewResultResponse struct {
 
 func (x *ExportPreviewResultResponse) Reset() {
 	*x = ExportPreviewResultResponse{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[43]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4949,7 +5799,7 @@ func (x *ExportPreviewResultResponse) String() string {
 func (*ExportPreviewResultResponse) ProtoMessage() {}
 
 func (x *ExportPreviewResultResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[43]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4962,7 +5812,7 @@ func (x *ExportPreviewResultResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExportPreviewResultResponse.ProtoReflect.Descriptor instead.
 func (*ExportPreviewResultResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{43}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{48}
 }
 
 func (x *ExportPreviewResultResponse) GetResult() *PreviewResult {
@@ -4985,7 +5835,7 @@ type PreviewResult struct {
 
 func (x *PreviewResult) Reset() {
 	*x = PreviewResult{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[44]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4997,7 +5847,7 @@ func (x *PreviewResult) String() string {
 func (*PreviewResult) ProtoMessage() {}
 
 func (x *PreviewResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[44]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5010,7 +5860,7 @@ func (x *PreviewResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PreviewResult.ProtoReflect.Descriptor instead.
 func (*PreviewResult) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{44}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{49}
 }
 
 func (x *PreviewResult) GetBinarySignedUri() string {
@@ -5039,7 +5889,7 @@ type GetTerraformVersionRequest struct {
 
 func (x *GetTerraformVersionRequest) Reset() {
 	*x = GetTerraformVersionRequest{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[45]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5051,7 +5901,7 @@ func (x *GetTerraformVersionRequest) String() string {
 func (*GetTerraformVersionRequest) ProtoMessage() {}
 
 func (x *GetTerraformVersionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[45]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5064,7 +5914,7 @@ func (x *GetTerraformVersionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTerraformVersionRequest.ProtoReflect.Descriptor instead.
 func (*GetTerraformVersionRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{45}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{50}
 }
 
 func (x *GetTerraformVersionRequest) GetName() string {
@@ -5106,7 +5956,7 @@ type ListTerraformVersionsRequest struct {
 
 func (x *ListTerraformVersionsRequest) Reset() {
 	*x = ListTerraformVersionsRequest{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[46]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[51]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5118,7 +5968,7 @@ func (x *ListTerraformVersionsRequest) String() string {
 func (*ListTerraformVersionsRequest) ProtoMessage() {}
 
 func (x *ListTerraformVersionsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[46]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[51]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5131,7 +5981,7 @@ func (x *ListTerraformVersionsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListTerraformVersionsRequest.ProtoReflect.Descriptor instead.
 func (*ListTerraformVersionsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{46}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{51}
 }
 
 func (x *ListTerraformVersionsRequest) GetParent() string {
@@ -5185,7 +6035,7 @@ type ListTerraformVersionsResponse struct {
 
 func (x *ListTerraformVersionsResponse) Reset() {
 	*x = ListTerraformVersionsResponse{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[47]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5197,7 +6047,7 @@ func (x *ListTerraformVersionsResponse) String() string {
 func (*ListTerraformVersionsResponse) ProtoMessage() {}
 
 func (x *ListTerraformVersionsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[47]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5210,7 +6060,7 @@ func (x *ListTerraformVersionsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListTerraformVersionsResponse.ProtoReflect.Descriptor instead.
 func (*ListTerraformVersionsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{47}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{52}
 }
 
 func (x *ListTerraformVersionsResponse) GetTerraformVersions() []*TerraformVersion {
@@ -5255,7 +6105,7 @@ type TerraformVersion struct {
 
 func (x *TerraformVersion) Reset() {
 	*x = TerraformVersion{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[48]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[53]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5267,7 +6117,7 @@ func (x *TerraformVersion) String() string {
 func (*TerraformVersion) ProtoMessage() {}
 
 func (x *TerraformVersion) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[48]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[53]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5280,7 +6130,7 @@ func (x *TerraformVersion) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TerraformVersion.ProtoReflect.Descriptor instead.
 func (*TerraformVersion) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{48}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{53}
 }
 
 func (x *TerraformVersion) GetName() string {
@@ -5337,7 +6187,7 @@ type ResourceChangeTerraformInfo struct {
 
 func (x *ResourceChangeTerraformInfo) Reset() {
 	*x = ResourceChangeTerraformInfo{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[49]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[54]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5349,7 +6199,7 @@ func (x *ResourceChangeTerraformInfo) String() string {
 func (*ResourceChangeTerraformInfo) ProtoMessage() {}
 
 func (x *ResourceChangeTerraformInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[49]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[54]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5362,7 +6212,7 @@ func (x *ResourceChangeTerraformInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResourceChangeTerraformInfo.ProtoReflect.Descriptor instead.
 func (*ResourceChangeTerraformInfo) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{49}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{54}
 }
 
 func (x *ResourceChangeTerraformInfo) GetAddress() string {
@@ -5419,7 +6269,7 @@ type ResourceChange struct {
 
 func (x *ResourceChange) Reset() {
 	*x = ResourceChange{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[50]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[55]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5431,7 +6281,7 @@ func (x *ResourceChange) String() string {
 func (*ResourceChange) ProtoMessage() {}
 
 func (x *ResourceChange) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[50]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[55]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5444,7 +6294,7 @@ func (x *ResourceChange) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResourceChange.ProtoReflect.Descriptor instead.
 func (*ResourceChange) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{50}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{55}
 }
 
 func (x *ResourceChange) GetName() string {
@@ -5496,7 +6346,7 @@ type PropertyChange struct {
 
 func (x *PropertyChange) Reset() {
 	*x = PropertyChange{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[51]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[56]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5508,7 +6358,7 @@ func (x *PropertyChange) String() string {
 func (*PropertyChange) ProtoMessage() {}
 
 func (x *PropertyChange) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[51]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[56]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5521,7 +6371,7 @@ func (x *PropertyChange) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PropertyChange.ProtoReflect.Descriptor instead.
 func (*PropertyChange) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{51}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{56}
 }
 
 func (x *PropertyChange) GetPath() string {
@@ -5597,7 +6447,7 @@ type ListResourceChangesRequest struct {
 
 func (x *ListResourceChangesRequest) Reset() {
 	*x = ListResourceChangesRequest{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[52]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[57]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5609,7 +6459,7 @@ func (x *ListResourceChangesRequest) String() string {
 func (*ListResourceChangesRequest) ProtoMessage() {}
 
 func (x *ListResourceChangesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[52]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[57]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5622,7 +6472,7 @@ func (x *ListResourceChangesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListResourceChangesRequest.ProtoReflect.Descriptor instead.
 func (*ListResourceChangesRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{52}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{57}
 }
 
 func (x *ListResourceChangesRequest) GetParent() string {
@@ -5679,7 +6529,7 @@ type ListResourceChangesResponse struct {
 
 func (x *ListResourceChangesResponse) Reset() {
 	*x = ListResourceChangesResponse{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[53]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[58]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5691,7 +6541,7 @@ func (x *ListResourceChangesResponse) String() string {
 func (*ListResourceChangesResponse) ProtoMessage() {}
 
 func (x *ListResourceChangesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[53]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[58]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5704,7 +6554,7 @@ func (x *ListResourceChangesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListResourceChangesResponse.ProtoReflect.Descriptor instead.
 func (*ListResourceChangesResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{53}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{58}
 }
 
 func (x *ListResourceChangesResponse) GetResourceChanges() []*ResourceChange {
@@ -5741,7 +6591,7 @@ type GetResourceChangeRequest struct {
 
 func (x *GetResourceChangeRequest) Reset() {
 	*x = GetResourceChangeRequest{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[54]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[59]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5753,7 +6603,7 @@ func (x *GetResourceChangeRequest) String() string {
 func (*GetResourceChangeRequest) ProtoMessage() {}
 
 func (x *GetResourceChangeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[54]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[59]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5766,7 +6616,7 @@ func (x *GetResourceChangeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetResourceChangeRequest.ProtoReflect.Descriptor instead.
 func (*GetResourceChangeRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{54}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{59}
 }
 
 func (x *GetResourceChangeRequest) GetName() string {
@@ -5793,7 +6643,7 @@ type ResourceDriftTerraformInfo struct {
 
 func (x *ResourceDriftTerraformInfo) Reset() {
 	*x = ResourceDriftTerraformInfo{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[55]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[60]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5805,7 +6655,7 @@ func (x *ResourceDriftTerraformInfo) String() string {
 func (*ResourceDriftTerraformInfo) ProtoMessage() {}
 
 func (x *ResourceDriftTerraformInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[55]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[60]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5818,7 +6668,7 @@ func (x *ResourceDriftTerraformInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResourceDriftTerraformInfo.ProtoReflect.Descriptor instead.
 func (*ResourceDriftTerraformInfo) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{55}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{60}
 }
 
 func (x *ResourceDriftTerraformInfo) GetAddress() string {
@@ -5866,7 +6716,7 @@ type ResourceDrift struct {
 
 func (x *ResourceDrift) Reset() {
 	*x = ResourceDrift{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[56]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[61]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5878,7 +6728,7 @@ func (x *ResourceDrift) String() string {
 func (*ResourceDrift) ProtoMessage() {}
 
 func (x *ResourceDrift) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[56]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[61]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5891,7 +6741,7 @@ func (x *ResourceDrift) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResourceDrift.ProtoReflect.Descriptor instead.
 func (*ResourceDrift) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{56}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{61}
 }
 
 func (x *ResourceDrift) GetName() string {
@@ -5936,7 +6786,7 @@ type PropertyDrift struct {
 
 func (x *PropertyDrift) Reset() {
 	*x = PropertyDrift{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[57]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[62]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5948,7 +6798,7 @@ func (x *PropertyDrift) String() string {
 func (*PropertyDrift) ProtoMessage() {}
 
 func (x *PropertyDrift) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[57]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[62]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5961,7 +6811,7 @@ func (x *PropertyDrift) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PropertyDrift.ProtoReflect.Descriptor instead.
 func (*PropertyDrift) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{57}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{62}
 }
 
 func (x *PropertyDrift) GetPath() string {
@@ -6037,7 +6887,7 @@ type ListResourceDriftsRequest struct {
 
 func (x *ListResourceDriftsRequest) Reset() {
 	*x = ListResourceDriftsRequest{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[58]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[63]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6049,7 +6899,7 @@ func (x *ListResourceDriftsRequest) String() string {
 func (*ListResourceDriftsRequest) ProtoMessage() {}
 
 func (x *ListResourceDriftsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[58]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[63]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6062,7 +6912,7 @@ func (x *ListResourceDriftsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListResourceDriftsRequest.ProtoReflect.Descriptor instead.
 func (*ListResourceDriftsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{58}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{63}
 }
 
 func (x *ListResourceDriftsRequest) GetParent() string {
@@ -6117,7 +6967,7 @@ type ListResourceDriftsResponse struct {
 
 func (x *ListResourceDriftsResponse) Reset() {
 	*x = ListResourceDriftsResponse{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[59]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[64]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6129,7 +6979,7 @@ func (x *ListResourceDriftsResponse) String() string {
 func (*ListResourceDriftsResponse) ProtoMessage() {}
 
 func (x *ListResourceDriftsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[59]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[64]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6142,7 +6992,7 @@ func (x *ListResourceDriftsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListResourceDriftsResponse.ProtoReflect.Descriptor instead.
 func (*ListResourceDriftsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{59}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{64}
 }
 
 func (x *ListResourceDriftsResponse) GetResourceDrifts() []*ResourceDrift {
@@ -6179,7 +7029,7 @@ type GetResourceDriftRequest struct {
 
 func (x *GetResourceDriftRequest) Reset() {
 	*x = GetResourceDriftRequest{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[60]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[65]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6191,7 +7041,7 @@ func (x *GetResourceDriftRequest) String() string {
 func (*GetResourceDriftRequest) ProtoMessage() {}
 
 func (x *GetResourceDriftRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[60]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[65]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6204,7 +7054,7 @@ func (x *GetResourceDriftRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetResourceDriftRequest.ProtoReflect.Descriptor instead.
 func (*GetResourceDriftRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{60}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{65}
 }
 
 func (x *GetResourceDriftRequest) GetName() string {
@@ -6225,7 +7075,7 @@ type ProviderConfig struct {
 
 func (x *ProviderConfig) Reset() {
 	*x = ProviderConfig{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[61]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[66]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6237,7 +7087,7 @@ func (x *ProviderConfig) String() string {
 func (*ProviderConfig) ProtoMessage() {}
 
 func (x *ProviderConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[61]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[66]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6250,7 +7100,7 @@ func (x *ProviderConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProviderConfig.ProtoReflect.Descriptor instead.
 func (*ProviderConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{61}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{66}
 }
 
 func (x *ProviderConfig) GetSourceType() ProviderConfig_ProviderSource {
@@ -6273,7 +7123,7 @@ type GetAutoMigrationConfigRequest struct {
 
 func (x *GetAutoMigrationConfigRequest) Reset() {
 	*x = GetAutoMigrationConfigRequest{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[62]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[67]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6285,7 +7135,7 @@ func (x *GetAutoMigrationConfigRequest) String() string {
 func (*GetAutoMigrationConfigRequest) ProtoMessage() {}
 
 func (x *GetAutoMigrationConfigRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[62]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[67]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6298,7 +7148,7 @@ func (x *GetAutoMigrationConfigRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAutoMigrationConfigRequest.ProtoReflect.Descriptor instead.
 func (*GetAutoMigrationConfigRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{62}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{67}
 }
 
 func (x *GetAutoMigrationConfigRequest) GetName() string {
@@ -6325,7 +7175,7 @@ type AutoMigrationConfig struct {
 
 func (x *AutoMigrationConfig) Reset() {
 	*x = AutoMigrationConfig{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[63]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[68]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6337,7 +7187,7 @@ func (x *AutoMigrationConfig) String() string {
 func (*AutoMigrationConfig) ProtoMessage() {}
 
 func (x *AutoMigrationConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[63]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[68]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6350,7 +7200,7 @@ func (x *AutoMigrationConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AutoMigrationConfig.ProtoReflect.Descriptor instead.
 func (*AutoMigrationConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{63}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{68}
 }
 
 func (x *AutoMigrationConfig) GetName() string {
@@ -6388,7 +7238,7 @@ type UpdateAutoMigrationConfigRequest struct {
 
 func (x *UpdateAutoMigrationConfigRequest) Reset() {
 	*x = UpdateAutoMigrationConfigRequest{}
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[64]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[69]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6400,7 +7250,7 @@ func (x *UpdateAutoMigrationConfigRequest) String() string {
 func (*UpdateAutoMigrationConfigRequest) ProtoMessage() {}
 
 func (x *UpdateAutoMigrationConfigRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_config_v1_config_proto_msgTypes[64]
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[69]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6413,7 +7263,7 @@ func (x *UpdateAutoMigrationConfigRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateAutoMigrationConfigRequest.ProtoReflect.Descriptor instead.
 func (*UpdateAutoMigrationConfigRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{64}
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{69}
 }
 
 func (x *UpdateAutoMigrationConfigRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
@@ -6426,6 +7276,1142 @@ func (x *UpdateAutoMigrationConfigRequest) GetUpdateMask() *fieldmaskpb.FieldMas
 func (x *UpdateAutoMigrationConfigRequest) GetAutoMigrationConfig() *AutoMigrationConfig {
 	if x != nil {
 		return x.AutoMigrationConfig
+	}
+	return nil
+}
+
+// A DeploymentGroup is a collection of DeploymentUnits that in a DAG-like
+// structure.
+type DeploymentGroup struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Identifier. The name of the deployment group.
+	// Format:
+	// 'projects/{project_id}/locations/{location}/deploymentGroups/{deployment_group}'.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Output only. Time when the deployment group was created.
+	CreateTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
+	// Output only. Time when the deployment group was last updated.
+	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
+	// Optional. User-defined metadata for the deployment group.
+	Labels map[string]string `protobuf:"bytes,4,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Optional. Arbitrary key-value metadata storage e.g. to help client tools
+	// identify deployment group during automation. See
+	// https://google.aip.dev/148#annotations for details on format and size
+	// limitations.
+	Annotations map[string]string `protobuf:"bytes,5,rep,name=annotations,proto3" json:"annotations,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Output only. Current state of the deployment group.
+	State DeploymentGroup_State `protobuf:"varint,6,opt,name=state,proto3,enum=google.cloud.config.v1.DeploymentGroup_State" json:"state,omitempty"`
+	// Output only. Additional information regarding the current state.
+	StateDescription string `protobuf:"bytes,7,opt,name=state_description,json=stateDescription,proto3" json:"state_description,omitempty"`
+	// The deployment units of the deployment group in a DAG like structure.
+	// When a deployment group is being provisioned, the deployment units are
+	// deployed in a DAG order.
+	// The provided units must be in a DAG order, otherwise an error will be
+	// returned.
+	DeploymentUnits []*DeploymentUnit `protobuf:"bytes,8,rep,name=deployment_units,json=deploymentUnits,proto3" json:"deployment_units,omitempty"`
+	// Output only. The provisioning state of the deployment group.
+	ProvisioningState DeploymentGroup_ProvisioningState `protobuf:"varint,9,opt,name=provisioning_state,json=provisioningState,proto3,enum=google.cloud.config.v1.DeploymentGroup_ProvisioningState" json:"provisioning_state,omitempty"`
+	// Output only. Additional information regarding the current provisioning
+	// state.
+	ProvisioningStateDescription string `protobuf:"bytes,10,opt,name=provisioning_state_description,json=provisioningStateDescription,proto3" json:"provisioning_state_description,omitempty"`
+	// Output only. The error status of the deployment group provisioning or
+	// deprovisioning.
+	ProvisioningError *status.Status `protobuf:"bytes,11,opt,name=provisioning_error,json=provisioningError,proto3" json:"provisioning_error,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *DeploymentGroup) Reset() {
+	*x = DeploymentGroup{}
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[70]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeploymentGroup) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeploymentGroup) ProtoMessage() {}
+
+func (x *DeploymentGroup) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[70]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeploymentGroup.ProtoReflect.Descriptor instead.
+func (*DeploymentGroup) Descriptor() ([]byte, []int) {
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{70}
+}
+
+func (x *DeploymentGroup) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *DeploymentGroup) GetCreateTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreateTime
+	}
+	return nil
+}
+
+func (x *DeploymentGroup) GetUpdateTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdateTime
+	}
+	return nil
+}
+
+func (x *DeploymentGroup) GetLabels() map[string]string {
+	if x != nil {
+		return x.Labels
+	}
+	return nil
+}
+
+func (x *DeploymentGroup) GetAnnotations() map[string]string {
+	if x != nil {
+		return x.Annotations
+	}
+	return nil
+}
+
+func (x *DeploymentGroup) GetState() DeploymentGroup_State {
+	if x != nil {
+		return x.State
+	}
+	return DeploymentGroup_STATE_UNSPECIFIED
+}
+
+func (x *DeploymentGroup) GetStateDescription() string {
+	if x != nil {
+		return x.StateDescription
+	}
+	return ""
+}
+
+func (x *DeploymentGroup) GetDeploymentUnits() []*DeploymentUnit {
+	if x != nil {
+		return x.DeploymentUnits
+	}
+	return nil
+}
+
+func (x *DeploymentGroup) GetProvisioningState() DeploymentGroup_ProvisioningState {
+	if x != nil {
+		return x.ProvisioningState
+	}
+	return DeploymentGroup_PROVISIONING_STATE_UNSPECIFIED
+}
+
+func (x *DeploymentGroup) GetProvisioningStateDescription() string {
+	if x != nil {
+		return x.ProvisioningStateDescription
+	}
+	return ""
+}
+
+func (x *DeploymentGroup) GetProvisioningError() *status.Status {
+	if x != nil {
+		return x.ProvisioningError
+	}
+	return nil
+}
+
+// A DeploymentUnit is a container for a deployment and its dependencies.
+// An existing deployment can be provided directly in the unit, or the unit
+// can act as a placeholder to define the DAG, with the deployment specs
+// supplied in a `provisionDeploymentRequest`.
+type DeploymentUnit struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The id of the deployment unit. Must be unique within the deployment group.
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// Optional. The name of the deployment to be provisioned.
+	// Format:
+	// 'projects/{project_id}/locations/{location}/deployments/{deployment}'.
+	Deployment *string `protobuf:"bytes,2,opt,name=deployment,proto3,oneof" json:"deployment,omitempty"`
+	// Required. The IDs of the deployment units within the deployment group that
+	// this unit depends on.
+	Dependencies  []string `protobuf:"bytes,3,rep,name=dependencies,proto3" json:"dependencies,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeploymentUnit) Reset() {
+	*x = DeploymentUnit{}
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[71]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeploymentUnit) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeploymentUnit) ProtoMessage() {}
+
+func (x *DeploymentUnit) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[71]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeploymentUnit.ProtoReflect.Descriptor instead.
+func (*DeploymentUnit) Descriptor() ([]byte, []int) {
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{71}
+}
+
+func (x *DeploymentUnit) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *DeploymentUnit) GetDeployment() string {
+	if x != nil && x.Deployment != nil {
+		return *x.Deployment
+	}
+	return ""
+}
+
+func (x *DeploymentUnit) GetDependencies() []string {
+	if x != nil {
+		return x.Dependencies
+	}
+	return nil
+}
+
+// Spec for a deployment to be created.
+type DeploymentSpec struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The id of the deployment to be created which doesn't include the
+	// project id and location.
+	DeploymentId string `protobuf:"bytes,1,opt,name=deployment_id,json=deploymentId,proto3" json:"deployment_id,omitempty"`
+	// Required. The deployment to be created.
+	Deployment    *Deployment `protobuf:"bytes,2,opt,name=deployment,proto3" json:"deployment,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeploymentSpec) Reset() {
+	*x = DeploymentSpec{}
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[72]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeploymentSpec) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeploymentSpec) ProtoMessage() {}
+
+func (x *DeploymentSpec) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[72]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeploymentSpec.ProtoReflect.Descriptor instead.
+func (*DeploymentSpec) Descriptor() ([]byte, []int) {
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{72}
+}
+
+func (x *DeploymentSpec) GetDeploymentId() string {
+	if x != nil {
+		return x.DeploymentId
+	}
+	return ""
+}
+
+func (x *DeploymentSpec) GetDeployment() *Deployment {
+	if x != nil {
+		return x.Deployment
+	}
+	return nil
+}
+
+// The request message for the GetDeploymentGroup method.
+type GetDeploymentGroupRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The name of the deployment group to retrieve.
+	// Format:
+	// 'projects/{project_id}/locations/{location}/deploymentGroups/{deployment_group}'.
+	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetDeploymentGroupRequest) Reset() {
+	*x = GetDeploymentGroupRequest{}
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[73]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetDeploymentGroupRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetDeploymentGroupRequest) ProtoMessage() {}
+
+func (x *GetDeploymentGroupRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[73]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetDeploymentGroupRequest.ProtoReflect.Descriptor instead.
+func (*GetDeploymentGroupRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{73}
+}
+
+func (x *GetDeploymentGroupRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+// The request message for the ListDeploymentGroups method.
+type ListDeploymentGroupsRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The parent, which owns this collection of deployment groups.
+	// Format: 'projects/{project_id}/locations/{location}'.
+	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	// Optional. When requesting a page of resources, 'page_size' specifies number
+	// of resources to return. If unspecified, at most 500 will be returned. The
+	// maximum value is 1000.
+	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	// Optional. Token returned by previous call to 'ListDeploymentGroups' which
+	// specifies the position in the list from where to continue listing the
+	// deployment groups.
+	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	// Optional. Lists the DeploymentGroups that match the filter expression. A
+	// filter expression filters the deployment groups listed in the response. The
+	// expression must be of the form '{field} {operator} {value}' where
+	// operators: '<', '>',
+	// '<=', '>=', '!=', '=', ':' are supported (colon ':' represents a HAS
+	// operator which is roughly synonymous with equality). {field} can refer to a
+	// proto or JSON field, or a synthetic field. Field names can be camelCase or
+	// snake_case.
+	//
+	// Examples:
+	//   - Filter by name:
+	//     name = "projects/foo/locations/us-central1/deploymentGroups/bar"
+	//
+	// - Filter by labels:
+	//   - Resources that have a key called 'foo'
+	//     labels.foo:*
+	//   - Resources that have a key called 'foo' whose value is 'bar'
+	//     labels.foo = bar
+	//
+	// - Filter by state:
+	//   - DeploymentGroups in CREATING state.
+	//     state=CREATING
+	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
+	// Optional. Field to use to sort the list.
+	OrderBy       string `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListDeploymentGroupsRequest) Reset() {
+	*x = ListDeploymentGroupsRequest{}
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[74]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListDeploymentGroupsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListDeploymentGroupsRequest) ProtoMessage() {}
+
+func (x *ListDeploymentGroupsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[74]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListDeploymentGroupsRequest.ProtoReflect.Descriptor instead.
+func (*ListDeploymentGroupsRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{74}
+}
+
+func (x *ListDeploymentGroupsRequest) GetParent() string {
+	if x != nil {
+		return x.Parent
+	}
+	return ""
+}
+
+func (x *ListDeploymentGroupsRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *ListDeploymentGroupsRequest) GetPageToken() string {
+	if x != nil {
+		return x.PageToken
+	}
+	return ""
+}
+
+func (x *ListDeploymentGroupsRequest) GetFilter() string {
+	if x != nil {
+		return x.Filter
+	}
+	return ""
+}
+
+func (x *ListDeploymentGroupsRequest) GetOrderBy() string {
+	if x != nil {
+		return x.OrderBy
+	}
+	return ""
+}
+
+// The response message for the ListDeploymentGroups method.
+type ListDeploymentGroupsResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The deployment groups from the specified collection.
+	DeploymentGroups []*DeploymentGroup `protobuf:"bytes,1,rep,name=deployment_groups,json=deploymentGroups,proto3" json:"deployment_groups,omitempty"`
+	// Token to be supplied to the next ListDeploymentGroups request via
+	// `page_token` to obtain the next set of results.
+	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+	// Locations that could not be reached.
+	Unreachable   []string `protobuf:"bytes,3,rep,name=unreachable,proto3" json:"unreachable,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListDeploymentGroupsResponse) Reset() {
+	*x = ListDeploymentGroupsResponse{}
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[75]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListDeploymentGroupsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListDeploymentGroupsResponse) ProtoMessage() {}
+
+func (x *ListDeploymentGroupsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[75]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListDeploymentGroupsResponse.ProtoReflect.Descriptor instead.
+func (*ListDeploymentGroupsResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{75}
+}
+
+func (x *ListDeploymentGroupsResponse) GetDeploymentGroups() []*DeploymentGroup {
+	if x != nil {
+		return x.DeploymentGroups
+	}
+	return nil
+}
+
+func (x *ListDeploymentGroupsResponse) GetNextPageToken() string {
+	if x != nil {
+		return x.NextPageToken
+	}
+	return ""
+}
+
+func (x *ListDeploymentGroupsResponse) GetUnreachable() []string {
+	if x != nil {
+		return x.Unreachable
+	}
+	return nil
+}
+
+// The request message for the ProvisionDeploymentGroup method.
+type ProvisionDeploymentGroupRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The name of the deployment group to provision.
+	// Format:
+	// 'projects/{project_id}/locations/{location}/deploymentGroups/{deployment_group}'.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Optional. The deployment specs of the deployment units to be created within
+	// the same project and location of the deployment group. The key is the unit
+	// ID, and the value is the `DeploymentSpec`. Provisioning will fail if a
+	// `deployment_spec` has a `deployment_id` that matches an existing deployment
+	// in the same project and location. If an existing deployment was part of the
+	// last successful revision but is no longer in the current DeploymentGroup's
+	// `deployment_units`, it will be recreated if included in `deployment_specs`.
+	DeploymentSpecs map[string]*DeploymentSpec `protobuf:"bytes,3,rep,name=deployment_specs,json=deploymentSpecs,proto3" json:"deployment_specs,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *ProvisionDeploymentGroupRequest) Reset() {
+	*x = ProvisionDeploymentGroupRequest{}
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[76]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ProvisionDeploymentGroupRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProvisionDeploymentGroupRequest) ProtoMessage() {}
+
+func (x *ProvisionDeploymentGroupRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[76]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ProvisionDeploymentGroupRequest.ProtoReflect.Descriptor instead.
+func (*ProvisionDeploymentGroupRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{76}
+}
+
+func (x *ProvisionDeploymentGroupRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *ProvisionDeploymentGroupRequest) GetDeploymentSpecs() map[string]*DeploymentSpec {
+	if x != nil {
+		return x.DeploymentSpecs
+	}
+	return nil
+}
+
+// The request message for the DeprovisionDeploymentGroup method.
+type DeprovisionDeploymentGroupRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The name of the deployment group to deprovision.
+	// Format:
+	// 'projects/{project_id}/locations/{location}/deploymentGroups/{deployment_group}'.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Optional. If set to true, this option is propagated to the deletion of each
+	// deployment in the group. This corresponds to the 'force' field
+	// in DeleteDeploymentRequest.
+	Force bool `protobuf:"varint,2,opt,name=force,proto3" json:"force,omitempty"`
+	// Optional. Policy on how resources within each deployment should be handled
+	// during deletion. This policy is applied globally to the deletion of all
+	// deployments in this group. This corresponds to the 'delete_policy' field
+	// in DeleteDeploymentRequest.
+	DeletePolicy  DeleteDeploymentRequest_DeletePolicy `protobuf:"varint,3,opt,name=delete_policy,json=deletePolicy,proto3,enum=google.cloud.config.v1.DeleteDeploymentRequest_DeletePolicy" json:"delete_policy,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeprovisionDeploymentGroupRequest) Reset() {
+	*x = DeprovisionDeploymentGroupRequest{}
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[77]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeprovisionDeploymentGroupRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeprovisionDeploymentGroupRequest) ProtoMessage() {}
+
+func (x *DeprovisionDeploymentGroupRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[77]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeprovisionDeploymentGroupRequest.ProtoReflect.Descriptor instead.
+func (*DeprovisionDeploymentGroupRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{77}
+}
+
+func (x *DeprovisionDeploymentGroupRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *DeprovisionDeploymentGroupRequest) GetForce() bool {
+	if x != nil {
+		return x.Force
+	}
+	return false
+}
+
+func (x *DeprovisionDeploymentGroupRequest) GetDeletePolicy() DeleteDeploymentRequest_DeletePolicy {
+	if x != nil {
+		return x.DeletePolicy
+	}
+	return DeleteDeploymentRequest_DELETE_POLICY_UNSPECIFIED
+}
+
+// The summary of the deployment operation.
+type DeploymentOperationSummary struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. The current step the deployment operation is running.
+	DeploymentStep DeploymentOperationMetadata_DeploymentStep `protobuf:"varint,1,opt,name=deployment_step,json=deploymentStep,proto3,enum=google.cloud.config.v1.DeploymentOperationMetadata_DeploymentStep" json:"deployment_step,omitempty"`
+	// Output only. Cloud Build instance UUID associated with this operation.
+	Build string `protobuf:"bytes,2,opt,name=build,proto3" json:"build,omitempty"`
+	// Output only. Location of Deployment operations logs in
+	// `gs://{bucket}/{object}` format.
+	Logs string `protobuf:"bytes,3,opt,name=logs,proto3" json:"logs,omitempty"`
+	// Output only. Location of Deployment operations content in
+	// `gs://{bucket}/{object}` format.
+	Content string `protobuf:"bytes,4,opt,name=content,proto3" json:"content,omitempty"`
+	// Output only. Location of Deployment operations artifacts in
+	// `gs://{bucket}/{object}` format.
+	Artifacts     string `protobuf:"bytes,5,opt,name=artifacts,proto3" json:"artifacts,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeploymentOperationSummary) Reset() {
+	*x = DeploymentOperationSummary{}
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[78]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeploymentOperationSummary) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeploymentOperationSummary) ProtoMessage() {}
+
+func (x *DeploymentOperationSummary) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[78]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeploymentOperationSummary.ProtoReflect.Descriptor instead.
+func (*DeploymentOperationSummary) Descriptor() ([]byte, []int) {
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{78}
+}
+
+func (x *DeploymentOperationSummary) GetDeploymentStep() DeploymentOperationMetadata_DeploymentStep {
+	if x != nil {
+		return x.DeploymentStep
+	}
+	return DeploymentOperationMetadata_DEPLOYMENT_STEP_UNSPECIFIED
+}
+
+func (x *DeploymentOperationSummary) GetBuild() string {
+	if x != nil {
+		return x.Build
+	}
+	return ""
+}
+
+func (x *DeploymentOperationSummary) GetLogs() string {
+	if x != nil {
+		return x.Logs
+	}
+	return ""
+}
+
+func (x *DeploymentOperationSummary) GetContent() string {
+	if x != nil {
+		return x.Content
+	}
+	return ""
+}
+
+func (x *DeploymentOperationSummary) GetArtifacts() string {
+	if x != nil {
+		return x.Artifacts
+	}
+	return ""
+}
+
+// The progress of a deployment unit provisioning or deprovisioning.
+type DeploymentUnitProgress struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. The unit id of the deployment unit to be provisioned.
+	UnitId string `protobuf:"bytes,1,opt,name=unit_id,json=unitId,proto3" json:"unit_id,omitempty"`
+	// Output only. The name of the deployment to be provisioned.
+	// Format:
+	// 'projects/{project}/locations/{location}/deployments/{deployment}'.
+	Deployment string `protobuf:"bytes,2,opt,name=deployment,proto3" json:"deployment,omitempty"`
+	// Output only. The current step of the deployment unit provisioning.
+	State DeploymentUnitProgress_State `protobuf:"varint,3,opt,name=state,proto3,enum=google.cloud.config.v1.DeploymentUnitProgress_State" json:"state,omitempty"`
+	// Output only. Additional information regarding the current state.
+	StateDescription string `protobuf:"bytes,4,opt,name=state_description,json=stateDescription,proto3" json:"state_description,omitempty"`
+	// Output only. The summary of the deployment operation.
+	DeploymentOperationSummary *DeploymentOperationSummary `protobuf:"bytes,5,opt,name=deployment_operation_summary,json=deploymentOperationSummary,proto3" json:"deployment_operation_summary,omitempty"`
+	// Output only. Holds the error status of the deployment unit provisioning.
+	Error *status.Status `protobuf:"bytes,6,opt,name=error,proto3" json:"error,omitempty"`
+	// Output only. The intent of the deployment unit.
+	Intent        DeploymentUnitProgress_Intent `protobuf:"varint,7,opt,name=intent,proto3,enum=google.cloud.config.v1.DeploymentUnitProgress_Intent" json:"intent,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeploymentUnitProgress) Reset() {
+	*x = DeploymentUnitProgress{}
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[79]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeploymentUnitProgress) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeploymentUnitProgress) ProtoMessage() {}
+
+func (x *DeploymentUnitProgress) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[79]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeploymentUnitProgress.ProtoReflect.Descriptor instead.
+func (*DeploymentUnitProgress) Descriptor() ([]byte, []int) {
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{79}
+}
+
+func (x *DeploymentUnitProgress) GetUnitId() string {
+	if x != nil {
+		return x.UnitId
+	}
+	return ""
+}
+
+func (x *DeploymentUnitProgress) GetDeployment() string {
+	if x != nil {
+		return x.Deployment
+	}
+	return ""
+}
+
+func (x *DeploymentUnitProgress) GetState() DeploymentUnitProgress_State {
+	if x != nil {
+		return x.State
+	}
+	return DeploymentUnitProgress_STATE_UNSPECIFIED
+}
+
+func (x *DeploymentUnitProgress) GetStateDescription() string {
+	if x != nil {
+		return x.StateDescription
+	}
+	return ""
+}
+
+func (x *DeploymentUnitProgress) GetDeploymentOperationSummary() *DeploymentOperationSummary {
+	if x != nil {
+		return x.DeploymentOperationSummary
+	}
+	return nil
+}
+
+func (x *DeploymentUnitProgress) GetError() *status.Status {
+	if x != nil {
+		return x.Error
+	}
+	return nil
+}
+
+func (x *DeploymentUnitProgress) GetIntent() DeploymentUnitProgress_Intent {
+	if x != nil {
+		return x.Intent
+	}
+	return DeploymentUnitProgress_INTENT_UNSPECIFIED
+}
+
+// Operation metadata for `ProvisionDeploymentGroup` and
+// `DeprovisionDeploymentGroup` long-running operations.
+type ProvisionDeploymentGroupOperationMetadata struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. The current step of the deployment group operation.
+	Step ProvisionDeploymentGroupOperationMetadata_ProvisionDeploymentGroupStep `protobuf:"varint,1,opt,name=step,proto3,enum=google.cloud.config.v1.ProvisionDeploymentGroupOperationMetadata_ProvisionDeploymentGroupStep" json:"step,omitempty"`
+	// Output only. Progress information for each deployment unit within the
+	// operation.
+	DeploymentUnitProgresses []*DeploymentUnitProgress `protobuf:"bytes,2,rep,name=deployment_unit_progresses,json=deploymentUnitProgresses,proto3" json:"deployment_unit_progresses,omitempty"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
+}
+
+func (x *ProvisionDeploymentGroupOperationMetadata) Reset() {
+	*x = ProvisionDeploymentGroupOperationMetadata{}
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[80]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ProvisionDeploymentGroupOperationMetadata) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProvisionDeploymentGroupOperationMetadata) ProtoMessage() {}
+
+func (x *ProvisionDeploymentGroupOperationMetadata) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[80]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ProvisionDeploymentGroupOperationMetadata.ProtoReflect.Descriptor instead.
+func (*ProvisionDeploymentGroupOperationMetadata) Descriptor() ([]byte, []int) {
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{80}
+}
+
+func (x *ProvisionDeploymentGroupOperationMetadata) GetStep() ProvisionDeploymentGroupOperationMetadata_ProvisionDeploymentGroupStep {
+	if x != nil {
+		return x.Step
+	}
+	return ProvisionDeploymentGroupOperationMetadata_PROVISION_DEPLOYMENT_GROUP_STEP_UNSPECIFIED
+}
+
+func (x *ProvisionDeploymentGroupOperationMetadata) GetDeploymentUnitProgresses() []*DeploymentUnitProgress {
+	if x != nil {
+		return x.DeploymentUnitProgresses
+	}
+	return nil
+}
+
+// A DeploymentGroupRevision represents a snapshot of a
+// [DeploymentGroup][google.cloud.config.v1.DeploymentGroup] at a given point in
+// time, created when a DeploymentGroup is provisioned or deprovisioned.
+type DeploymentGroupRevision struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Identifier. The name of the deployment group revision.
+	// Format:
+	// 'projects/{project_id}/locations/{location}/deploymentGroups/{deployment_group}/revisions/{revision}'.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Output only. The snapshot of the deployment group at this revision.
+	Snapshot *DeploymentGroup `protobuf:"bytes,2,opt,name=snapshot,proto3" json:"snapshot,omitempty"`
+	// Output only. Time when the deployment group revision was created.
+	CreateTime *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
+	// Output only. The alternative IDs of the deployment group revision.
+	AlternativeIds []string `protobuf:"bytes,4,rep,name=alternative_ids,json=alternativeIds,proto3" json:"alternative_ids,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *DeploymentGroupRevision) Reset() {
+	*x = DeploymentGroupRevision{}
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[81]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeploymentGroupRevision) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeploymentGroupRevision) ProtoMessage() {}
+
+func (x *DeploymentGroupRevision) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[81]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeploymentGroupRevision.ProtoReflect.Descriptor instead.
+func (*DeploymentGroupRevision) Descriptor() ([]byte, []int) {
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{81}
+}
+
+func (x *DeploymentGroupRevision) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *DeploymentGroupRevision) GetSnapshot() *DeploymentGroup {
+	if x != nil {
+		return x.Snapshot
+	}
+	return nil
+}
+
+func (x *DeploymentGroupRevision) GetCreateTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreateTime
+	}
+	return nil
+}
+
+func (x *DeploymentGroupRevision) GetAlternativeIds() []string {
+	if x != nil {
+		return x.AlternativeIds
+	}
+	return nil
+}
+
+// The request message for the GetDeploymentGroupRevision method.
+type GetDeploymentGroupRevisionRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The name of the deployment group revision to retrieve.
+	// Format:
+	// 'projects/{project_id}/locations/{location}/deploymentGroups/{deployment_group}/revisions/{revision}'.
+	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetDeploymentGroupRevisionRequest) Reset() {
+	*x = GetDeploymentGroupRevisionRequest{}
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[82]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetDeploymentGroupRevisionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetDeploymentGroupRevisionRequest) ProtoMessage() {}
+
+func (x *GetDeploymentGroupRevisionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[82]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetDeploymentGroupRevisionRequest.ProtoReflect.Descriptor instead.
+func (*GetDeploymentGroupRevisionRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{82}
+}
+
+func (x *GetDeploymentGroupRevisionRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+// The request message for the ListDeploymentGroupRevisions method.
+type ListDeploymentGroupRevisionsRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The parent, which owns this collection of deployment group
+	// revisions. Format:
+	// 'projects/{project_id}/locations/{location}/deploymentGroups/{deployment_group}'.
+	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	// Optional. When requesting a page of resources, 'page_size' specifies number
+	// of resources to return. If unspecified, a sensible default will be used by
+	// the server. The maximum value is 1000; values above 1000 will be coerced to
+	// 1000.
+	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	// Optional. Token returned by previous call to 'ListDeploymentGroupRevisions'
+	// which specifies the position in the list from where to continue listing the
+	// deployment group revisions. All other parameters provided to
+	// `ListDeploymentGroupRevisions` must match the call that provided the page
+	// token.
+	PageToken     string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListDeploymentGroupRevisionsRequest) Reset() {
+	*x = ListDeploymentGroupRevisionsRequest{}
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[83]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListDeploymentGroupRevisionsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListDeploymentGroupRevisionsRequest) ProtoMessage() {}
+
+func (x *ListDeploymentGroupRevisionsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[83]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListDeploymentGroupRevisionsRequest.ProtoReflect.Descriptor instead.
+func (*ListDeploymentGroupRevisionsRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{83}
+}
+
+func (x *ListDeploymentGroupRevisionsRequest) GetParent() string {
+	if x != nil {
+		return x.Parent
+	}
+	return ""
+}
+
+func (x *ListDeploymentGroupRevisionsRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *ListDeploymentGroupRevisionsRequest) GetPageToken() string {
+	if x != nil {
+		return x.PageToken
+	}
+	return ""
+}
+
+// The response message for the ListDeploymentGroupRevisions method.
+type ListDeploymentGroupRevisionsResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The deployment group revisions from the specified collection.
+	DeploymentGroupRevisions []*DeploymentGroupRevision `protobuf:"bytes,1,rep,name=deployment_group_revisions,json=deploymentGroupRevisions,proto3" json:"deployment_group_revisions,omitempty"`
+	// Token to be supplied to the next ListDeploymentGroupRevisions request via
+	// `page_token` to obtain the next set of results.
+	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+	// Unordered list. Locations that could not be reached.
+	Unreachable   []string `protobuf:"bytes,3,rep,name=unreachable,proto3" json:"unreachable,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListDeploymentGroupRevisionsResponse) Reset() {
+	*x = ListDeploymentGroupRevisionsResponse{}
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[84]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListDeploymentGroupRevisionsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListDeploymentGroupRevisionsResponse) ProtoMessage() {}
+
+func (x *ListDeploymentGroupRevisionsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_config_v1_config_proto_msgTypes[84]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListDeploymentGroupRevisionsResponse.ProtoReflect.Descriptor instead.
+func (*ListDeploymentGroupRevisionsResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_config_v1_config_proto_rawDescGZIP(), []int{84}
+}
+
+func (x *ListDeploymentGroupRevisionsResponse) GetDeploymentGroupRevisions() []*DeploymentGroupRevision {
+	if x != nil {
+		return x.DeploymentGroupRevisions
+	}
+	return nil
+}
+
+func (x *ListDeploymentGroupRevisionsResponse) GetNextPageToken() string {
+	if x != nil {
+		return x.NextPageToken
+	}
+	return ""
+}
+
+func (x *ListDeploymentGroupRevisionsResponse) GetUnreachable() []string {
+	if x != nil {
+		return x.Unreachable
 	}
 	return nil
 }
@@ -6514,20 +8500,34 @@ const file_google_cloud_config_v1_config_proto_rawDesc = "" +
 	"\x10_service_accountB\x1c\n" +
 	"\x1a_import_existing_resourcesB\x0e\n" +
 	"\f_worker_poolB\x18\n" +
-	"\x16_tf_version_constraint\"\xd3\x02\n" +
+	"\x16_tf_version_constraint\"\xb1\x04\n" +
 	"\x12TerraformBlueprint\x12\x1f\n" +
 	"\n" +
 	"gcs_source\x18\x01 \x01(\tH\x00R\tgcsSource\x12B\n" +
 	"\n" +
 	"git_source\x18\x02 \x01(\v2!.google.cloud.config.v1.GitSourceH\x00R\tgitSource\x12c\n" +
-	"\finput_values\x18\x04 \x03(\v2;.google.cloud.config.v1.TerraformBlueprint.InputValuesEntryB\x03\xe0A\x01R\vinputValues\x1ai\n" +
+	"\finput_values\x18\x04 \x03(\v2;.google.cloud.config.v1.TerraformBlueprint.InputValuesEntryB\x03\xe0A\x01R\vinputValues\x12l\n" +
+	"\x0fexternal_values\x18\x05 \x03(\v2>.google.cloud.config.v1.TerraformBlueprint.ExternalValuesEntryB\x03\xe0A\x01R\x0eexternalValues\x1ai\n" +
 	"\x10InputValuesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12?\n" +
-	"\x05value\x18\x02 \x01(\v2).google.cloud.config.v1.TerraformVariableR\x05value:\x028\x01B\b\n" +
+	"\x05value\x18\x02 \x01(\v2).google.cloud.config.v1.TerraformVariableR\x05value:\x028\x01\x1an\n" +
+	"\x13ExternalValuesEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12A\n" +
+	"\x05value\x18\x02 \x01(\v2+.google.cloud.config.v1.ExternalValueSourceR\x05value:\x028\x01B\b\n" +
 	"\x06source\"Q\n" +
 	"\x11TerraformVariable\x12<\n" +
 	"\vinput_value\x18\x05 \x01(\v2\x16.google.protobuf.ValueB\x03\xe0A\x01R\n" +
-	"inputValue\"\xf8\x01\n" +
+	"inputValue\"x\n" +
+	"\x13ExternalValueSource\x12W\n" +
+	"\x11deployment_source\x18\x01 \x01(\v2(.google.cloud.config.v1.DeploymentSourceH\x00R\x10deploymentSourceB\b\n" +
+	"\x06source\"\x82\x01\n" +
+	"\x10DeploymentSource\x12H\n" +
+	"\n" +
+	"deployment\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
+	" config.googleapis.com/DeploymentR\n" +
+	"deployment\x12$\n" +
+	"\voutput_name\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
+	"outputName\"\xf8\x01\n" +
 	"\fApplyResults\x12\x18\n" +
 	"\acontent\x18\x01 \x01(\tR\acontent\x12\x1c\n" +
 	"\tartifacts\x18\x02 \x01(\tR\tartifacts\x12K\n" +
@@ -6576,7 +8576,32 @@ const file_google_cloud_config_v1_config_proto_rawDesc = "" +
 	"deployment\x18\x03 \x01(\v2\".google.cloud.config.v1.DeploymentB\x03\xe0A\x02R\n" +
 	"deployment\x12\"\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xc8\x01\n" +
+	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\x9b\x02\n" +
+	"\x1cCreateDeploymentGroupRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x123\n" +
+	"\x13deployment_group_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x11deploymentGroupId\x12W\n" +
+	"\x10deployment_group\x18\x03 \x01(\v2'.google.cloud.config.v1.DeploymentGroupB\x03\xe0A\x02R\x0fdeploymentGroup\x12*\n" +
+	"\n" +
+	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xe5\x01\n" +
+	"\x1cUpdateDeploymentGroupRequest\x12@\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
+	"updateMask\x12W\n" +
+	"\x10deployment_group\x18\x02 \x01(\v2'.google.cloud.config.v1.DeploymentGroupB\x03\xe0A\x02R\x0fdeploymentGroup\x12*\n" +
+	"\n" +
+	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xf4\x03\n" +
+	"\x1cDeleteDeploymentGroupRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
+	"%config.googleapis.com/DeploymentGroupR\x04name\x12*\n" +
+	"\n" +
+	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12\x19\n" +
+	"\x05force\x18\x03 \x01(\bB\x03\xe0A\x01R\x05force\x12\x93\x01\n" +
+	"\x1bdeployment_reference_policy\x18\x04 \x01(\x0e2N.google.cloud.config.v1.DeleteDeploymentGroupRequest.DeploymentReferencePolicyB\x03\xe0A\x01R\x19deploymentReferencePolicy\"\xb3\x01\n" +
+	"\x19DeploymentReferencePolicy\x12+\n" +
+	"'DEPLOYMENT_REFERENCE_POLICY_UNSPECIFIED\x10\x00\x12 \n" +
+	"\x1cFAIL_IF_ANY_REFERENCES_EXIST\x10\x01\x12%\n" +
+	"!FAIL_IF_METADATA_REFERENCES_EXIST\x10\x02\x12 \n" +
+	"\x1cIGNORE_DEPLOYMENT_REFERENCES\x10\x03\"\xc8\x01\n" +
 	"\x17UpdateDeploymentRequest\x12@\n" +
 	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
 	"updateMask\x12G\n" +
@@ -6596,10 +8621,12 @@ const file_google_cloud_config_v1_config_proto_rawDesc = "" +
 	"\x19DELETE_POLICY_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06DELETE\x10\x01\x12\v\n" +
-	"\aABANDON\x10\x02\"\xbb\x04\n" +
+	"\aABANDON\x10\x02\"\xd5\x05\n" +
 	"\x11OperationMetadata\x12k\n" +
 	"\x13deployment_metadata\x18\b \x01(\v23.google.cloud.config.v1.DeploymentOperationMetadataB\x03\xe0A\x03H\x00R\x12deploymentMetadata\x12b\n" +
-	"\x10preview_metadata\x18\t \x01(\v20.google.cloud.config.v1.PreviewOperationMetadataB\x03\xe0A\x03H\x00R\x0fpreviewMetadata\x12@\n" +
+	"\x10preview_metadata\x18\t \x01(\v20.google.cloud.config.v1.PreviewOperationMetadataB\x03\xe0A\x03H\x00R\x0fpreviewMetadata\x12\x97\x01\n" +
+	"#provision_deployment_group_metadata\x18\n" +
+	" \x01(\v2A.google.cloud.config.v1.ProvisionDeploymentGroupOperationMetadataB\x03\xe0A\x03H\x00R provisionDeploymentGroupMetadata\x12@\n" +
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime\x12:\n" +
 	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
@@ -7036,11 +9063,162 @@ const file_google_cloud_config_v1_config_proto_rawDesc = "" +
 	" UpdateAutoMigrationConfigRequest\x12@\n" +
 	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
 	"updateMask\x12d\n" +
-	"\x15auto_migration_config\x18\x02 \x01(\v2+.google.cloud.config.v1.AutoMigrationConfigB\x03\xe0A\x02R\x13autoMigrationConfig*N\n" +
+	"\x15auto_migration_config\x18\x02 \x01(\v2+.google.cloud.config.v1.AutoMigrationConfigB\x03\xe0A\x02R\x13autoMigrationConfig\"\x81\v\n" +
+	"\x0fDeploymentGroup\x12\x17\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"createTime\x12@\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"updateTime\x12P\n" +
+	"\x06labels\x18\x04 \x03(\v23.google.cloud.config.v1.DeploymentGroup.LabelsEntryB\x03\xe0A\x01R\x06labels\x12_\n" +
+	"\vannotations\x18\x05 \x03(\v28.google.cloud.config.v1.DeploymentGroup.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12H\n" +
+	"\x05state\x18\x06 \x01(\x0e2-.google.cloud.config.v1.DeploymentGroup.StateB\x03\xe0A\x03R\x05state\x120\n" +
+	"\x11state_description\x18\a \x01(\tB\x03\xe0A\x03R\x10stateDescription\x12Q\n" +
+	"\x10deployment_units\x18\b \x03(\v2&.google.cloud.config.v1.DeploymentUnitR\x0fdeploymentUnits\x12m\n" +
+	"\x12provisioning_state\x18\t \x01(\x0e29.google.cloud.config.v1.DeploymentGroup.ProvisioningStateB\x03\xe0A\x03R\x11provisioningState\x12I\n" +
+	"\x1eprovisioning_state_description\x18\n" +
+	" \x01(\tB\x03\xe0A\x03R\x1cprovisioningStateDescription\x12F\n" +
+	"\x12provisioning_error\x18\v \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x11provisioningError\x1a9\n" +
+	"\vLabelsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a>\n" +
+	"\x10AnnotationsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"|\n" +
+	"\x05State\x12\x15\n" +
+	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
+	"\bCREATING\x10\x01\x12\n" +
+	"\n" +
+	"\x06ACTIVE\x10\x02\x12\f\n" +
+	"\bUPDATING\x10\x03\x12\f\n" +
+	"\bDELETING\x10\x04\x12\n" +
+	"\n" +
+	"\x06FAILED\x10\x05\x12\r\n" +
+	"\tSUSPENDED\x10\x06\x12\v\n" +
+	"\aDELETED\x10\a\"\xb5\x01\n" +
+	"\x11ProvisioningState\x12\"\n" +
+	"\x1ePROVISIONING_STATE_UNSPECIFIED\x10\x00\x12\x10\n" +
+	"\fPROVISIONING\x10\x01\x12\x0f\n" +
+	"\vPROVISIONED\x10\x02\x12\x17\n" +
+	"\x13FAILED_TO_PROVISION\x10\x03\x12\x12\n" +
+	"\x0eDEPROVISIONING\x10\x04\x12\x11\n" +
+	"\rDEPROVISIONED\x10\x05\x12\x19\n" +
+	"\x15FAILED_TO_DEPROVISION\x10\x06:\x9b\x01\xeaA\x97\x01\n" +
+	"%config.googleapis.com/DeploymentGroup\x12Kprojects/{project}/locations/{location}/deploymentGroups/{deployment_group}*\x10deploymentGroups2\x0fdeploymentGroup\"\xa7\x01\n" +
+	"\x0eDeploymentUnit\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12M\n" +
+	"\n" +
+	"deployment\x18\x02 \x01(\tB(\xe0A\x01\xfaA\"\n" +
+	" config.googleapis.com/DeploymentH\x00R\n" +
+	"deployment\x88\x01\x01\x12'\n" +
+	"\fdependencies\x18\x03 \x03(\tB\x03\xe0A\x02R\fdependenciesB\r\n" +
+	"\v_deployment\"\x83\x01\n" +
+	"\x0eDeploymentSpec\x12(\n" +
+	"\rdeployment_id\x18\x01 \x01(\tB\x03\xe0A\x02R\fdeploymentId\x12G\n" +
+	"\n" +
+	"deployment\x18\x02 \x01(\v2\".google.cloud.config.v1.DeploymentB\x03\xe0A\x02R\n" +
+	"deployment\"^\n" +
+	"\x19GetDeploymentGroupRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
+	"%config.googleapis.com/DeploymentGroupR\x04name\"\xe3\x01\n" +
+	"\x1bListDeploymentGroupsRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12 \n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
+	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
+	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xbe\x01\n" +
+	"\x1cListDeploymentGroupsResponse\x12T\n" +
+	"\x11deployment_groups\x18\x01 \x03(\v2'.google.cloud.config.v1.DeploymentGroupR\x10deploymentGroups\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xce\x02\n" +
+	"\x1fProvisionDeploymentGroupRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
+	"%config.googleapis.com/DeploymentGroupR\x04name\x12|\n" +
+	"\x10deployment_specs\x18\x03 \x03(\v2L.google.cloud.config.v1.ProvisionDeploymentGroupRequest.DeploymentSpecsEntryB\x03\xe0A\x01R\x0fdeploymentSpecs\x1aj\n" +
+	"\x14DeploymentSpecsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12<\n" +
+	"\x05value\x18\x02 \x01(\v2&.google.cloud.config.v1.DeploymentSpecR\x05value:\x028\x01\"\xe9\x01\n" +
+	"!DeprovisionDeploymentGroupRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
+	"%config.googleapis.com/DeploymentGroupR\x04name\x12\x19\n" +
+	"\x05force\x18\x02 \x01(\bB\x03\xe0A\x01R\x05force\x12f\n" +
+	"\rdelete_policy\x18\x03 \x01(\x0e2<.google.cloud.config.v1.DeleteDeploymentRequest.DeletePolicyB\x03\xe0A\x01R\fdeletePolicy\"\x8c\x02\n" +
+	"\x1aDeploymentOperationSummary\x12p\n" +
+	"\x0fdeployment_step\x18\x01 \x01(\x0e2B.google.cloud.config.v1.DeploymentOperationMetadata.DeploymentStepB\x03\xe0A\x03R\x0edeploymentStep\x12!\n" +
+	"\x05build\x18\x02 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x05build\x12\x17\n" +
+	"\x04logs\x18\x03 \x01(\tB\x03\xe0A\x03R\x04logs\x12\x1d\n" +
+	"\acontent\x18\x04 \x01(\tB\x03\xe0A\x03R\acontent\x12!\n" +
+	"\tartifacts\x18\x05 \x01(\tB\x03\xe0A\x03R\tartifacts\"\xce\x06\n" +
+	"\x16DeploymentUnitProgress\x12\x1c\n" +
+	"\aunit_id\x18\x01 \x01(\tB\x03\xe0A\x03R\x06unitId\x12H\n" +
+	"\n" +
+	"deployment\x18\x02 \x01(\tB(\xe0A\x03\xfaA\"\n" +
+	" config.googleapis.com/DeploymentR\n" +
+	"deployment\x12O\n" +
+	"\x05state\x18\x03 \x01(\x0e24.google.cloud.config.v1.DeploymentUnitProgress.StateB\x03\xe0A\x03R\x05state\x120\n" +
+	"\x11state_description\x18\x04 \x01(\tB\x03\xe0A\x03R\x10stateDescription\x12y\n" +
+	"\x1cdeployment_operation_summary\x18\x05 \x01(\v22.google.cloud.config.v1.DeploymentOperationSummaryB\x03\xe0A\x03R\x1adeploymentOperationSummary\x12-\n" +
+	"\x05error\x18\x06 \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x05error\x12R\n" +
+	"\x06intent\x18\a \x01(\x0e25.google.cloud.config.v1.DeploymentUnitProgress.IntentB\x03\xe0A\x03R\x06intent\"\xac\x01\n" +
+	"\x05State\x12\x15\n" +
+	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
+	"\n" +
+	"\x06QUEUED\x10\x01\x12\x17\n" +
+	"\x13APPLYING_DEPLOYMENT\x10\x02\x12\r\n" +
+	"\tSUCCEEDED\x10\x04\x12\n" +
+	"\n" +
+	"\x06FAILED\x10\x05\x12\v\n" +
+	"\aABORTED\x10\x06\x12\v\n" +
+	"\aSKIPPED\x10\a\x12\x17\n" +
+	"\x13DELETING_DEPLOYMENT\x10\b\x12\x19\n" +
+	"\x15PREVIEWING_DEPLOYMENT\x10\t\"\x9b\x01\n" +
+	"\x06Intent\x12\x16\n" +
+	"\x12INTENT_UNSPECIFIED\x10\x00\x12\x15\n" +
+	"\x11CREATE_DEPLOYMENT\x10\x01\x12\x15\n" +
+	"\x11UPDATE_DEPLOYMENT\x10\x02\x12\x15\n" +
+	"\x11DELETE_DEPLOYMENT\x10\x03\x12\x17\n" +
+	"\x13RECREATE_DEPLOYMENT\x10\x04\x12\f\n" +
+	"\bCLEAN_UP\x10\x05\x12\r\n" +
+	"\tUNCHANGED\x10\x06\"\xd4\x04\n" +
+	")ProvisionDeploymentGroupOperationMetadata\x12w\n" +
+	"\x04step\x18\x01 \x01(\x0e2^.google.cloud.config.v1.ProvisionDeploymentGroupOperationMetadata.ProvisionDeploymentGroupStepB\x03\xe0A\x03R\x04step\x12q\n" +
+	"\x1adeployment_unit_progresses\x18\x02 \x03(\v2..google.cloud.config.v1.DeploymentUnitProgressB\x03\xe0A\x03R\x18deploymentUnitProgresses\"\xba\x02\n" +
+	"\x1cProvisionDeploymentGroupStep\x12/\n" +
+	"+PROVISION_DEPLOYMENT_GROUP_STEP_UNSPECIFIED\x10\x00\x12\x1f\n" +
+	"\x1bVALIDATING_DEPLOYMENT_GROUP\x10\x01\x12/\n" +
+	"+ASSOCIATING_DEPLOYMENTS_TO_DEPLOYMENT_GROUP\x10\x02\x12!\n" +
+	"\x1dPROVISIONING_DEPLOYMENT_UNITS\x10\x03\x124\n" +
+	"0DISASSOCIATING_DEPLOYMENTS_FROM_DEPLOYMENT_GROUP\x10\x04\x12\r\n" +
+	"\tSUCCEEDED\x10\x05\x12\n" +
+	"\n" +
+	"\x06FAILED\x10\x06\x12#\n" +
+	"\x1fDEPROVISIONING_DEPLOYMENT_UNITS\x10\a\"\xb7\x03\n" +
+	"\x17DeploymentGroupRevision\x12\x17\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12H\n" +
+	"\bsnapshot\x18\x02 \x01(\v2'.google.cloud.config.v1.DeploymentGroupB\x03\xe0A\x03R\bsnapshot\x12@\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"createTime\x12,\n" +
+	"\x0falternative_ids\x18\x04 \x03(\tB\x03\xe0A\x03R\x0ealternativeIds:\xc8\x01\xeaA\xc4\x01\n" +
+	"-config.googleapis.com/DeploymentGroupRevision\x12`projects/{project}/locations/{location}/deploymentGroups/{deployment_group}/revisions/{revision}*\x18deploymentGroupRevisions2\x17deploymentGroupRevision\"n\n" +
+	"!GetDeploymentGroupRevisionRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
+	"-config.googleapis.com/DeploymentGroupRevisionR\x04name\"\xb2\x01\n" +
+	"#ListDeploymentGroupRevisionsRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
+	"%config.googleapis.com/DeploymentGroupR\x06parent\x12 \n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xe4\x01\n" +
+	"$ListDeploymentGroupRevisionsResponse\x12m\n" +
+	"\x1adeployment_group_revisions\x18\x01 \x03(\v2/.google.cloud.config.v1.DeploymentGroupRevisionR\x18deploymentGroupRevisions\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable*N\n" +
 	"\x0fQuotaValidation\x12 \n" +
 	"\x1cQUOTA_VALIDATION_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aENABLED\x10\x01\x12\f\n" +
-	"\bENFORCED\x10\x022\xb9-\n" +
+	"\bENFORCED\x10\x022\xf0=\n" +
 	"\x06Config\x12\xb4\x01\n" +
 	"\x0fListDeployments\x12..google.cloud.config.v1.ListDeploymentsRequest\x1a/.google.cloud.config.v1.ListDeploymentsResponse\"@\xdaA\x06parent\x82\xd3\xe4\x93\x021\x12//v1/{parent=projects/*/locations/*}/deployments\x12\xa1\x01\n" +
 	"\rGetDeployment\x12,.google.cloud.config.v1.GetDeploymentRequest\x1a\".google.cloud.config.v1.Deployment\">\xdaA\x04name\x82\xd3\xe4\x93\x021\x12//v1/{name=projects/*/locations/*/deployments/*}\x12\xec\x01\n" +
@@ -7086,7 +9264,21 @@ const file_google_cloud_config_v1_config_proto_rawDesc = "" +
 	"\x10GetResourceDrift\x12/.google.cloud.config.v1.GetResourceDriftRequest\x1a%.google.cloud.config.v1.ResourceDrift\"L\xdaA\x04name\x82\xd3\xe4\x93\x02?\x12=/v1/{name=projects/*/locations/*/previews/*/resourceDrifts/*}\x12\xc2\x01\n" +
 	"\x16GetAutoMigrationConfig\x125.google.cloud.config.v1.GetAutoMigrationConfigRequest\x1a+.google.cloud.config.v1.AutoMigrationConfig\"D\xdaA\x04name\x82\xd3\xe4\x93\x027\x125/v1/{name=projects/*/locations/*/autoMigrationConfig}\x12\xb0\x02\n" +
 	"\x19UpdateAutoMigrationConfig\x128.google.cloud.config.v1.UpdateAutoMigrationConfigRequest\x1a\x1d.google.longrunning.Operation\"\xb9\x01\xcaA(\n" +
-	"\x13AutoMigrationConfig\x12\x11OperationMetadata\xdaA!auto_migration_config,update_mask\x82\xd3\xe4\x93\x02d:\x15auto_migration_config2K/v1/{auto_migration_config.name=projects/*/locations/*/autoMigrationConfig}\x1aI\xcaA\x15config.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xfc\x02\xeaAY\n" +
+	"\x13AutoMigrationConfig\x12\x11OperationMetadata\xdaA!auto_migration_config,update_mask\x82\xd3\xe4\x93\x02d:\x15auto_migration_config2K/v1/{auto_migration_config.name=projects/*/locations/*/autoMigrationConfig}\x12\xb5\x01\n" +
+	"\x12GetDeploymentGroup\x121.google.cloud.config.v1.GetDeploymentGroupRequest\x1a'.google.cloud.config.v1.DeploymentGroup\"C\xdaA\x04name\x82\xd3\xe4\x93\x026\x124/v1/{name=projects/*/locations/*/deploymentGroups/*}\x12\x92\x02\n" +
+	"\x15CreateDeploymentGroup\x124.google.cloud.config.v1.CreateDeploymentGroupRequest\x1a\x1d.google.longrunning.Operation\"\xa3\x01\xcaA$\n" +
+	"\x0fDeploymentGroup\x12\x11OperationMetadata\xdaA+parent,deployment_group,deployment_group_id\x82\xd3\xe4\x93\x02H:\x10deployment_group\"4/v1/{parent=projects/*/locations/*}/deploymentGroups\x12\x94\x02\n" +
+	"\x15UpdateDeploymentGroup\x124.google.cloud.config.v1.UpdateDeploymentGroupRequest\x1a\x1d.google.longrunning.Operation\"\xa5\x01\xcaA$\n" +
+	"\x0fDeploymentGroup\x12\x11OperationMetadata\xdaA\x1cdeployment_group,update_mask\x82\xd3\xe4\x93\x02Y:\x10deployment_group2E/v1/{deployment_group.name=projects/*/locations/*/deploymentGroups/*}\x12\xd8\x01\n" +
+	"\x15DeleteDeploymentGroup\x124.google.cloud.config.v1.DeleteDeploymentGroupRequest\x1a\x1d.google.longrunning.Operation\"j\xcaA$\n" +
+	"\x0fDeploymentGroup\x12\x11OperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x026*4/v1/{name=projects/*/locations/*/deploymentGroups/*}\x12\xc8\x01\n" +
+	"\x14ListDeploymentGroups\x123.google.cloud.config.v1.ListDeploymentGroupsRequest\x1a4.google.cloud.config.v1.ListDeploymentGroupsResponse\"E\xdaA\x06parent\x82\xd3\xe4\x93\x026\x124/v1/{parent=projects/*/locations/*}/deploymentGroups\x12\xeb\x01\n" +
+	"\x18ProvisionDeploymentGroup\x127.google.cloud.config.v1.ProvisionDeploymentGroupRequest\x1a\x1d.google.longrunning.Operation\"w\xcaA$\n" +
+	"\x0fDeploymentGroup\x12\x11OperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02C:\x01*\">/v1/{name=projects/*/locations/*/deploymentGroups/*}:provision\x12\xf1\x01\n" +
+	"\x1aDeprovisionDeploymentGroup\x129.google.cloud.config.v1.DeprovisionDeploymentGroupRequest\x1a\x1d.google.longrunning.Operation\"y\xcaA$\n" +
+	"\x0fDeploymentGroup\x12\x11OperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02E:\x01*\"@/v1/{name=projects/*/locations/*/deploymentGroups/*}:deprovision\x12\xd9\x01\n" +
+	"\x1aGetDeploymentGroupRevision\x129.google.cloud.config.v1.GetDeploymentGroupRevisionRequest\x1a/.google.cloud.config.v1.DeploymentGroupRevision\"O\xdaA\x04name\x82\xd3\xe4\x93\x02B\x12@/v1/{name=projects/*/locations/*/deploymentGroups/*/revisions/*}\x12\xec\x01\n" +
+	"\x1cListDeploymentGroupRevisions\x12;.google.cloud.config.v1.ListDeploymentGroupRevisionsRequest\x1a<.google.cloud.config.v1.ListDeploymentGroupRevisionsResponse\"Q\xdaA\x06parent\x82\xd3\xe4\x93\x02B\x12@/v1/{parent=projects/*/locations/*/deploymentGroups/*}/revisions\x1aI\xcaA\x15config.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xfc\x02\xeaAY\n" +
 	"!iam.googleapis.com/ServiceAccount\x124projects/{project}/serviceAccounts/{service_account}\xeaAi\n" +
 	"$cloudbuild.googleapis.com/WorkerPool\x12Aprojects/{project}/locations/{location}/workerPools/{worker_pool}\n" +
 	"\x1acom.google.cloud.config.v1B\vConfigProtoP\x01Z2cloud.google.com/go/config/apiv1/configpb;configpb\xaa\x02\x16Google.Cloud.Config.V1\xca\x02\x16Google\\Cloud\\Config\\V1\xea\x02 Google::Cloud::ConfigService::V1b\x06proto3"
@@ -7103,255 +9295,334 @@ func file_google_cloud_config_v1_config_proto_rawDescGZIP() []byte {
 	return file_google_cloud_config_v1_config_proto_rawDescData
 }
 
-var file_google_cloud_config_v1_config_proto_enumTypes = make([]protoimpl.EnumInfo, 18)
-var file_google_cloud_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 72)
+var file_google_cloud_config_v1_config_proto_enumTypes = make([]protoimpl.EnumInfo, 24)
+var file_google_cloud_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 96)
 var file_google_cloud_config_v1_config_proto_goTypes = []any{
-	(QuotaValidation)(0),                            // 0: google.cloud.config.v1.QuotaValidation
-	(Deployment_State)(0),                           // 1: google.cloud.config.v1.Deployment.State
-	(Deployment_ErrorCode)(0),                       // 2: google.cloud.config.v1.Deployment.ErrorCode
-	(Deployment_LockState)(0),                       // 3: google.cloud.config.v1.Deployment.LockState
-	(DeleteDeploymentRequest_DeletePolicy)(0),       // 4: google.cloud.config.v1.DeleteDeploymentRequest.DeletePolicy
-	(Revision_Action)(0),                            // 5: google.cloud.config.v1.Revision.Action
-	(Revision_State)(0),                             // 6: google.cloud.config.v1.Revision.State
-	(Revision_ErrorCode)(0),                         // 7: google.cloud.config.v1.Revision.ErrorCode
-	(DeploymentOperationMetadata_DeploymentStep)(0), // 8: google.cloud.config.v1.DeploymentOperationMetadata.DeploymentStep
-	(Resource_Intent)(0),                            // 9: google.cloud.config.v1.Resource.Intent
-	(Resource_State)(0),                             // 10: google.cloud.config.v1.Resource.State
-	(Preview_State)(0),                              // 11: google.cloud.config.v1.Preview.State
-	(Preview_PreviewMode)(0),                        // 12: google.cloud.config.v1.Preview.PreviewMode
-	(Preview_ErrorCode)(0),                          // 13: google.cloud.config.v1.Preview.ErrorCode
-	(PreviewOperationMetadata_PreviewStep)(0),       // 14: google.cloud.config.v1.PreviewOperationMetadata.PreviewStep
-	(TerraformVersion_State)(0),                     // 15: google.cloud.config.v1.TerraformVersion.State
-	(ResourceChange_Intent)(0),                      // 16: google.cloud.config.v1.ResourceChange.Intent
-	(ProviderConfig_ProviderSource)(0),              // 17: google.cloud.config.v1.ProviderConfig.ProviderSource
-	(*Deployment)(nil),                              // 18: google.cloud.config.v1.Deployment
-	(*TerraformBlueprint)(nil),                      // 19: google.cloud.config.v1.TerraformBlueprint
-	(*TerraformVariable)(nil),                       // 20: google.cloud.config.v1.TerraformVariable
-	(*ApplyResults)(nil),                            // 21: google.cloud.config.v1.ApplyResults
-	(*TerraformOutput)(nil),                         // 22: google.cloud.config.v1.TerraformOutput
-	(*ListDeploymentsRequest)(nil),                  // 23: google.cloud.config.v1.ListDeploymentsRequest
-	(*ListDeploymentsResponse)(nil),                 // 24: google.cloud.config.v1.ListDeploymentsResponse
-	(*GetDeploymentRequest)(nil),                    // 25: google.cloud.config.v1.GetDeploymentRequest
-	(*ListRevisionsRequest)(nil),                    // 26: google.cloud.config.v1.ListRevisionsRequest
-	(*ListRevisionsResponse)(nil),                   // 27: google.cloud.config.v1.ListRevisionsResponse
-	(*GetRevisionRequest)(nil),                      // 28: google.cloud.config.v1.GetRevisionRequest
-	(*CreateDeploymentRequest)(nil),                 // 29: google.cloud.config.v1.CreateDeploymentRequest
-	(*UpdateDeploymentRequest)(nil),                 // 30: google.cloud.config.v1.UpdateDeploymentRequest
-	(*DeleteDeploymentRequest)(nil),                 // 31: google.cloud.config.v1.DeleteDeploymentRequest
-	(*OperationMetadata)(nil),                       // 32: google.cloud.config.v1.OperationMetadata
-	(*Revision)(nil),                                // 33: google.cloud.config.v1.Revision
-	(*TerraformError)(nil),                          // 34: google.cloud.config.v1.TerraformError
-	(*GitSource)(nil),                               // 35: google.cloud.config.v1.GitSource
-	(*DeploymentOperationMetadata)(nil),             // 36: google.cloud.config.v1.DeploymentOperationMetadata
-	(*Resource)(nil),                                // 37: google.cloud.config.v1.Resource
-	(*ResourceTerraformInfo)(nil),                   // 38: google.cloud.config.v1.ResourceTerraformInfo
-	(*ResourceCAIInfo)(nil),                         // 39: google.cloud.config.v1.ResourceCAIInfo
-	(*GetResourceRequest)(nil),                      // 40: google.cloud.config.v1.GetResourceRequest
-	(*ListResourcesRequest)(nil),                    // 41: google.cloud.config.v1.ListResourcesRequest
-	(*ListResourcesResponse)(nil),                   // 42: google.cloud.config.v1.ListResourcesResponse
-	(*Statefile)(nil),                               // 43: google.cloud.config.v1.Statefile
-	(*ExportDeploymentStatefileRequest)(nil),        // 44: google.cloud.config.v1.ExportDeploymentStatefileRequest
-	(*ExportRevisionStatefileRequest)(nil),          // 45: google.cloud.config.v1.ExportRevisionStatefileRequest
-	(*ImportStatefileRequest)(nil),                  // 46: google.cloud.config.v1.ImportStatefileRequest
-	(*DeleteStatefileRequest)(nil),                  // 47: google.cloud.config.v1.DeleteStatefileRequest
-	(*LockDeploymentRequest)(nil),                   // 48: google.cloud.config.v1.LockDeploymentRequest
-	(*UnlockDeploymentRequest)(nil),                 // 49: google.cloud.config.v1.UnlockDeploymentRequest
-	(*ExportLockInfoRequest)(nil),                   // 50: google.cloud.config.v1.ExportLockInfoRequest
-	(*LockInfo)(nil),                                // 51: google.cloud.config.v1.LockInfo
-	(*Preview)(nil),                                 // 52: google.cloud.config.v1.Preview
-	(*PreviewOperationMetadata)(nil),                // 53: google.cloud.config.v1.PreviewOperationMetadata
-	(*PreviewArtifacts)(nil),                        // 54: google.cloud.config.v1.PreviewArtifacts
-	(*CreatePreviewRequest)(nil),                    // 55: google.cloud.config.v1.CreatePreviewRequest
-	(*GetPreviewRequest)(nil),                       // 56: google.cloud.config.v1.GetPreviewRequest
-	(*ListPreviewsRequest)(nil),                     // 57: google.cloud.config.v1.ListPreviewsRequest
-	(*ListPreviewsResponse)(nil),                    // 58: google.cloud.config.v1.ListPreviewsResponse
-	(*DeletePreviewRequest)(nil),                    // 59: google.cloud.config.v1.DeletePreviewRequest
-	(*ExportPreviewResultRequest)(nil),              // 60: google.cloud.config.v1.ExportPreviewResultRequest
-	(*ExportPreviewResultResponse)(nil),             // 61: google.cloud.config.v1.ExportPreviewResultResponse
-	(*PreviewResult)(nil),                           // 62: google.cloud.config.v1.PreviewResult
-	(*GetTerraformVersionRequest)(nil),              // 63: google.cloud.config.v1.GetTerraformVersionRequest
-	(*ListTerraformVersionsRequest)(nil),            // 64: google.cloud.config.v1.ListTerraformVersionsRequest
-	(*ListTerraformVersionsResponse)(nil),           // 65: google.cloud.config.v1.ListTerraformVersionsResponse
-	(*TerraformVersion)(nil),                        // 66: google.cloud.config.v1.TerraformVersion
-	(*ResourceChangeTerraformInfo)(nil),             // 67: google.cloud.config.v1.ResourceChangeTerraformInfo
-	(*ResourceChange)(nil),                          // 68: google.cloud.config.v1.ResourceChange
-	(*PropertyChange)(nil),                          // 69: google.cloud.config.v1.PropertyChange
-	(*ListResourceChangesRequest)(nil),              // 70: google.cloud.config.v1.ListResourceChangesRequest
-	(*ListResourceChangesResponse)(nil),             // 71: google.cloud.config.v1.ListResourceChangesResponse
-	(*GetResourceChangeRequest)(nil),                // 72: google.cloud.config.v1.GetResourceChangeRequest
-	(*ResourceDriftTerraformInfo)(nil),              // 73: google.cloud.config.v1.ResourceDriftTerraformInfo
-	(*ResourceDrift)(nil),                           // 74: google.cloud.config.v1.ResourceDrift
-	(*PropertyDrift)(nil),                           // 75: google.cloud.config.v1.PropertyDrift
-	(*ListResourceDriftsRequest)(nil),               // 76: google.cloud.config.v1.ListResourceDriftsRequest
-	(*ListResourceDriftsResponse)(nil),              // 77: google.cloud.config.v1.ListResourceDriftsResponse
-	(*GetResourceDriftRequest)(nil),                 // 78: google.cloud.config.v1.GetResourceDriftRequest
-	(*ProviderConfig)(nil),                          // 79: google.cloud.config.v1.ProviderConfig
-	(*GetAutoMigrationConfigRequest)(nil),           // 80: google.cloud.config.v1.GetAutoMigrationConfigRequest
-	(*AutoMigrationConfig)(nil),                     // 81: google.cloud.config.v1.AutoMigrationConfig
-	(*UpdateAutoMigrationConfigRequest)(nil),        // 82: google.cloud.config.v1.UpdateAutoMigrationConfigRequest
-	nil,                                             // 83: google.cloud.config.v1.Deployment.LabelsEntry
-	nil,                                             // 84: google.cloud.config.v1.Deployment.AnnotationsEntry
-	nil,                                             // 85: google.cloud.config.v1.TerraformBlueprint.InputValuesEntry
-	nil,                                             // 86: google.cloud.config.v1.ApplyResults.OutputsEntry
-	nil,                                             // 87: google.cloud.config.v1.Resource.CaiAssetsEntry
-	nil,                                             // 88: google.cloud.config.v1.Preview.LabelsEntry
-	nil,                                             // 89: google.cloud.config.v1.Preview.AnnotationsEntry
-	(*timestamppb.Timestamp)(nil),                   // 90: google.protobuf.Timestamp
-	(*structpb.Value)(nil),                          // 91: google.protobuf.Value
-	(*fieldmaskpb.FieldMask)(nil),                   // 92: google.protobuf.FieldMask
-	(*status.Status)(nil),                           // 93: google.rpc.Status
-	(*longrunningpb.Operation)(nil),                 // 94: google.longrunning.Operation
-	(*emptypb.Empty)(nil),                           // 95: google.protobuf.Empty
+	(QuotaValidation)(0),      // 0: google.cloud.config.v1.QuotaValidation
+	(Deployment_State)(0),     // 1: google.cloud.config.v1.Deployment.State
+	(Deployment_ErrorCode)(0), // 2: google.cloud.config.v1.Deployment.ErrorCode
+	(Deployment_LockState)(0), // 3: google.cloud.config.v1.Deployment.LockState
+	(DeleteDeploymentGroupRequest_DeploymentReferencePolicy)(0), // 4: google.cloud.config.v1.DeleteDeploymentGroupRequest.DeploymentReferencePolicy
+	(DeleteDeploymentRequest_DeletePolicy)(0),                   // 5: google.cloud.config.v1.DeleteDeploymentRequest.DeletePolicy
+	(Revision_Action)(0),                                        // 6: google.cloud.config.v1.Revision.Action
+	(Revision_State)(0),                                         // 7: google.cloud.config.v1.Revision.State
+	(Revision_ErrorCode)(0),                                     // 8: google.cloud.config.v1.Revision.ErrorCode
+	(DeploymentOperationMetadata_DeploymentStep)(0),             // 9: google.cloud.config.v1.DeploymentOperationMetadata.DeploymentStep
+	(Resource_Intent)(0),                                        // 10: google.cloud.config.v1.Resource.Intent
+	(Resource_State)(0),                                         // 11: google.cloud.config.v1.Resource.State
+	(Preview_State)(0),                                          // 12: google.cloud.config.v1.Preview.State
+	(Preview_PreviewMode)(0),                                    // 13: google.cloud.config.v1.Preview.PreviewMode
+	(Preview_ErrorCode)(0),                                      // 14: google.cloud.config.v1.Preview.ErrorCode
+	(PreviewOperationMetadata_PreviewStep)(0),                   // 15: google.cloud.config.v1.PreviewOperationMetadata.PreviewStep
+	(TerraformVersion_State)(0),                                 // 16: google.cloud.config.v1.TerraformVersion.State
+	(ResourceChange_Intent)(0),                                  // 17: google.cloud.config.v1.ResourceChange.Intent
+	(ProviderConfig_ProviderSource)(0),                          // 18: google.cloud.config.v1.ProviderConfig.ProviderSource
+	(DeploymentGroup_State)(0),                                  // 19: google.cloud.config.v1.DeploymentGroup.State
+	(DeploymentGroup_ProvisioningState)(0),                      // 20: google.cloud.config.v1.DeploymentGroup.ProvisioningState
+	(DeploymentUnitProgress_State)(0),                           // 21: google.cloud.config.v1.DeploymentUnitProgress.State
+	(DeploymentUnitProgress_Intent)(0),                          // 22: google.cloud.config.v1.DeploymentUnitProgress.Intent
+	(ProvisionDeploymentGroupOperationMetadata_ProvisionDeploymentGroupStep)(0), // 23: google.cloud.config.v1.ProvisionDeploymentGroupOperationMetadata.ProvisionDeploymentGroupStep
+	(*Deployment)(nil),                                // 24: google.cloud.config.v1.Deployment
+	(*TerraformBlueprint)(nil),                        // 25: google.cloud.config.v1.TerraformBlueprint
+	(*TerraformVariable)(nil),                         // 26: google.cloud.config.v1.TerraformVariable
+	(*ExternalValueSource)(nil),                       // 27: google.cloud.config.v1.ExternalValueSource
+	(*DeploymentSource)(nil),                          // 28: google.cloud.config.v1.DeploymentSource
+	(*ApplyResults)(nil),                              // 29: google.cloud.config.v1.ApplyResults
+	(*TerraformOutput)(nil),                           // 30: google.cloud.config.v1.TerraformOutput
+	(*ListDeploymentsRequest)(nil),                    // 31: google.cloud.config.v1.ListDeploymentsRequest
+	(*ListDeploymentsResponse)(nil),                   // 32: google.cloud.config.v1.ListDeploymentsResponse
+	(*GetDeploymentRequest)(nil),                      // 33: google.cloud.config.v1.GetDeploymentRequest
+	(*ListRevisionsRequest)(nil),                      // 34: google.cloud.config.v1.ListRevisionsRequest
+	(*ListRevisionsResponse)(nil),                     // 35: google.cloud.config.v1.ListRevisionsResponse
+	(*GetRevisionRequest)(nil),                        // 36: google.cloud.config.v1.GetRevisionRequest
+	(*CreateDeploymentRequest)(nil),                   // 37: google.cloud.config.v1.CreateDeploymentRequest
+	(*CreateDeploymentGroupRequest)(nil),              // 38: google.cloud.config.v1.CreateDeploymentGroupRequest
+	(*UpdateDeploymentGroupRequest)(nil),              // 39: google.cloud.config.v1.UpdateDeploymentGroupRequest
+	(*DeleteDeploymentGroupRequest)(nil),              // 40: google.cloud.config.v1.DeleteDeploymentGroupRequest
+	(*UpdateDeploymentRequest)(nil),                   // 41: google.cloud.config.v1.UpdateDeploymentRequest
+	(*DeleteDeploymentRequest)(nil),                   // 42: google.cloud.config.v1.DeleteDeploymentRequest
+	(*OperationMetadata)(nil),                         // 43: google.cloud.config.v1.OperationMetadata
+	(*Revision)(nil),                                  // 44: google.cloud.config.v1.Revision
+	(*TerraformError)(nil),                            // 45: google.cloud.config.v1.TerraformError
+	(*GitSource)(nil),                                 // 46: google.cloud.config.v1.GitSource
+	(*DeploymentOperationMetadata)(nil),               // 47: google.cloud.config.v1.DeploymentOperationMetadata
+	(*Resource)(nil),                                  // 48: google.cloud.config.v1.Resource
+	(*ResourceTerraformInfo)(nil),                     // 49: google.cloud.config.v1.ResourceTerraformInfo
+	(*ResourceCAIInfo)(nil),                           // 50: google.cloud.config.v1.ResourceCAIInfo
+	(*GetResourceRequest)(nil),                        // 51: google.cloud.config.v1.GetResourceRequest
+	(*ListResourcesRequest)(nil),                      // 52: google.cloud.config.v1.ListResourcesRequest
+	(*ListResourcesResponse)(nil),                     // 53: google.cloud.config.v1.ListResourcesResponse
+	(*Statefile)(nil),                                 // 54: google.cloud.config.v1.Statefile
+	(*ExportDeploymentStatefileRequest)(nil),          // 55: google.cloud.config.v1.ExportDeploymentStatefileRequest
+	(*ExportRevisionStatefileRequest)(nil),            // 56: google.cloud.config.v1.ExportRevisionStatefileRequest
+	(*ImportStatefileRequest)(nil),                    // 57: google.cloud.config.v1.ImportStatefileRequest
+	(*DeleteStatefileRequest)(nil),                    // 58: google.cloud.config.v1.DeleteStatefileRequest
+	(*LockDeploymentRequest)(nil),                     // 59: google.cloud.config.v1.LockDeploymentRequest
+	(*UnlockDeploymentRequest)(nil),                   // 60: google.cloud.config.v1.UnlockDeploymentRequest
+	(*ExportLockInfoRequest)(nil),                     // 61: google.cloud.config.v1.ExportLockInfoRequest
+	(*LockInfo)(nil),                                  // 62: google.cloud.config.v1.LockInfo
+	(*Preview)(nil),                                   // 63: google.cloud.config.v1.Preview
+	(*PreviewOperationMetadata)(nil),                  // 64: google.cloud.config.v1.PreviewOperationMetadata
+	(*PreviewArtifacts)(nil),                          // 65: google.cloud.config.v1.PreviewArtifacts
+	(*CreatePreviewRequest)(nil),                      // 66: google.cloud.config.v1.CreatePreviewRequest
+	(*GetPreviewRequest)(nil),                         // 67: google.cloud.config.v1.GetPreviewRequest
+	(*ListPreviewsRequest)(nil),                       // 68: google.cloud.config.v1.ListPreviewsRequest
+	(*ListPreviewsResponse)(nil),                      // 69: google.cloud.config.v1.ListPreviewsResponse
+	(*DeletePreviewRequest)(nil),                      // 70: google.cloud.config.v1.DeletePreviewRequest
+	(*ExportPreviewResultRequest)(nil),                // 71: google.cloud.config.v1.ExportPreviewResultRequest
+	(*ExportPreviewResultResponse)(nil),               // 72: google.cloud.config.v1.ExportPreviewResultResponse
+	(*PreviewResult)(nil),                             // 73: google.cloud.config.v1.PreviewResult
+	(*GetTerraformVersionRequest)(nil),                // 74: google.cloud.config.v1.GetTerraformVersionRequest
+	(*ListTerraformVersionsRequest)(nil),              // 75: google.cloud.config.v1.ListTerraformVersionsRequest
+	(*ListTerraformVersionsResponse)(nil),             // 76: google.cloud.config.v1.ListTerraformVersionsResponse
+	(*TerraformVersion)(nil),                          // 77: google.cloud.config.v1.TerraformVersion
+	(*ResourceChangeTerraformInfo)(nil),               // 78: google.cloud.config.v1.ResourceChangeTerraformInfo
+	(*ResourceChange)(nil),                            // 79: google.cloud.config.v1.ResourceChange
+	(*PropertyChange)(nil),                            // 80: google.cloud.config.v1.PropertyChange
+	(*ListResourceChangesRequest)(nil),                // 81: google.cloud.config.v1.ListResourceChangesRequest
+	(*ListResourceChangesResponse)(nil),               // 82: google.cloud.config.v1.ListResourceChangesResponse
+	(*GetResourceChangeRequest)(nil),                  // 83: google.cloud.config.v1.GetResourceChangeRequest
+	(*ResourceDriftTerraformInfo)(nil),                // 84: google.cloud.config.v1.ResourceDriftTerraformInfo
+	(*ResourceDrift)(nil),                             // 85: google.cloud.config.v1.ResourceDrift
+	(*PropertyDrift)(nil),                             // 86: google.cloud.config.v1.PropertyDrift
+	(*ListResourceDriftsRequest)(nil),                 // 87: google.cloud.config.v1.ListResourceDriftsRequest
+	(*ListResourceDriftsResponse)(nil),                // 88: google.cloud.config.v1.ListResourceDriftsResponse
+	(*GetResourceDriftRequest)(nil),                   // 89: google.cloud.config.v1.GetResourceDriftRequest
+	(*ProviderConfig)(nil),                            // 90: google.cloud.config.v1.ProviderConfig
+	(*GetAutoMigrationConfigRequest)(nil),             // 91: google.cloud.config.v1.GetAutoMigrationConfigRequest
+	(*AutoMigrationConfig)(nil),                       // 92: google.cloud.config.v1.AutoMigrationConfig
+	(*UpdateAutoMigrationConfigRequest)(nil),          // 93: google.cloud.config.v1.UpdateAutoMigrationConfigRequest
+	(*DeploymentGroup)(nil),                           // 94: google.cloud.config.v1.DeploymentGroup
+	(*DeploymentUnit)(nil),                            // 95: google.cloud.config.v1.DeploymentUnit
+	(*DeploymentSpec)(nil),                            // 96: google.cloud.config.v1.DeploymentSpec
+	(*GetDeploymentGroupRequest)(nil),                 // 97: google.cloud.config.v1.GetDeploymentGroupRequest
+	(*ListDeploymentGroupsRequest)(nil),               // 98: google.cloud.config.v1.ListDeploymentGroupsRequest
+	(*ListDeploymentGroupsResponse)(nil),              // 99: google.cloud.config.v1.ListDeploymentGroupsResponse
+	(*ProvisionDeploymentGroupRequest)(nil),           // 100: google.cloud.config.v1.ProvisionDeploymentGroupRequest
+	(*DeprovisionDeploymentGroupRequest)(nil),         // 101: google.cloud.config.v1.DeprovisionDeploymentGroupRequest
+	(*DeploymentOperationSummary)(nil),                // 102: google.cloud.config.v1.DeploymentOperationSummary
+	(*DeploymentUnitProgress)(nil),                    // 103: google.cloud.config.v1.DeploymentUnitProgress
+	(*ProvisionDeploymentGroupOperationMetadata)(nil), // 104: google.cloud.config.v1.ProvisionDeploymentGroupOperationMetadata
+	(*DeploymentGroupRevision)(nil),                   // 105: google.cloud.config.v1.DeploymentGroupRevision
+	(*GetDeploymentGroupRevisionRequest)(nil),         // 106: google.cloud.config.v1.GetDeploymentGroupRevisionRequest
+	(*ListDeploymentGroupRevisionsRequest)(nil),       // 107: google.cloud.config.v1.ListDeploymentGroupRevisionsRequest
+	(*ListDeploymentGroupRevisionsResponse)(nil),      // 108: google.cloud.config.v1.ListDeploymentGroupRevisionsResponse
+	nil,                             // 109: google.cloud.config.v1.Deployment.LabelsEntry
+	nil,                             // 110: google.cloud.config.v1.Deployment.AnnotationsEntry
+	nil,                             // 111: google.cloud.config.v1.TerraformBlueprint.InputValuesEntry
+	nil,                             // 112: google.cloud.config.v1.TerraformBlueprint.ExternalValuesEntry
+	nil,                             // 113: google.cloud.config.v1.ApplyResults.OutputsEntry
+	nil,                             // 114: google.cloud.config.v1.Resource.CaiAssetsEntry
+	nil,                             // 115: google.cloud.config.v1.Preview.LabelsEntry
+	nil,                             // 116: google.cloud.config.v1.Preview.AnnotationsEntry
+	nil,                             // 117: google.cloud.config.v1.DeploymentGroup.LabelsEntry
+	nil,                             // 118: google.cloud.config.v1.DeploymentGroup.AnnotationsEntry
+	nil,                             // 119: google.cloud.config.v1.ProvisionDeploymentGroupRequest.DeploymentSpecsEntry
+	(*timestamppb.Timestamp)(nil),   // 120: google.protobuf.Timestamp
+	(*structpb.Value)(nil),          // 121: google.protobuf.Value
+	(*fieldmaskpb.FieldMask)(nil),   // 122: google.protobuf.FieldMask
+	(*status.Status)(nil),           // 123: google.rpc.Status
+	(*longrunningpb.Operation)(nil), // 124: google.longrunning.Operation
+	(*emptypb.Empty)(nil),           // 125: google.protobuf.Empty
 }
 var file_google_cloud_config_v1_config_proto_depIdxs = []int32{
-	19,  // 0: google.cloud.config.v1.Deployment.terraform_blueprint:type_name -> google.cloud.config.v1.TerraformBlueprint
-	90,  // 1: google.cloud.config.v1.Deployment.create_time:type_name -> google.protobuf.Timestamp
-	90,  // 2: google.cloud.config.v1.Deployment.update_time:type_name -> google.protobuf.Timestamp
-	83,  // 3: google.cloud.config.v1.Deployment.labels:type_name -> google.cloud.config.v1.Deployment.LabelsEntry
+	25,  // 0: google.cloud.config.v1.Deployment.terraform_blueprint:type_name -> google.cloud.config.v1.TerraformBlueprint
+	120, // 1: google.cloud.config.v1.Deployment.create_time:type_name -> google.protobuf.Timestamp
+	120, // 2: google.cloud.config.v1.Deployment.update_time:type_name -> google.protobuf.Timestamp
+	109, // 3: google.cloud.config.v1.Deployment.labels:type_name -> google.cloud.config.v1.Deployment.LabelsEntry
 	1,   // 4: google.cloud.config.v1.Deployment.state:type_name -> google.cloud.config.v1.Deployment.State
 	2,   // 5: google.cloud.config.v1.Deployment.error_code:type_name -> google.cloud.config.v1.Deployment.ErrorCode
-	21,  // 6: google.cloud.config.v1.Deployment.delete_results:type_name -> google.cloud.config.v1.ApplyResults
-	34,  // 7: google.cloud.config.v1.Deployment.tf_errors:type_name -> google.cloud.config.v1.TerraformError
+	29,  // 6: google.cloud.config.v1.Deployment.delete_results:type_name -> google.cloud.config.v1.ApplyResults
+	45,  // 7: google.cloud.config.v1.Deployment.tf_errors:type_name -> google.cloud.config.v1.TerraformError
 	3,   // 8: google.cloud.config.v1.Deployment.lock_state:type_name -> google.cloud.config.v1.Deployment.LockState
 	0,   // 9: google.cloud.config.v1.Deployment.quota_validation:type_name -> google.cloud.config.v1.QuotaValidation
-	84,  // 10: google.cloud.config.v1.Deployment.annotations:type_name -> google.cloud.config.v1.Deployment.AnnotationsEntry
-	79,  // 11: google.cloud.config.v1.Deployment.provider_config:type_name -> google.cloud.config.v1.ProviderConfig
-	35,  // 12: google.cloud.config.v1.TerraformBlueprint.git_source:type_name -> google.cloud.config.v1.GitSource
-	85,  // 13: google.cloud.config.v1.TerraformBlueprint.input_values:type_name -> google.cloud.config.v1.TerraformBlueprint.InputValuesEntry
-	91,  // 14: google.cloud.config.v1.TerraformVariable.input_value:type_name -> google.protobuf.Value
-	86,  // 15: google.cloud.config.v1.ApplyResults.outputs:type_name -> google.cloud.config.v1.ApplyResults.OutputsEntry
-	91,  // 16: google.cloud.config.v1.TerraformOutput.value:type_name -> google.protobuf.Value
-	18,  // 17: google.cloud.config.v1.ListDeploymentsResponse.deployments:type_name -> google.cloud.config.v1.Deployment
-	33,  // 18: google.cloud.config.v1.ListRevisionsResponse.revisions:type_name -> google.cloud.config.v1.Revision
-	18,  // 19: google.cloud.config.v1.CreateDeploymentRequest.deployment:type_name -> google.cloud.config.v1.Deployment
-	92,  // 20: google.cloud.config.v1.UpdateDeploymentRequest.update_mask:type_name -> google.protobuf.FieldMask
-	18,  // 21: google.cloud.config.v1.UpdateDeploymentRequest.deployment:type_name -> google.cloud.config.v1.Deployment
-	4,   // 22: google.cloud.config.v1.DeleteDeploymentRequest.delete_policy:type_name -> google.cloud.config.v1.DeleteDeploymentRequest.DeletePolicy
-	36,  // 23: google.cloud.config.v1.OperationMetadata.deployment_metadata:type_name -> google.cloud.config.v1.DeploymentOperationMetadata
-	53,  // 24: google.cloud.config.v1.OperationMetadata.preview_metadata:type_name -> google.cloud.config.v1.PreviewOperationMetadata
-	90,  // 25: google.cloud.config.v1.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
-	90,  // 26: google.cloud.config.v1.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
-	19,  // 27: google.cloud.config.v1.Revision.terraform_blueprint:type_name -> google.cloud.config.v1.TerraformBlueprint
-	90,  // 28: google.cloud.config.v1.Revision.create_time:type_name -> google.protobuf.Timestamp
-	90,  // 29: google.cloud.config.v1.Revision.update_time:type_name -> google.protobuf.Timestamp
-	5,   // 30: google.cloud.config.v1.Revision.action:type_name -> google.cloud.config.v1.Revision.Action
-	6,   // 31: google.cloud.config.v1.Revision.state:type_name -> google.cloud.config.v1.Revision.State
-	21,  // 32: google.cloud.config.v1.Revision.apply_results:type_name -> google.cloud.config.v1.ApplyResults
-	7,   // 33: google.cloud.config.v1.Revision.error_code:type_name -> google.cloud.config.v1.Revision.ErrorCode
-	34,  // 34: google.cloud.config.v1.Revision.tf_errors:type_name -> google.cloud.config.v1.TerraformError
-	0,   // 35: google.cloud.config.v1.Revision.quota_validation:type_name -> google.cloud.config.v1.QuotaValidation
-	79,  // 36: google.cloud.config.v1.Revision.provider_config:type_name -> google.cloud.config.v1.ProviderConfig
-	93,  // 37: google.cloud.config.v1.TerraformError.error:type_name -> google.rpc.Status
-	8,   // 38: google.cloud.config.v1.DeploymentOperationMetadata.step:type_name -> google.cloud.config.v1.DeploymentOperationMetadata.DeploymentStep
-	21,  // 39: google.cloud.config.v1.DeploymentOperationMetadata.apply_results:type_name -> google.cloud.config.v1.ApplyResults
-	38,  // 40: google.cloud.config.v1.Resource.terraform_info:type_name -> google.cloud.config.v1.ResourceTerraformInfo
-	87,  // 41: google.cloud.config.v1.Resource.cai_assets:type_name -> google.cloud.config.v1.Resource.CaiAssetsEntry
-	9,   // 42: google.cloud.config.v1.Resource.intent:type_name -> google.cloud.config.v1.Resource.Intent
-	10,  // 43: google.cloud.config.v1.Resource.state:type_name -> google.cloud.config.v1.Resource.State
-	37,  // 44: google.cloud.config.v1.ListResourcesResponse.resources:type_name -> google.cloud.config.v1.Resource
-	90,  // 45: google.cloud.config.v1.LockInfo.create_time:type_name -> google.protobuf.Timestamp
-	19,  // 46: google.cloud.config.v1.Preview.terraform_blueprint:type_name -> google.cloud.config.v1.TerraformBlueprint
-	90,  // 47: google.cloud.config.v1.Preview.create_time:type_name -> google.protobuf.Timestamp
-	88,  // 48: google.cloud.config.v1.Preview.labels:type_name -> google.cloud.config.v1.Preview.LabelsEntry
-	11,  // 49: google.cloud.config.v1.Preview.state:type_name -> google.cloud.config.v1.Preview.State
-	12,  // 50: google.cloud.config.v1.Preview.preview_mode:type_name -> google.cloud.config.v1.Preview.PreviewMode
-	13,  // 51: google.cloud.config.v1.Preview.error_code:type_name -> google.cloud.config.v1.Preview.ErrorCode
-	93,  // 52: google.cloud.config.v1.Preview.error_status:type_name -> google.rpc.Status
-	34,  // 53: google.cloud.config.v1.Preview.tf_errors:type_name -> google.cloud.config.v1.TerraformError
-	54,  // 54: google.cloud.config.v1.Preview.preview_artifacts:type_name -> google.cloud.config.v1.PreviewArtifacts
-	89,  // 55: google.cloud.config.v1.Preview.annotations:type_name -> google.cloud.config.v1.Preview.AnnotationsEntry
-	79,  // 56: google.cloud.config.v1.Preview.provider_config:type_name -> google.cloud.config.v1.ProviderConfig
-	14,  // 57: google.cloud.config.v1.PreviewOperationMetadata.step:type_name -> google.cloud.config.v1.PreviewOperationMetadata.PreviewStep
-	54,  // 58: google.cloud.config.v1.PreviewOperationMetadata.preview_artifacts:type_name -> google.cloud.config.v1.PreviewArtifacts
-	52,  // 59: google.cloud.config.v1.CreatePreviewRequest.preview:type_name -> google.cloud.config.v1.Preview
-	52,  // 60: google.cloud.config.v1.ListPreviewsResponse.previews:type_name -> google.cloud.config.v1.Preview
-	62,  // 61: google.cloud.config.v1.ExportPreviewResultResponse.result:type_name -> google.cloud.config.v1.PreviewResult
-	66,  // 62: google.cloud.config.v1.ListTerraformVersionsResponse.terraform_versions:type_name -> google.cloud.config.v1.TerraformVersion
-	15,  // 63: google.cloud.config.v1.TerraformVersion.state:type_name -> google.cloud.config.v1.TerraformVersion.State
-	90,  // 64: google.cloud.config.v1.TerraformVersion.support_time:type_name -> google.protobuf.Timestamp
-	90,  // 65: google.cloud.config.v1.TerraformVersion.deprecate_time:type_name -> google.protobuf.Timestamp
-	90,  // 66: google.cloud.config.v1.TerraformVersion.obsolete_time:type_name -> google.protobuf.Timestamp
-	67,  // 67: google.cloud.config.v1.ResourceChange.terraform_info:type_name -> google.cloud.config.v1.ResourceChangeTerraformInfo
-	16,  // 68: google.cloud.config.v1.ResourceChange.intent:type_name -> google.cloud.config.v1.ResourceChange.Intent
-	69,  // 69: google.cloud.config.v1.ResourceChange.property_changes:type_name -> google.cloud.config.v1.PropertyChange
-	91,  // 70: google.cloud.config.v1.PropertyChange.before:type_name -> google.protobuf.Value
-	91,  // 71: google.cloud.config.v1.PropertyChange.after:type_name -> google.protobuf.Value
-	68,  // 72: google.cloud.config.v1.ListResourceChangesResponse.resource_changes:type_name -> google.cloud.config.v1.ResourceChange
-	73,  // 73: google.cloud.config.v1.ResourceDrift.terraform_info:type_name -> google.cloud.config.v1.ResourceDriftTerraformInfo
-	75,  // 74: google.cloud.config.v1.ResourceDrift.property_drifts:type_name -> google.cloud.config.v1.PropertyDrift
-	91,  // 75: google.cloud.config.v1.PropertyDrift.before:type_name -> google.protobuf.Value
-	91,  // 76: google.cloud.config.v1.PropertyDrift.after:type_name -> google.protobuf.Value
-	74,  // 77: google.cloud.config.v1.ListResourceDriftsResponse.resource_drifts:type_name -> google.cloud.config.v1.ResourceDrift
-	17,  // 78: google.cloud.config.v1.ProviderConfig.source_type:type_name -> google.cloud.config.v1.ProviderConfig.ProviderSource
-	90,  // 79: google.cloud.config.v1.AutoMigrationConfig.update_time:type_name -> google.protobuf.Timestamp
-	92,  // 80: google.cloud.config.v1.UpdateAutoMigrationConfigRequest.update_mask:type_name -> google.protobuf.FieldMask
-	81,  // 81: google.cloud.config.v1.UpdateAutoMigrationConfigRequest.auto_migration_config:type_name -> google.cloud.config.v1.AutoMigrationConfig
-	20,  // 82: google.cloud.config.v1.TerraformBlueprint.InputValuesEntry.value:type_name -> google.cloud.config.v1.TerraformVariable
-	22,  // 83: google.cloud.config.v1.ApplyResults.OutputsEntry.value:type_name -> google.cloud.config.v1.TerraformOutput
-	39,  // 84: google.cloud.config.v1.Resource.CaiAssetsEntry.value:type_name -> google.cloud.config.v1.ResourceCAIInfo
-	23,  // 85: google.cloud.config.v1.Config.ListDeployments:input_type -> google.cloud.config.v1.ListDeploymentsRequest
-	25,  // 86: google.cloud.config.v1.Config.GetDeployment:input_type -> google.cloud.config.v1.GetDeploymentRequest
-	29,  // 87: google.cloud.config.v1.Config.CreateDeployment:input_type -> google.cloud.config.v1.CreateDeploymentRequest
-	30,  // 88: google.cloud.config.v1.Config.UpdateDeployment:input_type -> google.cloud.config.v1.UpdateDeploymentRequest
-	31,  // 89: google.cloud.config.v1.Config.DeleteDeployment:input_type -> google.cloud.config.v1.DeleteDeploymentRequest
-	26,  // 90: google.cloud.config.v1.Config.ListRevisions:input_type -> google.cloud.config.v1.ListRevisionsRequest
-	28,  // 91: google.cloud.config.v1.Config.GetRevision:input_type -> google.cloud.config.v1.GetRevisionRequest
-	40,  // 92: google.cloud.config.v1.Config.GetResource:input_type -> google.cloud.config.v1.GetResourceRequest
-	41,  // 93: google.cloud.config.v1.Config.ListResources:input_type -> google.cloud.config.v1.ListResourcesRequest
-	44,  // 94: google.cloud.config.v1.Config.ExportDeploymentStatefile:input_type -> google.cloud.config.v1.ExportDeploymentStatefileRequest
-	45,  // 95: google.cloud.config.v1.Config.ExportRevisionStatefile:input_type -> google.cloud.config.v1.ExportRevisionStatefileRequest
-	46,  // 96: google.cloud.config.v1.Config.ImportStatefile:input_type -> google.cloud.config.v1.ImportStatefileRequest
-	47,  // 97: google.cloud.config.v1.Config.DeleteStatefile:input_type -> google.cloud.config.v1.DeleteStatefileRequest
-	48,  // 98: google.cloud.config.v1.Config.LockDeployment:input_type -> google.cloud.config.v1.LockDeploymentRequest
-	49,  // 99: google.cloud.config.v1.Config.UnlockDeployment:input_type -> google.cloud.config.v1.UnlockDeploymentRequest
-	50,  // 100: google.cloud.config.v1.Config.ExportLockInfo:input_type -> google.cloud.config.v1.ExportLockInfoRequest
-	55,  // 101: google.cloud.config.v1.Config.CreatePreview:input_type -> google.cloud.config.v1.CreatePreviewRequest
-	56,  // 102: google.cloud.config.v1.Config.GetPreview:input_type -> google.cloud.config.v1.GetPreviewRequest
-	57,  // 103: google.cloud.config.v1.Config.ListPreviews:input_type -> google.cloud.config.v1.ListPreviewsRequest
-	59,  // 104: google.cloud.config.v1.Config.DeletePreview:input_type -> google.cloud.config.v1.DeletePreviewRequest
-	60,  // 105: google.cloud.config.v1.Config.ExportPreviewResult:input_type -> google.cloud.config.v1.ExportPreviewResultRequest
-	64,  // 106: google.cloud.config.v1.Config.ListTerraformVersions:input_type -> google.cloud.config.v1.ListTerraformVersionsRequest
-	63,  // 107: google.cloud.config.v1.Config.GetTerraformVersion:input_type -> google.cloud.config.v1.GetTerraformVersionRequest
-	70,  // 108: google.cloud.config.v1.Config.ListResourceChanges:input_type -> google.cloud.config.v1.ListResourceChangesRequest
-	72,  // 109: google.cloud.config.v1.Config.GetResourceChange:input_type -> google.cloud.config.v1.GetResourceChangeRequest
-	76,  // 110: google.cloud.config.v1.Config.ListResourceDrifts:input_type -> google.cloud.config.v1.ListResourceDriftsRequest
-	78,  // 111: google.cloud.config.v1.Config.GetResourceDrift:input_type -> google.cloud.config.v1.GetResourceDriftRequest
-	80,  // 112: google.cloud.config.v1.Config.GetAutoMigrationConfig:input_type -> google.cloud.config.v1.GetAutoMigrationConfigRequest
-	82,  // 113: google.cloud.config.v1.Config.UpdateAutoMigrationConfig:input_type -> google.cloud.config.v1.UpdateAutoMigrationConfigRequest
-	24,  // 114: google.cloud.config.v1.Config.ListDeployments:output_type -> google.cloud.config.v1.ListDeploymentsResponse
-	18,  // 115: google.cloud.config.v1.Config.GetDeployment:output_type -> google.cloud.config.v1.Deployment
-	94,  // 116: google.cloud.config.v1.Config.CreateDeployment:output_type -> google.longrunning.Operation
-	94,  // 117: google.cloud.config.v1.Config.UpdateDeployment:output_type -> google.longrunning.Operation
-	94,  // 118: google.cloud.config.v1.Config.DeleteDeployment:output_type -> google.longrunning.Operation
-	27,  // 119: google.cloud.config.v1.Config.ListRevisions:output_type -> google.cloud.config.v1.ListRevisionsResponse
-	33,  // 120: google.cloud.config.v1.Config.GetRevision:output_type -> google.cloud.config.v1.Revision
-	37,  // 121: google.cloud.config.v1.Config.GetResource:output_type -> google.cloud.config.v1.Resource
-	42,  // 122: google.cloud.config.v1.Config.ListResources:output_type -> google.cloud.config.v1.ListResourcesResponse
-	43,  // 123: google.cloud.config.v1.Config.ExportDeploymentStatefile:output_type -> google.cloud.config.v1.Statefile
-	43,  // 124: google.cloud.config.v1.Config.ExportRevisionStatefile:output_type -> google.cloud.config.v1.Statefile
-	43,  // 125: google.cloud.config.v1.Config.ImportStatefile:output_type -> google.cloud.config.v1.Statefile
-	95,  // 126: google.cloud.config.v1.Config.DeleteStatefile:output_type -> google.protobuf.Empty
-	94,  // 127: google.cloud.config.v1.Config.LockDeployment:output_type -> google.longrunning.Operation
-	94,  // 128: google.cloud.config.v1.Config.UnlockDeployment:output_type -> google.longrunning.Operation
-	51,  // 129: google.cloud.config.v1.Config.ExportLockInfo:output_type -> google.cloud.config.v1.LockInfo
-	94,  // 130: google.cloud.config.v1.Config.CreatePreview:output_type -> google.longrunning.Operation
-	52,  // 131: google.cloud.config.v1.Config.GetPreview:output_type -> google.cloud.config.v1.Preview
-	58,  // 132: google.cloud.config.v1.Config.ListPreviews:output_type -> google.cloud.config.v1.ListPreviewsResponse
-	94,  // 133: google.cloud.config.v1.Config.DeletePreview:output_type -> google.longrunning.Operation
-	61,  // 134: google.cloud.config.v1.Config.ExportPreviewResult:output_type -> google.cloud.config.v1.ExportPreviewResultResponse
-	65,  // 135: google.cloud.config.v1.Config.ListTerraformVersions:output_type -> google.cloud.config.v1.ListTerraformVersionsResponse
-	66,  // 136: google.cloud.config.v1.Config.GetTerraformVersion:output_type -> google.cloud.config.v1.TerraformVersion
-	71,  // 137: google.cloud.config.v1.Config.ListResourceChanges:output_type -> google.cloud.config.v1.ListResourceChangesResponse
-	68,  // 138: google.cloud.config.v1.Config.GetResourceChange:output_type -> google.cloud.config.v1.ResourceChange
-	77,  // 139: google.cloud.config.v1.Config.ListResourceDrifts:output_type -> google.cloud.config.v1.ListResourceDriftsResponse
-	74,  // 140: google.cloud.config.v1.Config.GetResourceDrift:output_type -> google.cloud.config.v1.ResourceDrift
-	81,  // 141: google.cloud.config.v1.Config.GetAutoMigrationConfig:output_type -> google.cloud.config.v1.AutoMigrationConfig
-	94,  // 142: google.cloud.config.v1.Config.UpdateAutoMigrationConfig:output_type -> google.longrunning.Operation
-	114, // [114:143] is the sub-list for method output_type
-	85,  // [85:114] is the sub-list for method input_type
-	85,  // [85:85] is the sub-list for extension type_name
-	85,  // [85:85] is the sub-list for extension extendee
-	0,   // [0:85] is the sub-list for field type_name
+	110, // 10: google.cloud.config.v1.Deployment.annotations:type_name -> google.cloud.config.v1.Deployment.AnnotationsEntry
+	90,  // 11: google.cloud.config.v1.Deployment.provider_config:type_name -> google.cloud.config.v1.ProviderConfig
+	46,  // 12: google.cloud.config.v1.TerraformBlueprint.git_source:type_name -> google.cloud.config.v1.GitSource
+	111, // 13: google.cloud.config.v1.TerraformBlueprint.input_values:type_name -> google.cloud.config.v1.TerraformBlueprint.InputValuesEntry
+	112, // 14: google.cloud.config.v1.TerraformBlueprint.external_values:type_name -> google.cloud.config.v1.TerraformBlueprint.ExternalValuesEntry
+	121, // 15: google.cloud.config.v1.TerraformVariable.input_value:type_name -> google.protobuf.Value
+	28,  // 16: google.cloud.config.v1.ExternalValueSource.deployment_source:type_name -> google.cloud.config.v1.DeploymentSource
+	113, // 17: google.cloud.config.v1.ApplyResults.outputs:type_name -> google.cloud.config.v1.ApplyResults.OutputsEntry
+	121, // 18: google.cloud.config.v1.TerraformOutput.value:type_name -> google.protobuf.Value
+	24,  // 19: google.cloud.config.v1.ListDeploymentsResponse.deployments:type_name -> google.cloud.config.v1.Deployment
+	44,  // 20: google.cloud.config.v1.ListRevisionsResponse.revisions:type_name -> google.cloud.config.v1.Revision
+	24,  // 21: google.cloud.config.v1.CreateDeploymentRequest.deployment:type_name -> google.cloud.config.v1.Deployment
+	94,  // 22: google.cloud.config.v1.CreateDeploymentGroupRequest.deployment_group:type_name -> google.cloud.config.v1.DeploymentGroup
+	122, // 23: google.cloud.config.v1.UpdateDeploymentGroupRequest.update_mask:type_name -> google.protobuf.FieldMask
+	94,  // 24: google.cloud.config.v1.UpdateDeploymentGroupRequest.deployment_group:type_name -> google.cloud.config.v1.DeploymentGroup
+	4,   // 25: google.cloud.config.v1.DeleteDeploymentGroupRequest.deployment_reference_policy:type_name -> google.cloud.config.v1.DeleteDeploymentGroupRequest.DeploymentReferencePolicy
+	122, // 26: google.cloud.config.v1.UpdateDeploymentRequest.update_mask:type_name -> google.protobuf.FieldMask
+	24,  // 27: google.cloud.config.v1.UpdateDeploymentRequest.deployment:type_name -> google.cloud.config.v1.Deployment
+	5,   // 28: google.cloud.config.v1.DeleteDeploymentRequest.delete_policy:type_name -> google.cloud.config.v1.DeleteDeploymentRequest.DeletePolicy
+	47,  // 29: google.cloud.config.v1.OperationMetadata.deployment_metadata:type_name -> google.cloud.config.v1.DeploymentOperationMetadata
+	64,  // 30: google.cloud.config.v1.OperationMetadata.preview_metadata:type_name -> google.cloud.config.v1.PreviewOperationMetadata
+	104, // 31: google.cloud.config.v1.OperationMetadata.provision_deployment_group_metadata:type_name -> google.cloud.config.v1.ProvisionDeploymentGroupOperationMetadata
+	120, // 32: google.cloud.config.v1.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
+	120, // 33: google.cloud.config.v1.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
+	25,  // 34: google.cloud.config.v1.Revision.terraform_blueprint:type_name -> google.cloud.config.v1.TerraformBlueprint
+	120, // 35: google.cloud.config.v1.Revision.create_time:type_name -> google.protobuf.Timestamp
+	120, // 36: google.cloud.config.v1.Revision.update_time:type_name -> google.protobuf.Timestamp
+	6,   // 37: google.cloud.config.v1.Revision.action:type_name -> google.cloud.config.v1.Revision.Action
+	7,   // 38: google.cloud.config.v1.Revision.state:type_name -> google.cloud.config.v1.Revision.State
+	29,  // 39: google.cloud.config.v1.Revision.apply_results:type_name -> google.cloud.config.v1.ApplyResults
+	8,   // 40: google.cloud.config.v1.Revision.error_code:type_name -> google.cloud.config.v1.Revision.ErrorCode
+	45,  // 41: google.cloud.config.v1.Revision.tf_errors:type_name -> google.cloud.config.v1.TerraformError
+	0,   // 42: google.cloud.config.v1.Revision.quota_validation:type_name -> google.cloud.config.v1.QuotaValidation
+	90,  // 43: google.cloud.config.v1.Revision.provider_config:type_name -> google.cloud.config.v1.ProviderConfig
+	123, // 44: google.cloud.config.v1.TerraformError.error:type_name -> google.rpc.Status
+	9,   // 45: google.cloud.config.v1.DeploymentOperationMetadata.step:type_name -> google.cloud.config.v1.DeploymentOperationMetadata.DeploymentStep
+	29,  // 46: google.cloud.config.v1.DeploymentOperationMetadata.apply_results:type_name -> google.cloud.config.v1.ApplyResults
+	49,  // 47: google.cloud.config.v1.Resource.terraform_info:type_name -> google.cloud.config.v1.ResourceTerraformInfo
+	114, // 48: google.cloud.config.v1.Resource.cai_assets:type_name -> google.cloud.config.v1.Resource.CaiAssetsEntry
+	10,  // 49: google.cloud.config.v1.Resource.intent:type_name -> google.cloud.config.v1.Resource.Intent
+	11,  // 50: google.cloud.config.v1.Resource.state:type_name -> google.cloud.config.v1.Resource.State
+	48,  // 51: google.cloud.config.v1.ListResourcesResponse.resources:type_name -> google.cloud.config.v1.Resource
+	120, // 52: google.cloud.config.v1.LockInfo.create_time:type_name -> google.protobuf.Timestamp
+	25,  // 53: google.cloud.config.v1.Preview.terraform_blueprint:type_name -> google.cloud.config.v1.TerraformBlueprint
+	120, // 54: google.cloud.config.v1.Preview.create_time:type_name -> google.protobuf.Timestamp
+	115, // 55: google.cloud.config.v1.Preview.labels:type_name -> google.cloud.config.v1.Preview.LabelsEntry
+	12,  // 56: google.cloud.config.v1.Preview.state:type_name -> google.cloud.config.v1.Preview.State
+	13,  // 57: google.cloud.config.v1.Preview.preview_mode:type_name -> google.cloud.config.v1.Preview.PreviewMode
+	14,  // 58: google.cloud.config.v1.Preview.error_code:type_name -> google.cloud.config.v1.Preview.ErrorCode
+	123, // 59: google.cloud.config.v1.Preview.error_status:type_name -> google.rpc.Status
+	45,  // 60: google.cloud.config.v1.Preview.tf_errors:type_name -> google.cloud.config.v1.TerraformError
+	65,  // 61: google.cloud.config.v1.Preview.preview_artifacts:type_name -> google.cloud.config.v1.PreviewArtifacts
+	116, // 62: google.cloud.config.v1.Preview.annotations:type_name -> google.cloud.config.v1.Preview.AnnotationsEntry
+	90,  // 63: google.cloud.config.v1.Preview.provider_config:type_name -> google.cloud.config.v1.ProviderConfig
+	15,  // 64: google.cloud.config.v1.PreviewOperationMetadata.step:type_name -> google.cloud.config.v1.PreviewOperationMetadata.PreviewStep
+	65,  // 65: google.cloud.config.v1.PreviewOperationMetadata.preview_artifacts:type_name -> google.cloud.config.v1.PreviewArtifacts
+	63,  // 66: google.cloud.config.v1.CreatePreviewRequest.preview:type_name -> google.cloud.config.v1.Preview
+	63,  // 67: google.cloud.config.v1.ListPreviewsResponse.previews:type_name -> google.cloud.config.v1.Preview
+	73,  // 68: google.cloud.config.v1.ExportPreviewResultResponse.result:type_name -> google.cloud.config.v1.PreviewResult
+	77,  // 69: google.cloud.config.v1.ListTerraformVersionsResponse.terraform_versions:type_name -> google.cloud.config.v1.TerraformVersion
+	16,  // 70: google.cloud.config.v1.TerraformVersion.state:type_name -> google.cloud.config.v1.TerraformVersion.State
+	120, // 71: google.cloud.config.v1.TerraformVersion.support_time:type_name -> google.protobuf.Timestamp
+	120, // 72: google.cloud.config.v1.TerraformVersion.deprecate_time:type_name -> google.protobuf.Timestamp
+	120, // 73: google.cloud.config.v1.TerraformVersion.obsolete_time:type_name -> google.protobuf.Timestamp
+	78,  // 74: google.cloud.config.v1.ResourceChange.terraform_info:type_name -> google.cloud.config.v1.ResourceChangeTerraformInfo
+	17,  // 75: google.cloud.config.v1.ResourceChange.intent:type_name -> google.cloud.config.v1.ResourceChange.Intent
+	80,  // 76: google.cloud.config.v1.ResourceChange.property_changes:type_name -> google.cloud.config.v1.PropertyChange
+	121, // 77: google.cloud.config.v1.PropertyChange.before:type_name -> google.protobuf.Value
+	121, // 78: google.cloud.config.v1.PropertyChange.after:type_name -> google.protobuf.Value
+	79,  // 79: google.cloud.config.v1.ListResourceChangesResponse.resource_changes:type_name -> google.cloud.config.v1.ResourceChange
+	84,  // 80: google.cloud.config.v1.ResourceDrift.terraform_info:type_name -> google.cloud.config.v1.ResourceDriftTerraformInfo
+	86,  // 81: google.cloud.config.v1.ResourceDrift.property_drifts:type_name -> google.cloud.config.v1.PropertyDrift
+	121, // 82: google.cloud.config.v1.PropertyDrift.before:type_name -> google.protobuf.Value
+	121, // 83: google.cloud.config.v1.PropertyDrift.after:type_name -> google.protobuf.Value
+	85,  // 84: google.cloud.config.v1.ListResourceDriftsResponse.resource_drifts:type_name -> google.cloud.config.v1.ResourceDrift
+	18,  // 85: google.cloud.config.v1.ProviderConfig.source_type:type_name -> google.cloud.config.v1.ProviderConfig.ProviderSource
+	120, // 86: google.cloud.config.v1.AutoMigrationConfig.update_time:type_name -> google.protobuf.Timestamp
+	122, // 87: google.cloud.config.v1.UpdateAutoMigrationConfigRequest.update_mask:type_name -> google.protobuf.FieldMask
+	92,  // 88: google.cloud.config.v1.UpdateAutoMigrationConfigRequest.auto_migration_config:type_name -> google.cloud.config.v1.AutoMigrationConfig
+	120, // 89: google.cloud.config.v1.DeploymentGroup.create_time:type_name -> google.protobuf.Timestamp
+	120, // 90: google.cloud.config.v1.DeploymentGroup.update_time:type_name -> google.protobuf.Timestamp
+	117, // 91: google.cloud.config.v1.DeploymentGroup.labels:type_name -> google.cloud.config.v1.DeploymentGroup.LabelsEntry
+	118, // 92: google.cloud.config.v1.DeploymentGroup.annotations:type_name -> google.cloud.config.v1.DeploymentGroup.AnnotationsEntry
+	19,  // 93: google.cloud.config.v1.DeploymentGroup.state:type_name -> google.cloud.config.v1.DeploymentGroup.State
+	95,  // 94: google.cloud.config.v1.DeploymentGroup.deployment_units:type_name -> google.cloud.config.v1.DeploymentUnit
+	20,  // 95: google.cloud.config.v1.DeploymentGroup.provisioning_state:type_name -> google.cloud.config.v1.DeploymentGroup.ProvisioningState
+	123, // 96: google.cloud.config.v1.DeploymentGroup.provisioning_error:type_name -> google.rpc.Status
+	24,  // 97: google.cloud.config.v1.DeploymentSpec.deployment:type_name -> google.cloud.config.v1.Deployment
+	94,  // 98: google.cloud.config.v1.ListDeploymentGroupsResponse.deployment_groups:type_name -> google.cloud.config.v1.DeploymentGroup
+	119, // 99: google.cloud.config.v1.ProvisionDeploymentGroupRequest.deployment_specs:type_name -> google.cloud.config.v1.ProvisionDeploymentGroupRequest.DeploymentSpecsEntry
+	5,   // 100: google.cloud.config.v1.DeprovisionDeploymentGroupRequest.delete_policy:type_name -> google.cloud.config.v1.DeleteDeploymentRequest.DeletePolicy
+	9,   // 101: google.cloud.config.v1.DeploymentOperationSummary.deployment_step:type_name -> google.cloud.config.v1.DeploymentOperationMetadata.DeploymentStep
+	21,  // 102: google.cloud.config.v1.DeploymentUnitProgress.state:type_name -> google.cloud.config.v1.DeploymentUnitProgress.State
+	102, // 103: google.cloud.config.v1.DeploymentUnitProgress.deployment_operation_summary:type_name -> google.cloud.config.v1.DeploymentOperationSummary
+	123, // 104: google.cloud.config.v1.DeploymentUnitProgress.error:type_name -> google.rpc.Status
+	22,  // 105: google.cloud.config.v1.DeploymentUnitProgress.intent:type_name -> google.cloud.config.v1.DeploymentUnitProgress.Intent
+	23,  // 106: google.cloud.config.v1.ProvisionDeploymentGroupOperationMetadata.step:type_name -> google.cloud.config.v1.ProvisionDeploymentGroupOperationMetadata.ProvisionDeploymentGroupStep
+	103, // 107: google.cloud.config.v1.ProvisionDeploymentGroupOperationMetadata.deployment_unit_progresses:type_name -> google.cloud.config.v1.DeploymentUnitProgress
+	94,  // 108: google.cloud.config.v1.DeploymentGroupRevision.snapshot:type_name -> google.cloud.config.v1.DeploymentGroup
+	120, // 109: google.cloud.config.v1.DeploymentGroupRevision.create_time:type_name -> google.protobuf.Timestamp
+	105, // 110: google.cloud.config.v1.ListDeploymentGroupRevisionsResponse.deployment_group_revisions:type_name -> google.cloud.config.v1.DeploymentGroupRevision
+	26,  // 111: google.cloud.config.v1.TerraformBlueprint.InputValuesEntry.value:type_name -> google.cloud.config.v1.TerraformVariable
+	27,  // 112: google.cloud.config.v1.TerraformBlueprint.ExternalValuesEntry.value:type_name -> google.cloud.config.v1.ExternalValueSource
+	30,  // 113: google.cloud.config.v1.ApplyResults.OutputsEntry.value:type_name -> google.cloud.config.v1.TerraformOutput
+	50,  // 114: google.cloud.config.v1.Resource.CaiAssetsEntry.value:type_name -> google.cloud.config.v1.ResourceCAIInfo
+	96,  // 115: google.cloud.config.v1.ProvisionDeploymentGroupRequest.DeploymentSpecsEntry.value:type_name -> google.cloud.config.v1.DeploymentSpec
+	31,  // 116: google.cloud.config.v1.Config.ListDeployments:input_type -> google.cloud.config.v1.ListDeploymentsRequest
+	33,  // 117: google.cloud.config.v1.Config.GetDeployment:input_type -> google.cloud.config.v1.GetDeploymentRequest
+	37,  // 118: google.cloud.config.v1.Config.CreateDeployment:input_type -> google.cloud.config.v1.CreateDeploymentRequest
+	41,  // 119: google.cloud.config.v1.Config.UpdateDeployment:input_type -> google.cloud.config.v1.UpdateDeploymentRequest
+	42,  // 120: google.cloud.config.v1.Config.DeleteDeployment:input_type -> google.cloud.config.v1.DeleteDeploymentRequest
+	34,  // 121: google.cloud.config.v1.Config.ListRevisions:input_type -> google.cloud.config.v1.ListRevisionsRequest
+	36,  // 122: google.cloud.config.v1.Config.GetRevision:input_type -> google.cloud.config.v1.GetRevisionRequest
+	51,  // 123: google.cloud.config.v1.Config.GetResource:input_type -> google.cloud.config.v1.GetResourceRequest
+	52,  // 124: google.cloud.config.v1.Config.ListResources:input_type -> google.cloud.config.v1.ListResourcesRequest
+	55,  // 125: google.cloud.config.v1.Config.ExportDeploymentStatefile:input_type -> google.cloud.config.v1.ExportDeploymentStatefileRequest
+	56,  // 126: google.cloud.config.v1.Config.ExportRevisionStatefile:input_type -> google.cloud.config.v1.ExportRevisionStatefileRequest
+	57,  // 127: google.cloud.config.v1.Config.ImportStatefile:input_type -> google.cloud.config.v1.ImportStatefileRequest
+	58,  // 128: google.cloud.config.v1.Config.DeleteStatefile:input_type -> google.cloud.config.v1.DeleteStatefileRequest
+	59,  // 129: google.cloud.config.v1.Config.LockDeployment:input_type -> google.cloud.config.v1.LockDeploymentRequest
+	60,  // 130: google.cloud.config.v1.Config.UnlockDeployment:input_type -> google.cloud.config.v1.UnlockDeploymentRequest
+	61,  // 131: google.cloud.config.v1.Config.ExportLockInfo:input_type -> google.cloud.config.v1.ExportLockInfoRequest
+	66,  // 132: google.cloud.config.v1.Config.CreatePreview:input_type -> google.cloud.config.v1.CreatePreviewRequest
+	67,  // 133: google.cloud.config.v1.Config.GetPreview:input_type -> google.cloud.config.v1.GetPreviewRequest
+	68,  // 134: google.cloud.config.v1.Config.ListPreviews:input_type -> google.cloud.config.v1.ListPreviewsRequest
+	70,  // 135: google.cloud.config.v1.Config.DeletePreview:input_type -> google.cloud.config.v1.DeletePreviewRequest
+	71,  // 136: google.cloud.config.v1.Config.ExportPreviewResult:input_type -> google.cloud.config.v1.ExportPreviewResultRequest
+	75,  // 137: google.cloud.config.v1.Config.ListTerraformVersions:input_type -> google.cloud.config.v1.ListTerraformVersionsRequest
+	74,  // 138: google.cloud.config.v1.Config.GetTerraformVersion:input_type -> google.cloud.config.v1.GetTerraformVersionRequest
+	81,  // 139: google.cloud.config.v1.Config.ListResourceChanges:input_type -> google.cloud.config.v1.ListResourceChangesRequest
+	83,  // 140: google.cloud.config.v1.Config.GetResourceChange:input_type -> google.cloud.config.v1.GetResourceChangeRequest
+	87,  // 141: google.cloud.config.v1.Config.ListResourceDrifts:input_type -> google.cloud.config.v1.ListResourceDriftsRequest
+	89,  // 142: google.cloud.config.v1.Config.GetResourceDrift:input_type -> google.cloud.config.v1.GetResourceDriftRequest
+	91,  // 143: google.cloud.config.v1.Config.GetAutoMigrationConfig:input_type -> google.cloud.config.v1.GetAutoMigrationConfigRequest
+	93,  // 144: google.cloud.config.v1.Config.UpdateAutoMigrationConfig:input_type -> google.cloud.config.v1.UpdateAutoMigrationConfigRequest
+	97,  // 145: google.cloud.config.v1.Config.GetDeploymentGroup:input_type -> google.cloud.config.v1.GetDeploymentGroupRequest
+	38,  // 146: google.cloud.config.v1.Config.CreateDeploymentGroup:input_type -> google.cloud.config.v1.CreateDeploymentGroupRequest
+	39,  // 147: google.cloud.config.v1.Config.UpdateDeploymentGroup:input_type -> google.cloud.config.v1.UpdateDeploymentGroupRequest
+	40,  // 148: google.cloud.config.v1.Config.DeleteDeploymentGroup:input_type -> google.cloud.config.v1.DeleteDeploymentGroupRequest
+	98,  // 149: google.cloud.config.v1.Config.ListDeploymentGroups:input_type -> google.cloud.config.v1.ListDeploymentGroupsRequest
+	100, // 150: google.cloud.config.v1.Config.ProvisionDeploymentGroup:input_type -> google.cloud.config.v1.ProvisionDeploymentGroupRequest
+	101, // 151: google.cloud.config.v1.Config.DeprovisionDeploymentGroup:input_type -> google.cloud.config.v1.DeprovisionDeploymentGroupRequest
+	106, // 152: google.cloud.config.v1.Config.GetDeploymentGroupRevision:input_type -> google.cloud.config.v1.GetDeploymentGroupRevisionRequest
+	107, // 153: google.cloud.config.v1.Config.ListDeploymentGroupRevisions:input_type -> google.cloud.config.v1.ListDeploymentGroupRevisionsRequest
+	32,  // 154: google.cloud.config.v1.Config.ListDeployments:output_type -> google.cloud.config.v1.ListDeploymentsResponse
+	24,  // 155: google.cloud.config.v1.Config.GetDeployment:output_type -> google.cloud.config.v1.Deployment
+	124, // 156: google.cloud.config.v1.Config.CreateDeployment:output_type -> google.longrunning.Operation
+	124, // 157: google.cloud.config.v1.Config.UpdateDeployment:output_type -> google.longrunning.Operation
+	124, // 158: google.cloud.config.v1.Config.DeleteDeployment:output_type -> google.longrunning.Operation
+	35,  // 159: google.cloud.config.v1.Config.ListRevisions:output_type -> google.cloud.config.v1.ListRevisionsResponse
+	44,  // 160: google.cloud.config.v1.Config.GetRevision:output_type -> google.cloud.config.v1.Revision
+	48,  // 161: google.cloud.config.v1.Config.GetResource:output_type -> google.cloud.config.v1.Resource
+	53,  // 162: google.cloud.config.v1.Config.ListResources:output_type -> google.cloud.config.v1.ListResourcesResponse
+	54,  // 163: google.cloud.config.v1.Config.ExportDeploymentStatefile:output_type -> google.cloud.config.v1.Statefile
+	54,  // 164: google.cloud.config.v1.Config.ExportRevisionStatefile:output_type -> google.cloud.config.v1.Statefile
+	54,  // 165: google.cloud.config.v1.Config.ImportStatefile:output_type -> google.cloud.config.v1.Statefile
+	125, // 166: google.cloud.config.v1.Config.DeleteStatefile:output_type -> google.protobuf.Empty
+	124, // 167: google.cloud.config.v1.Config.LockDeployment:output_type -> google.longrunning.Operation
+	124, // 168: google.cloud.config.v1.Config.UnlockDeployment:output_type -> google.longrunning.Operation
+	62,  // 169: google.cloud.config.v1.Config.ExportLockInfo:output_type -> google.cloud.config.v1.LockInfo
+	124, // 170: google.cloud.config.v1.Config.CreatePreview:output_type -> google.longrunning.Operation
+	63,  // 171: google.cloud.config.v1.Config.GetPreview:output_type -> google.cloud.config.v1.Preview
+	69,  // 172: google.cloud.config.v1.Config.ListPreviews:output_type -> google.cloud.config.v1.ListPreviewsResponse
+	124, // 173: google.cloud.config.v1.Config.DeletePreview:output_type -> google.longrunning.Operation
+	72,  // 174: google.cloud.config.v1.Config.ExportPreviewResult:output_type -> google.cloud.config.v1.ExportPreviewResultResponse
+	76,  // 175: google.cloud.config.v1.Config.ListTerraformVersions:output_type -> google.cloud.config.v1.ListTerraformVersionsResponse
+	77,  // 176: google.cloud.config.v1.Config.GetTerraformVersion:output_type -> google.cloud.config.v1.TerraformVersion
+	82,  // 177: google.cloud.config.v1.Config.ListResourceChanges:output_type -> google.cloud.config.v1.ListResourceChangesResponse
+	79,  // 178: google.cloud.config.v1.Config.GetResourceChange:output_type -> google.cloud.config.v1.ResourceChange
+	88,  // 179: google.cloud.config.v1.Config.ListResourceDrifts:output_type -> google.cloud.config.v1.ListResourceDriftsResponse
+	85,  // 180: google.cloud.config.v1.Config.GetResourceDrift:output_type -> google.cloud.config.v1.ResourceDrift
+	92,  // 181: google.cloud.config.v1.Config.GetAutoMigrationConfig:output_type -> google.cloud.config.v1.AutoMigrationConfig
+	124, // 182: google.cloud.config.v1.Config.UpdateAutoMigrationConfig:output_type -> google.longrunning.Operation
+	94,  // 183: google.cloud.config.v1.Config.GetDeploymentGroup:output_type -> google.cloud.config.v1.DeploymentGroup
+	124, // 184: google.cloud.config.v1.Config.CreateDeploymentGroup:output_type -> google.longrunning.Operation
+	124, // 185: google.cloud.config.v1.Config.UpdateDeploymentGroup:output_type -> google.longrunning.Operation
+	124, // 186: google.cloud.config.v1.Config.DeleteDeploymentGroup:output_type -> google.longrunning.Operation
+	99,  // 187: google.cloud.config.v1.Config.ListDeploymentGroups:output_type -> google.cloud.config.v1.ListDeploymentGroupsResponse
+	124, // 188: google.cloud.config.v1.Config.ProvisionDeploymentGroup:output_type -> google.longrunning.Operation
+	124, // 189: google.cloud.config.v1.Config.DeprovisionDeploymentGroup:output_type -> google.longrunning.Operation
+	105, // 190: google.cloud.config.v1.Config.GetDeploymentGroupRevision:output_type -> google.cloud.config.v1.DeploymentGroupRevision
+	108, // 191: google.cloud.config.v1.Config.ListDeploymentGroupRevisions:output_type -> google.cloud.config.v1.ListDeploymentGroupRevisionsResponse
+	154, // [154:192] is the sub-list for method output_type
+	116, // [116:154] is the sub-list for method input_type
+	116, // [116:116] is the sub-list for extension type_name
+	116, // [116:116] is the sub-list for extension extendee
+	0,   // [0:116] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_config_v1_config_proto_init() }
@@ -7366,26 +9637,31 @@ func file_google_cloud_config_v1_config_proto_init() {
 		(*TerraformBlueprint_GcsSource)(nil),
 		(*TerraformBlueprint_GitSource)(nil),
 	}
-	file_google_cloud_config_v1_config_proto_msgTypes[14].OneofWrappers = []any{
+	file_google_cloud_config_v1_config_proto_msgTypes[3].OneofWrappers = []any{
+		(*ExternalValueSource_DeploymentSource)(nil),
+	}
+	file_google_cloud_config_v1_config_proto_msgTypes[19].OneofWrappers = []any{
 		(*OperationMetadata_DeploymentMetadata)(nil),
 		(*OperationMetadata_PreviewMetadata)(nil),
+		(*OperationMetadata_ProvisionDeploymentGroupMetadata)(nil),
 	}
-	file_google_cloud_config_v1_config_proto_msgTypes[15].OneofWrappers = []any{
+	file_google_cloud_config_v1_config_proto_msgTypes[20].OneofWrappers = []any{
 		(*Revision_TerraformBlueprint)(nil),
 	}
-	file_google_cloud_config_v1_config_proto_msgTypes[17].OneofWrappers = []any{}
-	file_google_cloud_config_v1_config_proto_msgTypes[34].OneofWrappers = []any{
+	file_google_cloud_config_v1_config_proto_msgTypes[22].OneofWrappers = []any{}
+	file_google_cloud_config_v1_config_proto_msgTypes[39].OneofWrappers = []any{
 		(*Preview_TerraformBlueprint)(nil),
 	}
-	file_google_cloud_config_v1_config_proto_msgTypes[48].OneofWrappers = []any{}
-	file_google_cloud_config_v1_config_proto_msgTypes[61].OneofWrappers = []any{}
+	file_google_cloud_config_v1_config_proto_msgTypes[53].OneofWrappers = []any{}
+	file_google_cloud_config_v1_config_proto_msgTypes[66].OneofWrappers = []any{}
+	file_google_cloud_config_v1_config_proto_msgTypes[71].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_config_v1_config_proto_rawDesc), len(file_google_cloud_config_v1_config_proto_rawDesc)),
-			NumEnums:      18,
-			NumMessages:   72,
+			NumEnums:      24,
+			NumMessages:   96,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

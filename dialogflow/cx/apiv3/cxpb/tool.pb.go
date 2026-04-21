@@ -2292,8 +2292,8 @@ const file_google_cloud_dialogflow_cx_v3_tool_proto_rawDesc = "" +
 	"\x11CreateToolVersion\x127.google.cloud.dialogflow.cx.v3.CreateToolVersionRequest\x1a*.google.cloud.dialogflow.cx.v3.ToolVersion\"i\xdaA\x13parent,tool_version\x82\xd3\xe4\x93\x02M:\ftool_version\"=/v3/{parent=projects/*/locations/*/agents/*/tools/*}/versions\x12\xc0\x01\n" +
 	"\x0eGetToolVersion\x124.google.cloud.dialogflow.cx.v3.GetToolVersionRequest\x1a*.google.cloud.dialogflow.cx.v3.ToolVersion\"L\xdaA\x04name\x82\xd3\xe4\x93\x02?\x12=/v3/{name=projects/*/locations/*/agents/*/tools/*/versions/*}\x12\xb2\x01\n" +
 	"\x11DeleteToolVersion\x127.google.cloud.dialogflow.cx.v3.DeleteToolVersionRequest\x1a\x16.google.protobuf.Empty\"L\xdaA\x04name\x82\xd3\xe4\x93\x02?*=/v3/{name=projects/*/locations/*/agents/*/tools/*/versions/*}\x12\xe2\x01\n" +
-	"\x12RestoreToolVersion\x128.google.cloud.dialogflow.cx.v3.RestoreToolVersionRequest\x1a9.google.cloud.dialogflow.cx.v3.RestoreToolVersionResponse\"W\xdaA\x04name\x82\xd3\xe4\x93\x02J:\x01*\"E/v3/{name=projects/*/locations/*/agents/*/tools/*/versions/*}:restore\x1ax\xcaA\x19dialogflow.googleapis.com\xd2AYhttps://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/dialogflowB\x88\x01\n" +
-	"!com.google.cloud.dialogflow.cx.v3B\tToolProtoP\x01Z1cloud.google.com/go/dialogflow/cx/apiv3/cxpb;cxpb\xa2\x02\x02DF\xaa\x02\x1dGoogle.Cloud.Dialogflow.Cx.V3b\x06proto3"
+	"\x12RestoreToolVersion\x128.google.cloud.dialogflow.cx.v3.RestoreToolVersionRequest\x1a9.google.cloud.dialogflow.cx.v3.RestoreToolVersionResponse\"W\xdaA\x04name\x82\xd3\xe4\x93\x02J:\x01*\"E/v3/{name=projects/*/locations/*/agents/*/tools/*/versions/*}:restore\x1ax\xcaA\x19dialogflow.googleapis.com\xd2AYhttps://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/dialogflowB\xac\x01\n" +
+	"!com.google.cloud.dialogflow.cx.v3B\tToolProtoP\x01Z1cloud.google.com/go/dialogflow/cx/apiv3/cxpb;cxpb\xa2\x02\x02DF\xaa\x02\x1dGoogle.Cloud.Dialogflow.Cx.V3\xea\x02!Google::Cloud::Dialogflow::CX::V3b\x06proto3"
 
 var (
 	file_google_cloud_dialogflow_cx_v3_tool_proto_rawDescOnce sync.Once

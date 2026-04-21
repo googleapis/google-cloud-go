@@ -14,6 +14,328 @@
     {
       "clientMethod": {
         "client": {
+          "fullName": "google.iam.v3beta.AccessPoliciesClient",
+          "shortName": "AccessPoliciesClient"
+        },
+        "fullName": "google.iam.v3beta.AccessPoliciesClient.CreateAccessPolicy",
+        "method": {
+          "fullName": "google.iam.v3beta.AccessPolicies.CreateAccessPolicy",
+          "service": {
+            "fullName": "google.iam.v3beta.AccessPolicies",
+            "shortName": "AccessPolicies"
+          },
+          "shortName": "CreateAccessPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.CreateAccessPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateAccessPolicyOperation",
+        "shortName": "CreateAccessPolicy"
+      },
+      "description": "CreateAccessPolicy creates an access policy, and returns a long running operation.",
+      "file": "AccessPoliciesClient/CreateAccessPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "iam_v3beta_generated_AccessPolicies_CreateAccessPolicy_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "iam CreateAccessPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.iam.v3beta.AccessPoliciesClient",
+          "shortName": "AccessPoliciesClient"
+        },
+        "fullName": "google.iam.v3beta.AccessPoliciesClient.DeleteAccessPolicy",
+        "method": {
+          "fullName": "google.iam.v3beta.AccessPolicies.DeleteAccessPolicy",
+          "service": {
+            "fullName": "google.iam.v3beta.AccessPolicies",
+            "shortName": "AccessPolicies"
+          },
+          "shortName": "DeleteAccessPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.DeleteAccessPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteAccessPolicyOperation",
+        "shortName": "DeleteAccessPolicy"
+      },
+      "description": "DeleteAccessPolicy deletes an access policy.",
+      "file": "AccessPoliciesClient/DeleteAccessPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "iam_v3beta_generated_AccessPolicies_DeleteAccessPolicy_sync",
+      "segments": [
+        {
+          "end": 56,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "iam DeleteAccessPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.iam.v3beta.AccessPoliciesClient",
+          "shortName": "AccessPoliciesClient"
+        },
+        "fullName": "google.iam.v3beta.AccessPoliciesClient.GetAccessPolicy",
+        "method": {
+          "fullName": "google.iam.v3beta.AccessPolicies.GetAccessPolicy",
+          "service": {
+            "fullName": "google.iam.v3beta.AccessPolicies",
+            "shortName": "AccessPolicies"
+          },
+          "shortName": "GetAccessPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.GetAccessPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.AccessPolicy",
+        "shortName": "GetAccessPolicy"
+      },
+      "description": "GetAccessPolicy gets an access policy.",
+      "file": "AccessPoliciesClient/GetAccessPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "iam_v3beta_generated_AccessPolicies_GetAccessPolicy_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "iam GetAccessPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.iam.v3beta.AccessPoliciesClient",
+          "shortName": "AccessPoliciesClient"
+        },
+        "fullName": "google.iam.v3beta.AccessPoliciesClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "AccessPoliciesClient/GetOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "iam_v3beta_generated_AccessPolicies_GetOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "iam GetOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.iam.v3beta.AccessPoliciesClient",
+          "shortName": "AccessPoliciesClient"
+        },
+        "fullName": "google.iam.v3beta.AccessPoliciesClient.ListAccessPolicies",
+        "method": {
+          "fullName": "google.iam.v3beta.AccessPolicies.ListAccessPolicies",
+          "service": {
+            "fullName": "google.iam.v3beta.AccessPolicies",
+            "shortName": "AccessPolicies"
+          },
+          "shortName": "ListAccessPolicies"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.ListAccessPoliciesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "AccessPolicyIterator",
+        "shortName": "ListAccessPolicies"
+      },
+      "description": "ListAccessPolicies lists access policies.",
+      "file": "AccessPoliciesClient/ListAccessPolicies/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "iam_v3beta_generated_AccessPolicies_ListAccessPolicies_sync",
+      "segments": [
+        {
+          "end": 66,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "iam ListAccessPolicies Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.iam.v3beta.AccessPoliciesClient",
+          "shortName": "AccessPoliciesClient"
+        },
+        "fullName": "google.iam.v3beta.AccessPoliciesClient.SearchAccessPolicyBindings",
+        "method": {
+          "fullName": "google.iam.v3beta.AccessPolicies.SearchAccessPolicyBindings",
+          "service": {
+            "fullName": "google.iam.v3beta.AccessPolicies",
+            "shortName": "AccessPolicies"
+          },
+          "shortName": "SearchAccessPolicyBindings"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.SearchAccessPolicyBindingsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "PolicyBindingIterator",
+        "shortName": "SearchAccessPolicyBindings"
+      },
+      "description": "SearchAccessPolicyBindings returns all policy bindings that bind a specific policy if a user has\nsearchPolicyBindings permission on that policy.",
+      "file": "AccessPoliciesClient/SearchAccessPolicyBindings/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "iam_v3beta_generated_AccessPolicies_SearchAccessPolicyBindings_sync",
+      "segments": [
+        {
+          "end": 66,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "iam SearchAccessPolicyBindings Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.iam.v3beta.AccessPoliciesClient",
+          "shortName": "AccessPoliciesClient"
+        },
+        "fullName": "google.iam.v3beta.AccessPoliciesClient.UpdateAccessPolicy",
+        "method": {
+          "fullName": "google.iam.v3beta.AccessPolicies.UpdateAccessPolicy",
+          "service": {
+            "fullName": "google.iam.v3beta.AccessPolicies",
+            "shortName": "AccessPolicies"
+          },
+          "shortName": "UpdateAccessPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.UpdateAccessPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "UpdateAccessPolicyOperation",
+        "shortName": "UpdateAccessPolicy"
+      },
+      "description": "UpdateAccessPolicy updates an access policy.",
+      "file": "AccessPoliciesClient/UpdateAccessPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "iam_v3beta_generated_AccessPolicies_UpdateAccessPolicy_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "iam UpdateAccessPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
           "fullName": "google.iam.v3beta.PolicyBindingsClient",
           "shortName": "PolicyBindingsClient"
         },
@@ -43,7 +365,7 @@
         "resultType": "CreatePolicyBindingOperation",
         "shortName": "CreatePolicyBinding"
       },
-      "description": "CreatePolicyBinding creates a policy binding and returns a long-running operation.\nCallers will need the IAM permissions on both the policy and target.\nOnce the binding is created, the policy is applied to the target.",
+      "description": "CreatePolicyBinding creates a policy binding and returns a long-running operation.\nCallers will need the IAM permissions on both the policy and target.\nAfter the binding is created, the policy is applied to the target.",
       "file": "PolicyBindingsClient/CreatePolicyBinding/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -89,7 +411,7 @@
         "resultType": "DeletePolicyBindingOperation",
         "shortName": "DeletePolicyBinding"
       },
-      "description": "DeletePolicyBinding deletes a policy binding and returns a long-running operation.\nCallers will need the IAM permissions on both the policy and target.\nOnce the binding is deleted, the policy no longer applies to the target.",
+      "description": "DeletePolicyBinding deletes a policy binding and returns a long-running operation.\nCallers will need the IAM permissions on both the policy and target.\nAfter the binding is deleted, the policy no longer applies to the target.",
       "file": "PolicyBindingsClient/DeletePolicyBinding/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -319,7 +641,7 @@
         "resultType": "UpdatePolicyBindingOperation",
         "shortName": "UpdatePolicyBinding"
       },
-      "description": "UpdatePolicyBinding updates a policy binding and returns a long-running operation.\nCallers will need the IAM permissions on the policy and target in the\nbinding to update, and the IAM permission to remove the existing policy\nfrom the binding. Target is immutable and cannot be updated. Once the\nbinding is updated, the new policy is applied to the target.",
+      "description": "UpdatePolicyBinding updates a policy binding and returns a long-running operation.\nCallers will need the IAM permissions on the policy and target in the\nbinding to update. Target and policy are immutable and cannot be updated.",
       "file": "PolicyBindingsClient/UpdatePolicyBinding/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",

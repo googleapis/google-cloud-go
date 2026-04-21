@@ -165,6 +165,8 @@ const (
 	// Evaluation/Expectation failed. In the case of an evaluation, this means
 	// that at least one expectation was not met.
 	EvaluationResult_FAIL EvaluationResult_Outcome = 2
+	// Evaluation/Expectation was skipped.
+	EvaluationResult_SKIPPED EvaluationResult_Outcome = 3
 )
 
 // Enum value maps for EvaluationResult_Outcome.
@@ -173,11 +175,13 @@ var (
 		0: "OUTCOME_UNSPECIFIED",
 		1: "PASS",
 		2: "FAIL",
+		3: "SKIPPED",
 	}
 	EvaluationResult_Outcome_value = map[string]int32{
 		"OUTCOME_UNSPECIFIED": 0,
 		"PASS":                1,
 		"FAIL":                2,
+		"SKIPPED":             3,
 	}
 )
 
@@ -5915,7 +5919,7 @@ const file_google_cloud_ces_v1beta_evaluation_proto_rawDesc = "" +
 	"created_by\x18\a \x01(\tB\x03\xe0A\x03R\tcreatedBy\x12+\n" +
 	"\x0flast_updated_by\x18\b \x01(\tB\x03\xe0A\x03R\rlastUpdatedBy\x12^\n" +
 	"\x12aggregated_metrics\x18\t \x01(\v2*.google.cloud.ces.v1beta.AggregatedMetricsB\x03\xe0A\x03R\x11aggregatedMetrics:\xad\x01\xeaA\xa9\x01\n" +
-	"$ces.googleapis.com/EvaluationDataset\x12Zprojects/{project}/locations/{location}/apps/{app}/evaluationDatasets/{evaluation_dataset}*\x12evaluationDatasets2\x11evaluationDataset\"\xefB\n" +
+	"$ces.googleapis.com/EvaluationDataset\x12Zprojects/{project}/locations/{location}/apps/{app}/evaluationDatasets/{evaluation_dataset}*\x12evaluationDatasets2\x11evaluationDataset\"\xfcB\n" +
 	"\x10EvaluationResult\x12b\n" +
 	"\rgolden_result\x18\a \x01(\v26.google.cloud.ces.v1beta.EvaluationResult.GoldenResultB\x03\xe0A\x03H\x00R\fgoldenResult\x12h\n" +
 	"\x0fscenario_result\x18\b \x01(\v28.google.cloud.ces.v1beta.EvaluationResult.ScenarioResultB\x03\xe0A\x03H\x00R\x0escenarioResult\x12\x17\n" +
@@ -6068,11 +6072,12 @@ const file_google_cloud_ces_v1beta_evaluation_proto_rawDesc = "" +
 	"\x05score\x18\x01 \x01(\x05B\x03\xe0A\x03H\x00R\x05score\x88\x01\x01\x12\x19\n" +
 	"\x05label\x18\x02 \x01(\tB\x03\xe0A\x03R\x05label\x12%\n" +
 	"\vexplanation\x18\x03 \x01(\tB\x03\xe0A\x03R\vexplanationB\b\n" +
-	"\x06_score\"6\n" +
+	"\x06_score\"C\n" +
 	"\aOutcome\x12\x17\n" +
 	"\x13OUTCOME_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04PASS\x10\x01\x12\b\n" +
-	"\x04FAIL\x10\x02\"X\n" +
+	"\x04FAIL\x10\x02\x12\v\n" +
+	"\aSKIPPED\x10\x03\"X\n" +
 	"\x0eExecutionState\x12\x1f\n" +
 	"\x1bEXECUTION_STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aRUNNING\x10\x01\x12\r\n" +

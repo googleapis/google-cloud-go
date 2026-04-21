@@ -28,6 +28,70 @@ import (
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
 
+// CreateDeploymentGroupOperation manages a long-running operation from CreateDeploymentGroup.
+type CreateDeploymentGroupOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *CreateDeploymentGroupOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*configpb.DeploymentGroup, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp configpb.DeploymentGroup
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *CreateDeploymentGroupOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*configpb.DeploymentGroup, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp configpb.DeploymentGroup
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *CreateDeploymentGroupOperation) Metadata() (*configpb.OperationMetadata, error) {
+	var meta configpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *CreateDeploymentGroupOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *CreateDeploymentGroupOperation) Name() string {
+	return op.lro.Name()
+}
+
 // CreateDeploymentOperation manages a long-running operation from CreateDeployment.
 type CreateDeploymentOperation struct {
 	lro      *longrunning.Operation
@@ -153,6 +217,70 @@ func (op *CreatePreviewOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *CreatePreviewOperation) Name() string {
+	return op.lro.Name()
+}
+
+// DeleteDeploymentGroupOperation manages a long-running operation from DeleteDeploymentGroup.
+type DeleteDeploymentGroupOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeleteDeploymentGroupOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*configpb.DeploymentGroup, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp configpb.DeploymentGroup
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeleteDeploymentGroupOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*configpb.DeploymentGroup, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp configpb.DeploymentGroup
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeleteDeploymentGroupOperation) Metadata() (*configpb.OperationMetadata, error) {
+	var meta configpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeleteDeploymentGroupOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeleteDeploymentGroupOperation) Name() string {
 	return op.lro.Name()
 }
 
@@ -284,6 +412,70 @@ func (op *DeletePreviewOperation) Name() string {
 	return op.lro.Name()
 }
 
+// DeprovisionDeploymentGroupOperation manages a long-running operation from DeprovisionDeploymentGroup.
+type DeprovisionDeploymentGroupOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeprovisionDeploymentGroupOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*configpb.DeploymentGroup, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp configpb.DeploymentGroup
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeprovisionDeploymentGroupOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*configpb.DeploymentGroup, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp configpb.DeploymentGroup
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeprovisionDeploymentGroupOperation) Metadata() (*configpb.OperationMetadata, error) {
+	var meta configpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeprovisionDeploymentGroupOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeprovisionDeploymentGroupOperation) Name() string {
+	return op.lro.Name()
+}
+
 // LockDeploymentOperation manages a long-running operation from LockDeployment.
 type LockDeploymentOperation struct {
 	lro      *longrunning.Operation
@@ -345,6 +537,70 @@ func (op *LockDeploymentOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *LockDeploymentOperation) Name() string {
+	return op.lro.Name()
+}
+
+// ProvisionDeploymentGroupOperation manages a long-running operation from ProvisionDeploymentGroup.
+type ProvisionDeploymentGroupOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *ProvisionDeploymentGroupOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*configpb.DeploymentGroup, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp configpb.DeploymentGroup
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *ProvisionDeploymentGroupOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*configpb.DeploymentGroup, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp configpb.DeploymentGroup
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *ProvisionDeploymentGroupOperation) Metadata() (*configpb.OperationMetadata, error) {
+	var meta configpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *ProvisionDeploymentGroupOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *ProvisionDeploymentGroupOperation) Name() string {
 	return op.lro.Name()
 }
 
@@ -476,6 +732,70 @@ func (op *UpdateAutoMigrationConfigOperation) Name() string {
 	return op.lro.Name()
 }
 
+// UpdateDeploymentGroupOperation manages a long-running operation from UpdateDeploymentGroup.
+type UpdateDeploymentGroupOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UpdateDeploymentGroupOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*configpb.DeploymentGroup, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp configpb.DeploymentGroup
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *UpdateDeploymentGroupOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*configpb.DeploymentGroup, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp configpb.DeploymentGroup
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UpdateDeploymentGroupOperation) Metadata() (*configpb.OperationMetadata, error) {
+	var meta configpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UpdateDeploymentGroupOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UpdateDeploymentGroupOperation) Name() string {
+	return op.lro.Name()
+}
+
 // UpdateDeploymentOperation manages a long-running operation from UpdateDeployment.
 type UpdateDeploymentOperation struct {
 	lro      *longrunning.Operation
@@ -538,6 +858,100 @@ func (op *UpdateDeploymentOperation) Done() bool {
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *UpdateDeploymentOperation) Name() string {
 	return op.lro.Name()
+}
+
+// DeploymentGroupIterator manages a stream of *configpb.DeploymentGroup.
+type DeploymentGroupIterator struct {
+	items    []*configpb.DeploymentGroup
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*configpb.DeploymentGroup, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *DeploymentGroupIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *DeploymentGroupIterator) Next() (*configpb.DeploymentGroup, error) {
+	var item *configpb.DeploymentGroup
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *DeploymentGroupIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *DeploymentGroupIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// DeploymentGroupRevisionIterator manages a stream of *configpb.DeploymentGroupRevision.
+type DeploymentGroupRevisionIterator struct {
+	items    []*configpb.DeploymentGroupRevision
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*configpb.DeploymentGroupRevision, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *DeploymentGroupRevisionIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *DeploymentGroupRevisionIterator) Next() (*configpb.DeploymentGroupRevision, error) {
+	var item *configpb.DeploymentGroupRevision
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *DeploymentGroupRevisionIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *DeploymentGroupRevisionIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }
 
 // DeploymentIterator manages a stream of *configpb.Deployment.

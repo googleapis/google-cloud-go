@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Different policy kinds supported in this binding.
+// The different policy kinds supported in this binding.
 type PolicyBinding_PolicyKind int32
 
 const (
@@ -47,6 +47,8 @@ const (
 	PolicyBinding_POLICY_KIND_UNSPECIFIED PolicyBinding_PolicyKind = 0
 	// Principal access boundary policy kind
 	PolicyBinding_PRINCIPAL_ACCESS_BOUNDARY PolicyBinding_PolicyKind = 1
+	// Access policy kind.
+	PolicyBinding_ACCESS PolicyBinding_PolicyKind = 2
 )
 
 // Enum value maps for PolicyBinding_PolicyKind.
@@ -54,10 +56,12 @@ var (
 	PolicyBinding_PolicyKind_name = map[int32]string{
 		0: "POLICY_KIND_UNSPECIFIED",
 		1: "PRINCIPAL_ACCESS_BOUNDARY",
+		2: "ACCESS",
 	}
 	PolicyBinding_PolicyKind_value = map[string]int32{
 		"POLICY_KIND_UNSPECIFIED":   0,
 		"PRINCIPAL_ACCESS_BOUNDARY": 1,
+		"ACCESS":                    2,
 	}
 )
 
@@ -116,8 +120,8 @@ type PolicyBinding struct {
 	// https://google.aip.dev/148#annotations for more details such as format and
 	// size limitations
 	Annotations map[string]string `protobuf:"bytes,5,rep,name=annotations,proto3" json:"annotations,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	// Required. Immutable. Target is the full resource name of the resource to
-	// which the policy will be bound. Immutable once set.
+	// Required. Immutable. The full resource name of the resource to which the
+	// policy will be bound. Immutable once set.
 	Target *PolicyBinding_Target `protobuf:"bytes,6,opt,name=target,proto3" json:"target,omitempty"`
 	// Immutable. The kind of the policy to attach in this binding. This field
 	// must be one of the following:
@@ -159,13 +163,14 @@ type PolicyBinding struct {
 	// - `principal.type != <principal type string>`
 	// - `principal.type in [<list of principal types>]`
 	//
-	// Supported principal types are Workspace, Workforce Pool, Workload Pool and
-	// Service Account. Allowed string must be one of:
+	// Supported principal types are workspace, workforce pool, workload pool,
+	// service account, and Agent Identity. Allowed string must be one of:
 	//
-	// - iam.googleapis.com/WorkspaceIdentity
-	// - iam.googleapis.com/WorkforcePoolIdentity
-	// - iam.googleapis.com/WorkloadPoolIdentity
-	// - iam.googleapis.com/ServiceAccount
+	// - `iam.googleapis.com/WorkspaceIdentity`
+	// - `iam.googleapis.com/WorkforcePoolIdentity`
+	// - `iam.googleapis.com/WorkloadPoolIdentity`
+	// - `iam.googleapis.com/ServiceAccount`
+	// - `iam.googleapis.com/AgentPoolIdentity` (available in Preview)
 	Condition *expr.Expr `protobuf:"bytes,8,opt,name=condition,proto3" json:"condition,omitempty"`
 	// Output only. The time when the policy binding was created.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
@@ -289,7 +294,7 @@ func (x *PolicyBinding) GetUpdateTime() *timestamppb.Timestamp {
 	return nil
 }
 
-// Target is the full resource name of the resource to which the policy will
+// The full resource name of the resource to which the policy will
 // be bound. Immutable once set.
 type PolicyBinding_Target struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -298,6 +303,7 @@ type PolicyBinding_Target struct {
 	// Types that are valid to be assigned to Target:
 	//
 	//	*PolicyBinding_Target_PrincipalSet
+	//	*PolicyBinding_Target_Resource
 	Target        isPolicyBinding_Target_Target `protobuf_oneof:"target"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -349,18 +355,28 @@ func (x *PolicyBinding_Target) GetPrincipalSet() string {
 	return ""
 }
 
+func (x *PolicyBinding_Target) GetResource() string {
+	if x != nil {
+		if x, ok := x.Target.(*PolicyBinding_Target_Resource); ok {
+			return x.Resource
+		}
+	}
+	return ""
+}
+
 type isPolicyBinding_Target_Target interface {
 	isPolicyBinding_Target_Target()
 }
 
 type PolicyBinding_Target_PrincipalSet struct {
-	// Immutable. Full Resource Name used for principal access boundary policy
-	// bindings. The principal set must be directly parented by the policy
-	// binding's parent or same as the parent if the target is a
-	// project/folder/organization.
+	// Immutable. The full resource name that's used for principal access
+	// boundary policy bindings. The principal set must be directly parented
+	// by the policy binding's parent or same as the parent if the target is a
+	// project, folder, or organization.
 	//
 	// Examples:
-	// * For binding's parented by an organization:
+	//
+	// * For bindings parented by an organization:
 	//   - Organization:
 	//     `//cloudresourcemanager.googleapis.com/organizations/ORGANIZATION_ID`
 	//   - Workforce Identity:
@@ -368,11 +384,11 @@ type PolicyBinding_Target_PrincipalSet struct {
 	//   - Workspace Identity:
 	//     `//iam.googleapis.com/locations/global/workspace/WORKSPACE_ID`
 	//
-	// * For binding's parented by a folder:
+	// * For bindings parented by a folder:
 	//   - Folder:
 	//     `//cloudresourcemanager.googleapis.com/folders/FOLDER_ID`
 	//
-	// * For binding's parented by a project:
+	// * For bindings parented by a project:
 	//   - Project:
 	//   - `//cloudresourcemanager.googleapis.com/projects/PROJECT_NUMBER`
 	//   - `//cloudresourcemanager.googleapis.com/projects/PROJECT_ID`
@@ -381,13 +397,30 @@ type PolicyBinding_Target_PrincipalSet struct {
 	PrincipalSet string `protobuf:"bytes,1,opt,name=principal_set,json=principalSet,proto3,oneof"`
 }
 
+type PolicyBinding_Target_Resource struct {
+	// Immutable. The full resource name that's used for access policy
+	// bindings.
+	//
+	// Examples:
+	//
+	// * Organization:
+	// `//cloudresourcemanager.googleapis.com/organizations/ORGANIZATION_ID`
+	// * Folder: `//cloudresourcemanager.googleapis.com/folders/FOLDER_ID`
+	// * Project:
+	//   - `//cloudresourcemanager.googleapis.com/projects/PROJECT_NUMBER`
+	//   - `//cloudresourcemanager.googleapis.com/projects/PROJECT_ID`
+	Resource string `protobuf:"bytes,2,opt,name=resource,proto3,oneof"`
+}
+
 func (*PolicyBinding_Target_PrincipalSet) isPolicyBinding_Target_Target() {}
+
+func (*PolicyBinding_Target_Resource) isPolicyBinding_Target_Target() {}
 
 var File_google_iam_v3beta_policy_binding_resources_proto protoreflect.FileDescriptor
 
 const file_google_iam_v3beta_policy_binding_resources_proto_rawDesc = "" +
 	"\n" +
-	"0google/iam/v3beta/policy_binding_resources.proto\x12\x11google.iam.v3beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x16google/type/expr.proto\"\xf1\b\n" +
+	"0google/iam/v3beta/policy_binding_resources.proto\x12\x11google.iam.v3beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x16google/type/expr.proto\"\xa0\t\n" +
 	"\rPolicyBinding\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1d\n" +
 	"\x03uid\x18\x02 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12\x17\n" +
@@ -405,17 +438,20 @@ const file_google_iam_v3beta_policy_binding_resources_proto_rawDesc = "" +
 	"createTime\x12@\n" +
 	"\vupdate_time\x18\n" +
 	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x1a>\n" +
+	"updateTime\x1aa\n" +
 	"\x06Target\x12*\n" +
-	"\rprincipal_set\x18\x01 \x01(\tB\x03\xe0A\x05H\x00R\fprincipalSetB\b\n" +
+	"\rprincipal_set\x18\x01 \x01(\tB\x03\xe0A\x05H\x00R\fprincipalSet\x12!\n" +
+	"\bresource\x18\x02 \x01(\tB\x03\xe0A\x05H\x00R\bresourceB\b\n" +
 	"\x06target\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"H\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"T\n" +
 	"\n" +
 	"PolicyKind\x12\x1b\n" +
 	"\x17POLICY_KIND_UNSPECIFIED\x10\x00\x12\x1d\n" +
-	"\x19PRINCIPAL_ACCESS_BOUNDARY\x10\x01:\xa8\x02\xeaA\xa4\x02\n" +
+	"\x19PRINCIPAL_ACCESS_BOUNDARY\x10\x01\x12\n" +
+	"\n" +
+	"\x06ACCESS\x10\x02:\xa8\x02\xeaA\xa4\x02\n" +
 	" iam.googleapis.com/PolicyBinding\x12Qorganizations/{organization}/locations/{location}/policyBindings/{policy_binding}\x12Efolders/{folder}/locations/{location}/policyBindings/{policy_binding}\x12Gprojects/{project}/locations/{location}/policyBindings/{policy_binding}*\x0epolicyBindings2\rpolicyBindingB\x99\x01\n" +
 	"\x15com.google.iam.v3betaB\x1bPolicyBindingResourcesProtoP\x01Z-cloud.google.com/go/iam/apiv3beta/iampb;iampb\xaa\x02\x17Google.Cloud.Iam.V3Beta\xca\x02\x17Google\\Cloud\\Iam\\V3betab\x06proto3"
 
@@ -462,6 +498,7 @@ func file_google_iam_v3beta_policy_binding_resources_proto_init() {
 	}
 	file_google_iam_v3beta_policy_binding_resources_proto_msgTypes[1].OneofWrappers = []any{
 		(*PolicyBinding_Target_PrincipalSet)(nil),
+		(*PolicyBinding_Target_Resource)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

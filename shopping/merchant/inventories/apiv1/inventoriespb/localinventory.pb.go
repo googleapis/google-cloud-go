@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -48,7 +48,49 @@ type LocalInventory struct {
 	// Output only. The name of the `LocalInventory` resource.
 	// Format:
 	// `accounts/{account}/products/{product}/localInventories/{store_code}`
+	//
+	// The `{product}` segment is a unique identifier for the product.
+	// This identifier must be unique within a merchant account and generally
+	// follows the structure: `content_language~feed_label~offer_id`. Example:
+	// `en~US~sku123` For legacy local products, the structure is:
+	// `local~content_language~feed_label~offer_id`. Example: `local~en~US~sku123`
+	//
+	// The format of the `{product}` segment in the URL is automatically detected
+	// by the server, supporting two options:
+	//
+	//  1. **Encoded Format**: The `{product}` segment is an unpadded base64url
+	//     encoded string (RFC 4648 Section 5). The decoded string must result
+	//     in the `content_language~feed_label~offer_id` structure. This encoding
+	//     MUST be used if any part of the product identifier (like `offer_id`)
+	//     contains characters such as `/`, `%`, or `~`.
+	//     *   Example: To represent the product ID `en~US~sku/123` for
+	//     `store_code` "store123", the `{product}` segment must be the
+	//     base64url encoding of this string, which is `ZW5-VVN-c2t1LzEyMw`.
+	//     The full resource name for the local inventory would be
+	//     `accounts/123/products/ZW5-VVN-c2t1LzEyMw/localInventories/store123`.
+	//
+	//  2. **Plain Format**: The `{product}` segment is the tilde-separated string
+	//     `content_language~feed_label~offer_id`. This format is suitable only
+	//     when `content_language`, `feed_label`, and `offer_id` do not contain
+	//     URL-problematic characters like `/`, `%`, or `~`.
+	//
+	// We recommend using the **Encoded Format** for all product IDs to ensure
+	// correct parsing, especially those containing special characters. The
+	// presence of tilde (`~`) characters in the `{product}` segment is used to
+	// differentiate between the two formats.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Output only. The unpadded base64url encoded name of the `LocalInventory`
+	// resource. Format:
+	// `accounts/{account}/products/{product}/localInventories/{store_code}`
+	// where the `{product}` segment is the unpadded base64url encoded value of
+	// the identifier of the form `content_language~feed_label~offer_id`. Example:
+	// `accounts/123/products/ZW5-VVN-c2t1LzEyMw/localInventories/store123` for
+	// the decoded product ID `en~US~sku/123` and `store_code` "store123".
+	// Can be used directly as input to the API methods that require the local
+	// product identifier within the local inventory name to be encoded if it
+	// contains special characters, for example
+	// [`GetLocalInventory`](https://developers.google.com/merchant/api/reference/rest/inventories_v1/accounts.products.localInventories/get).
+	Base64EncodedName string `protobuf:"bytes,15,opt,name=base64_encoded_name,json=base64EncodedName,proto3" json:"base64_encoded_name,omitempty"`
 	// Output only. The account that owns the product. This field will be ignored
 	// if set by the client.
 	Account int64 `protobuf:"varint,2,opt,name=account,proto3" json:"account,omitempty"`
@@ -101,6 +143,13 @@ func (x *LocalInventory) GetName() string {
 	return ""
 }
 
+func (x *LocalInventory) GetBase64EncodedName() string {
+	if x != nil {
+		return x.Base64EncodedName
+	}
+	return ""
+}
+
 func (x *LocalInventory) GetAccount() int64 {
 	if x != nil {
 		return x.Account
@@ -128,6 +177,36 @@ type ListLocalInventoriesRequest struct {
 	// Required. The `name` of the parent product to list local inventories for.
 	// Format:
 	// `accounts/{account}/products/{product}`
+	//
+	// The `{product}` segment is a unique identifier for the product.
+	// This identifier must be unique within a merchant account and generally
+	// follows the structure: `content_language~feed_label~offer_id`. Example:
+	// `en~US~sku123` For legacy local products, the structure is:
+	// `local~content_language~feed_label~offer_id`. Example: `local~en~US~sku123`
+	//
+	// The format of the `{product}` segment in the URL is automatically detected
+	// by the server, supporting two options:
+	//
+	//  1. **Encoded Format**: The `{product}` segment is an unpadded base64url
+	//     encoded string (RFC 4648 Section 5). The decoded string must result
+	//     in the `content_language~feed_label~offer_id` structure. This encoding
+	//     MUST be used if any part of the product identifier (like `offer_id`)
+	//     contains characters such as `/`, `%`, or `~`.
+	//     *   Example: To represent the product ID `en~US~sku/123`, the
+	//     `{product}` segment must be the unpadded base64url encoding of this
+	//     string, which is `ZW5-VVN-c2t1LzEyMw`. The full resource name
+	//     for the product would be
+	//     `accounts/123/products/ZW5-VVN-c2t1LzEyMw`.
+	//
+	//  2. **Plain Format**: The `{product}` segment is the tilde-separated string
+	//     `content_language~feed_label~offer_id`. This format is suitable only
+	//     when `content_language`, `feed_label`, and `offer_id` do not contain
+	//     URL-problematic characters like `/`, `%`, or `~`.
+	//
+	// We recommend using the **Encoded Format** for all product IDs to ensure
+	// correct parsing, especially those containing special characters. The
+	// presence of tilde (`~`) characters in the `{product}` segment is used to
+	// differentiate between the two formats.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The maximum number of `LocalInventory` resources for the given
 	// product to return. The service returns fewer than this value if the number
@@ -260,6 +339,36 @@ type InsertLocalInventoryRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The account and product where this inventory will be inserted.
 	// Format: `accounts/{account}/products/{product}`
+	//
+	// The `{product}` segment is a unique identifier for the product.
+	// This identifier must be unique within a merchant account and generally
+	// follows the structure: `content_language~feed_label~offer_id`. Example:
+	// `en~US~sku123` For legacy local products, the structure is:
+	// `local~content_language~feed_label~offer_id`. Example: `local~en~US~sku123`
+	//
+	// The format of the `{product}` segment in the URL is automatically detected
+	// by the server, supporting two options:
+	//
+	//  1. **Encoded Format**: The `{product}` segment is an unpadded base64url
+	//     encoded string (RFC 4648 Section 5). The decoded string must result
+	//     in the `content_language~feed_label~offer_id` structure. This encoding
+	//     MUST be used if any part of the product identifier (like `offer_id`)
+	//     contains characters such as `/`, `%`, or `~`.
+	//     *   Example: To represent the product ID `en~US~sku/123`, the
+	//     `{product}` segment must be the unpadded base64url encoding of this
+	//     string, which is `ZW5-VVN-c2t1LzEyMw`. The full resource name
+	//     for the product would be
+	//     `accounts/123/products/ZW5-VVN-c2t1LzEyMw`.
+	//
+	//  2. **Plain Format**: The `{product}` segment is the tilde-separated string
+	//     `content_language~feed_label~offer_id`. This format is suitable only
+	//     when `content_language`, `feed_label`, and `offer_id` do not contain
+	//     URL-problematic characters like `/`, `%`, or `~`.
+	//
+	// We recommend using the **Encoded Format** for all product IDs to ensure
+	// correct parsing, especially those containing special characters. The
+	// presence of tilde (`~`) characters in the `{product}` segment is used to
+	// differentiate between the two formats.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. Local inventory information of the product. If the product
 	// already has a `LocalInventory` resource for the same `storeCode`, full
@@ -319,6 +428,37 @@ type DeleteLocalInventoryRequest struct {
 	// Required. The name of the local inventory for the given product to delete.
 	// Format:
 	// `accounts/{account}/products/{product}/localInventories/{store_code}`
+	//
+	// The `{product}` segment is a unique identifier for the product.
+	// This identifier must be unique within a merchant account and generally
+	// follows the structure: `content_language~feed_label~offer_id`. Example:
+	// `en~US~sku123` For legacy local products, the structure is:
+	// `local~content_language~feed_label~offer_id`. Example: `local~en~US~sku123`
+	//
+	// The format of the `{product}` segment in the URL is automatically detected
+	// by the server, supporting two options:
+	//
+	//  1. **Encoded Format**: The `{product}` segment is an unpadded base64url
+	//     encoded string (RFC 4648 Section 5). The decoded string must result
+	//     in the `content_language~feed_label~offer_id` structure. This encoding
+	//     MUST be used if any part of the product identifier (like `offer_id`)
+	//     contains characters such as `/`, `%`, or `~`.
+	//     *   Example: To represent the product ID `en~US~sku/123` for
+	//     `store_code` "store123", the `{product}` segment must be the
+	//     unpadded base64url encoding of this string, which is
+	//     `ZW5-VVN-c2t1LzEyMw`. The full resource name for the local
+	//     inventory would be
+	//     `accounts/123/products/ZW5-VVN-c2t1LzEyMw/localInventories/store123`.
+	//
+	//  2. **Plain Format**: The `{product}` segment is the tilde-separated string
+	//     `content_language~feed_label~offer_id`. This format is suitable only
+	//     when `content_language`, `feed_label`, and `offer_id` do not contain
+	//     URL-problematic characters like `/`, `%`, or `~`.
+	//
+	// We recommend using the **Encoded Format** for all product IDs to ensure
+	// correct parsing, especially those containing special characters. The
+	// presence of tilde (`~`) characters in the `{product}` segment is used to
+	// differentiate between the two formats.
 	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -365,9 +505,10 @@ var File_google_shopping_merchant_inventories_v1_localinventory_proto protorefle
 
 const file_google_shopping_merchant_inventories_v1_localinventory_proto_rawDesc = "" +
 	"\n" +
-	"<google/shopping/merchant/inventories/v1/localinventory.proto\x12'google.shopping.merchant.inventories.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a@google/shopping/merchant/inventories/v1/inventories_common.proto\"\xeb\x02\n" +
+	"<google/shopping/merchant/inventories/v1/localinventory.proto\x12'google.shopping.merchant.inventories.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a@google/shopping/merchant/inventories/v1/inventories_common.proto\"\xa0\x03\n" +
 	"\x0eLocalInventory\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x1d\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x123\n" +
+	"\x13base64_encoded_name\x18\x0f \x01(\tB\x03\xe0A\x03R\x11base64EncodedName\x12\x1d\n" +
 	"\aaccount\x18\x02 \x01(\x03B\x03\xe0A\x03R\aaccount\x12%\n" +
 	"\n" +
 	"store_code\x18\x03 \x01(\tB\x06\xe0A\x02\xe0A\x05R\tstoreCode\x12\x84\x01\n" +

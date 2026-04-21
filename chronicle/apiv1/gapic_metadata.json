@@ -159,6 +159,210 @@
         }
       }
     },
+    "DataTableService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DataTableClient",
+          "rpcs": {
+            "BulkCreateDataTableRows": {
+              "methods": [
+                "BulkCreateDataTableRows"
+              ]
+            },
+            "BulkGetDataTableRows": {
+              "methods": [
+                "BulkGetDataTableRows"
+              ]
+            },
+            "BulkReplaceDataTableRows": {
+              "methods": [
+                "BulkReplaceDataTableRows"
+              ]
+            },
+            "BulkUpdateDataTableRows": {
+              "methods": [
+                "BulkUpdateDataTableRows"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateDataTable": {
+              "methods": [
+                "CreateDataTable"
+              ]
+            },
+            "CreateDataTableRow": {
+              "methods": [
+                "CreateDataTableRow"
+              ]
+            },
+            "DeleteDataTable": {
+              "methods": [
+                "DeleteDataTable"
+              ]
+            },
+            "DeleteDataTableRow": {
+              "methods": [
+                "DeleteDataTableRow"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetDataTable": {
+              "methods": [
+                "GetDataTable"
+              ]
+            },
+            "GetDataTableOperationErrors": {
+              "methods": [
+                "GetDataTableOperationErrors"
+              ]
+            },
+            "GetDataTableRow": {
+              "methods": [
+                "GetDataTableRow"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListDataTableRows": {
+              "methods": [
+                "ListDataTableRows"
+              ]
+            },
+            "ListDataTables": {
+              "methods": [
+                "ListDataTables"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateDataTable": {
+              "methods": [
+                "UpdateDataTable"
+              ]
+            },
+            "UpdateDataTableRow": {
+              "methods": [
+                "UpdateDataTableRow"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "DataTableClient",
+          "rpcs": {
+            "BulkCreateDataTableRows": {
+              "methods": [
+                "BulkCreateDataTableRows"
+              ]
+            },
+            "BulkGetDataTableRows": {
+              "methods": [
+                "BulkGetDataTableRows"
+              ]
+            },
+            "BulkReplaceDataTableRows": {
+              "methods": [
+                "BulkReplaceDataTableRows"
+              ]
+            },
+            "BulkUpdateDataTableRows": {
+              "methods": [
+                "BulkUpdateDataTableRows"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateDataTable": {
+              "methods": [
+                "CreateDataTable"
+              ]
+            },
+            "CreateDataTableRow": {
+              "methods": [
+                "CreateDataTableRow"
+              ]
+            },
+            "DeleteDataTable": {
+              "methods": [
+                "DeleteDataTable"
+              ]
+            },
+            "DeleteDataTableRow": {
+              "methods": [
+                "DeleteDataTableRow"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetDataTable": {
+              "methods": [
+                "GetDataTable"
+              ]
+            },
+            "GetDataTableOperationErrors": {
+              "methods": [
+                "GetDataTableOperationErrors"
+              ]
+            },
+            "GetDataTableRow": {
+              "methods": [
+                "GetDataTableRow"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListDataTableRows": {
+              "methods": [
+                "ListDataTableRows"
+              ]
+            },
+            "ListDataTables": {
+              "methods": [
+                "ListDataTables"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateDataTable": {
+              "methods": [
+                "UpdateDataTable"
+              ]
+            },
+            "UpdateDataTableRow": {
+              "methods": [
+                "UpdateDataTableRow"
+              ]
+            }
+          }
+        }
+      }
+    },
     "EntityService": {
       "clients": {
         "grpc": {

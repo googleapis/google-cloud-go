@@ -656,6 +656,52 @@
           "fullName": "google.chat.v1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.chat.v1.Client.FindGroupChats",
+        "method": {
+          "fullName": "google.chat.v1.ChatService.FindGroupChats",
+          "service": {
+            "fullName": "google.chat.v1.ChatService",
+            "shortName": "ChatService"
+          },
+          "shortName": "FindGroupChats"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chatpb.FindGroupChatsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "SpaceIterator",
+        "shortName": "FindGroupChats"
+      },
+      "description": "FindGroupChats returns all spaces with `spaceType == GROUP_CHAT`, whose\nhuman memberships contain exactly the calling user, and the users specified\nin `FindGroupChatsRequest.users`. Only members that have joined the\nconversation are supported. For an example, see [Find group\nchats](https: //developers.google.com/workspace/chat/find-group-chats).\n\nIf the calling user blocks, or is blocked by, some users, and no spaces\nwith the entire specified set of users are found, this method returns\nspaces that don't include the blocked or blocking users.\n\nThe specified set of users must contain only human (non-app) memberships.\nA request that contains non-human users doesn't return any spaces.\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user)\nwith one of the following [authorization\nscopes](https: //developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes): \n\n- `https: //www.googleapis.com/auth/chat.memberships.readonly`\n- `https: //www.googleapis.com/auth/chat.memberships`",
+      "file": "Client/FindGroupChats/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chat_v1_generated_ChatService_FindGroupChats_sync",
+      "segments": [
+        {
+          "end": 66,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chat FindGroupChats Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.chat.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.chat.v1.Client.GetAttachment",
         "method": {
           "fullName": "google.chat.v1.ChatService.GetAttachment",

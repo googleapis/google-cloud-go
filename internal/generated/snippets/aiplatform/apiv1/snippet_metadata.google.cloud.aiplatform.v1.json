@@ -22982,6 +22982,52 @@
           "fullName": "google.cloud.aiplatform.v1.ReasoningEngineExecutionClient",
           "shortName": "ReasoningEngineExecutionClient"
         },
+        "fullName": "google.cloud.aiplatform.v1.ReasoningEngineExecutionClient.AsyncQueryReasoningEngine",
+        "method": {
+          "fullName": "google.cloud.aiplatform.v1.ReasoningEngineExecutionService.AsyncQueryReasoningEngine",
+          "service": {
+            "fullName": "google.cloud.aiplatform.v1.ReasoningEngineExecutionService",
+            "shortName": "ReasoningEngineExecutionService"
+          },
+          "shortName": "AsyncQueryReasoningEngine"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "aiplatformpb.AsyncQueryReasoningEngineRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "AsyncQueryReasoningEngineOperation",
+        "shortName": "AsyncQueryReasoningEngine"
+      },
+      "description": "AsyncQueryReasoningEngine async query using a reasoning engine.",
+      "file": "ReasoningEngineExecutionClient/AsyncQueryReasoningEngine/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "aiplatform_v1_generated_ReasoningEngineExecutionService_AsyncQueryReasoningEngine_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "aiplatform AsyncQueryReasoningEngine Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.aiplatform.v1.ReasoningEngineExecutionClient",
+          "shortName": "ReasoningEngineExecutionClient"
+        },
         "fullName": "google.cloud.aiplatform.v1.ReasoningEngineExecutionClient.CancelOperation",
         "method": {
           "fullName": "google.longrunning.Operations.CancelOperation",

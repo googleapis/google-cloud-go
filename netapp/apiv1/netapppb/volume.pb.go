@@ -482,7 +482,7 @@ func (x SimpleExportPolicyRule_SquashMode) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use SimpleExportPolicyRule_SquashMode.Descriptor instead.
 func (SimpleExportPolicyRule_SquashMode) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{9, 0}
+	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{10, 0}
 }
 
 // Tier action for the volume.
@@ -536,7 +536,7 @@ func (x TieringPolicy_TierAction) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use TieringPolicy_TierAction.Descriptor instead.
 func (TieringPolicy_TierAction) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{18, 0}
+	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{19, 0}
 }
 
 // Type of the volume's hybrid replication.
@@ -599,7 +599,7 @@ func (x HybridReplicationParameters_VolumeHybridReplicationType) Number() protor
 
 // Deprecated: Use HybridReplicationParameters_VolumeHybridReplicationType.Descriptor instead.
 func (HybridReplicationParameters_VolumeHybridReplicationType) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{19, 0}
+	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{20, 0}
 }
 
 // State of the cache volume indicating the peering status.
@@ -662,7 +662,7 @@ func (x CacheParameters_CacheState) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use CacheParameters_CacheState.Descriptor instead.
 func (CacheParameters_CacheState) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{20, 0}
+	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{21, 0}
 }
 
 // State of the prepopulation job indicating how the prepopulation is
@@ -728,7 +728,7 @@ func (x CacheConfig_CachePrePopulateState) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use CacheConfig_CachePrePopulateState.Descriptor instead.
 func (CacheConfig_CachePrePopulateState) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{21, 0}
+	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{22, 0}
 }
 
 // Message for requesting list of Volumes
@@ -1240,7 +1240,9 @@ type Volume struct {
 	// Optional. List of actions that are restricted on this volume.
 	RestrictedActions []RestrictedAction `protobuf:"varint,31,rep,packed,name=restricted_actions,json=restrictedActions,proto3,enum=google.cloud.netapp.v1.RestrictedAction" json:"restricted_actions,omitempty"`
 	// Optional. Flag indicating if the volume will be a large capacity volume or
-	// a regular volume.
+	// a regular volume. This field is used for legacy FILE pools. For Unified
+	// pools, use the `large_capacity_config` field instead. This field and
+	// `large_capacity_config` are mutually exclusive.
 	LargeCapacity bool `protobuf:"varint,32,opt,name=large_capacity,json=largeCapacity,proto3" json:"large_capacity,omitempty"`
 	// Optional. Flag indicating if the volume will have an IP address per node
 	// for volumes supporting multiple IP endpoints. Only the volume with
@@ -1267,6 +1269,12 @@ type Volume struct {
 	// Optional. Block devices for the volume.
 	// Currently, only one block device is permitted per Volume.
 	BlockDevices []*BlockDevice `protobuf:"bytes,45,rep,name=block_devices,json=blockDevices,proto3" json:"block_devices,omitempty"`
+	// Optional. Large capacity config for the volume.
+	// Enables and configures large capacity for volumes in Unified pools with
+	// File protocols. Not applicable for Block protocols in Unified pools.
+	// This field and the legacy `large_capacity` boolean field
+	// are mutually exclusive.
+	LargeCapacityConfig *LargeCapacityConfig `protobuf:"bytes,46,opt,name=large_capacity_config,json=largeCapacityConfig,proto3" json:"large_capacity_config,omitempty"`
 	// Output only. If this volume is a clone, this field contains details about
 	// the clone.
 	CloneDetails  *Volume_CloneDetails `protobuf:"bytes,47,opt,name=clone_details,json=cloneDetails,proto3" json:"clone_details,omitempty"`
@@ -1598,11 +1606,67 @@ func (x *Volume) GetBlockDevices() []*BlockDevice {
 	return nil
 }
 
+func (x *Volume) GetLargeCapacityConfig() *LargeCapacityConfig {
+	if x != nil {
+		return x.LargeCapacityConfig
+	}
+	return nil
+}
+
 func (x *Volume) GetCloneDetails() *Volume_CloneDetails {
 	if x != nil {
 		return x.CloneDetails
 	}
 	return nil
+}
+
+// Configuration for a Large Capacity Volume. A Large Capacity Volume
+// supports sizes ranging from 4.8 TiB to 20 PiB, it is composed of multiple
+// internal constituents, and must be created in a large capacity pool.
+type LargeCapacityConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The number of internal constituents (e.g., FlexVols) for this
+	// large volume. The minimum number of constituents is 2.
+	ConstituentCount int32 `protobuf:"varint,1,opt,name=constituent_count,json=constituentCount,proto3" json:"constituent_count,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *LargeCapacityConfig) Reset() {
+	*x = LargeCapacityConfig{}
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LargeCapacityConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LargeCapacityConfig) ProtoMessage() {}
+
+func (x *LargeCapacityConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LargeCapacityConfig.ProtoReflect.Descriptor instead.
+func (*LargeCapacityConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *LargeCapacityConfig) GetConstituentCount() int32 {
+	if x != nil {
+		return x.ConstituentCount
+	}
+	return 0
 }
 
 // Defines the export policy for the volume.
@@ -1616,7 +1680,7 @@ type ExportPolicy struct {
 
 func (x *ExportPolicy) Reset() {
 	*x = ExportPolicy{}
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[8]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1628,7 +1692,7 @@ func (x *ExportPolicy) String() string {
 func (*ExportPolicy) ProtoMessage() {}
 
 func (x *ExportPolicy) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[8]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1641,7 +1705,7 @@ func (x *ExportPolicy) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExportPolicy.ProtoReflect.Descriptor instead.
 func (*ExportPolicy) Descriptor() ([]byte, []int) {
-	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{8}
+	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *ExportPolicy) GetRules() []*SimpleExportPolicyRule {
@@ -1704,7 +1768,7 @@ type SimpleExportPolicyRule struct {
 
 func (x *SimpleExportPolicyRule) Reset() {
 	*x = SimpleExportPolicyRule{}
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[9]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1716,7 +1780,7 @@ func (x *SimpleExportPolicyRule) String() string {
 func (*SimpleExportPolicyRule) ProtoMessage() {}
 
 func (x *SimpleExportPolicyRule) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[9]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1729,7 +1793,7 @@ func (x *SimpleExportPolicyRule) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SimpleExportPolicyRule.ProtoReflect.Descriptor instead.
 func (*SimpleExportPolicyRule) Descriptor() ([]byte, []int) {
-	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{9}
+	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *SimpleExportPolicyRule) GetAllowedClients() string {
@@ -1843,7 +1907,7 @@ type SnapshotPolicy struct {
 
 func (x *SnapshotPolicy) Reset() {
 	*x = SnapshotPolicy{}
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[10]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1855,7 +1919,7 @@ func (x *SnapshotPolicy) String() string {
 func (*SnapshotPolicy) ProtoMessage() {}
 
 func (x *SnapshotPolicy) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[10]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1868,7 +1932,7 @@ func (x *SnapshotPolicy) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SnapshotPolicy.ProtoReflect.Descriptor instead.
 func (*SnapshotPolicy) Descriptor() ([]byte, []int) {
-	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{10}
+	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *SnapshotPolicy) GetEnabled() bool {
@@ -1920,7 +1984,7 @@ type HourlySchedule struct {
 
 func (x *HourlySchedule) Reset() {
 	*x = HourlySchedule{}
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[11]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1932,7 +1996,7 @@ func (x *HourlySchedule) String() string {
 func (*HourlySchedule) ProtoMessage() {}
 
 func (x *HourlySchedule) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[11]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1945,7 +2009,7 @@ func (x *HourlySchedule) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HourlySchedule.ProtoReflect.Descriptor instead.
 func (*HourlySchedule) Descriptor() ([]byte, []int) {
-	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{11}
+	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *HourlySchedule) GetSnapshotsToKeep() float64 {
@@ -1978,7 +2042,7 @@ type DailySchedule struct {
 
 func (x *DailySchedule) Reset() {
 	*x = DailySchedule{}
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[12]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1990,7 +2054,7 @@ func (x *DailySchedule) String() string {
 func (*DailySchedule) ProtoMessage() {}
 
 func (x *DailySchedule) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[12]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2003,7 +2067,7 @@ func (x *DailySchedule) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DailySchedule.ProtoReflect.Descriptor instead.
 func (*DailySchedule) Descriptor() ([]byte, []int) {
-	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{12}
+	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *DailySchedule) GetSnapshotsToKeep() float64 {
@@ -2047,7 +2111,7 @@ type WeeklySchedule struct {
 
 func (x *WeeklySchedule) Reset() {
 	*x = WeeklySchedule{}
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[13]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2059,7 +2123,7 @@ func (x *WeeklySchedule) String() string {
 func (*WeeklySchedule) ProtoMessage() {}
 
 func (x *WeeklySchedule) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[13]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2072,7 +2136,7 @@ func (x *WeeklySchedule) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WeeklySchedule.ProtoReflect.Descriptor instead.
 func (*WeeklySchedule) Descriptor() ([]byte, []int) {
-	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{13}
+	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *WeeklySchedule) GetSnapshotsToKeep() float64 {
@@ -2122,7 +2186,7 @@ type MonthlySchedule struct {
 
 func (x *MonthlySchedule) Reset() {
 	*x = MonthlySchedule{}
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[14]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2134,7 +2198,7 @@ func (x *MonthlySchedule) String() string {
 func (*MonthlySchedule) ProtoMessage() {}
 
 func (x *MonthlySchedule) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[14]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2147,7 +2211,7 @@ func (x *MonthlySchedule) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MonthlySchedule.ProtoReflect.Descriptor instead.
 func (*MonthlySchedule) Descriptor() ([]byte, []int) {
-	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{14}
+	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *MonthlySchedule) GetSnapshotsToKeep() float64 {
@@ -2197,7 +2261,7 @@ type MountOption struct {
 
 func (x *MountOption) Reset() {
 	*x = MountOption{}
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[15]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2209,7 +2273,7 @@ func (x *MountOption) String() string {
 func (*MountOption) ProtoMessage() {}
 
 func (x *MountOption) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[15]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2222,7 +2286,7 @@ func (x *MountOption) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MountOption.ProtoReflect.Descriptor instead.
 func (*MountOption) Descriptor() ([]byte, []int) {
-	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{15}
+	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *MountOption) GetExport() string {
@@ -2276,7 +2340,7 @@ type RestoreParameters struct {
 
 func (x *RestoreParameters) Reset() {
 	*x = RestoreParameters{}
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[16]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2288,7 +2352,7 @@ func (x *RestoreParameters) String() string {
 func (*RestoreParameters) ProtoMessage() {}
 
 func (x *RestoreParameters) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[16]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2301,7 +2365,7 @@ func (x *RestoreParameters) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RestoreParameters.ProtoReflect.Descriptor instead.
 func (*RestoreParameters) Descriptor() ([]byte, []int) {
-	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{16}
+	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *RestoreParameters) GetSource() isRestoreParameters_Source {
@@ -2375,7 +2439,7 @@ type BackupConfig struct {
 
 func (x *BackupConfig) Reset() {
 	*x = BackupConfig{}
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[17]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2387,7 +2451,7 @@ func (x *BackupConfig) String() string {
 func (*BackupConfig) ProtoMessage() {}
 
 func (x *BackupConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[17]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2400,7 +2464,7 @@ func (x *BackupConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BackupConfig.ProtoReflect.Descriptor instead.
 func (*BackupConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{17}
+	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *BackupConfig) GetBackupPolicies() []string {
@@ -2449,7 +2513,7 @@ type TieringPolicy struct {
 
 func (x *TieringPolicy) Reset() {
 	*x = TieringPolicy{}
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[18]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2461,7 +2525,7 @@ func (x *TieringPolicy) String() string {
 func (*TieringPolicy) ProtoMessage() {}
 
 func (x *TieringPolicy) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[18]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2474,7 +2538,7 @@ func (x *TieringPolicy) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TieringPolicy.ProtoReflect.Descriptor instead.
 func (*TieringPolicy) Descriptor() ([]byte, []int) {
-	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{18}
+	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *TieringPolicy) GetTierAction() TieringPolicy_TierAction {
@@ -2533,7 +2597,7 @@ type HybridReplicationParameters struct {
 
 func (x *HybridReplicationParameters) Reset() {
 	*x = HybridReplicationParameters{}
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[19]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2545,7 +2609,7 @@ func (x *HybridReplicationParameters) String() string {
 func (*HybridReplicationParameters) ProtoMessage() {}
 
 func (x *HybridReplicationParameters) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[19]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2558,7 +2622,7 @@ func (x *HybridReplicationParameters) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HybridReplicationParameters.ProtoReflect.Descriptor instead.
 func (*HybridReplicationParameters) Descriptor() ([]byte, []int) {
-	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{19}
+	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *HybridReplicationParameters) GetReplication() string {
@@ -2672,7 +2736,7 @@ type CacheParameters struct {
 
 func (x *CacheParameters) Reset() {
 	*x = CacheParameters{}
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[20]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2684,7 +2748,7 @@ func (x *CacheParameters) String() string {
 func (*CacheParameters) ProtoMessage() {}
 
 func (x *CacheParameters) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[20]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2697,7 +2761,7 @@ func (x *CacheParameters) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CacheParameters.ProtoReflect.Descriptor instead.
 func (*CacheParameters) Descriptor() ([]byte, []int) {
-	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{20}
+	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *CacheParameters) GetPeerVolumeName() string {
@@ -2797,7 +2861,7 @@ type CacheConfig struct {
 
 func (x *CacheConfig) Reset() {
 	*x = CacheConfig{}
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[21]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2809,7 +2873,7 @@ func (x *CacheConfig) String() string {
 func (*CacheConfig) ProtoMessage() {}
 
 func (x *CacheConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[21]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2822,7 +2886,7 @@ func (x *CacheConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CacheConfig.ProtoReflect.Descriptor instead.
 func (*CacheConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{21}
+	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *CacheConfig) GetCachePrePopulate() *CachePrePopulate {
@@ -2871,7 +2935,7 @@ type CachePrePopulate struct {
 
 func (x *CachePrePopulate) Reset() {
 	*x = CachePrePopulate{}
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[22]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2883,7 +2947,7 @@ func (x *CachePrePopulate) String() string {
 func (*CachePrePopulate) ProtoMessage() {}
 
 func (x *CachePrePopulate) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[22]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2896,7 +2960,7 @@ func (x *CachePrePopulate) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CachePrePopulate.ProtoReflect.Descriptor instead.
 func (*CachePrePopulate) Descriptor() ([]byte, []int) {
-	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{22}
+	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *CachePrePopulate) GetPathList() []string {
@@ -2953,7 +3017,7 @@ type BlockDevice struct {
 
 func (x *BlockDevice) Reset() {
 	*x = BlockDevice{}
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[23]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2965,7 +3029,7 @@ func (x *BlockDevice) String() string {
 func (*BlockDevice) ProtoMessage() {}
 
 func (x *BlockDevice) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[23]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2978,7 +3042,7 @@ func (x *BlockDevice) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BlockDevice.ProtoReflect.Descriptor instead.
 func (*BlockDevice) Descriptor() ([]byte, []int) {
-	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{23}
+	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *BlockDevice) GetName() string {
@@ -3037,7 +3101,7 @@ type RestoreBackupFilesRequest struct {
 
 func (x *RestoreBackupFilesRequest) Reset() {
 	*x = RestoreBackupFilesRequest{}
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[24]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3049,7 +3113,7 @@ func (x *RestoreBackupFilesRequest) String() string {
 func (*RestoreBackupFilesRequest) ProtoMessage() {}
 
 func (x *RestoreBackupFilesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[24]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3062,7 +3126,7 @@ func (x *RestoreBackupFilesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RestoreBackupFilesRequest.ProtoReflect.Descriptor instead.
 func (*RestoreBackupFilesRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{24}
+	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *RestoreBackupFilesRequest) GetName() string {
@@ -3102,7 +3166,7 @@ type RestoreBackupFilesResponse struct {
 
 func (x *RestoreBackupFilesResponse) Reset() {
 	*x = RestoreBackupFilesResponse{}
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[25]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3114,7 +3178,7 @@ func (x *RestoreBackupFilesResponse) String() string {
 func (*RestoreBackupFilesResponse) ProtoMessage() {}
 
 func (x *RestoreBackupFilesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[25]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3127,7 +3191,7 @@ func (x *RestoreBackupFilesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RestoreBackupFilesResponse.ProtoReflect.Descriptor instead.
 func (*RestoreBackupFilesResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{25}
+	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{26}
 }
 
 // EstablishVolumePeeringRequest establishes cluster and svm peerings between
@@ -3154,7 +3218,7 @@ type EstablishVolumePeeringRequest struct {
 
 func (x *EstablishVolumePeeringRequest) Reset() {
 	*x = EstablishVolumePeeringRequest{}
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[26]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3166,7 +3230,7 @@ func (x *EstablishVolumePeeringRequest) String() string {
 func (*EstablishVolumePeeringRequest) ProtoMessage() {}
 
 func (x *EstablishVolumePeeringRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[26]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3179,7 +3243,7 @@ func (x *EstablishVolumePeeringRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EstablishVolumePeeringRequest.ProtoReflect.Descriptor instead.
 func (*EstablishVolumePeeringRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{26}
+	return file_google_cloud_netapp_v1_volume_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *EstablishVolumePeeringRequest) GetName() string {
@@ -3237,7 +3301,7 @@ type Volume_CloneDetails struct {
 
 func (x *Volume_CloneDetails) Reset() {
 	*x = Volume_CloneDetails{}
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[27]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3249,7 +3313,7 @@ func (x *Volume_CloneDetails) String() string {
 func (*Volume_CloneDetails) ProtoMessage() {}
 
 func (x *Volume_CloneDetails) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[27]
+	mi := &file_google_cloud_netapp_v1_volume_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3321,7 +3385,7 @@ const file_google_cloud_netapp_v1_volume_proto_rawDesc = "" +
 	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
 	"\x1cnetapp.googleapis.com/VolumeR\x04name\x12$\n" +
 	"\vsnapshot_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"snapshotId\"\xf0\x19\n" +
+	"snapshotId\"\xd6\x1a\n" +
 	"\x06Volume\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12?\n" +
 	"\x05state\x18\x02 \x01(\x0e2$.google.cloud.netapp.v1.Volume.StateB\x03\xe0A\x03R\x05state\x12(\n" +
@@ -3372,7 +3436,8 @@ const file_google_cloud_netapp_v1_volume_proto_rawDesc = "" +
 	"\x10throughput_mibps\x18) \x01(\x01B\x03\xe0A\x01R\x0fthroughputMibps\x12W\n" +
 	"\x10cache_parameters\x18* \x01(\v2'.google.cloud.netapp.v1.CacheParametersB\x03\xe0A\x01R\x0fcacheParameters\x127\n" +
 	"\x16hot_tier_size_used_gib\x18, \x01(\x03B\x03\xe0A\x03R\x12hotTierSizeUsedGib\x12M\n" +
-	"\rblock_devices\x18- \x03(\v2#.google.cloud.netapp.v1.BlockDeviceB\x03\xe0A\x01R\fblockDevices\x12U\n" +
+	"\rblock_devices\x18- \x03(\v2#.google.cloud.netapp.v1.BlockDeviceB\x03\xe0A\x01R\fblockDevices\x12d\n" +
+	"\x15large_capacity_config\x18. \x01(\v2+.google.cloud.netapp.v1.LargeCapacityConfigB\x03\xe0A\x01R\x13largeCapacityConfig\x12U\n" +
 	"\rclone_details\x18/ \x01(\v2+.google.cloud.netapp.v1.Volume.CloneDetailsB\x03\xe0A\x03R\fcloneDetails\x1a\xd9\x01\n" +
 	"\fCloneDetails\x12O\n" +
 	"\x0fsource_snapshot\x18\x01 \x01(\tB&\xe0A\x03\xfaA \n" +
@@ -3396,7 +3461,9 @@ const file_google_cloud_netapp_v1_volume_proto_rawDesc = "" +
 	"\tREAD_ONLY\x10\t:l\xeaAi\n" +
 	"\x1cnetapp.googleapis.com/Volume\x128projects/{project}/locations/{location}/volumes/{volume}*\avolumes2\x06volumeB\x10\n" +
 	"\x0e_backup_configB\x11\n" +
-	"\x0f_tiering_policy\"Y\n" +
+	"\x0f_tiering_policy\"G\n" +
+	"\x13LargeCapacityConfig\x120\n" +
+	"\x11constituent_count\x18\x01 \x01(\x05B\x03\xe0A\x01R\x10constituentCount\"Y\n" +
 	"\fExportPolicy\x12I\n" +
 	"\x05rules\x18\x01 \x03(\v2..google.cloud.netapp.v1.SimpleExportPolicyRuleB\x03\xe0A\x02R\x05rules\"\xb6\b\n" +
 	"\x16SimpleExportPolicyRule\x12,\n" +
@@ -3657,7 +3724,7 @@ func file_google_cloud_netapp_v1_volume_proto_rawDescGZIP() []byte {
 }
 
 var file_google_cloud_netapp_v1_volume_proto_enumTypes = make([]protoimpl.EnumInfo, 11)
-var file_google_cloud_netapp_v1_volume_proto_msgTypes = make([]protoimpl.MessageInfo, 30)
+var file_google_cloud_netapp_v1_volume_proto_msgTypes = make([]protoimpl.MessageInfo, 31)
 var file_google_cloud_netapp_v1_volume_proto_goTypes = []any{
 	(Protocols)(0),                         // 0: google.cloud.netapp.v1.Protocols
 	(AccessType)(0),                        // 1: google.cloud.netapp.v1.AccessType
@@ -3678,82 +3745,84 @@ var file_google_cloud_netapp_v1_volume_proto_goTypes = []any{
 	(*DeleteVolumeRequest)(nil),                                  // 16: google.cloud.netapp.v1.DeleteVolumeRequest
 	(*RevertVolumeRequest)(nil),                                  // 17: google.cloud.netapp.v1.RevertVolumeRequest
 	(*Volume)(nil),                                               // 18: google.cloud.netapp.v1.Volume
-	(*ExportPolicy)(nil),                                         // 19: google.cloud.netapp.v1.ExportPolicy
-	(*SimpleExportPolicyRule)(nil),                               // 20: google.cloud.netapp.v1.SimpleExportPolicyRule
-	(*SnapshotPolicy)(nil),                                       // 21: google.cloud.netapp.v1.SnapshotPolicy
-	(*HourlySchedule)(nil),                                       // 22: google.cloud.netapp.v1.HourlySchedule
-	(*DailySchedule)(nil),                                        // 23: google.cloud.netapp.v1.DailySchedule
-	(*WeeklySchedule)(nil),                                       // 24: google.cloud.netapp.v1.WeeklySchedule
-	(*MonthlySchedule)(nil),                                      // 25: google.cloud.netapp.v1.MonthlySchedule
-	(*MountOption)(nil),                                          // 26: google.cloud.netapp.v1.MountOption
-	(*RestoreParameters)(nil),                                    // 27: google.cloud.netapp.v1.RestoreParameters
-	(*BackupConfig)(nil),                                         // 28: google.cloud.netapp.v1.BackupConfig
-	(*TieringPolicy)(nil),                                        // 29: google.cloud.netapp.v1.TieringPolicy
-	(*HybridReplicationParameters)(nil),                          // 30: google.cloud.netapp.v1.HybridReplicationParameters
-	(*CacheParameters)(nil),                                      // 31: google.cloud.netapp.v1.CacheParameters
-	(*CacheConfig)(nil),                                          // 32: google.cloud.netapp.v1.CacheConfig
-	(*CachePrePopulate)(nil),                                     // 33: google.cloud.netapp.v1.CachePrePopulate
-	(*BlockDevice)(nil),                                          // 34: google.cloud.netapp.v1.BlockDevice
-	(*RestoreBackupFilesRequest)(nil),                            // 35: google.cloud.netapp.v1.RestoreBackupFilesRequest
-	(*RestoreBackupFilesResponse)(nil),                           // 36: google.cloud.netapp.v1.RestoreBackupFilesResponse
-	(*EstablishVolumePeeringRequest)(nil),                        // 37: google.cloud.netapp.v1.EstablishVolumePeeringRequest
-	(*Volume_CloneDetails)(nil),                                  // 38: google.cloud.netapp.v1.Volume.CloneDetails
-	nil,                                                          // 39: google.cloud.netapp.v1.Volume.LabelsEntry
-	nil,                                                          // 40: google.cloud.netapp.v1.HybridReplicationParameters.LabelsEntry
-	(*fieldmaskpb.FieldMask)(nil),                                // 41: google.protobuf.FieldMask
-	(*timestamppb.Timestamp)(nil),                                // 42: google.protobuf.Timestamp
-	(ServiceLevel)(0),                                            // 43: google.cloud.netapp.v1.ServiceLevel
-	(EncryptionType)(0),                                          // 44: google.cloud.netapp.v1.EncryptionType
-	(HybridReplicationSchedule)(0),                               // 45: google.cloud.netapp.v1.HybridReplicationSchedule
-	(OsType)(0),                                                  // 46: google.cloud.netapp.v1.OsType
+	(*LargeCapacityConfig)(nil),                                  // 19: google.cloud.netapp.v1.LargeCapacityConfig
+	(*ExportPolicy)(nil),                                         // 20: google.cloud.netapp.v1.ExportPolicy
+	(*SimpleExportPolicyRule)(nil),                               // 21: google.cloud.netapp.v1.SimpleExportPolicyRule
+	(*SnapshotPolicy)(nil),                                       // 22: google.cloud.netapp.v1.SnapshotPolicy
+	(*HourlySchedule)(nil),                                       // 23: google.cloud.netapp.v1.HourlySchedule
+	(*DailySchedule)(nil),                                        // 24: google.cloud.netapp.v1.DailySchedule
+	(*WeeklySchedule)(nil),                                       // 25: google.cloud.netapp.v1.WeeklySchedule
+	(*MonthlySchedule)(nil),                                      // 26: google.cloud.netapp.v1.MonthlySchedule
+	(*MountOption)(nil),                                          // 27: google.cloud.netapp.v1.MountOption
+	(*RestoreParameters)(nil),                                    // 28: google.cloud.netapp.v1.RestoreParameters
+	(*BackupConfig)(nil),                                         // 29: google.cloud.netapp.v1.BackupConfig
+	(*TieringPolicy)(nil),                                        // 30: google.cloud.netapp.v1.TieringPolicy
+	(*HybridReplicationParameters)(nil),                          // 31: google.cloud.netapp.v1.HybridReplicationParameters
+	(*CacheParameters)(nil),                                      // 32: google.cloud.netapp.v1.CacheParameters
+	(*CacheConfig)(nil),                                          // 33: google.cloud.netapp.v1.CacheConfig
+	(*CachePrePopulate)(nil),                                     // 34: google.cloud.netapp.v1.CachePrePopulate
+	(*BlockDevice)(nil),                                          // 35: google.cloud.netapp.v1.BlockDevice
+	(*RestoreBackupFilesRequest)(nil),                            // 36: google.cloud.netapp.v1.RestoreBackupFilesRequest
+	(*RestoreBackupFilesResponse)(nil),                           // 37: google.cloud.netapp.v1.RestoreBackupFilesResponse
+	(*EstablishVolumePeeringRequest)(nil),                        // 38: google.cloud.netapp.v1.EstablishVolumePeeringRequest
+	(*Volume_CloneDetails)(nil),                                  // 39: google.cloud.netapp.v1.Volume.CloneDetails
+	nil,                                                          // 40: google.cloud.netapp.v1.Volume.LabelsEntry
+	nil,                                                          // 41: google.cloud.netapp.v1.HybridReplicationParameters.LabelsEntry
+	(*fieldmaskpb.FieldMask)(nil),                                // 42: google.protobuf.FieldMask
+	(*timestamppb.Timestamp)(nil),                                // 43: google.protobuf.Timestamp
+	(ServiceLevel)(0),                                            // 44: google.cloud.netapp.v1.ServiceLevel
+	(EncryptionType)(0),                                          // 45: google.cloud.netapp.v1.EncryptionType
+	(HybridReplicationSchedule)(0),                               // 46: google.cloud.netapp.v1.HybridReplicationSchedule
+	(OsType)(0),                                                  // 47: google.cloud.netapp.v1.OsType
 }
 var file_google_cloud_netapp_v1_volume_proto_depIdxs = []int32{
 	18, // 0: google.cloud.netapp.v1.ListVolumesResponse.volumes:type_name -> google.cloud.netapp.v1.Volume
 	18, // 1: google.cloud.netapp.v1.CreateVolumeRequest.volume:type_name -> google.cloud.netapp.v1.Volume
-	41, // 2: google.cloud.netapp.v1.UpdateVolumeRequest.update_mask:type_name -> google.protobuf.FieldMask
+	42, // 2: google.cloud.netapp.v1.UpdateVolumeRequest.update_mask:type_name -> google.protobuf.FieldMask
 	18, // 3: google.cloud.netapp.v1.UpdateVolumeRequest.volume:type_name -> google.cloud.netapp.v1.Volume
 	5,  // 4: google.cloud.netapp.v1.Volume.state:type_name -> google.cloud.netapp.v1.Volume.State
-	42, // 5: google.cloud.netapp.v1.Volume.create_time:type_name -> google.protobuf.Timestamp
-	43, // 6: google.cloud.netapp.v1.Volume.service_level:type_name -> google.cloud.netapp.v1.ServiceLevel
-	19, // 7: google.cloud.netapp.v1.Volume.export_policy:type_name -> google.cloud.netapp.v1.ExportPolicy
+	43, // 5: google.cloud.netapp.v1.Volume.create_time:type_name -> google.protobuf.Timestamp
+	44, // 6: google.cloud.netapp.v1.Volume.service_level:type_name -> google.cloud.netapp.v1.ServiceLevel
+	20, // 7: google.cloud.netapp.v1.Volume.export_policy:type_name -> google.cloud.netapp.v1.ExportPolicy
 	0,  // 8: google.cloud.netapp.v1.Volume.protocols:type_name -> google.cloud.netapp.v1.Protocols
 	2,  // 9: google.cloud.netapp.v1.Volume.smb_settings:type_name -> google.cloud.netapp.v1.SMBSettings
-	26, // 10: google.cloud.netapp.v1.Volume.mount_options:type_name -> google.cloud.netapp.v1.MountOption
-	39, // 11: google.cloud.netapp.v1.Volume.labels:type_name -> google.cloud.netapp.v1.Volume.LabelsEntry
-	21, // 12: google.cloud.netapp.v1.Volume.snapshot_policy:type_name -> google.cloud.netapp.v1.SnapshotPolicy
+	27, // 10: google.cloud.netapp.v1.Volume.mount_options:type_name -> google.cloud.netapp.v1.MountOption
+	40, // 11: google.cloud.netapp.v1.Volume.labels:type_name -> google.cloud.netapp.v1.Volume.LabelsEntry
+	22, // 12: google.cloud.netapp.v1.Volume.snapshot_policy:type_name -> google.cloud.netapp.v1.SnapshotPolicy
 	3,  // 13: google.cloud.netapp.v1.Volume.security_style:type_name -> google.cloud.netapp.v1.SecurityStyle
-	27, // 14: google.cloud.netapp.v1.Volume.restore_parameters:type_name -> google.cloud.netapp.v1.RestoreParameters
-	44, // 15: google.cloud.netapp.v1.Volume.encryption_type:type_name -> google.cloud.netapp.v1.EncryptionType
-	28, // 16: google.cloud.netapp.v1.Volume.backup_config:type_name -> google.cloud.netapp.v1.BackupConfig
+	28, // 14: google.cloud.netapp.v1.Volume.restore_parameters:type_name -> google.cloud.netapp.v1.RestoreParameters
+	45, // 15: google.cloud.netapp.v1.Volume.encryption_type:type_name -> google.cloud.netapp.v1.EncryptionType
+	29, // 16: google.cloud.netapp.v1.Volume.backup_config:type_name -> google.cloud.netapp.v1.BackupConfig
 	4,  // 17: google.cloud.netapp.v1.Volume.restricted_actions:type_name -> google.cloud.netapp.v1.RestrictedAction
-	29, // 18: google.cloud.netapp.v1.Volume.tiering_policy:type_name -> google.cloud.netapp.v1.TieringPolicy
-	30, // 19: google.cloud.netapp.v1.Volume.hybrid_replication_parameters:type_name -> google.cloud.netapp.v1.HybridReplicationParameters
-	31, // 20: google.cloud.netapp.v1.Volume.cache_parameters:type_name -> google.cloud.netapp.v1.CacheParameters
-	34, // 21: google.cloud.netapp.v1.Volume.block_devices:type_name -> google.cloud.netapp.v1.BlockDevice
-	38, // 22: google.cloud.netapp.v1.Volume.clone_details:type_name -> google.cloud.netapp.v1.Volume.CloneDetails
-	20, // 23: google.cloud.netapp.v1.ExportPolicy.rules:type_name -> google.cloud.netapp.v1.SimpleExportPolicyRule
-	1,  // 24: google.cloud.netapp.v1.SimpleExportPolicyRule.access_type:type_name -> google.cloud.netapp.v1.AccessType
-	6,  // 25: google.cloud.netapp.v1.SimpleExportPolicyRule.squash_mode:type_name -> google.cloud.netapp.v1.SimpleExportPolicyRule.SquashMode
-	22, // 26: google.cloud.netapp.v1.SnapshotPolicy.hourly_schedule:type_name -> google.cloud.netapp.v1.HourlySchedule
-	23, // 27: google.cloud.netapp.v1.SnapshotPolicy.daily_schedule:type_name -> google.cloud.netapp.v1.DailySchedule
-	24, // 28: google.cloud.netapp.v1.SnapshotPolicy.weekly_schedule:type_name -> google.cloud.netapp.v1.WeeklySchedule
-	25, // 29: google.cloud.netapp.v1.SnapshotPolicy.monthly_schedule:type_name -> google.cloud.netapp.v1.MonthlySchedule
-	0,  // 30: google.cloud.netapp.v1.MountOption.protocol:type_name -> google.cloud.netapp.v1.Protocols
-	7,  // 31: google.cloud.netapp.v1.TieringPolicy.tier_action:type_name -> google.cloud.netapp.v1.TieringPolicy.TierAction
-	40, // 32: google.cloud.netapp.v1.HybridReplicationParameters.labels:type_name -> google.cloud.netapp.v1.HybridReplicationParameters.LabelsEntry
-	45, // 33: google.cloud.netapp.v1.HybridReplicationParameters.replication_schedule:type_name -> google.cloud.netapp.v1.HybridReplicationSchedule
-	8,  // 34: google.cloud.netapp.v1.HybridReplicationParameters.hybrid_replication_type:type_name -> google.cloud.netapp.v1.HybridReplicationParameters.VolumeHybridReplicationType
-	32, // 35: google.cloud.netapp.v1.CacheParameters.cache_config:type_name -> google.cloud.netapp.v1.CacheConfig
-	9,  // 36: google.cloud.netapp.v1.CacheParameters.cache_state:type_name -> google.cloud.netapp.v1.CacheParameters.CacheState
-	42, // 37: google.cloud.netapp.v1.CacheParameters.peering_command_expiry_time:type_name -> google.protobuf.Timestamp
-	33, // 38: google.cloud.netapp.v1.CacheConfig.cache_pre_populate:type_name -> google.cloud.netapp.v1.CachePrePopulate
-	10, // 39: google.cloud.netapp.v1.CacheConfig.cache_pre_populate_state:type_name -> google.cloud.netapp.v1.CacheConfig.CachePrePopulateState
-	46, // 40: google.cloud.netapp.v1.BlockDevice.os_type:type_name -> google.cloud.netapp.v1.OsType
-	41, // [41:41] is the sub-list for method output_type
-	41, // [41:41] is the sub-list for method input_type
-	41, // [41:41] is the sub-list for extension type_name
-	41, // [41:41] is the sub-list for extension extendee
-	0,  // [0:41] is the sub-list for field type_name
+	30, // 18: google.cloud.netapp.v1.Volume.tiering_policy:type_name -> google.cloud.netapp.v1.TieringPolicy
+	31, // 19: google.cloud.netapp.v1.Volume.hybrid_replication_parameters:type_name -> google.cloud.netapp.v1.HybridReplicationParameters
+	32, // 20: google.cloud.netapp.v1.Volume.cache_parameters:type_name -> google.cloud.netapp.v1.CacheParameters
+	35, // 21: google.cloud.netapp.v1.Volume.block_devices:type_name -> google.cloud.netapp.v1.BlockDevice
+	19, // 22: google.cloud.netapp.v1.Volume.large_capacity_config:type_name -> google.cloud.netapp.v1.LargeCapacityConfig
+	39, // 23: google.cloud.netapp.v1.Volume.clone_details:type_name -> google.cloud.netapp.v1.Volume.CloneDetails
+	21, // 24: google.cloud.netapp.v1.ExportPolicy.rules:type_name -> google.cloud.netapp.v1.SimpleExportPolicyRule
+	1,  // 25: google.cloud.netapp.v1.SimpleExportPolicyRule.access_type:type_name -> google.cloud.netapp.v1.AccessType
+	6,  // 26: google.cloud.netapp.v1.SimpleExportPolicyRule.squash_mode:type_name -> google.cloud.netapp.v1.SimpleExportPolicyRule.SquashMode
+	23, // 27: google.cloud.netapp.v1.SnapshotPolicy.hourly_schedule:type_name -> google.cloud.netapp.v1.HourlySchedule
+	24, // 28: google.cloud.netapp.v1.SnapshotPolicy.daily_schedule:type_name -> google.cloud.netapp.v1.DailySchedule
+	25, // 29: google.cloud.netapp.v1.SnapshotPolicy.weekly_schedule:type_name -> google.cloud.netapp.v1.WeeklySchedule
+	26, // 30: google.cloud.netapp.v1.SnapshotPolicy.monthly_schedule:type_name -> google.cloud.netapp.v1.MonthlySchedule
+	0,  // 31: google.cloud.netapp.v1.MountOption.protocol:type_name -> google.cloud.netapp.v1.Protocols
+	7,  // 32: google.cloud.netapp.v1.TieringPolicy.tier_action:type_name -> google.cloud.netapp.v1.TieringPolicy.TierAction
+	41, // 33: google.cloud.netapp.v1.HybridReplicationParameters.labels:type_name -> google.cloud.netapp.v1.HybridReplicationParameters.LabelsEntry
+	46, // 34: google.cloud.netapp.v1.HybridReplicationParameters.replication_schedule:type_name -> google.cloud.netapp.v1.HybridReplicationSchedule
+	8,  // 35: google.cloud.netapp.v1.HybridReplicationParameters.hybrid_replication_type:type_name -> google.cloud.netapp.v1.HybridReplicationParameters.VolumeHybridReplicationType
+	33, // 36: google.cloud.netapp.v1.CacheParameters.cache_config:type_name -> google.cloud.netapp.v1.CacheConfig
+	9,  // 37: google.cloud.netapp.v1.CacheParameters.cache_state:type_name -> google.cloud.netapp.v1.CacheParameters.CacheState
+	43, // 38: google.cloud.netapp.v1.CacheParameters.peering_command_expiry_time:type_name -> google.protobuf.Timestamp
+	34, // 39: google.cloud.netapp.v1.CacheConfig.cache_pre_populate:type_name -> google.cloud.netapp.v1.CachePrePopulate
+	10, // 40: google.cloud.netapp.v1.CacheConfig.cache_pre_populate_state:type_name -> google.cloud.netapp.v1.CacheConfig.CachePrePopulateState
+	47, // 41: google.cloud.netapp.v1.BlockDevice.os_type:type_name -> google.cloud.netapp.v1.OsType
+	42, // [42:42] is the sub-list for method output_type
+	42, // [42:42] is the sub-list for method input_type
+	42, // [42:42] is the sub-list for extension type_name
+	42, // [42:42] is the sub-list for extension extendee
+	0,  // [0:42] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_netapp_v1_volume_proto_init() }
@@ -3763,29 +3832,29 @@ func file_google_cloud_netapp_v1_volume_proto_init() {
 	}
 	file_google_cloud_netapp_v1_common_proto_init()
 	file_google_cloud_netapp_v1_volume_proto_msgTypes[7].OneofWrappers = []any{}
-	file_google_cloud_netapp_v1_volume_proto_msgTypes[9].OneofWrappers = []any{}
 	file_google_cloud_netapp_v1_volume_proto_msgTypes[10].OneofWrappers = []any{}
 	file_google_cloud_netapp_v1_volume_proto_msgTypes[11].OneofWrappers = []any{}
 	file_google_cloud_netapp_v1_volume_proto_msgTypes[12].OneofWrappers = []any{}
 	file_google_cloud_netapp_v1_volume_proto_msgTypes[13].OneofWrappers = []any{}
 	file_google_cloud_netapp_v1_volume_proto_msgTypes[14].OneofWrappers = []any{}
-	file_google_cloud_netapp_v1_volume_proto_msgTypes[16].OneofWrappers = []any{
+	file_google_cloud_netapp_v1_volume_proto_msgTypes[15].OneofWrappers = []any{}
+	file_google_cloud_netapp_v1_volume_proto_msgTypes[17].OneofWrappers = []any{
 		(*RestoreParameters_SourceSnapshot)(nil),
 		(*RestoreParameters_SourceBackup)(nil),
 	}
-	file_google_cloud_netapp_v1_volume_proto_msgTypes[17].OneofWrappers = []any{}
 	file_google_cloud_netapp_v1_volume_proto_msgTypes[18].OneofWrappers = []any{}
-	file_google_cloud_netapp_v1_volume_proto_msgTypes[20].OneofWrappers = []any{}
+	file_google_cloud_netapp_v1_volume_proto_msgTypes[19].OneofWrappers = []any{}
 	file_google_cloud_netapp_v1_volume_proto_msgTypes[21].OneofWrappers = []any{}
 	file_google_cloud_netapp_v1_volume_proto_msgTypes[22].OneofWrappers = []any{}
 	file_google_cloud_netapp_v1_volume_proto_msgTypes[23].OneofWrappers = []any{}
+	file_google_cloud_netapp_v1_volume_proto_msgTypes[24].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_netapp_v1_volume_proto_rawDesc), len(file_google_cloud_netapp_v1_volume_proto_rawDesc)),
 			NumEnums:      11,
-			NumMessages:   30,
+			NumMessages:   31,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

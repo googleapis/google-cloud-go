@@ -401,7 +401,7 @@ func defaultSubscriptionAdminRESTCallOptions() *SubscriptionAdminCallOptions {
 			}),
 		},
 		StreamingPull: []gax.CallOption{
-			gax.WithTimeout(900000 * time.Millisecond),
+			gax.WithTimeout(1800000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,

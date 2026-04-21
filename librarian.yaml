@@ -16,9 +16,8 @@ version: v0.10.2-0.20260421180302-dc35d110f9bb
 repo: googleapis/google-cloud-go
 sources:
   googleapis:
-    commit: cd090841ab172574e740c214c99df00aef9c0dee
-    sha256: 08e4b7744dc23b6e3320a3f1d05db9f40853aaf1089d06bfb8d79044b7a66f21
-release: {}
+    commit: 939ba3bf8408af83f0f73ae35c76c4b11a8c8c8d
+    sha256: 70829cda81b9c69ae4f5f2a42f347c263b62cd69eb6a87b70555aab6ae5b6d74
 tools:
   go:
     - name: github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic
@@ -29,6 +28,7 @@ tools:
       version: v1.3.0
     - name: google.golang.org/protobuf/cmd/protoc-gen-go
       version: v1.36.11
+release: {}
 default:
   tag_format: '{name}/v{version}'
 libraries:
@@ -1454,7 +1454,6 @@ libraries:
           path: google/cloud/managedkafka/schemaregistry/v1
   - name: maps
     version: 1.33.0
-    title_override: "Google Maps Platform"
     apis:
       - path: google/maps/geocode/v4
       - path: google/maps/routing/v2
@@ -1465,6 +1464,7 @@ libraries:
       - path: google/maps/routeoptimization/v1
       - path: google/maps/solar/v1
       - path: google/maps/fleetengine/delivery/v1
+    title_override: Google Maps Platform
     go:
       go_apis:
         - enabled_generator_features:

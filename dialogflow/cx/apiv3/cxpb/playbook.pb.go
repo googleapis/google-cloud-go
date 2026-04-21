@@ -2158,8 +2158,8 @@ const file_google_cloud_dialogflow_cx_v3_playbook_proto_rawDesc = "" +
 	"\x12GetPlaybookVersion\x128.google.cloud.dialogflow.cx.v3.GetPlaybookVersionRequest\x1a..google.cloud.dialogflow.cx.v3.PlaybookVersion\"P\xdaA\x04name\x82\xd3\xe4\x93\x02C\x12A/v3/{name=projects/*/locations/*/agents/*/playbooks/*/versions/*}\x12\xf2\x01\n" +
 	"\x16RestorePlaybookVersion\x12<.google.cloud.dialogflow.cx.v3.RestorePlaybookVersionRequest\x1a=.google.cloud.dialogflow.cx.v3.RestorePlaybookVersionResponse\"[\xdaA\x04name\x82\xd3\xe4\x93\x02N:\x01*\"I/v3/{name=projects/*/locations/*/agents/*/playbooks/*/versions/*}:restore\x12\xe3\x01\n" +
 	"\x14ListPlaybookVersions\x12:.google.cloud.dialogflow.cx.v3.ListPlaybookVersionsRequest\x1a;.google.cloud.dialogflow.cx.v3.ListPlaybookVersionsResponse\"R\xdaA\x06parent\x82\xd3\xe4\x93\x02C\x12A/v3/{parent=projects/*/locations/*/agents/*/playbooks/*}/versions\x12\xbe\x01\n" +
-	"\x15DeletePlaybookVersion\x12;.google.cloud.dialogflow.cx.v3.DeletePlaybookVersionRequest\x1a\x16.google.protobuf.Empty\"P\xdaA\x04name\x82\xd3\xe4\x93\x02C*A/v3/{name=projects/*/locations/*/agents/*/playbooks/*/versions/*}\x1ax\xcaA\x19dialogflow.googleapis.com\xd2AYhttps://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/dialogflowB\x8c\x01\n" +
-	"!com.google.cloud.dialogflow.cx.v3B\rPlaybookProtoP\x01Z1cloud.google.com/go/dialogflow/cx/apiv3/cxpb;cxpb\xa2\x02\x02DF\xaa\x02\x1dGoogle.Cloud.Dialogflow.Cx.V3b\x06proto3"
+	"\x15DeletePlaybookVersion\x12;.google.cloud.dialogflow.cx.v3.DeletePlaybookVersionRequest\x1a\x16.google.protobuf.Empty\"P\xdaA\x04name\x82\xd3\xe4\x93\x02C*A/v3/{name=projects/*/locations/*/agents/*/playbooks/*/versions/*}\x1ax\xcaA\x19dialogflow.googleapis.com\xd2AYhttps://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/dialogflowB\xb0\x01\n" +
+	"!com.google.cloud.dialogflow.cx.v3B\rPlaybookProtoP\x01Z1cloud.google.com/go/dialogflow/cx/apiv3/cxpb;cxpb\xa2\x02\x02DF\xaa\x02\x1dGoogle.Cloud.Dialogflow.Cx.V3\xea\x02!Google::Cloud::Dialogflow::CX::V3b\x06proto3"
 
 var (
 	file_google_cloud_dialogflow_cx_v3_playbook_proto_rawDescOnce sync.Once

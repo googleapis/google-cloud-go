@@ -488,8 +488,8 @@ const file_google_cloud_dialogflow_cx_v3_parameter_definition_proto_rawDesc = ""
 	"\n" +
 	"\x06NUMBER\x10\x02\x12\v\n" +
 	"\aBOOLEAN\x10\x03\x12\t\n" +
-	"\x05ARRAY\x10\x06Br\n" +
-	"!com.google.cloud.dialogflow.cx.v3B\x18ParameterDefinitionProtoP\x01Z1cloud.google.com/go/dialogflow/cx/apiv3/cxpb;cxpbb\x06proto3"
+	"\x05ARRAY\x10\x06B\x96\x01\n" +
+	"!com.google.cloud.dialogflow.cx.v3B\x18ParameterDefinitionProtoP\x01Z1cloud.google.com/go/dialogflow/cx/apiv3/cxpb;cxpb\xea\x02!Google::Cloud::Dialogflow::CX::V3b\x06proto3"
 
 var (
 	file_google_cloud_dialogflow_cx_v3_parameter_definition_proto_rawDescOnce sync.Once

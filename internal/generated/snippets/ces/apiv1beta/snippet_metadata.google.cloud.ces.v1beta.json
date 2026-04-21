@@ -3174,6 +3174,52 @@
           "fullName": "google.cloud.ces.v1beta.EvaluationClient",
           "shortName": "EvaluationClient"
         },
+        "fullName": "google.cloud.ces.v1beta.EvaluationClient.ExportEvaluations",
+        "method": {
+          "fullName": "google.cloud.ces.v1beta.EvaluationService.ExportEvaluations",
+          "service": {
+            "fullName": "google.cloud.ces.v1beta.EvaluationService",
+            "shortName": "EvaluationService"
+          },
+          "shortName": "ExportEvaluations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "cespb.ExportEvaluationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ExportEvaluationsOperation",
+        "shortName": "ExportEvaluations"
+      },
+      "description": "ExportEvaluations exports evaluations.",
+      "file": "EvaluationClient/ExportEvaluations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "ces_v1beta_generated_EvaluationService_ExportEvaluations_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "ces ExportEvaluations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.ces.v1beta.EvaluationClient",
+          "shortName": "EvaluationClient"
+        },
         "fullName": "google.cloud.ces.v1beta.EvaluationClient.GenerateEvaluation",
         "method": {
           "fullName": "google.cloud.ces.v1beta.EvaluationService.GenerateEvaluation",

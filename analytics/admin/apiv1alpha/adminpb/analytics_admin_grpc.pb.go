@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -189,6 +189,7 @@ const (
 	AnalyticsAdminService_UpdateSubpropertySyncConfig_FullMethodName                  = "/google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateSubpropertySyncConfig"
 	AnalyticsAdminService_GetSubpropertySyncConfig_FullMethodName                     = "/google.analytics.admin.v1alpha.AnalyticsAdminService/GetSubpropertySyncConfig"
 	AnalyticsAdminService_GetReportingIdentitySettings_FullMethodName                 = "/google.analytics.admin.v1alpha.AnalyticsAdminService/GetReportingIdentitySettings"
+	AnalyticsAdminService_GetUserProvidedDataSettings_FullMethodName                  = "/google.analytics.admin.v1alpha.AnalyticsAdminService/GetUserProvidedDataSettings"
 )
 
 // AnalyticsAdminServiceClient is the client API for AnalyticsAdminService service.
@@ -610,8 +611,10 @@ type AnalyticsAdminServiceClient interface {
 	UpdateSubpropertySyncConfig(ctx context.Context, in *UpdateSubpropertySyncConfigRequest, opts ...grpc.CallOption) (*SubpropertySyncConfig, error)
 	// Lookup for a single `SubpropertySyncConfig`.
 	GetSubpropertySyncConfig(ctx context.Context, in *GetSubpropertySyncConfigRequest, opts ...grpc.CallOption) (*SubpropertySyncConfig, error)
-	// Returns the singleton data retention settings for this property.
+	// Returns the reporting identity settings for this property.
 	GetReportingIdentitySettings(ctx context.Context, in *GetReportingIdentitySettingsRequest, opts ...grpc.CallOption) (*ReportingIdentitySettings, error)
+	// Looks up settings related to user-provided data for a property.
+	GetUserProvidedDataSettings(ctx context.Context, in *GetUserProvidedDataSettingsRequest, opts ...grpc.CallOption) (*UserProvidedDataSettings, error)
 }
 
 type analyticsAdminServiceClient struct {
@@ -2013,6 +2016,15 @@ func (c *analyticsAdminServiceClient) GetReportingIdentitySettings(ctx context.C
 	return out, nil
 }
 
+func (c *analyticsAdminServiceClient) GetUserProvidedDataSettings(ctx context.Context, in *GetUserProvidedDataSettingsRequest, opts ...grpc.CallOption) (*UserProvidedDataSettings, error) {
+	out := new(UserProvidedDataSettings)
+	err := c.cc.Invoke(ctx, AnalyticsAdminService_GetUserProvidedDataSettings_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AnalyticsAdminServiceServer is the server API for AnalyticsAdminService service.
 // All implementations should embed UnimplementedAnalyticsAdminServiceServer
 // for forward compatibility
@@ -2432,8 +2444,10 @@ type AnalyticsAdminServiceServer interface {
 	UpdateSubpropertySyncConfig(context.Context, *UpdateSubpropertySyncConfigRequest) (*SubpropertySyncConfig, error)
 	// Lookup for a single `SubpropertySyncConfig`.
 	GetSubpropertySyncConfig(context.Context, *GetSubpropertySyncConfigRequest) (*SubpropertySyncConfig, error)
-	// Returns the singleton data retention settings for this property.
+	// Returns the reporting identity settings for this property.
 	GetReportingIdentitySettings(context.Context, *GetReportingIdentitySettingsRequest) (*ReportingIdentitySettings, error)
+	// Looks up settings related to user-provided data for a property.
+	GetUserProvidedDataSettings(context.Context, *GetUserProvidedDataSettingsRequest) (*UserProvidedDataSettings, error)
 }
 
 // UnimplementedAnalyticsAdminServiceServer should be embedded to have forward compatible implementations.
@@ -2901,6 +2915,9 @@ func (UnimplementedAnalyticsAdminServiceServer) GetSubpropertySyncConfig(context
 }
 func (UnimplementedAnalyticsAdminServiceServer) GetReportingIdentitySettings(context.Context, *GetReportingIdentitySettingsRequest) (*ReportingIdentitySettings, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetReportingIdentitySettings not implemented")
+}
+func (UnimplementedAnalyticsAdminServiceServer) GetUserProvidedDataSettings(context.Context, *GetUserProvidedDataSettingsRequest) (*UserProvidedDataSettings, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserProvidedDataSettings not implemented")
 }
 
 // UnsafeAnalyticsAdminServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -5686,6 +5703,24 @@ func _AnalyticsAdminService_GetReportingIdentitySettings_Handler(srv interface{}
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AnalyticsAdminService_GetUserProvidedDataSettings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserProvidedDataSettingsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AnalyticsAdminServiceServer).GetUserProvidedDataSettings(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AnalyticsAdminService_GetUserProvidedDataSettings_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AnalyticsAdminServiceServer).GetUserProvidedDataSettings(ctx, req.(*GetUserProvidedDataSettingsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AnalyticsAdminService_ServiceDesc is the grpc.ServiceDesc for AnalyticsAdminService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -6308,6 +6343,10 @@ var AnalyticsAdminService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetReportingIdentitySettings",
 			Handler:    _AnalyticsAdminService_GetReportingIdentitySettings_Handler,
+		},
+		{
+			MethodName: "GetUserProvidedDataSettings",
+			Handler:    _AnalyticsAdminService_GetUserProvidedDataSettings_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -43,6 +43,7 @@ const (
 	VectorSearchService_ListIndexes_FullMethodName       = "/google.cloud.vectorsearch.v1beta.VectorSearchService/ListIndexes"
 	VectorSearchService_GetIndex_FullMethodName          = "/google.cloud.vectorsearch.v1beta.VectorSearchService/GetIndex"
 	VectorSearchService_CreateIndex_FullMethodName       = "/google.cloud.vectorsearch.v1beta.VectorSearchService/CreateIndex"
+	VectorSearchService_UpdateIndex_FullMethodName       = "/google.cloud.vectorsearch.v1beta.VectorSearchService/UpdateIndex"
 	VectorSearchService_DeleteIndex_FullMethodName       = "/google.cloud.vectorsearch.v1beta.VectorSearchService/DeleteIndex"
 	VectorSearchService_ImportDataObjects_FullMethodName = "/google.cloud.vectorsearch.v1beta.VectorSearchService/ImportDataObjects"
 	VectorSearchService_ExportDataObjects_FullMethodName = "/google.cloud.vectorsearch.v1beta.VectorSearchService/ExportDataObjects"
@@ -68,6 +69,8 @@ type VectorSearchServiceClient interface {
 	GetIndex(ctx context.Context, in *GetIndexRequest, opts ...grpc.CallOption) (*Index, error)
 	// Creates a new Index in a given project and location.
 	CreateIndex(ctx context.Context, in *CreateIndexRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Updates the parameters of a single Index.
+	UpdateIndex(ctx context.Context, in *UpdateIndexRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single Index.
 	DeleteIndex(ctx context.Context, in *DeleteIndexRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Initiates a Long-Running Operation to import DataObjects into a Collection.
@@ -156,6 +159,15 @@ func (c *vectorSearchServiceClient) CreateIndex(ctx context.Context, in *CreateI
 	return out, nil
 }
 
+func (c *vectorSearchServiceClient) UpdateIndex(ctx context.Context, in *UpdateIndexRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, VectorSearchService_UpdateIndex_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *vectorSearchServiceClient) DeleteIndex(ctx context.Context, in *DeleteIndexRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, VectorSearchService_DeleteIndex_FullMethodName, in, out, opts...)
@@ -203,6 +215,8 @@ type VectorSearchServiceServer interface {
 	GetIndex(context.Context, *GetIndexRequest) (*Index, error)
 	// Creates a new Index in a given project and location.
 	CreateIndex(context.Context, *CreateIndexRequest) (*longrunningpb.Operation, error)
+	// Updates the parameters of a single Index.
+	UpdateIndex(context.Context, *UpdateIndexRequest) (*longrunningpb.Operation, error)
 	// Deletes a single Index.
 	DeleteIndex(context.Context, *DeleteIndexRequest) (*longrunningpb.Operation, error)
 	// Initiates a Long-Running Operation to import DataObjects into a Collection.
@@ -238,6 +252,9 @@ func (UnimplementedVectorSearchServiceServer) GetIndex(context.Context, *GetInde
 }
 func (UnimplementedVectorSearchServiceServer) CreateIndex(context.Context, *CreateIndexRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateIndex not implemented")
+}
+func (UnimplementedVectorSearchServiceServer) UpdateIndex(context.Context, *UpdateIndexRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateIndex not implemented")
 }
 func (UnimplementedVectorSearchServiceServer) DeleteIndex(context.Context, *DeleteIndexRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteIndex not implemented")
@@ -404,6 +421,24 @@ func _VectorSearchService_CreateIndex_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _VectorSearchService_UpdateIndex_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateIndexRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VectorSearchServiceServer).UpdateIndex(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: VectorSearchService_UpdateIndex_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VectorSearchServiceServer).UpdateIndex(ctx, req.(*UpdateIndexRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _VectorSearchService_DeleteIndex_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteIndexRequest)
 	if err := dec(in); err != nil {
@@ -496,6 +531,10 @@ var VectorSearchService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateIndex",
 			Handler:    _VectorSearchService_CreateIndex_Handler,
+		},
+		{
+			MethodName: "UpdateIndex",
+			Handler:    _VectorSearchService_UpdateIndex_Handler,
 		},
 		{
 			MethodName: "DeleteIndex",

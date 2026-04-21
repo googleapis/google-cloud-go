@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -390,12 +390,12 @@ func (x *GetAccountRequest) GetName() string {
 // Request message for ListAccounts RPC.
 type ListAccountsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The maximum number of resources to return. The service may return
+	// Optional. The maximum number of resources to return. The service may return
 	// fewer than this value, even if there are additional pages.
 	// If unspecified, at most 50 resources will be returned.
 	// The maximum value is 200; (higher values will be coerced to the maximum)
 	PageSize int32 `protobuf:"varint,1,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// A page token, received from a previous `ListAccounts` call.
+	// Optional. A page token, received from a previous `ListAccounts` call.
 	// Provide this to retrieve the subsequent page.
 	// When paginating, all other parameters provided to `ListAccounts` must
 	// match the call that provided the page token.
@@ -792,12 +792,12 @@ type ListPropertiesRequest struct {
 	// | firebase_project:123        | The firebase project with number: 123.    |
 	// ```
 	Filter string `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
-	// The maximum number of resources to return. The service may return
+	// Optional. The maximum number of resources to return. The service may return
 	// fewer than this value, even if there are additional pages.
 	// If unspecified, at most 50 resources will be returned.
 	// The maximum value is 200; (higher values will be coerced to the maximum)
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// A page token, received from a previous `ListProperties` call.
+	// Optional. A page token, received from a previous `ListProperties` call.
 	// Provide this to retrieve the subsequent page.
 	// When paginating, all other parameters provided to `ListProperties` must
 	// match the call that provided the page token.
@@ -1191,12 +1191,12 @@ type ListFirebaseLinksRequest struct {
 	//
 	// Example: `properties/1234`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// The maximum number of resources to return. The service may return
+	// Optional. The maximum number of resources to return. The service may return
 	// fewer than this value, even if there are additional pages.
 	// If unspecified, at most 50 resources will be returned.
 	// The maximum value is 200; (higher values will be coerced to the maximum)
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// A page token, received from a previous `ListFirebaseLinks` call.
+	// Optional. A page token, received from a previous `ListFirebaseLinks` call.
 	// Provide this to retrieve the subsequent page.
 	// When paginating, all other parameters provided to `ListFirebaseLinks` must
 	// match the call that provided the page token.
@@ -1528,11 +1528,11 @@ type ListGoogleAdsLinksRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. Example format: properties/1234
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// The maximum number of resources to return.
+	// Optional. The maximum number of resources to return.
 	// If unspecified, at most 50 resources will be returned.
 	// The maximum value is 200 (higher values will be coerced to the maximum).
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// A page token, received from a previous `ListGoogleAdsLinks` call.
+	// Optional. A page token, received from a previous `ListGoogleAdsLinks` call.
 	// Provide this to retrieve the subsequent page.
 	//
 	// When paginating, all other parameters provided to `ListGoogleAdsLinks` must
@@ -1701,15 +1701,15 @@ func (x *GetDataSharingSettingsRequest) GetName() string {
 // Request message for ListAccountSummaries RPC.
 type ListAccountSummariesRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The maximum number of AccountSummary resources to return. The service may
-	// return fewer than this value, even if there are additional pages.
-	// If unspecified, at most 50 resources will be returned.
-	// The maximum value is 200; (higher values will be coerced to the maximum)
+	// Optional. The maximum number of AccountSummary resources to return. The
+	// service may return fewer than this value, even if there are additional
+	// pages. If unspecified, at most 50 resources will be returned. The maximum
+	// value is 200; (higher values will be coerced to the maximum)
 	PageSize int32 `protobuf:"varint,1,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// A page token, received from a previous `ListAccountSummaries` call.
-	// Provide this to retrieve the subsequent page.
-	// When paginating, all other parameters provided to `ListAccountSummaries`
-	// must match the call that provided the page token.
+	// Optional. A page token, received from a previous `ListAccountSummaries`
+	// call. Provide this to retrieve the subsequent page. When paginating, all
+	// other parameters provided to `ListAccountSummaries` must match the call
+	// that provided the page token.
 	PageToken     string `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -2325,14 +2325,15 @@ type ListMeasurementProtocolSecretsRequest struct {
 	// Format:
 	// properties/{property}/dataStreams/{dataStream}/measurementProtocolSecrets
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// The maximum number of resources to return.
+	// Optional. The maximum number of resources to return.
 	// If unspecified, at most 10 resources will be returned.
 	// The maximum value is 10. Higher values will be coerced to the maximum.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// A page token, received from a previous `ListMeasurementProtocolSecrets`
-	// call. Provide this to retrieve the subsequent page. When paginating, all
-	// other parameters provided to `ListMeasurementProtocolSecrets` must match
-	// the call that provided the page token.
+	// Optional. A page token, received from a previous
+	// `ListMeasurementProtocolSecrets` call. Provide this to retrieve the
+	// subsequent page. When paginating, all other parameters provided to
+	// `ListMeasurementProtocolSecrets` must match the call that provided the page
+	// token.
 	PageToken     string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -2661,12 +2662,12 @@ type ListSKAdNetworkConversionValueSchemasRequest struct {
 	// properties/{property_id}/dataStreams/{dataStream}
 	// Example: properties/1234/dataStreams/5678
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// The maximum number of resources to return. The service may return
+	// Optional. The maximum number of resources to return. The service may return
 	// fewer than this value, even if there are additional pages.
 	// If unspecified, at most 50 resources will be returned.
 	// The maximum value is 200; (higher values will be coerced to the maximum)
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// A page token, received from a previous
+	// Optional. A page token, received from a previous
 	// `ListSKAdNetworkConversionValueSchemas` call. Provide this to retrieve the
 	// subsequent page. When paginating, all other parameters provided to
 	// `ListSKAdNetworkConversionValueSchema` must match the call that provided
@@ -3110,14 +3111,14 @@ type ListConversionEventsRequest struct {
 	// Required. The resource name of the parent property.
 	// Example: 'properties/123'
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// The maximum number of resources to return.
+	// Optional. The maximum number of resources to return.
 	// If unspecified, at most 50 resources will be returned.
 	// The maximum value is 200; (higher values will be coerced to the maximum)
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// A page token, received from a previous `ListConversionEvents` call.
-	// Provide this to retrieve the subsequent page.
-	// When paginating, all other parameters provided to `ListConversionEvents`
-	// must match the call that provided the page token.
+	// Optional. A page token, received from a previous `ListConversionEvents`
+	// call. Provide this to retrieve the subsequent page. When paginating, all
+	// other parameters provided to `ListConversionEvents` must match the call
+	// that provided the page token.
 	PageToken     string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -3447,11 +3448,11 @@ type ListKeyEventsRequest struct {
 	// Required. The resource name of the parent property.
 	// Example: 'properties/123'
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// The maximum number of resources to return.
+	// Optional. The maximum number of resources to return.
 	// If unspecified, at most 50 resources will be returned.
 	// The maximum value is 200; (higher values will be coerced to the maximum)
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// A page token, received from a previous `ListKeyEvents` call.
+	// Optional. A page token, received from a previous `ListKeyEvents` call.
 	// Provide this to retrieve the subsequent page.
 	// When paginating, all other parameters provided to `ListKeyEvents`
 	// must match the call that provided the page token.
@@ -4768,12 +4769,12 @@ type ListCustomDimensionsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. Example format: properties/1234
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// The maximum number of resources to return.
+	// Optional. The maximum number of resources to return.
 	// If unspecified, at most 50 resources will be returned.
 	// The maximum value is 200 (higher values will be coerced to the maximum).
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// A page token, received from a previous `ListCustomDimensions` call.
-	// Provide this to retrieve the subsequent page.
+	// Optional. A page token, received from a previous `ListCustomDimensions`
+	// call. Provide this to retrieve the subsequent page.
 	//
 	// When paginating, all other parameters provided to `ListCustomDimensions`
 	// must match the call that provided the page token.
@@ -11217,6 +11218,53 @@ func (x *GetReportingIdentitySettingsRequest) GetName() string {
 	return ""
 }
 
+// Request message for GetUserProvidedDataSettings RPC
+type GetUserProvidedDataSettingsRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The name of the user provided data settings to retrieve.
+	// Format: properties/{property}/userProvidedDataSettings
+	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetUserProvidedDataSettingsRequest) Reset() {
+	*x = GetUserProvidedDataSettingsRequest{}
+	mi := &file_google_analytics_admin_v1alpha_analytics_admin_proto_msgTypes[193]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetUserProvidedDataSettingsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetUserProvidedDataSettingsRequest) ProtoMessage() {}
+
+func (x *GetUserProvidedDataSettingsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_analytics_admin_v1alpha_analytics_admin_proto_msgTypes[193]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetUserProvidedDataSettingsRequest.ProtoReflect.Descriptor instead.
+func (*GetUserProvidedDataSettingsRequest) Descriptor() ([]byte, []int) {
+	return file_google_analytics_admin_v1alpha_analytics_admin_proto_rawDescGZIP(), []int{193}
+}
+
+func (x *GetUserProvidedDataSettingsRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
 var File_google_analytics_admin_v1alpha_analytics_admin_proto protoreflect.FileDescriptor
 
 const file_google_analytics_admin_v1alpha_analytics_admin_proto_rawDesc = "" +
@@ -11248,11 +11296,11 @@ const file_google_analytics_admin_v1alpha_analytics_admin_proto_rawDesc = "" +
 	"\x05quota\x18\x05 \x01(\v2+.google.analytics.admin.v1alpha.AccessQuotaR\x05quota\"V\n" +
 	"\x11GetAccountRequest\x12A\n" +
 	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%analyticsadmin.googleapis.com/AccountR\x04name\"t\n" +
-	"\x13ListAccountsRequest\x12\x1b\n" +
-	"\tpage_size\x18\x01 \x01(\x05R\bpageSize\x12\x1d\n" +
+	"%analyticsadmin.googleapis.com/AccountR\x04name\"~\n" +
+	"\x13ListAccountsRequest\x12 \n" +
+	"\tpage_size\x18\x01 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
-	"page_token\x18\x02 \x01(\tR\tpageToken\x12!\n" +
+	"page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\tpageToken\x12!\n" +
 	"\fshow_deleted\x18\x03 \x01(\bR\vshowDeleted\"\x83\x01\n" +
 	"\x14ListAccountsResponse\x12C\n" +
 	"\baccounts\x18\x01 \x03(\v2'.google.analytics.admin.v1alpha.AccountR\baccounts\x12&\n" +
@@ -11271,12 +11319,12 @@ const file_google_analytics_admin_v1alpha_analytics_admin_proto_rawDesc = "" +
 	"\x11account_ticket_id\x18\x01 \x01(\tR\x0faccountTicketId\"X\n" +
 	"\x12GetPropertyRequest\x12B\n" +
 	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&analyticsadmin.googleapis.com/PropertyR\x04name\"\x93\x01\n" +
+	"&analyticsadmin.googleapis.com/PropertyR\x04name\"\x9d\x01\n" +
 	"\x15ListPropertiesRequest\x12\x1b\n" +
-	"\x06filter\x18\x01 \x01(\tB\x03\xe0A\x02R\x06filter\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
+	"\x06filter\x18\x01 \x01(\tB\x03\xe0A\x02R\x06filter\x12 \n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\x12!\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12!\n" +
 	"\fshow_deleted\x18\x04 \x01(\bR\vshowDeleted\"\x8a\x01\n" +
 	"\x16ListPropertiesResponse\x12H\n" +
 	"\n" +
@@ -11297,12 +11345,12 @@ const file_google_analytics_admin_v1alpha_analytics_admin_proto_rawDesc = "" +
 	"\rfirebase_link\x18\x02 \x01(\v2,.google.analytics.admin.v1alpha.FirebaseLinkB\x03\xe0A\x02R\ffirebaseLink\"c\n" +
 	"\x19DeleteFirebaseLinkRequest\x12F\n" +
 	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*analyticsadmin.googleapis.com/FirebaseLinkR\x04name\"\xa2\x01\n" +
+	"*analyticsadmin.googleapis.com/FirebaseLinkR\x04name\"\xac\x01\n" +
 	"\x18ListFirebaseLinksRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*analyticsadmin.googleapis.com/FirebaseLinkR\x06parent\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*analyticsadmin.googleapis.com/FirebaseLinkR\x06parent\x12 \n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\"\x98\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x98\x01\n" +
 	"\x19ListFirebaseLinksResponse\x12S\n" +
 	"\x0efirebase_links\x18\x01 \x03(\v2,.google.analytics.admin.v1alpha.FirebaseLinkR\rfirebaseLinks\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"b\n" +
@@ -11318,22 +11366,22 @@ const file_google_analytics_admin_v1alpha_analytics_admin_proto_rawDesc = "" +
 	"updateMask\"e\n" +
 	"\x1aDeleteGoogleAdsLinkRequest\x12G\n" +
 	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+analyticsadmin.googleapis.com/GoogleAdsLinkR\x04name\"\xa4\x01\n" +
+	"+analyticsadmin.googleapis.com/GoogleAdsLinkR\x04name\"\xae\x01\n" +
 	"\x19ListGoogleAdsLinksRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+analyticsadmin.googleapis.com/GoogleAdsLinkR\x06parent\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+analyticsadmin.googleapis.com/GoogleAdsLinkR\x06parent\x12 \n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\"\x9d\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x9d\x01\n" +
 	"\x1aListGoogleAdsLinksResponse\x12W\n" +
 	"\x10google_ads_links\x18\x01 \x03(\v2-.google.analytics.admin.v1alpha.GoogleAdsLinkR\x0egoogleAdsLinks\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"n\n" +
 	"\x1dGetDataSharingSettingsRequest\x12M\n" +
 	"\x04name\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
-	"1analyticsadmin.googleapis.com/DataSharingSettingsR\x04name\"Y\n" +
-	"\x1bListAccountSummariesRequest\x12\x1b\n" +
-	"\tpage_size\x18\x01 \x01(\x05R\bpageSize\x12\x1d\n" +
+	"1analyticsadmin.googleapis.com/DataSharingSettingsR\x04name\"c\n" +
+	"\x1bListAccountSummariesRequest\x12 \n" +
+	"\tpage_size\x18\x01 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
-	"page_token\x18\x02 \x01(\tR\tpageToken\"\xa3\x01\n" +
+	"page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xa3\x01\n" +
 	"\x1cListAccountSummariesResponse\x12[\n" +
 	"\x11account_summaries\x18\x01 \x03(\v2..google.analytics.admin.v1alpha.AccountSummaryR\x10accountSummaries\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa1\x01\n" +
@@ -11371,12 +11419,12 @@ const file_google_analytics_admin_v1alpha_analytics_admin_proto_rawDesc = "" +
 	"&UpdateMeasurementProtocolSecretRequest\x12~\n" +
 	"\x1bmeasurement_protocol_secret\x18\x01 \x01(\v29.google.analytics.admin.v1alpha.MeasurementProtocolSecretB\x03\xe0A\x02R\x19measurementProtocolSecret\x12@\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\xbc\x01\n" +
+	"updateMask\"\xc6\x01\n" +
 	"%ListMeasurementProtocolSecretsRequest\x12W\n" +
-	"\x06parent\x18\x01 \x01(\tB?\xe0A\x02\xfaA9\x127analyticsadmin.googleapis.com/MeasurementProtocolSecretR\x06parent\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
+	"\x06parent\x18\x01 \x01(\tB?\xe0A\x02\xfaA9\x127analyticsadmin.googleapis.com/MeasurementProtocolSecretR\x06parent\x12 \n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\"\xcd\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xcd\x01\n" +
 	"&ListMeasurementProtocolSecretsResponse\x12{\n" +
 	"\x1cmeasurement_protocol_secrets\x18\x01 \x03(\v29.google.analytics.admin.v1alpha.MeasurementProtocolSecretR\x1ameasurementProtocolSecrets\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x88\x01\n" +
@@ -11392,12 +11440,12 @@ const file_google_analytics_admin_v1alpha_analytics_admin_proto_rawDesc = "" +
 	"-UpdateSKAdNetworkConversionValueSchemaRequest\x12\x94\x01\n" +
 	"#skadnetwork_conversion_value_schema\x18\x01 \x01(\v2@.google.analytics.admin.v1alpha.SKAdNetworkConversionValueSchemaB\x03\xe0A\x02R skadnetworkConversionValueSchema\x12@\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\xca\x01\n" +
+	"updateMask\"\xd4\x01\n" +
 	",ListSKAdNetworkConversionValueSchemasRequest\x12^\n" +
-	"\x06parent\x18\x01 \x01(\tBF\xe0A\x02\xfaA@\x12>analyticsadmin.googleapis.com/SKAdNetworkConversionValueSchemaR\x06parent\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
+	"\x06parent\x18\x01 \x01(\tBF\xe0A\x02\xfaA@\x12>analyticsadmin.googleapis.com/SKAdNetworkConversionValueSchemaR\x06parent\x12 \n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\"\xeb\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xeb\x01\n" +
 	"-ListSKAdNetworkConversionValueSchemasResponse\x12\x91\x01\n" +
 	"$skadnetwork_conversion_value_schemas\x18\x01 \x03(\v2@.google.analytics.admin.v1alpha.SKAdNetworkConversionValueSchemaR!skadnetworkConversionValueSchemas\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"r\n" +
@@ -11420,12 +11468,12 @@ const file_google_analytics_admin_v1alpha_analytics_admin_proto_rawDesc = "" +
 	"-analyticsadmin.googleapis.com/ConversionEventR\x04name\"i\n" +
 	"\x1cDeleteConversionEventRequest\x12I\n" +
 	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-analyticsadmin.googleapis.com/ConversionEventR\x04name\"\xa8\x01\n" +
+	"-analyticsadmin.googleapis.com/ConversionEventR\x04name\"\xb2\x01\n" +
 	"\x1bListConversionEventsRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\x12-analyticsadmin.googleapis.com/ConversionEventR\x06parent\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\x12-analyticsadmin.googleapis.com/ConversionEventR\x06parent\x12 \n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\"\xa4\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xa4\x01\n" +
 	"\x1cListConversionEventsResponse\x12\\\n" +
 	"\x11conversion_events\x18\x01 \x03(\v2/.google.analytics.admin.v1alpha.ConversionEventR\x10conversionEvents\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xab\x01\n" +
@@ -11441,12 +11489,12 @@ const file_google_analytics_admin_v1alpha_analytics_admin_proto_rawDesc = "" +
 	"&analyticsadmin.googleapis.com/KeyEventR\x04name\"[\n" +
 	"\x15DeleteKeyEventRequest\x12B\n" +
 	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&analyticsadmin.googleapis.com/KeyEventR\x04name\"\x9a\x01\n" +
+	"&analyticsadmin.googleapis.com/KeyEventR\x04name\"\xa4\x01\n" +
 	"\x14ListKeyEventsRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&analyticsadmin.googleapis.com/KeyEventR\x06parent\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&analyticsadmin.googleapis.com/KeyEventR\x06parent\x12 \n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\"\x88\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x88\x01\n" +
 	"\x15ListKeyEventsResponse\x12G\n" +
 	"\n" +
 	"key_events\x18\x01 \x03(\v2(.google.analytics.admin.v1alpha.KeyEventR\tkeyEvents\x12&\n" +
@@ -11524,12 +11572,12 @@ const file_google_analytics_admin_v1alpha_analytics_admin_proto_rawDesc = "" +
 	"\x1cUpdateCustomDimensionRequest\x12Z\n" +
 	"\x10custom_dimension\x18\x01 \x01(\v2/.google.analytics.admin.v1alpha.CustomDimensionR\x0fcustomDimension\x12@\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\xa8\x01\n" +
+	"updateMask\"\xb2\x01\n" +
 	"\x1bListCustomDimensionsRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\x12-analyticsadmin.googleapis.com/CustomDimensionR\x06parent\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\x12-analyticsadmin.googleapis.com/CustomDimensionR\x06parent\x12 \n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\"\xa4\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xa4\x01\n" +
 	"\x1cListCustomDimensionsResponse\x12\\\n" +
 	"\x11custom_dimensions\x18\x01 \x03(\v2/.google.analytics.admin.v1alpha.CustomDimensionR\x10customDimensions\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"j\n" +
@@ -11916,7 +11964,10 @@ const file_google_analytics_admin_v1alpha_analytics_admin_proto_rawDesc = "" +
 	"updateMask\"z\n" +
 	"#GetReportingIdentitySettingsRequest\x12S\n" +
 	"\x04name\x18\x01 \x01(\tB?\xe0A\x02\xfaA9\n" +
-	"7analyticsadmin.googleapis.com/ReportingIdentitySettingsR\x04name2\xa4\x97\x02\n" +
+	"7analyticsadmin.googleapis.com/ReportingIdentitySettingsR\x04name\"x\n" +
+	"\"GetUserProvidedDataSettingsRequest\x12R\n" +
+	"\x04name\x18\x01 \x01(\tB>\xe0A\x02\xfaA8\n" +
+	"6analyticsadmin.googleapis.com/UserProvidedDataSettingsR\x04name2\x88\x99\x02\n" +
 	"\x15AnalyticsAdminService\x12\x93\x01\n" +
 	"\n" +
 	"GetAccount\x121.google.analytics.admin.v1alpha.GetAccountRequest\x1a'.google.analytics.admin.v1alpha.Account\")\xdaA\x04name\x82\xd3\xe4\x93\x02\x1c\x12\x1a/v1alpha/{name=accounts/*}\x12\x94\x01\n" +
@@ -12072,7 +12123,8 @@ const file_google_analytics_admin_v1alpha_analytics_admin_proto_rawDesc = "" +
 	"\x1aListSubpropertySyncConfigs\x12A.google.analytics.admin.v1alpha.ListSubpropertySyncConfigsRequest\x1aB.google.analytics.admin.v1alpha.ListSubpropertySyncConfigsResponse\"F\xdaA\x06parent\x82\xd3\xe4\x93\x027\x125/v1alpha/{parent=properties/*}/subpropertySyncConfigs\x12\xaf\x02\n" +
 	"\x1bUpdateSubpropertySyncConfig\x12B.google.analytics.admin.v1alpha.UpdateSubpropertySyncConfigRequest\x1a5.google.analytics.admin.v1alpha.SubpropertySyncConfig\"\x94\x01\xdaA#subproperty_sync_config,update_mask\x82\xd3\xe4\x93\x02h:\x17subproperty_sync_config2M/v1alpha/{subproperty_sync_config.name=properties/*/subpropertySyncConfigs/*}\x12\xd8\x01\n" +
 	"\x18GetSubpropertySyncConfig\x12?.google.analytics.admin.v1alpha.GetSubpropertySyncConfigRequest\x1a5.google.analytics.admin.v1alpha.SubpropertySyncConfig\"D\xdaA\x04name\x82\xd3\xe4\x93\x027\x125/v1alpha/{name=properties/*/subpropertySyncConfigs/*}\x12\xe5\x01\n" +
-	"\x1cGetReportingIdentitySettings\x12C.google.analytics.admin.v1alpha.GetReportingIdentitySettingsRequest\x1a9.google.analytics.admin.v1alpha.ReportingIdentitySettings\"E\xdaA\x04name\x82\xd3\xe4\x93\x028\x126/v1alpha/{name=properties/*/reportingIdentitySettings}\x1a\xfc\x01\xcaA\x1danalyticsadmin.googleapis.com\xd2A\xd8\x01https://www.googleapis.com/auth/analytics.edit,https://www.googleapis.com/auth/analytics.manage.users,https://www.googleapis.com/auth/analytics.manage.users.readonly,https://www.googleapis.com/auth/analytics.readonlyB{\n" +
+	"\x1cGetReportingIdentitySettings\x12C.google.analytics.admin.v1alpha.GetReportingIdentitySettingsRequest\x1a9.google.analytics.admin.v1alpha.ReportingIdentitySettings\"E\xdaA\x04name\x82\xd3\xe4\x93\x028\x126/v1alpha/{name=properties/*/reportingIdentitySettings}\x12\xe1\x01\n" +
+	"\x1bGetUserProvidedDataSettings\x12B.google.analytics.admin.v1alpha.GetUserProvidedDataSettingsRequest\x1a8.google.analytics.admin.v1alpha.UserProvidedDataSettings\"D\xdaA\x04name\x82\xd3\xe4\x93\x027\x125/v1alpha/{name=properties/*/userProvidedDataSettings}\x1a\xfc\x01\xcaA\x1danalyticsadmin.googleapis.com\xd2A\xd8\x01https://www.googleapis.com/auth/analytics.edit,https://www.googleapis.com/auth/analytics.manage.users,https://www.googleapis.com/auth/analytics.manage.users.readonly,https://www.googleapis.com/auth/analytics.readonlyB{\n" +
 	"\"com.google.analytics.admin.v1alphaB\x13AnalyticsAdminProtoP\x01Z>cloud.google.com/go/analytics/admin/apiv1alpha/adminpb;adminpbb\x06proto3"
 
 var (
@@ -12087,7 +12139,7 @@ func file_google_analytics_admin_v1alpha_analytics_admin_proto_rawDescGZIP() []b
 	return file_google_analytics_admin_v1alpha_analytics_admin_proto_rawDescData
 }
 
-var file_google_analytics_admin_v1alpha_analytics_admin_proto_msgTypes = make([]protoimpl.MessageInfo, 193)
+var file_google_analytics_admin_v1alpha_analytics_admin_proto_msgTypes = make([]protoimpl.MessageInfo, 194)
 var file_google_analytics_admin_v1alpha_analytics_admin_proto_goTypes = []any{
 	(*RunAccessReportRequest)(nil),                               // 0: google.analytics.admin.v1alpha.RunAccessReportRequest
 	(*RunAccessReportResponse)(nil),                              // 1: google.analytics.admin.v1alpha.RunAccessReportResponse
@@ -12282,200 +12334,202 @@ var file_google_analytics_admin_v1alpha_analytics_admin_proto_goTypes = []any{
 	(*ListSubpropertySyncConfigsResponse)(nil),                   // 190: google.analytics.admin.v1alpha.ListSubpropertySyncConfigsResponse
 	(*UpdateSubpropertySyncConfigRequest)(nil),                   // 191: google.analytics.admin.v1alpha.UpdateSubpropertySyncConfigRequest
 	(*GetReportingIdentitySettingsRequest)(nil),                  // 192: google.analytics.admin.v1alpha.GetReportingIdentitySettingsRequest
-	(*AccessDimension)(nil),                                      // 193: google.analytics.admin.v1alpha.AccessDimension
-	(*AccessMetric)(nil),                                         // 194: google.analytics.admin.v1alpha.AccessMetric
-	(*AccessDateRange)(nil),                                      // 195: google.analytics.admin.v1alpha.AccessDateRange
-	(*AccessFilterExpression)(nil),                               // 196: google.analytics.admin.v1alpha.AccessFilterExpression
-	(*AccessOrderBy)(nil),                                        // 197: google.analytics.admin.v1alpha.AccessOrderBy
-	(*AccessDimensionHeader)(nil),                                // 198: google.analytics.admin.v1alpha.AccessDimensionHeader
-	(*AccessMetricHeader)(nil),                                   // 199: google.analytics.admin.v1alpha.AccessMetricHeader
-	(*AccessRow)(nil),                                            // 200: google.analytics.admin.v1alpha.AccessRow
-	(*AccessQuota)(nil),                                          // 201: google.analytics.admin.v1alpha.AccessQuota
-	(*Account)(nil),                                              // 202: google.analytics.admin.v1alpha.Account
-	(*fieldmaskpb.FieldMask)(nil),                                // 203: google.protobuf.FieldMask
-	(*Property)(nil),                                             // 204: google.analytics.admin.v1alpha.Property
-	(*FirebaseLink)(nil),                                         // 205: google.analytics.admin.v1alpha.FirebaseLink
-	(*GoogleAdsLink)(nil),                                        // 206: google.analytics.admin.v1alpha.GoogleAdsLink
-	(*AccountSummary)(nil),                                       // 207: google.analytics.admin.v1alpha.AccountSummary
-	(ChangeHistoryResourceType)(0),                               // 208: google.analytics.admin.v1alpha.ChangeHistoryResourceType
-	(ActionType)(0),                                              // 209: google.analytics.admin.v1alpha.ActionType
-	(*timestamppb.Timestamp)(nil),                                // 210: google.protobuf.Timestamp
-	(*ChangeHistoryEvent)(nil),                                   // 211: google.analytics.admin.v1alpha.ChangeHistoryEvent
-	(*MeasurementProtocolSecret)(nil),                            // 212: google.analytics.admin.v1alpha.MeasurementProtocolSecret
-	(*SKAdNetworkConversionValueSchema)(nil),                     // 213: google.analytics.admin.v1alpha.SKAdNetworkConversionValueSchema
-	(*GoogleSignalsSettings)(nil),                                // 214: google.analytics.admin.v1alpha.GoogleSignalsSettings
-	(*ConversionEvent)(nil),                                      // 215: google.analytics.admin.v1alpha.ConversionEvent
-	(*KeyEvent)(nil),                                             // 216: google.analytics.admin.v1alpha.KeyEvent
-	(*DisplayVideo360AdvertiserLink)(nil),                        // 217: google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLink
-	(*DisplayVideo360AdvertiserLinkProposal)(nil),                // 218: google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLinkProposal
-	(*SearchAds360Link)(nil),                                     // 219: google.analytics.admin.v1alpha.SearchAds360Link
-	(*CustomDimension)(nil),                                      // 220: google.analytics.admin.v1alpha.CustomDimension
-	(*CustomMetric)(nil),                                         // 221: google.analytics.admin.v1alpha.CustomMetric
-	(*CalculatedMetric)(nil),                                     // 222: google.analytics.admin.v1alpha.CalculatedMetric
-	(*DataRetentionSettings)(nil),                                // 223: google.analytics.admin.v1alpha.DataRetentionSettings
-	(*DataStream)(nil),                                           // 224: google.analytics.admin.v1alpha.DataStream
-	(*Audience)(nil),                                             // 225: google.analytics.admin.v1alpha.Audience
-	(*AttributionSettings)(nil),                                  // 226: google.analytics.admin.v1alpha.AttributionSettings
-	(*AccessBinding)(nil),                                        // 227: google.analytics.admin.v1alpha.AccessBinding
-	(*ExpandedDataSet)(nil),                                      // 228: google.analytics.admin.v1alpha.ExpandedDataSet
-	(*ChannelGroup)(nil),                                         // 229: google.analytics.admin.v1alpha.ChannelGroup
-	(*BigQueryLink)(nil),                                         // 230: google.analytics.admin.v1alpha.BigQueryLink
-	(*EnhancedMeasurementSettings)(nil),                          // 231: google.analytics.admin.v1alpha.EnhancedMeasurementSettings
-	(*DataRedactionSettings)(nil),                                // 232: google.analytics.admin.v1alpha.DataRedactionSettings
-	(*AdSenseLink)(nil),                                          // 233: google.analytics.admin.v1alpha.AdSenseLink
-	(*EventCreateRule)(nil),                                      // 234: google.analytics.admin.v1alpha.EventCreateRule
-	(*EventEditRule)(nil),                                        // 235: google.analytics.admin.v1alpha.EventEditRule
-	(*RollupPropertySourceLink)(nil),                             // 236: google.analytics.admin.v1alpha.RollupPropertySourceLink
-	(*SubpropertyEventFilter)(nil),                               // 237: google.analytics.admin.v1alpha.SubpropertyEventFilter
-	(SubpropertySyncConfig_SynchronizationMode)(0),               // 238: google.analytics.admin.v1alpha.SubpropertySyncConfig.SynchronizationMode
-	(*ReportingDataAnnotation)(nil),                              // 239: google.analytics.admin.v1alpha.ReportingDataAnnotation
-	(*SubpropertySyncConfig)(nil),                                // 240: google.analytics.admin.v1alpha.SubpropertySyncConfig
-	(*emptypb.Empty)(nil),                                        // 241: google.protobuf.Empty
-	(*GlobalSiteTag)(nil),                                        // 242: google.analytics.admin.v1alpha.GlobalSiteTag
-	(*DataSharingSettings)(nil),                                  // 243: google.analytics.admin.v1alpha.DataSharingSettings
-	(*ReportingIdentitySettings)(nil),                            // 244: google.analytics.admin.v1alpha.ReportingIdentitySettings
+	(*GetUserProvidedDataSettingsRequest)(nil),                   // 193: google.analytics.admin.v1alpha.GetUserProvidedDataSettingsRequest
+	(*AccessDimension)(nil),                                      // 194: google.analytics.admin.v1alpha.AccessDimension
+	(*AccessMetric)(nil),                                         // 195: google.analytics.admin.v1alpha.AccessMetric
+	(*AccessDateRange)(nil),                                      // 196: google.analytics.admin.v1alpha.AccessDateRange
+	(*AccessFilterExpression)(nil),                               // 197: google.analytics.admin.v1alpha.AccessFilterExpression
+	(*AccessOrderBy)(nil),                                        // 198: google.analytics.admin.v1alpha.AccessOrderBy
+	(*AccessDimensionHeader)(nil),                                // 199: google.analytics.admin.v1alpha.AccessDimensionHeader
+	(*AccessMetricHeader)(nil),                                   // 200: google.analytics.admin.v1alpha.AccessMetricHeader
+	(*AccessRow)(nil),                                            // 201: google.analytics.admin.v1alpha.AccessRow
+	(*AccessQuota)(nil),                                          // 202: google.analytics.admin.v1alpha.AccessQuota
+	(*Account)(nil),                                              // 203: google.analytics.admin.v1alpha.Account
+	(*fieldmaskpb.FieldMask)(nil),                                // 204: google.protobuf.FieldMask
+	(*Property)(nil),                                             // 205: google.analytics.admin.v1alpha.Property
+	(*FirebaseLink)(nil),                                         // 206: google.analytics.admin.v1alpha.FirebaseLink
+	(*GoogleAdsLink)(nil),                                        // 207: google.analytics.admin.v1alpha.GoogleAdsLink
+	(*AccountSummary)(nil),                                       // 208: google.analytics.admin.v1alpha.AccountSummary
+	(ChangeHistoryResourceType)(0),                               // 209: google.analytics.admin.v1alpha.ChangeHistoryResourceType
+	(ActionType)(0),                                              // 210: google.analytics.admin.v1alpha.ActionType
+	(*timestamppb.Timestamp)(nil),                                // 211: google.protobuf.Timestamp
+	(*ChangeHistoryEvent)(nil),                                   // 212: google.analytics.admin.v1alpha.ChangeHistoryEvent
+	(*MeasurementProtocolSecret)(nil),                            // 213: google.analytics.admin.v1alpha.MeasurementProtocolSecret
+	(*SKAdNetworkConversionValueSchema)(nil),                     // 214: google.analytics.admin.v1alpha.SKAdNetworkConversionValueSchema
+	(*GoogleSignalsSettings)(nil),                                // 215: google.analytics.admin.v1alpha.GoogleSignalsSettings
+	(*ConversionEvent)(nil),                                      // 216: google.analytics.admin.v1alpha.ConversionEvent
+	(*KeyEvent)(nil),                                             // 217: google.analytics.admin.v1alpha.KeyEvent
+	(*DisplayVideo360AdvertiserLink)(nil),                        // 218: google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLink
+	(*DisplayVideo360AdvertiserLinkProposal)(nil),                // 219: google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLinkProposal
+	(*SearchAds360Link)(nil),                                     // 220: google.analytics.admin.v1alpha.SearchAds360Link
+	(*CustomDimension)(nil),                                      // 221: google.analytics.admin.v1alpha.CustomDimension
+	(*CustomMetric)(nil),                                         // 222: google.analytics.admin.v1alpha.CustomMetric
+	(*CalculatedMetric)(nil),                                     // 223: google.analytics.admin.v1alpha.CalculatedMetric
+	(*DataRetentionSettings)(nil),                                // 224: google.analytics.admin.v1alpha.DataRetentionSettings
+	(*DataStream)(nil),                                           // 225: google.analytics.admin.v1alpha.DataStream
+	(*Audience)(nil),                                             // 226: google.analytics.admin.v1alpha.Audience
+	(*AttributionSettings)(nil),                                  // 227: google.analytics.admin.v1alpha.AttributionSettings
+	(*AccessBinding)(nil),                                        // 228: google.analytics.admin.v1alpha.AccessBinding
+	(*ExpandedDataSet)(nil),                                      // 229: google.analytics.admin.v1alpha.ExpandedDataSet
+	(*ChannelGroup)(nil),                                         // 230: google.analytics.admin.v1alpha.ChannelGroup
+	(*BigQueryLink)(nil),                                         // 231: google.analytics.admin.v1alpha.BigQueryLink
+	(*EnhancedMeasurementSettings)(nil),                          // 232: google.analytics.admin.v1alpha.EnhancedMeasurementSettings
+	(*DataRedactionSettings)(nil),                                // 233: google.analytics.admin.v1alpha.DataRedactionSettings
+	(*AdSenseLink)(nil),                                          // 234: google.analytics.admin.v1alpha.AdSenseLink
+	(*EventCreateRule)(nil),                                      // 235: google.analytics.admin.v1alpha.EventCreateRule
+	(*EventEditRule)(nil),                                        // 236: google.analytics.admin.v1alpha.EventEditRule
+	(*RollupPropertySourceLink)(nil),                             // 237: google.analytics.admin.v1alpha.RollupPropertySourceLink
+	(*SubpropertyEventFilter)(nil),                               // 238: google.analytics.admin.v1alpha.SubpropertyEventFilter
+	(SubpropertySyncConfig_SynchronizationMode)(0),               // 239: google.analytics.admin.v1alpha.SubpropertySyncConfig.SynchronizationMode
+	(*ReportingDataAnnotation)(nil),                              // 240: google.analytics.admin.v1alpha.ReportingDataAnnotation
+	(*SubpropertySyncConfig)(nil),                                // 241: google.analytics.admin.v1alpha.SubpropertySyncConfig
+	(*emptypb.Empty)(nil),                                        // 242: google.protobuf.Empty
+	(*GlobalSiteTag)(nil),                                        // 243: google.analytics.admin.v1alpha.GlobalSiteTag
+	(*DataSharingSettings)(nil),                                  // 244: google.analytics.admin.v1alpha.DataSharingSettings
+	(*ReportingIdentitySettings)(nil),                            // 245: google.analytics.admin.v1alpha.ReportingIdentitySettings
+	(*UserProvidedDataSettings)(nil),                             // 246: google.analytics.admin.v1alpha.UserProvidedDataSettings
 }
 var file_google_analytics_admin_v1alpha_analytics_admin_proto_depIdxs = []int32{
-	193, // 0: google.analytics.admin.v1alpha.RunAccessReportRequest.dimensions:type_name -> google.analytics.admin.v1alpha.AccessDimension
-	194, // 1: google.analytics.admin.v1alpha.RunAccessReportRequest.metrics:type_name -> google.analytics.admin.v1alpha.AccessMetric
-	195, // 2: google.analytics.admin.v1alpha.RunAccessReportRequest.date_ranges:type_name -> google.analytics.admin.v1alpha.AccessDateRange
-	196, // 3: google.analytics.admin.v1alpha.RunAccessReportRequest.dimension_filter:type_name -> google.analytics.admin.v1alpha.AccessFilterExpression
-	196, // 4: google.analytics.admin.v1alpha.RunAccessReportRequest.metric_filter:type_name -> google.analytics.admin.v1alpha.AccessFilterExpression
-	197, // 5: google.analytics.admin.v1alpha.RunAccessReportRequest.order_bys:type_name -> google.analytics.admin.v1alpha.AccessOrderBy
-	198, // 6: google.analytics.admin.v1alpha.RunAccessReportResponse.dimension_headers:type_name -> google.analytics.admin.v1alpha.AccessDimensionHeader
-	199, // 7: google.analytics.admin.v1alpha.RunAccessReportResponse.metric_headers:type_name -> google.analytics.admin.v1alpha.AccessMetricHeader
-	200, // 8: google.analytics.admin.v1alpha.RunAccessReportResponse.rows:type_name -> google.analytics.admin.v1alpha.AccessRow
-	201, // 9: google.analytics.admin.v1alpha.RunAccessReportResponse.quota:type_name -> google.analytics.admin.v1alpha.AccessQuota
-	202, // 10: google.analytics.admin.v1alpha.ListAccountsResponse.accounts:type_name -> google.analytics.admin.v1alpha.Account
-	202, // 11: google.analytics.admin.v1alpha.UpdateAccountRequest.account:type_name -> google.analytics.admin.v1alpha.Account
-	203, // 12: google.analytics.admin.v1alpha.UpdateAccountRequest.update_mask:type_name -> google.protobuf.FieldMask
-	202, // 13: google.analytics.admin.v1alpha.ProvisionAccountTicketRequest.account:type_name -> google.analytics.admin.v1alpha.Account
-	204, // 14: google.analytics.admin.v1alpha.ListPropertiesResponse.properties:type_name -> google.analytics.admin.v1alpha.Property
-	204, // 15: google.analytics.admin.v1alpha.UpdatePropertyRequest.property:type_name -> google.analytics.admin.v1alpha.Property
-	203, // 16: google.analytics.admin.v1alpha.UpdatePropertyRequest.update_mask:type_name -> google.protobuf.FieldMask
-	204, // 17: google.analytics.admin.v1alpha.CreatePropertyRequest.property:type_name -> google.analytics.admin.v1alpha.Property
-	205, // 18: google.analytics.admin.v1alpha.CreateFirebaseLinkRequest.firebase_link:type_name -> google.analytics.admin.v1alpha.FirebaseLink
-	205, // 19: google.analytics.admin.v1alpha.ListFirebaseLinksResponse.firebase_links:type_name -> google.analytics.admin.v1alpha.FirebaseLink
-	206, // 20: google.analytics.admin.v1alpha.CreateGoogleAdsLinkRequest.google_ads_link:type_name -> google.analytics.admin.v1alpha.GoogleAdsLink
-	206, // 21: google.analytics.admin.v1alpha.UpdateGoogleAdsLinkRequest.google_ads_link:type_name -> google.analytics.admin.v1alpha.GoogleAdsLink
-	203, // 22: google.analytics.admin.v1alpha.UpdateGoogleAdsLinkRequest.update_mask:type_name -> google.protobuf.FieldMask
-	206, // 23: google.analytics.admin.v1alpha.ListGoogleAdsLinksResponse.google_ads_links:type_name -> google.analytics.admin.v1alpha.GoogleAdsLink
-	207, // 24: google.analytics.admin.v1alpha.ListAccountSummariesResponse.account_summaries:type_name -> google.analytics.admin.v1alpha.AccountSummary
-	208, // 25: google.analytics.admin.v1alpha.SearchChangeHistoryEventsRequest.resource_type:type_name -> google.analytics.admin.v1alpha.ChangeHistoryResourceType
-	209, // 26: google.analytics.admin.v1alpha.SearchChangeHistoryEventsRequest.action:type_name -> google.analytics.admin.v1alpha.ActionType
-	210, // 27: google.analytics.admin.v1alpha.SearchChangeHistoryEventsRequest.earliest_change_time:type_name -> google.protobuf.Timestamp
-	210, // 28: google.analytics.admin.v1alpha.SearchChangeHistoryEventsRequest.latest_change_time:type_name -> google.protobuf.Timestamp
-	211, // 29: google.analytics.admin.v1alpha.SearchChangeHistoryEventsResponse.change_history_events:type_name -> google.analytics.admin.v1alpha.ChangeHistoryEvent
-	212, // 30: google.analytics.admin.v1alpha.CreateMeasurementProtocolSecretRequest.measurement_protocol_secret:type_name -> google.analytics.admin.v1alpha.MeasurementProtocolSecret
-	212, // 31: google.analytics.admin.v1alpha.UpdateMeasurementProtocolSecretRequest.measurement_protocol_secret:type_name -> google.analytics.admin.v1alpha.MeasurementProtocolSecret
-	203, // 32: google.analytics.admin.v1alpha.UpdateMeasurementProtocolSecretRequest.update_mask:type_name -> google.protobuf.FieldMask
-	212, // 33: google.analytics.admin.v1alpha.ListMeasurementProtocolSecretsResponse.measurement_protocol_secrets:type_name -> google.analytics.admin.v1alpha.MeasurementProtocolSecret
-	213, // 34: google.analytics.admin.v1alpha.CreateSKAdNetworkConversionValueSchemaRequest.skadnetwork_conversion_value_schema:type_name -> google.analytics.admin.v1alpha.SKAdNetworkConversionValueSchema
-	213, // 35: google.analytics.admin.v1alpha.UpdateSKAdNetworkConversionValueSchemaRequest.skadnetwork_conversion_value_schema:type_name -> google.analytics.admin.v1alpha.SKAdNetworkConversionValueSchema
-	203, // 36: google.analytics.admin.v1alpha.UpdateSKAdNetworkConversionValueSchemaRequest.update_mask:type_name -> google.protobuf.FieldMask
-	213, // 37: google.analytics.admin.v1alpha.ListSKAdNetworkConversionValueSchemasResponse.skadnetwork_conversion_value_schemas:type_name -> google.analytics.admin.v1alpha.SKAdNetworkConversionValueSchema
-	214, // 38: google.analytics.admin.v1alpha.UpdateGoogleSignalsSettingsRequest.google_signals_settings:type_name -> google.analytics.admin.v1alpha.GoogleSignalsSettings
-	203, // 39: google.analytics.admin.v1alpha.UpdateGoogleSignalsSettingsRequest.update_mask:type_name -> google.protobuf.FieldMask
-	215, // 40: google.analytics.admin.v1alpha.CreateConversionEventRequest.conversion_event:type_name -> google.analytics.admin.v1alpha.ConversionEvent
-	215, // 41: google.analytics.admin.v1alpha.UpdateConversionEventRequest.conversion_event:type_name -> google.analytics.admin.v1alpha.ConversionEvent
-	203, // 42: google.analytics.admin.v1alpha.UpdateConversionEventRequest.update_mask:type_name -> google.protobuf.FieldMask
-	215, // 43: google.analytics.admin.v1alpha.ListConversionEventsResponse.conversion_events:type_name -> google.analytics.admin.v1alpha.ConversionEvent
-	216, // 44: google.analytics.admin.v1alpha.CreateKeyEventRequest.key_event:type_name -> google.analytics.admin.v1alpha.KeyEvent
-	216, // 45: google.analytics.admin.v1alpha.UpdateKeyEventRequest.key_event:type_name -> google.analytics.admin.v1alpha.KeyEvent
-	203, // 46: google.analytics.admin.v1alpha.UpdateKeyEventRequest.update_mask:type_name -> google.protobuf.FieldMask
-	216, // 47: google.analytics.admin.v1alpha.ListKeyEventsResponse.key_events:type_name -> google.analytics.admin.v1alpha.KeyEvent
-	217, // 48: google.analytics.admin.v1alpha.ListDisplayVideo360AdvertiserLinksResponse.display_video_360_advertiser_links:type_name -> google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLink
-	217, // 49: google.analytics.admin.v1alpha.CreateDisplayVideo360AdvertiserLinkRequest.display_video_360_advertiser_link:type_name -> google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLink
-	217, // 50: google.analytics.admin.v1alpha.UpdateDisplayVideo360AdvertiserLinkRequest.display_video_360_advertiser_link:type_name -> google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLink
-	203, // 51: google.analytics.admin.v1alpha.UpdateDisplayVideo360AdvertiserLinkRequest.update_mask:type_name -> google.protobuf.FieldMask
-	218, // 52: google.analytics.admin.v1alpha.ListDisplayVideo360AdvertiserLinkProposalsResponse.display_video_360_advertiser_link_proposals:type_name -> google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLinkProposal
-	218, // 53: google.analytics.admin.v1alpha.CreateDisplayVideo360AdvertiserLinkProposalRequest.display_video_360_advertiser_link_proposal:type_name -> google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLinkProposal
-	217, // 54: google.analytics.admin.v1alpha.ApproveDisplayVideo360AdvertiserLinkProposalResponse.display_video_360_advertiser_link:type_name -> google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLink
-	219, // 55: google.analytics.admin.v1alpha.ListSearchAds360LinksResponse.search_ads_360_links:type_name -> google.analytics.admin.v1alpha.SearchAds360Link
-	219, // 56: google.analytics.admin.v1alpha.CreateSearchAds360LinkRequest.search_ads_360_link:type_name -> google.analytics.admin.v1alpha.SearchAds360Link
-	219, // 57: google.analytics.admin.v1alpha.UpdateSearchAds360LinkRequest.search_ads_360_link:type_name -> google.analytics.admin.v1alpha.SearchAds360Link
-	203, // 58: google.analytics.admin.v1alpha.UpdateSearchAds360LinkRequest.update_mask:type_name -> google.protobuf.FieldMask
-	220, // 59: google.analytics.admin.v1alpha.CreateCustomDimensionRequest.custom_dimension:type_name -> google.analytics.admin.v1alpha.CustomDimension
-	220, // 60: google.analytics.admin.v1alpha.UpdateCustomDimensionRequest.custom_dimension:type_name -> google.analytics.admin.v1alpha.CustomDimension
-	203, // 61: google.analytics.admin.v1alpha.UpdateCustomDimensionRequest.update_mask:type_name -> google.protobuf.FieldMask
-	220, // 62: google.analytics.admin.v1alpha.ListCustomDimensionsResponse.custom_dimensions:type_name -> google.analytics.admin.v1alpha.CustomDimension
-	221, // 63: google.analytics.admin.v1alpha.CreateCustomMetricRequest.custom_metric:type_name -> google.analytics.admin.v1alpha.CustomMetric
-	221, // 64: google.analytics.admin.v1alpha.UpdateCustomMetricRequest.custom_metric:type_name -> google.analytics.admin.v1alpha.CustomMetric
-	203, // 65: google.analytics.admin.v1alpha.UpdateCustomMetricRequest.update_mask:type_name -> google.protobuf.FieldMask
-	221, // 66: google.analytics.admin.v1alpha.ListCustomMetricsResponse.custom_metrics:type_name -> google.analytics.admin.v1alpha.CustomMetric
-	222, // 67: google.analytics.admin.v1alpha.CreateCalculatedMetricRequest.calculated_metric:type_name -> google.analytics.admin.v1alpha.CalculatedMetric
-	222, // 68: google.analytics.admin.v1alpha.UpdateCalculatedMetricRequest.calculated_metric:type_name -> google.analytics.admin.v1alpha.CalculatedMetric
-	203, // 69: google.analytics.admin.v1alpha.UpdateCalculatedMetricRequest.update_mask:type_name -> google.protobuf.FieldMask
-	222, // 70: google.analytics.admin.v1alpha.ListCalculatedMetricsResponse.calculated_metrics:type_name -> google.analytics.admin.v1alpha.CalculatedMetric
-	223, // 71: google.analytics.admin.v1alpha.UpdateDataRetentionSettingsRequest.data_retention_settings:type_name -> google.analytics.admin.v1alpha.DataRetentionSettings
-	203, // 72: google.analytics.admin.v1alpha.UpdateDataRetentionSettingsRequest.update_mask:type_name -> google.protobuf.FieldMask
-	224, // 73: google.analytics.admin.v1alpha.CreateDataStreamRequest.data_stream:type_name -> google.analytics.admin.v1alpha.DataStream
-	224, // 74: google.analytics.admin.v1alpha.UpdateDataStreamRequest.data_stream:type_name -> google.analytics.admin.v1alpha.DataStream
-	203, // 75: google.analytics.admin.v1alpha.UpdateDataStreamRequest.update_mask:type_name -> google.protobuf.FieldMask
-	224, // 76: google.analytics.admin.v1alpha.ListDataStreamsResponse.data_streams:type_name -> google.analytics.admin.v1alpha.DataStream
-	225, // 77: google.analytics.admin.v1alpha.ListAudiencesResponse.audiences:type_name -> google.analytics.admin.v1alpha.Audience
-	225, // 78: google.analytics.admin.v1alpha.CreateAudienceRequest.audience:type_name -> google.analytics.admin.v1alpha.Audience
-	225, // 79: google.analytics.admin.v1alpha.UpdateAudienceRequest.audience:type_name -> google.analytics.admin.v1alpha.Audience
-	203, // 80: google.analytics.admin.v1alpha.UpdateAudienceRequest.update_mask:type_name -> google.protobuf.FieldMask
-	226, // 81: google.analytics.admin.v1alpha.UpdateAttributionSettingsRequest.attribution_settings:type_name -> google.analytics.admin.v1alpha.AttributionSettings
-	203, // 82: google.analytics.admin.v1alpha.UpdateAttributionSettingsRequest.update_mask:type_name -> google.protobuf.FieldMask
-	227, // 83: google.analytics.admin.v1alpha.BatchGetAccessBindingsResponse.access_bindings:type_name -> google.analytics.admin.v1alpha.AccessBinding
-	227, // 84: google.analytics.admin.v1alpha.ListAccessBindingsResponse.access_bindings:type_name -> google.analytics.admin.v1alpha.AccessBinding
-	227, // 85: google.analytics.admin.v1alpha.CreateAccessBindingRequest.access_binding:type_name -> google.analytics.admin.v1alpha.AccessBinding
+	194, // 0: google.analytics.admin.v1alpha.RunAccessReportRequest.dimensions:type_name -> google.analytics.admin.v1alpha.AccessDimension
+	195, // 1: google.analytics.admin.v1alpha.RunAccessReportRequest.metrics:type_name -> google.analytics.admin.v1alpha.AccessMetric
+	196, // 2: google.analytics.admin.v1alpha.RunAccessReportRequest.date_ranges:type_name -> google.analytics.admin.v1alpha.AccessDateRange
+	197, // 3: google.analytics.admin.v1alpha.RunAccessReportRequest.dimension_filter:type_name -> google.analytics.admin.v1alpha.AccessFilterExpression
+	197, // 4: google.analytics.admin.v1alpha.RunAccessReportRequest.metric_filter:type_name -> google.analytics.admin.v1alpha.AccessFilterExpression
+	198, // 5: google.analytics.admin.v1alpha.RunAccessReportRequest.order_bys:type_name -> google.analytics.admin.v1alpha.AccessOrderBy
+	199, // 6: google.analytics.admin.v1alpha.RunAccessReportResponse.dimension_headers:type_name -> google.analytics.admin.v1alpha.AccessDimensionHeader
+	200, // 7: google.analytics.admin.v1alpha.RunAccessReportResponse.metric_headers:type_name -> google.analytics.admin.v1alpha.AccessMetricHeader
+	201, // 8: google.analytics.admin.v1alpha.RunAccessReportResponse.rows:type_name -> google.analytics.admin.v1alpha.AccessRow
+	202, // 9: google.analytics.admin.v1alpha.RunAccessReportResponse.quota:type_name -> google.analytics.admin.v1alpha.AccessQuota
+	203, // 10: google.analytics.admin.v1alpha.ListAccountsResponse.accounts:type_name -> google.analytics.admin.v1alpha.Account
+	203, // 11: google.analytics.admin.v1alpha.UpdateAccountRequest.account:type_name -> google.analytics.admin.v1alpha.Account
+	204, // 12: google.analytics.admin.v1alpha.UpdateAccountRequest.update_mask:type_name -> google.protobuf.FieldMask
+	203, // 13: google.analytics.admin.v1alpha.ProvisionAccountTicketRequest.account:type_name -> google.analytics.admin.v1alpha.Account
+	205, // 14: google.analytics.admin.v1alpha.ListPropertiesResponse.properties:type_name -> google.analytics.admin.v1alpha.Property
+	205, // 15: google.analytics.admin.v1alpha.UpdatePropertyRequest.property:type_name -> google.analytics.admin.v1alpha.Property
+	204, // 16: google.analytics.admin.v1alpha.UpdatePropertyRequest.update_mask:type_name -> google.protobuf.FieldMask
+	205, // 17: google.analytics.admin.v1alpha.CreatePropertyRequest.property:type_name -> google.analytics.admin.v1alpha.Property
+	206, // 18: google.analytics.admin.v1alpha.CreateFirebaseLinkRequest.firebase_link:type_name -> google.analytics.admin.v1alpha.FirebaseLink
+	206, // 19: google.analytics.admin.v1alpha.ListFirebaseLinksResponse.firebase_links:type_name -> google.analytics.admin.v1alpha.FirebaseLink
+	207, // 20: google.analytics.admin.v1alpha.CreateGoogleAdsLinkRequest.google_ads_link:type_name -> google.analytics.admin.v1alpha.GoogleAdsLink
+	207, // 21: google.analytics.admin.v1alpha.UpdateGoogleAdsLinkRequest.google_ads_link:type_name -> google.analytics.admin.v1alpha.GoogleAdsLink
+	204, // 22: google.analytics.admin.v1alpha.UpdateGoogleAdsLinkRequest.update_mask:type_name -> google.protobuf.FieldMask
+	207, // 23: google.analytics.admin.v1alpha.ListGoogleAdsLinksResponse.google_ads_links:type_name -> google.analytics.admin.v1alpha.GoogleAdsLink
+	208, // 24: google.analytics.admin.v1alpha.ListAccountSummariesResponse.account_summaries:type_name -> google.analytics.admin.v1alpha.AccountSummary
+	209, // 25: google.analytics.admin.v1alpha.SearchChangeHistoryEventsRequest.resource_type:type_name -> google.analytics.admin.v1alpha.ChangeHistoryResourceType
+	210, // 26: google.analytics.admin.v1alpha.SearchChangeHistoryEventsRequest.action:type_name -> google.analytics.admin.v1alpha.ActionType
+	211, // 27: google.analytics.admin.v1alpha.SearchChangeHistoryEventsRequest.earliest_change_time:type_name -> google.protobuf.Timestamp
+	211, // 28: google.analytics.admin.v1alpha.SearchChangeHistoryEventsRequest.latest_change_time:type_name -> google.protobuf.Timestamp
+	212, // 29: google.analytics.admin.v1alpha.SearchChangeHistoryEventsResponse.change_history_events:type_name -> google.analytics.admin.v1alpha.ChangeHistoryEvent
+	213, // 30: google.analytics.admin.v1alpha.CreateMeasurementProtocolSecretRequest.measurement_protocol_secret:type_name -> google.analytics.admin.v1alpha.MeasurementProtocolSecret
+	213, // 31: google.analytics.admin.v1alpha.UpdateMeasurementProtocolSecretRequest.measurement_protocol_secret:type_name -> google.analytics.admin.v1alpha.MeasurementProtocolSecret
+	204, // 32: google.analytics.admin.v1alpha.UpdateMeasurementProtocolSecretRequest.update_mask:type_name -> google.protobuf.FieldMask
+	213, // 33: google.analytics.admin.v1alpha.ListMeasurementProtocolSecretsResponse.measurement_protocol_secrets:type_name -> google.analytics.admin.v1alpha.MeasurementProtocolSecret
+	214, // 34: google.analytics.admin.v1alpha.CreateSKAdNetworkConversionValueSchemaRequest.skadnetwork_conversion_value_schema:type_name -> google.analytics.admin.v1alpha.SKAdNetworkConversionValueSchema
+	214, // 35: google.analytics.admin.v1alpha.UpdateSKAdNetworkConversionValueSchemaRequest.skadnetwork_conversion_value_schema:type_name -> google.analytics.admin.v1alpha.SKAdNetworkConversionValueSchema
+	204, // 36: google.analytics.admin.v1alpha.UpdateSKAdNetworkConversionValueSchemaRequest.update_mask:type_name -> google.protobuf.FieldMask
+	214, // 37: google.analytics.admin.v1alpha.ListSKAdNetworkConversionValueSchemasResponse.skadnetwork_conversion_value_schemas:type_name -> google.analytics.admin.v1alpha.SKAdNetworkConversionValueSchema
+	215, // 38: google.analytics.admin.v1alpha.UpdateGoogleSignalsSettingsRequest.google_signals_settings:type_name -> google.analytics.admin.v1alpha.GoogleSignalsSettings
+	204, // 39: google.analytics.admin.v1alpha.UpdateGoogleSignalsSettingsRequest.update_mask:type_name -> google.protobuf.FieldMask
+	216, // 40: google.analytics.admin.v1alpha.CreateConversionEventRequest.conversion_event:type_name -> google.analytics.admin.v1alpha.ConversionEvent
+	216, // 41: google.analytics.admin.v1alpha.UpdateConversionEventRequest.conversion_event:type_name -> google.analytics.admin.v1alpha.ConversionEvent
+	204, // 42: google.analytics.admin.v1alpha.UpdateConversionEventRequest.update_mask:type_name -> google.protobuf.FieldMask
+	216, // 43: google.analytics.admin.v1alpha.ListConversionEventsResponse.conversion_events:type_name -> google.analytics.admin.v1alpha.ConversionEvent
+	217, // 44: google.analytics.admin.v1alpha.CreateKeyEventRequest.key_event:type_name -> google.analytics.admin.v1alpha.KeyEvent
+	217, // 45: google.analytics.admin.v1alpha.UpdateKeyEventRequest.key_event:type_name -> google.analytics.admin.v1alpha.KeyEvent
+	204, // 46: google.analytics.admin.v1alpha.UpdateKeyEventRequest.update_mask:type_name -> google.protobuf.FieldMask
+	217, // 47: google.analytics.admin.v1alpha.ListKeyEventsResponse.key_events:type_name -> google.analytics.admin.v1alpha.KeyEvent
+	218, // 48: google.analytics.admin.v1alpha.ListDisplayVideo360AdvertiserLinksResponse.display_video_360_advertiser_links:type_name -> google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLink
+	218, // 49: google.analytics.admin.v1alpha.CreateDisplayVideo360AdvertiserLinkRequest.display_video_360_advertiser_link:type_name -> google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLink
+	218, // 50: google.analytics.admin.v1alpha.UpdateDisplayVideo360AdvertiserLinkRequest.display_video_360_advertiser_link:type_name -> google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLink
+	204, // 51: google.analytics.admin.v1alpha.UpdateDisplayVideo360AdvertiserLinkRequest.update_mask:type_name -> google.protobuf.FieldMask
+	219, // 52: google.analytics.admin.v1alpha.ListDisplayVideo360AdvertiserLinkProposalsResponse.display_video_360_advertiser_link_proposals:type_name -> google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLinkProposal
+	219, // 53: google.analytics.admin.v1alpha.CreateDisplayVideo360AdvertiserLinkProposalRequest.display_video_360_advertiser_link_proposal:type_name -> google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLinkProposal
+	218, // 54: google.analytics.admin.v1alpha.ApproveDisplayVideo360AdvertiserLinkProposalResponse.display_video_360_advertiser_link:type_name -> google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLink
+	220, // 55: google.analytics.admin.v1alpha.ListSearchAds360LinksResponse.search_ads_360_links:type_name -> google.analytics.admin.v1alpha.SearchAds360Link
+	220, // 56: google.analytics.admin.v1alpha.CreateSearchAds360LinkRequest.search_ads_360_link:type_name -> google.analytics.admin.v1alpha.SearchAds360Link
+	220, // 57: google.analytics.admin.v1alpha.UpdateSearchAds360LinkRequest.search_ads_360_link:type_name -> google.analytics.admin.v1alpha.SearchAds360Link
+	204, // 58: google.analytics.admin.v1alpha.UpdateSearchAds360LinkRequest.update_mask:type_name -> google.protobuf.FieldMask
+	221, // 59: google.analytics.admin.v1alpha.CreateCustomDimensionRequest.custom_dimension:type_name -> google.analytics.admin.v1alpha.CustomDimension
+	221, // 60: google.analytics.admin.v1alpha.UpdateCustomDimensionRequest.custom_dimension:type_name -> google.analytics.admin.v1alpha.CustomDimension
+	204, // 61: google.analytics.admin.v1alpha.UpdateCustomDimensionRequest.update_mask:type_name -> google.protobuf.FieldMask
+	221, // 62: google.analytics.admin.v1alpha.ListCustomDimensionsResponse.custom_dimensions:type_name -> google.analytics.admin.v1alpha.CustomDimension
+	222, // 63: google.analytics.admin.v1alpha.CreateCustomMetricRequest.custom_metric:type_name -> google.analytics.admin.v1alpha.CustomMetric
+	222, // 64: google.analytics.admin.v1alpha.UpdateCustomMetricRequest.custom_metric:type_name -> google.analytics.admin.v1alpha.CustomMetric
+	204, // 65: google.analytics.admin.v1alpha.UpdateCustomMetricRequest.update_mask:type_name -> google.protobuf.FieldMask
+	222, // 66: google.analytics.admin.v1alpha.ListCustomMetricsResponse.custom_metrics:type_name -> google.analytics.admin.v1alpha.CustomMetric
+	223, // 67: google.analytics.admin.v1alpha.CreateCalculatedMetricRequest.calculated_metric:type_name -> google.analytics.admin.v1alpha.CalculatedMetric
+	223, // 68: google.analytics.admin.v1alpha.UpdateCalculatedMetricRequest.calculated_metric:type_name -> google.analytics.admin.v1alpha.CalculatedMetric
+	204, // 69: google.analytics.admin.v1alpha.UpdateCalculatedMetricRequest.update_mask:type_name -> google.protobuf.FieldMask
+	223, // 70: google.analytics.admin.v1alpha.ListCalculatedMetricsResponse.calculated_metrics:type_name -> google.analytics.admin.v1alpha.CalculatedMetric
+	224, // 71: google.analytics.admin.v1alpha.UpdateDataRetentionSettingsRequest.data_retention_settings:type_name -> google.analytics.admin.v1alpha.DataRetentionSettings
+	204, // 72: google.analytics.admin.v1alpha.UpdateDataRetentionSettingsRequest.update_mask:type_name -> google.protobuf.FieldMask
+	225, // 73: google.analytics.admin.v1alpha.CreateDataStreamRequest.data_stream:type_name -> google.analytics.admin.v1alpha.DataStream
+	225, // 74: google.analytics.admin.v1alpha.UpdateDataStreamRequest.data_stream:type_name -> google.analytics.admin.v1alpha.DataStream
+	204, // 75: google.analytics.admin.v1alpha.UpdateDataStreamRequest.update_mask:type_name -> google.protobuf.FieldMask
+	225, // 76: google.analytics.admin.v1alpha.ListDataStreamsResponse.data_streams:type_name -> google.analytics.admin.v1alpha.DataStream
+	226, // 77: google.analytics.admin.v1alpha.ListAudiencesResponse.audiences:type_name -> google.analytics.admin.v1alpha.Audience
+	226, // 78: google.analytics.admin.v1alpha.CreateAudienceRequest.audience:type_name -> google.analytics.admin.v1alpha.Audience
+	226, // 79: google.analytics.admin.v1alpha.UpdateAudienceRequest.audience:type_name -> google.analytics.admin.v1alpha.Audience
+	204, // 80: google.analytics.admin.v1alpha.UpdateAudienceRequest.update_mask:type_name -> google.protobuf.FieldMask
+	227, // 81: google.analytics.admin.v1alpha.UpdateAttributionSettingsRequest.attribution_settings:type_name -> google.analytics.admin.v1alpha.AttributionSettings
+	204, // 82: google.analytics.admin.v1alpha.UpdateAttributionSettingsRequest.update_mask:type_name -> google.protobuf.FieldMask
+	228, // 83: google.analytics.admin.v1alpha.BatchGetAccessBindingsResponse.access_bindings:type_name -> google.analytics.admin.v1alpha.AccessBinding
+	228, // 84: google.analytics.admin.v1alpha.ListAccessBindingsResponse.access_bindings:type_name -> google.analytics.admin.v1alpha.AccessBinding
+	228, // 85: google.analytics.admin.v1alpha.CreateAccessBindingRequest.access_binding:type_name -> google.analytics.admin.v1alpha.AccessBinding
 	117, // 86: google.analytics.admin.v1alpha.BatchCreateAccessBindingsRequest.requests:type_name -> google.analytics.admin.v1alpha.CreateAccessBindingRequest
-	227, // 87: google.analytics.admin.v1alpha.BatchCreateAccessBindingsResponse.access_bindings:type_name -> google.analytics.admin.v1alpha.AccessBinding
-	227, // 88: google.analytics.admin.v1alpha.UpdateAccessBindingRequest.access_binding:type_name -> google.analytics.admin.v1alpha.AccessBinding
+	228, // 87: google.analytics.admin.v1alpha.BatchCreateAccessBindingsResponse.access_bindings:type_name -> google.analytics.admin.v1alpha.AccessBinding
+	228, // 88: google.analytics.admin.v1alpha.UpdateAccessBindingRequest.access_binding:type_name -> google.analytics.admin.v1alpha.AccessBinding
 	120, // 89: google.analytics.admin.v1alpha.BatchUpdateAccessBindingsRequest.requests:type_name -> google.analytics.admin.v1alpha.UpdateAccessBindingRequest
-	227, // 90: google.analytics.admin.v1alpha.BatchUpdateAccessBindingsResponse.access_bindings:type_name -> google.analytics.admin.v1alpha.AccessBinding
+	228, // 90: google.analytics.admin.v1alpha.BatchUpdateAccessBindingsResponse.access_bindings:type_name -> google.analytics.admin.v1alpha.AccessBinding
 	123, // 91: google.analytics.admin.v1alpha.BatchDeleteAccessBindingsRequest.requests:type_name -> google.analytics.admin.v1alpha.DeleteAccessBindingRequest
-	228, // 92: google.analytics.admin.v1alpha.CreateExpandedDataSetRequest.expanded_data_set:type_name -> google.analytics.admin.v1alpha.ExpandedDataSet
-	228, // 93: google.analytics.admin.v1alpha.UpdateExpandedDataSetRequest.expanded_data_set:type_name -> google.analytics.admin.v1alpha.ExpandedDataSet
-	203, // 94: google.analytics.admin.v1alpha.UpdateExpandedDataSetRequest.update_mask:type_name -> google.protobuf.FieldMask
-	228, // 95: google.analytics.admin.v1alpha.ListExpandedDataSetsResponse.expanded_data_sets:type_name -> google.analytics.admin.v1alpha.ExpandedDataSet
-	229, // 96: google.analytics.admin.v1alpha.CreateChannelGroupRequest.channel_group:type_name -> google.analytics.admin.v1alpha.ChannelGroup
-	229, // 97: google.analytics.admin.v1alpha.UpdateChannelGroupRequest.channel_group:type_name -> google.analytics.admin.v1alpha.ChannelGroup
-	203, // 98: google.analytics.admin.v1alpha.UpdateChannelGroupRequest.update_mask:type_name -> google.protobuf.FieldMask
-	229, // 99: google.analytics.admin.v1alpha.ListChannelGroupsResponse.channel_groups:type_name -> google.analytics.admin.v1alpha.ChannelGroup
-	230, // 100: google.analytics.admin.v1alpha.CreateBigQueryLinkRequest.bigquery_link:type_name -> google.analytics.admin.v1alpha.BigQueryLink
-	230, // 101: google.analytics.admin.v1alpha.ListBigQueryLinksResponse.bigquery_links:type_name -> google.analytics.admin.v1alpha.BigQueryLink
-	230, // 102: google.analytics.admin.v1alpha.UpdateBigQueryLinkRequest.bigquery_link:type_name -> google.analytics.admin.v1alpha.BigQueryLink
-	203, // 103: google.analytics.admin.v1alpha.UpdateBigQueryLinkRequest.update_mask:type_name -> google.protobuf.FieldMask
-	231, // 104: google.analytics.admin.v1alpha.UpdateEnhancedMeasurementSettingsRequest.enhanced_measurement_settings:type_name -> google.analytics.admin.v1alpha.EnhancedMeasurementSettings
-	203, // 105: google.analytics.admin.v1alpha.UpdateEnhancedMeasurementSettingsRequest.update_mask:type_name -> google.protobuf.FieldMask
-	232, // 106: google.analytics.admin.v1alpha.UpdateDataRedactionSettingsRequest.data_redaction_settings:type_name -> google.analytics.admin.v1alpha.DataRedactionSettings
-	203, // 107: google.analytics.admin.v1alpha.UpdateDataRedactionSettingsRequest.update_mask:type_name -> google.protobuf.FieldMask
-	233, // 108: google.analytics.admin.v1alpha.CreateAdSenseLinkRequest.adsense_link:type_name -> google.analytics.admin.v1alpha.AdSenseLink
-	233, // 109: google.analytics.admin.v1alpha.ListAdSenseLinksResponse.adsense_links:type_name -> google.analytics.admin.v1alpha.AdSenseLink
-	234, // 110: google.analytics.admin.v1alpha.CreateEventCreateRuleRequest.event_create_rule:type_name -> google.analytics.admin.v1alpha.EventCreateRule
-	234, // 111: google.analytics.admin.v1alpha.UpdateEventCreateRuleRequest.event_create_rule:type_name -> google.analytics.admin.v1alpha.EventCreateRule
-	203, // 112: google.analytics.admin.v1alpha.UpdateEventCreateRuleRequest.update_mask:type_name -> google.protobuf.FieldMask
-	234, // 113: google.analytics.admin.v1alpha.ListEventCreateRulesResponse.event_create_rules:type_name -> google.analytics.admin.v1alpha.EventCreateRule
-	235, // 114: google.analytics.admin.v1alpha.CreateEventEditRuleRequest.event_edit_rule:type_name -> google.analytics.admin.v1alpha.EventEditRule
-	235, // 115: google.analytics.admin.v1alpha.UpdateEventEditRuleRequest.event_edit_rule:type_name -> google.analytics.admin.v1alpha.EventEditRule
-	203, // 116: google.analytics.admin.v1alpha.UpdateEventEditRuleRequest.update_mask:type_name -> google.protobuf.FieldMask
-	235, // 117: google.analytics.admin.v1alpha.ListEventEditRulesResponse.event_edit_rules:type_name -> google.analytics.admin.v1alpha.EventEditRule
-	204, // 118: google.analytics.admin.v1alpha.CreateRollupPropertyRequest.rollup_property:type_name -> google.analytics.admin.v1alpha.Property
-	204, // 119: google.analytics.admin.v1alpha.CreateRollupPropertyResponse.rollup_property:type_name -> google.analytics.admin.v1alpha.Property
-	236, // 120: google.analytics.admin.v1alpha.CreateRollupPropertyResponse.rollup_property_source_links:type_name -> google.analytics.admin.v1alpha.RollupPropertySourceLink
-	236, // 121: google.analytics.admin.v1alpha.ListRollupPropertySourceLinksResponse.rollup_property_source_links:type_name -> google.analytics.admin.v1alpha.RollupPropertySourceLink
-	236, // 122: google.analytics.admin.v1alpha.CreateRollupPropertySourceLinkRequest.rollup_property_source_link:type_name -> google.analytics.admin.v1alpha.RollupPropertySourceLink
-	204, // 123: google.analytics.admin.v1alpha.ProvisionSubpropertyRequest.subproperty:type_name -> google.analytics.admin.v1alpha.Property
-	237, // 124: google.analytics.admin.v1alpha.ProvisionSubpropertyRequest.subproperty_event_filter:type_name -> google.analytics.admin.v1alpha.SubpropertyEventFilter
-	238, // 125: google.analytics.admin.v1alpha.ProvisionSubpropertyRequest.custom_dimension_and_metric_synchronization_mode:type_name -> google.analytics.admin.v1alpha.SubpropertySyncConfig.SynchronizationMode
-	204, // 126: google.analytics.admin.v1alpha.ProvisionSubpropertyResponse.subproperty:type_name -> google.analytics.admin.v1alpha.Property
-	237, // 127: google.analytics.admin.v1alpha.ProvisionSubpropertyResponse.subproperty_event_filter:type_name -> google.analytics.admin.v1alpha.SubpropertyEventFilter
-	237, // 128: google.analytics.admin.v1alpha.CreateSubpropertyEventFilterRequest.subproperty_event_filter:type_name -> google.analytics.admin.v1alpha.SubpropertyEventFilter
-	237, // 129: google.analytics.admin.v1alpha.ListSubpropertyEventFiltersResponse.subproperty_event_filters:type_name -> google.analytics.admin.v1alpha.SubpropertyEventFilter
-	237, // 130: google.analytics.admin.v1alpha.UpdateSubpropertyEventFilterRequest.subproperty_event_filter:type_name -> google.analytics.admin.v1alpha.SubpropertyEventFilter
-	203, // 131: google.analytics.admin.v1alpha.UpdateSubpropertyEventFilterRequest.update_mask:type_name -> google.protobuf.FieldMask
-	239, // 132: google.analytics.admin.v1alpha.CreateReportingDataAnnotationRequest.reporting_data_annotation:type_name -> google.analytics.admin.v1alpha.ReportingDataAnnotation
-	239, // 133: google.analytics.admin.v1alpha.ListReportingDataAnnotationsResponse.reporting_data_annotations:type_name -> google.analytics.admin.v1alpha.ReportingDataAnnotation
-	239, // 134: google.analytics.admin.v1alpha.UpdateReportingDataAnnotationRequest.reporting_data_annotation:type_name -> google.analytics.admin.v1alpha.ReportingDataAnnotation
-	203, // 135: google.analytics.admin.v1alpha.UpdateReportingDataAnnotationRequest.update_mask:type_name -> google.protobuf.FieldMask
-	210, // 136: google.analytics.admin.v1alpha.SubmitUserDeletionResponse.deletion_request_time:type_name -> google.protobuf.Timestamp
-	240, // 137: google.analytics.admin.v1alpha.ListSubpropertySyncConfigsResponse.subproperty_sync_configs:type_name -> google.analytics.admin.v1alpha.SubpropertySyncConfig
-	240, // 138: google.analytics.admin.v1alpha.UpdateSubpropertySyncConfigRequest.subproperty_sync_config:type_name -> google.analytics.admin.v1alpha.SubpropertySyncConfig
-	203, // 139: google.analytics.admin.v1alpha.UpdateSubpropertySyncConfigRequest.update_mask:type_name -> google.protobuf.FieldMask
+	229, // 92: google.analytics.admin.v1alpha.CreateExpandedDataSetRequest.expanded_data_set:type_name -> google.analytics.admin.v1alpha.ExpandedDataSet
+	229, // 93: google.analytics.admin.v1alpha.UpdateExpandedDataSetRequest.expanded_data_set:type_name -> google.analytics.admin.v1alpha.ExpandedDataSet
+	204, // 94: google.analytics.admin.v1alpha.UpdateExpandedDataSetRequest.update_mask:type_name -> google.protobuf.FieldMask
+	229, // 95: google.analytics.admin.v1alpha.ListExpandedDataSetsResponse.expanded_data_sets:type_name -> google.analytics.admin.v1alpha.ExpandedDataSet
+	230, // 96: google.analytics.admin.v1alpha.CreateChannelGroupRequest.channel_group:type_name -> google.analytics.admin.v1alpha.ChannelGroup
+	230, // 97: google.analytics.admin.v1alpha.UpdateChannelGroupRequest.channel_group:type_name -> google.analytics.admin.v1alpha.ChannelGroup
+	204, // 98: google.analytics.admin.v1alpha.UpdateChannelGroupRequest.update_mask:type_name -> google.protobuf.FieldMask
+	230, // 99: google.analytics.admin.v1alpha.ListChannelGroupsResponse.channel_groups:type_name -> google.analytics.admin.v1alpha.ChannelGroup
+	231, // 100: google.analytics.admin.v1alpha.CreateBigQueryLinkRequest.bigquery_link:type_name -> google.analytics.admin.v1alpha.BigQueryLink
+	231, // 101: google.analytics.admin.v1alpha.ListBigQueryLinksResponse.bigquery_links:type_name -> google.analytics.admin.v1alpha.BigQueryLink
+	231, // 102: google.analytics.admin.v1alpha.UpdateBigQueryLinkRequest.bigquery_link:type_name -> google.analytics.admin.v1alpha.BigQueryLink
+	204, // 103: google.analytics.admin.v1alpha.UpdateBigQueryLinkRequest.update_mask:type_name -> google.protobuf.FieldMask
+	232, // 104: google.analytics.admin.v1alpha.UpdateEnhancedMeasurementSettingsRequest.enhanced_measurement_settings:type_name -> google.analytics.admin.v1alpha.EnhancedMeasurementSettings
+	204, // 105: google.analytics.admin.v1alpha.UpdateEnhancedMeasurementSettingsRequest.update_mask:type_name -> google.protobuf.FieldMask
+	233, // 106: google.analytics.admin.v1alpha.UpdateDataRedactionSettingsRequest.data_redaction_settings:type_name -> google.analytics.admin.v1alpha.DataRedactionSettings
+	204, // 107: google.analytics.admin.v1alpha.UpdateDataRedactionSettingsRequest.update_mask:type_name -> google.protobuf.FieldMask
+	234, // 108: google.analytics.admin.v1alpha.CreateAdSenseLinkRequest.adsense_link:type_name -> google.analytics.admin.v1alpha.AdSenseLink
+	234, // 109: google.analytics.admin.v1alpha.ListAdSenseLinksResponse.adsense_links:type_name -> google.analytics.admin.v1alpha.AdSenseLink
+	235, // 110: google.analytics.admin.v1alpha.CreateEventCreateRuleRequest.event_create_rule:type_name -> google.analytics.admin.v1alpha.EventCreateRule
+	235, // 111: google.analytics.admin.v1alpha.UpdateEventCreateRuleRequest.event_create_rule:type_name -> google.analytics.admin.v1alpha.EventCreateRule
+	204, // 112: google.analytics.admin.v1alpha.UpdateEventCreateRuleRequest.update_mask:type_name -> google.protobuf.FieldMask
+	235, // 113: google.analytics.admin.v1alpha.ListEventCreateRulesResponse.event_create_rules:type_name -> google.analytics.admin.v1alpha.EventCreateRule
+	236, // 114: google.analytics.admin.v1alpha.CreateEventEditRuleRequest.event_edit_rule:type_name -> google.analytics.admin.v1alpha.EventEditRule
+	236, // 115: google.analytics.admin.v1alpha.UpdateEventEditRuleRequest.event_edit_rule:type_name -> google.analytics.admin.v1alpha.EventEditRule
+	204, // 116: google.analytics.admin.v1alpha.UpdateEventEditRuleRequest.update_mask:type_name -> google.protobuf.FieldMask
+	236, // 117: google.analytics.admin.v1alpha.ListEventEditRulesResponse.event_edit_rules:type_name -> google.analytics.admin.v1alpha.EventEditRule
+	205, // 118: google.analytics.admin.v1alpha.CreateRollupPropertyRequest.rollup_property:type_name -> google.analytics.admin.v1alpha.Property
+	205, // 119: google.analytics.admin.v1alpha.CreateRollupPropertyResponse.rollup_property:type_name -> google.analytics.admin.v1alpha.Property
+	237, // 120: google.analytics.admin.v1alpha.CreateRollupPropertyResponse.rollup_property_source_links:type_name -> google.analytics.admin.v1alpha.RollupPropertySourceLink
+	237, // 121: google.analytics.admin.v1alpha.ListRollupPropertySourceLinksResponse.rollup_property_source_links:type_name -> google.analytics.admin.v1alpha.RollupPropertySourceLink
+	237, // 122: google.analytics.admin.v1alpha.CreateRollupPropertySourceLinkRequest.rollup_property_source_link:type_name -> google.analytics.admin.v1alpha.RollupPropertySourceLink
+	205, // 123: google.analytics.admin.v1alpha.ProvisionSubpropertyRequest.subproperty:type_name -> google.analytics.admin.v1alpha.Property
+	238, // 124: google.analytics.admin.v1alpha.ProvisionSubpropertyRequest.subproperty_event_filter:type_name -> google.analytics.admin.v1alpha.SubpropertyEventFilter
+	239, // 125: google.analytics.admin.v1alpha.ProvisionSubpropertyRequest.custom_dimension_and_metric_synchronization_mode:type_name -> google.analytics.admin.v1alpha.SubpropertySyncConfig.SynchronizationMode
+	205, // 126: google.analytics.admin.v1alpha.ProvisionSubpropertyResponse.subproperty:type_name -> google.analytics.admin.v1alpha.Property
+	238, // 127: google.analytics.admin.v1alpha.ProvisionSubpropertyResponse.subproperty_event_filter:type_name -> google.analytics.admin.v1alpha.SubpropertyEventFilter
+	238, // 128: google.analytics.admin.v1alpha.CreateSubpropertyEventFilterRequest.subproperty_event_filter:type_name -> google.analytics.admin.v1alpha.SubpropertyEventFilter
+	238, // 129: google.analytics.admin.v1alpha.ListSubpropertyEventFiltersResponse.subproperty_event_filters:type_name -> google.analytics.admin.v1alpha.SubpropertyEventFilter
+	238, // 130: google.analytics.admin.v1alpha.UpdateSubpropertyEventFilterRequest.subproperty_event_filter:type_name -> google.analytics.admin.v1alpha.SubpropertyEventFilter
+	204, // 131: google.analytics.admin.v1alpha.UpdateSubpropertyEventFilterRequest.update_mask:type_name -> google.protobuf.FieldMask
+	240, // 132: google.analytics.admin.v1alpha.CreateReportingDataAnnotationRequest.reporting_data_annotation:type_name -> google.analytics.admin.v1alpha.ReportingDataAnnotation
+	240, // 133: google.analytics.admin.v1alpha.ListReportingDataAnnotationsResponse.reporting_data_annotations:type_name -> google.analytics.admin.v1alpha.ReportingDataAnnotation
+	240, // 134: google.analytics.admin.v1alpha.UpdateReportingDataAnnotationRequest.reporting_data_annotation:type_name -> google.analytics.admin.v1alpha.ReportingDataAnnotation
+	204, // 135: google.analytics.admin.v1alpha.UpdateReportingDataAnnotationRequest.update_mask:type_name -> google.protobuf.FieldMask
+	211, // 136: google.analytics.admin.v1alpha.SubmitUserDeletionResponse.deletion_request_time:type_name -> google.protobuf.Timestamp
+	241, // 137: google.analytics.admin.v1alpha.ListSubpropertySyncConfigsResponse.subproperty_sync_configs:type_name -> google.analytics.admin.v1alpha.SubpropertySyncConfig
+	241, // 138: google.analytics.admin.v1alpha.UpdateSubpropertySyncConfigRequest.subproperty_sync_config:type_name -> google.analytics.admin.v1alpha.SubpropertySyncConfig
+	204, // 139: google.analytics.admin.v1alpha.UpdateSubpropertySyncConfigRequest.update_mask:type_name -> google.protobuf.FieldMask
 	2,   // 140: google.analytics.admin.v1alpha.AnalyticsAdminService.GetAccount:input_type -> google.analytics.admin.v1alpha.GetAccountRequest
 	3,   // 141: google.analytics.admin.v1alpha.AnalyticsAdminService.ListAccounts:input_type -> google.analytics.admin.v1alpha.ListAccountsRequest
 	5,   // 142: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteAccount:input_type -> google.analytics.admin.v1alpha.DeleteAccountRequest
@@ -12630,162 +12684,164 @@ var file_google_analytics_admin_v1alpha_analytics_admin_proto_depIdxs = []int32{
 	191, // 291: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateSubpropertySyncConfig:input_type -> google.analytics.admin.v1alpha.UpdateSubpropertySyncConfigRequest
 	188, // 292: google.analytics.admin.v1alpha.AnalyticsAdminService.GetSubpropertySyncConfig:input_type -> google.analytics.admin.v1alpha.GetSubpropertySyncConfigRequest
 	192, // 293: google.analytics.admin.v1alpha.AnalyticsAdminService.GetReportingIdentitySettings:input_type -> google.analytics.admin.v1alpha.GetReportingIdentitySettingsRequest
-	202, // 294: google.analytics.admin.v1alpha.AnalyticsAdminService.GetAccount:output_type -> google.analytics.admin.v1alpha.Account
-	4,   // 295: google.analytics.admin.v1alpha.AnalyticsAdminService.ListAccounts:output_type -> google.analytics.admin.v1alpha.ListAccountsResponse
-	241, // 296: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteAccount:output_type -> google.protobuf.Empty
-	202, // 297: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateAccount:output_type -> google.analytics.admin.v1alpha.Account
-	8,   // 298: google.analytics.admin.v1alpha.AnalyticsAdminService.ProvisionAccountTicket:output_type -> google.analytics.admin.v1alpha.ProvisionAccountTicketResponse
-	27,  // 299: google.analytics.admin.v1alpha.AnalyticsAdminService.ListAccountSummaries:output_type -> google.analytics.admin.v1alpha.ListAccountSummariesResponse
-	204, // 300: google.analytics.admin.v1alpha.AnalyticsAdminService.GetProperty:output_type -> google.analytics.admin.v1alpha.Property
-	11,  // 301: google.analytics.admin.v1alpha.AnalyticsAdminService.ListProperties:output_type -> google.analytics.admin.v1alpha.ListPropertiesResponse
-	204, // 302: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateProperty:output_type -> google.analytics.admin.v1alpha.Property
-	204, // 303: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteProperty:output_type -> google.analytics.admin.v1alpha.Property
-	204, // 304: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateProperty:output_type -> google.analytics.admin.v1alpha.Property
-	205, // 305: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateFirebaseLink:output_type -> google.analytics.admin.v1alpha.FirebaseLink
-	241, // 306: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteFirebaseLink:output_type -> google.protobuf.Empty
-	18,  // 307: google.analytics.admin.v1alpha.AnalyticsAdminService.ListFirebaseLinks:output_type -> google.analytics.admin.v1alpha.ListFirebaseLinksResponse
-	242, // 308: google.analytics.admin.v1alpha.AnalyticsAdminService.GetGlobalSiteTag:output_type -> google.analytics.admin.v1alpha.GlobalSiteTag
-	206, // 309: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateGoogleAdsLink:output_type -> google.analytics.admin.v1alpha.GoogleAdsLink
-	206, // 310: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateGoogleAdsLink:output_type -> google.analytics.admin.v1alpha.GoogleAdsLink
-	241, // 311: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteGoogleAdsLink:output_type -> google.protobuf.Empty
-	24,  // 312: google.analytics.admin.v1alpha.AnalyticsAdminService.ListGoogleAdsLinks:output_type -> google.analytics.admin.v1alpha.ListGoogleAdsLinksResponse
-	243, // 313: google.analytics.admin.v1alpha.AnalyticsAdminService.GetDataSharingSettings:output_type -> google.analytics.admin.v1alpha.DataSharingSettings
-	212, // 314: google.analytics.admin.v1alpha.AnalyticsAdminService.GetMeasurementProtocolSecret:output_type -> google.analytics.admin.v1alpha.MeasurementProtocolSecret
-	37,  // 315: google.analytics.admin.v1alpha.AnalyticsAdminService.ListMeasurementProtocolSecrets:output_type -> google.analytics.admin.v1alpha.ListMeasurementProtocolSecretsResponse
-	212, // 316: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateMeasurementProtocolSecret:output_type -> google.analytics.admin.v1alpha.MeasurementProtocolSecret
-	241, // 317: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteMeasurementProtocolSecret:output_type -> google.protobuf.Empty
-	212, // 318: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateMeasurementProtocolSecret:output_type -> google.analytics.admin.v1alpha.MeasurementProtocolSecret
-	29,  // 319: google.analytics.admin.v1alpha.AnalyticsAdminService.AcknowledgeUserDataCollection:output_type -> google.analytics.admin.v1alpha.AcknowledgeUserDataCollectionResponse
-	213, // 320: google.analytics.admin.v1alpha.AnalyticsAdminService.GetSKAdNetworkConversionValueSchema:output_type -> google.analytics.admin.v1alpha.SKAdNetworkConversionValueSchema
-	213, // 321: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateSKAdNetworkConversionValueSchema:output_type -> google.analytics.admin.v1alpha.SKAdNetworkConversionValueSchema
-	241, // 322: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteSKAdNetworkConversionValueSchema:output_type -> google.protobuf.Empty
-	213, // 323: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateSKAdNetworkConversionValueSchema:output_type -> google.analytics.admin.v1alpha.SKAdNetworkConversionValueSchema
-	43,  // 324: google.analytics.admin.v1alpha.AnalyticsAdminService.ListSKAdNetworkConversionValueSchemas:output_type -> google.analytics.admin.v1alpha.ListSKAdNetworkConversionValueSchemasResponse
-	31,  // 325: google.analytics.admin.v1alpha.AnalyticsAdminService.SearchChangeHistoryEvents:output_type -> google.analytics.admin.v1alpha.SearchChangeHistoryEventsResponse
-	214, // 326: google.analytics.admin.v1alpha.AnalyticsAdminService.GetGoogleSignalsSettings:output_type -> google.analytics.admin.v1alpha.GoogleSignalsSettings
-	214, // 327: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateGoogleSignalsSettings:output_type -> google.analytics.admin.v1alpha.GoogleSignalsSettings
-	215, // 328: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateConversionEvent:output_type -> google.analytics.admin.v1alpha.ConversionEvent
-	215, // 329: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateConversionEvent:output_type -> google.analytics.admin.v1alpha.ConversionEvent
-	215, // 330: google.analytics.admin.v1alpha.AnalyticsAdminService.GetConversionEvent:output_type -> google.analytics.admin.v1alpha.ConversionEvent
-	241, // 331: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteConversionEvent:output_type -> google.protobuf.Empty
-	51,  // 332: google.analytics.admin.v1alpha.AnalyticsAdminService.ListConversionEvents:output_type -> google.analytics.admin.v1alpha.ListConversionEventsResponse
-	216, // 333: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateKeyEvent:output_type -> google.analytics.admin.v1alpha.KeyEvent
-	216, // 334: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateKeyEvent:output_type -> google.analytics.admin.v1alpha.KeyEvent
-	216, // 335: google.analytics.admin.v1alpha.AnalyticsAdminService.GetKeyEvent:output_type -> google.analytics.admin.v1alpha.KeyEvent
-	241, // 336: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteKeyEvent:output_type -> google.protobuf.Empty
-	57,  // 337: google.analytics.admin.v1alpha.AnalyticsAdminService.ListKeyEvents:output_type -> google.analytics.admin.v1alpha.ListKeyEventsResponse
-	217, // 338: google.analytics.admin.v1alpha.AnalyticsAdminService.GetDisplayVideo360AdvertiserLink:output_type -> google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLink
-	60,  // 339: google.analytics.admin.v1alpha.AnalyticsAdminService.ListDisplayVideo360AdvertiserLinks:output_type -> google.analytics.admin.v1alpha.ListDisplayVideo360AdvertiserLinksResponse
-	217, // 340: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateDisplayVideo360AdvertiserLink:output_type -> google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLink
-	241, // 341: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteDisplayVideo360AdvertiserLink:output_type -> google.protobuf.Empty
-	217, // 342: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateDisplayVideo360AdvertiserLink:output_type -> google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLink
-	218, // 343: google.analytics.admin.v1alpha.AnalyticsAdminService.GetDisplayVideo360AdvertiserLinkProposal:output_type -> google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLinkProposal
-	66,  // 344: google.analytics.admin.v1alpha.AnalyticsAdminService.ListDisplayVideo360AdvertiserLinkProposals:output_type -> google.analytics.admin.v1alpha.ListDisplayVideo360AdvertiserLinkProposalsResponse
-	218, // 345: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateDisplayVideo360AdvertiserLinkProposal:output_type -> google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLinkProposal
-	241, // 346: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteDisplayVideo360AdvertiserLinkProposal:output_type -> google.protobuf.Empty
-	70,  // 347: google.analytics.admin.v1alpha.AnalyticsAdminService.ApproveDisplayVideo360AdvertiserLinkProposal:output_type -> google.analytics.admin.v1alpha.ApproveDisplayVideo360AdvertiserLinkProposalResponse
-	218, // 348: google.analytics.admin.v1alpha.AnalyticsAdminService.CancelDisplayVideo360AdvertiserLinkProposal:output_type -> google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLinkProposal
-	220, // 349: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateCustomDimension:output_type -> google.analytics.admin.v1alpha.CustomDimension
-	220, // 350: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateCustomDimension:output_type -> google.analytics.admin.v1alpha.CustomDimension
-	81,  // 351: google.analytics.admin.v1alpha.AnalyticsAdminService.ListCustomDimensions:output_type -> google.analytics.admin.v1alpha.ListCustomDimensionsResponse
-	241, // 352: google.analytics.admin.v1alpha.AnalyticsAdminService.ArchiveCustomDimension:output_type -> google.protobuf.Empty
-	220, // 353: google.analytics.admin.v1alpha.AnalyticsAdminService.GetCustomDimension:output_type -> google.analytics.admin.v1alpha.CustomDimension
-	221, // 354: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateCustomMetric:output_type -> google.analytics.admin.v1alpha.CustomMetric
-	221, // 355: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateCustomMetric:output_type -> google.analytics.admin.v1alpha.CustomMetric
-	87,  // 356: google.analytics.admin.v1alpha.AnalyticsAdminService.ListCustomMetrics:output_type -> google.analytics.admin.v1alpha.ListCustomMetricsResponse
-	241, // 357: google.analytics.admin.v1alpha.AnalyticsAdminService.ArchiveCustomMetric:output_type -> google.protobuf.Empty
-	221, // 358: google.analytics.admin.v1alpha.AnalyticsAdminService.GetCustomMetric:output_type -> google.analytics.admin.v1alpha.CustomMetric
-	223, // 359: google.analytics.admin.v1alpha.AnalyticsAdminService.GetDataRetentionSettings:output_type -> google.analytics.admin.v1alpha.DataRetentionSettings
-	223, // 360: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateDataRetentionSettings:output_type -> google.analytics.admin.v1alpha.DataRetentionSettings
-	224, // 361: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateDataStream:output_type -> google.analytics.admin.v1alpha.DataStream
-	241, // 362: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteDataStream:output_type -> google.protobuf.Empty
-	224, // 363: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateDataStream:output_type -> google.analytics.admin.v1alpha.DataStream
-	102, // 364: google.analytics.admin.v1alpha.AnalyticsAdminService.ListDataStreams:output_type -> google.analytics.admin.v1alpha.ListDataStreamsResponse
-	224, // 365: google.analytics.admin.v1alpha.AnalyticsAdminService.GetDataStream:output_type -> google.analytics.admin.v1alpha.DataStream
-	225, // 366: google.analytics.admin.v1alpha.AnalyticsAdminService.GetAudience:output_type -> google.analytics.admin.v1alpha.Audience
-	106, // 367: google.analytics.admin.v1alpha.AnalyticsAdminService.ListAudiences:output_type -> google.analytics.admin.v1alpha.ListAudiencesResponse
-	225, // 368: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateAudience:output_type -> google.analytics.admin.v1alpha.Audience
-	225, // 369: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateAudience:output_type -> google.analytics.admin.v1alpha.Audience
-	241, // 370: google.analytics.admin.v1alpha.AnalyticsAdminService.ArchiveAudience:output_type -> google.protobuf.Empty
-	219, // 371: google.analytics.admin.v1alpha.AnalyticsAdminService.GetSearchAds360Link:output_type -> google.analytics.admin.v1alpha.SearchAds360Link
-	74,  // 372: google.analytics.admin.v1alpha.AnalyticsAdminService.ListSearchAds360Links:output_type -> google.analytics.admin.v1alpha.ListSearchAds360LinksResponse
-	219, // 373: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateSearchAds360Link:output_type -> google.analytics.admin.v1alpha.SearchAds360Link
-	241, // 374: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteSearchAds360Link:output_type -> google.protobuf.Empty
-	219, // 375: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateSearchAds360Link:output_type -> google.analytics.admin.v1alpha.SearchAds360Link
-	226, // 376: google.analytics.admin.v1alpha.AnalyticsAdminService.GetAttributionSettings:output_type -> google.analytics.admin.v1alpha.AttributionSettings
-	226, // 377: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateAttributionSettings:output_type -> google.analytics.admin.v1alpha.AttributionSettings
-	1,   // 378: google.analytics.admin.v1alpha.AnalyticsAdminService.RunAccessReport:output_type -> google.analytics.admin.v1alpha.RunAccessReportResponse
-	227, // 379: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateAccessBinding:output_type -> google.analytics.admin.v1alpha.AccessBinding
-	227, // 380: google.analytics.admin.v1alpha.AnalyticsAdminService.GetAccessBinding:output_type -> google.analytics.admin.v1alpha.AccessBinding
-	227, // 381: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateAccessBinding:output_type -> google.analytics.admin.v1alpha.AccessBinding
-	241, // 382: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteAccessBinding:output_type -> google.protobuf.Empty
-	116, // 383: google.analytics.admin.v1alpha.AnalyticsAdminService.ListAccessBindings:output_type -> google.analytics.admin.v1alpha.ListAccessBindingsResponse
-	119, // 384: google.analytics.admin.v1alpha.AnalyticsAdminService.BatchCreateAccessBindings:output_type -> google.analytics.admin.v1alpha.BatchCreateAccessBindingsResponse
-	114, // 385: google.analytics.admin.v1alpha.AnalyticsAdminService.BatchGetAccessBindings:output_type -> google.analytics.admin.v1alpha.BatchGetAccessBindingsResponse
-	122, // 386: google.analytics.admin.v1alpha.AnalyticsAdminService.BatchUpdateAccessBindings:output_type -> google.analytics.admin.v1alpha.BatchUpdateAccessBindingsResponse
-	241, // 387: google.analytics.admin.v1alpha.AnalyticsAdminService.BatchDeleteAccessBindings:output_type -> google.protobuf.Empty
-	228, // 388: google.analytics.admin.v1alpha.AnalyticsAdminService.GetExpandedDataSet:output_type -> google.analytics.admin.v1alpha.ExpandedDataSet
-	130, // 389: google.analytics.admin.v1alpha.AnalyticsAdminService.ListExpandedDataSets:output_type -> google.analytics.admin.v1alpha.ListExpandedDataSetsResponse
-	228, // 390: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateExpandedDataSet:output_type -> google.analytics.admin.v1alpha.ExpandedDataSet
-	228, // 391: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateExpandedDataSet:output_type -> google.analytics.admin.v1alpha.ExpandedDataSet
-	241, // 392: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteExpandedDataSet:output_type -> google.protobuf.Empty
-	229, // 393: google.analytics.admin.v1alpha.AnalyticsAdminService.GetChannelGroup:output_type -> google.analytics.admin.v1alpha.ChannelGroup
-	136, // 394: google.analytics.admin.v1alpha.AnalyticsAdminService.ListChannelGroups:output_type -> google.analytics.admin.v1alpha.ListChannelGroupsResponse
-	229, // 395: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateChannelGroup:output_type -> google.analytics.admin.v1alpha.ChannelGroup
-	229, // 396: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateChannelGroup:output_type -> google.analytics.admin.v1alpha.ChannelGroup
-	241, // 397: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteChannelGroup:output_type -> google.protobuf.Empty
-	230, // 398: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateBigQueryLink:output_type -> google.analytics.admin.v1alpha.BigQueryLink
-	230, // 399: google.analytics.admin.v1alpha.AnalyticsAdminService.GetBigQueryLink:output_type -> google.analytics.admin.v1alpha.BigQueryLink
-	140, // 400: google.analytics.admin.v1alpha.AnalyticsAdminService.ListBigQueryLinks:output_type -> google.analytics.admin.v1alpha.ListBigQueryLinksResponse
-	241, // 401: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteBigQueryLink:output_type -> google.protobuf.Empty
-	230, // 402: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateBigQueryLink:output_type -> google.analytics.admin.v1alpha.BigQueryLink
-	231, // 403: google.analytics.admin.v1alpha.AnalyticsAdminService.GetEnhancedMeasurementSettings:output_type -> google.analytics.admin.v1alpha.EnhancedMeasurementSettings
-	231, // 404: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateEnhancedMeasurementSettings:output_type -> google.analytics.admin.v1alpha.EnhancedMeasurementSettings
-	233, // 405: google.analytics.admin.v1alpha.AnalyticsAdminService.GetAdSenseLink:output_type -> google.analytics.admin.v1alpha.AdSenseLink
-	233, // 406: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateAdSenseLink:output_type -> google.analytics.admin.v1alpha.AdSenseLink
-	241, // 407: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteAdSenseLink:output_type -> google.protobuf.Empty
-	151, // 408: google.analytics.admin.v1alpha.AnalyticsAdminService.ListAdSenseLinks:output_type -> google.analytics.admin.v1alpha.ListAdSenseLinksResponse
-	234, // 409: google.analytics.admin.v1alpha.AnalyticsAdminService.GetEventCreateRule:output_type -> google.analytics.admin.v1alpha.EventCreateRule
-	157, // 410: google.analytics.admin.v1alpha.AnalyticsAdminService.ListEventCreateRules:output_type -> google.analytics.admin.v1alpha.ListEventCreateRulesResponse
-	234, // 411: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateEventCreateRule:output_type -> google.analytics.admin.v1alpha.EventCreateRule
-	234, // 412: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateEventCreateRule:output_type -> google.analytics.admin.v1alpha.EventCreateRule
-	241, // 413: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteEventCreateRule:output_type -> google.protobuf.Empty
-	235, // 414: google.analytics.admin.v1alpha.AnalyticsAdminService.GetEventEditRule:output_type -> google.analytics.admin.v1alpha.EventEditRule
-	163, // 415: google.analytics.admin.v1alpha.AnalyticsAdminService.ListEventEditRules:output_type -> google.analytics.admin.v1alpha.ListEventEditRulesResponse
-	235, // 416: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateEventEditRule:output_type -> google.analytics.admin.v1alpha.EventEditRule
-	235, // 417: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateEventEditRule:output_type -> google.analytics.admin.v1alpha.EventEditRule
-	241, // 418: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteEventEditRule:output_type -> google.protobuf.Empty
-	241, // 419: google.analytics.admin.v1alpha.AnalyticsAdminService.ReorderEventEditRules:output_type -> google.protobuf.Empty
-	232, // 420: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateDataRedactionSettings:output_type -> google.analytics.admin.v1alpha.DataRedactionSettings
-	232, // 421: google.analytics.admin.v1alpha.AnalyticsAdminService.GetDataRedactionSettings:output_type -> google.analytics.admin.v1alpha.DataRedactionSettings
-	222, // 422: google.analytics.admin.v1alpha.AnalyticsAdminService.GetCalculatedMetric:output_type -> google.analytics.admin.v1alpha.CalculatedMetric
-	222, // 423: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateCalculatedMetric:output_type -> google.analytics.admin.v1alpha.CalculatedMetric
-	94,  // 424: google.analytics.admin.v1alpha.AnalyticsAdminService.ListCalculatedMetrics:output_type -> google.analytics.admin.v1alpha.ListCalculatedMetricsResponse
-	222, // 425: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateCalculatedMetric:output_type -> google.analytics.admin.v1alpha.CalculatedMetric
-	241, // 426: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteCalculatedMetric:output_type -> google.protobuf.Empty
-	166, // 427: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateRollupProperty:output_type -> google.analytics.admin.v1alpha.CreateRollupPropertyResponse
-	236, // 428: google.analytics.admin.v1alpha.AnalyticsAdminService.GetRollupPropertySourceLink:output_type -> google.analytics.admin.v1alpha.RollupPropertySourceLink
-	169, // 429: google.analytics.admin.v1alpha.AnalyticsAdminService.ListRollupPropertySourceLinks:output_type -> google.analytics.admin.v1alpha.ListRollupPropertySourceLinksResponse
-	236, // 430: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateRollupPropertySourceLink:output_type -> google.analytics.admin.v1alpha.RollupPropertySourceLink
-	241, // 431: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteRollupPropertySourceLink:output_type -> google.protobuf.Empty
-	173, // 432: google.analytics.admin.v1alpha.AnalyticsAdminService.ProvisionSubproperty:output_type -> google.analytics.admin.v1alpha.ProvisionSubpropertyResponse
-	237, // 433: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateSubpropertyEventFilter:output_type -> google.analytics.admin.v1alpha.SubpropertyEventFilter
-	237, // 434: google.analytics.admin.v1alpha.AnalyticsAdminService.GetSubpropertyEventFilter:output_type -> google.analytics.admin.v1alpha.SubpropertyEventFilter
-	177, // 435: google.analytics.admin.v1alpha.AnalyticsAdminService.ListSubpropertyEventFilters:output_type -> google.analytics.admin.v1alpha.ListSubpropertyEventFiltersResponse
-	237, // 436: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateSubpropertyEventFilter:output_type -> google.analytics.admin.v1alpha.SubpropertyEventFilter
-	241, // 437: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteSubpropertyEventFilter:output_type -> google.protobuf.Empty
-	239, // 438: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateReportingDataAnnotation:output_type -> google.analytics.admin.v1alpha.ReportingDataAnnotation
-	239, // 439: google.analytics.admin.v1alpha.AnalyticsAdminService.GetReportingDataAnnotation:output_type -> google.analytics.admin.v1alpha.ReportingDataAnnotation
-	183, // 440: google.analytics.admin.v1alpha.AnalyticsAdminService.ListReportingDataAnnotations:output_type -> google.analytics.admin.v1alpha.ListReportingDataAnnotationsResponse
-	239, // 441: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateReportingDataAnnotation:output_type -> google.analytics.admin.v1alpha.ReportingDataAnnotation
-	241, // 442: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteReportingDataAnnotation:output_type -> google.protobuf.Empty
-	187, // 443: google.analytics.admin.v1alpha.AnalyticsAdminService.SubmitUserDeletion:output_type -> google.analytics.admin.v1alpha.SubmitUserDeletionResponse
-	190, // 444: google.analytics.admin.v1alpha.AnalyticsAdminService.ListSubpropertySyncConfigs:output_type -> google.analytics.admin.v1alpha.ListSubpropertySyncConfigsResponse
-	240, // 445: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateSubpropertySyncConfig:output_type -> google.analytics.admin.v1alpha.SubpropertySyncConfig
-	240, // 446: google.analytics.admin.v1alpha.AnalyticsAdminService.GetSubpropertySyncConfig:output_type -> google.analytics.admin.v1alpha.SubpropertySyncConfig
-	244, // 447: google.analytics.admin.v1alpha.AnalyticsAdminService.GetReportingIdentitySettings:output_type -> google.analytics.admin.v1alpha.ReportingIdentitySettings
-	294, // [294:448] is the sub-list for method output_type
-	140, // [140:294] is the sub-list for method input_type
+	193, // 294: google.analytics.admin.v1alpha.AnalyticsAdminService.GetUserProvidedDataSettings:input_type -> google.analytics.admin.v1alpha.GetUserProvidedDataSettingsRequest
+	203, // 295: google.analytics.admin.v1alpha.AnalyticsAdminService.GetAccount:output_type -> google.analytics.admin.v1alpha.Account
+	4,   // 296: google.analytics.admin.v1alpha.AnalyticsAdminService.ListAccounts:output_type -> google.analytics.admin.v1alpha.ListAccountsResponse
+	242, // 297: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteAccount:output_type -> google.protobuf.Empty
+	203, // 298: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateAccount:output_type -> google.analytics.admin.v1alpha.Account
+	8,   // 299: google.analytics.admin.v1alpha.AnalyticsAdminService.ProvisionAccountTicket:output_type -> google.analytics.admin.v1alpha.ProvisionAccountTicketResponse
+	27,  // 300: google.analytics.admin.v1alpha.AnalyticsAdminService.ListAccountSummaries:output_type -> google.analytics.admin.v1alpha.ListAccountSummariesResponse
+	205, // 301: google.analytics.admin.v1alpha.AnalyticsAdminService.GetProperty:output_type -> google.analytics.admin.v1alpha.Property
+	11,  // 302: google.analytics.admin.v1alpha.AnalyticsAdminService.ListProperties:output_type -> google.analytics.admin.v1alpha.ListPropertiesResponse
+	205, // 303: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateProperty:output_type -> google.analytics.admin.v1alpha.Property
+	205, // 304: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteProperty:output_type -> google.analytics.admin.v1alpha.Property
+	205, // 305: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateProperty:output_type -> google.analytics.admin.v1alpha.Property
+	206, // 306: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateFirebaseLink:output_type -> google.analytics.admin.v1alpha.FirebaseLink
+	242, // 307: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteFirebaseLink:output_type -> google.protobuf.Empty
+	18,  // 308: google.analytics.admin.v1alpha.AnalyticsAdminService.ListFirebaseLinks:output_type -> google.analytics.admin.v1alpha.ListFirebaseLinksResponse
+	243, // 309: google.analytics.admin.v1alpha.AnalyticsAdminService.GetGlobalSiteTag:output_type -> google.analytics.admin.v1alpha.GlobalSiteTag
+	207, // 310: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateGoogleAdsLink:output_type -> google.analytics.admin.v1alpha.GoogleAdsLink
+	207, // 311: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateGoogleAdsLink:output_type -> google.analytics.admin.v1alpha.GoogleAdsLink
+	242, // 312: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteGoogleAdsLink:output_type -> google.protobuf.Empty
+	24,  // 313: google.analytics.admin.v1alpha.AnalyticsAdminService.ListGoogleAdsLinks:output_type -> google.analytics.admin.v1alpha.ListGoogleAdsLinksResponse
+	244, // 314: google.analytics.admin.v1alpha.AnalyticsAdminService.GetDataSharingSettings:output_type -> google.analytics.admin.v1alpha.DataSharingSettings
+	213, // 315: google.analytics.admin.v1alpha.AnalyticsAdminService.GetMeasurementProtocolSecret:output_type -> google.analytics.admin.v1alpha.MeasurementProtocolSecret
+	37,  // 316: google.analytics.admin.v1alpha.AnalyticsAdminService.ListMeasurementProtocolSecrets:output_type -> google.analytics.admin.v1alpha.ListMeasurementProtocolSecretsResponse
+	213, // 317: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateMeasurementProtocolSecret:output_type -> google.analytics.admin.v1alpha.MeasurementProtocolSecret
+	242, // 318: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteMeasurementProtocolSecret:output_type -> google.protobuf.Empty
+	213, // 319: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateMeasurementProtocolSecret:output_type -> google.analytics.admin.v1alpha.MeasurementProtocolSecret
+	29,  // 320: google.analytics.admin.v1alpha.AnalyticsAdminService.AcknowledgeUserDataCollection:output_type -> google.analytics.admin.v1alpha.AcknowledgeUserDataCollectionResponse
+	214, // 321: google.analytics.admin.v1alpha.AnalyticsAdminService.GetSKAdNetworkConversionValueSchema:output_type -> google.analytics.admin.v1alpha.SKAdNetworkConversionValueSchema
+	214, // 322: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateSKAdNetworkConversionValueSchema:output_type -> google.analytics.admin.v1alpha.SKAdNetworkConversionValueSchema
+	242, // 323: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteSKAdNetworkConversionValueSchema:output_type -> google.protobuf.Empty
+	214, // 324: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateSKAdNetworkConversionValueSchema:output_type -> google.analytics.admin.v1alpha.SKAdNetworkConversionValueSchema
+	43,  // 325: google.analytics.admin.v1alpha.AnalyticsAdminService.ListSKAdNetworkConversionValueSchemas:output_type -> google.analytics.admin.v1alpha.ListSKAdNetworkConversionValueSchemasResponse
+	31,  // 326: google.analytics.admin.v1alpha.AnalyticsAdminService.SearchChangeHistoryEvents:output_type -> google.analytics.admin.v1alpha.SearchChangeHistoryEventsResponse
+	215, // 327: google.analytics.admin.v1alpha.AnalyticsAdminService.GetGoogleSignalsSettings:output_type -> google.analytics.admin.v1alpha.GoogleSignalsSettings
+	215, // 328: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateGoogleSignalsSettings:output_type -> google.analytics.admin.v1alpha.GoogleSignalsSettings
+	216, // 329: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateConversionEvent:output_type -> google.analytics.admin.v1alpha.ConversionEvent
+	216, // 330: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateConversionEvent:output_type -> google.analytics.admin.v1alpha.ConversionEvent
+	216, // 331: google.analytics.admin.v1alpha.AnalyticsAdminService.GetConversionEvent:output_type -> google.analytics.admin.v1alpha.ConversionEvent
+	242, // 332: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteConversionEvent:output_type -> google.protobuf.Empty
+	51,  // 333: google.analytics.admin.v1alpha.AnalyticsAdminService.ListConversionEvents:output_type -> google.analytics.admin.v1alpha.ListConversionEventsResponse
+	217, // 334: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateKeyEvent:output_type -> google.analytics.admin.v1alpha.KeyEvent
+	217, // 335: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateKeyEvent:output_type -> google.analytics.admin.v1alpha.KeyEvent
+	217, // 336: google.analytics.admin.v1alpha.AnalyticsAdminService.GetKeyEvent:output_type -> google.analytics.admin.v1alpha.KeyEvent
+	242, // 337: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteKeyEvent:output_type -> google.protobuf.Empty
+	57,  // 338: google.analytics.admin.v1alpha.AnalyticsAdminService.ListKeyEvents:output_type -> google.analytics.admin.v1alpha.ListKeyEventsResponse
+	218, // 339: google.analytics.admin.v1alpha.AnalyticsAdminService.GetDisplayVideo360AdvertiserLink:output_type -> google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLink
+	60,  // 340: google.analytics.admin.v1alpha.AnalyticsAdminService.ListDisplayVideo360AdvertiserLinks:output_type -> google.analytics.admin.v1alpha.ListDisplayVideo360AdvertiserLinksResponse
+	218, // 341: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateDisplayVideo360AdvertiserLink:output_type -> google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLink
+	242, // 342: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteDisplayVideo360AdvertiserLink:output_type -> google.protobuf.Empty
+	218, // 343: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateDisplayVideo360AdvertiserLink:output_type -> google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLink
+	219, // 344: google.analytics.admin.v1alpha.AnalyticsAdminService.GetDisplayVideo360AdvertiserLinkProposal:output_type -> google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLinkProposal
+	66,  // 345: google.analytics.admin.v1alpha.AnalyticsAdminService.ListDisplayVideo360AdvertiserLinkProposals:output_type -> google.analytics.admin.v1alpha.ListDisplayVideo360AdvertiserLinkProposalsResponse
+	219, // 346: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateDisplayVideo360AdvertiserLinkProposal:output_type -> google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLinkProposal
+	242, // 347: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteDisplayVideo360AdvertiserLinkProposal:output_type -> google.protobuf.Empty
+	70,  // 348: google.analytics.admin.v1alpha.AnalyticsAdminService.ApproveDisplayVideo360AdvertiserLinkProposal:output_type -> google.analytics.admin.v1alpha.ApproveDisplayVideo360AdvertiserLinkProposalResponse
+	219, // 349: google.analytics.admin.v1alpha.AnalyticsAdminService.CancelDisplayVideo360AdvertiserLinkProposal:output_type -> google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLinkProposal
+	221, // 350: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateCustomDimension:output_type -> google.analytics.admin.v1alpha.CustomDimension
+	221, // 351: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateCustomDimension:output_type -> google.analytics.admin.v1alpha.CustomDimension
+	81,  // 352: google.analytics.admin.v1alpha.AnalyticsAdminService.ListCustomDimensions:output_type -> google.analytics.admin.v1alpha.ListCustomDimensionsResponse
+	242, // 353: google.analytics.admin.v1alpha.AnalyticsAdminService.ArchiveCustomDimension:output_type -> google.protobuf.Empty
+	221, // 354: google.analytics.admin.v1alpha.AnalyticsAdminService.GetCustomDimension:output_type -> google.analytics.admin.v1alpha.CustomDimension
+	222, // 355: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateCustomMetric:output_type -> google.analytics.admin.v1alpha.CustomMetric
+	222, // 356: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateCustomMetric:output_type -> google.analytics.admin.v1alpha.CustomMetric
+	87,  // 357: google.analytics.admin.v1alpha.AnalyticsAdminService.ListCustomMetrics:output_type -> google.analytics.admin.v1alpha.ListCustomMetricsResponse
+	242, // 358: google.analytics.admin.v1alpha.AnalyticsAdminService.ArchiveCustomMetric:output_type -> google.protobuf.Empty
+	222, // 359: google.analytics.admin.v1alpha.AnalyticsAdminService.GetCustomMetric:output_type -> google.analytics.admin.v1alpha.CustomMetric
+	224, // 360: google.analytics.admin.v1alpha.AnalyticsAdminService.GetDataRetentionSettings:output_type -> google.analytics.admin.v1alpha.DataRetentionSettings
+	224, // 361: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateDataRetentionSettings:output_type -> google.analytics.admin.v1alpha.DataRetentionSettings
+	225, // 362: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateDataStream:output_type -> google.analytics.admin.v1alpha.DataStream
+	242, // 363: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteDataStream:output_type -> google.protobuf.Empty
+	225, // 364: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateDataStream:output_type -> google.analytics.admin.v1alpha.DataStream
+	102, // 365: google.analytics.admin.v1alpha.AnalyticsAdminService.ListDataStreams:output_type -> google.analytics.admin.v1alpha.ListDataStreamsResponse
+	225, // 366: google.analytics.admin.v1alpha.AnalyticsAdminService.GetDataStream:output_type -> google.analytics.admin.v1alpha.DataStream
+	226, // 367: google.analytics.admin.v1alpha.AnalyticsAdminService.GetAudience:output_type -> google.analytics.admin.v1alpha.Audience
+	106, // 368: google.analytics.admin.v1alpha.AnalyticsAdminService.ListAudiences:output_type -> google.analytics.admin.v1alpha.ListAudiencesResponse
+	226, // 369: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateAudience:output_type -> google.analytics.admin.v1alpha.Audience
+	226, // 370: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateAudience:output_type -> google.analytics.admin.v1alpha.Audience
+	242, // 371: google.analytics.admin.v1alpha.AnalyticsAdminService.ArchiveAudience:output_type -> google.protobuf.Empty
+	220, // 372: google.analytics.admin.v1alpha.AnalyticsAdminService.GetSearchAds360Link:output_type -> google.analytics.admin.v1alpha.SearchAds360Link
+	74,  // 373: google.analytics.admin.v1alpha.AnalyticsAdminService.ListSearchAds360Links:output_type -> google.analytics.admin.v1alpha.ListSearchAds360LinksResponse
+	220, // 374: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateSearchAds360Link:output_type -> google.analytics.admin.v1alpha.SearchAds360Link
+	242, // 375: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteSearchAds360Link:output_type -> google.protobuf.Empty
+	220, // 376: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateSearchAds360Link:output_type -> google.analytics.admin.v1alpha.SearchAds360Link
+	227, // 377: google.analytics.admin.v1alpha.AnalyticsAdminService.GetAttributionSettings:output_type -> google.analytics.admin.v1alpha.AttributionSettings
+	227, // 378: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateAttributionSettings:output_type -> google.analytics.admin.v1alpha.AttributionSettings
+	1,   // 379: google.analytics.admin.v1alpha.AnalyticsAdminService.RunAccessReport:output_type -> google.analytics.admin.v1alpha.RunAccessReportResponse
+	228, // 380: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateAccessBinding:output_type -> google.analytics.admin.v1alpha.AccessBinding
+	228, // 381: google.analytics.admin.v1alpha.AnalyticsAdminService.GetAccessBinding:output_type -> google.analytics.admin.v1alpha.AccessBinding
+	228, // 382: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateAccessBinding:output_type -> google.analytics.admin.v1alpha.AccessBinding
+	242, // 383: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteAccessBinding:output_type -> google.protobuf.Empty
+	116, // 384: google.analytics.admin.v1alpha.AnalyticsAdminService.ListAccessBindings:output_type -> google.analytics.admin.v1alpha.ListAccessBindingsResponse
+	119, // 385: google.analytics.admin.v1alpha.AnalyticsAdminService.BatchCreateAccessBindings:output_type -> google.analytics.admin.v1alpha.BatchCreateAccessBindingsResponse
+	114, // 386: google.analytics.admin.v1alpha.AnalyticsAdminService.BatchGetAccessBindings:output_type -> google.analytics.admin.v1alpha.BatchGetAccessBindingsResponse
+	122, // 387: google.analytics.admin.v1alpha.AnalyticsAdminService.BatchUpdateAccessBindings:output_type -> google.analytics.admin.v1alpha.BatchUpdateAccessBindingsResponse
+	242, // 388: google.analytics.admin.v1alpha.AnalyticsAdminService.BatchDeleteAccessBindings:output_type -> google.protobuf.Empty
+	229, // 389: google.analytics.admin.v1alpha.AnalyticsAdminService.GetExpandedDataSet:output_type -> google.analytics.admin.v1alpha.ExpandedDataSet
+	130, // 390: google.analytics.admin.v1alpha.AnalyticsAdminService.ListExpandedDataSets:output_type -> google.analytics.admin.v1alpha.ListExpandedDataSetsResponse
+	229, // 391: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateExpandedDataSet:output_type -> google.analytics.admin.v1alpha.ExpandedDataSet
+	229, // 392: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateExpandedDataSet:output_type -> google.analytics.admin.v1alpha.ExpandedDataSet
+	242, // 393: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteExpandedDataSet:output_type -> google.protobuf.Empty
+	230, // 394: google.analytics.admin.v1alpha.AnalyticsAdminService.GetChannelGroup:output_type -> google.analytics.admin.v1alpha.ChannelGroup
+	136, // 395: google.analytics.admin.v1alpha.AnalyticsAdminService.ListChannelGroups:output_type -> google.analytics.admin.v1alpha.ListChannelGroupsResponse
+	230, // 396: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateChannelGroup:output_type -> google.analytics.admin.v1alpha.ChannelGroup
+	230, // 397: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateChannelGroup:output_type -> google.analytics.admin.v1alpha.ChannelGroup
+	242, // 398: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteChannelGroup:output_type -> google.protobuf.Empty
+	231, // 399: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateBigQueryLink:output_type -> google.analytics.admin.v1alpha.BigQueryLink
+	231, // 400: google.analytics.admin.v1alpha.AnalyticsAdminService.GetBigQueryLink:output_type -> google.analytics.admin.v1alpha.BigQueryLink
+	140, // 401: google.analytics.admin.v1alpha.AnalyticsAdminService.ListBigQueryLinks:output_type -> google.analytics.admin.v1alpha.ListBigQueryLinksResponse
+	242, // 402: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteBigQueryLink:output_type -> google.protobuf.Empty
+	231, // 403: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateBigQueryLink:output_type -> google.analytics.admin.v1alpha.BigQueryLink
+	232, // 404: google.analytics.admin.v1alpha.AnalyticsAdminService.GetEnhancedMeasurementSettings:output_type -> google.analytics.admin.v1alpha.EnhancedMeasurementSettings
+	232, // 405: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateEnhancedMeasurementSettings:output_type -> google.analytics.admin.v1alpha.EnhancedMeasurementSettings
+	234, // 406: google.analytics.admin.v1alpha.AnalyticsAdminService.GetAdSenseLink:output_type -> google.analytics.admin.v1alpha.AdSenseLink
+	234, // 407: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateAdSenseLink:output_type -> google.analytics.admin.v1alpha.AdSenseLink
+	242, // 408: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteAdSenseLink:output_type -> google.protobuf.Empty
+	151, // 409: google.analytics.admin.v1alpha.AnalyticsAdminService.ListAdSenseLinks:output_type -> google.analytics.admin.v1alpha.ListAdSenseLinksResponse
+	235, // 410: google.analytics.admin.v1alpha.AnalyticsAdminService.GetEventCreateRule:output_type -> google.analytics.admin.v1alpha.EventCreateRule
+	157, // 411: google.analytics.admin.v1alpha.AnalyticsAdminService.ListEventCreateRules:output_type -> google.analytics.admin.v1alpha.ListEventCreateRulesResponse
+	235, // 412: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateEventCreateRule:output_type -> google.analytics.admin.v1alpha.EventCreateRule
+	235, // 413: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateEventCreateRule:output_type -> google.analytics.admin.v1alpha.EventCreateRule
+	242, // 414: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteEventCreateRule:output_type -> google.protobuf.Empty
+	236, // 415: google.analytics.admin.v1alpha.AnalyticsAdminService.GetEventEditRule:output_type -> google.analytics.admin.v1alpha.EventEditRule
+	163, // 416: google.analytics.admin.v1alpha.AnalyticsAdminService.ListEventEditRules:output_type -> google.analytics.admin.v1alpha.ListEventEditRulesResponse
+	236, // 417: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateEventEditRule:output_type -> google.analytics.admin.v1alpha.EventEditRule
+	236, // 418: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateEventEditRule:output_type -> google.analytics.admin.v1alpha.EventEditRule
+	242, // 419: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteEventEditRule:output_type -> google.protobuf.Empty
+	242, // 420: google.analytics.admin.v1alpha.AnalyticsAdminService.ReorderEventEditRules:output_type -> google.protobuf.Empty
+	233, // 421: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateDataRedactionSettings:output_type -> google.analytics.admin.v1alpha.DataRedactionSettings
+	233, // 422: google.analytics.admin.v1alpha.AnalyticsAdminService.GetDataRedactionSettings:output_type -> google.analytics.admin.v1alpha.DataRedactionSettings
+	223, // 423: google.analytics.admin.v1alpha.AnalyticsAdminService.GetCalculatedMetric:output_type -> google.analytics.admin.v1alpha.CalculatedMetric
+	223, // 424: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateCalculatedMetric:output_type -> google.analytics.admin.v1alpha.CalculatedMetric
+	94,  // 425: google.analytics.admin.v1alpha.AnalyticsAdminService.ListCalculatedMetrics:output_type -> google.analytics.admin.v1alpha.ListCalculatedMetricsResponse
+	223, // 426: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateCalculatedMetric:output_type -> google.analytics.admin.v1alpha.CalculatedMetric
+	242, // 427: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteCalculatedMetric:output_type -> google.protobuf.Empty
+	166, // 428: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateRollupProperty:output_type -> google.analytics.admin.v1alpha.CreateRollupPropertyResponse
+	237, // 429: google.analytics.admin.v1alpha.AnalyticsAdminService.GetRollupPropertySourceLink:output_type -> google.analytics.admin.v1alpha.RollupPropertySourceLink
+	169, // 430: google.analytics.admin.v1alpha.AnalyticsAdminService.ListRollupPropertySourceLinks:output_type -> google.analytics.admin.v1alpha.ListRollupPropertySourceLinksResponse
+	237, // 431: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateRollupPropertySourceLink:output_type -> google.analytics.admin.v1alpha.RollupPropertySourceLink
+	242, // 432: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteRollupPropertySourceLink:output_type -> google.protobuf.Empty
+	173, // 433: google.analytics.admin.v1alpha.AnalyticsAdminService.ProvisionSubproperty:output_type -> google.analytics.admin.v1alpha.ProvisionSubpropertyResponse
+	238, // 434: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateSubpropertyEventFilter:output_type -> google.analytics.admin.v1alpha.SubpropertyEventFilter
+	238, // 435: google.analytics.admin.v1alpha.AnalyticsAdminService.GetSubpropertyEventFilter:output_type -> google.analytics.admin.v1alpha.SubpropertyEventFilter
+	177, // 436: google.analytics.admin.v1alpha.AnalyticsAdminService.ListSubpropertyEventFilters:output_type -> google.analytics.admin.v1alpha.ListSubpropertyEventFiltersResponse
+	238, // 437: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateSubpropertyEventFilter:output_type -> google.analytics.admin.v1alpha.SubpropertyEventFilter
+	242, // 438: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteSubpropertyEventFilter:output_type -> google.protobuf.Empty
+	240, // 439: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateReportingDataAnnotation:output_type -> google.analytics.admin.v1alpha.ReportingDataAnnotation
+	240, // 440: google.analytics.admin.v1alpha.AnalyticsAdminService.GetReportingDataAnnotation:output_type -> google.analytics.admin.v1alpha.ReportingDataAnnotation
+	183, // 441: google.analytics.admin.v1alpha.AnalyticsAdminService.ListReportingDataAnnotations:output_type -> google.analytics.admin.v1alpha.ListReportingDataAnnotationsResponse
+	240, // 442: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateReportingDataAnnotation:output_type -> google.analytics.admin.v1alpha.ReportingDataAnnotation
+	242, // 443: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteReportingDataAnnotation:output_type -> google.protobuf.Empty
+	187, // 444: google.analytics.admin.v1alpha.AnalyticsAdminService.SubmitUserDeletion:output_type -> google.analytics.admin.v1alpha.SubmitUserDeletionResponse
+	190, // 445: google.analytics.admin.v1alpha.AnalyticsAdminService.ListSubpropertySyncConfigs:output_type -> google.analytics.admin.v1alpha.ListSubpropertySyncConfigsResponse
+	241, // 446: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateSubpropertySyncConfig:output_type -> google.analytics.admin.v1alpha.SubpropertySyncConfig
+	241, // 447: google.analytics.admin.v1alpha.AnalyticsAdminService.GetSubpropertySyncConfig:output_type -> google.analytics.admin.v1alpha.SubpropertySyncConfig
+	245, // 448: google.analytics.admin.v1alpha.AnalyticsAdminService.GetReportingIdentitySettings:output_type -> google.analytics.admin.v1alpha.ReportingIdentitySettings
+	246, // 449: google.analytics.admin.v1alpha.AnalyticsAdminService.GetUserProvidedDataSettings:output_type -> google.analytics.admin.v1alpha.UserProvidedDataSettings
+	295, // [295:450] is the sub-list for method output_type
+	140, // [140:295] is the sub-list for method input_type
 	140, // [140:140] is the sub-list for extension type_name
 	140, // [140:140] is the sub-list for extension extendee
 	0,   // [0:140] is the sub-list for field type_name
@@ -12815,7 +12871,7 @@ func file_google_analytics_admin_v1alpha_analytics_admin_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_analytics_admin_v1alpha_analytics_admin_proto_rawDesc), len(file_google_analytics_admin_v1alpha_analytics_admin_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   193,
+			NumMessages:   194,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

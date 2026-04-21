@@ -504,6 +504,9 @@ const (
 	SearchRequest_SearchAsYouTypeSpec_DISABLED SearchRequest_SearchAsYouTypeSpec_Condition = 1
 	// Enables Search As You Type.
 	SearchRequest_SearchAsYouTypeSpec_ENABLED SearchRequest_SearchAsYouTypeSpec_Condition = 2
+	// Automatic switching between search-as-you-type and standard search
+	// modes, ideal for single-API implementations (e.g., debouncing).
+	SearchRequest_SearchAsYouTypeSpec_AUTO SearchRequest_SearchAsYouTypeSpec_Condition = 3
 )
 
 // Enum value maps for SearchRequest_SearchAsYouTypeSpec_Condition.
@@ -512,11 +515,13 @@ var (
 		0: "CONDITION_UNSPECIFIED",
 		1: "DISABLED",
 		2: "ENABLED",
+		3: "AUTO",
 	}
 	SearchRequest_SearchAsYouTypeSpec_Condition_value = map[string]int32{
 		"CONDITION_UNSPECIFIED": 0,
 		"DISABLED":              1,
 		"ENABLED":               2,
+		"AUTO":                  3,
 	}
 )
 
@@ -5134,7 +5139,7 @@ var File_google_cloud_discoveryengine_v1alpha_search_service_proto protoreflect.
 
 const file_google_cloud_discoveryengine_v1alpha_search_service_proto_rawDesc = "" +
 	"\n" +
-	"9google/cloud/discoveryengine/v1alpha/search_service.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/discoveryengine/v1alpha/chunk.proto\x1a1google/cloud/discoveryengine/v1alpha/common.proto\x1a3google/cloud/discoveryengine/v1alpha/document.proto\x1a\x1cgoogle/protobuf/struct.proto\"\x95@\n" +
+	"9google/cloud/discoveryengine/v1alpha/search_service.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/discoveryengine/v1alpha/chunk.proto\x1a1google/cloud/discoveryengine/v1alpha/common.proto\x1a3google/cloud/discoveryengine/v1alpha/document.proto\x1a\x1cgoogle/protobuf/struct.proto\"\x9f@\n" +
 	"\rSearchRequest\x12[\n" +
 	"\x0eserving_config\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
 	",discoveryengine.googleapis.com/ServingConfigR\rservingConfig\x12B\n" +
@@ -5289,13 +5294,14 @@ const file_google_cloud_discoveryengine_v1alpha_search_service_proto_rawDesc = "
 	"\x19FilterExtractionCondition\x12\x19\n" +
 	"\x15CONDITION_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDISABLED\x10\x01\x12\v\n" +
-	"\aENABLED\x10\x02\x1a\xc9\x01\n" +
+	"\aENABLED\x10\x02\x1a\xd3\x01\n" +
 	"\x13SearchAsYouTypeSpec\x12o\n" +
-	"\tcondition\x18\x01 \x01(\x0e2Q.google.cloud.discoveryengine.v1alpha.SearchRequest.SearchAsYouTypeSpec.ConditionR\tcondition\"A\n" +
+	"\tcondition\x18\x01 \x01(\x0e2Q.google.cloud.discoveryengine.v1alpha.SearchRequest.SearchAsYouTypeSpec.ConditionR\tcondition\"K\n" +
 	"\tCondition\x12\x19\n" +
 	"\x15CONDITION_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDISABLED\x10\x01\x12\v\n" +
-	"\aENABLED\x10\x02\x1a\x98\x01\n" +
+	"\aENABLED\x10\x02\x12\b\n" +
+	"\x04AUTO\x10\x03\x1a\x98\x01\n" +
 	"\vSessionSpec\x12\x19\n" +
 	"\bquery_id\x18\x01 \x01(\tR\aqueryId\x12J\n" +
 	"\x1fsearch_result_persistence_count\x18\x02 \x01(\x05H\x00R\x1csearchResultPersistenceCount\x88\x01\x01B\"\n" +

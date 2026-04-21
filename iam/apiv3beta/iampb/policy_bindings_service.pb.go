@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -338,8 +338,7 @@ type ListPolicyBindingsRequest struct {
 	// Optional. The maximum number of policy bindings to return. The service may
 	// return fewer than this value.
 	//
-	// If unspecified, at most 50 policy bindings will be returned.
-	// The maximum value is 1000; values above 1000 will be coerced to 1000.
+	// The default value is 50. The maximum value is 1000.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// Optional. A page token, received from a previous `ListPolicyBindings` call.
 	// Provide this to retrieve the subsequent page.
@@ -348,7 +347,8 @@ type ListPolicyBindingsRequest struct {
 	// match the call that provided the page token.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	// Optional. An expression for filtering the results of the request. Filter
-	// rules are case insensitive. Some eligible fields for filtering are:
+	// rules are case insensitive. Some eligible fields for filtering are the
+	// following:
 	//
 	// + `target`
 	// + `policy`
@@ -494,8 +494,7 @@ type SearchTargetPolicyBindingsRequest struct {
 	// Optional. The maximum number of policy bindings to return. The service may
 	// return fewer than this value.
 	//
-	// If unspecified, at most 50 policy bindings will be returned.
-	// The maximum value is 1000; values above 1000 will be coerced to 1000.
+	// The default value is 50. The maximum value is 1000.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// Optional. A page token, received from a previous
 	// `SearchTargetPolicyBindingsRequest` call. Provide this to retrieve the
@@ -515,7 +514,18 @@ type SearchTargetPolicyBindingsRequest struct {
 	// * `projects/{project_number}/locations/{location}`
 	// * `folders/{folder_id}/locations/{location}`
 	// * `organizations/{organization_id}/locations/{location}`
-	Parent        string `protobuf:"bytes,5,opt,name=parent,proto3" json:"parent,omitempty"`
+	Parent string `protobuf:"bytes,5,opt,name=parent,proto3" json:"parent,omitempty"`
+	// Optional. Filtering currently only supports the kind of policies to return,
+	// and must be in the format "policy_kind={policy_kind}".
+	//
+	// If String is empty, bindings bound to all kinds of policies would be
+	// returned.
+	//
+	// The only supported values are the following:
+	//
+	// * "policy_kind=PRINCIPAL_ACCESS_BOUNDARY",
+	// * "policy_kind=ACCESS"
+	Filter        string `protobuf:"bytes,6,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -574,6 +584,13 @@ func (x *SearchTargetPolicyBindingsRequest) GetPageToken() string {
 func (x *SearchTargetPolicyBindingsRequest) GetParent() string {
 	if x != nil {
 		return x.Parent
+	}
+	return ""
+}
+
+func (x *SearchTargetPolicyBindingsRequest) GetFilter() string {
+	if x != nil {
+		return x.Filter
 	}
 	return ""
 }
@@ -665,13 +682,14 @@ const file_google_iam_v3beta_policy_bindings_service_proto_rawDesc = "" +
 	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\x94\x01\n" +
 	"\x1aListPolicyBindingsResponse\x12I\n" +
 	"\x0fpolicy_bindings\x18\x01 \x03(\v2 .google.iam.v3beta.PolicyBindingR\x0epolicyBindings\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\rnextPageToken\"\xc8\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\rnextPageToken\"\xe5\x01\n" +
 	"!SearchTargetPolicyBindingsRequest\x12\x1b\n" +
 	"\x06target\x18\x01 \x01(\tB\x03\xe0A\x02R\x06target\x12 \n" +
 	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12@\n" +
-	"\x06parent\x18\x05 \x01(\tB(\xe0A\x02\xfaA\"\x12 iam.googleapis.com/PolicyBindingR\x06parent\"\x9c\x01\n" +
+	"\x06parent\x18\x05 \x01(\tB(\xe0A\x02\xfaA\"\x12 iam.googleapis.com/PolicyBindingR\x06parent\x12\x1b\n" +
+	"\x06filter\x18\x06 \x01(\tB\x03\xe0A\x01R\x06filter\"\x9c\x01\n" +
 	"\"SearchTargetPolicyBindingsResponse\x12I\n" +
 	"\x0fpolicy_bindings\x18\x01 \x03(\v2 .google.iam.v3beta.PolicyBindingR\x0epolicyBindings\x12+\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\rnextPageToken2\x8c\x12\n" +

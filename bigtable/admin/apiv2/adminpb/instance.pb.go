@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -150,6 +150,70 @@ func (Instance_Type) EnumDescriptor() ([]byte, []int) {
 	return file_google_bigtable_admin_v2_instance_proto_rawDescGZIP(), []int{0, 1}
 }
 
+// Possible editions of an instance.
+//
+// An edition is a specific tier of Cloud Bigtable. Each edition is tailored
+// to different customer needs. Higher tiers offer more features and better
+// performance.
+type Instance_Edition int32
+
+const (
+	// The edition is unspecified. This is treated as `ENTERPRISE`.
+	Instance_EDITION_UNSPECIFIED Instance_Edition = 0
+	// The Enterprise edition. This is the default offering that is designed to
+	// meet the needs of most enterprise workloads.
+	Instance_ENTERPRISE Instance_Edition = 1
+	// The Enterprise Plus edition. This is a premium tier that is designed for
+	// demanding, multi-tenant workloads requiring the highest levels of
+	// performance, scale, and global availability.
+	//
+	// The nodes in the Enterprise Plus tier come at a higher cost than the
+	// Enterprise tier. Any Enterprise Plus features must be disabled before
+	// downgrading to Enterprise.
+	Instance_ENTERPRISE_PLUS Instance_Edition = 2
+)
+
+// Enum value maps for Instance_Edition.
+var (
+	Instance_Edition_name = map[int32]string{
+		0: "EDITION_UNSPECIFIED",
+		1: "ENTERPRISE",
+		2: "ENTERPRISE_PLUS",
+	}
+	Instance_Edition_value = map[string]int32{
+		"EDITION_UNSPECIFIED": 0,
+		"ENTERPRISE":          1,
+		"ENTERPRISE_PLUS":     2,
+	}
+)
+
+func (x Instance_Edition) Enum() *Instance_Edition {
+	p := new(Instance_Edition)
+	*p = x
+	return p
+}
+
+func (x Instance_Edition) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Instance_Edition) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_bigtable_admin_v2_instance_proto_enumTypes[2].Descriptor()
+}
+
+func (Instance_Edition) Type() protoreflect.EnumType {
+	return &file_google_bigtable_admin_v2_instance_proto_enumTypes[2]
+}
+
+func (x Instance_Edition) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Instance_Edition.Descriptor instead.
+func (Instance_Edition) EnumDescriptor() ([]byte, []int) {
+	return file_google_bigtable_admin_v2_instance_proto_rawDescGZIP(), []int{0, 2}
+}
+
 // Possible states of a cluster.
 type Cluster_State int32
 
@@ -202,11 +266,11 @@ func (x Cluster_State) String() string {
 }
 
 func (Cluster_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_bigtable_admin_v2_instance_proto_enumTypes[2].Descriptor()
+	return file_google_bigtable_admin_v2_instance_proto_enumTypes[3].Descriptor()
 }
 
 func (Cluster_State) Type() protoreflect.EnumType {
-	return &file_google_bigtable_admin_v2_instance_proto_enumTypes[2]
+	return &file_google_bigtable_admin_v2_instance_proto_enumTypes[3]
 }
 
 func (x Cluster_State) Number() protoreflect.EnumNumber {
@@ -258,11 +322,11 @@ func (x Cluster_NodeScalingFactor) String() string {
 }
 
 func (Cluster_NodeScalingFactor) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_bigtable_admin_v2_instance_proto_enumTypes[3].Descriptor()
+	return file_google_bigtable_admin_v2_instance_proto_enumTypes[4].Descriptor()
 }
 
 func (Cluster_NodeScalingFactor) Type() protoreflect.EnumType {
-	return &file_google_bigtable_admin_v2_instance_proto_enumTypes[3]
+	return &file_google_bigtable_admin_v2_instance_proto_enumTypes[4]
 }
 
 func (x Cluster_NodeScalingFactor) Number() protoreflect.EnumNumber {
@@ -314,11 +378,11 @@ func (x AppProfile_Priority) String() string {
 }
 
 func (AppProfile_Priority) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_bigtable_admin_v2_instance_proto_enumTypes[4].Descriptor()
+	return file_google_bigtable_admin_v2_instance_proto_enumTypes[5].Descriptor()
 }
 
 func (AppProfile_Priority) Type() protoreflect.EnumType {
-	return &file_google_bigtable_admin_v2_instance_proto_enumTypes[4]
+	return &file_google_bigtable_admin_v2_instance_proto_enumTypes[5]
 }
 
 func (x AppProfile_Priority) Number() protoreflect.EnumNumber {
@@ -366,11 +430,11 @@ func (x AppProfile_DataBoostIsolationReadOnly_ComputeBillingOwner) String() stri
 }
 
 func (AppProfile_DataBoostIsolationReadOnly_ComputeBillingOwner) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_bigtable_admin_v2_instance_proto_enumTypes[5].Descriptor()
+	return file_google_bigtable_admin_v2_instance_proto_enumTypes[6].Descriptor()
 }
 
 func (AppProfile_DataBoostIsolationReadOnly_ComputeBillingOwner) Type() protoreflect.EnumType {
-	return &file_google_bigtable_admin_v2_instance_proto_enumTypes[5]
+	return &file_google_bigtable_admin_v2_instance_proto_enumTypes[6]
 }
 
 func (x AppProfile_DataBoostIsolationReadOnly_ComputeBillingOwner) Number() protoreflect.EnumNumber {
@@ -399,6 +463,9 @@ type Instance struct {
 	State Instance_State `protobuf:"varint,3,opt,name=state,proto3,enum=google.bigtable.admin.v2.Instance_State" json:"state,omitempty"`
 	// The type of the instance. Defaults to `PRODUCTION`.
 	Type Instance_Type `protobuf:"varint,4,opt,name=type,proto3,enum=google.bigtable.admin.v2.Instance_Type" json:"type,omitempty"`
+	// Optional. The edition of the instance. See
+	// [Edition][google.bigtable.admin.v2.Instance.Edition] for details.
+	Edition Instance_Edition `protobuf:"varint,14,opt,name=edition,proto3,enum=google.bigtable.admin.v2.Instance_Edition" json:"edition,omitempty"`
 	// Labels are a flexible and lightweight mechanism for organizing cloud
 	// resources into groups that reflect a customer's organizational needs and
 	// deployment strategies. They can be used to filter resources and aggregate
@@ -489,6 +556,13 @@ func (x *Instance) GetType() Instance_Type {
 		return x.Type
 	}
 	return Instance_TYPE_UNSPECIFIED
+}
+
+func (x *Instance) GetEdition() Instance_Edition {
+	if x != nil {
+		return x.Edition
+	}
+	return Instance_EDITION_UNSPECIFIED
 }
 
 func (x *Instance) GetLabels() map[string]string {
@@ -1703,12 +1777,13 @@ var File_google_bigtable_admin_v2_instance_proto protoreflect.FileDescriptor
 
 const file_google_bigtable_admin_v2_instance_proto_rawDesc = "" +
 	"\n" +
-	"'google/bigtable/admin/v2/instance.proto\x12\x18google.bigtable.admin.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a%google/bigtable/admin/v2/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf5\x06\n" +
+	"'google/bigtable/admin/v2/instance.proto\x12\x18google.bigtable.admin.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a%google/bigtable/admin/v2/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x89\b\n" +
 	"\bInstance\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12&\n" +
 	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12C\n" +
 	"\x05state\x18\x03 \x01(\x0e2(.google.bigtable.admin.v2.Instance.StateB\x03\xe0A\x03R\x05state\x12;\n" +
-	"\x04type\x18\x04 \x01(\x0e2'.google.bigtable.admin.v2.Instance.TypeR\x04type\x12F\n" +
+	"\x04type\x18\x04 \x01(\x0e2'.google.bigtable.admin.v2.Instance.TypeR\x04type\x12I\n" +
+	"\aedition\x18\x0e \x01(\x0e2*.google.bigtable.admin.v2.Instance.EditionB\x03\xe0A\x01R\aedition\x12F\n" +
 	"\x06labels\x18\x05 \x03(\v2..google.bigtable.admin.v2.Instance.LabelsEntryR\x06labels\x12@\n" +
 	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime\x12-\n" +
@@ -1729,7 +1804,12 @@ const file_google_bigtable_admin_v2_instance_proto_rawDesc = "" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +
 	"PRODUCTION\x10\x01\x12\x0f\n" +
-	"\vDEVELOPMENT\x10\x02:h\xeaAe\n" +
+	"\vDEVELOPMENT\x10\x02\"G\n" +
+	"\aEdition\x12\x17\n" +
+	"\x13EDITION_UNSPECIFIED\x10\x00\x12\x0e\n" +
+	"\n" +
+	"ENTERPRISE\x10\x01\x12\x13\n" +
+	"\x0fENTERPRISE_PLUS\x10\x02:h\xeaAe\n" +
 	"%bigtableadmin.googleapis.com/Instance\x12'projects/{project}/instances/{instance}*\tinstances2\binstanceB\x10\n" +
 	"\x0e_satisfies_pzsB\x10\n" +
 	"\x0e_satisfies_pzi\"\x94\x01\n" +
@@ -1851,65 +1931,67 @@ func file_google_bigtable_admin_v2_instance_proto_rawDescGZIP() []byte {
 	return file_google_bigtable_admin_v2_instance_proto_rawDescData
 }
 
-var file_google_bigtable_admin_v2_instance_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
+var file_google_bigtable_admin_v2_instance_proto_enumTypes = make([]protoimpl.EnumInfo, 7)
 var file_google_bigtable_admin_v2_instance_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
 var file_google_bigtable_admin_v2_instance_proto_goTypes = []any{
 	(Instance_State)(0),            // 0: google.bigtable.admin.v2.Instance.State
 	(Instance_Type)(0),             // 1: google.bigtable.admin.v2.Instance.Type
-	(Cluster_State)(0),             // 2: google.bigtable.admin.v2.Cluster.State
-	(Cluster_NodeScalingFactor)(0), // 3: google.bigtable.admin.v2.Cluster.NodeScalingFactor
-	(AppProfile_Priority)(0),       // 4: google.bigtable.admin.v2.AppProfile.Priority
-	(AppProfile_DataBoostIsolationReadOnly_ComputeBillingOwner)(0), // 5: google.bigtable.admin.v2.AppProfile.DataBoostIsolationReadOnly.ComputeBillingOwner
-	(*Instance)(nil),                         // 6: google.bigtable.admin.v2.Instance
-	(*AutoscalingTargets)(nil),               // 7: google.bigtable.admin.v2.AutoscalingTargets
-	(*AutoscalingLimits)(nil),                // 8: google.bigtable.admin.v2.AutoscalingLimits
-	(*Cluster)(nil),                          // 9: google.bigtable.admin.v2.Cluster
-	(*AppProfile)(nil),                       // 10: google.bigtable.admin.v2.AppProfile
-	(*HotTablet)(nil),                        // 11: google.bigtable.admin.v2.HotTablet
-	(*LogicalView)(nil),                      // 12: google.bigtable.admin.v2.LogicalView
-	(*MaterializedView)(nil),                 // 13: google.bigtable.admin.v2.MaterializedView
-	nil,                                      // 14: google.bigtable.admin.v2.Instance.LabelsEntry
-	nil,                                      // 15: google.bigtable.admin.v2.Instance.TagsEntry
-	(*Cluster_ClusterAutoscalingConfig)(nil), // 16: google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig
-	(*Cluster_ClusterConfig)(nil),            // 17: google.bigtable.admin.v2.Cluster.ClusterConfig
-	(*Cluster_EncryptionConfig)(nil),         // 18: google.bigtable.admin.v2.Cluster.EncryptionConfig
-	(*AppProfile_MultiClusterRoutingUseAny)(nil),             // 19: google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny
-	(*AppProfile_SingleClusterRouting)(nil),                  // 20: google.bigtable.admin.v2.AppProfile.SingleClusterRouting
-	(*AppProfile_StandardIsolation)(nil),                     // 21: google.bigtable.admin.v2.AppProfile.StandardIsolation
-	(*AppProfile_DataBoostIsolationReadOnly)(nil),            // 22: google.bigtable.admin.v2.AppProfile.DataBoostIsolationReadOnly
-	(*AppProfile_MultiClusterRoutingUseAny_RowAffinity)(nil), // 23: google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny.RowAffinity
-	(*timestamppb.Timestamp)(nil),                            // 24: google.protobuf.Timestamp
-	(StorageType)(0),                                         // 25: google.bigtable.admin.v2.StorageType
+	(Instance_Edition)(0),          // 2: google.bigtable.admin.v2.Instance.Edition
+	(Cluster_State)(0),             // 3: google.bigtable.admin.v2.Cluster.State
+	(Cluster_NodeScalingFactor)(0), // 4: google.bigtable.admin.v2.Cluster.NodeScalingFactor
+	(AppProfile_Priority)(0),       // 5: google.bigtable.admin.v2.AppProfile.Priority
+	(AppProfile_DataBoostIsolationReadOnly_ComputeBillingOwner)(0), // 6: google.bigtable.admin.v2.AppProfile.DataBoostIsolationReadOnly.ComputeBillingOwner
+	(*Instance)(nil),                         // 7: google.bigtable.admin.v2.Instance
+	(*AutoscalingTargets)(nil),               // 8: google.bigtable.admin.v2.AutoscalingTargets
+	(*AutoscalingLimits)(nil),                // 9: google.bigtable.admin.v2.AutoscalingLimits
+	(*Cluster)(nil),                          // 10: google.bigtable.admin.v2.Cluster
+	(*AppProfile)(nil),                       // 11: google.bigtable.admin.v2.AppProfile
+	(*HotTablet)(nil),                        // 12: google.bigtable.admin.v2.HotTablet
+	(*LogicalView)(nil),                      // 13: google.bigtable.admin.v2.LogicalView
+	(*MaterializedView)(nil),                 // 14: google.bigtable.admin.v2.MaterializedView
+	nil,                                      // 15: google.bigtable.admin.v2.Instance.LabelsEntry
+	nil,                                      // 16: google.bigtable.admin.v2.Instance.TagsEntry
+	(*Cluster_ClusterAutoscalingConfig)(nil), // 17: google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig
+	(*Cluster_ClusterConfig)(nil),            // 18: google.bigtable.admin.v2.Cluster.ClusterConfig
+	(*Cluster_EncryptionConfig)(nil),         // 19: google.bigtable.admin.v2.Cluster.EncryptionConfig
+	(*AppProfile_MultiClusterRoutingUseAny)(nil),             // 20: google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny
+	(*AppProfile_SingleClusterRouting)(nil),                  // 21: google.bigtable.admin.v2.AppProfile.SingleClusterRouting
+	(*AppProfile_StandardIsolation)(nil),                     // 22: google.bigtable.admin.v2.AppProfile.StandardIsolation
+	(*AppProfile_DataBoostIsolationReadOnly)(nil),            // 23: google.bigtable.admin.v2.AppProfile.DataBoostIsolationReadOnly
+	(*AppProfile_MultiClusterRoutingUseAny_RowAffinity)(nil), // 24: google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny.RowAffinity
+	(*timestamppb.Timestamp)(nil),                            // 25: google.protobuf.Timestamp
+	(StorageType)(0),                                         // 26: google.bigtable.admin.v2.StorageType
 }
 var file_google_bigtable_admin_v2_instance_proto_depIdxs = []int32{
 	0,  // 0: google.bigtable.admin.v2.Instance.state:type_name -> google.bigtable.admin.v2.Instance.State
 	1,  // 1: google.bigtable.admin.v2.Instance.type:type_name -> google.bigtable.admin.v2.Instance.Type
-	14, // 2: google.bigtable.admin.v2.Instance.labels:type_name -> google.bigtable.admin.v2.Instance.LabelsEntry
-	24, // 3: google.bigtable.admin.v2.Instance.create_time:type_name -> google.protobuf.Timestamp
-	15, // 4: google.bigtable.admin.v2.Instance.tags:type_name -> google.bigtable.admin.v2.Instance.TagsEntry
-	2,  // 5: google.bigtable.admin.v2.Cluster.state:type_name -> google.bigtable.admin.v2.Cluster.State
-	3,  // 6: google.bigtable.admin.v2.Cluster.node_scaling_factor:type_name -> google.bigtable.admin.v2.Cluster.NodeScalingFactor
-	17, // 7: google.bigtable.admin.v2.Cluster.cluster_config:type_name -> google.bigtable.admin.v2.Cluster.ClusterConfig
-	25, // 8: google.bigtable.admin.v2.Cluster.default_storage_type:type_name -> google.bigtable.admin.v2.StorageType
-	18, // 9: google.bigtable.admin.v2.Cluster.encryption_config:type_name -> google.bigtable.admin.v2.Cluster.EncryptionConfig
-	19, // 10: google.bigtable.admin.v2.AppProfile.multi_cluster_routing_use_any:type_name -> google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny
-	20, // 11: google.bigtable.admin.v2.AppProfile.single_cluster_routing:type_name -> google.bigtable.admin.v2.AppProfile.SingleClusterRouting
-	4,  // 12: google.bigtable.admin.v2.AppProfile.priority:type_name -> google.bigtable.admin.v2.AppProfile.Priority
-	21, // 13: google.bigtable.admin.v2.AppProfile.standard_isolation:type_name -> google.bigtable.admin.v2.AppProfile.StandardIsolation
-	22, // 14: google.bigtable.admin.v2.AppProfile.data_boost_isolation_read_only:type_name -> google.bigtable.admin.v2.AppProfile.DataBoostIsolationReadOnly
-	24, // 15: google.bigtable.admin.v2.HotTablet.start_time:type_name -> google.protobuf.Timestamp
-	24, // 16: google.bigtable.admin.v2.HotTablet.end_time:type_name -> google.protobuf.Timestamp
-	8,  // 17: google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig.autoscaling_limits:type_name -> google.bigtable.admin.v2.AutoscalingLimits
-	7,  // 18: google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig.autoscaling_targets:type_name -> google.bigtable.admin.v2.AutoscalingTargets
-	16, // 19: google.bigtable.admin.v2.Cluster.ClusterConfig.cluster_autoscaling_config:type_name -> google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig
-	23, // 20: google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny.row_affinity:type_name -> google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny.RowAffinity
-	4,  // 21: google.bigtable.admin.v2.AppProfile.StandardIsolation.priority:type_name -> google.bigtable.admin.v2.AppProfile.Priority
-	5,  // 22: google.bigtable.admin.v2.AppProfile.DataBoostIsolationReadOnly.compute_billing_owner:type_name -> google.bigtable.admin.v2.AppProfile.DataBoostIsolationReadOnly.ComputeBillingOwner
-	23, // [23:23] is the sub-list for method output_type
-	23, // [23:23] is the sub-list for method input_type
-	23, // [23:23] is the sub-list for extension type_name
-	23, // [23:23] is the sub-list for extension extendee
-	0,  // [0:23] is the sub-list for field type_name
+	2,  // 2: google.bigtable.admin.v2.Instance.edition:type_name -> google.bigtable.admin.v2.Instance.Edition
+	15, // 3: google.bigtable.admin.v2.Instance.labels:type_name -> google.bigtable.admin.v2.Instance.LabelsEntry
+	25, // 4: google.bigtable.admin.v2.Instance.create_time:type_name -> google.protobuf.Timestamp
+	16, // 5: google.bigtable.admin.v2.Instance.tags:type_name -> google.bigtable.admin.v2.Instance.TagsEntry
+	3,  // 6: google.bigtable.admin.v2.Cluster.state:type_name -> google.bigtable.admin.v2.Cluster.State
+	4,  // 7: google.bigtable.admin.v2.Cluster.node_scaling_factor:type_name -> google.bigtable.admin.v2.Cluster.NodeScalingFactor
+	18, // 8: google.bigtable.admin.v2.Cluster.cluster_config:type_name -> google.bigtable.admin.v2.Cluster.ClusterConfig
+	26, // 9: google.bigtable.admin.v2.Cluster.default_storage_type:type_name -> google.bigtable.admin.v2.StorageType
+	19, // 10: google.bigtable.admin.v2.Cluster.encryption_config:type_name -> google.bigtable.admin.v2.Cluster.EncryptionConfig
+	20, // 11: google.bigtable.admin.v2.AppProfile.multi_cluster_routing_use_any:type_name -> google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny
+	21, // 12: google.bigtable.admin.v2.AppProfile.single_cluster_routing:type_name -> google.bigtable.admin.v2.AppProfile.SingleClusterRouting
+	5,  // 13: google.bigtable.admin.v2.AppProfile.priority:type_name -> google.bigtable.admin.v2.AppProfile.Priority
+	22, // 14: google.bigtable.admin.v2.AppProfile.standard_isolation:type_name -> google.bigtable.admin.v2.AppProfile.StandardIsolation
+	23, // 15: google.bigtable.admin.v2.AppProfile.data_boost_isolation_read_only:type_name -> google.bigtable.admin.v2.AppProfile.DataBoostIsolationReadOnly
+	25, // 16: google.bigtable.admin.v2.HotTablet.start_time:type_name -> google.protobuf.Timestamp
+	25, // 17: google.bigtable.admin.v2.HotTablet.end_time:type_name -> google.protobuf.Timestamp
+	9,  // 18: google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig.autoscaling_limits:type_name -> google.bigtable.admin.v2.AutoscalingLimits
+	8,  // 19: google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig.autoscaling_targets:type_name -> google.bigtable.admin.v2.AutoscalingTargets
+	17, // 20: google.bigtable.admin.v2.Cluster.ClusterConfig.cluster_autoscaling_config:type_name -> google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig
+	24, // 21: google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny.row_affinity:type_name -> google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny.RowAffinity
+	5,  // 22: google.bigtable.admin.v2.AppProfile.StandardIsolation.priority:type_name -> google.bigtable.admin.v2.AppProfile.Priority
+	6,  // 23: google.bigtable.admin.v2.AppProfile.DataBoostIsolationReadOnly.compute_billing_owner:type_name -> google.bigtable.admin.v2.AppProfile.DataBoostIsolationReadOnly.ComputeBillingOwner
+	24, // [24:24] is the sub-list for method output_type
+	24, // [24:24] is the sub-list for method input_type
+	24, // [24:24] is the sub-list for extension type_name
+	24, // [24:24] is the sub-list for extension extendee
+	0,  // [0:24] is the sub-list for field type_name
 }
 
 func init() { file_google_bigtable_admin_v2_instance_proto_init() }
@@ -1938,7 +2020,7 @@ func file_google_bigtable_admin_v2_instance_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_bigtable_admin_v2_instance_proto_rawDesc), len(file_google_bigtable_admin_v2_instance_proto_rawDesc)),
-			NumEnums:      6,
+			NumEnums:      7,
 			NumMessages:   18,
 			NumExtensions: 0,
 			NumServices:   0,
