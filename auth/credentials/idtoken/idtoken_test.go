@@ -241,6 +241,9 @@ func TestNewCredentials_ImpersonatedAndExternal(t *testing.T) {
 			client := internal.DefaultClient()
 			client.Transport = mockTransport{
 				handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					if strings.Contains(r.URL.Path, "generateAccessToken") {
+						t.Errorf("unexpected call to generateAccessToken")
+					}
 					w.Write([]byte(fmt.Sprintf(`{"token": %q}`, wantTok)))
 				}),
 			}

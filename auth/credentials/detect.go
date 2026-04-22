@@ -138,6 +138,10 @@ func OnGCE() bool {
 // Google APIs can compromise the security of your systems and data. For
 // more information, refer to [Validate credential configurations from
 // external sources](https://cloud.google.com/docs/authentication/external/externally-sourced-credentials).
+//
+// Note: If the detected credential configuration file contains a
+// `service_account_impersonation_url` field, the returned credentials will
+// yield tokens that are already impersonated to that target service account.
 func DetectDefault(opts *DetectOptions) (*auth.Credentials, error) {
 	if err := opts.validate(); err != nil {
 		return nil, err
