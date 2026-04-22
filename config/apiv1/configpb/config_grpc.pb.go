@@ -36,35 +36,44 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Config_ListDeployments_FullMethodName           = "/google.cloud.config.v1.Config/ListDeployments"
-	Config_GetDeployment_FullMethodName             = "/google.cloud.config.v1.Config/GetDeployment"
-	Config_CreateDeployment_FullMethodName          = "/google.cloud.config.v1.Config/CreateDeployment"
-	Config_UpdateDeployment_FullMethodName          = "/google.cloud.config.v1.Config/UpdateDeployment"
-	Config_DeleteDeployment_FullMethodName          = "/google.cloud.config.v1.Config/DeleteDeployment"
-	Config_ListRevisions_FullMethodName             = "/google.cloud.config.v1.Config/ListRevisions"
-	Config_GetRevision_FullMethodName               = "/google.cloud.config.v1.Config/GetRevision"
-	Config_GetResource_FullMethodName               = "/google.cloud.config.v1.Config/GetResource"
-	Config_ListResources_FullMethodName             = "/google.cloud.config.v1.Config/ListResources"
-	Config_ExportDeploymentStatefile_FullMethodName = "/google.cloud.config.v1.Config/ExportDeploymentStatefile"
-	Config_ExportRevisionStatefile_FullMethodName   = "/google.cloud.config.v1.Config/ExportRevisionStatefile"
-	Config_ImportStatefile_FullMethodName           = "/google.cloud.config.v1.Config/ImportStatefile"
-	Config_DeleteStatefile_FullMethodName           = "/google.cloud.config.v1.Config/DeleteStatefile"
-	Config_LockDeployment_FullMethodName            = "/google.cloud.config.v1.Config/LockDeployment"
-	Config_UnlockDeployment_FullMethodName          = "/google.cloud.config.v1.Config/UnlockDeployment"
-	Config_ExportLockInfo_FullMethodName            = "/google.cloud.config.v1.Config/ExportLockInfo"
-	Config_CreatePreview_FullMethodName             = "/google.cloud.config.v1.Config/CreatePreview"
-	Config_GetPreview_FullMethodName                = "/google.cloud.config.v1.Config/GetPreview"
-	Config_ListPreviews_FullMethodName              = "/google.cloud.config.v1.Config/ListPreviews"
-	Config_DeletePreview_FullMethodName             = "/google.cloud.config.v1.Config/DeletePreview"
-	Config_ExportPreviewResult_FullMethodName       = "/google.cloud.config.v1.Config/ExportPreviewResult"
-	Config_ListTerraformVersions_FullMethodName     = "/google.cloud.config.v1.Config/ListTerraformVersions"
-	Config_GetTerraformVersion_FullMethodName       = "/google.cloud.config.v1.Config/GetTerraformVersion"
-	Config_ListResourceChanges_FullMethodName       = "/google.cloud.config.v1.Config/ListResourceChanges"
-	Config_GetResourceChange_FullMethodName         = "/google.cloud.config.v1.Config/GetResourceChange"
-	Config_ListResourceDrifts_FullMethodName        = "/google.cloud.config.v1.Config/ListResourceDrifts"
-	Config_GetResourceDrift_FullMethodName          = "/google.cloud.config.v1.Config/GetResourceDrift"
-	Config_GetAutoMigrationConfig_FullMethodName    = "/google.cloud.config.v1.Config/GetAutoMigrationConfig"
-	Config_UpdateAutoMigrationConfig_FullMethodName = "/google.cloud.config.v1.Config/UpdateAutoMigrationConfig"
+	Config_ListDeployments_FullMethodName              = "/google.cloud.config.v1.Config/ListDeployments"
+	Config_GetDeployment_FullMethodName                = "/google.cloud.config.v1.Config/GetDeployment"
+	Config_CreateDeployment_FullMethodName             = "/google.cloud.config.v1.Config/CreateDeployment"
+	Config_UpdateDeployment_FullMethodName             = "/google.cloud.config.v1.Config/UpdateDeployment"
+	Config_DeleteDeployment_FullMethodName             = "/google.cloud.config.v1.Config/DeleteDeployment"
+	Config_ListRevisions_FullMethodName                = "/google.cloud.config.v1.Config/ListRevisions"
+	Config_GetRevision_FullMethodName                  = "/google.cloud.config.v1.Config/GetRevision"
+	Config_GetResource_FullMethodName                  = "/google.cloud.config.v1.Config/GetResource"
+	Config_ListResources_FullMethodName                = "/google.cloud.config.v1.Config/ListResources"
+	Config_ExportDeploymentStatefile_FullMethodName    = "/google.cloud.config.v1.Config/ExportDeploymentStatefile"
+	Config_ExportRevisionStatefile_FullMethodName      = "/google.cloud.config.v1.Config/ExportRevisionStatefile"
+	Config_ImportStatefile_FullMethodName              = "/google.cloud.config.v1.Config/ImportStatefile"
+	Config_DeleteStatefile_FullMethodName              = "/google.cloud.config.v1.Config/DeleteStatefile"
+	Config_LockDeployment_FullMethodName               = "/google.cloud.config.v1.Config/LockDeployment"
+	Config_UnlockDeployment_FullMethodName             = "/google.cloud.config.v1.Config/UnlockDeployment"
+	Config_ExportLockInfo_FullMethodName               = "/google.cloud.config.v1.Config/ExportLockInfo"
+	Config_CreatePreview_FullMethodName                = "/google.cloud.config.v1.Config/CreatePreview"
+	Config_GetPreview_FullMethodName                   = "/google.cloud.config.v1.Config/GetPreview"
+	Config_ListPreviews_FullMethodName                 = "/google.cloud.config.v1.Config/ListPreviews"
+	Config_DeletePreview_FullMethodName                = "/google.cloud.config.v1.Config/DeletePreview"
+	Config_ExportPreviewResult_FullMethodName          = "/google.cloud.config.v1.Config/ExportPreviewResult"
+	Config_ListTerraformVersions_FullMethodName        = "/google.cloud.config.v1.Config/ListTerraformVersions"
+	Config_GetTerraformVersion_FullMethodName          = "/google.cloud.config.v1.Config/GetTerraformVersion"
+	Config_ListResourceChanges_FullMethodName          = "/google.cloud.config.v1.Config/ListResourceChanges"
+	Config_GetResourceChange_FullMethodName            = "/google.cloud.config.v1.Config/GetResourceChange"
+	Config_ListResourceDrifts_FullMethodName           = "/google.cloud.config.v1.Config/ListResourceDrifts"
+	Config_GetResourceDrift_FullMethodName             = "/google.cloud.config.v1.Config/GetResourceDrift"
+	Config_GetAutoMigrationConfig_FullMethodName       = "/google.cloud.config.v1.Config/GetAutoMigrationConfig"
+	Config_UpdateAutoMigrationConfig_FullMethodName    = "/google.cloud.config.v1.Config/UpdateAutoMigrationConfig"
+	Config_GetDeploymentGroup_FullMethodName           = "/google.cloud.config.v1.Config/GetDeploymentGroup"
+	Config_CreateDeploymentGroup_FullMethodName        = "/google.cloud.config.v1.Config/CreateDeploymentGroup"
+	Config_UpdateDeploymentGroup_FullMethodName        = "/google.cloud.config.v1.Config/UpdateDeploymentGroup"
+	Config_DeleteDeploymentGroup_FullMethodName        = "/google.cloud.config.v1.Config/DeleteDeploymentGroup"
+	Config_ListDeploymentGroups_FullMethodName         = "/google.cloud.config.v1.Config/ListDeploymentGroups"
+	Config_ProvisionDeploymentGroup_FullMethodName     = "/google.cloud.config.v1.Config/ProvisionDeploymentGroup"
+	Config_DeprovisionDeploymentGroup_FullMethodName   = "/google.cloud.config.v1.Config/DeprovisionDeploymentGroup"
+	Config_GetDeploymentGroupRevision_FullMethodName   = "/google.cloud.config.v1.Config/GetDeploymentGroupRevision"
+	Config_ListDeploymentGroupRevisions_FullMethodName = "/google.cloud.config.v1.Config/ListDeploymentGroupRevisions"
 )
 
 // ConfigClient is the client API for Config service.
@@ -135,6 +144,47 @@ type ConfigClient interface {
 	GetAutoMigrationConfig(ctx context.Context, in *GetAutoMigrationConfigRequest, opts ...grpc.CallOption) (*AutoMigrationConfig, error)
 	// Updates the AutoMigrationConfig for a given project and location.
 	UpdateAutoMigrationConfig(ctx context.Context, in *UpdateAutoMigrationConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Get a DeploymentGroup for a given project and location.
+	GetDeploymentGroup(ctx context.Context, in *GetDeploymentGroupRequest, opts ...grpc.CallOption) (*DeploymentGroup, error)
+	// Creates a [DeploymentGroup][google.cloud.config.v1.DeploymentGroup]
+	// The newly created DeploymentGroup will be in the `CREATING` state
+	// and can be retrieved via Get and List calls.
+	CreateDeploymentGroup(ctx context.Context, in *CreateDeploymentGroupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Updates a [DeploymentGroup][google.cloud.config.v1.DeploymentGroup]
+	UpdateDeploymentGroup(ctx context.Context, in *UpdateDeploymentGroupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deletes a [DeploymentGroup][google.cloud.config.v1.DeploymentGroup]
+	DeleteDeploymentGroup(ctx context.Context, in *DeleteDeploymentGroupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// List DeploymentGroups for a given project and location.
+	ListDeploymentGroups(ctx context.Context, in *ListDeploymentGroupsRequest, opts ...grpc.CallOption) (*ListDeploymentGroupsResponse, error)
+	// Provisions a deployment group.
+	//
+	// NOTE: As a first step of this operation, Infra Manager will
+	// automatically delete any Deployments that were part of the
+	// *last successful*
+	// [DeploymentGroupRevision][google.cloud.config.v1.DeploymentGroupRevision]
+	// but are *no longer* included in the *current*
+	// [DeploymentGroup][google.cloud.config.v1.DeploymentGroup] definition (e.g.,
+	// following an `UpdateDeploymentGroup` call), along with their actuated
+	// resources.
+	ProvisionDeploymentGroup(ctx context.Context, in *ProvisionDeploymentGroupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deprovisions a deployment group.
+	//
+	// NOTE: As a first step of this operation, Infra Manager will
+	// automatically delete any Deployments that were part of the
+	// *last successful*
+	// [DeploymentGroupRevision][google.cloud.config.v1.DeploymentGroupRevision]
+	// but are *no longer* included in the *current*
+	// [DeploymentGroup][google.cloud.config.v1.DeploymentGroup] definition (e.g.,
+	// following an `UpdateDeploymentGroup` call), along with their actuated
+	// resources.
+	DeprovisionDeploymentGroup(ctx context.Context, in *DeprovisionDeploymentGroupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Gets details about a
+	// [DeploymentGroupRevision][google.cloud.config.v1.DeploymentGroupRevision].
+	GetDeploymentGroupRevision(ctx context.Context, in *GetDeploymentGroupRevisionRequest, opts ...grpc.CallOption) (*DeploymentGroupRevision, error)
+	// Lists
+	// [DeploymentGroupRevision][google.cloud.config.v1.DeploymentGroupRevision]s
+	// in a given [DeploymentGroup][google.cloud.config.v1.DeploymentGroup].
+	ListDeploymentGroupRevisions(ctx context.Context, in *ListDeploymentGroupRevisionsRequest, opts ...grpc.CallOption) (*ListDeploymentGroupRevisionsResponse, error)
 }
 
 type configClient struct {
@@ -406,6 +456,87 @@ func (c *configClient) UpdateAutoMigrationConfig(ctx context.Context, in *Update
 	return out, nil
 }
 
+func (c *configClient) GetDeploymentGroup(ctx context.Context, in *GetDeploymentGroupRequest, opts ...grpc.CallOption) (*DeploymentGroup, error) {
+	out := new(DeploymentGroup)
+	err := c.cc.Invoke(ctx, Config_GetDeploymentGroup_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *configClient) CreateDeploymentGroup(ctx context.Context, in *CreateDeploymentGroupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, Config_CreateDeploymentGroup_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *configClient) UpdateDeploymentGroup(ctx context.Context, in *UpdateDeploymentGroupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, Config_UpdateDeploymentGroup_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *configClient) DeleteDeploymentGroup(ctx context.Context, in *DeleteDeploymentGroupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, Config_DeleteDeploymentGroup_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *configClient) ListDeploymentGroups(ctx context.Context, in *ListDeploymentGroupsRequest, opts ...grpc.CallOption) (*ListDeploymentGroupsResponse, error) {
+	out := new(ListDeploymentGroupsResponse)
+	err := c.cc.Invoke(ctx, Config_ListDeploymentGroups_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *configClient) ProvisionDeploymentGroup(ctx context.Context, in *ProvisionDeploymentGroupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, Config_ProvisionDeploymentGroup_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *configClient) DeprovisionDeploymentGroup(ctx context.Context, in *DeprovisionDeploymentGroupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, Config_DeprovisionDeploymentGroup_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *configClient) GetDeploymentGroupRevision(ctx context.Context, in *GetDeploymentGroupRevisionRequest, opts ...grpc.CallOption) (*DeploymentGroupRevision, error) {
+	out := new(DeploymentGroupRevision)
+	err := c.cc.Invoke(ctx, Config_GetDeploymentGroupRevision_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *configClient) ListDeploymentGroupRevisions(ctx context.Context, in *ListDeploymentGroupRevisionsRequest, opts ...grpc.CallOption) (*ListDeploymentGroupRevisionsResponse, error) {
+	out := new(ListDeploymentGroupRevisionsResponse)
+	err := c.cc.Invoke(ctx, Config_ListDeploymentGroupRevisions_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ConfigServer is the server API for Config service.
 // All implementations should embed UnimplementedConfigServer
 // for forward compatibility
@@ -474,6 +605,47 @@ type ConfigServer interface {
 	GetAutoMigrationConfig(context.Context, *GetAutoMigrationConfigRequest) (*AutoMigrationConfig, error)
 	// Updates the AutoMigrationConfig for a given project and location.
 	UpdateAutoMigrationConfig(context.Context, *UpdateAutoMigrationConfigRequest) (*longrunningpb.Operation, error)
+	// Get a DeploymentGroup for a given project and location.
+	GetDeploymentGroup(context.Context, *GetDeploymentGroupRequest) (*DeploymentGroup, error)
+	// Creates a [DeploymentGroup][google.cloud.config.v1.DeploymentGroup]
+	// The newly created DeploymentGroup will be in the `CREATING` state
+	// and can be retrieved via Get and List calls.
+	CreateDeploymentGroup(context.Context, *CreateDeploymentGroupRequest) (*longrunningpb.Operation, error)
+	// Updates a [DeploymentGroup][google.cloud.config.v1.DeploymentGroup]
+	UpdateDeploymentGroup(context.Context, *UpdateDeploymentGroupRequest) (*longrunningpb.Operation, error)
+	// Deletes a [DeploymentGroup][google.cloud.config.v1.DeploymentGroup]
+	DeleteDeploymentGroup(context.Context, *DeleteDeploymentGroupRequest) (*longrunningpb.Operation, error)
+	// List DeploymentGroups for a given project and location.
+	ListDeploymentGroups(context.Context, *ListDeploymentGroupsRequest) (*ListDeploymentGroupsResponse, error)
+	// Provisions a deployment group.
+	//
+	// NOTE: As a first step of this operation, Infra Manager will
+	// automatically delete any Deployments that were part of the
+	// *last successful*
+	// [DeploymentGroupRevision][google.cloud.config.v1.DeploymentGroupRevision]
+	// but are *no longer* included in the *current*
+	// [DeploymentGroup][google.cloud.config.v1.DeploymentGroup] definition (e.g.,
+	// following an `UpdateDeploymentGroup` call), along with their actuated
+	// resources.
+	ProvisionDeploymentGroup(context.Context, *ProvisionDeploymentGroupRequest) (*longrunningpb.Operation, error)
+	// Deprovisions a deployment group.
+	//
+	// NOTE: As a first step of this operation, Infra Manager will
+	// automatically delete any Deployments that were part of the
+	// *last successful*
+	// [DeploymentGroupRevision][google.cloud.config.v1.DeploymentGroupRevision]
+	// but are *no longer* included in the *current*
+	// [DeploymentGroup][google.cloud.config.v1.DeploymentGroup] definition (e.g.,
+	// following an `UpdateDeploymentGroup` call), along with their actuated
+	// resources.
+	DeprovisionDeploymentGroup(context.Context, *DeprovisionDeploymentGroupRequest) (*longrunningpb.Operation, error)
+	// Gets details about a
+	// [DeploymentGroupRevision][google.cloud.config.v1.DeploymentGroupRevision].
+	GetDeploymentGroupRevision(context.Context, *GetDeploymentGroupRevisionRequest) (*DeploymentGroupRevision, error)
+	// Lists
+	// [DeploymentGroupRevision][google.cloud.config.v1.DeploymentGroupRevision]s
+	// in a given [DeploymentGroup][google.cloud.config.v1.DeploymentGroup].
+	ListDeploymentGroupRevisions(context.Context, *ListDeploymentGroupRevisionsRequest) (*ListDeploymentGroupRevisionsResponse, error)
 }
 
 // UnimplementedConfigServer should be embedded to have forward compatible implementations.
@@ -566,6 +738,33 @@ func (UnimplementedConfigServer) GetAutoMigrationConfig(context.Context, *GetAut
 }
 func (UnimplementedConfigServer) UpdateAutoMigrationConfig(context.Context, *UpdateAutoMigrationConfigRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateAutoMigrationConfig not implemented")
+}
+func (UnimplementedConfigServer) GetDeploymentGroup(context.Context, *GetDeploymentGroupRequest) (*DeploymentGroup, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDeploymentGroup not implemented")
+}
+func (UnimplementedConfigServer) CreateDeploymentGroup(context.Context, *CreateDeploymentGroupRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateDeploymentGroup not implemented")
+}
+func (UnimplementedConfigServer) UpdateDeploymentGroup(context.Context, *UpdateDeploymentGroupRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateDeploymentGroup not implemented")
+}
+func (UnimplementedConfigServer) DeleteDeploymentGroup(context.Context, *DeleteDeploymentGroupRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteDeploymentGroup not implemented")
+}
+func (UnimplementedConfigServer) ListDeploymentGroups(context.Context, *ListDeploymentGroupsRequest) (*ListDeploymentGroupsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListDeploymentGroups not implemented")
+}
+func (UnimplementedConfigServer) ProvisionDeploymentGroup(context.Context, *ProvisionDeploymentGroupRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProvisionDeploymentGroup not implemented")
+}
+func (UnimplementedConfigServer) DeprovisionDeploymentGroup(context.Context, *DeprovisionDeploymentGroupRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeprovisionDeploymentGroup not implemented")
+}
+func (UnimplementedConfigServer) GetDeploymentGroupRevision(context.Context, *GetDeploymentGroupRevisionRequest) (*DeploymentGroupRevision, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDeploymentGroupRevision not implemented")
+}
+func (UnimplementedConfigServer) ListDeploymentGroupRevisions(context.Context, *ListDeploymentGroupRevisionsRequest) (*ListDeploymentGroupRevisionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListDeploymentGroupRevisions not implemented")
 }
 
 // UnsafeConfigServer may be embedded to opt out of forward compatibility for this service.
@@ -1101,6 +1300,168 @@ func _Config_UpdateAutoMigrationConfig_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Config_GetDeploymentGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetDeploymentGroupRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConfigServer).GetDeploymentGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Config_GetDeploymentGroup_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConfigServer).GetDeploymentGroup(ctx, req.(*GetDeploymentGroupRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Config_CreateDeploymentGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateDeploymentGroupRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConfigServer).CreateDeploymentGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Config_CreateDeploymentGroup_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConfigServer).CreateDeploymentGroup(ctx, req.(*CreateDeploymentGroupRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Config_UpdateDeploymentGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateDeploymentGroupRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConfigServer).UpdateDeploymentGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Config_UpdateDeploymentGroup_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConfigServer).UpdateDeploymentGroup(ctx, req.(*UpdateDeploymentGroupRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Config_DeleteDeploymentGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteDeploymentGroupRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConfigServer).DeleteDeploymentGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Config_DeleteDeploymentGroup_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConfigServer).DeleteDeploymentGroup(ctx, req.(*DeleteDeploymentGroupRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Config_ListDeploymentGroups_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListDeploymentGroupsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConfigServer).ListDeploymentGroups(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Config_ListDeploymentGroups_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConfigServer).ListDeploymentGroups(ctx, req.(*ListDeploymentGroupsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Config_ProvisionDeploymentGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ProvisionDeploymentGroupRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConfigServer).ProvisionDeploymentGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Config_ProvisionDeploymentGroup_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConfigServer).ProvisionDeploymentGroup(ctx, req.(*ProvisionDeploymentGroupRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Config_DeprovisionDeploymentGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeprovisionDeploymentGroupRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConfigServer).DeprovisionDeploymentGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Config_DeprovisionDeploymentGroup_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConfigServer).DeprovisionDeploymentGroup(ctx, req.(*DeprovisionDeploymentGroupRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Config_GetDeploymentGroupRevision_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetDeploymentGroupRevisionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConfigServer).GetDeploymentGroupRevision(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Config_GetDeploymentGroupRevision_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConfigServer).GetDeploymentGroupRevision(ctx, req.(*GetDeploymentGroupRevisionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Config_ListDeploymentGroupRevisions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListDeploymentGroupRevisionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConfigServer).ListDeploymentGroupRevisions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Config_ListDeploymentGroupRevisions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConfigServer).ListDeploymentGroupRevisions(ctx, req.(*ListDeploymentGroupRevisionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Config_ServiceDesc is the grpc.ServiceDesc for Config service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1223,6 +1584,42 @@ var Config_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateAutoMigrationConfig",
 			Handler:    _Config_UpdateAutoMigrationConfig_Handler,
+		},
+		{
+			MethodName: "GetDeploymentGroup",
+			Handler:    _Config_GetDeploymentGroup_Handler,
+		},
+		{
+			MethodName: "CreateDeploymentGroup",
+			Handler:    _Config_CreateDeploymentGroup_Handler,
+		},
+		{
+			MethodName: "UpdateDeploymentGroup",
+			Handler:    _Config_UpdateDeploymentGroup_Handler,
+		},
+		{
+			MethodName: "DeleteDeploymentGroup",
+			Handler:    _Config_DeleteDeploymentGroup_Handler,
+		},
+		{
+			MethodName: "ListDeploymentGroups",
+			Handler:    _Config_ListDeploymentGroups_Handler,
+		},
+		{
+			MethodName: "ProvisionDeploymentGroup",
+			Handler:    _Config_ProvisionDeploymentGroup_Handler,
+		},
+		{
+			MethodName: "DeprovisionDeploymentGroup",
+			Handler:    _Config_DeprovisionDeploymentGroup_Handler,
+		},
+		{
+			MethodName: "GetDeploymentGroupRevision",
+			Handler:    _Config_GetDeploymentGroupRevision_Handler,
+		},
+		{
+			MethodName: "ListDeploymentGroupRevisions",
+			Handler:    _Config_ListDeploymentGroupRevisions_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

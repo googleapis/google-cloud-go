@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -1150,9 +1150,9 @@ type ExternalDataConfiguration struct {
 	// of TIMESTAMP types that are allowed to the destination table for
 	// autodetection mode.
 	//
-	// Available for the formats: CSV.
+	// Available for the formats: CSV, PARQUET, and AVRO.
 	//
-	// For the CSV Format, Possible values include:
+	// Possible values include:
 	// Not Specified, [], or [6]: timestamp(6) for all auto detected TIMESTAMP
 	// columns
 	// [6, 12]: timestamp(6) for all auto detected TIMESTAMP columns that have
@@ -1394,7 +1394,7 @@ var File_google_cloud_bigquery_v2_external_data_config_proto protoreflect.FileDe
 
 const file_google_cloud_bigquery_v2_external_data_config_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/bigquery/v2/external_data_config.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a3google/cloud/bigquery/v2/decimal_target_types.proto\x1a:google/cloud/bigquery/v2/file_set_specification_type.proto\x1a0google/cloud/bigquery/v2/hive_partitioning.proto\x1a-google/cloud/bigquery/v2/json_extension.proto\x1a.google/cloud/bigquery/v2/map_target_type.proto\x1a+google/cloud/bigquery/v2/table_schema.proto\x1a\x1egoogle/protobuf/wrappers.proto\"c\n" +
+	"3google/cloud/bigquery/v2/external_data_config.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a3google/cloud/bigquery/v2/decimal_target_types.proto\x1a:google/cloud/bigquery/v2/file_set_specification_type.proto\x1a0google/cloud/bigquery/v2/hive_partitioning.proto\x1a-google/cloud/bigquery/v2/json_extension.proto\x1a.google/cloud/bigquery/v2/map_target_type.proto\x1a+google/cloud/bigquery/v2/table_schema.proto\x1a\x1egoogle/protobuf/wrappers.proto\"c\n" +
 	"\vAvroOptions\x12T\n" +
 	"\x16use_avro_logical_types\x18\x01 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\x13useAvroLogicalTypes\"\x82\x02\n" +
 	"\x0eParquetOptions\x12E\n" +

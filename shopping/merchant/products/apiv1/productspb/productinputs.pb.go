@@ -89,10 +89,10 @@ type ProductInput struct {
 	//	MUST be used if any part of the product identifier (like `offer_id`)
 	//	contains characters such as `/`, `%`, or `~`.
 	//	*   Example: To represent the product ID `en~US~sku/123`, the
-	//	    `{productinput}` segment must be the base64url encoding of this
-	//	    string, which is `ZW5-VVMtc2t1LzEyMw`. The full resource name
+	//	    `{productinput}` segment must be the unpadded base64url encoding of
+	//	    this string, which is `ZW5-VVN-c2t1LzEyMw`. The full resource name
 	//	    for the product would be
-	//	    `accounts/123/productinputs/ZW5-VVMtc2t1LzEyMw`.
+	//	    `accounts/123/productInputs/ZW5-VVN-c2t1LzEyMw`.
 	//
 	// 2.  **Plain Format**: The `{productinput}` segment is the tilde-separated
 	// string
@@ -105,15 +105,31 @@ type ProductInput struct {
 	// correct parsing, especially those containing special characters. The
 	// presence of tilde (`~`) characters in the `{productinput}` segment is used
 	// to differentiate between the two formats.
-	//
-	// Note: For calls to the v1beta version, the plain format is
-	//
-	//	`channel~content_language~feed_label~offer_id`, for example:
-	//	`accounts/123/productinputs/online~en~US~sku123`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Output only. The **unpadded base64url encoded name** of the product input.
+	// Format:
+	// `accounts/{account}/productInputs/{productinput}` where the last
+	// section `productinput` is the unpadded base64url encoding of the
+	// `content_language~feed_label~offer_id` name.
+	// Example: `accounts/123/productInputs/ZW5-VVN-c2t1LzEyMw` for the decoded
+	// product input name `accounts/123/productInputs/en~US~sku/123`. This field
+	// can be used directly as input to the API methods that require the product
+	// input name to be encoded if it contains special characters, for example
+	// [`GetProductInput`](https://developers.google.com/merchant/api/reference/rest/products_v1/accounts.productInputs/get).
+	Base64EncodedName string `protobuf:"bytes,12,opt,name=base64_encoded_name,json=base64EncodedName,proto3" json:"base64_encoded_name,omitempty"`
 	// Output only. The name of the processed product.
 	// Format: `accounts/{account}/products/{product}`
 	Product string `protobuf:"bytes,2,opt,name=product,proto3" json:"product,omitempty"`
+	// Output only. The **unpadded base64url encoded name** of the processed
+	// product. Format: `accounts/{account}/products/{product}` where the last
+	// section `product` is the unpadded base64url encoding of the
+	// `content_language~feed_label~offer_id` name.
+	// Example: `accounts/123/products/ZW5-VVN-c2t1LzEyMw` for the decoded
+	// product name `accounts/123/products/en~US~sku/123`. This field can be used
+	// directly as input to the API methods that require the product name to be
+	// encoded if it contains special characters, for example
+	// [`GetProduct`](https://developers.google.com/merchant/api/reference/rest/products_v1/accounts.products/get).
+	Base64EncodedProduct string `protobuf:"bytes,13,opt,name=base64_encoded_product,json=base64EncodedProduct,proto3" json:"base64_encoded_product,omitempty"`
 	// Immutable. Determines whether the product is **only** targeting
 	// local destinations and whether the product name should be distinguished
 	// with a `local~` prefix. For example,
@@ -210,9 +226,23 @@ func (x *ProductInput) GetName() string {
 	return ""
 }
 
+func (x *ProductInput) GetBase64EncodedName() string {
+	if x != nil {
+		return x.Base64EncodedName
+	}
+	return ""
+}
+
 func (x *ProductInput) GetProduct() string {
 	if x != nil {
 		return x.Product
+	}
+	return ""
+}
+
+func (x *ProductInput) GetBase64EncodedProduct() string {
+	if x != nil {
+		return x.Base64EncodedProduct
 	}
 	return ""
 }
@@ -452,10 +482,10 @@ type DeleteProductInputRequest struct {
 	//	MUST be used if any part of the product identifier (like `offer_id`)
 	//	contains characters such as `/`, `%`, or `~`.
 	//	*   Example: To represent the product ID `en~US~sku/123`, the
-	//	    `{productInput}` segment must be the base64url encoding of this
-	//	    string, which is `ZW5-VVMtc2t1LzEyMw`. The full resource name
+	//	    `{productInput}` segment must be the unpadded base64url encoding of
+	//	    this string, which is `ZW5-VVN-c2t1LzEyMw`. The full resource name
 	//	    for the product would be
-	//	    `accounts/123/productInputs/ZW5-VVMtc2t1LzEyMw`.
+	//	    `accounts/123/productInputs/ZW5-VVN-c2t1LzEyMw`.
 	//
 	// 2.  **Plain Format**: The `{productInput}` segment is the tilde-separated
 	// string
@@ -468,11 +498,6 @@ type DeleteProductInputRequest struct {
 	// correct parsing, especially those containing special characters. The
 	// presence of tilde (`~`) characters in the `{productInput}` segment is used
 	// to differentiate between the two formats.
-	//
-	// Note: For calls to the v1beta version, the plain format is
-	//
-	//	`channel~content_language~feed_label~offer_id`, for example:
-	//	`accounts/123/productinputs/online~en~US~sku123`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. The primary or supplemental data source from which the product
 	// input should be deleted. Format:
@@ -531,10 +556,12 @@ var File_google_shopping_merchant_products_v1_productinputs_proto protoreflect.F
 
 const file_google_shopping_merchant_products_v1_productinputs_proto_rawDesc = "" +
 	"\n" +
-	"8google/shopping/merchant/products/v1/productinputs.proto\x12$google.shopping.merchant.products.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a:google/shopping/merchant/products/v1/products_common.proto\x1a google/shopping/type/types.proto\"\xf4\x04\n" +
+	"8google/shopping/merchant/products/v1/productinputs.proto\x12$google.shopping.merchant.products.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a:google/shopping/merchant/products/v1/products_common.proto\x1a google/shopping/type/types.proto\"\xe4\x05\n" +
 	"\fProductInput\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1d\n" +
-	"\aproduct\x18\x02 \x01(\tB\x03\xe0A\x03R\aproduct\x12&\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x123\n" +
+	"\x13base64_encoded_name\x18\f \x01(\tB\x03\xe0A\x03R\x11base64EncodedName\x12\x1d\n" +
+	"\aproduct\x18\x02 \x01(\tB\x03\xe0A\x03R\aproduct\x129\n" +
+	"\x16base64_encoded_product\x18\r \x01(\tB\x03\xe0A\x03R\x14base64EncodedProduct\x12&\n" +
 	"\flegacy_local\x18\n" +
 	" \x01(\bB\x03\xe0A\x05R\vlegacyLocal\x12!\n" +
 	"\boffer_id\x18\x04 \x01(\tB\x06\xe0A\x02\xe0A\x05R\aofferId\x121\n" +

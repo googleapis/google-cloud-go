@@ -108,6 +108,52 @@
           "fullName": "google.cloud.config.v1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.config.v1.Client.CreateDeploymentGroup",
+        "method": {
+          "fullName": "google.cloud.config.v1.Config.CreateDeploymentGroup",
+          "service": {
+            "fullName": "google.cloud.config.v1.Config",
+            "shortName": "Config"
+          },
+          "shortName": "CreateDeploymentGroup"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "configpb.CreateDeploymentGroupRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateDeploymentGroupOperation",
+        "shortName": "CreateDeploymentGroup"
+      },
+      "description": "CreateDeploymentGroup creates a [DeploymentGroup][google.cloud.config.v1.DeploymentGroup]\nThe newly created DeploymentGroup will be in the `CREATING` state\nand can be retrieved via Get and List calls.",
+      "file": "Client/CreateDeploymentGroup/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "config_v1_generated_Config_CreateDeploymentGroup_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "config CreateDeploymentGroup Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.config.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.config.v1.Client.CreatePreview",
         "method": {
           "fullName": "google.cloud.config.v1.Config.CreatePreview",
@@ -193,6 +239,52 @@
         }
       ],
       "title": "config DeleteDeployment Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.config.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.config.v1.Client.DeleteDeploymentGroup",
+        "method": {
+          "fullName": "google.cloud.config.v1.Config.DeleteDeploymentGroup",
+          "service": {
+            "fullName": "google.cloud.config.v1.Config",
+            "shortName": "Config"
+          },
+          "shortName": "DeleteDeploymentGroup"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "configpb.DeleteDeploymentGroupRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteDeploymentGroupOperation",
+        "shortName": "DeleteDeploymentGroup"
+      },
+      "description": "DeleteDeploymentGroup deletes a [DeploymentGroup][google.cloud.config.v1.DeploymentGroup]",
+      "file": "Client/DeleteDeploymentGroup/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "config_v1_generated_Config_DeleteDeploymentGroup_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "config DeleteDeploymentGroup Sample"
     },
     {
       "clientMethod": {
@@ -329,6 +421,52 @@
         }
       ],
       "title": "config DeleteStatefile Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.config.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.config.v1.Client.DeprovisionDeploymentGroup",
+        "method": {
+          "fullName": "google.cloud.config.v1.Config.DeprovisionDeploymentGroup",
+          "service": {
+            "fullName": "google.cloud.config.v1.Config",
+            "shortName": "Config"
+          },
+          "shortName": "DeprovisionDeploymentGroup"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "configpb.DeprovisionDeploymentGroupRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeprovisionDeploymentGroupOperation",
+        "shortName": "DeprovisionDeploymentGroup"
+      },
+      "description": "DeprovisionDeploymentGroup deprovisions a deployment group.\n\nNOTE: As a first step of this operation, Infra Manager will\nautomatically delete any Deployments that were part of the\n*last successful*\n[DeploymentGroupRevision][google.cloud.config.v1.DeploymentGroupRevision]\nbut are *no longer* included in the *current*\n[DeploymentGroup][google.cloud.config.v1.DeploymentGroup] definition (e.g.,\nfollowing an `UpdateDeploymentGroup` call), along with their actuated\nresources.",
+      "file": "Client/DeprovisionDeploymentGroup/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "config_v1_generated_Config_DeprovisionDeploymentGroup_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "config DeprovisionDeploymentGroup Sample"
     },
     {
       "clientMethod": {
@@ -605,6 +743,98 @@
         }
       ],
       "title": "config GetDeployment Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.config.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.config.v1.Client.GetDeploymentGroup",
+        "method": {
+          "fullName": "google.cloud.config.v1.Config.GetDeploymentGroup",
+          "service": {
+            "fullName": "google.cloud.config.v1.Config",
+            "shortName": "Config"
+          },
+          "shortName": "GetDeploymentGroup"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "configpb.GetDeploymentGroupRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*configpb.DeploymentGroup",
+        "shortName": "GetDeploymentGroup"
+      },
+      "description": "GetDeploymentGroup get a DeploymentGroup for a given project and location.",
+      "file": "Client/GetDeploymentGroup/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "config_v1_generated_Config_GetDeploymentGroup_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "config GetDeploymentGroup Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.config.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.config.v1.Client.GetDeploymentGroupRevision",
+        "method": {
+          "fullName": "google.cloud.config.v1.Config.GetDeploymentGroupRevision",
+          "service": {
+            "fullName": "google.cloud.config.v1.Config",
+            "shortName": "Config"
+          },
+          "shortName": "GetDeploymentGroupRevision"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "configpb.GetDeploymentGroupRevisionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*configpb.DeploymentGroupRevision",
+        "shortName": "GetDeploymentGroupRevision"
+      },
+      "description": "GetDeploymentGroupRevision gets details about a\n[DeploymentGroupRevision][google.cloud.config.v1.DeploymentGroupRevision].",
+      "file": "Client/GetDeploymentGroupRevision/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "config_v1_generated_Config_GetDeploymentGroupRevision_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "config GetDeploymentGroupRevision Sample"
     },
     {
       "clientMethod": {
@@ -1072,6 +1302,98 @@
           "fullName": "google.cloud.config.v1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.config.v1.Client.ListDeploymentGroupRevisions",
+        "method": {
+          "fullName": "google.cloud.config.v1.Config.ListDeploymentGroupRevisions",
+          "service": {
+            "fullName": "google.cloud.config.v1.Config",
+            "shortName": "Config"
+          },
+          "shortName": "ListDeploymentGroupRevisions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "configpb.ListDeploymentGroupRevisionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeploymentGroupRevisionIterator",
+        "shortName": "ListDeploymentGroupRevisions"
+      },
+      "description": "ListDeploymentGroupRevisions lists\n[DeploymentGroupRevision][google.cloud.config.v1.DeploymentGroupRevision]s\nin a given [DeploymentGroup][google.cloud.config.v1.DeploymentGroup].",
+      "file": "Client/ListDeploymentGroupRevisions/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "config_v1_generated_Config_ListDeploymentGroupRevisions_sync",
+      "segments": [
+        {
+          "end": 66,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "config ListDeploymentGroupRevisions Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.config.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.config.v1.Client.ListDeploymentGroups",
+        "method": {
+          "fullName": "google.cloud.config.v1.Config.ListDeploymentGroups",
+          "service": {
+            "fullName": "google.cloud.config.v1.Config",
+            "shortName": "Config"
+          },
+          "shortName": "ListDeploymentGroups"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "configpb.ListDeploymentGroupsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeploymentGroupIterator",
+        "shortName": "ListDeploymentGroups"
+      },
+      "description": "ListDeploymentGroups list DeploymentGroups for a given project and location.",
+      "file": "Client/ListDeploymentGroups/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "config_v1_generated_Config_ListDeploymentGroups_sync",
+      "segments": [
+        {
+          "end": 66,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "config ListDeploymentGroups Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.config.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.config.v1.Client.ListDeployments",
         "method": {
           "fullName": "google.cloud.config.v1.Config.ListDeployments",
@@ -1144,7 +1466,7 @@
         "resultType": "LocationIterator",
         "shortName": "ListLocations"
       },
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "Client/ListLocations/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -1532,6 +1854,52 @@
           "fullName": "google.cloud.config.v1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.config.v1.Client.ProvisionDeploymentGroup",
+        "method": {
+          "fullName": "google.cloud.config.v1.Config.ProvisionDeploymentGroup",
+          "service": {
+            "fullName": "google.cloud.config.v1.Config",
+            "shortName": "Config"
+          },
+          "shortName": "ProvisionDeploymentGroup"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "configpb.ProvisionDeploymentGroupRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ProvisionDeploymentGroupOperation",
+        "shortName": "ProvisionDeploymentGroup"
+      },
+      "description": "ProvisionDeploymentGroup provisions a deployment group.\n\nNOTE: As a first step of this operation, Infra Manager will\nautomatically delete any Deployments that were part of the\n*last successful*\n[DeploymentGroupRevision][google.cloud.config.v1.DeploymentGroupRevision]\nbut are *no longer* included in the *current*\n[DeploymentGroup][google.cloud.config.v1.DeploymentGroup] definition (e.g.,\nfollowing an `UpdateDeploymentGroup` call), along with their actuated\nresources.",
+      "file": "Client/ProvisionDeploymentGroup/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "config_v1_generated_Config_ProvisionDeploymentGroup_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "config ProvisionDeploymentGroup Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.config.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.config.v1.Client.SetIamPolicy",
         "method": {
           "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
@@ -1755,6 +2123,52 @@
         }
       ],
       "title": "config UpdateDeployment Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.config.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.config.v1.Client.UpdateDeploymentGroup",
+        "method": {
+          "fullName": "google.cloud.config.v1.Config.UpdateDeploymentGroup",
+          "service": {
+            "fullName": "google.cloud.config.v1.Config",
+            "shortName": "Config"
+          },
+          "shortName": "UpdateDeploymentGroup"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "configpb.UpdateDeploymentGroupRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "UpdateDeploymentGroupOperation",
+        "shortName": "UpdateDeploymentGroup"
+      },
+      "description": "UpdateDeploymentGroup updates a [DeploymentGroup][google.cloud.config.v1.DeploymentGroup]",
+      "file": "Client/UpdateDeploymentGroup/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "config_v1_generated_Config_UpdateDeploymentGroup_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "config UpdateDeploymentGroup Sample"
     }
   ]
 }

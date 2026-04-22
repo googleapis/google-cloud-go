@@ -18,10 +18,18 @@ package spanner
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"net"
 	"sync"
 	"sync/atomic"
 	"testing"
+	"time"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/connectivity"
+	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/test/bufconn"
 )
 
 // closableSpannerClient is a minimal spannerClient that tracks Close calls.
@@ -36,11 +44,89 @@ func (c *closableSpannerClient) Close() error {
 	return nil
 }
 
+func newReadyTestConn(t *testing.T) (*grpc.ClientConn, func()) {
+	t.Helper()
+
+	listener := bufconn.Listen(1024 * 1024)
+	server := grpc.NewServer()
+	done := make(chan struct{})
+	go func() {
+		defer close(done)
+		_ = server.Serve(listener)
+	}()
+
+	dialer := func(context.Context, string) (net.Conn, error) {
+		return listener.Dial()
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	conn, err := grpc.DialContext(
+		ctx,
+		"passthrough:///bufconn",
+		grpc.WithContextDialer(dialer),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		t.Fatalf("DialContext() failed: %v", err)
+	}
+	conn.Connect()
+	waitForConnState(t, conn, connectivity.Ready)
+
+	cleanup := func() {
+		_ = conn.Close()
+		server.Stop()
+		<-done
+	}
+	return conn, cleanup
+}
+
+func newTransientFailureTestConn(t *testing.T) (*grpc.ClientConn, func()) {
+	t.Helper()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	conn, err := grpc.DialContext(
+		ctx,
+		"passthrough:///transient-failure",
+		grpc.WithContextDialer(func(context.Context, string) (net.Conn, error) {
+			return nil, errors.New("dial failed")
+		}),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		t.Fatalf("DialContext() failed: %v", err)
+	}
+	conn.Connect()
+	waitForConnState(t, conn, connectivity.TransientFailure)
+
+	return conn, func() { _ = conn.Close() }
+}
+
+func waitForConnState(t *testing.T, conn *grpc.ClientConn, target connectivity.State) {
+	t.Helper()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	for {
+		state := conn.GetState()
+		if state == target {
+			return
+		}
+		if !conn.WaitForStateChange(ctx, state) {
+			t.Fatalf("timed out waiting for state %v, last state %v", target, state)
+		}
+	}
+}
+
 func TestEndpointClientCache_GetOrCreate(t *testing.T) {
+	conn, cleanup := newReadyTestConn(t)
+	defer cleanup()
+
 	createCount := 0
 	factory := func(ctx context.Context, address string) (spannerClient, error) {
 		createCount++
-		return &closableSpannerClient{}, nil
+		return &closableSpannerClient{mockSpannerClient: mockSpannerClient{conn: conn}}, nil
 	}
 
 	cache := newEndpointClientCache(factory)
@@ -153,21 +239,20 @@ func TestEndpointClientCache_FactoryError(t *testing.T) {
 }
 
 func TestEndpointClientCache_UnhealthyEndpoint(t *testing.T) {
+	conn, cleanup := newTransientFailureTestConn(t)
+	defer cleanup()
+
 	factory := func(ctx context.Context, address string) (spannerClient, error) {
-		return &closableSpannerClient{}, nil
+		return &closableSpannerClient{mockSpannerClient: mockSpannerClient{conn: conn}}, nil
 	}
 
 	cache := newEndpointClientCache(factory)
 	ep := cache.Get(context.Background(), "addr1")
-	if !ep.IsHealthy() {
-		t.Fatal("expected healthy initially")
-	}
-
-	// Mark unhealthy.
-	gep := ep.(*grpcChannelEndpoint)
-	gep.healthy.Store(false)
 	if ep.IsHealthy() {
-		t.Fatal("expected unhealthy after marking")
+		t.Fatal("expected endpoint to be unhealthy in transient failure")
+	}
+	if !ep.IsTransientFailure() {
+		t.Fatal("expected endpoint to report transient failure")
 	}
 }
 
@@ -233,5 +318,150 @@ func TestEndpointClientCache_GetSingleFlightPerAddress(t *testing.T) {
 		if ep != first {
 			t.Fatal("expected both callers to observe the same endpoint")
 		}
+	}
+}
+
+func TestEndpointClientCache_GetIfPresent(t *testing.T) {
+	createCount := 0
+	factory := func(ctx context.Context, address string) (spannerClient, error) {
+		createCount++
+		return &closableSpannerClient{}, nil
+	}
+
+	cache := newEndpointClientCache(factory)
+	if got := cache.GetIfPresent("addr1"); got != nil {
+		t.Fatalf("GetIfPresent(addr1) = %#v, want nil", got)
+	}
+	if createCount != 0 {
+		t.Fatalf("expected GetIfPresent not to create clients, got %d creations", createCount)
+	}
+
+	created := cache.Get(context.Background(), "addr1")
+	if created == nil {
+		t.Fatal("expected endpoint creation")
+	}
+	if got := cache.GetIfPresent("addr1"); got != created {
+		t.Fatalf("GetIfPresent(addr1) = %#v, want %#v", got, created)
+	}
+}
+
+func TestEndpointClientCache_Evict(t *testing.T) {
+	client := &closableSpannerClient{}
+	cache := newEndpointClientCache(func(context.Context, string) (spannerClient, error) {
+		return client, nil
+	})
+
+	created := cache.Get(context.Background(), "addr1")
+	if created == nil {
+		t.Fatal("expected endpoint creation")
+	}
+
+	cache.Evict("addr1")
+
+	if !client.closed.Load() {
+		t.Fatal("expected evicted endpoint client to be closed")
+	}
+	if got := cache.GetIfPresent("addr1"); got != nil {
+		t.Fatalf("GetIfPresent(addr1) after Evict = %#v, want nil", got)
+	}
+}
+
+func TestEndpointClientCache_EvictInFlightCreation(t *testing.T) {
+	started := make(chan struct{})
+	release := make(chan struct{})
+	client := &closableSpannerClient{}
+	cache := newEndpointClientCache(func(context.Context, string) (spannerClient, error) {
+		close(started)
+		<-release
+		return client, nil
+	})
+
+	result := make(chan channelEndpoint, 1)
+	go func() {
+		result <- cache.Get(context.Background(), "addr1")
+	}()
+
+	<-started
+	cache.Evict("addr1")
+	close(release)
+
+	if got := <-result; got != nil {
+		t.Fatalf("Get(addr1) after inflight Evict = %#v, want nil", got)
+	}
+	if !client.closed.Load() {
+		t.Fatal("expected evicted in-flight client to be closed")
+	}
+}
+
+func TestEndpointClientCache_DefaultChannel(t *testing.T) {
+	cache := newEndpointClientCache(func(context.Context, string) (spannerClient, error) {
+		return &closableSpannerClient{}, nil
+	})
+
+	defaultChannel := cache.DefaultChannel()
+	if defaultChannel == nil {
+		t.Fatal("expected non-nil default channel")
+	}
+	if defaultChannel.Address() != "" {
+		t.Fatalf("default channel address = %q, want empty sentinel", defaultChannel.Address())
+	}
+
+	cache.Evict(defaultChannel.Address())
+	if got := cache.DefaultChannel(); got != defaultChannel {
+		t.Fatalf("default channel changed after Evict: got %#v, want %#v", got, defaultChannel)
+	}
+}
+
+func TestEndpointClientCache_DefaultChannelUsesConfiguredAddress(t *testing.T) {
+	cache := newEndpointClientCacheWithDefaultAddress(
+		func(context.Context, string) (spannerClient, error) {
+			return &closableSpannerClient{}, nil
+		},
+		"spanner.googleapis.com:443",
+	)
+
+	defaultChannel := cache.DefaultChannel()
+	if defaultChannel == nil {
+		t.Fatal("expected non-nil default channel")
+	}
+	if got := defaultChannel.Address(); got != "spanner.googleapis.com:443" {
+		t.Fatalf("default channel address = %q, want %q", got, "spanner.googleapis.com:443")
+	}
+}
+
+func TestEndpointClientCache_GetReturnsDefaultChannelForConfiguredAddress(t *testing.T) {
+	createCount := 0
+	cache := newEndpointClientCacheWithDefaultAddress(
+		func(context.Context, string) (spannerClient, error) {
+			createCount++
+			t.Fatal("factory should not be called for the configured default endpoint")
+			return nil, nil
+		},
+		"spanner.googleapis.com:443",
+	)
+
+	defaultChannel := cache.DefaultChannel()
+	if defaultChannel == nil {
+		t.Fatal("expected non-nil default channel")
+	}
+
+	if got := cache.Get(context.Background(), "spanner.googleapis.com:443"); got != defaultChannel {
+		t.Fatalf("Get(default endpoint) = %#v, want %#v", got, defaultChannel)
+	}
+	if createCount != 0 {
+		t.Fatalf("factory createCount = %d, want 0", createCount)
+	}
+}
+
+func TestGRPCChannelEndpoint_GetConn(t *testing.T) {
+	conn, cleanup := newReadyTestConn(t)
+	defer cleanup()
+
+	endpoint := &grpcChannelEndpoint{
+		address: "addr1",
+		conn:    conn,
+	}
+	if got := endpoint.GetConn(); got != conn {
+		t.Fatalf("GetConn() = %#v, want %#v", got, conn)
 	}
 }

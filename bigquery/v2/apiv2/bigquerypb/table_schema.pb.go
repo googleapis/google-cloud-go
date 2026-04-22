@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -154,6 +154,61 @@ func (TableFieldSchema_RoundingMode) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_bigquery_v2_table_schema_proto_rawDescGZIP(), []int{3, 0}
 }
 
+// Dictates when system generated values are used to populate the field.
+type TableFieldSchema_GeneratedColumn_GeneratedMode int32
+
+const (
+	// Unspecified GeneratedMode will default to GENERATED_ALWAYS.
+	TableFieldSchema_GeneratedColumn_GENERATED_MODE_UNSPECIFIED TableFieldSchema_GeneratedColumn_GeneratedMode = 0
+	// Field can only have system generated values. Users cannot manually
+	// insert values into the field.
+	TableFieldSchema_GeneratedColumn_GENERATED_ALWAYS TableFieldSchema_GeneratedColumn_GeneratedMode = 1
+	// Use system generated values only if the user does not explicitly
+	// provide a value.
+	TableFieldSchema_GeneratedColumn_GENERATED_BY_DEFAULT TableFieldSchema_GeneratedColumn_GeneratedMode = 2
+)
+
+// Enum value maps for TableFieldSchema_GeneratedColumn_GeneratedMode.
+var (
+	TableFieldSchema_GeneratedColumn_GeneratedMode_name = map[int32]string{
+		0: "GENERATED_MODE_UNSPECIFIED",
+		1: "GENERATED_ALWAYS",
+		2: "GENERATED_BY_DEFAULT",
+	}
+	TableFieldSchema_GeneratedColumn_GeneratedMode_value = map[string]int32{
+		"GENERATED_MODE_UNSPECIFIED": 0,
+		"GENERATED_ALWAYS":           1,
+		"GENERATED_BY_DEFAULT":       2,
+	}
+)
+
+func (x TableFieldSchema_GeneratedColumn_GeneratedMode) Enum() *TableFieldSchema_GeneratedColumn_GeneratedMode {
+	p := new(TableFieldSchema_GeneratedColumn_GeneratedMode)
+	*p = x
+	return p
+}
+
+func (x TableFieldSchema_GeneratedColumn_GeneratedMode) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (TableFieldSchema_GeneratedColumn_GeneratedMode) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_bigquery_v2_table_schema_proto_enumTypes[2].Descriptor()
+}
+
+func (TableFieldSchema_GeneratedColumn_GeneratedMode) Type() protoreflect.EnumType {
+	return &file_google_cloud_bigquery_v2_table_schema_proto_enumTypes[2]
+}
+
+func (x TableFieldSchema_GeneratedColumn_GeneratedMode) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use TableFieldSchema_GeneratedColumn_GeneratedMode.Descriptor instead.
+func (TableFieldSchema_GeneratedColumn_GeneratedMode) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_bigquery_v2_table_schema_proto_rawDescGZIP(), []int{3, 3, 0}
+}
+
 // Schema of a table
 type TableSchema struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -260,7 +315,7 @@ func (x *ForeignTypeInfo) GetTypeSystem() ForeignTypeInfo_TypeSystem {
 
 // Data policy option. For more information, see
 // [Mask data by applying data policies to a
-// column](https://cloud.google.com/bigquery/docs/column-data-masking#data-policies-on-column/).
+// column](https://docs.cloud.google.com/bigquery/docs/column-data-masking#data-policies-on-column).
 type DataPolicyOption struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Data policy resource name in the form of
@@ -428,8 +483,11 @@ type TableFieldSchema struct {
 	// Only valid for top-level schema fields (not nested fields).
 	// If the type is FOREIGN, this field is required.
 	ForeignTypeDefinition string `protobuf:"bytes,23,opt,name=foreign_type_definition,json=foreignTypeDefinition,proto3" json:"foreign_type_definition,omitempty"`
-	unknownFields         protoimpl.UnknownFields
-	sizeCache             protoimpl.SizeCache
+	// Optional. Definition of how values are generated for the field.
+	// Only valid for top-level schema fields (not nested fields).
+	GeneratedColumn *TableFieldSchema_GeneratedColumn `protobuf:"bytes,28,opt,name=generated_column,json=generatedColumn,proto3" json:"generated_column,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *TableFieldSchema) Reset() {
@@ -574,6 +632,13 @@ func (x *TableFieldSchema) GetForeignTypeDefinition() string {
 	return ""
 }
 
+func (x *TableFieldSchema) GetGeneratedColumn() *TableFieldSchema_GeneratedColumn {
+	if x != nil {
+		return x.GeneratedColumn
+	}
+	return nil
+}
+
 type TableFieldSchema_PolicyTagList struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// A list of policy tag resource names. For example,
@@ -668,6 +733,154 @@ func (x *TableFieldSchema_FieldElementType) GetType() string {
 	return ""
 }
 
+// Definition of the expression used to generate the field.
+type TableFieldSchema_GeneratedExpressionInfo struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The generation expression (e.g. AI.EMBED(...)) used to
+	// generated the field.
+	GenerationExpression *string `protobuf:"bytes,1,opt,name=generation_expression,json=generationExpression,proto3,oneof" json:"generation_expression,omitempty"`
+	// Optional. Whether the column generation is done asynchronously.
+	Asynchronous *bool `protobuf:"varint,2,opt,name=asynchronous,proto3,oneof" json:"asynchronous,omitempty"`
+	// Optional. Whether the generated column is stored in the table.
+	Stored        *bool `protobuf:"varint,3,opt,name=stored,proto3,oneof" json:"stored,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TableFieldSchema_GeneratedExpressionInfo) Reset() {
+	*x = TableFieldSchema_GeneratedExpressionInfo{}
+	mi := &file_google_cloud_bigquery_v2_table_schema_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TableFieldSchema_GeneratedExpressionInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TableFieldSchema_GeneratedExpressionInfo) ProtoMessage() {}
+
+func (x *TableFieldSchema_GeneratedExpressionInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_bigquery_v2_table_schema_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TableFieldSchema_GeneratedExpressionInfo.ProtoReflect.Descriptor instead.
+func (*TableFieldSchema_GeneratedExpressionInfo) Descriptor() ([]byte, []int) {
+	return file_google_cloud_bigquery_v2_table_schema_proto_rawDescGZIP(), []int{3, 2}
+}
+
+func (x *TableFieldSchema_GeneratedExpressionInfo) GetGenerationExpression() string {
+	if x != nil && x.GenerationExpression != nil {
+		return *x.GenerationExpression
+	}
+	return ""
+}
+
+func (x *TableFieldSchema_GeneratedExpressionInfo) GetAsynchronous() bool {
+	if x != nil && x.Asynchronous != nil {
+		return *x.Asynchronous
+	}
+	return false
+}
+
+func (x *TableFieldSchema_GeneratedExpressionInfo) GetStored() bool {
+	if x != nil && x.Stored != nil {
+		return *x.Stored
+	}
+	return false
+}
+
+// Optional. Definition of how values are generated for the field.
+// Only valid for top-level schema fields (not nested fields).
+type TableFieldSchema_GeneratedColumn struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Dictates when system generated values are used to populate the
+	// field.
+	GeneratedMode *TableFieldSchema_GeneratedColumn_GeneratedMode `protobuf:"varint,1,opt,name=generated_mode,json=generatedMode,proto3,enum=google.cloud.bigquery.v2.TableFieldSchema_GeneratedColumn_GeneratedMode,oneof" json:"generated_mode,omitempty"`
+	// Captures the metadata for the generated column. Could be either an
+	// identity column or a generated column.
+	//
+	// Types that are valid to be assigned to Definition:
+	//
+	//	*TableFieldSchema_GeneratedColumn_GeneratedExpressionInfo
+	Definition    isTableFieldSchema_GeneratedColumn_Definition `protobuf_oneof:"definition"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TableFieldSchema_GeneratedColumn) Reset() {
+	*x = TableFieldSchema_GeneratedColumn{}
+	mi := &file_google_cloud_bigquery_v2_table_schema_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TableFieldSchema_GeneratedColumn) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TableFieldSchema_GeneratedColumn) ProtoMessage() {}
+
+func (x *TableFieldSchema_GeneratedColumn) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_bigquery_v2_table_schema_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TableFieldSchema_GeneratedColumn.ProtoReflect.Descriptor instead.
+func (*TableFieldSchema_GeneratedColumn) Descriptor() ([]byte, []int) {
+	return file_google_cloud_bigquery_v2_table_schema_proto_rawDescGZIP(), []int{3, 3}
+}
+
+func (x *TableFieldSchema_GeneratedColumn) GetGeneratedMode() TableFieldSchema_GeneratedColumn_GeneratedMode {
+	if x != nil && x.GeneratedMode != nil {
+		return *x.GeneratedMode
+	}
+	return TableFieldSchema_GeneratedColumn_GENERATED_MODE_UNSPECIFIED
+}
+
+func (x *TableFieldSchema_GeneratedColumn) GetDefinition() isTableFieldSchema_GeneratedColumn_Definition {
+	if x != nil {
+		return x.Definition
+	}
+	return nil
+}
+
+func (x *TableFieldSchema_GeneratedColumn) GetGeneratedExpressionInfo() *TableFieldSchema_GeneratedExpressionInfo {
+	if x != nil {
+		if x, ok := x.Definition.(*TableFieldSchema_GeneratedColumn_GeneratedExpressionInfo); ok {
+			return x.GeneratedExpressionInfo
+		}
+	}
+	return nil
+}
+
+type isTableFieldSchema_GeneratedColumn_Definition interface {
+	isTableFieldSchema_GeneratedColumn_Definition()
+}
+
+type TableFieldSchema_GeneratedColumn_GeneratedExpressionInfo struct {
+	// Definition of the expression used to generate the field.
+	GeneratedExpressionInfo *TableFieldSchema_GeneratedExpressionInfo `protobuf:"bytes,3,opt,name=generated_expression_info,json=generatedExpressionInfo,proto3,oneof"`
+}
+
+func (*TableFieldSchema_GeneratedColumn_GeneratedExpressionInfo) isTableFieldSchema_GeneratedColumn_Definition() {
+}
+
 var File_google_cloud_bigquery_v2_table_schema_proto protoreflect.FileDescriptor
 
 const file_google_cloud_bigquery_v2_table_schema_proto_rawDesc = "" +
@@ -685,7 +898,7 @@ const file_google_cloud_bigquery_v2_table_schema_proto_rawDesc = "" +
 	"\x04HIVE\x10\x01\"4\n" +
 	"\x10DataPolicyOption\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tH\x00R\x04name\x88\x01\x01B\a\n" +
-	"\x05_name\"\xbb\t\n" +
+	"\x05_name\"\x9c\x0f\n" +
 	"\x10TableFieldSchema\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x17\n" +
 	"\x04type\x18\x02 \x01(\tB\x03\xe0A\x02R\x04type\x12\x17\n" +
@@ -705,11 +918,29 @@ const file_google_cloud_bigquery_v2_table_schema_proto_rawDesc = "" +
 	"\tcollation\x18\r \x01(\v2\x1c.google.protobuf.StringValueB\x03\xe0A\x01R\tcollation\x12[\n" +
 	"\x18default_value_expression\x18\x0e \x01(\v2\x1c.google.protobuf.StringValueB\x03\xe0A\x01R\x16defaultValueExpression\x12n\n" +
 	"\x12range_element_type\x18\x12 \x01(\v2;.google.cloud.bigquery.v2.TableFieldSchema.FieldElementTypeB\x03\xe0A\x01R\x10rangeElementType\x12;\n" +
-	"\x17foreign_type_definition\x18\x17 \x01(\tB\x03\xe0A\x01R\x15foreignTypeDefinition\x1a%\n" +
+	"\x17foreign_type_definition\x18\x17 \x01(\tB\x03\xe0A\x01R\x15foreignTypeDefinition\x12j\n" +
+	"\x10generated_column\x18\x1c \x01(\v2:.google.cloud.bigquery.v2.TableFieldSchema.GeneratedColumnB\x03\xe0A\x01R\x0fgeneratedColumn\x1a%\n" +
 	"\rPolicyTagList\x12\x14\n" +
 	"\x05names\x18\x01 \x03(\tR\x05names\x1a+\n" +
 	"\x10FieldElementType\x12\x17\n" +
-	"\x04type\x18\x01 \x01(\tB\x03\xe0A\x02R\x04type\"a\n" +
+	"\x04type\x18\x01 \x01(\tB\x03\xe0A\x02R\x04type\x1a\xde\x01\n" +
+	"\x17GeneratedExpressionInfo\x12=\n" +
+	"\x15generation_expression\x18\x01 \x01(\tB\x03\xe0A\x01H\x00R\x14generationExpression\x88\x01\x01\x12,\n" +
+	"\fasynchronous\x18\x02 \x01(\bB\x03\xe0A\x01H\x01R\fasynchronous\x88\x01\x01\x12 \n" +
+	"\x06stored\x18\x03 \x01(\bB\x03\xe0A\x01H\x02R\x06stored\x88\x01\x01B\x18\n" +
+	"\x16_generation_expressionB\x0f\n" +
+	"\r_asynchronousB\t\n" +
+	"\a_stored\x1a\x91\x03\n" +
+	"\x0fGeneratedColumn\x12y\n" +
+	"\x0egenerated_mode\x18\x01 \x01(\x0e2H.google.cloud.bigquery.v2.TableFieldSchema.GeneratedColumn.GeneratedModeB\x03\xe0A\x01H\x01R\rgeneratedMode\x88\x01\x01\x12\x80\x01\n" +
+	"\x19generated_expression_info\x18\x03 \x01(\v2B.google.cloud.bigquery.v2.TableFieldSchema.GeneratedExpressionInfoH\x00R\x17generatedExpressionInfo\"_\n" +
+	"\rGeneratedMode\x12\x1e\n" +
+	"\x1aGENERATED_MODE_UNSPECIFIED\x10\x00\x12\x14\n" +
+	"\x10GENERATED_ALWAYS\x10\x01\x12\x18\n" +
+	"\x14GENERATED_BY_DEFAULT\x10\x02B\f\n" +
+	"\n" +
+	"definitionB\x11\n" +
+	"\x0f_generated_mode\"a\n" +
 	"\fRoundingMode\x12\x1d\n" +
 	"\x19ROUNDING_MODE_UNSPECIFIED\x10\x00\x12\x1d\n" +
 	"\x19ROUND_HALF_AWAY_FROM_ZERO\x10\x01\x12\x13\n" +
@@ -728,38 +959,44 @@ func file_google_cloud_bigquery_v2_table_schema_proto_rawDescGZIP() []byte {
 	return file_google_cloud_bigquery_v2_table_schema_proto_rawDescData
 }
 
-var file_google_cloud_bigquery_v2_table_schema_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_google_cloud_bigquery_v2_table_schema_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_google_cloud_bigquery_v2_table_schema_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_google_cloud_bigquery_v2_table_schema_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_google_cloud_bigquery_v2_table_schema_proto_goTypes = []any{
-	(ForeignTypeInfo_TypeSystem)(0),           // 0: google.cloud.bigquery.v2.ForeignTypeInfo.TypeSystem
-	(TableFieldSchema_RoundingMode)(0),        // 1: google.cloud.bigquery.v2.TableFieldSchema.RoundingMode
-	(*TableSchema)(nil),                       // 2: google.cloud.bigquery.v2.TableSchema
-	(*ForeignTypeInfo)(nil),                   // 3: google.cloud.bigquery.v2.ForeignTypeInfo
-	(*DataPolicyOption)(nil),                  // 4: google.cloud.bigquery.v2.DataPolicyOption
-	(*TableFieldSchema)(nil),                  // 5: google.cloud.bigquery.v2.TableFieldSchema
-	(*TableFieldSchema_PolicyTagList)(nil),    // 6: google.cloud.bigquery.v2.TableFieldSchema.PolicyTagList
-	(*TableFieldSchema_FieldElementType)(nil), // 7: google.cloud.bigquery.v2.TableFieldSchema.FieldElementType
-	(*wrapperspb.StringValue)(nil),            // 8: google.protobuf.StringValue
-	(*wrapperspb.Int64Value)(nil),             // 9: google.protobuf.Int64Value
+	(ForeignTypeInfo_TypeSystem)(0),                     // 0: google.cloud.bigquery.v2.ForeignTypeInfo.TypeSystem
+	(TableFieldSchema_RoundingMode)(0),                  // 1: google.cloud.bigquery.v2.TableFieldSchema.RoundingMode
+	(TableFieldSchema_GeneratedColumn_GeneratedMode)(0), // 2: google.cloud.bigquery.v2.TableFieldSchema.GeneratedColumn.GeneratedMode
+	(*TableSchema)(nil),                                 // 3: google.cloud.bigquery.v2.TableSchema
+	(*ForeignTypeInfo)(nil),                             // 4: google.cloud.bigquery.v2.ForeignTypeInfo
+	(*DataPolicyOption)(nil),                            // 5: google.cloud.bigquery.v2.DataPolicyOption
+	(*TableFieldSchema)(nil),                            // 6: google.cloud.bigquery.v2.TableFieldSchema
+	(*TableFieldSchema_PolicyTagList)(nil),              // 7: google.cloud.bigquery.v2.TableFieldSchema.PolicyTagList
+	(*TableFieldSchema_FieldElementType)(nil),           // 8: google.cloud.bigquery.v2.TableFieldSchema.FieldElementType
+	(*TableFieldSchema_GeneratedExpressionInfo)(nil),    // 9: google.cloud.bigquery.v2.TableFieldSchema.GeneratedExpressionInfo
+	(*TableFieldSchema_GeneratedColumn)(nil),            // 10: google.cloud.bigquery.v2.TableFieldSchema.GeneratedColumn
+	(*wrapperspb.StringValue)(nil),                      // 11: google.protobuf.StringValue
+	(*wrapperspb.Int64Value)(nil),                       // 12: google.protobuf.Int64Value
 }
 var file_google_cloud_bigquery_v2_table_schema_proto_depIdxs = []int32{
-	5,  // 0: google.cloud.bigquery.v2.TableSchema.fields:type_name -> google.cloud.bigquery.v2.TableFieldSchema
-	3,  // 1: google.cloud.bigquery.v2.TableSchema.foreign_type_info:type_name -> google.cloud.bigquery.v2.ForeignTypeInfo
+	6,  // 0: google.cloud.bigquery.v2.TableSchema.fields:type_name -> google.cloud.bigquery.v2.TableFieldSchema
+	4,  // 1: google.cloud.bigquery.v2.TableSchema.foreign_type_info:type_name -> google.cloud.bigquery.v2.ForeignTypeInfo
 	0,  // 2: google.cloud.bigquery.v2.ForeignTypeInfo.type_system:type_name -> google.cloud.bigquery.v2.ForeignTypeInfo.TypeSystem
-	5,  // 3: google.cloud.bigquery.v2.TableFieldSchema.fields:type_name -> google.cloud.bigquery.v2.TableFieldSchema
-	8,  // 4: google.cloud.bigquery.v2.TableFieldSchema.description:type_name -> google.protobuf.StringValue
-	6,  // 5: google.cloud.bigquery.v2.TableFieldSchema.policy_tags:type_name -> google.cloud.bigquery.v2.TableFieldSchema.PolicyTagList
-	4,  // 6: google.cloud.bigquery.v2.TableFieldSchema.data_policies:type_name -> google.cloud.bigquery.v2.DataPolicyOption
-	9,  // 7: google.cloud.bigquery.v2.TableFieldSchema.timestamp_precision:type_name -> google.protobuf.Int64Value
+	6,  // 3: google.cloud.bigquery.v2.TableFieldSchema.fields:type_name -> google.cloud.bigquery.v2.TableFieldSchema
+	11, // 4: google.cloud.bigquery.v2.TableFieldSchema.description:type_name -> google.protobuf.StringValue
+	7,  // 5: google.cloud.bigquery.v2.TableFieldSchema.policy_tags:type_name -> google.cloud.bigquery.v2.TableFieldSchema.PolicyTagList
+	5,  // 6: google.cloud.bigquery.v2.TableFieldSchema.data_policies:type_name -> google.cloud.bigquery.v2.DataPolicyOption
+	12, // 7: google.cloud.bigquery.v2.TableFieldSchema.timestamp_precision:type_name -> google.protobuf.Int64Value
 	1,  // 8: google.cloud.bigquery.v2.TableFieldSchema.rounding_mode:type_name -> google.cloud.bigquery.v2.TableFieldSchema.RoundingMode
-	8,  // 9: google.cloud.bigquery.v2.TableFieldSchema.collation:type_name -> google.protobuf.StringValue
-	8,  // 10: google.cloud.bigquery.v2.TableFieldSchema.default_value_expression:type_name -> google.protobuf.StringValue
-	7,  // 11: google.cloud.bigquery.v2.TableFieldSchema.range_element_type:type_name -> google.cloud.bigquery.v2.TableFieldSchema.FieldElementType
-	12, // [12:12] is the sub-list for method output_type
-	12, // [12:12] is the sub-list for method input_type
-	12, // [12:12] is the sub-list for extension type_name
-	12, // [12:12] is the sub-list for extension extendee
-	0,  // [0:12] is the sub-list for field type_name
+	11, // 9: google.cloud.bigquery.v2.TableFieldSchema.collation:type_name -> google.protobuf.StringValue
+	11, // 10: google.cloud.bigquery.v2.TableFieldSchema.default_value_expression:type_name -> google.protobuf.StringValue
+	8,  // 11: google.cloud.bigquery.v2.TableFieldSchema.range_element_type:type_name -> google.cloud.bigquery.v2.TableFieldSchema.FieldElementType
+	10, // 12: google.cloud.bigquery.v2.TableFieldSchema.generated_column:type_name -> google.cloud.bigquery.v2.TableFieldSchema.GeneratedColumn
+	2,  // 13: google.cloud.bigquery.v2.TableFieldSchema.GeneratedColumn.generated_mode:type_name -> google.cloud.bigquery.v2.TableFieldSchema.GeneratedColumn.GeneratedMode
+	9,  // 14: google.cloud.bigquery.v2.TableFieldSchema.GeneratedColumn.generated_expression_info:type_name -> google.cloud.bigquery.v2.TableFieldSchema.GeneratedExpressionInfo
+	15, // [15:15] is the sub-list for method output_type
+	15, // [15:15] is the sub-list for method input_type
+	15, // [15:15] is the sub-list for extension type_name
+	15, // [15:15] is the sub-list for extension extendee
+	0,  // [0:15] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_bigquery_v2_table_schema_proto_init() }
@@ -768,13 +1005,17 @@ func file_google_cloud_bigquery_v2_table_schema_proto_init() {
 		return
 	}
 	file_google_cloud_bigquery_v2_table_schema_proto_msgTypes[2].OneofWrappers = []any{}
+	file_google_cloud_bigquery_v2_table_schema_proto_msgTypes[6].OneofWrappers = []any{}
+	file_google_cloud_bigquery_v2_table_schema_proto_msgTypes[7].OneofWrappers = []any{
+		(*TableFieldSchema_GeneratedColumn_GeneratedExpressionInfo)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_bigquery_v2_table_schema_proto_rawDesc), len(file_google_cloud_bigquery_v2_table_schema_proto_rawDesc)),
-			NumEnums:      2,
-			NumMessages:   6,
+			NumEnums:      3,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

@@ -41,7 +41,7 @@ var File_google_chat_v1_chat_service_proto protoreflect.FileDescriptor
 
 const file_google_chat_v1_chat_service_proto_rawDesc = "" +
 	"\n" +
-	"!google/chat/v1/chat_service.proto\x12\x0egoogle.chat.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/chat/v1/attachment.proto\x1a\x1fgoogle/chat/v1/membership.proto\x1a\x1cgoogle/chat/v1/message.proto\x1a\x1dgoogle/chat/v1/reaction.proto\x1a\x1cgoogle/chat/v1/section.proto\x1a\x1agoogle/chat/v1/space.proto\x1a google/chat/v1/space_event.proto\x1a/google/chat/v1/space_notification_setting.proto\x1a%google/chat/v1/space_read_state.proto\x1a google/chat/v1/space_setup.proto\x1a&google/chat/v1/thread_read_state.proto\x1a\x1bgoogle/protobuf/empty.proto2\xcc?\n" +
+	"!google/chat/v1/chat_service.proto\x12\x0egoogle.chat.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/chat/v1/attachment.proto\x1a\x1fgoogle/chat/v1/membership.proto\x1a\x1cgoogle/chat/v1/message.proto\x1a\x1dgoogle/chat/v1/reaction.proto\x1a\x1cgoogle/chat/v1/section.proto\x1a\x1agoogle/chat/v1/space.proto\x1a google/chat/v1/space_event.proto\x1a/google/chat/v1/space_notification_setting.proto\x1a%google/chat/v1/space_read_state.proto\x1a google/chat/v1/space_setup.proto\x1a&google/chat/v1/thread_read_state.proto\x1a\x1bgoogle/protobuf/empty.proto2\xd1@\n" +
 	"\vChatService\x12\x9b\x01\n" +
 	"\rCreateMessage\x12$.google.chat.v1.CreateMessageRequest\x1a\x17.google.chat.v1.Message\"K\xdaA\x19parent,message,message_id\x82\xd3\xe4\x93\x02):\amessage\"\x1e/v1/{parent=spaces/*}/messages\x12\x8a\x01\n" +
 	"\fListMessages\x12#.google.chat.v1.ListMessagesRequest\x1a$.google.chat.v1.ListMessagesResponse\"/\xdaA\x06parent\x82\xd3\xe4\x93\x02 \x12\x1e/v1/{parent=spaces/*}/messages\x12\x92\x01\n" +
@@ -65,7 +65,8 @@ const file_google_chat_v1_chat_service_proto_rawDesc = "" +
 	"\vUpdateSpace\x12\".google.chat.v1.UpdateSpaceRequest\x1a\x15.google.chat.v1.Space\"<\xdaA\x11space,update_mask\x82\xd3\xe4\x93\x02\":\x05space2\x19/v1/{space.name=spaces/*}\x12m\n" +
 	"\vDeleteSpace\x12\".google.chat.v1.DeleteSpaceRequest\x1a\x16.google.protobuf.Empty\"\"\xdaA\x04name\x82\xd3\xe4\x93\x02\x15*\x13/v1/{name=spaces/*}\x12\x9d\x01\n" +
 	"\x13CompleteImportSpace\x12*.google.chat.v1.CompleteImportSpaceRequest\x1a+.google.chat.v1.CompleteImportSpaceResponse\"-\x82\xd3\xe4\x93\x02':\x01*\"\"/v1/{name=spaces/*}:completeImport\x12z\n" +
-	"\x11FindDirectMessage\x12(.google.chat.v1.FindDirectMessageRequest\x1a\x15.google.chat.v1.Space\"$\x82\xd3\xe4\x93\x02\x1e\x12\x1c/v1/spaces:findDirectMessage\x12\x9e\x01\n" +
+	"\x11FindDirectMessage\x12(.google.chat.v1.FindDirectMessageRequest\x1a\x15.google.chat.v1.Space\"$\x82\xd3\xe4\x93\x02\x1e\x12\x1c/v1/spaces:findDirectMessage\x12\x82\x01\n" +
+	"\x0eFindGroupChats\x12%.google.chat.v1.FindGroupChatsRequest\x1a&.google.chat.v1.FindGroupChatsResponse\"!\x82\xd3\xe4\x93\x02\x1b\x12\x19/v1/spaces:findGroupChats\x12\x9e\x01\n" +
 	"\x10CreateMembership\x12'.google.chat.v1.CreateMembershipRequest\x1a\x1a.google.chat.v1.Membership\"E\xdaA\x11parent,membership\x82\xd3\xe4\x93\x02+:\n" +
 	"membership\"\x1d/v1/{parent=spaces/*}/members\x12\xae\x01\n" +
 	"\x10UpdateMembership\x12'.google.chat.v1.UpdateMembershipRequest\x1a\x1a.google.chat.v1.Membership\"U\xdaA\x16membership,update_mask\x82\xd3\xe4\x93\x026:\n" +
@@ -113,55 +114,57 @@ var file_google_chat_v1_chat_service_proto_goTypes = []any{
 	(*DeleteSpaceRequest)(nil),                    // 15: google.chat.v1.DeleteSpaceRequest
 	(*CompleteImportSpaceRequest)(nil),            // 16: google.chat.v1.CompleteImportSpaceRequest
 	(*FindDirectMessageRequest)(nil),              // 17: google.chat.v1.FindDirectMessageRequest
-	(*CreateMembershipRequest)(nil),               // 18: google.chat.v1.CreateMembershipRequest
-	(*UpdateMembershipRequest)(nil),               // 19: google.chat.v1.UpdateMembershipRequest
-	(*DeleteMembershipRequest)(nil),               // 20: google.chat.v1.DeleteMembershipRequest
-	(*CreateReactionRequest)(nil),                 // 21: google.chat.v1.CreateReactionRequest
-	(*ListReactionsRequest)(nil),                  // 22: google.chat.v1.ListReactionsRequest
-	(*DeleteReactionRequest)(nil),                 // 23: google.chat.v1.DeleteReactionRequest
-	(*CreateCustomEmojiRequest)(nil),              // 24: google.chat.v1.CreateCustomEmojiRequest
-	(*GetCustomEmojiRequest)(nil),                 // 25: google.chat.v1.GetCustomEmojiRequest
-	(*ListCustomEmojisRequest)(nil),               // 26: google.chat.v1.ListCustomEmojisRequest
-	(*DeleteCustomEmojiRequest)(nil),              // 27: google.chat.v1.DeleteCustomEmojiRequest
-	(*GetSpaceReadStateRequest)(nil),              // 28: google.chat.v1.GetSpaceReadStateRequest
-	(*UpdateSpaceReadStateRequest)(nil),           // 29: google.chat.v1.UpdateSpaceReadStateRequest
-	(*GetThreadReadStateRequest)(nil),             // 30: google.chat.v1.GetThreadReadStateRequest
-	(*GetSpaceEventRequest)(nil),                  // 31: google.chat.v1.GetSpaceEventRequest
-	(*ListSpaceEventsRequest)(nil),                // 32: google.chat.v1.ListSpaceEventsRequest
-	(*GetSpaceNotificationSettingRequest)(nil),    // 33: google.chat.v1.GetSpaceNotificationSettingRequest
-	(*UpdateSpaceNotificationSettingRequest)(nil), // 34: google.chat.v1.UpdateSpaceNotificationSettingRequest
-	(*CreateSectionRequest)(nil),                  // 35: google.chat.v1.CreateSectionRequest
-	(*DeleteSectionRequest)(nil),                  // 36: google.chat.v1.DeleteSectionRequest
-	(*UpdateSectionRequest)(nil),                  // 37: google.chat.v1.UpdateSectionRequest
-	(*ListSectionsRequest)(nil),                   // 38: google.chat.v1.ListSectionsRequest
-	(*PositionSectionRequest)(nil),                // 39: google.chat.v1.PositionSectionRequest
-	(*ListSectionItemsRequest)(nil),               // 40: google.chat.v1.ListSectionItemsRequest
-	(*MoveSectionItemRequest)(nil),                // 41: google.chat.v1.MoveSectionItemRequest
-	(*Message)(nil),                               // 42: google.chat.v1.Message
-	(*ListMessagesResponse)(nil),                  // 43: google.chat.v1.ListMessagesResponse
-	(*ListMembershipsResponse)(nil),               // 44: google.chat.v1.ListMembershipsResponse
-	(*Membership)(nil),                            // 45: google.chat.v1.Membership
-	(*emptypb.Empty)(nil),                         // 46: google.protobuf.Empty
-	(*Attachment)(nil),                            // 47: google.chat.v1.Attachment
-	(*UploadAttachmentResponse)(nil),              // 48: google.chat.v1.UploadAttachmentResponse
-	(*ListSpacesResponse)(nil),                    // 49: google.chat.v1.ListSpacesResponse
-	(*SearchSpacesResponse)(nil),                  // 50: google.chat.v1.SearchSpacesResponse
-	(*Space)(nil),                                 // 51: google.chat.v1.Space
-	(*CompleteImportSpaceResponse)(nil),           // 52: google.chat.v1.CompleteImportSpaceResponse
-	(*Reaction)(nil),                              // 53: google.chat.v1.Reaction
-	(*ListReactionsResponse)(nil),                 // 54: google.chat.v1.ListReactionsResponse
-	(*CustomEmoji)(nil),                           // 55: google.chat.v1.CustomEmoji
-	(*ListCustomEmojisResponse)(nil),              // 56: google.chat.v1.ListCustomEmojisResponse
-	(*SpaceReadState)(nil),                        // 57: google.chat.v1.SpaceReadState
-	(*ThreadReadState)(nil),                       // 58: google.chat.v1.ThreadReadState
-	(*SpaceEvent)(nil),                            // 59: google.chat.v1.SpaceEvent
-	(*ListSpaceEventsResponse)(nil),               // 60: google.chat.v1.ListSpaceEventsResponse
-	(*SpaceNotificationSetting)(nil),              // 61: google.chat.v1.SpaceNotificationSetting
-	(*Section)(nil),                               // 62: google.chat.v1.Section
-	(*ListSectionsResponse)(nil),                  // 63: google.chat.v1.ListSectionsResponse
-	(*PositionSectionResponse)(nil),               // 64: google.chat.v1.PositionSectionResponse
-	(*ListSectionItemsResponse)(nil),              // 65: google.chat.v1.ListSectionItemsResponse
-	(*MoveSectionItemResponse)(nil),               // 66: google.chat.v1.MoveSectionItemResponse
+	(*FindGroupChatsRequest)(nil),                 // 18: google.chat.v1.FindGroupChatsRequest
+	(*CreateMembershipRequest)(nil),               // 19: google.chat.v1.CreateMembershipRequest
+	(*UpdateMembershipRequest)(nil),               // 20: google.chat.v1.UpdateMembershipRequest
+	(*DeleteMembershipRequest)(nil),               // 21: google.chat.v1.DeleteMembershipRequest
+	(*CreateReactionRequest)(nil),                 // 22: google.chat.v1.CreateReactionRequest
+	(*ListReactionsRequest)(nil),                  // 23: google.chat.v1.ListReactionsRequest
+	(*DeleteReactionRequest)(nil),                 // 24: google.chat.v1.DeleteReactionRequest
+	(*CreateCustomEmojiRequest)(nil),              // 25: google.chat.v1.CreateCustomEmojiRequest
+	(*GetCustomEmojiRequest)(nil),                 // 26: google.chat.v1.GetCustomEmojiRequest
+	(*ListCustomEmojisRequest)(nil),               // 27: google.chat.v1.ListCustomEmojisRequest
+	(*DeleteCustomEmojiRequest)(nil),              // 28: google.chat.v1.DeleteCustomEmojiRequest
+	(*GetSpaceReadStateRequest)(nil),              // 29: google.chat.v1.GetSpaceReadStateRequest
+	(*UpdateSpaceReadStateRequest)(nil),           // 30: google.chat.v1.UpdateSpaceReadStateRequest
+	(*GetThreadReadStateRequest)(nil),             // 31: google.chat.v1.GetThreadReadStateRequest
+	(*GetSpaceEventRequest)(nil),                  // 32: google.chat.v1.GetSpaceEventRequest
+	(*ListSpaceEventsRequest)(nil),                // 33: google.chat.v1.ListSpaceEventsRequest
+	(*GetSpaceNotificationSettingRequest)(nil),    // 34: google.chat.v1.GetSpaceNotificationSettingRequest
+	(*UpdateSpaceNotificationSettingRequest)(nil), // 35: google.chat.v1.UpdateSpaceNotificationSettingRequest
+	(*CreateSectionRequest)(nil),                  // 36: google.chat.v1.CreateSectionRequest
+	(*DeleteSectionRequest)(nil),                  // 37: google.chat.v1.DeleteSectionRequest
+	(*UpdateSectionRequest)(nil),                  // 38: google.chat.v1.UpdateSectionRequest
+	(*ListSectionsRequest)(nil),                   // 39: google.chat.v1.ListSectionsRequest
+	(*PositionSectionRequest)(nil),                // 40: google.chat.v1.PositionSectionRequest
+	(*ListSectionItemsRequest)(nil),               // 41: google.chat.v1.ListSectionItemsRequest
+	(*MoveSectionItemRequest)(nil),                // 42: google.chat.v1.MoveSectionItemRequest
+	(*Message)(nil),                               // 43: google.chat.v1.Message
+	(*ListMessagesResponse)(nil),                  // 44: google.chat.v1.ListMessagesResponse
+	(*ListMembershipsResponse)(nil),               // 45: google.chat.v1.ListMembershipsResponse
+	(*Membership)(nil),                            // 46: google.chat.v1.Membership
+	(*emptypb.Empty)(nil),                         // 47: google.protobuf.Empty
+	(*Attachment)(nil),                            // 48: google.chat.v1.Attachment
+	(*UploadAttachmentResponse)(nil),              // 49: google.chat.v1.UploadAttachmentResponse
+	(*ListSpacesResponse)(nil),                    // 50: google.chat.v1.ListSpacesResponse
+	(*SearchSpacesResponse)(nil),                  // 51: google.chat.v1.SearchSpacesResponse
+	(*Space)(nil),                                 // 52: google.chat.v1.Space
+	(*CompleteImportSpaceResponse)(nil),           // 53: google.chat.v1.CompleteImportSpaceResponse
+	(*FindGroupChatsResponse)(nil),                // 54: google.chat.v1.FindGroupChatsResponse
+	(*Reaction)(nil),                              // 55: google.chat.v1.Reaction
+	(*ListReactionsResponse)(nil),                 // 56: google.chat.v1.ListReactionsResponse
+	(*CustomEmoji)(nil),                           // 57: google.chat.v1.CustomEmoji
+	(*ListCustomEmojisResponse)(nil),              // 58: google.chat.v1.ListCustomEmojisResponse
+	(*SpaceReadState)(nil),                        // 59: google.chat.v1.SpaceReadState
+	(*ThreadReadState)(nil),                       // 60: google.chat.v1.ThreadReadState
+	(*SpaceEvent)(nil),                            // 61: google.chat.v1.SpaceEvent
+	(*ListSpaceEventsResponse)(nil),               // 62: google.chat.v1.ListSpaceEventsResponse
+	(*SpaceNotificationSetting)(nil),              // 63: google.chat.v1.SpaceNotificationSetting
+	(*Section)(nil),                               // 64: google.chat.v1.Section
+	(*ListSectionsResponse)(nil),                  // 65: google.chat.v1.ListSectionsResponse
+	(*PositionSectionResponse)(nil),               // 66: google.chat.v1.PositionSectionResponse
+	(*ListSectionItemsResponse)(nil),              // 67: google.chat.v1.ListSectionItemsResponse
+	(*MoveSectionItemResponse)(nil),               // 68: google.chat.v1.MoveSectionItemResponse
 }
 var file_google_chat_v1_chat_service_proto_depIdxs = []int32{
 	0,  // 0: google.chat.v1.ChatService.CreateMessage:input_type -> google.chat.v1.CreateMessageRequest
@@ -182,74 +185,76 @@ var file_google_chat_v1_chat_service_proto_depIdxs = []int32{
 	15, // 15: google.chat.v1.ChatService.DeleteSpace:input_type -> google.chat.v1.DeleteSpaceRequest
 	16, // 16: google.chat.v1.ChatService.CompleteImportSpace:input_type -> google.chat.v1.CompleteImportSpaceRequest
 	17, // 17: google.chat.v1.ChatService.FindDirectMessage:input_type -> google.chat.v1.FindDirectMessageRequest
-	18, // 18: google.chat.v1.ChatService.CreateMembership:input_type -> google.chat.v1.CreateMembershipRequest
-	19, // 19: google.chat.v1.ChatService.UpdateMembership:input_type -> google.chat.v1.UpdateMembershipRequest
-	20, // 20: google.chat.v1.ChatService.DeleteMembership:input_type -> google.chat.v1.DeleteMembershipRequest
-	21, // 21: google.chat.v1.ChatService.CreateReaction:input_type -> google.chat.v1.CreateReactionRequest
-	22, // 22: google.chat.v1.ChatService.ListReactions:input_type -> google.chat.v1.ListReactionsRequest
-	23, // 23: google.chat.v1.ChatService.DeleteReaction:input_type -> google.chat.v1.DeleteReactionRequest
-	24, // 24: google.chat.v1.ChatService.CreateCustomEmoji:input_type -> google.chat.v1.CreateCustomEmojiRequest
-	25, // 25: google.chat.v1.ChatService.GetCustomEmoji:input_type -> google.chat.v1.GetCustomEmojiRequest
-	26, // 26: google.chat.v1.ChatService.ListCustomEmojis:input_type -> google.chat.v1.ListCustomEmojisRequest
-	27, // 27: google.chat.v1.ChatService.DeleteCustomEmoji:input_type -> google.chat.v1.DeleteCustomEmojiRequest
-	28, // 28: google.chat.v1.ChatService.GetSpaceReadState:input_type -> google.chat.v1.GetSpaceReadStateRequest
-	29, // 29: google.chat.v1.ChatService.UpdateSpaceReadState:input_type -> google.chat.v1.UpdateSpaceReadStateRequest
-	30, // 30: google.chat.v1.ChatService.GetThreadReadState:input_type -> google.chat.v1.GetThreadReadStateRequest
-	31, // 31: google.chat.v1.ChatService.GetSpaceEvent:input_type -> google.chat.v1.GetSpaceEventRequest
-	32, // 32: google.chat.v1.ChatService.ListSpaceEvents:input_type -> google.chat.v1.ListSpaceEventsRequest
-	33, // 33: google.chat.v1.ChatService.GetSpaceNotificationSetting:input_type -> google.chat.v1.GetSpaceNotificationSettingRequest
-	34, // 34: google.chat.v1.ChatService.UpdateSpaceNotificationSetting:input_type -> google.chat.v1.UpdateSpaceNotificationSettingRequest
-	35, // 35: google.chat.v1.ChatService.CreateSection:input_type -> google.chat.v1.CreateSectionRequest
-	36, // 36: google.chat.v1.ChatService.DeleteSection:input_type -> google.chat.v1.DeleteSectionRequest
-	37, // 37: google.chat.v1.ChatService.UpdateSection:input_type -> google.chat.v1.UpdateSectionRequest
-	38, // 38: google.chat.v1.ChatService.ListSections:input_type -> google.chat.v1.ListSectionsRequest
-	39, // 39: google.chat.v1.ChatService.PositionSection:input_type -> google.chat.v1.PositionSectionRequest
-	40, // 40: google.chat.v1.ChatService.ListSectionItems:input_type -> google.chat.v1.ListSectionItemsRequest
-	41, // 41: google.chat.v1.ChatService.MoveSectionItem:input_type -> google.chat.v1.MoveSectionItemRequest
-	42, // 42: google.chat.v1.ChatService.CreateMessage:output_type -> google.chat.v1.Message
-	43, // 43: google.chat.v1.ChatService.ListMessages:output_type -> google.chat.v1.ListMessagesResponse
-	44, // 44: google.chat.v1.ChatService.ListMemberships:output_type -> google.chat.v1.ListMembershipsResponse
-	45, // 45: google.chat.v1.ChatService.GetMembership:output_type -> google.chat.v1.Membership
-	42, // 46: google.chat.v1.ChatService.GetMessage:output_type -> google.chat.v1.Message
-	42, // 47: google.chat.v1.ChatService.UpdateMessage:output_type -> google.chat.v1.Message
-	46, // 48: google.chat.v1.ChatService.DeleteMessage:output_type -> google.protobuf.Empty
-	47, // 49: google.chat.v1.ChatService.GetAttachment:output_type -> google.chat.v1.Attachment
-	48, // 50: google.chat.v1.ChatService.UploadAttachment:output_type -> google.chat.v1.UploadAttachmentResponse
-	49, // 51: google.chat.v1.ChatService.ListSpaces:output_type -> google.chat.v1.ListSpacesResponse
-	50, // 52: google.chat.v1.ChatService.SearchSpaces:output_type -> google.chat.v1.SearchSpacesResponse
-	51, // 53: google.chat.v1.ChatService.GetSpace:output_type -> google.chat.v1.Space
-	51, // 54: google.chat.v1.ChatService.CreateSpace:output_type -> google.chat.v1.Space
-	51, // 55: google.chat.v1.ChatService.SetUpSpace:output_type -> google.chat.v1.Space
-	51, // 56: google.chat.v1.ChatService.UpdateSpace:output_type -> google.chat.v1.Space
-	46, // 57: google.chat.v1.ChatService.DeleteSpace:output_type -> google.protobuf.Empty
-	52, // 58: google.chat.v1.ChatService.CompleteImportSpace:output_type -> google.chat.v1.CompleteImportSpaceResponse
-	51, // 59: google.chat.v1.ChatService.FindDirectMessage:output_type -> google.chat.v1.Space
-	45, // 60: google.chat.v1.ChatService.CreateMembership:output_type -> google.chat.v1.Membership
-	45, // 61: google.chat.v1.ChatService.UpdateMembership:output_type -> google.chat.v1.Membership
-	45, // 62: google.chat.v1.ChatService.DeleteMembership:output_type -> google.chat.v1.Membership
-	53, // 63: google.chat.v1.ChatService.CreateReaction:output_type -> google.chat.v1.Reaction
-	54, // 64: google.chat.v1.ChatService.ListReactions:output_type -> google.chat.v1.ListReactionsResponse
-	46, // 65: google.chat.v1.ChatService.DeleteReaction:output_type -> google.protobuf.Empty
-	55, // 66: google.chat.v1.ChatService.CreateCustomEmoji:output_type -> google.chat.v1.CustomEmoji
-	55, // 67: google.chat.v1.ChatService.GetCustomEmoji:output_type -> google.chat.v1.CustomEmoji
-	56, // 68: google.chat.v1.ChatService.ListCustomEmojis:output_type -> google.chat.v1.ListCustomEmojisResponse
-	46, // 69: google.chat.v1.ChatService.DeleteCustomEmoji:output_type -> google.protobuf.Empty
-	57, // 70: google.chat.v1.ChatService.GetSpaceReadState:output_type -> google.chat.v1.SpaceReadState
-	57, // 71: google.chat.v1.ChatService.UpdateSpaceReadState:output_type -> google.chat.v1.SpaceReadState
-	58, // 72: google.chat.v1.ChatService.GetThreadReadState:output_type -> google.chat.v1.ThreadReadState
-	59, // 73: google.chat.v1.ChatService.GetSpaceEvent:output_type -> google.chat.v1.SpaceEvent
-	60, // 74: google.chat.v1.ChatService.ListSpaceEvents:output_type -> google.chat.v1.ListSpaceEventsResponse
-	61, // 75: google.chat.v1.ChatService.GetSpaceNotificationSetting:output_type -> google.chat.v1.SpaceNotificationSetting
-	61, // 76: google.chat.v1.ChatService.UpdateSpaceNotificationSetting:output_type -> google.chat.v1.SpaceNotificationSetting
-	62, // 77: google.chat.v1.ChatService.CreateSection:output_type -> google.chat.v1.Section
-	46, // 78: google.chat.v1.ChatService.DeleteSection:output_type -> google.protobuf.Empty
-	62, // 79: google.chat.v1.ChatService.UpdateSection:output_type -> google.chat.v1.Section
-	63, // 80: google.chat.v1.ChatService.ListSections:output_type -> google.chat.v1.ListSectionsResponse
-	64, // 81: google.chat.v1.ChatService.PositionSection:output_type -> google.chat.v1.PositionSectionResponse
-	65, // 82: google.chat.v1.ChatService.ListSectionItems:output_type -> google.chat.v1.ListSectionItemsResponse
-	66, // 83: google.chat.v1.ChatService.MoveSectionItem:output_type -> google.chat.v1.MoveSectionItemResponse
-	42, // [42:84] is the sub-list for method output_type
-	0,  // [0:42] is the sub-list for method input_type
+	18, // 18: google.chat.v1.ChatService.FindGroupChats:input_type -> google.chat.v1.FindGroupChatsRequest
+	19, // 19: google.chat.v1.ChatService.CreateMembership:input_type -> google.chat.v1.CreateMembershipRequest
+	20, // 20: google.chat.v1.ChatService.UpdateMembership:input_type -> google.chat.v1.UpdateMembershipRequest
+	21, // 21: google.chat.v1.ChatService.DeleteMembership:input_type -> google.chat.v1.DeleteMembershipRequest
+	22, // 22: google.chat.v1.ChatService.CreateReaction:input_type -> google.chat.v1.CreateReactionRequest
+	23, // 23: google.chat.v1.ChatService.ListReactions:input_type -> google.chat.v1.ListReactionsRequest
+	24, // 24: google.chat.v1.ChatService.DeleteReaction:input_type -> google.chat.v1.DeleteReactionRequest
+	25, // 25: google.chat.v1.ChatService.CreateCustomEmoji:input_type -> google.chat.v1.CreateCustomEmojiRequest
+	26, // 26: google.chat.v1.ChatService.GetCustomEmoji:input_type -> google.chat.v1.GetCustomEmojiRequest
+	27, // 27: google.chat.v1.ChatService.ListCustomEmojis:input_type -> google.chat.v1.ListCustomEmojisRequest
+	28, // 28: google.chat.v1.ChatService.DeleteCustomEmoji:input_type -> google.chat.v1.DeleteCustomEmojiRequest
+	29, // 29: google.chat.v1.ChatService.GetSpaceReadState:input_type -> google.chat.v1.GetSpaceReadStateRequest
+	30, // 30: google.chat.v1.ChatService.UpdateSpaceReadState:input_type -> google.chat.v1.UpdateSpaceReadStateRequest
+	31, // 31: google.chat.v1.ChatService.GetThreadReadState:input_type -> google.chat.v1.GetThreadReadStateRequest
+	32, // 32: google.chat.v1.ChatService.GetSpaceEvent:input_type -> google.chat.v1.GetSpaceEventRequest
+	33, // 33: google.chat.v1.ChatService.ListSpaceEvents:input_type -> google.chat.v1.ListSpaceEventsRequest
+	34, // 34: google.chat.v1.ChatService.GetSpaceNotificationSetting:input_type -> google.chat.v1.GetSpaceNotificationSettingRequest
+	35, // 35: google.chat.v1.ChatService.UpdateSpaceNotificationSetting:input_type -> google.chat.v1.UpdateSpaceNotificationSettingRequest
+	36, // 36: google.chat.v1.ChatService.CreateSection:input_type -> google.chat.v1.CreateSectionRequest
+	37, // 37: google.chat.v1.ChatService.DeleteSection:input_type -> google.chat.v1.DeleteSectionRequest
+	38, // 38: google.chat.v1.ChatService.UpdateSection:input_type -> google.chat.v1.UpdateSectionRequest
+	39, // 39: google.chat.v1.ChatService.ListSections:input_type -> google.chat.v1.ListSectionsRequest
+	40, // 40: google.chat.v1.ChatService.PositionSection:input_type -> google.chat.v1.PositionSectionRequest
+	41, // 41: google.chat.v1.ChatService.ListSectionItems:input_type -> google.chat.v1.ListSectionItemsRequest
+	42, // 42: google.chat.v1.ChatService.MoveSectionItem:input_type -> google.chat.v1.MoveSectionItemRequest
+	43, // 43: google.chat.v1.ChatService.CreateMessage:output_type -> google.chat.v1.Message
+	44, // 44: google.chat.v1.ChatService.ListMessages:output_type -> google.chat.v1.ListMessagesResponse
+	45, // 45: google.chat.v1.ChatService.ListMemberships:output_type -> google.chat.v1.ListMembershipsResponse
+	46, // 46: google.chat.v1.ChatService.GetMembership:output_type -> google.chat.v1.Membership
+	43, // 47: google.chat.v1.ChatService.GetMessage:output_type -> google.chat.v1.Message
+	43, // 48: google.chat.v1.ChatService.UpdateMessage:output_type -> google.chat.v1.Message
+	47, // 49: google.chat.v1.ChatService.DeleteMessage:output_type -> google.protobuf.Empty
+	48, // 50: google.chat.v1.ChatService.GetAttachment:output_type -> google.chat.v1.Attachment
+	49, // 51: google.chat.v1.ChatService.UploadAttachment:output_type -> google.chat.v1.UploadAttachmentResponse
+	50, // 52: google.chat.v1.ChatService.ListSpaces:output_type -> google.chat.v1.ListSpacesResponse
+	51, // 53: google.chat.v1.ChatService.SearchSpaces:output_type -> google.chat.v1.SearchSpacesResponse
+	52, // 54: google.chat.v1.ChatService.GetSpace:output_type -> google.chat.v1.Space
+	52, // 55: google.chat.v1.ChatService.CreateSpace:output_type -> google.chat.v1.Space
+	52, // 56: google.chat.v1.ChatService.SetUpSpace:output_type -> google.chat.v1.Space
+	52, // 57: google.chat.v1.ChatService.UpdateSpace:output_type -> google.chat.v1.Space
+	47, // 58: google.chat.v1.ChatService.DeleteSpace:output_type -> google.protobuf.Empty
+	53, // 59: google.chat.v1.ChatService.CompleteImportSpace:output_type -> google.chat.v1.CompleteImportSpaceResponse
+	52, // 60: google.chat.v1.ChatService.FindDirectMessage:output_type -> google.chat.v1.Space
+	54, // 61: google.chat.v1.ChatService.FindGroupChats:output_type -> google.chat.v1.FindGroupChatsResponse
+	46, // 62: google.chat.v1.ChatService.CreateMembership:output_type -> google.chat.v1.Membership
+	46, // 63: google.chat.v1.ChatService.UpdateMembership:output_type -> google.chat.v1.Membership
+	46, // 64: google.chat.v1.ChatService.DeleteMembership:output_type -> google.chat.v1.Membership
+	55, // 65: google.chat.v1.ChatService.CreateReaction:output_type -> google.chat.v1.Reaction
+	56, // 66: google.chat.v1.ChatService.ListReactions:output_type -> google.chat.v1.ListReactionsResponse
+	47, // 67: google.chat.v1.ChatService.DeleteReaction:output_type -> google.protobuf.Empty
+	57, // 68: google.chat.v1.ChatService.CreateCustomEmoji:output_type -> google.chat.v1.CustomEmoji
+	57, // 69: google.chat.v1.ChatService.GetCustomEmoji:output_type -> google.chat.v1.CustomEmoji
+	58, // 70: google.chat.v1.ChatService.ListCustomEmojis:output_type -> google.chat.v1.ListCustomEmojisResponse
+	47, // 71: google.chat.v1.ChatService.DeleteCustomEmoji:output_type -> google.protobuf.Empty
+	59, // 72: google.chat.v1.ChatService.GetSpaceReadState:output_type -> google.chat.v1.SpaceReadState
+	59, // 73: google.chat.v1.ChatService.UpdateSpaceReadState:output_type -> google.chat.v1.SpaceReadState
+	60, // 74: google.chat.v1.ChatService.GetThreadReadState:output_type -> google.chat.v1.ThreadReadState
+	61, // 75: google.chat.v1.ChatService.GetSpaceEvent:output_type -> google.chat.v1.SpaceEvent
+	62, // 76: google.chat.v1.ChatService.ListSpaceEvents:output_type -> google.chat.v1.ListSpaceEventsResponse
+	63, // 77: google.chat.v1.ChatService.GetSpaceNotificationSetting:output_type -> google.chat.v1.SpaceNotificationSetting
+	63, // 78: google.chat.v1.ChatService.UpdateSpaceNotificationSetting:output_type -> google.chat.v1.SpaceNotificationSetting
+	64, // 79: google.chat.v1.ChatService.CreateSection:output_type -> google.chat.v1.Section
+	47, // 80: google.chat.v1.ChatService.DeleteSection:output_type -> google.protobuf.Empty
+	64, // 81: google.chat.v1.ChatService.UpdateSection:output_type -> google.chat.v1.Section
+	65, // 82: google.chat.v1.ChatService.ListSections:output_type -> google.chat.v1.ListSectionsResponse
+	66, // 83: google.chat.v1.ChatService.PositionSection:output_type -> google.chat.v1.PositionSectionResponse
+	67, // 84: google.chat.v1.ChatService.ListSectionItems:output_type -> google.chat.v1.ListSectionItemsResponse
+	68, // 85: google.chat.v1.ChatService.MoveSectionItem:output_type -> google.chat.v1.MoveSectionItemResponse
+	43, // [43:86] is the sub-list for method output_type
+	0,  // [0:43] is the sub-list for method input_type
 	0,  // [0:0] is the sub-list for extension type_name
 	0,  // [0:0] is the sub-list for extension extendee
 	0,  // [0:0] is the sub-list for field type_name

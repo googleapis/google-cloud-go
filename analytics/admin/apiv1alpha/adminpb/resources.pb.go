@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -421,6 +421,8 @@ const (
 	ChangeHistoryResourceType_SUBPROPERTY_SYNC_CONFIG ChangeHistoryResourceType = 33
 	// ReportingIdentitySettings resource
 	ChangeHistoryResourceType_REPORTING_IDENTITY_SETTINGS ChangeHistoryResourceType = 34
+	// UserProvidedDataSettings resource
+	ChangeHistoryResourceType_USER_PROVIDED_DATA_SETTINGS ChangeHistoryResourceType = 35
 )
 
 // Enum value maps for ChangeHistoryResourceType.
@@ -456,6 +458,7 @@ var (
 		32: "REPORTING_DATA_ANNOTATION",
 		33: "SUBPROPERTY_SYNC_CONFIG",
 		34: "REPORTING_IDENTITY_SETTINGS",
+		35: "USER_PROVIDED_DATA_SETTINGS",
 	}
 	ChangeHistoryResourceType_value = map[string]int32{
 		"CHANGE_HISTORY_RESOURCE_TYPE_UNSPECIFIED": 0,
@@ -488,6 +491,7 @@ var (
 		"REPORTING_DATA_ANNOTATION":                  32,
 		"SUBPROPERTY_SYNC_CONFIG":                    33,
 		"REPORTING_IDENTITY_SETTINGS":                34,
+		"USER_PROVIDED_DATA_SETTINGS":                35,
 	}
 )
 
@@ -1929,7 +1933,7 @@ func (ReportingIdentitySettings_ReportingIdentity) EnumDescriptor() ([]byte, []i
 // A resource message representing a Google Analytics account.
 type Account struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Output only. Resource name of this account.
+	// Identifier. Resource name of this account.
 	// Format: accounts/{account}
 	// Example: "accounts/100"
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -2034,7 +2038,7 @@ func (x *Account) GetGmpOrganization() string {
 // A resource message representing a Google Analytics property.
 type Property struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Output only. Resource name of this property.
+	// Identifier. Resource name of this property.
 	// Format: properties/{property_id}
 	// Example: "properties/1000"
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -2225,7 +2229,7 @@ type DataStream struct {
 	//	*DataStream_AndroidAppStreamData_
 	//	*DataStream_IosAppStreamData_
 	StreamData isDataStream_StreamData `protobuf_oneof:"stream_data"`
-	// Output only. Resource name of this Data Stream.
+	// Identifier. Resource name of this Data Stream.
 	// Format: properties/{property_id}/dataStreams/{stream_id}
 	// Example: "properties/1000/dataStreams/2000"
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -2375,7 +2379,7 @@ func (*DataStream_IosAppStreamData_) isDataStream_StreamData() {}
 // A link between a Google Analytics property and a Firebase project.
 type FirebaseLink struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Output only. Example format: properties/1234/firebaseLinks/5678
+	// Identifier. Example format: properties/1234/firebaseLinks/5678
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Immutable. Firebase project resource name. When creating a FirebaseLink,
 	// you may provide this resource name using either a project number or project
@@ -2446,7 +2450,7 @@ func (x *FirebaseLink) GetCreateTime() *timestamppb.Timestamp {
 // DataStream. Only present for web DataStream resources.
 type GlobalSiteTag struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Output only. Resource name for this GlobalSiteTag resource.
+	// Identifier. Resource name for this GlobalSiteTag resource.
 	// Format: properties/{property_id}/dataStreams/{stream_id}/globalSiteTag
 	// Example: "properties/123/dataStreams/456/globalSiteTag"
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -2504,7 +2508,7 @@ func (x *GlobalSiteTag) GetSnippet() string {
 // A link between a Google Analytics property and a Google Ads account.
 type GoogleAdsLink struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Output only. Format:
+	// Identifier. Format:
 	// properties/{propertyId}/googleAdsLinks/{googleAdsLinkId}
 	//
 	// Note: googleAdsLinkId is not the Google Ads customer ID.
@@ -2612,7 +2616,7 @@ func (x *GoogleAdsLink) GetCreatorEmailAddress() string {
 // account.
 type DataSharingSettings struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Output only. Resource name.
+	// Identifier. Resource name.
 	// Format: accounts/{account}/dataSharingSettings
 	// Example: "accounts/1000/dataSharingSettings"
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -2732,7 +2736,7 @@ func (x *DataSharingSettings) GetSharingWithOthersEnabled() bool {
 // all its child Google Analytics properties.
 type AccountSummary struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Resource name for this account summary.
+	// Identifier. Resource name for this account summary.
 	// Format: accountSummaries/{account_id}
 	// Example: "accountSummaries/1000"
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -2888,8 +2892,8 @@ func (x *PropertySummary) GetParent() string {
 // A secret value used for sending hits to Measurement Protocol.
 type MeasurementProtocolSecret struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Output only. Resource name of this secret. This secret may be a child of
-	// any type of stream. Format:
+	// Identifier. Resource name of this secret. This secret may be a child of any
+	// type of stream. Format:
 	// properties/{property}/dataStreams/{dataStream}/measurementProtocolSecrets/{measurementProtocolSecret}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. Human-readable display name for this secret.
@@ -2956,7 +2960,7 @@ func (x *MeasurementProtocolSecret) GetSecretValue() string {
 // SKAdNetwork conversion value schema of an iOS stream.
 type SKAdNetworkConversionValueSchema struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Output only. Resource name of the schema. This will be child of ONLY an iOS
+	// Identifier. Resource name of the schema. This will be child of ONLY an iOS
 	// stream, and there can be at most one such child under an iOS stream.
 	// Format:
 	// properties/{property}/dataStreams/{dataStream}/sKAdNetworkConversionValueSchema
@@ -3485,7 +3489,7 @@ func (x *ChangeHistoryChange) GetResourceAfterChange() *ChangeHistoryChange_Chan
 // advertiser.
 type DisplayVideo360AdvertiserLink struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Output only. The resource name for this DisplayVideo360AdvertiserLink
+	// Identifier. The resource name for this DisplayVideo360AdvertiserLink
 	// resource. Format:
 	// properties/{propertyId}/displayVideo360AdvertiserLinks/{linkId}
 	//
@@ -3593,7 +3597,7 @@ func (x *DisplayVideo360AdvertiserLink) GetCostDataSharingEnabled() *wrapperspb.
 // admins approve outbound proposals.
 type DisplayVideo360AdvertiserLinkProposal struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Output only. The resource name for this
+	// Identifier. The resource name for this
 	// DisplayVideo360AdvertiserLinkProposal resource. Format:
 	// properties/{propertyId}/displayVideo360AdvertiserLinkProposals/{proposalId}
 	//
@@ -3716,7 +3720,7 @@ func (x *DisplayVideo360AdvertiserLinkProposal) GetCostDataSharingEnabled() *wra
 // A link between a Google Analytics property and a Search Ads 360 entity.
 type SearchAds360Link struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Output only. The resource name for this SearchAds360Link resource.
+	// Identifier. The resource name for this SearchAds360Link resource.
 	// Format: properties/{propertyId}/searchAds360Links/{linkId}
 	//
 	// Note: linkId is not the Search Ads 360 advertiser ID
@@ -3894,7 +3898,7 @@ func (x *LinkProposalStatusDetails) GetLinkProposalState() LinkProposalState {
 // A conversion event in a Google Analytics property.
 type ConversionEvent struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Output only. Resource name of this conversion event.
+	// Identifier. Resource name of this conversion event.
 	// Format: properties/{property}/conversionEvents/{conversion_event}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Immutable. The event name for this conversion event.
@@ -4178,7 +4182,7 @@ func (x *GoogleSignalsSettings) GetConsent() GoogleSignalsConsent {
 // A definition for a CustomDimension.
 type CustomDimension struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Output only. Resource name for this CustomDimension resource.
+	// Identifier. Resource name for this CustomDimension resource.
 	// Format: properties/{property}/customDimensions/{customDimension}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. Immutable. Tagging parameter name for this custom dimension.
@@ -4289,7 +4293,7 @@ func (x *CustomDimension) GetDisallowAdsPersonalization() bool {
 // A definition for a custom metric.
 type CustomMetric struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Output only. Resource name for this CustomMetric resource.
+	// Identifier. Resource name for this CustomMetric resource.
 	// Format: properties/{property}/customMetrics/{customMetric}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. Immutable. Tagging name for this custom metric.
@@ -4403,7 +4407,7 @@ func (x *CustomMetric) GetRestrictedMetricType() []CustomMetric_RestrictedMetric
 // A definition for a calculated metric.
 type CalculatedMetric struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Output only. Resource name for this CalculatedMetric.
+	// Identifier. Resource name for this CalculatedMetric.
 	// Format: 'properties/{property_id}/calculatedMetrics/{calculated_metric_id}'
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. Description for this calculated metric.
@@ -4528,7 +4532,7 @@ func (x *CalculatedMetric) GetInvalidMetricReference() bool {
 // Settings values for data retention. This is a singleton resource.
 type DataRetentionSettings struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Output only. Resource name for this DataRetentionSetting resource.
+	// Identifier. Resource name for this DataRetentionSetting resource.
 	// Format: properties/{property}/dataRetentionSettings
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. The length of time that event-level data is retained.
@@ -5575,6 +5579,75 @@ func (x *ReportingIdentitySettings) GetReportingIdentity() ReportingIdentitySett
 	return ReportingIdentitySettings_IDENTITY_BLENDING_STRATEGY_UNSPECIFIED
 }
 
+// Configuration for user-provided data collection. This is a singleton resource
+// for a Google Analytics property.
+type UserProvidedDataSettings struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Identifier. Resource name of this setting.
+	// Format: properties/{property}/userProvidedDataSettings
+	// Example: "properties/1000/userProvidedDataSettings"
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Optional. Whether this property accepts user-provided data sent to it.
+	UserProvidedDataCollectionEnabled bool `protobuf:"varint,2,opt,name=user_provided_data_collection_enabled,json=userProvidedDataCollectionEnabled,proto3" json:"user_provided_data_collection_enabled,omitempty"`
+	// Optional. Whether this property allows a Google Tag to automatically
+	// collect user-provided data from your website. This setting only takes
+	// effect if `user_provided_data_collection_enabled` is also true.
+	AutomaticallyDetectedDataCollectionEnabled bool `protobuf:"varint,3,opt,name=automatically_detected_data_collection_enabled,json=automaticallyDetectedDataCollectionEnabled,proto3" json:"automatically_detected_data_collection_enabled,omitempty"`
+	unknownFields                              protoimpl.UnknownFields
+	sizeCache                                  protoimpl.SizeCache
+}
+
+func (x *UserProvidedDataSettings) Reset() {
+	*x = UserProvidedDataSettings{}
+	mi := &file_google_analytics_admin_v1alpha_resources_proto_msgTypes[37]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UserProvidedDataSettings) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UserProvidedDataSettings) ProtoMessage() {}
+
+func (x *UserProvidedDataSettings) ProtoReflect() protoreflect.Message {
+	mi := &file_google_analytics_admin_v1alpha_resources_proto_msgTypes[37]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UserProvidedDataSettings.ProtoReflect.Descriptor instead.
+func (*UserProvidedDataSettings) Descriptor() ([]byte, []int) {
+	return file_google_analytics_admin_v1alpha_resources_proto_rawDescGZIP(), []int{37}
+}
+
+func (x *UserProvidedDataSettings) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *UserProvidedDataSettings) GetUserProvidedDataCollectionEnabled() bool {
+	if x != nil {
+		return x.UserProvidedDataCollectionEnabled
+	}
+	return false
+}
+
+func (x *UserProvidedDataSettings) GetAutomaticallyDetectedDataCollectionEnabled() bool {
+	if x != nil {
+		return x.AutomaticallyDetectedDataCollectionEnabled
+	}
+	return false
+}
+
 // Data specific to web streams.
 type DataStream_WebStreamData struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -5594,7 +5667,7 @@ type DataStream_WebStreamData struct {
 
 func (x *DataStream_WebStreamData) Reset() {
 	*x = DataStream_WebStreamData{}
-	mi := &file_google_analytics_admin_v1alpha_resources_proto_msgTypes[37]
+	mi := &file_google_analytics_admin_v1alpha_resources_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5606,7 +5679,7 @@ func (x *DataStream_WebStreamData) String() string {
 func (*DataStream_WebStreamData) ProtoMessage() {}
 
 func (x *DataStream_WebStreamData) ProtoReflect() protoreflect.Message {
-	mi := &file_google_analytics_admin_v1alpha_resources_proto_msgTypes[37]
+	mi := &file_google_analytics_admin_v1alpha_resources_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5658,7 +5731,7 @@ type DataStream_AndroidAppStreamData struct {
 
 func (x *DataStream_AndroidAppStreamData) Reset() {
 	*x = DataStream_AndroidAppStreamData{}
-	mi := &file_google_analytics_admin_v1alpha_resources_proto_msgTypes[38]
+	mi := &file_google_analytics_admin_v1alpha_resources_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5670,7 +5743,7 @@ func (x *DataStream_AndroidAppStreamData) String() string {
 func (*DataStream_AndroidAppStreamData) ProtoMessage() {}
 
 func (x *DataStream_AndroidAppStreamData) ProtoReflect() protoreflect.Message {
-	mi := &file_google_analytics_admin_v1alpha_resources_proto_msgTypes[38]
+	mi := &file_google_analytics_admin_v1alpha_resources_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5715,7 +5788,7 @@ type DataStream_IosAppStreamData struct {
 
 func (x *DataStream_IosAppStreamData) Reset() {
 	*x = DataStream_IosAppStreamData{}
-	mi := &file_google_analytics_admin_v1alpha_resources_proto_msgTypes[39]
+	mi := &file_google_analytics_admin_v1alpha_resources_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5727,7 +5800,7 @@ func (x *DataStream_IosAppStreamData) String() string {
 func (*DataStream_IosAppStreamData) ProtoMessage() {}
 
 func (x *DataStream_IosAppStreamData) ProtoReflect() protoreflect.Message {
-	mi := &file_google_analytics_admin_v1alpha_resources_proto_msgTypes[39]
+	mi := &file_google_analytics_admin_v1alpha_resources_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5792,6 +5865,7 @@ type ChangeHistoryChange_ChangeHistoryResource struct {
 	//	*ChangeHistoryChange_ChangeHistoryResource_ReportingDataAnnotation
 	//	*ChangeHistoryChange_ChangeHistoryResource_SubpropertySyncConfig
 	//	*ChangeHistoryChange_ChangeHistoryResource_ReportingIdentitySettings
+	//	*ChangeHistoryChange_ChangeHistoryResource_UserProvidedDataSettings
 	Resource      isChangeHistoryChange_ChangeHistoryResource_Resource `protobuf_oneof:"resource"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -5799,7 +5873,7 @@ type ChangeHistoryChange_ChangeHistoryResource struct {
 
 func (x *ChangeHistoryChange_ChangeHistoryResource) Reset() {
 	*x = ChangeHistoryChange_ChangeHistoryResource{}
-	mi := &file_google_analytics_admin_v1alpha_resources_proto_msgTypes[40]
+	mi := &file_google_analytics_admin_v1alpha_resources_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5811,7 +5885,7 @@ func (x *ChangeHistoryChange_ChangeHistoryResource) String() string {
 func (*ChangeHistoryChange_ChangeHistoryResource) ProtoMessage() {}
 
 func (x *ChangeHistoryChange_ChangeHistoryResource) ProtoReflect() protoreflect.Message {
-	mi := &file_google_analytics_admin_v1alpha_resources_proto_msgTypes[40]
+	mi := &file_google_analytics_admin_v1alpha_resources_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6095,6 +6169,15 @@ func (x *ChangeHistoryChange_ChangeHistoryResource) GetReportingIdentitySettings
 	return nil
 }
 
+func (x *ChangeHistoryChange_ChangeHistoryResource) GetUserProvidedDataSettings() *UserProvidedDataSettings {
+	if x != nil {
+		if x, ok := x.Resource.(*ChangeHistoryChange_ChangeHistoryResource_UserProvidedDataSettings); ok {
+			return x.UserProvidedDataSettings
+		}
+	}
+	return nil
+}
+
 type isChangeHistoryChange_ChangeHistoryResource_Resource interface {
 	isChangeHistoryChange_ChangeHistoryResource_Resource()
 }
@@ -6247,6 +6330,11 @@ type ChangeHistoryChange_ChangeHistoryResource_ReportingIdentitySettings struct 
 	ReportingIdentitySettings *ReportingIdentitySettings `protobuf:"bytes,34,opt,name=reporting_identity_settings,json=reportingIdentitySettings,proto3,oneof"`
 }
 
+type ChangeHistoryChange_ChangeHistoryResource_UserProvidedDataSettings struct {
+	// A snapshot of a UserProvidedDataSettings resource in change history.
+	UserProvidedDataSettings *UserProvidedDataSettings `protobuf:"bytes,35,opt,name=user_provided_data_settings,json=userProvidedDataSettings,proto3,oneof"`
+}
+
 func (*ChangeHistoryChange_ChangeHistoryResource_Account) isChangeHistoryChange_ChangeHistoryResource_Resource() {
 }
 
@@ -6334,6 +6422,9 @@ func (*ChangeHistoryChange_ChangeHistoryResource_SubpropertySyncConfig) isChange
 func (*ChangeHistoryChange_ChangeHistoryResource_ReportingIdentitySettings) isChangeHistoryChange_ChangeHistoryResource_Resource() {
 }
 
+func (*ChangeHistoryChange_ChangeHistoryResource_UserProvidedDataSettings) isChangeHistoryChange_ChangeHistoryResource_Resource() {
+}
+
 // Defines a default value/currency for a conversion event. Both value and
 // currency must be provided.
 type ConversionEvent_DefaultConversionValue struct {
@@ -6352,7 +6443,7 @@ type ConversionEvent_DefaultConversionValue struct {
 
 func (x *ConversionEvent_DefaultConversionValue) Reset() {
 	*x = ConversionEvent_DefaultConversionValue{}
-	mi := &file_google_analytics_admin_v1alpha_resources_proto_msgTypes[41]
+	mi := &file_google_analytics_admin_v1alpha_resources_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6364,7 +6455,7 @@ func (x *ConversionEvent_DefaultConversionValue) String() string {
 func (*ConversionEvent_DefaultConversionValue) ProtoMessage() {}
 
 func (x *ConversionEvent_DefaultConversionValue) ProtoReflect() protoreflect.Message {
-	mi := &file_google_analytics_admin_v1alpha_resources_proto_msgTypes[41]
+	mi := &file_google_analytics_admin_v1alpha_resources_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6413,7 +6504,7 @@ type KeyEvent_DefaultValue struct {
 
 func (x *KeyEvent_DefaultValue) Reset() {
 	*x = KeyEvent_DefaultValue{}
-	mi := &file_google_analytics_admin_v1alpha_resources_proto_msgTypes[42]
+	mi := &file_google_analytics_admin_v1alpha_resources_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6425,7 +6516,7 @@ func (x *KeyEvent_DefaultValue) String() string {
 func (*KeyEvent_DefaultValue) ProtoMessage() {}
 
 func (x *KeyEvent_DefaultValue) ProtoReflect() protoreflect.Message {
-	mi := &file_google_analytics_admin_v1alpha_resources_proto_msgTypes[42]
+	mi := &file_google_analytics_admin_v1alpha_resources_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6473,7 +6564,7 @@ type ReportingDataAnnotation_DateRange struct {
 
 func (x *ReportingDataAnnotation_DateRange) Reset() {
 	*x = ReportingDataAnnotation_DateRange{}
-	mi := &file_google_analytics_admin_v1alpha_resources_proto_msgTypes[43]
+	mi := &file_google_analytics_admin_v1alpha_resources_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6485,7 +6576,7 @@ func (x *ReportingDataAnnotation_DateRange) String() string {
 func (*ReportingDataAnnotation_DateRange) ProtoMessage() {}
 
 func (x *ReportingDataAnnotation_DateRange) ProtoReflect() protoreflect.Message {
-	mi := &file_google_analytics_admin_v1alpha_resources_proto_msgTypes[43]
+	mi := &file_google_analytics_admin_v1alpha_resources_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6519,9 +6610,9 @@ var File_google_analytics_admin_v1alpha_resources_proto protoreflect.FileDescrip
 
 const file_google_analytics_admin_v1alpha_resources_proto_rawDesc = "" +
 	"\n" +
-	".google/analytics/admin/v1alpha/resources.proto\x12\x1egoogle.analytics.admin.v1alpha\x1a-google/analytics/admin/v1alpha/audience.proto\x1a2google/analytics/admin/v1alpha/channel_group.proto\x1a:google/analytics/admin/v1alpha/event_create_and_edit.proto\x1a6google/analytics/admin/v1alpha/expanded_data_set.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x16google/type/date.proto\"\xb5\x03\n" +
+	".google/analytics/admin/v1alpha/resources.proto\x12\x1egoogle.analytics.admin.v1alpha\x1a-google/analytics/admin/v1alpha/audience.proto\x1a2google/analytics/admin/v1alpha/channel_group.proto\x1a:google/analytics/admin/v1alpha/event_create_and_edit.proto\x1a6google/analytics/admin/v1alpha/expanded_data_set.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x16google/type/date.proto\"\xc8\x03\n" +
 	"\aAccount\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
 	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime\x12@\n" +
 	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
@@ -6531,10 +6622,10 @@ const file_google_analytics_admin_v1alpha_resources_proto_rawDesc = "" +
 	"regionCode\x12\x1d\n" +
 	"\adeleted\x18\x06 \x01(\bB\x03\xe0A\x03R\adeleted\x12e\n" +
 	"\x10gmp_organization\x18\a \x01(\tB:\xe0A\x03\xfaA4\n" +
-	"2marketingplatformadmin.googleapis.com/OrganizationR\x0fgmpOrganization:>\xeaA;\n" +
-	"%analyticsadmin.googleapis.com/Account\x12\x12accounts/{account}\"\xd3\x06\n" +
+	"2marketingplatformadmin.googleapis.com/OrganizationR\x0fgmpOrganization:Q\xeaAN\n" +
+	"%analyticsadmin.googleapis.com/Account\x12\x12accounts/{account}*\baccounts2\aaccount\"\xe9\x06\n" +
 	"\bProperty\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12V\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12V\n" +
 	"\rproperty_type\x18\x0e \x01(\x0e2,.google.analytics.admin.v1alpha.PropertyTypeB\x03\xe0A\x05R\fpropertyType\x12@\n" +
 	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime\x12@\n" +
@@ -6552,14 +6643,15 @@ const file_google_analytics_admin_v1alpha_resources_proto_rawDesc = "" +
 	"\vexpire_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"expireTime\x12G\n" +
 	"\aaccount\x18\r \x01(\tB-\xe0A\x05\xfaA'\n" +
-	"%analyticsadmin.googleapis.com/AccountR\aaccount:B\xeaA?\n" +
-	"&analyticsadmin.googleapis.com/Property\x12\x15properties/{property}\"\xbc\t\n" +
+	"%analyticsadmin.googleapis.com/AccountR\aaccount:X\xeaAU\n" +
+	"&analyticsadmin.googleapis.com/Property\x12\x15properties/{property}*\n" +
+	"properties2\bproperty\"\xd5\t\n" +
 	"\n" +
 	"DataStream\x12b\n" +
 	"\x0fweb_stream_data\x18\x06 \x01(\v28.google.analytics.admin.v1alpha.DataStream.WebStreamDataH\x00R\rwebStreamData\x12x\n" +
 	"\x17android_app_stream_data\x18\a \x01(\v2?.google.analytics.admin.v1alpha.DataStream.AndroidAppStreamDataH\x00R\x14androidAppStreamData\x12l\n" +
 	"\x13ios_app_stream_data\x18\b \x01(\v2;.google.analytics.admin.v1alpha.DataStream.IosAppStreamDataH\x00R\x10iosAppStreamData\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12U\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12U\n" +
 	"\x04type\x18\x02 \x01(\x0e29.google.analytics.admin.v1alpha.DataStream.DataStreamTypeB\x06\xe0A\x05\xe0A\x02R\x04type\x12!\n" +
 	"\fdisplay_name\x18\x03 \x01(\tR\vdisplayName\x12@\n" +
 	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
@@ -6581,21 +6673,22 @@ const file_google_analytics_admin_v1alpha_resources_proto_rawDesc = "" +
 	"\x1cDATA_STREAM_TYPE_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fWEB_DATA_STREAM\x10\x01\x12\x1b\n" +
 	"\x17ANDROID_APP_DATA_STREAM\x10\x02\x12\x17\n" +
-	"\x13IOS_APP_DATA_STREAM\x10\x03:^\xeaA[\n" +
-	"(analyticsadmin.googleapis.com/DataStream\x12/properties/{property}/dataStreams/{data_stream}B\r\n" +
-	"\vstream_data\"\xee\x01\n" +
+	"\x13IOS_APP_DATA_STREAM\x10\x03:w\xeaAt\n" +
+	"(analyticsadmin.googleapis.com/DataStream\x12/properties/{property}/dataStreams/{data_stream}*\vdataStreams2\n" +
+	"dataStreamB\r\n" +
+	"\vstream_data\"\x8c\x02\n" +
 	"\fFirebaseLink\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x1d\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1d\n" +
 	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x05R\aproject\x12@\n" +
 	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime:d\xeaAa\n" +
-	"*analyticsadmin.googleapis.com/FirebaseLink\x123properties/{property}/firebaseLinks/{firebase_link}\"\xb8\x01\n" +
+	"createTime:\x81\x01\xeaA~\n" +
+	"*analyticsadmin.googleapis.com/FirebaseLink\x123properties/{property}/firebaseLinks/{firebase_link}*\rfirebaseLinks2\ffirebaseLink\"\xd9\x01\n" +
 	"\rGlobalSiteTag\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x1d\n" +
-	"\asnippet\x18\x02 \x01(\tB\x03\xe0A\x05R\asnippet:o\xeaAl\n" +
-	"+analyticsadmin.googleapis.com/GlobalSiteTag\x12=properties/{property}/dataStreams/{data_stream}/globalSiteTag\"\x84\x04\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1d\n" +
+	"\asnippet\x18\x02 \x01(\tB\x03\xe0A\x05R\asnippet:\x8f\x01\xeaA\x8b\x01\n" +
+	"+analyticsadmin.googleapis.com/GlobalSiteTag\x12=properties/{property}/dataStreams/{data_stream}/globalSiteTag*\x0eglobalSiteTags2\rglobalSiteTag\"\xa5\x04\n" +
 	"\rGoogleAdsLink\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12$\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12$\n" +
 	"\vcustomer_id\x18\x03 \x01(\tB\x03\xe0A\x05R\n" +
 	"customerId\x121\n" +
 	"\x12can_manage_clients\x18\x04 \x01(\bB\x03\xe0A\x03R\x10canManageClients\x12Z\n" +
@@ -6604,41 +6697,41 @@ const file_google_analytics_admin_v1alpha_resources_proto_rawDesc = "" +
 	"createTime\x12@\n" +
 	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"updateTime\x127\n" +
-	"\x15creator_email_address\x18\t \x01(\tB\x03\xe0A\x03R\x13creatorEmailAddress:h\xeaAe\n" +
-	"+analyticsadmin.googleapis.com/GoogleAdsLink\x126properties/{property}/googleAdsLinks/{google_ads_link}\"\x9b\x04\n" +
+	"\x15creator_email_address\x18\t \x01(\tB\x03\xe0A\x03R\x13creatorEmailAddress:\x88\x01\xeaA\x84\x01\n" +
+	"+analyticsadmin.googleapis.com/GoogleAdsLink\x126properties/{property}/googleAdsLinks/{google_ads_link}*\x0egoogleAdsLinks2\rgoogleAdsLink\"\xc7\x04\n" +
 	"\x13DataSharingSettings\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12L\n" +
 	"#sharing_with_google_support_enabled\x18\x02 \x01(\bR\x1fsharingWithGoogleSupportEnabled\x12Y\n" +
 	"*sharing_with_google_assigned_sales_enabled\x18\x03 \x01(\bR%sharingWithGoogleAssignedSalesEnabled\x12S\n" +
 	"%sharing_with_google_any_sales_enabled\x18\x04 \x01(\bB\x02\x18\x01R sharingWithGoogleAnySalesEnabled\x12N\n" +
 	"$sharing_with_google_products_enabled\x18\x05 \x01(\bR sharingWithGoogleProductsEnabled\x12=\n" +
-	"\x1bsharing_with_others_enabled\x18\x06 \x01(\bR\x18sharingWithOthersEnabled:^\xeaA[\n" +
-	"1analyticsadmin.googleapis.com/DataSharingSettings\x12&accounts/{account}/dataSharingSettings\"\xc4\x02\n" +
-	"\x0eAccountSummary\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12D\n" +
+	"\x1bsharing_with_others_enabled\x18\x06 \x01(\bR\x18sharingWithOthersEnabled:\x89\x01\xeaA\x85\x01\n" +
+	"1analyticsadmin.googleapis.com/DataSharingSettings\x12&accounts/{account}/dataSharingSettings*\x13dataSharingSettings2\x13dataSharingSettings\"\xeb\x02\n" +
+	"\x0eAccountSummary\x12\x17\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12D\n" +
 	"\aaccount\x18\x02 \x01(\tB*\xfaA'\n" +
 	"%analyticsadmin.googleapis.com/AccountR\aaccount\x12!\n" +
 	"\fdisplay_name\x18\x03 \x01(\tR\vdisplayName\x12^\n" +
-	"\x12property_summaries\x18\x04 \x03(\v2/.google.analytics.admin.v1alpha.PropertySummaryR\x11propertySummaries:U\xeaAR\n" +
-	",analyticsadmin.googleapis.com/AccountSummary\x12\"accountSummaries/{account_summary}\"\xe8\x01\n" +
+	"\x12property_summaries\x18\x04 \x03(\v2/.google.analytics.admin.v1alpha.PropertySummaryR\x11propertySummaries:w\xeaAt\n" +
+	",analyticsadmin.googleapis.com/AccountSummary\x12\"accountSummaries/{account_summary}*\x10accountSummaries2\x0eaccountSummary\"\xe8\x01\n" +
 	"\x0fPropertySummary\x12G\n" +
 	"\bproperty\x18\x01 \x01(\tB+\xfaA(\n" +
 	"&analyticsadmin.googleapis.com/PropertyR\bproperty\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12Q\n" +
 	"\rproperty_type\x18\x03 \x01(\x0e2,.google.analytics.admin.v1alpha.PropertyTypeR\fpropertyType\x12\x16\n" +
-	"\x06parent\x18\x04 \x01(\tR\x06parent\"\xae\x02\n" +
+	"\x06parent\x18\x04 \x01(\tR\x06parent\"\xe5\x02\n" +
 	"\x19MeasurementProtocolSecret\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12&\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
 	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12&\n" +
-	"\fsecret_value\x18\x03 \x01(\tB\x03\xe0A\x03R\vsecretValue:\xa7\x01\xeaA\xa3\x01\n" +
-	"7analyticsadmin.googleapis.com/MeasurementProtocolSecret\x12hproperties/{property}/dataStreams/{data_stream}/measurementProtocolSecrets/{measurement_protocol_secret}\"\xdb\x04\n" +
+	"\fsecret_value\x18\x03 \x01(\tB\x03\xe0A\x03R\vsecretValue:\xde\x01\xeaA\xda\x01\n" +
+	"7analyticsadmin.googleapis.com/MeasurementProtocolSecret\x12hproperties/{property}/dataStreams/{data_stream}/measurementProtocolSecrets/{measurement_protocol_secret}*\x1ameasurementProtocolSecrets2\x19measurementProtocolSecret\"\xa0\x05\n" +
 	" SKAdNetworkConversionValueSchema\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12c\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12c\n" +
 	"\x13postback_window_one\x18\x02 \x01(\v2..google.analytics.admin.v1alpha.PostbackWindowB\x03\xe0A\x02R\x11postbackWindowOne\x12^\n" +
 	"\x13postback_window_two\x18\x03 \x01(\v2..google.analytics.admin.v1alpha.PostbackWindowR\x11postbackWindowTwo\x12b\n" +
 	"\x15postback_window_three\x18\x04 \x01(\v2..google.analytics.admin.v1alpha.PostbackWindowR\x13postbackWindowThree\x126\n" +
-	"\x17apply_conversion_values\x18\x05 \x01(\bR\x15applyConversionValues:\xbc\x01\xeaA\xb8\x01\n" +
-	">analyticsadmin.googleapis.com/SKAdNetworkConversionValueSchema\x12vproperties/{property}/dataStreams/{data_stream}/sKAdNetworkConversionValueSchema/{skadnetwork_conversion_value_schema}\"\xb8\x01\n" +
+	"\x17apply_conversion_values\x18\x05 \x01(\bR\x15applyConversionValues:\x81\x02\xeaA\xfd\x01\n" +
+	">analyticsadmin.googleapis.com/SKAdNetworkConversionValueSchema\x12vproperties/{property}/dataStreams/{data_stream}/sKAdNetworkConversionValueSchema/{skadnetwork_conversion_value_schema}*!skAdNetworkConversionValueSchemas2 skAdNetworkConversionValueSchema\"\xb8\x01\n" +
 	"\x0ePostbackWindow\x12]\n" +
 	"\x11conversion_values\x18\x01 \x03(\v20.google.analytics.admin.v1alpha.ConversionValuesR\x10conversionValues\x12G\n" +
 	" postback_window_settings_enabled\x18\x02 \x01(\bR\x1dpostbackWindowSettingsEnabled\"\xb5\x02\n" +
@@ -6669,12 +6762,12 @@ const file_google_analytics_admin_v1alpha_resources_proto_rawDesc = "" +
 	"actor_type\x18\x03 \x01(\x0e2).google.analytics.admin.v1alpha.ActorTypeR\tactorType\x12(\n" +
 	"\x10user_actor_email\x18\x04 \x01(\tR\x0euserActorEmail\x12)\n" +
 	"\x10changes_filtered\x18\x05 \x01(\bR\x0fchangesFiltered\x12M\n" +
-	"\achanges\x18\x06 \x03(\v23.google.analytics.admin.v1alpha.ChangeHistoryChangeR\achanges\"\xad\x1a\n" +
+	"\achanges\x18\x06 \x03(\v23.google.analytics.admin.v1alpha.ChangeHistoryChangeR\achanges\"\xa8\x1b\n" +
 	"\x13ChangeHistoryChange\x12\x1a\n" +
 	"\bresource\x18\x01 \x01(\tR\bresource\x12B\n" +
 	"\x06action\x18\x02 \x01(\x0e2*.google.analytics.admin.v1alpha.ActionTypeR\x06action\x12\x7f\n" +
 	"\x16resource_before_change\x18\x03 \x01(\v2I.google.analytics.admin.v1alpha.ChangeHistoryChange.ChangeHistoryResourceR\x14resourceBeforeChange\x12}\n" +
-	"\x15resource_after_change\x18\x04 \x01(\v2I.google.analytics.admin.v1alpha.ChangeHistoryChange.ChangeHistoryResourceR\x13resourceAfterChange\x1a\xb5\x17\n" +
+	"\x15resource_after_change\x18\x04 \x01(\v2I.google.analytics.admin.v1alpha.ChangeHistoryChange.ChangeHistoryResourceR\x13resourceAfterChange\x1a\xb0\x18\n" +
 	"\x15ChangeHistoryResource\x12C\n" +
 	"\aaccount\x18\x01 \x01(\v2'.google.analytics.admin.v1alpha.AccountH\x00R\aaccount\x12F\n" +
 	"\bproperty\x18\x02 \x01(\v2(.google.analytics.admin.v1alpha.PropertyH\x00R\bproperty\x12S\n" +
@@ -6706,42 +6799,43 @@ const file_google_analytics_admin_v1alpha_resources_proto_rawDesc = "" +
 	"\x11calculated_metric\x18\x1f \x01(\v20.google.analytics.admin.v1alpha.CalculatedMetricH\x00R\x10calculatedMetric\x12u\n" +
 	"\x19reporting_data_annotation\x18  \x01(\v27.google.analytics.admin.v1alpha.ReportingDataAnnotationH\x00R\x17reportingDataAnnotation\x12o\n" +
 	"\x17subproperty_sync_config\x18! \x01(\v25.google.analytics.admin.v1alpha.SubpropertySyncConfigH\x00R\x15subpropertySyncConfig\x12{\n" +
-	"\x1breporting_identity_settings\x18\" \x01(\v29.google.analytics.admin.v1alpha.ReportingIdentitySettingsH\x00R\x19reportingIdentitySettingsB\n" +
+	"\x1breporting_identity_settings\x18\" \x01(\v29.google.analytics.admin.v1alpha.ReportingIdentitySettingsH\x00R\x19reportingIdentitySettings\x12y\n" +
+	"\x1buser_provided_data_settings\x18# \x01(\v28.google.analytics.admin.v1alpha.UserProvidedDataSettingsH\x00R\x18userProvidedDataSettingsB\n" +
 	"\n" +
-	"\bresource\"\xd9\x04\n" +
+	"\bresource\"\x98\x05\n" +
 	"\x1dDisplayVideo360AdvertiserLink\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12(\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12(\n" +
 	"\radvertiser_id\x18\x02 \x01(\tB\x03\xe0A\x05R\fadvertiserId\x12;\n" +
 	"\x17advertiser_display_name\x18\x03 \x01(\tB\x03\xe0A\x03R\x15advertiserDisplayName\x12Z\n" +
 	"\x1bads_personalization_enabled\x18\x04 \x01(\v2\x1a.google.protobuf.BoolValueR\x19adsPersonalizationEnabled\x12b\n" +
 	"\x1dcampaign_data_sharing_enabled\x18\x05 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x05R\x1acampaignDataSharingEnabled\x12Z\n" +
-	"\x19cost_data_sharing_enabled\x18\x06 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x05R\x16costDataSharingEnabled:\x9b\x01\xeaA\x97\x01\n" +
-	";analyticsadmin.googleapis.com/DisplayVideo360AdvertiserLink\x12Xproperties/{property}/displayVideo360AdvertiserLinks/{display_video_360_advertiser_link}\"\xb0\x06\n" +
+	"\x19cost_data_sharing_enabled\x18\x06 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x05R\x16costDataSharingEnabled:\xda\x01\xeaA\xd6\x01\n" +
+	";analyticsadmin.googleapis.com/DisplayVideo360AdvertiserLink\x12Xproperties/{property}/displayVideo360AdvertiserLinks/{display_video_360_advertiser_link}*\x1edisplayVideo360AdvertiserLinks2\x1ddisplayVideo360AdvertiserLink\"\xff\x06\n" +
 	"%DisplayVideo360AdvertiserLinkProposal\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12(\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12(\n" +
 	"\radvertiser_id\x18\x02 \x01(\tB\x03\xe0A\x05R\fadvertiserId\x12\x7f\n" +
 	"\x1clink_proposal_status_details\x18\x03 \x01(\v29.google.analytics.admin.v1alpha.LinkProposalStatusDetailsB\x03\xe0A\x03R\x19linkProposalStatusDetails\x12;\n" +
 	"\x17advertiser_display_name\x18\x04 \x01(\tB\x03\xe0A\x03R\x15advertiserDisplayName\x12.\n" +
 	"\x10validation_email\x18\x05 \x01(\tB\x03\xe0A\x04R\x0fvalidationEmail\x12_\n" +
 	"\x1bads_personalization_enabled\x18\x06 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x05R\x19adsPersonalizationEnabled\x12b\n" +
 	"\x1dcampaign_data_sharing_enabled\x18\a \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x05R\x1acampaignDataSharingEnabled\x12Z\n" +
-	"\x19cost_data_sharing_enabled\x18\b \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x05R\x16costDataSharingEnabled:\xb4\x01\xeaA\xb0\x01\n" +
-	"Canalyticsadmin.googleapis.com/DisplayVideo360AdvertiserLinkProposal\x12iproperties/{property}/displayVideo360AdvertiserLinkProposals/{display_video_360_advertiser_link_proposal}\"\xfb\x04\n" +
+	"\x19cost_data_sharing_enabled\x18\b \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x05R\x16costDataSharingEnabled:\x83\x02\xeaA\xff\x01\n" +
+	"Canalyticsadmin.googleapis.com/DisplayVideo360AdvertiserLinkProposal\x12iproperties/{property}/displayVideo360AdvertiserLinkProposals/{display_video_360_advertiser_link_proposal}*&displayVideo360AdvertiserLinkProposals2%displayVideo360AdvertiserLinkProposal\"\xa2\x05\n" +
 	"\x10SearchAds360Link\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12(\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12(\n" +
 	"\radvertiser_id\x18\x02 \x01(\tB\x03\xe0A\x05R\fadvertiserId\x12b\n" +
 	"\x1dcampaign_data_sharing_enabled\x18\x03 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x05R\x1acampaignDataSharingEnabled\x12Z\n" +
 	"\x19cost_data_sharing_enabled\x18\x04 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x05R\x16costDataSharingEnabled\x12;\n" +
 	"\x17advertiser_display_name\x18\x05 \x01(\tB\x03\xe0A\x03R\x15advertiserDisplayName\x12Z\n" +
 	"\x1bads_personalization_enabled\x18\x06 \x01(\v2\x1a.google.protobuf.BoolValueR\x19adsPersonalizationEnabled\x12W\n" +
-	"\x1asite_stats_sharing_enabled\x18\a \x01(\v2\x1a.google.protobuf.BoolValueR\x17siteStatsSharingEnabled:r\xeaAo\n" +
-	".analyticsadmin.googleapis.com/SearchAds360Link\x12=properties/{property}/searchAds360Links/{search_ads_360_link}\"\xbf\x02\n" +
+	"\x1asite_stats_sharing_enabled\x18\a \x01(\v2\x1a.google.protobuf.BoolValueR\x17siteStatsSharingEnabled:\x98\x01\xeaA\x94\x01\n" +
+	".analyticsadmin.googleapis.com/SearchAds360Link\x12=properties/{property}/searchAds360Links/{search_ads_360_link}*\x11searchAds360Links2\x10searchAds360Link\"\xbf\x02\n" +
 	"\x19LinkProposalStatusDetails\x12\x8b\x01\n" +
 	" link_proposal_initiating_product\x18\x01 \x01(\x0e2=.google.analytics.admin.v1alpha.LinkProposalInitiatingProductB\x03\xe0A\x03R\x1dlinkProposalInitiatingProduct\x12,\n" +
 	"\x0frequestor_email\x18\x02 \x01(\tB\x03\xe0A\x03R\x0erequestorEmail\x12f\n" +
-	"\x13link_proposal_state\x18\x03 \x01(\x0e21.google.analytics.admin.v1alpha.LinkProposalStateB\x03\xe0A\x03R\x11linkProposalState\"\xce\x06\n" +
+	"\x13link_proposal_state\x18\x03 \x01(\x0e21.google.analytics.admin.v1alpha.LinkProposalStateB\x03\xe0A\x03R\x11linkProposalState\"\xf3\x06\n" +
 	"\x0fConversionEvent\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\"\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\"\n" +
 	"\n" +
 	"event_name\x18\x02 \x01(\tB\x03\xe0A\x05R\teventName\x12@\n" +
 	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
@@ -6758,8 +6852,8 @@ const file_google_analytics_admin_v1alpha_resources_proto_rawDesc = "" +
 	"\x18ConversionCountingMethod\x12*\n" +
 	"&CONVERSION_COUNTING_METHOD_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eONCE_PER_EVENT\x10\x01\x12\x14\n" +
-	"\x10ONCE_PER_SESSION\x10\x02:m\xeaAj\n" +
-	"-analyticsadmin.googleapis.com/ConversionEvent\x129properties/{property}/conversionEvents/{conversion_event}B\x1b\n" +
+	"\x10ONCE_PER_SESSION\x10\x02:\x91\x01\xeaA\x8d\x01\n" +
+	"-analyticsadmin.googleapis.com/ConversionEvent\x129properties/{property}/conversionEvents/{conversion_event}*\x10conversionEvents2\x0fconversionEventB\x1b\n" +
 	"\x19_default_conversion_value\"\xc1\x05\n" +
 	"\bKeyEvent\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\"\n" +
@@ -6783,9 +6877,9 @@ const file_google_analytics_admin_v1alpha_resources_proto_rawDesc = "" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12H\n" +
 	"\x05state\x18\x03 \x01(\x0e22.google.analytics.admin.v1alpha.GoogleSignalsStateR\x05state\x12S\n" +
 	"\aconsent\x18\x04 \x01(\x0e24.google.analytics.admin.v1alpha.GoogleSignalsConsentB\x03\xe0A\x03R\aconsent:e\xeaAb\n" +
-	"3analyticsadmin.googleapis.com/GoogleSignalsSettings\x12+properties/{property}/googleSignalsSettings\"\x8e\x04\n" +
+	"3analyticsadmin.googleapis.com/GoogleSignalsSettings\x12+properties/{property}/googleSignalsSettings\"\xb3\x04\n" +
 	"\x0fCustomDimension\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12-\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12-\n" +
 	"\x0eparameter_name\x18\x02 \x01(\tB\x06\xe0A\x02\xe0A\x05R\rparameterName\x12&\n" +
 	"\fdisplay_name\x18\x03 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12%\n" +
 	"\vdescription\x18\x04 \x01(\tB\x03\xe0A\x01R\vdescription\x12\\\n" +
@@ -6795,10 +6889,10 @@ const file_google_analytics_admin_v1alpha_resources_proto_rawDesc = "" +
 	"\x1bDIMENSION_SCOPE_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05EVENT\x10\x01\x12\b\n" +
 	"\x04USER\x10\x02\x12\b\n" +
-	"\x04ITEM\x10\x03:m\xeaAj\n" +
-	"-analyticsadmin.googleapis.com/CustomDimension\x129properties/{property}/customDimensions/{custom_dimension}\"\xa2\a\n" +
+	"\x04ITEM\x10\x03:\x91\x01\xeaA\x8d\x01\n" +
+	"-analyticsadmin.googleapis.com/CustomDimension\x129properties/{property}/customDimensions/{custom_dimension}*\x10customDimensions2\x0fcustomDimension\"\xc0\a\n" +
 	"\fCustomMetric\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12-\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12-\n" +
 	"\x0eparameter_name\x18\x02 \x01(\tB\x06\xe0A\x02\xe0A\x05R\rparameterName\x12&\n" +
 	"\fdisplay_name\x18\x03 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12%\n" +
 	"\vdescription\x18\x04 \x01(\tB\x03\xe0A\x01R\vdescription\x12l\n" +
@@ -6826,10 +6920,10 @@ const file_google_analytics_admin_v1alpha_resources_proto_rawDesc = "" +
 	"\x14RestrictedMetricType\x12&\n" +
 	"\"RESTRICTED_METRIC_TYPE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tCOST_DATA\x10\x01\x12\x10\n" +
-	"\fREVENUE_DATA\x10\x02:d\xeaAa\n" +
-	"*analyticsadmin.googleapis.com/CustomMetric\x123properties/{property}/customMetrics/{custom_metric}\"\x9f\a\n" +
+	"\fREVENUE_DATA\x10\x02:\x81\x01\xeaA~\n" +
+	"*analyticsadmin.googleapis.com/CustomMetric\x123properties/{property}/customMetrics/{custom_metric}*\rcustomMetrics2\fcustomMetric\"\x9f\a\n" +
 	"\x10CalculatedMetric\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12%\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12%\n" +
 	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12&\n" +
 	"\fdisplay_name\x18\x03 \x01(\tB\x03\xe0A\x02R\vdisplayName\x125\n" +
 	"\x14calculated_metric_id\x18\x04 \x01(\tB\x03\xe0A\x03R\x12calculatedMetricId\x12a\n" +
@@ -6858,9 +6952,9 @@ const file_google_analytics_admin_v1alpha_resources_proto_rawDesc = "" +
 	"\"RESTRICTED_METRIC_TYPE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tCOST_DATA\x10\x01\x12\x10\n" +
 	"\fREVENUE_DATA\x10\x02:\x96\x01\xeaA\x92\x01\n" +
-	".analyticsadmin.googleapis.com/CalculatedMetric\x12;properties/{property}/calculatedMetrics/{calculated_metric}*\x11calculatedMetrics2\x10calculatedMetric\"\xfb\x04\n" +
+	".analyticsadmin.googleapis.com/CalculatedMetric\x12;properties/{property}/calculatedMetrics/{calculated_metric}*\x11calculatedMetrics2\x10calculatedMetric\"\xab\x05\n" +
 	"\x15DataRetentionSettings\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12~\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12~\n" +
 	"\x14event_data_retention\x18\x02 \x01(\x0e2G.google.analytics.admin.v1alpha.DataRetentionSettings.RetentionDurationB\x03\xe0A\x02R\x12eventDataRetention\x12|\n" +
 	"\x13user_data_retention\x18\x04 \x01(\x0e2G.google.analytics.admin.v1alpha.DataRetentionSettings.RetentionDurationB\x03\xe0A\x02R\x11userDataRetention\x12C\n" +
 	"\x1freset_user_data_on_new_activity\x18\x03 \x01(\bR\x1aresetUserDataOnNewActivity\"\x9e\x01\n" +
@@ -6871,8 +6965,8 @@ const file_google_analytics_admin_v1alpha_resources_proto_rawDesc = "" +
 	"\x0fFOURTEEN_MONTHS\x10\x03\x12\x15\n" +
 	"\x11TWENTY_SIX_MONTHS\x10\x04\x12\x17\n" +
 	"\x13THIRTY_EIGHT_MONTHS\x10\x05\x12\x10\n" +
-	"\fFIFTY_MONTHS\x10\x06:e\xeaAb\n" +
-	"3analyticsadmin.googleapis.com/DataRetentionSettings\x12+properties/{property}/dataRetentionSettings\"\x8d\r\n" +
+	"\fFIFTY_MONTHS\x10\x06:\x94\x01\xeaA\x90\x01\n" +
+	"3analyticsadmin.googleapis.com/DataRetentionSettings\x12+properties/{property}/dataRetentionSettings*\x15dataRetentionSettings2\x15dataRetentionSettings\"\x8d\r\n" +
 	"\x13AttributionSettings\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\xc1\x01\n" +
 	",acquisition_conversion_event_lookback_window\x18\x02 \x01(\x0e2\\.google.analytics.admin.v1alpha.AttributionSettings.AcquisitionConversionEventLookbackWindowB\x03\xe0A\x02R(acquisitionConversionEventLookbackWindow\x12\xaf\x01\n" +
@@ -6989,7 +7083,12 @@ const file_google_analytics_admin_v1alpha_resources_proto_rawDesc = "" +
 	"\aBLENDED\x10\x01\x12\f\n" +
 	"\bOBSERVED\x10\x02\x12\x10\n" +
 	"\fDEVICE_BASED\x10\x03:\xa4\x01\xeaA\xa0\x01\n" +
-	"7analyticsadmin.googleapis.com/ReportingIdentitySettings\x12/properties/{property}/reportingIdentitySettings*\x19reportingIdentitySettings2\x19reportingIdentitySettings*\xaa\x04\n" +
+	"7analyticsadmin.googleapis.com/ReportingIdentitySettings\x12/properties/{property}/reportingIdentitySettings*\x19reportingIdentitySettings2\x19reportingIdentitySettings\"\x96\x03\n" +
+	"\x18UserProvidedDataSettings\x12\x17\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12U\n" +
+	"%user_provided_data_collection_enabled\x18\x02 \x01(\bB\x03\xe0A\x01R!userProvidedDataCollectionEnabled\x12g\n" +
+	".automatically_detected_data_collection_enabled\x18\x03 \x01(\bB\x03\xe0A\x01R*automaticallyDetectedDataCollectionEnabled:\xa0\x01\xeaA\x9c\x01\n" +
+	"6analyticsadmin.googleapis.com/UserProvidedDataSettings\x12.properties/{property}/userProvidedDataSettings*\x18userProvidedDataSettings2\x18userProvidedDataSettings*\xaa\x04\n" +
 	"\x10IndustryCategory\x12!\n" +
 	"\x1dINDUSTRY_CATEGORY_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +
@@ -7039,7 +7138,7 @@ const file_google_analytics_admin_v1alpha_resources_proto_rawDesc = "" +
 	"\x17ACTION_TYPE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aCREATED\x10\x01\x12\v\n" +
 	"\aUPDATED\x10\x02\x12\v\n" +
-	"\aDELETED\x10\x03*\xa1\x06\n" +
+	"\aDELETED\x10\x03*\xc2\x06\n" +
 	"\x19ChangeHistoryResourceType\x12,\n" +
 	"(CHANGE_HISTORY_RESOURCE_TYPE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aACCOUNT\x10\x01\x12\f\n" +
@@ -7071,7 +7170,8 @@ const file_google_analytics_admin_v1alpha_resources_proto_rawDesc = "" +
 	"\x11CALCULATED_METRIC\x10\x1f\x12\x1d\n" +
 	"\x19REPORTING_DATA_ANNOTATION\x10 \x12\x1b\n" +
 	"\x17SUBPROPERTY_SYNC_CONFIG\x10!\x12\x1f\n" +
-	"\x1bREPORTING_IDENTITY_SETTINGS\x10\"*s\n" +
+	"\x1bREPORTING_IDENTITY_SETTINGS\x10\"\x12\x1f\n" +
+	"\x1bUSER_PROVIDED_DATA_SETTINGS\x10#*s\n" +
 	"\x12GoogleSignalsState\x12$\n" +
 	" GOOGLE_SIGNALS_STATE_UNSPECIFIED\x10\x00\x12\x1a\n" +
 	"\x16GOOGLE_SIGNALS_ENABLED\x10\x01\x12\x1b\n" +
@@ -7118,7 +7218,7 @@ func file_google_analytics_admin_v1alpha_resources_proto_rawDescGZIP() []byte {
 }
 
 var file_google_analytics_admin_v1alpha_resources_proto_enumTypes = make([]protoimpl.EnumInfo, 28)
-var file_google_analytics_admin_v1alpha_resources_proto_msgTypes = make([]protoimpl.MessageInfo, 44)
+var file_google_analytics_admin_v1alpha_resources_proto_msgTypes = make([]protoimpl.MessageInfo, 45)
 var file_google_analytics_admin_v1alpha_resources_proto_goTypes = []any{
 	(IndustryCategory)(0),                                             // 0: google.analytics.admin.v1alpha.IndustryCategory
 	(ServiceLevel)(0),                                                 // 1: google.analytics.admin.v1alpha.ServiceLevel
@@ -7185,41 +7285,42 @@ var file_google_analytics_admin_v1alpha_resources_proto_goTypes = []any{
 	(*ReportingDataAnnotation)(nil),                                   // 62: google.analytics.admin.v1alpha.ReportingDataAnnotation
 	(*SubpropertySyncConfig)(nil),                                     // 63: google.analytics.admin.v1alpha.SubpropertySyncConfig
 	(*ReportingIdentitySettings)(nil),                                 // 64: google.analytics.admin.v1alpha.ReportingIdentitySettings
-	(*DataStream_WebStreamData)(nil),                                  // 65: google.analytics.admin.v1alpha.DataStream.WebStreamData
-	(*DataStream_AndroidAppStreamData)(nil),                           // 66: google.analytics.admin.v1alpha.DataStream.AndroidAppStreamData
-	(*DataStream_IosAppStreamData)(nil),                               // 67: google.analytics.admin.v1alpha.DataStream.IosAppStreamData
-	(*ChangeHistoryChange_ChangeHistoryResource)(nil),                 // 68: google.analytics.admin.v1alpha.ChangeHistoryChange.ChangeHistoryResource
-	(*ConversionEvent_DefaultConversionValue)(nil),                    // 69: google.analytics.admin.v1alpha.ConversionEvent.DefaultConversionValue
-	(*KeyEvent_DefaultValue)(nil),                                     // 70: google.analytics.admin.v1alpha.KeyEvent.DefaultValue
-	(*ReportingDataAnnotation_DateRange)(nil),                         // 71: google.analytics.admin.v1alpha.ReportingDataAnnotation.DateRange
-	(*timestamppb.Timestamp)(nil),                                     // 72: google.protobuf.Timestamp
-	(*wrapperspb.BoolValue)(nil),                                      // 73: google.protobuf.BoolValue
-	(*date.Date)(nil),                                                 // 74: google.type.Date
-	(*ExpandedDataSet)(nil),                                           // 75: google.analytics.admin.v1alpha.ExpandedDataSet
-	(*ChannelGroup)(nil),                                              // 76: google.analytics.admin.v1alpha.ChannelGroup
-	(*Audience)(nil),                                                  // 77: google.analytics.admin.v1alpha.Audience
-	(*EventCreateRule)(nil),                                           // 78: google.analytics.admin.v1alpha.EventCreateRule
+	(*UserProvidedDataSettings)(nil),                                  // 65: google.analytics.admin.v1alpha.UserProvidedDataSettings
+	(*DataStream_WebStreamData)(nil),                                  // 66: google.analytics.admin.v1alpha.DataStream.WebStreamData
+	(*DataStream_AndroidAppStreamData)(nil),                           // 67: google.analytics.admin.v1alpha.DataStream.AndroidAppStreamData
+	(*DataStream_IosAppStreamData)(nil),                               // 68: google.analytics.admin.v1alpha.DataStream.IosAppStreamData
+	(*ChangeHistoryChange_ChangeHistoryResource)(nil),                 // 69: google.analytics.admin.v1alpha.ChangeHistoryChange.ChangeHistoryResource
+	(*ConversionEvent_DefaultConversionValue)(nil),                    // 70: google.analytics.admin.v1alpha.ConversionEvent.DefaultConversionValue
+	(*KeyEvent_DefaultValue)(nil),                                     // 71: google.analytics.admin.v1alpha.KeyEvent.DefaultValue
+	(*ReportingDataAnnotation_DateRange)(nil),                         // 72: google.analytics.admin.v1alpha.ReportingDataAnnotation.DateRange
+	(*timestamppb.Timestamp)(nil),                                     // 73: google.protobuf.Timestamp
+	(*wrapperspb.BoolValue)(nil),                                      // 74: google.protobuf.BoolValue
+	(*date.Date)(nil),                                                 // 75: google.type.Date
+	(*ExpandedDataSet)(nil),                                           // 76: google.analytics.admin.v1alpha.ExpandedDataSet
+	(*ChannelGroup)(nil),                                              // 77: google.analytics.admin.v1alpha.ChannelGroup
+	(*Audience)(nil),                                                  // 78: google.analytics.admin.v1alpha.Audience
+	(*EventCreateRule)(nil),                                           // 79: google.analytics.admin.v1alpha.EventCreateRule
 }
 var file_google_analytics_admin_v1alpha_resources_proto_depIdxs = []int32{
-	72,  // 0: google.analytics.admin.v1alpha.Account.create_time:type_name -> google.protobuf.Timestamp
-	72,  // 1: google.analytics.admin.v1alpha.Account.update_time:type_name -> google.protobuf.Timestamp
+	73,  // 0: google.analytics.admin.v1alpha.Account.create_time:type_name -> google.protobuf.Timestamp
+	73,  // 1: google.analytics.admin.v1alpha.Account.update_time:type_name -> google.protobuf.Timestamp
 	9,   // 2: google.analytics.admin.v1alpha.Property.property_type:type_name -> google.analytics.admin.v1alpha.PropertyType
-	72,  // 3: google.analytics.admin.v1alpha.Property.create_time:type_name -> google.protobuf.Timestamp
-	72,  // 4: google.analytics.admin.v1alpha.Property.update_time:type_name -> google.protobuf.Timestamp
+	73,  // 3: google.analytics.admin.v1alpha.Property.create_time:type_name -> google.protobuf.Timestamp
+	73,  // 4: google.analytics.admin.v1alpha.Property.update_time:type_name -> google.protobuf.Timestamp
 	0,   // 5: google.analytics.admin.v1alpha.Property.industry_category:type_name -> google.analytics.admin.v1alpha.IndustryCategory
 	1,   // 6: google.analytics.admin.v1alpha.Property.service_level:type_name -> google.analytics.admin.v1alpha.ServiceLevel
-	72,  // 7: google.analytics.admin.v1alpha.Property.delete_time:type_name -> google.protobuf.Timestamp
-	72,  // 8: google.analytics.admin.v1alpha.Property.expire_time:type_name -> google.protobuf.Timestamp
-	65,  // 9: google.analytics.admin.v1alpha.DataStream.web_stream_data:type_name -> google.analytics.admin.v1alpha.DataStream.WebStreamData
-	66,  // 10: google.analytics.admin.v1alpha.DataStream.android_app_stream_data:type_name -> google.analytics.admin.v1alpha.DataStream.AndroidAppStreamData
-	67,  // 11: google.analytics.admin.v1alpha.DataStream.ios_app_stream_data:type_name -> google.analytics.admin.v1alpha.DataStream.IosAppStreamData
+	73,  // 7: google.analytics.admin.v1alpha.Property.delete_time:type_name -> google.protobuf.Timestamp
+	73,  // 8: google.analytics.admin.v1alpha.Property.expire_time:type_name -> google.protobuf.Timestamp
+	66,  // 9: google.analytics.admin.v1alpha.DataStream.web_stream_data:type_name -> google.analytics.admin.v1alpha.DataStream.WebStreamData
+	67,  // 10: google.analytics.admin.v1alpha.DataStream.android_app_stream_data:type_name -> google.analytics.admin.v1alpha.DataStream.AndroidAppStreamData
+	68,  // 11: google.analytics.admin.v1alpha.DataStream.ios_app_stream_data:type_name -> google.analytics.admin.v1alpha.DataStream.IosAppStreamData
 	11,  // 12: google.analytics.admin.v1alpha.DataStream.type:type_name -> google.analytics.admin.v1alpha.DataStream.DataStreamType
-	72,  // 13: google.analytics.admin.v1alpha.DataStream.create_time:type_name -> google.protobuf.Timestamp
-	72,  // 14: google.analytics.admin.v1alpha.DataStream.update_time:type_name -> google.protobuf.Timestamp
-	72,  // 15: google.analytics.admin.v1alpha.FirebaseLink.create_time:type_name -> google.protobuf.Timestamp
-	73,  // 16: google.analytics.admin.v1alpha.GoogleAdsLink.ads_personalization_enabled:type_name -> google.protobuf.BoolValue
-	72,  // 17: google.analytics.admin.v1alpha.GoogleAdsLink.create_time:type_name -> google.protobuf.Timestamp
-	72,  // 18: google.analytics.admin.v1alpha.GoogleAdsLink.update_time:type_name -> google.protobuf.Timestamp
+	73,  // 13: google.analytics.admin.v1alpha.DataStream.create_time:type_name -> google.protobuf.Timestamp
+	73,  // 14: google.analytics.admin.v1alpha.DataStream.update_time:type_name -> google.protobuf.Timestamp
+	73,  // 15: google.analytics.admin.v1alpha.FirebaseLink.create_time:type_name -> google.protobuf.Timestamp
+	74,  // 16: google.analytics.admin.v1alpha.GoogleAdsLink.ads_personalization_enabled:type_name -> google.protobuf.BoolValue
+	73,  // 17: google.analytics.admin.v1alpha.GoogleAdsLink.create_time:type_name -> google.protobuf.Timestamp
+	73,  // 18: google.analytics.admin.v1alpha.GoogleAdsLink.update_time:type_name -> google.protobuf.Timestamp
 	36,  // 19: google.analytics.admin.v1alpha.AccountSummary.property_summaries:type_name -> google.analytics.admin.v1alpha.PropertySummary
 	9,   // 20: google.analytics.admin.v1alpha.PropertySummary.property_type:type_name -> google.analytics.admin.v1alpha.PropertyType
 	39,  // 21: google.analytics.admin.v1alpha.SKAdNetworkConversionValueSchema.postback_window_one:type_name -> google.analytics.admin.v1alpha.PostbackWindow
@@ -7228,31 +7329,31 @@ var file_google_analytics_admin_v1alpha_resources_proto_depIdxs = []int32{
 	40,  // 24: google.analytics.admin.v1alpha.PostbackWindow.conversion_values:type_name -> google.analytics.admin.v1alpha.ConversionValues
 	10,  // 25: google.analytics.admin.v1alpha.ConversionValues.coarse_value:type_name -> google.analytics.admin.v1alpha.CoarseValue
 	41,  // 26: google.analytics.admin.v1alpha.ConversionValues.event_mappings:type_name -> google.analytics.admin.v1alpha.EventMapping
-	72,  // 27: google.analytics.admin.v1alpha.ChangeHistoryEvent.change_time:type_name -> google.protobuf.Timestamp
+	73,  // 27: google.analytics.admin.v1alpha.ChangeHistoryEvent.change_time:type_name -> google.protobuf.Timestamp
 	2,   // 28: google.analytics.admin.v1alpha.ChangeHistoryEvent.actor_type:type_name -> google.analytics.admin.v1alpha.ActorType
 	43,  // 29: google.analytics.admin.v1alpha.ChangeHistoryEvent.changes:type_name -> google.analytics.admin.v1alpha.ChangeHistoryChange
 	3,   // 30: google.analytics.admin.v1alpha.ChangeHistoryChange.action:type_name -> google.analytics.admin.v1alpha.ActionType
-	68,  // 31: google.analytics.admin.v1alpha.ChangeHistoryChange.resource_before_change:type_name -> google.analytics.admin.v1alpha.ChangeHistoryChange.ChangeHistoryResource
-	68,  // 32: google.analytics.admin.v1alpha.ChangeHistoryChange.resource_after_change:type_name -> google.analytics.admin.v1alpha.ChangeHistoryChange.ChangeHistoryResource
-	73,  // 33: google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLink.ads_personalization_enabled:type_name -> google.protobuf.BoolValue
-	73,  // 34: google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLink.campaign_data_sharing_enabled:type_name -> google.protobuf.BoolValue
-	73,  // 35: google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLink.cost_data_sharing_enabled:type_name -> google.protobuf.BoolValue
+	69,  // 31: google.analytics.admin.v1alpha.ChangeHistoryChange.resource_before_change:type_name -> google.analytics.admin.v1alpha.ChangeHistoryChange.ChangeHistoryResource
+	69,  // 32: google.analytics.admin.v1alpha.ChangeHistoryChange.resource_after_change:type_name -> google.analytics.admin.v1alpha.ChangeHistoryChange.ChangeHistoryResource
+	74,  // 33: google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLink.ads_personalization_enabled:type_name -> google.protobuf.BoolValue
+	74,  // 34: google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLink.campaign_data_sharing_enabled:type_name -> google.protobuf.BoolValue
+	74,  // 35: google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLink.cost_data_sharing_enabled:type_name -> google.protobuf.BoolValue
 	47,  // 36: google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLinkProposal.link_proposal_status_details:type_name -> google.analytics.admin.v1alpha.LinkProposalStatusDetails
-	73,  // 37: google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLinkProposal.ads_personalization_enabled:type_name -> google.protobuf.BoolValue
-	73,  // 38: google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLinkProposal.campaign_data_sharing_enabled:type_name -> google.protobuf.BoolValue
-	73,  // 39: google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLinkProposal.cost_data_sharing_enabled:type_name -> google.protobuf.BoolValue
-	73,  // 40: google.analytics.admin.v1alpha.SearchAds360Link.campaign_data_sharing_enabled:type_name -> google.protobuf.BoolValue
-	73,  // 41: google.analytics.admin.v1alpha.SearchAds360Link.cost_data_sharing_enabled:type_name -> google.protobuf.BoolValue
-	73,  // 42: google.analytics.admin.v1alpha.SearchAds360Link.ads_personalization_enabled:type_name -> google.protobuf.BoolValue
-	73,  // 43: google.analytics.admin.v1alpha.SearchAds360Link.site_stats_sharing_enabled:type_name -> google.protobuf.BoolValue
+	74,  // 37: google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLinkProposal.ads_personalization_enabled:type_name -> google.protobuf.BoolValue
+	74,  // 38: google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLinkProposal.campaign_data_sharing_enabled:type_name -> google.protobuf.BoolValue
+	74,  // 39: google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLinkProposal.cost_data_sharing_enabled:type_name -> google.protobuf.BoolValue
+	74,  // 40: google.analytics.admin.v1alpha.SearchAds360Link.campaign_data_sharing_enabled:type_name -> google.protobuf.BoolValue
+	74,  // 41: google.analytics.admin.v1alpha.SearchAds360Link.cost_data_sharing_enabled:type_name -> google.protobuf.BoolValue
+	74,  // 42: google.analytics.admin.v1alpha.SearchAds360Link.ads_personalization_enabled:type_name -> google.protobuf.BoolValue
+	74,  // 43: google.analytics.admin.v1alpha.SearchAds360Link.site_stats_sharing_enabled:type_name -> google.protobuf.BoolValue
 	7,   // 44: google.analytics.admin.v1alpha.LinkProposalStatusDetails.link_proposal_initiating_product:type_name -> google.analytics.admin.v1alpha.LinkProposalInitiatingProduct
 	8,   // 45: google.analytics.admin.v1alpha.LinkProposalStatusDetails.link_proposal_state:type_name -> google.analytics.admin.v1alpha.LinkProposalState
-	72,  // 46: google.analytics.admin.v1alpha.ConversionEvent.create_time:type_name -> google.protobuf.Timestamp
+	73,  // 46: google.analytics.admin.v1alpha.ConversionEvent.create_time:type_name -> google.protobuf.Timestamp
 	12,  // 47: google.analytics.admin.v1alpha.ConversionEvent.counting_method:type_name -> google.analytics.admin.v1alpha.ConversionEvent.ConversionCountingMethod
-	69,  // 48: google.analytics.admin.v1alpha.ConversionEvent.default_conversion_value:type_name -> google.analytics.admin.v1alpha.ConversionEvent.DefaultConversionValue
-	72,  // 49: google.analytics.admin.v1alpha.KeyEvent.create_time:type_name -> google.protobuf.Timestamp
+	70,  // 48: google.analytics.admin.v1alpha.ConversionEvent.default_conversion_value:type_name -> google.analytics.admin.v1alpha.ConversionEvent.DefaultConversionValue
+	73,  // 49: google.analytics.admin.v1alpha.KeyEvent.create_time:type_name -> google.protobuf.Timestamp
 	13,  // 50: google.analytics.admin.v1alpha.KeyEvent.counting_method:type_name -> google.analytics.admin.v1alpha.KeyEvent.CountingMethod
-	70,  // 51: google.analytics.admin.v1alpha.KeyEvent.default_value:type_name -> google.analytics.admin.v1alpha.KeyEvent.DefaultValue
+	71,  // 51: google.analytics.admin.v1alpha.KeyEvent.default_value:type_name -> google.analytics.admin.v1alpha.KeyEvent.DefaultValue
 	5,   // 52: google.analytics.admin.v1alpha.GoogleSignalsSettings.state:type_name -> google.analytics.admin.v1alpha.GoogleSignalsState
 	6,   // 53: google.analytics.admin.v1alpha.GoogleSignalsSettings.consent:type_name -> google.analytics.admin.v1alpha.GoogleSignalsConsent
 	14,  // 54: google.analytics.admin.v1alpha.CustomDimension.scope:type_name -> google.analytics.admin.v1alpha.CustomDimension.DimensionScope
@@ -7267,9 +7368,9 @@ var file_google_analytics_admin_v1alpha_resources_proto_depIdxs = []int32{
 	22,  // 63: google.analytics.admin.v1alpha.AttributionSettings.other_conversion_event_lookback_window:type_name -> google.analytics.admin.v1alpha.AttributionSettings.OtherConversionEventLookbackWindow
 	23,  // 64: google.analytics.admin.v1alpha.AttributionSettings.reporting_attribution_model:type_name -> google.analytics.admin.v1alpha.AttributionSettings.ReportingAttributionModel
 	24,  // 65: google.analytics.admin.v1alpha.AttributionSettings.ads_web_conversion_data_export_scope:type_name -> google.analytics.admin.v1alpha.AttributionSettings.AdsWebConversionDataExportScope
-	72,  // 66: google.analytics.admin.v1alpha.BigQueryLink.create_time:type_name -> google.protobuf.Timestamp
-	74,  // 67: google.analytics.admin.v1alpha.ReportingDataAnnotation.annotation_date:type_name -> google.type.Date
-	71,  // 68: google.analytics.admin.v1alpha.ReportingDataAnnotation.annotation_date_range:type_name -> google.analytics.admin.v1alpha.ReportingDataAnnotation.DateRange
+	73,  // 66: google.analytics.admin.v1alpha.BigQueryLink.create_time:type_name -> google.protobuf.Timestamp
+	75,  // 67: google.analytics.admin.v1alpha.ReportingDataAnnotation.annotation_date:type_name -> google.type.Date
+	72,  // 68: google.analytics.admin.v1alpha.ReportingDataAnnotation.annotation_date_range:type_name -> google.analytics.admin.v1alpha.ReportingDataAnnotation.DateRange
 	25,  // 69: google.analytics.admin.v1alpha.ReportingDataAnnotation.color:type_name -> google.analytics.admin.v1alpha.ReportingDataAnnotation.Color
 	26,  // 70: google.analytics.admin.v1alpha.SubpropertySyncConfig.custom_dimension_and_metric_sync_mode:type_name -> google.analytics.admin.v1alpha.SubpropertySyncConfig.SynchronizationMode
 	27,  // 71: google.analytics.admin.v1alpha.ReportingIdentitySettings.reporting_identity:type_name -> google.analytics.admin.v1alpha.ReportingIdentitySettings.ReportingIdentity
@@ -7288,27 +7389,28 @@ var file_google_analytics_admin_v1alpha_resources_proto_depIdxs = []int32{
 	46,  // 84: google.analytics.admin.v1alpha.ChangeHistoryChange.ChangeHistoryResource.search_ads_360_link:type_name -> google.analytics.admin.v1alpha.SearchAds360Link
 	30,  // 85: google.analytics.admin.v1alpha.ChangeHistoryChange.ChangeHistoryResource.data_stream:type_name -> google.analytics.admin.v1alpha.DataStream
 	55,  // 86: google.analytics.admin.v1alpha.ChangeHistoryChange.ChangeHistoryResource.attribution_settings:type_name -> google.analytics.admin.v1alpha.AttributionSettings
-	75,  // 87: google.analytics.admin.v1alpha.ChangeHistoryChange.ChangeHistoryResource.expanded_data_set:type_name -> google.analytics.admin.v1alpha.ExpandedDataSet
-	76,  // 88: google.analytics.admin.v1alpha.ChangeHistoryChange.ChangeHistoryResource.channel_group:type_name -> google.analytics.admin.v1alpha.ChannelGroup
+	76,  // 87: google.analytics.admin.v1alpha.ChangeHistoryChange.ChangeHistoryResource.expanded_data_set:type_name -> google.analytics.admin.v1alpha.ExpandedDataSet
+	77,  // 88: google.analytics.admin.v1alpha.ChangeHistoryChange.ChangeHistoryResource.channel_group:type_name -> google.analytics.admin.v1alpha.ChannelGroup
 	57,  // 89: google.analytics.admin.v1alpha.ChangeHistoryChange.ChangeHistoryResource.bigquery_link:type_name -> google.analytics.admin.v1alpha.BigQueryLink
 	58,  // 90: google.analytics.admin.v1alpha.ChangeHistoryChange.ChangeHistoryResource.enhanced_measurement_settings:type_name -> google.analytics.admin.v1alpha.EnhancedMeasurementSettings
 	59,  // 91: google.analytics.admin.v1alpha.ChangeHistoryChange.ChangeHistoryResource.data_redaction_settings:type_name -> google.analytics.admin.v1alpha.DataRedactionSettings
 	38,  // 92: google.analytics.admin.v1alpha.ChangeHistoryChange.ChangeHistoryResource.skadnetwork_conversion_value_schema:type_name -> google.analytics.admin.v1alpha.SKAdNetworkConversionValueSchema
 	60,  // 93: google.analytics.admin.v1alpha.ChangeHistoryChange.ChangeHistoryResource.adsense_link:type_name -> google.analytics.admin.v1alpha.AdSenseLink
-	77,  // 94: google.analytics.admin.v1alpha.ChangeHistoryChange.ChangeHistoryResource.audience:type_name -> google.analytics.admin.v1alpha.Audience
-	78,  // 95: google.analytics.admin.v1alpha.ChangeHistoryChange.ChangeHistoryResource.event_create_rule:type_name -> google.analytics.admin.v1alpha.EventCreateRule
+	78,  // 94: google.analytics.admin.v1alpha.ChangeHistoryChange.ChangeHistoryResource.audience:type_name -> google.analytics.admin.v1alpha.Audience
+	79,  // 95: google.analytics.admin.v1alpha.ChangeHistoryChange.ChangeHistoryResource.event_create_rule:type_name -> google.analytics.admin.v1alpha.EventCreateRule
 	49,  // 96: google.analytics.admin.v1alpha.ChangeHistoryChange.ChangeHistoryResource.key_event:type_name -> google.analytics.admin.v1alpha.KeyEvent
 	53,  // 97: google.analytics.admin.v1alpha.ChangeHistoryChange.ChangeHistoryResource.calculated_metric:type_name -> google.analytics.admin.v1alpha.CalculatedMetric
 	62,  // 98: google.analytics.admin.v1alpha.ChangeHistoryChange.ChangeHistoryResource.reporting_data_annotation:type_name -> google.analytics.admin.v1alpha.ReportingDataAnnotation
 	63,  // 99: google.analytics.admin.v1alpha.ChangeHistoryChange.ChangeHistoryResource.subproperty_sync_config:type_name -> google.analytics.admin.v1alpha.SubpropertySyncConfig
 	64,  // 100: google.analytics.admin.v1alpha.ChangeHistoryChange.ChangeHistoryResource.reporting_identity_settings:type_name -> google.analytics.admin.v1alpha.ReportingIdentitySettings
-	74,  // 101: google.analytics.admin.v1alpha.ReportingDataAnnotation.DateRange.start_date:type_name -> google.type.Date
-	74,  // 102: google.analytics.admin.v1alpha.ReportingDataAnnotation.DateRange.end_date:type_name -> google.type.Date
-	103, // [103:103] is the sub-list for method output_type
-	103, // [103:103] is the sub-list for method input_type
-	103, // [103:103] is the sub-list for extension type_name
-	103, // [103:103] is the sub-list for extension extendee
-	0,   // [0:103] is the sub-list for field type_name
+	65,  // 101: google.analytics.admin.v1alpha.ChangeHistoryChange.ChangeHistoryResource.user_provided_data_settings:type_name -> google.analytics.admin.v1alpha.UserProvidedDataSettings
+	75,  // 102: google.analytics.admin.v1alpha.ReportingDataAnnotation.DateRange.start_date:type_name -> google.type.Date
+	75,  // 103: google.analytics.admin.v1alpha.ReportingDataAnnotation.DateRange.end_date:type_name -> google.type.Date
+	104, // [104:104] is the sub-list for method output_type
+	104, // [104:104] is the sub-list for method input_type
+	104, // [104:104] is the sub-list for extension type_name
+	104, // [104:104] is the sub-list for extension extendee
+	0,   // [0:104] is the sub-list for field type_name
 }
 
 func init() { file_google_analytics_admin_v1alpha_resources_proto_init() }
@@ -7335,7 +7437,7 @@ func file_google_analytics_admin_v1alpha_resources_proto_init() {
 		(*ReportingDataAnnotation_AnnotationDate)(nil),
 		(*ReportingDataAnnotation_AnnotationDateRange)(nil),
 	}
-	file_google_analytics_admin_v1alpha_resources_proto_msgTypes[40].OneofWrappers = []any{
+	file_google_analytics_admin_v1alpha_resources_proto_msgTypes[41].OneofWrappers = []any{
 		(*ChangeHistoryChange_ChangeHistoryResource_Account)(nil),
 		(*ChangeHistoryChange_ChangeHistoryResource_Property)(nil),
 		(*ChangeHistoryChange_ChangeHistoryResource_FirebaseLink)(nil),
@@ -7365,15 +7467,16 @@ func file_google_analytics_admin_v1alpha_resources_proto_init() {
 		(*ChangeHistoryChange_ChangeHistoryResource_ReportingDataAnnotation)(nil),
 		(*ChangeHistoryChange_ChangeHistoryResource_SubpropertySyncConfig)(nil),
 		(*ChangeHistoryChange_ChangeHistoryResource_ReportingIdentitySettings)(nil),
+		(*ChangeHistoryChange_ChangeHistoryResource_UserProvidedDataSettings)(nil),
 	}
-	file_google_analytics_admin_v1alpha_resources_proto_msgTypes[41].OneofWrappers = []any{}
+	file_google_analytics_admin_v1alpha_resources_proto_msgTypes[42].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_analytics_admin_v1alpha_resources_proto_rawDesc), len(file_google_analytics_admin_v1alpha_resources_proto_rawDesc)),
 			NumEnums:      28,
-			NumMessages:   44,
+			NumMessages:   45,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

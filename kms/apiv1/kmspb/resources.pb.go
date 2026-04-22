@@ -1257,6 +1257,10 @@ type CryptoKey struct {
 	// justification codes.
 	// https://cloud.google.com/assured-workloads/key-access-justifications/docs/justification-codes
 	// By default, this field is absent, and all justification codes are allowed.
+	// If the
+	// `key_access_justifications_policy.allowed_access_reasons`
+	// is empty (zero allowed justification code), all encrypt, decrypt, and sign
+	// operations will fail.
 	KeyAccessJustificationsPolicy *KeyAccessJustificationsPolicy `protobuf:"bytes,17,opt,name=key_access_justifications_policy,json=keyAccessJustificationsPolicy,proto3" json:"key_access_justifications_policy,omitempty"`
 	unknownFields                 protoimpl.UnknownFields
 	sizeCache                     protoimpl.SizeCache
@@ -2241,14 +2245,18 @@ func (x *ExternalProtectionLevelOptions) GetEkmConnectionKeyPath() string {
 // [KeyAccessJustificationsPolicy][google.cloud.kms.v1.KeyAccessJustificationsPolicy]
 // specifies zero or more allowed
 // [AccessReason][google.cloud.kms.v1.AccessReason] values for encrypt, decrypt,
-// and sign operations on a [CryptoKey][google.cloud.kms.v1.CryptoKey].
+// and sign operations on a [CryptoKey][google.cloud.kms.v1.CryptoKey] or
+// [KeyAccessJustificationsPolicyConfig][google.cloud.kms.v1.KeyAccessJustificationsPolicyConfig]
+// (the default Key Access Justifications policy).
 type KeyAccessJustificationsPolicy struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The list of allowed reasons for access to a
-	// [CryptoKey][google.cloud.kms.v1.CryptoKey]. Zero allowed access reasons
-	// means all encrypt, decrypt, and sign operations for the
-	// [CryptoKey][google.cloud.kms.v1.CryptoKey] associated with this policy will
-	// fail.
+	// [CryptoKey][google.cloud.kms.v1.CryptoKey]. Note that empty
+	// allowed_access_reasons has a different meaning depending on where this
+	// message appears. If this is under
+	// [KeyAccessJustificationsPolicyConfig][google.cloud.kms.v1.KeyAccessJustificationsPolicyConfig],
+	// it means allow-all. If this is under
+	// [CryptoKey][google.cloud.kms.v1.CryptoKey], it means deny-all.
 	AllowedAccessReasons []AccessReason `protobuf:"varint,1,rep,packed,name=allowed_access_reasons,json=allowedAccessReasons,proto3,enum=google.cloud.kms.v1.AccessReason" json:"allowed_access_reasons,omitempty"`
 	unknownFields        protoimpl.UnknownFields
 	sizeCache            protoimpl.SizeCache

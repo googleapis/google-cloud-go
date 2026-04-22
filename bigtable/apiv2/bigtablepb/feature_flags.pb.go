@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -73,9 +73,13 @@ type FeatureFlags struct {
 	// Notify the server that the client explicitly opted in for Direct Access.
 	DirectAccessRequested bool `protobuf:"varint,10,opt,name=direct_access_requested,json=directAccessRequested,proto3" json:"direct_access_requested,omitempty"`
 	// If the client can support using BigtablePeerInfo.
-	PeerInfo      bool `protobuf:"varint,11,opt,name=peer_info,json=peerInfo,proto3" json:"peer_info,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	PeerInfo bool `protobuf:"varint,11,opt,name=peer_info,json=peerInfo,proto3" json:"peer_info,omitempty"`
+	// Indicates whether the client supports the Bigtable Sessions API.
+	SessionsCompatible bool `protobuf:"varint,12,opt,name=sessions_compatible,json=sessionsCompatible,proto3" json:"sessions_compatible,omitempty"`
+	// Internal flag to force sessions for internal projects.
+	SessionsRequired bool `protobuf:"varint,13,opt,name=sessions_required,json=sessionsRequired,proto3" json:"sessions_required,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *FeatureFlags) Reset() {
@@ -178,11 +182,25 @@ func (x *FeatureFlags) GetPeerInfo() bool {
 	return false
 }
 
+func (x *FeatureFlags) GetSessionsCompatible() bool {
+	if x != nil {
+		return x.SessionsCompatible
+	}
+	return false
+}
+
+func (x *FeatureFlags) GetSessionsRequired() bool {
+	if x != nil {
+		return x.SessionsRequired
+	}
+	return false
+}
+
 var File_google_bigtable_v2_feature_flags_proto protoreflect.FileDescriptor
 
 const file_google_bigtable_v2_feature_flags_proto_rawDesc = "" +
 	"\n" +
-	"&google/bigtable/v2/feature_flags.proto\x12\x12google.bigtable.v2\"\xf0\x03\n" +
+	"&google/bigtable/v2/feature_flags.proto\x12\x12google.bigtable.v2\"\xce\x04\n" +
 	"\fFeatureFlags\x12#\n" +
 	"\rreverse_scans\x18\x01 \x01(\bR\freverseScans\x123\n" +
 	"\x16mutate_rows_rate_limit\x18\x03 \x01(\bR\x13mutateRowsRateLimit\x125\n" +
@@ -195,7 +213,9 @@ const file_google_bigtable_v2_feature_flags_proto_rawDesc = "" +
 	"\x18traffic_director_enabled\x18\t \x01(\bR\x16trafficDirectorEnabled\x126\n" +
 	"\x17direct_access_requested\x18\n" +
 	" \x01(\bR\x15directAccessRequested\x12\x1b\n" +
-	"\tpeer_info\x18\v \x01(\bR\bpeerInfoB\xbb\x01\n" +
+	"\tpeer_info\x18\v \x01(\bR\bpeerInfo\x12/\n" +
+	"\x13sessions_compatible\x18\f \x01(\bR\x12sessionsCompatible\x12+\n" +
+	"\x11sessions_required\x18\r \x01(\bR\x10sessionsRequiredB\xbb\x01\n" +
 	"\x16com.google.bigtable.v2B\x11FeatureFlagsProtoP\x01Z8cloud.google.com/go/bigtable/apiv2/bigtablepb;bigtablepb\xaa\x02\x18Google.Cloud.Bigtable.V2\xca\x02\x18Google\\Cloud\\Bigtable\\V2\xea\x02\x1bGoogle::Cloud::Bigtable::V2b\x06proto3"
 
 var (

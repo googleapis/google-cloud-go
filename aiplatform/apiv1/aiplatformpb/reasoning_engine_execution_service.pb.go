@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import (
 	sync "sync"
 	unsafe "unsafe"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -221,11 +222,172 @@ func (x *StreamQueryReasoningEngineRequest) GetClassMethod() string {
 	return ""
 }
 
+// Request message for
+// [ReasoningEngineExecutionService.AsyncQueryReasoningEngine][google.cloud.aiplatform.v1.ReasoningEngineExecutionService.AsyncQueryReasoningEngine].
+type AsyncQueryReasoningEngineRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The name of the ReasoningEngine resource to use.
+	// Format:
+	// `projects/{project}/locations/{location}/reasoningEngines/{reasoning_engine}`
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Optional. Input Cloud Storage URI for the Async query.
+	InputGcsUri string `protobuf:"bytes,2,opt,name=input_gcs_uri,json=inputGcsUri,proto3" json:"input_gcs_uri,omitempty"`
+	// Optional. Output Cloud Storage URI for the Async query.
+	OutputGcsUri  string `protobuf:"bytes,3,opt,name=output_gcs_uri,json=outputGcsUri,proto3" json:"output_gcs_uri,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AsyncQueryReasoningEngineRequest) Reset() {
+	*x = AsyncQueryReasoningEngineRequest{}
+	mi := &file_google_cloud_aiplatform_v1_reasoning_engine_execution_service_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AsyncQueryReasoningEngineRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AsyncQueryReasoningEngineRequest) ProtoMessage() {}
+
+func (x *AsyncQueryReasoningEngineRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1_reasoning_engine_execution_service_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AsyncQueryReasoningEngineRequest.ProtoReflect.Descriptor instead.
+func (*AsyncQueryReasoningEngineRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1_reasoning_engine_execution_service_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *AsyncQueryReasoningEngineRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *AsyncQueryReasoningEngineRequest) GetInputGcsUri() string {
+	if x != nil {
+		return x.InputGcsUri
+	}
+	return ""
+}
+
+func (x *AsyncQueryReasoningEngineRequest) GetOutputGcsUri() string {
+	if x != nil {
+		return x.OutputGcsUri
+	}
+	return ""
+}
+
+// Operation metadata message for
+// [ReasoningEngineExecutionService.AsyncQueryReasoningEngine][google.cloud.aiplatform.v1.ReasoningEngineExecutionService.AsyncQueryReasoningEngine].
+type AsyncQueryReasoningEngineOperationMetadata struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The common part of the operation metadata.
+	GenericMetadata *GenericOperationMetadata `protobuf:"bytes,1,opt,name=generic_metadata,json=genericMetadata,proto3" json:"generic_metadata,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *AsyncQueryReasoningEngineOperationMetadata) Reset() {
+	*x = AsyncQueryReasoningEngineOperationMetadata{}
+	mi := &file_google_cloud_aiplatform_v1_reasoning_engine_execution_service_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AsyncQueryReasoningEngineOperationMetadata) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AsyncQueryReasoningEngineOperationMetadata) ProtoMessage() {}
+
+func (x *AsyncQueryReasoningEngineOperationMetadata) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1_reasoning_engine_execution_service_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AsyncQueryReasoningEngineOperationMetadata.ProtoReflect.Descriptor instead.
+func (*AsyncQueryReasoningEngineOperationMetadata) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1_reasoning_engine_execution_service_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *AsyncQueryReasoningEngineOperationMetadata) GetGenericMetadata() *GenericOperationMetadata {
+	if x != nil {
+		return x.GenericMetadata
+	}
+	return nil
+}
+
+// Response message for
+// [ReasoningEngineExecutionService.AsyncQueryReasoningEngine][google.cloud.aiplatform.v1.ReasoningEngineExecutionService.AsyncQueryReasoningEngine].
+type AsyncQueryReasoningEngineResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output Cloud Storage URI for the Async query.
+	OutputGcsUri  string `protobuf:"bytes,1,opt,name=output_gcs_uri,json=outputGcsUri,proto3" json:"output_gcs_uri,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AsyncQueryReasoningEngineResponse) Reset() {
+	*x = AsyncQueryReasoningEngineResponse{}
+	mi := &file_google_cloud_aiplatform_v1_reasoning_engine_execution_service_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AsyncQueryReasoningEngineResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AsyncQueryReasoningEngineResponse) ProtoMessage() {}
+
+func (x *AsyncQueryReasoningEngineResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1_reasoning_engine_execution_service_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AsyncQueryReasoningEngineResponse.ProtoReflect.Descriptor instead.
+func (*AsyncQueryReasoningEngineResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1_reasoning_engine_execution_service_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *AsyncQueryReasoningEngineResponse) GetOutputGcsUri() string {
+	if x != nil {
+		return x.OutputGcsUri
+	}
+	return ""
+}
+
 var File_google_cloud_aiplatform_v1_reasoning_engine_execution_service_proto protoreflect.FileDescriptor
 
 const file_google_cloud_aiplatform_v1_reasoning_engine_execution_service_proto_rawDesc = "" +
 	"\n" +
-	"Cgoogle/cloud/aiplatform/v1/reasoning_engine_execution_service.proto\x12\x1agoogle.cloud.aiplatform.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/httpbody.proto\x1a\x19google/api/resource.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xc0\x01\n" +
+	"Cgoogle/cloud/aiplatform/v1/reasoning_engine_execution_service.proto\x12\x1agoogle.cloud.aiplatform.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/httpbody.proto\x1a\x19google/api/resource.proto\x1a*google/cloud/aiplatform/v1/operation.proto\x1a#google/longrunning/operations.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xc0\x01\n" +
 	"\x1bQueryReasoningEngineRequest\x12E\n" +
 	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
 	")aiplatform.googleapis.com/ReasoningEngineR\x04name\x122\n" +
@@ -237,10 +399,21 @@ const file_google_cloud_aiplatform_v1_reasoning_engine_execution_service_proto_r
 	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
 	")aiplatform.googleapis.com/ReasoningEngineR\x04name\x122\n" +
 	"\x05input\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x05input\x12&\n" +
-	"\fclass_method\x18\x03 \x01(\tB\x03\xe0A\x01R\vclassMethod2\x86\x04\n" +
+	"\fclass_method\x18\x03 \x01(\tB\x03\xe0A\x01R\vclassMethod\"\xbd\x01\n" +
+	" AsyncQueryReasoningEngineRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
+	")aiplatform.googleapis.com/ReasoningEngineR\x04name\x12'\n" +
+	"\rinput_gcs_uri\x18\x02 \x01(\tB\x03\xe0A\x01R\vinputGcsUri\x12)\n" +
+	"\x0eoutput_gcs_uri\x18\x03 \x01(\tB\x03\xe0A\x01R\foutputGcsUri\"\x8d\x01\n" +
+	"*AsyncQueryReasoningEngineOperationMetadata\x12_\n" +
+	"\x10generic_metadata\x18\x01 \x01(\v24.google.cloud.aiplatform.v1.GenericOperationMetadataR\x0fgenericMetadata\"I\n" +
+	"!AsyncQueryReasoningEngineResponse\x12$\n" +
+	"\x0eoutput_gcs_uri\x18\x01 \x01(\tR\foutputGcsUri2\xcf\x06\n" +
 	"\x1fReasoningEngineExecutionService\x12\xd0\x01\n" +
 	"\x14QueryReasoningEngine\x127.google.cloud.aiplatform.v1.QueryReasoningEngineRequest\x1a8.google.cloud.aiplatform.v1.QueryReasoningEngineResponse\"E\x82\xd3\xe4\x93\x02?:\x01*\":/v1/{name=projects/*/locations/*/reasoningEngines/*}:query\x12\xc0\x01\n" +
-	"\x1aStreamQueryReasoningEngine\x12=.google.cloud.aiplatform.v1.StreamQueryReasoningEngineRequest\x1a\x14.google.api.HttpBody\"K\x82\xd3\xe4\x93\x02E:\x01*\"@/v1/{name=projects/*/locations/*/reasoningEngines/*}:streamQuery0\x01\x1aM\xcaA\x19aiplatform.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xe2\x01\n" +
+	"\x1aStreamQueryReasoningEngine\x12=.google.cloud.aiplatform.v1.StreamQueryReasoningEngineRequest\x1a\x14.google.api.HttpBody\"K\x82\xd3\xe4\x93\x02E:\x01*\"@/v1/{name=projects/*/locations/*/reasoningEngines/*}:streamQuery0\x01\x12\xc6\x02\n" +
+	"\x19AsyncQueryReasoningEngine\x12<.google.cloud.aiplatform.v1.AsyncQueryReasoningEngineRequest\x1a\x1d.google.longrunning.Operation\"\xcb\x01\xcaAO\n" +
+	"!AsyncQueryReasoningEngineResponse\x12*AsyncQueryReasoningEngineOperationMetadata\x82\xd3\xe4\x93\x02s:\x01*Z-:\x01*\"(/v1/{name=reasoningEngines/*}:asyncQuery\"?/v1/{name=projects/*/locations/*/reasoningEngines/*}:asyncQuery\x1aM\xcaA\x19aiplatform.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xe2\x01\n" +
 	"\x1ecom.google.cloud.aiplatform.v1B$ReasoningEngineExecutionServiceProtoP\x01Z>cloud.google.com/go/aiplatform/apiv1/aiplatformpb;aiplatformpb\xaa\x02\x1aGoogle.Cloud.AIPlatform.V1\xca\x02\x1aGoogle\\Cloud\\AIPlatform\\V1\xea\x02\x1dGoogle::Cloud::AIPlatform::V1b\x06proto3"
 
 var (
@@ -255,28 +428,36 @@ func file_google_cloud_aiplatform_v1_reasoning_engine_execution_service_proto_ra
 	return file_google_cloud_aiplatform_v1_reasoning_engine_execution_service_proto_rawDescData
 }
 
-var file_google_cloud_aiplatform_v1_reasoning_engine_execution_service_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_google_cloud_aiplatform_v1_reasoning_engine_execution_service_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_google_cloud_aiplatform_v1_reasoning_engine_execution_service_proto_goTypes = []any{
-	(*QueryReasoningEngineRequest)(nil),       // 0: google.cloud.aiplatform.v1.QueryReasoningEngineRequest
-	(*QueryReasoningEngineResponse)(nil),      // 1: google.cloud.aiplatform.v1.QueryReasoningEngineResponse
-	(*StreamQueryReasoningEngineRequest)(nil), // 2: google.cloud.aiplatform.v1.StreamQueryReasoningEngineRequest
-	(*structpb.Struct)(nil),                   // 3: google.protobuf.Struct
-	(*structpb.Value)(nil),                    // 4: google.protobuf.Value
-	(*httpbody.HttpBody)(nil),                 // 5: google.api.HttpBody
+	(*QueryReasoningEngineRequest)(nil),                // 0: google.cloud.aiplatform.v1.QueryReasoningEngineRequest
+	(*QueryReasoningEngineResponse)(nil),               // 1: google.cloud.aiplatform.v1.QueryReasoningEngineResponse
+	(*StreamQueryReasoningEngineRequest)(nil),          // 2: google.cloud.aiplatform.v1.StreamQueryReasoningEngineRequest
+	(*AsyncQueryReasoningEngineRequest)(nil),           // 3: google.cloud.aiplatform.v1.AsyncQueryReasoningEngineRequest
+	(*AsyncQueryReasoningEngineOperationMetadata)(nil), // 4: google.cloud.aiplatform.v1.AsyncQueryReasoningEngineOperationMetadata
+	(*AsyncQueryReasoningEngineResponse)(nil),          // 5: google.cloud.aiplatform.v1.AsyncQueryReasoningEngineResponse
+	(*structpb.Struct)(nil),                            // 6: google.protobuf.Struct
+	(*structpb.Value)(nil),                             // 7: google.protobuf.Value
+	(*GenericOperationMetadata)(nil),                   // 8: google.cloud.aiplatform.v1.GenericOperationMetadata
+	(*httpbody.HttpBody)(nil),                          // 9: google.api.HttpBody
+	(*longrunningpb.Operation)(nil),                    // 10: google.longrunning.Operation
 }
 var file_google_cloud_aiplatform_v1_reasoning_engine_execution_service_proto_depIdxs = []int32{
-	3, // 0: google.cloud.aiplatform.v1.QueryReasoningEngineRequest.input:type_name -> google.protobuf.Struct
-	4, // 1: google.cloud.aiplatform.v1.QueryReasoningEngineResponse.output:type_name -> google.protobuf.Value
-	3, // 2: google.cloud.aiplatform.v1.StreamQueryReasoningEngineRequest.input:type_name -> google.protobuf.Struct
-	0, // 3: google.cloud.aiplatform.v1.ReasoningEngineExecutionService.QueryReasoningEngine:input_type -> google.cloud.aiplatform.v1.QueryReasoningEngineRequest
-	2, // 4: google.cloud.aiplatform.v1.ReasoningEngineExecutionService.StreamQueryReasoningEngine:input_type -> google.cloud.aiplatform.v1.StreamQueryReasoningEngineRequest
-	1, // 5: google.cloud.aiplatform.v1.ReasoningEngineExecutionService.QueryReasoningEngine:output_type -> google.cloud.aiplatform.v1.QueryReasoningEngineResponse
-	5, // 6: google.cloud.aiplatform.v1.ReasoningEngineExecutionService.StreamQueryReasoningEngine:output_type -> google.api.HttpBody
-	5, // [5:7] is the sub-list for method output_type
-	3, // [3:5] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	6,  // 0: google.cloud.aiplatform.v1.QueryReasoningEngineRequest.input:type_name -> google.protobuf.Struct
+	7,  // 1: google.cloud.aiplatform.v1.QueryReasoningEngineResponse.output:type_name -> google.protobuf.Value
+	6,  // 2: google.cloud.aiplatform.v1.StreamQueryReasoningEngineRequest.input:type_name -> google.protobuf.Struct
+	8,  // 3: google.cloud.aiplatform.v1.AsyncQueryReasoningEngineOperationMetadata.generic_metadata:type_name -> google.cloud.aiplatform.v1.GenericOperationMetadata
+	0,  // 4: google.cloud.aiplatform.v1.ReasoningEngineExecutionService.QueryReasoningEngine:input_type -> google.cloud.aiplatform.v1.QueryReasoningEngineRequest
+	2,  // 5: google.cloud.aiplatform.v1.ReasoningEngineExecutionService.StreamQueryReasoningEngine:input_type -> google.cloud.aiplatform.v1.StreamQueryReasoningEngineRequest
+	3,  // 6: google.cloud.aiplatform.v1.ReasoningEngineExecutionService.AsyncQueryReasoningEngine:input_type -> google.cloud.aiplatform.v1.AsyncQueryReasoningEngineRequest
+	1,  // 7: google.cloud.aiplatform.v1.ReasoningEngineExecutionService.QueryReasoningEngine:output_type -> google.cloud.aiplatform.v1.QueryReasoningEngineResponse
+	9,  // 8: google.cloud.aiplatform.v1.ReasoningEngineExecutionService.StreamQueryReasoningEngine:output_type -> google.api.HttpBody
+	10, // 9: google.cloud.aiplatform.v1.ReasoningEngineExecutionService.AsyncQueryReasoningEngine:output_type -> google.longrunning.Operation
+	7,  // [7:10] is the sub-list for method output_type
+	4,  // [4:7] is the sub-list for method input_type
+	4,  // [4:4] is the sub-list for extension type_name
+	4,  // [4:4] is the sub-list for extension extendee
+	0,  // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_aiplatform_v1_reasoning_engine_execution_service_proto_init() }
@@ -284,13 +465,14 @@ func file_google_cloud_aiplatform_v1_reasoning_engine_execution_service_proto_in
 	if File_google_cloud_aiplatform_v1_reasoning_engine_execution_service_proto != nil {
 		return
 	}
+	file_google_cloud_aiplatform_v1_operation_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_aiplatform_v1_reasoning_engine_execution_service_proto_rawDesc), len(file_google_cloud_aiplatform_v1_reasoning_engine_execution_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

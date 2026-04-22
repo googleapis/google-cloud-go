@@ -3901,7 +3901,9 @@ type RouteInfo struct {
 	Uri string `protobuf:"bytes,2,opt,name=uri,proto3" json:"uri,omitempty"`
 	// Region of the route. DYNAMIC, PEERING_DYNAMIC, POLICY_BASED and ADVERTISED
 	// routes only. If set for POLICY_BASED route, this is a region of VLAN
-	// attachments for Cloud Interconnect the route applies to.
+	// attachments for Cloud Interconnect the route applies to. If set to "all"
+	// for POLICY_BASED route, the route applies to VLAN attachments of Cloud
+	// Interconnect in all regions.
 	Region string `protobuf:"bytes,19,opt,name=region,proto3" json:"region,omitempty"`
 	// Destination IP range of the route.
 	DestIpRange string `protobuf:"bytes,3,opt,name=dest_ip_range,json=destIpRange,proto3" json:"dest_ip_range,omitempty"`

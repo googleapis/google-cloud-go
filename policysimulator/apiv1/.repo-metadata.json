@@ -6,5 +6,5 @@
     "distribution_name": "cloud.google.com/go/policysimulator/apiv1",
     "language": "go",
     "library_type": "GAPIC_AUTO",
-    "release_level": "stable"
+    "release_level": "preview"
 }

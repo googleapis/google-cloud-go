@@ -1421,8 +1421,19 @@ type CopyModelRequest struct {
 	// Customer-managed encryption key options. If this is set,
 	// then the Model copy will be encrypted with the provided encryption key.
 	EncryptionSpec *EncryptionSpec `protobuf:"bytes,3,opt,name=encryption_spec,json=encryptionSpec,proto3" json:"encryption_spec,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// Optional. The user-provided custom service account to use to do the copy
+	// model. If empty, [Vertex AI Service
+	// Agent](https://cloud.google.com/vertex-ai/docs/general/access-control#service-agents)
+	// will be used to access resources needed to upload the model. This account
+	// must belong to the destination project where the model is copied to,
+	// i.e., the project specified in the `parent` field of this request and
+	// have the Vertex AI Service Agent role in the source project.
+	//
+	// Requires the user copying the Model to have the
+	// `iam.serviceAccounts.actAs` permission on this service account.
+	CustomServiceAccount string `protobuf:"bytes,7,opt,name=custom_service_account,json=customServiceAccount,proto3" json:"custom_service_account,omitempty"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
 }
 
 func (x *CopyModelRequest) Reset() {
@@ -1499,6 +1510,13 @@ func (x *CopyModelRequest) GetEncryptionSpec() *EncryptionSpec {
 		return x.EncryptionSpec
 	}
 	return nil
+}
+
+func (x *CopyModelRequest) GetCustomServiceAccount() string {
+	if x != nil {
+		return x.CustomServiceAccount
+	}
+	return ""
 }
 
 type isCopyModelRequest_DestinationModel interface {
@@ -2528,7 +2546,7 @@ const file_google_cloud_aiplatform_v1_model_service_proto_rawDesc = "" +
 	"\x13artifact_output_uri\x18\x02 \x01(\tB\x03\xe0A\x03R\x11artifactOutputUri\x12-\n" +
 	"\x10image_output_uri\x18\x03 \x01(\tB\x03\xe0A\x03R\x0eimageOutputUri\"\"\n" +
 	" UpdateExplanationDatasetResponse\"\x15\n" +
-	"\x13ExportModelResponse\"\xfb\x02\n" +
+	"\x13ExportModelResponse\"\xb6\x03\n" +
 	"\x10CopyModelRequest\x12 \n" +
 	"\bmodel_id\x18\x04 \x01(\tB\x03\xe0A\x01H\x00R\amodelId\x12L\n" +
 	"\fparent_model\x18\x05 \x01(\tB'\xe0A\x01\xfaA!\n" +
@@ -2537,7 +2555,8 @@ const file_google_cloud_aiplatform_v1_model_service_proto_rawDesc = "" +
 	"!locations.googleapis.com/LocationR\x06parent\x12J\n" +
 	"\fsource_model\x18\x02 \x01(\tB'\xe0A\x02\xfaA!\n" +
 	"\x1faiplatform.googleapis.com/ModelR\vsourceModel\x12S\n" +
-	"\x0fencryption_spec\x18\x03 \x01(\v2*.google.cloud.aiplatform.v1.EncryptionSpecR\x0eencryptionSpecB\x13\n" +
+	"\x0fencryption_spec\x18\x03 \x01(\v2*.google.cloud.aiplatform.v1.EncryptionSpecR\x0eencryptionSpec\x129\n" +
+	"\x16custom_service_account\x18\a \x01(\tB\x03\xe0A\x01R\x14customServiceAccountB\x13\n" +
 	"\x11destination_model\"}\n" +
 	"\x1aCopyModelOperationMetadata\x12_\n" +
 	"\x10generic_metadata\x18\x01 \x01(\v24.google.cloud.aiplatform.v1.GenericOperationMetadataR\x0fgenericMetadata\"~\n" +

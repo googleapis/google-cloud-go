@@ -389,6 +389,8 @@ func (*Search_TextSearch) isSearch_SearchType() {}
 // Defines a search operation using a query vector.
 type VectorSearch struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
+	// Specifies the type of vector to use for the query.
+	//
 	// Types that are valid to be assigned to VectorType:
 	//
 	//	*VectorSearch_Vector

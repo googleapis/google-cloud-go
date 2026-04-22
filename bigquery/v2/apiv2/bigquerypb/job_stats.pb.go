@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -703,8 +703,11 @@ type IncrementalResultStats_DisabledReason int32
 const (
 	// Disabled reason not specified.
 	IncrementalResultStats_DISABLED_REASON_UNSPECIFIED IncrementalResultStats_DisabledReason = 0
-	// Some other reason.
+	// Incremental results are/were disabled for reasons not covered by the
+	// other enum values, e.g. runtime issues.
 	IncrementalResultStats_OTHER IncrementalResultStats_DisabledReason = 1
+	// Query includes an operation that is not supported.
+	IncrementalResultStats_UNSUPPORTED_OPERATOR IncrementalResultStats_DisabledReason = 2
 )
 
 // Enum value maps for IncrementalResultStats_DisabledReason.
@@ -712,10 +715,12 @@ var (
 	IncrementalResultStats_DisabledReason_name = map[int32]string{
 		0: "DISABLED_REASON_UNSPECIFIED",
 		1: "OTHER",
+		2: "UNSUPPORTED_OPERATOR",
 	}
 	IncrementalResultStats_DisabledReason_value = map[string]int32{
 		"DISABLED_REASON_UNSPECIFIED": 0,
 		"OTHER":                       1,
+		"UNSUPPORTED_OPERATOR":        2,
 	}
 )
 
@@ -853,6 +858,118 @@ func (ScriptStatistics_EvaluationKind) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_bigquery_v2_job_stats_proto_rawDescGZIP(), []int{20, 0}
 }
 
+// Enum to specify the DML mode used.
+type DmlStats_DmlMode int32
+
+const (
+	// Default value. This value is unused.
+	DmlStats_DML_MODE_UNSPECIFIED DmlStats_DmlMode = 0
+	// Coarse-grained DML was used.
+	DmlStats_COARSE_GRAINED_DML DmlStats_DmlMode = 1
+	// Fine-grained DML was used.
+	DmlStats_FINE_GRAINED_DML DmlStats_DmlMode = 2
+)
+
+// Enum value maps for DmlStats_DmlMode.
+var (
+	DmlStats_DmlMode_name = map[int32]string{
+		0: "DML_MODE_UNSPECIFIED",
+		1: "COARSE_GRAINED_DML",
+		2: "FINE_GRAINED_DML",
+	}
+	DmlStats_DmlMode_value = map[string]int32{
+		"DML_MODE_UNSPECIFIED": 0,
+		"COARSE_GRAINED_DML":   1,
+		"FINE_GRAINED_DML":     2,
+	}
+)
+
+func (x DmlStats_DmlMode) Enum() *DmlStats_DmlMode {
+	p := new(DmlStats_DmlMode)
+	*p = x
+	return p
+}
+
+func (x DmlStats_DmlMode) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (DmlStats_DmlMode) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_bigquery_v2_job_stats_proto_enumTypes[12].Descriptor()
+}
+
+func (DmlStats_DmlMode) Type() protoreflect.EnumType {
+	return &file_google_cloud_bigquery_v2_job_stats_proto_enumTypes[12]
+}
+
+func (x DmlStats_DmlMode) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use DmlStats_DmlMode.Descriptor instead.
+func (DmlStats_DmlMode) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_bigquery_v2_job_stats_proto_rawDescGZIP(), []int{24, 0}
+}
+
+// Reason for disabling fine-grained DML. Additional values may be added in
+// the future.
+type DmlStats_FineGrainedDmlUnusedReason int32
+
+const (
+	// Default value. This value is unused.
+	DmlStats_FINE_GRAINED_DML_UNUSED_REASON_UNSPECIFIED DmlStats_FineGrainedDmlUnusedReason = 0
+	// Max partition size threshold exceeded. [Fine-grained DML Limitations]
+	// (https://docs.cloud.google.com/bigquery/docs/data-manipulation-language#fine-grained-dml-limitations)
+	DmlStats_MAX_PARTITION_SIZE_EXCEEDED DmlStats_FineGrainedDmlUnusedReason = 1
+	// The table is not enrolled for fine-grained DML.
+	DmlStats_TABLE_NOT_ENROLLED DmlStats_FineGrainedDmlUnusedReason = 2
+	// The DML statement is part of a multi-statement transaction.
+	DmlStats_DML_IN_MULTI_STATEMENT_TRANSACTION DmlStats_FineGrainedDmlUnusedReason = 3
+)
+
+// Enum value maps for DmlStats_FineGrainedDmlUnusedReason.
+var (
+	DmlStats_FineGrainedDmlUnusedReason_name = map[int32]string{
+		0: "FINE_GRAINED_DML_UNUSED_REASON_UNSPECIFIED",
+		1: "MAX_PARTITION_SIZE_EXCEEDED",
+		2: "TABLE_NOT_ENROLLED",
+		3: "DML_IN_MULTI_STATEMENT_TRANSACTION",
+	}
+	DmlStats_FineGrainedDmlUnusedReason_value = map[string]int32{
+		"FINE_GRAINED_DML_UNUSED_REASON_UNSPECIFIED": 0,
+		"MAX_PARTITION_SIZE_EXCEEDED":                1,
+		"TABLE_NOT_ENROLLED":                         2,
+		"DML_IN_MULTI_STATEMENT_TRANSACTION":         3,
+	}
+)
+
+func (x DmlStats_FineGrainedDmlUnusedReason) Enum() *DmlStats_FineGrainedDmlUnusedReason {
+	p := new(DmlStats_FineGrainedDmlUnusedReason)
+	*p = x
+	return p
+}
+
+func (x DmlStats_FineGrainedDmlUnusedReason) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (DmlStats_FineGrainedDmlUnusedReason) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_bigquery_v2_job_stats_proto_enumTypes[13].Descriptor()
+}
+
+func (DmlStats_FineGrainedDmlUnusedReason) Type() protoreflect.EnumType {
+	return &file_google_cloud_bigquery_v2_job_stats_proto_enumTypes[13]
+}
+
+func (x DmlStats_FineGrainedDmlUnusedReason) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use DmlStats_FineGrainedDmlUnusedReason.Descriptor instead.
+func (DmlStats_FineGrainedDmlUnusedReason) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_bigquery_v2_job_stats_proto_rawDescGZIP(), []int{24, 1}
+}
+
 // Reason why a materialized view was not chosen for a query. For more
 // information, see [Understand why materialized views were
 // rejected](https://cloud.google.com/bigquery/docs/materialized-views-use#understand-rejected).
@@ -940,11 +1057,11 @@ func (x MaterializedView_RejectedReason) String() string {
 }
 
 func (MaterializedView_RejectedReason) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_bigquery_v2_job_stats_proto_enumTypes[12].Descriptor()
+	return file_google_cloud_bigquery_v2_job_stats_proto_enumTypes[14].Descriptor()
 }
 
 func (MaterializedView_RejectedReason) Type() protoreflect.EnumType {
-	return &file_google_cloud_bigquery_v2_job_stats_proto_enumTypes[12]
+	return &file_google_cloud_bigquery_v2_job_stats_proto_enumTypes[14]
 }
 
 func (x MaterializedView_RejectedReason) Number() protoreflect.EnumNumber {
@@ -999,11 +1116,11 @@ func (x TableMetadataCacheUsage_UnusedReason) String() string {
 }
 
 func (TableMetadataCacheUsage_UnusedReason) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_bigquery_v2_job_stats_proto_enumTypes[13].Descriptor()
+	return file_google_cloud_bigquery_v2_job_stats_proto_enumTypes[15].Descriptor()
 }
 
 func (TableMetadataCacheUsage_UnusedReason) Type() protoreflect.EnumType {
-	return &file_google_cloud_bigquery_v2_job_stats_proto_enumTypes[13]
+	return &file_google_cloud_bigquery_v2_job_stats_proto_enumTypes[15]
 }
 
 func (x TableMetadataCacheUsage_UnusedReason) Number() protoreflect.EnumNumber {
@@ -2274,16 +2391,31 @@ func (x *LoadQueryStatistics) GetBadRecords() *wrapperspb.Int64Value {
 // JobStatistics2. This feature is not yet available.
 type IncrementalResultStats struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Reason why incremental query results are/were not written by the query.
+	// Output only. Reason why incremental query results are/were not written by
+	// the query.
 	DisabledReason IncrementalResultStats_DisabledReason `protobuf:"varint,1,opt,name=disabled_reason,json=disabledReason,proto3,enum=google.cloud.bigquery.v2.IncrementalResultStats_DisabledReason" json:"disabled_reason,omitempty"`
-	// The time at which the result table's contents were completely replaced.
-	// May be absent if no results have been written or the query has completed.
+	// Output only. Additional human-readable clarification, if available, for
+	// DisabledReason.
+	DisabledReasonDetails string `protobuf:"bytes,4,opt,name=disabled_reason_details,json=disabledReasonDetails,proto3" json:"disabled_reason_details,omitempty"`
+	// Output only. The time at which the result table's contents were completely
+	// replaced. May be absent if no results have been written or the query has
+	// completed.
 	ResultSetLastReplaceTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=result_set_last_replace_time,json=resultSetLastReplaceTime,proto3" json:"result_set_last_replace_time,omitempty"`
-	// The time at which the result table's contents were modified.
+	// Output only. The time at which the result table's contents were modified.
 	// May be absent if no results have been written or the query has completed.
 	ResultSetLastModifyTime *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=result_set_last_modify_time,json=resultSetLastModifyTime,proto3" json:"result_set_last_modify_time,omitempty"`
-	unknownFields           protoimpl.UnknownFields
-	sizeCache               protoimpl.SizeCache
+	// Output only. The time at which the first incremental result was written. If
+	// the query needed to restart internally, this only describes the final
+	// attempt.
+	FirstIncrementalRowTime *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=first_incremental_row_time,json=firstIncrementalRowTime,proto3" json:"first_incremental_row_time,omitempty"`
+	// Output only. The time at which the last incremental result was written.
+	// Does not include the final result written after query completion.
+	LastIncrementalRowTime *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=last_incremental_row_time,json=lastIncrementalRowTime,proto3" json:"last_incremental_row_time,omitempty"`
+	// Output only. Number of rows that were in the latest result set before query
+	// completion.
+	IncrementalRowCount *int64 `protobuf:"varint,7,opt,name=incremental_row_count,json=incrementalRowCount,proto3,oneof" json:"incremental_row_count,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *IncrementalResultStats) Reset() {
@@ -2323,6 +2455,13 @@ func (x *IncrementalResultStats) GetDisabledReason() IncrementalResultStats_Disa
 	return IncrementalResultStats_DISABLED_REASON_UNSPECIFIED
 }
 
+func (x *IncrementalResultStats) GetDisabledReasonDetails() string {
+	if x != nil {
+		return x.DisabledReasonDetails
+	}
+	return ""
+}
+
 func (x *IncrementalResultStats) GetResultSetLastReplaceTime() *timestamppb.Timestamp {
 	if x != nil {
 		return x.ResultSetLastReplaceTime
@@ -2335,6 +2474,27 @@ func (x *IncrementalResultStats) GetResultSetLastModifyTime() *timestamppb.Times
 		return x.ResultSetLastModifyTime
 	}
 	return nil
+}
+
+func (x *IncrementalResultStats) GetFirstIncrementalRowTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.FirstIncrementalRowTime
+	}
+	return nil
+}
+
+func (x *IncrementalResultStats) GetLastIncrementalRowTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.LastIncrementalRowTime
+	}
+	return nil
+}
+
+func (x *IncrementalResultStats) GetIncrementalRowCount() int64 {
+	if x != nil && x.IncrementalRowCount != nil {
+		return *x.IncrementalRowCount
+	}
+	return 0
 }
 
 // Statistics for a query job.
@@ -2384,6 +2544,9 @@ type JobStatistics2 struct {
 	ReferencedTables []*TableReference `protobuf:"bytes,10,rep,name=referenced_tables,json=referencedTables,proto3" json:"referenced_tables,omitempty"`
 	// Output only. Referenced routines for the job.
 	ReferencedRoutines []*RoutineReference `protobuf:"bytes,24,rep,name=referenced_routines,json=referencedRoutines,proto3" json:"referenced_routines,omitempty"`
+	// Output only. Referenced property graphs for the job. Queries that reference
+	// more than 50 property graphs will not have a complete list.
+	ReferencedPropertyGraphs []*PropertyGraphReference `protobuf:"bytes,49,rep,name=referenced_property_graphs,json=referencedPropertyGraphs,proto3" json:"referenced_property_graphs,omitempty"`
 	// Output only. The schema of the results. Present only for successful dry
 	// run of non-legacy SQL queries.
 	Schema *TableSchema `protobuf:"bytes,11,opt,name=schema,proto3" json:"schema,omitempty"`
@@ -2582,8 +2745,10 @@ type JobStatistics2 struct {
 	// Output only. Statistics related to incremental query results, if enabled
 	// for the query. This feature is not yet available.
 	IncrementalResultStats *IncrementalResultStats `protobuf:"bytes,53,opt,name=incremental_result_stats,json=incrementalResultStats,proto3" json:"incremental_result_stats,omitempty"`
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	// Output only. Statistics related to GenAI usage in the query.
+	GenAiStats    *GenAiStats `protobuf:"bytes,54,opt,name=gen_ai_stats,json=genAiStats,proto3" json:"gen_ai_stats,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *JobStatistics2) Reset() {
@@ -2703,6 +2868,13 @@ func (x *JobStatistics2) GetReferencedTables() []*TableReference {
 func (x *JobStatistics2) GetReferencedRoutines() []*RoutineReference {
 	if x != nil {
 		return x.ReferencedRoutines
+	}
+	return nil
+}
+
+func (x *JobStatistics2) GetReferencedPropertyGraphs() []*PropertyGraphReference {
+	if x != nil {
+		return x.ReferencedPropertyGraphs
 	}
 	return nil
 }
@@ -2906,6 +3078,13 @@ func (x *JobStatistics2) GetMetadataCacheStatistics() *MetadataCacheStatistics {
 func (x *JobStatistics2) GetIncrementalResultStats() *IncrementalResultStats {
 	if x != nil {
 		return x.IncrementalResultStats
+	}
+	return nil
+}
+
+func (x *JobStatistics2) GetGenAiStats() *GenAiStats {
+	if x != nil {
+		return x.GenAiStats
 	}
 	return nil
 }
@@ -3637,8 +3816,12 @@ type DmlStats struct {
 	// Output only. Number of updated Rows. Populated by DML UPDATE and MERGE
 	// statements.
 	UpdatedRowCount *wrapperspb.Int64Value `protobuf:"bytes,3,opt,name=updated_row_count,json=updatedRowCount,proto3" json:"updated_row_count,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	// Output only. DML mode used.
+	DmlMode DmlStats_DmlMode `protobuf:"varint,4,opt,name=dml_mode,json=dmlMode,proto3,enum=google.cloud.bigquery.v2.DmlStats_DmlMode" json:"dml_mode,omitempty"`
+	// Output only. Reason for disabling fine-grained DML if applicable.
+	FineGrainedDmlUnusedReason DmlStats_FineGrainedDmlUnusedReason `protobuf:"varint,5,opt,name=fine_grained_dml_unused_reason,json=fineGrainedDmlUnusedReason,proto3,enum=google.cloud.bigquery.v2.DmlStats_FineGrainedDmlUnusedReason" json:"fine_grained_dml_unused_reason,omitempty"`
+	unknownFields              protoimpl.UnknownFields
+	sizeCache                  protoimpl.SizeCache
 }
 
 func (x *DmlStats) Reset() {
@@ -3690,6 +3873,20 @@ func (x *DmlStats) GetUpdatedRowCount() *wrapperspb.Int64Value {
 		return x.UpdatedRowCount
 	}
 	return nil
+}
+
+func (x *DmlStats) GetDmlMode() DmlStats_DmlMode {
+	if x != nil {
+		return x.DmlMode
+	}
+	return DmlStats_DML_MODE_UNSPECIFIED
+}
+
+func (x *DmlStats) GetFineGrainedDmlUnusedReason() DmlStats_FineGrainedDmlUnusedReason {
+	if x != nil {
+		return x.FineGrainedDmlUnusedReason
+	}
+	return DmlStats_FINE_GRAINED_DML_UNUSED_REASON_UNSPECIFIED
 }
 
 // Performance insights for the job.
@@ -4849,7 +5046,7 @@ var File_google_cloud_bigquery_v2_job_stats_proto protoreflect.FileDescriptor
 
 const file_google_cloud_bigquery_v2_job_stats_proto_rawDesc = "" +
 	"\n" +
-	"(google/cloud/bigquery/v2/job_stats.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/bigquery/v2/dataset_reference.proto\x1a$google/cloud/bigquery/v2/model.proto\x1a.google/cloud/bigquery/v2/query_parameter.proto\x1a0google/cloud/bigquery/v2/routine_reference.proto\x1a:google/cloud/bigquery/v2/row_access_policy_reference.proto\x1a+google/cloud/bigquery/v2/session_info.proto\x1a.google/cloud/bigquery/v2/table_reference.proto\x1a+google/cloud/bigquery/v2/table_schema.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\"B\n" +
+	"(google/cloud/bigquery/v2/job_stats.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/bigquery/v2/dataset_reference.proto\x1a+google/cloud/bigquery/v2/gen_ai_stats.proto\x1a$google/cloud/bigquery/v2/model.proto\x1a7google/cloud/bigquery/v2/property_graph_reference.proto\x1a.google/cloud/bigquery/v2/query_parameter.proto\x1a0google/cloud/bigquery/v2/routine_reference.proto\x1a:google/cloud/bigquery/v2/row_access_policy_reference.proto\x1a+google/cloud/bigquery/v2/session_info.proto\x1a.google/cloud/bigquery/v2/table_reference.proto\x1a+google/cloud/bigquery/v2/table_schema.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\"B\n" +
 	"\x10ExplainQueryStep\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12\x1a\n" +
 	"\bsubsteps\x18\x02 \x03(\tR\bsubsteps\"\xde\x0f\n" +
@@ -5040,14 +5237,20 @@ const file_google_cloud_bigquery_v2_job_stats_proto_rawDesc = "" +
 	"outputRows\x12C\n" +
 	"\foutput_bytes\x18\x04 \x01(\v2\x1b.google.protobuf.Int64ValueB\x03\xe0A\x03R\voutputBytes\x12A\n" +
 	"\vbad_records\x18\x05 \x01(\v2\x1b.google.protobuf.Int64ValueB\x03\xe0A\x03R\n" +
-	"badRecords\"\xf6\x02\n" +
-	"\x16IncrementalResultStats\x12h\n" +
-	"\x0fdisabled_reason\x18\x01 \x01(\x0e2?.google.cloud.bigquery.v2.IncrementalResultStats.DisabledReasonR\x0edisabledReason\x12Z\n" +
-	"\x1cresult_set_last_replace_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x18resultSetLastReplaceTime\x12X\n" +
-	"\x1bresult_set_last_modify_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\x17resultSetLastModifyTime\"<\n" +
+	"badRecords\"\xee\x05\n" +
+	"\x16IncrementalResultStats\x12m\n" +
+	"\x0fdisabled_reason\x18\x01 \x01(\x0e2?.google.cloud.bigquery.v2.IncrementalResultStats.DisabledReasonB\x03\xe0A\x03R\x0edisabledReason\x12;\n" +
+	"\x17disabled_reason_details\x18\x04 \x01(\tB\x03\xe0A\x03R\x15disabledReasonDetails\x12_\n" +
+	"\x1cresult_set_last_replace_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x18resultSetLastReplaceTime\x12]\n" +
+	"\x1bresult_set_last_modify_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x17resultSetLastModifyTime\x12\\\n" +
+	"\x1afirst_incremental_row_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x17firstIncrementalRowTime\x12Z\n" +
+	"\x19last_incremental_row_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x16lastIncrementalRowTime\x12<\n" +
+	"\x15incremental_row_count\x18\a \x01(\x03B\x03\xe0A\x03H\x00R\x13incrementalRowCount\x88\x01\x01\"V\n" +
 	"\x0eDisabledReason\x12\x1f\n" +
 	"\x1bDISABLED_REASON_UNSPECIFIED\x10\x00\x12\t\n" +
-	"\x05OTHER\x10\x01\"\xf4\x1d\n" +
+	"\x05OTHER\x10\x01\x12\x18\n" +
+	"\x14UNSUPPORTED_OPERATOR\x10\x02B\x18\n" +
+	"\x16_incremental_row_count\"\xb6\x1f\n" +
 	"\x0eJobStatistics2\x12O\n" +
 	"\n" +
 	"query_plan\x18\x01 \x03(\v2+.google.cloud.bigquery.v2.ExplainQueryStageB\x03\xe0A\x03R\tqueryPlan\x12\\\n" +
@@ -5063,7 +5266,8 @@ const file_google_cloud_bigquery_v2_job_stats_proto_rawDesc = "" +
 	"\tcache_hit\x18\t \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x03R\bcacheHit\x12Z\n" +
 	"\x11referenced_tables\x18\n" +
 	" \x03(\v2(.google.cloud.bigquery.v2.TableReferenceB\x03\xe0A\x03R\x10referencedTables\x12`\n" +
-	"\x13referenced_routines\x18\x18 \x03(\v2*.google.cloud.bigquery.v2.RoutineReferenceB\x03\xe0A\x03R\x12referencedRoutines\x12B\n" +
+	"\x13referenced_routines\x18\x18 \x03(\v2*.google.cloud.bigquery.v2.RoutineReferenceB\x03\xe0A\x03R\x12referencedRoutines\x12s\n" +
+	"\x1areferenced_property_graphs\x181 \x03(\v20.google.cloud.bigquery.v2.PropertyGraphReferenceB\x03\xe0A\x03R\x18referencedPropertyGraphs\x12B\n" +
 	"\x06schema\x18\v \x01(\v2%.google.cloud.bigquery.v2.TableSchemaB\x03\xe0A\x03R\x06schema\x12S\n" +
 	"\x15num_dml_affected_rows\x18\f \x01(\v2\x1b.google.protobuf.Int64ValueB\x03\xe0A\x03R\x12numDmlAffectedRows\x12D\n" +
 	"\tdml_stats\x18  \x01(\v2\".google.cloud.bigquery.v2.DmlStatsB\x03\xe0A\x03R\bdmlStats\x12m\n" +
@@ -5093,7 +5297,9 @@ const file_google_cloud_bigquery_v2_job_stats_proto_rawDesc = "" +
 	"\x11transferred_bytes\x18) \x01(\v2\x1b.google.protobuf.Int64ValueB\x03\xe0A\x03R\x10transferredBytes\x12{\n" +
 	"\x1cmaterialized_view_statistics\x18* \x01(\v24.google.cloud.bigquery.v2.MaterializedViewStatisticsB\x03\xe0A\x03R\x1amaterializedViewStatistics\x12r\n" +
 	"\x19metadata_cache_statistics\x18+ \x01(\v21.google.cloud.bigquery.v2.MetadataCacheStatisticsB\x03\xe0A\x03R\x17metadataCacheStatistics\x12o\n" +
-	"\x18incremental_result_stats\x185 \x01(\v20.google.cloud.bigquery.v2.IncrementalResultStatsB\x03\xe0A\x03R\x16incrementalResultStatsB\x1d\n" +
+	"\x18incremental_result_stats\x185 \x01(\v20.google.cloud.bigquery.v2.IncrementalResultStatsB\x03\xe0A\x03R\x16incrementalResultStats\x12K\n" +
+	"\fgen_ai_stats\x186 \x01(\v2$.google.cloud.bigquery.v2.GenAiStatsB\x03\xe0A\x03R\n" +
+	"genAiStatsB\x1d\n" +
 	"\x1b_total_services_sku_slot_ms\"\xba\x03\n" +
 	"\x0eJobStatistics3\x12A\n" +
 	"\vinput_files\x18\x01 \x01(\v2\x1b.google.protobuf.Int64ValueB\x03\xe0A\x03R\n" +
@@ -5172,11 +5378,22 @@ const file_google_cloud_bigquery_v2_job_stats_proto_rawDesc = "" +
 	"\aedition\x18\x18 \x01(\x0e2,.google.cloud.bigquery.v2.ReservationEditionB\x03\xe0A\x03R\aedition\x129\n" +
 	"\x16reservation_group_path\x18\x1a \x03(\tB\x03\xe0A\x03R\x14reservationGroupPath\x1a=\n" +
 	"\x0fTransactionInfo\x12*\n" +
-	"\x0etransaction_id\x18\x01 \x01(\tB\x03\xe0A\x03R\rtransactionId\"\xf6\x01\n" +
+	"\x0etransaction_id\x18\x01 \x01(\tB\x03\xe0A\x03R\rtransactionId\"\xce\x05\n" +
 	"\bDmlStats\x12N\n" +
 	"\x12inserted_row_count\x18\x01 \x01(\v2\x1b.google.protobuf.Int64ValueB\x03\xe0A\x03R\x10insertedRowCount\x12L\n" +
 	"\x11deleted_row_count\x18\x02 \x01(\v2\x1b.google.protobuf.Int64ValueB\x03\xe0A\x03R\x0fdeletedRowCount\x12L\n" +
-	"\x11updated_row_count\x18\x03 \x01(\v2\x1b.google.protobuf.Int64ValueB\x03\xe0A\x03R\x0fupdatedRowCount\"\xf5\x02\n" +
+	"\x11updated_row_count\x18\x03 \x01(\v2\x1b.google.protobuf.Int64ValueB\x03\xe0A\x03R\x0fupdatedRowCount\x12J\n" +
+	"\bdml_mode\x18\x04 \x01(\x0e2*.google.cloud.bigquery.v2.DmlStats.DmlModeB\x03\xe0A\x03R\admlMode\x12\x86\x01\n" +
+	"\x1efine_grained_dml_unused_reason\x18\x05 \x01(\x0e2=.google.cloud.bigquery.v2.DmlStats.FineGrainedDmlUnusedReasonB\x03\xe0A\x03R\x1afineGrainedDmlUnusedReason\"Q\n" +
+	"\aDmlMode\x12\x18\n" +
+	"\x14DML_MODE_UNSPECIFIED\x10\x00\x12\x16\n" +
+	"\x12COARSE_GRAINED_DML\x10\x01\x12\x14\n" +
+	"\x10FINE_GRAINED_DML\x10\x02\"\xad\x01\n" +
+	"\x1aFineGrainedDmlUnusedReason\x12.\n" +
+	"*FINE_GRAINED_DML_UNUSED_REASON_UNSPECIFIED\x10\x00\x12\x1f\n" +
+	"\x1bMAX_PARTITION_SIZE_EXCEEDED\x10\x01\x12\x16\n" +
+	"\x12TABLE_NOT_ENROLLED\x10\x02\x12&\n" +
+	"\"DML_IN_MULTI_STATEMENT_TRANSACTION\x10\x03\"\xf5\x02\n" +
 	"\x13PerformanceInsights\x12>\n" +
 	"\x19avg_previous_execution_ms\x18\x01 \x01(\x03B\x03\xe0A\x03R\x16avgPreviousExecutionMs\x12\x93\x01\n" +
 	"%stage_performance_standalone_insights\x18\x02 \x03(\v2;.google.cloud.bigquery.v2.StagePerformanceStandaloneInsightB\x03\xe0A\x03R\"stagePerformanceStandaloneInsights\x12\x87\x01\n" +
@@ -5306,7 +5523,7 @@ func file_google_cloud_bigquery_v2_job_stats_proto_rawDescGZIP() []byte {
 	return file_google_cloud_bigquery_v2_job_stats_proto_rawDescData
 }
 
-var file_google_cloud_bigquery_v2_job_stats_proto_enumTypes = make([]protoimpl.EnumInfo, 14)
+var file_google_cloud_bigquery_v2_job_stats_proto_enumTypes = make([]protoimpl.EnumInfo, 16)
 var file_google_cloud_bigquery_v2_job_stats_proto_msgTypes = make([]protoimpl.MessageInfo, 43)
 var file_google_cloud_bigquery_v2_job_stats_proto_goTypes = []any{
 	(ReservationEdition)(0),                                // 0: google.cloud.bigquery.v2.ReservationEdition
@@ -5321,225 +5538,235 @@ var file_google_cloud_bigquery_v2_job_stats_proto_goTypes = []any{
 	(IncrementalResultStats_DisabledReason)(0),             // 9: google.cloud.bigquery.v2.IncrementalResultStats.DisabledReason
 	(MlStatistics_TrainingType)(0),                         // 10: google.cloud.bigquery.v2.MlStatistics.TrainingType
 	(ScriptStatistics_EvaluationKind)(0),                   // 11: google.cloud.bigquery.v2.ScriptStatistics.EvaluationKind
-	(MaterializedView_RejectedReason)(0),                   // 12: google.cloud.bigquery.v2.MaterializedView.RejectedReason
-	(TableMetadataCacheUsage_UnusedReason)(0),              // 13: google.cloud.bigquery.v2.TableMetadataCacheUsage.UnusedReason
-	(*ExplainQueryStep)(nil),                               // 14: google.cloud.bigquery.v2.ExplainQueryStep
-	(*ExplainQueryStage)(nil),                              // 15: google.cloud.bigquery.v2.ExplainQueryStage
-	(*QueryTimelineSample)(nil),                            // 16: google.cloud.bigquery.v2.QueryTimelineSample
-	(*ExternalServiceCost)(nil),                            // 17: google.cloud.bigquery.v2.ExternalServiceCost
-	(*ExportDataStatistics)(nil),                           // 18: google.cloud.bigquery.v2.ExportDataStatistics
-	(*BiEngineReason)(nil),                                 // 19: google.cloud.bigquery.v2.BiEngineReason
-	(*BiEngineStatistics)(nil),                             // 20: google.cloud.bigquery.v2.BiEngineStatistics
-	(*IndexUnusedReason)(nil),                              // 21: google.cloud.bigquery.v2.IndexUnusedReason
-	(*IndexPruningStats)(nil),                              // 22: google.cloud.bigquery.v2.IndexPruningStats
-	(*StoredColumnsUsage)(nil),                             // 23: google.cloud.bigquery.v2.StoredColumnsUsage
-	(*SearchStatistics)(nil),                               // 24: google.cloud.bigquery.v2.SearchStatistics
-	(*VectorSearchStatistics)(nil),                         // 25: google.cloud.bigquery.v2.VectorSearchStatistics
-	(*QueryInfo)(nil),                                      // 26: google.cloud.bigquery.v2.QueryInfo
-	(*LoadQueryStatistics)(nil),                            // 27: google.cloud.bigquery.v2.LoadQueryStatistics
-	(*IncrementalResultStats)(nil),                         // 28: google.cloud.bigquery.v2.IncrementalResultStats
-	(*JobStatistics2)(nil),                                 // 29: google.cloud.bigquery.v2.JobStatistics2
-	(*JobStatistics3)(nil),                                 // 30: google.cloud.bigquery.v2.JobStatistics3
-	(*JobStatistics4)(nil),                                 // 31: google.cloud.bigquery.v2.JobStatistics4
-	(*CopyJobStatistics)(nil),                              // 32: google.cloud.bigquery.v2.CopyJobStatistics
-	(*MlStatistics)(nil),                                   // 33: google.cloud.bigquery.v2.MlStatistics
-	(*ScriptStatistics)(nil),                               // 34: google.cloud.bigquery.v2.ScriptStatistics
-	(*RowLevelSecurityStatistics)(nil),                     // 35: google.cloud.bigquery.v2.RowLevelSecurityStatistics
-	(*DataMaskingStatistics)(nil),                          // 36: google.cloud.bigquery.v2.DataMaskingStatistics
-	(*JobStatistics)(nil),                                  // 37: google.cloud.bigquery.v2.JobStatistics
-	(*DmlStats)(nil),                                       // 38: google.cloud.bigquery.v2.DmlStats
-	(*PerformanceInsights)(nil),                            // 39: google.cloud.bigquery.v2.PerformanceInsights
-	(*StagePerformanceChangeInsight)(nil),                  // 40: google.cloud.bigquery.v2.StagePerformanceChangeInsight
-	(*InputDataChange)(nil),                                // 41: google.cloud.bigquery.v2.InputDataChange
-	(*StagePerformanceStandaloneInsight)(nil),              // 42: google.cloud.bigquery.v2.StagePerformanceStandaloneInsight
-	(*HighCardinalityJoin)(nil),                            // 43: google.cloud.bigquery.v2.HighCardinalityJoin
-	(*PartitionSkew)(nil),                                  // 44: google.cloud.bigquery.v2.PartitionSkew
-	(*SparkStatistics)(nil),                                // 45: google.cloud.bigquery.v2.SparkStatistics
-	(*MaterializedViewStatistics)(nil),                     // 46: google.cloud.bigquery.v2.MaterializedViewStatistics
-	(*MaterializedView)(nil),                               // 47: google.cloud.bigquery.v2.MaterializedView
-	(*PruningStats)(nil),                                   // 48: google.cloud.bigquery.v2.PruningStats
-	(*TableMetadataCacheUsage)(nil),                        // 49: google.cloud.bigquery.v2.TableMetadataCacheUsage
-	(*MetadataCacheStatistics)(nil),                        // 50: google.cloud.bigquery.v2.MetadataCacheStatistics
-	(*StoredColumnsUsage_StoredColumnsUnusedReason)(nil),   // 51: google.cloud.bigquery.v2.StoredColumnsUsage.StoredColumnsUnusedReason
-	(*ScriptStatistics_ScriptStackFrame)(nil),              // 52: google.cloud.bigquery.v2.ScriptStatistics.ScriptStackFrame
-	(*JobStatistics_TransactionInfo)(nil),                  // 53: google.cloud.bigquery.v2.JobStatistics.TransactionInfo
-	(*PartitionSkew_SkewSource)(nil),                       // 54: google.cloud.bigquery.v2.PartitionSkew.SkewSource
-	(*SparkStatistics_LoggingInfo)(nil),                    // 55: google.cloud.bigquery.v2.SparkStatistics.LoggingInfo
-	nil,                                                    // 56: google.cloud.bigquery.v2.SparkStatistics.EndpointsEntry
-	(*wrapperspb.Int64Value)(nil),                          // 57: google.protobuf.Int64Value
-	(*wrapperspb.DoubleValue)(nil),                         // 58: google.protobuf.DoubleValue
-	(*TableReference)(nil),                                 // 59: google.cloud.bigquery.v2.TableReference
-	(*structpb.Struct)(nil),                                // 60: google.protobuf.Struct
-	(*timestamppb.Timestamp)(nil),                          // 61: google.protobuf.Timestamp
-	(*wrapperspb.Int32Value)(nil),                          // 62: google.protobuf.Int32Value
-	(*wrapperspb.BoolValue)(nil),                           // 63: google.protobuf.BoolValue
-	(*RoutineReference)(nil),                               // 64: google.cloud.bigquery.v2.RoutineReference
-	(*TableSchema)(nil),                                    // 65: google.cloud.bigquery.v2.TableSchema
-	(*QueryParameter)(nil),                                 // 66: google.cloud.bigquery.v2.QueryParameter
-	(*RowAccessPolicyReference)(nil),                       // 67: google.cloud.bigquery.v2.RowAccessPolicyReference
-	(*DatasetReference)(nil),                               // 68: google.cloud.bigquery.v2.DatasetReference
-	(*Model_TrainingRun_IterationResult)(nil),              // 69: google.cloud.bigquery.v2.Model.TrainingRun.IterationResult
-	(Model_ModelType)(0),                                   // 70: google.cloud.bigquery.v2.Model.ModelType
-	(*Model_HparamTuningTrial)(nil),                        // 71: google.cloud.bigquery.v2.Model.HparamTuningTrial
-	(*SessionInfo)(nil),                                    // 72: google.cloud.bigquery.v2.SessionInfo
-	(*durationpb.Duration)(nil),                            // 73: google.protobuf.Duration
+	(DmlStats_DmlMode)(0),                                  // 12: google.cloud.bigquery.v2.DmlStats.DmlMode
+	(DmlStats_FineGrainedDmlUnusedReason)(0),               // 13: google.cloud.bigquery.v2.DmlStats.FineGrainedDmlUnusedReason
+	(MaterializedView_RejectedReason)(0),                   // 14: google.cloud.bigquery.v2.MaterializedView.RejectedReason
+	(TableMetadataCacheUsage_UnusedReason)(0),              // 15: google.cloud.bigquery.v2.TableMetadataCacheUsage.UnusedReason
+	(*ExplainQueryStep)(nil),                               // 16: google.cloud.bigquery.v2.ExplainQueryStep
+	(*ExplainQueryStage)(nil),                              // 17: google.cloud.bigquery.v2.ExplainQueryStage
+	(*QueryTimelineSample)(nil),                            // 18: google.cloud.bigquery.v2.QueryTimelineSample
+	(*ExternalServiceCost)(nil),                            // 19: google.cloud.bigquery.v2.ExternalServiceCost
+	(*ExportDataStatistics)(nil),                           // 20: google.cloud.bigquery.v2.ExportDataStatistics
+	(*BiEngineReason)(nil),                                 // 21: google.cloud.bigquery.v2.BiEngineReason
+	(*BiEngineStatistics)(nil),                             // 22: google.cloud.bigquery.v2.BiEngineStatistics
+	(*IndexUnusedReason)(nil),                              // 23: google.cloud.bigquery.v2.IndexUnusedReason
+	(*IndexPruningStats)(nil),                              // 24: google.cloud.bigquery.v2.IndexPruningStats
+	(*StoredColumnsUsage)(nil),                             // 25: google.cloud.bigquery.v2.StoredColumnsUsage
+	(*SearchStatistics)(nil),                               // 26: google.cloud.bigquery.v2.SearchStatistics
+	(*VectorSearchStatistics)(nil),                         // 27: google.cloud.bigquery.v2.VectorSearchStatistics
+	(*QueryInfo)(nil),                                      // 28: google.cloud.bigquery.v2.QueryInfo
+	(*LoadQueryStatistics)(nil),                            // 29: google.cloud.bigquery.v2.LoadQueryStatistics
+	(*IncrementalResultStats)(nil),                         // 30: google.cloud.bigquery.v2.IncrementalResultStats
+	(*JobStatistics2)(nil),                                 // 31: google.cloud.bigquery.v2.JobStatistics2
+	(*JobStatistics3)(nil),                                 // 32: google.cloud.bigquery.v2.JobStatistics3
+	(*JobStatistics4)(nil),                                 // 33: google.cloud.bigquery.v2.JobStatistics4
+	(*CopyJobStatistics)(nil),                              // 34: google.cloud.bigquery.v2.CopyJobStatistics
+	(*MlStatistics)(nil),                                   // 35: google.cloud.bigquery.v2.MlStatistics
+	(*ScriptStatistics)(nil),                               // 36: google.cloud.bigquery.v2.ScriptStatistics
+	(*RowLevelSecurityStatistics)(nil),                     // 37: google.cloud.bigquery.v2.RowLevelSecurityStatistics
+	(*DataMaskingStatistics)(nil),                          // 38: google.cloud.bigquery.v2.DataMaskingStatistics
+	(*JobStatistics)(nil),                                  // 39: google.cloud.bigquery.v2.JobStatistics
+	(*DmlStats)(nil),                                       // 40: google.cloud.bigquery.v2.DmlStats
+	(*PerformanceInsights)(nil),                            // 41: google.cloud.bigquery.v2.PerformanceInsights
+	(*StagePerformanceChangeInsight)(nil),                  // 42: google.cloud.bigquery.v2.StagePerformanceChangeInsight
+	(*InputDataChange)(nil),                                // 43: google.cloud.bigquery.v2.InputDataChange
+	(*StagePerformanceStandaloneInsight)(nil),              // 44: google.cloud.bigquery.v2.StagePerformanceStandaloneInsight
+	(*HighCardinalityJoin)(nil),                            // 45: google.cloud.bigquery.v2.HighCardinalityJoin
+	(*PartitionSkew)(nil),                                  // 46: google.cloud.bigquery.v2.PartitionSkew
+	(*SparkStatistics)(nil),                                // 47: google.cloud.bigquery.v2.SparkStatistics
+	(*MaterializedViewStatistics)(nil),                     // 48: google.cloud.bigquery.v2.MaterializedViewStatistics
+	(*MaterializedView)(nil),                               // 49: google.cloud.bigquery.v2.MaterializedView
+	(*PruningStats)(nil),                                   // 50: google.cloud.bigquery.v2.PruningStats
+	(*TableMetadataCacheUsage)(nil),                        // 51: google.cloud.bigquery.v2.TableMetadataCacheUsage
+	(*MetadataCacheStatistics)(nil),                        // 52: google.cloud.bigquery.v2.MetadataCacheStatistics
+	(*StoredColumnsUsage_StoredColumnsUnusedReason)(nil),   // 53: google.cloud.bigquery.v2.StoredColumnsUsage.StoredColumnsUnusedReason
+	(*ScriptStatistics_ScriptStackFrame)(nil),              // 54: google.cloud.bigquery.v2.ScriptStatistics.ScriptStackFrame
+	(*JobStatistics_TransactionInfo)(nil),                  // 55: google.cloud.bigquery.v2.JobStatistics.TransactionInfo
+	(*PartitionSkew_SkewSource)(nil),                       // 56: google.cloud.bigquery.v2.PartitionSkew.SkewSource
+	(*SparkStatistics_LoggingInfo)(nil),                    // 57: google.cloud.bigquery.v2.SparkStatistics.LoggingInfo
+	nil,                                                    // 58: google.cloud.bigquery.v2.SparkStatistics.EndpointsEntry
+	(*wrapperspb.Int64Value)(nil),                          // 59: google.protobuf.Int64Value
+	(*wrapperspb.DoubleValue)(nil),                         // 60: google.protobuf.DoubleValue
+	(*TableReference)(nil),                                 // 61: google.cloud.bigquery.v2.TableReference
+	(*structpb.Struct)(nil),                                // 62: google.protobuf.Struct
+	(*timestamppb.Timestamp)(nil),                          // 63: google.protobuf.Timestamp
+	(*wrapperspb.Int32Value)(nil),                          // 64: google.protobuf.Int32Value
+	(*wrapperspb.BoolValue)(nil),                           // 65: google.protobuf.BoolValue
+	(*RoutineReference)(nil),                               // 66: google.cloud.bigquery.v2.RoutineReference
+	(*PropertyGraphReference)(nil),                         // 67: google.cloud.bigquery.v2.PropertyGraphReference
+	(*TableSchema)(nil),                                    // 68: google.cloud.bigquery.v2.TableSchema
+	(*QueryParameter)(nil),                                 // 69: google.cloud.bigquery.v2.QueryParameter
+	(*RowAccessPolicyReference)(nil),                       // 70: google.cloud.bigquery.v2.RowAccessPolicyReference
+	(*DatasetReference)(nil),                               // 71: google.cloud.bigquery.v2.DatasetReference
+	(*GenAiStats)(nil),                                     // 72: google.cloud.bigquery.v2.GenAiStats
+	(*Model_TrainingRun_IterationResult)(nil),              // 73: google.cloud.bigquery.v2.Model.TrainingRun.IterationResult
+	(Model_ModelType)(0),                                   // 74: google.cloud.bigquery.v2.Model.ModelType
+	(*Model_HparamTuningTrial)(nil),                        // 75: google.cloud.bigquery.v2.Model.HparamTuningTrial
+	(*SessionInfo)(nil),                                    // 76: google.cloud.bigquery.v2.SessionInfo
+	(*durationpb.Duration)(nil),                            // 77: google.protobuf.Duration
 }
 var file_google_cloud_bigquery_v2_job_stats_proto_depIdxs = []int32{
-	57,  // 0: google.cloud.bigquery.v2.ExplainQueryStage.id:type_name -> google.protobuf.Int64Value
-	58,  // 1: google.cloud.bigquery.v2.ExplainQueryStage.wait_ratio_avg:type_name -> google.protobuf.DoubleValue
-	57,  // 2: google.cloud.bigquery.v2.ExplainQueryStage.wait_ms_avg:type_name -> google.protobuf.Int64Value
-	58,  // 3: google.cloud.bigquery.v2.ExplainQueryStage.wait_ratio_max:type_name -> google.protobuf.DoubleValue
-	57,  // 4: google.cloud.bigquery.v2.ExplainQueryStage.wait_ms_max:type_name -> google.protobuf.Int64Value
-	58,  // 5: google.cloud.bigquery.v2.ExplainQueryStage.read_ratio_avg:type_name -> google.protobuf.DoubleValue
-	57,  // 6: google.cloud.bigquery.v2.ExplainQueryStage.read_ms_avg:type_name -> google.protobuf.Int64Value
-	58,  // 7: google.cloud.bigquery.v2.ExplainQueryStage.read_ratio_max:type_name -> google.protobuf.DoubleValue
-	57,  // 8: google.cloud.bigquery.v2.ExplainQueryStage.read_ms_max:type_name -> google.protobuf.Int64Value
-	58,  // 9: google.cloud.bigquery.v2.ExplainQueryStage.compute_ratio_avg:type_name -> google.protobuf.DoubleValue
-	57,  // 10: google.cloud.bigquery.v2.ExplainQueryStage.compute_ms_avg:type_name -> google.protobuf.Int64Value
-	58,  // 11: google.cloud.bigquery.v2.ExplainQueryStage.compute_ratio_max:type_name -> google.protobuf.DoubleValue
-	57,  // 12: google.cloud.bigquery.v2.ExplainQueryStage.compute_ms_max:type_name -> google.protobuf.Int64Value
-	58,  // 13: google.cloud.bigquery.v2.ExplainQueryStage.write_ratio_avg:type_name -> google.protobuf.DoubleValue
-	57,  // 14: google.cloud.bigquery.v2.ExplainQueryStage.write_ms_avg:type_name -> google.protobuf.Int64Value
-	58,  // 15: google.cloud.bigquery.v2.ExplainQueryStage.write_ratio_max:type_name -> google.protobuf.DoubleValue
-	57,  // 16: google.cloud.bigquery.v2.ExplainQueryStage.write_ms_max:type_name -> google.protobuf.Int64Value
-	57,  // 17: google.cloud.bigquery.v2.ExplainQueryStage.shuffle_output_bytes:type_name -> google.protobuf.Int64Value
-	57,  // 18: google.cloud.bigquery.v2.ExplainQueryStage.shuffle_output_bytes_spilled:type_name -> google.protobuf.Int64Value
-	57,  // 19: google.cloud.bigquery.v2.ExplainQueryStage.records_read:type_name -> google.protobuf.Int64Value
-	57,  // 20: google.cloud.bigquery.v2.ExplainQueryStage.records_written:type_name -> google.protobuf.Int64Value
-	57,  // 21: google.cloud.bigquery.v2.ExplainQueryStage.parallel_inputs:type_name -> google.protobuf.Int64Value
-	57,  // 22: google.cloud.bigquery.v2.ExplainQueryStage.completed_parallel_inputs:type_name -> google.protobuf.Int64Value
-	14,  // 23: google.cloud.bigquery.v2.ExplainQueryStage.steps:type_name -> google.cloud.bigquery.v2.ExplainQueryStep
-	57,  // 24: google.cloud.bigquery.v2.ExplainQueryStage.slot_ms:type_name -> google.protobuf.Int64Value
+	59,  // 0: google.cloud.bigquery.v2.ExplainQueryStage.id:type_name -> google.protobuf.Int64Value
+	60,  // 1: google.cloud.bigquery.v2.ExplainQueryStage.wait_ratio_avg:type_name -> google.protobuf.DoubleValue
+	59,  // 2: google.cloud.bigquery.v2.ExplainQueryStage.wait_ms_avg:type_name -> google.protobuf.Int64Value
+	60,  // 3: google.cloud.bigquery.v2.ExplainQueryStage.wait_ratio_max:type_name -> google.protobuf.DoubleValue
+	59,  // 4: google.cloud.bigquery.v2.ExplainQueryStage.wait_ms_max:type_name -> google.protobuf.Int64Value
+	60,  // 5: google.cloud.bigquery.v2.ExplainQueryStage.read_ratio_avg:type_name -> google.protobuf.DoubleValue
+	59,  // 6: google.cloud.bigquery.v2.ExplainQueryStage.read_ms_avg:type_name -> google.protobuf.Int64Value
+	60,  // 7: google.cloud.bigquery.v2.ExplainQueryStage.read_ratio_max:type_name -> google.protobuf.DoubleValue
+	59,  // 8: google.cloud.bigquery.v2.ExplainQueryStage.read_ms_max:type_name -> google.protobuf.Int64Value
+	60,  // 9: google.cloud.bigquery.v2.ExplainQueryStage.compute_ratio_avg:type_name -> google.protobuf.DoubleValue
+	59,  // 10: google.cloud.bigquery.v2.ExplainQueryStage.compute_ms_avg:type_name -> google.protobuf.Int64Value
+	60,  // 11: google.cloud.bigquery.v2.ExplainQueryStage.compute_ratio_max:type_name -> google.protobuf.DoubleValue
+	59,  // 12: google.cloud.bigquery.v2.ExplainQueryStage.compute_ms_max:type_name -> google.protobuf.Int64Value
+	60,  // 13: google.cloud.bigquery.v2.ExplainQueryStage.write_ratio_avg:type_name -> google.protobuf.DoubleValue
+	59,  // 14: google.cloud.bigquery.v2.ExplainQueryStage.write_ms_avg:type_name -> google.protobuf.Int64Value
+	60,  // 15: google.cloud.bigquery.v2.ExplainQueryStage.write_ratio_max:type_name -> google.protobuf.DoubleValue
+	59,  // 16: google.cloud.bigquery.v2.ExplainQueryStage.write_ms_max:type_name -> google.protobuf.Int64Value
+	59,  // 17: google.cloud.bigquery.v2.ExplainQueryStage.shuffle_output_bytes:type_name -> google.protobuf.Int64Value
+	59,  // 18: google.cloud.bigquery.v2.ExplainQueryStage.shuffle_output_bytes_spilled:type_name -> google.protobuf.Int64Value
+	59,  // 19: google.cloud.bigquery.v2.ExplainQueryStage.records_read:type_name -> google.protobuf.Int64Value
+	59,  // 20: google.cloud.bigquery.v2.ExplainQueryStage.records_written:type_name -> google.protobuf.Int64Value
+	59,  // 21: google.cloud.bigquery.v2.ExplainQueryStage.parallel_inputs:type_name -> google.protobuf.Int64Value
+	59,  // 22: google.cloud.bigquery.v2.ExplainQueryStage.completed_parallel_inputs:type_name -> google.protobuf.Int64Value
+	16,  // 23: google.cloud.bigquery.v2.ExplainQueryStage.steps:type_name -> google.cloud.bigquery.v2.ExplainQueryStep
+	59,  // 24: google.cloud.bigquery.v2.ExplainQueryStage.slot_ms:type_name -> google.protobuf.Int64Value
 	1,   // 25: google.cloud.bigquery.v2.ExplainQueryStage.compute_mode:type_name -> google.cloud.bigquery.v2.ExplainQueryStage.ComputeMode
-	57,  // 26: google.cloud.bigquery.v2.QueryTimelineSample.elapsed_ms:type_name -> google.protobuf.Int64Value
-	57,  // 27: google.cloud.bigquery.v2.QueryTimelineSample.total_slot_ms:type_name -> google.protobuf.Int64Value
-	57,  // 28: google.cloud.bigquery.v2.QueryTimelineSample.pending_units:type_name -> google.protobuf.Int64Value
-	57,  // 29: google.cloud.bigquery.v2.QueryTimelineSample.completed_units:type_name -> google.protobuf.Int64Value
-	57,  // 30: google.cloud.bigquery.v2.QueryTimelineSample.active_units:type_name -> google.protobuf.Int64Value
-	58,  // 31: google.cloud.bigquery.v2.QueryTimelineSample.shuffle_ram_usage_ratio:type_name -> google.protobuf.DoubleValue
-	57,  // 32: google.cloud.bigquery.v2.QueryTimelineSample.estimated_runnable_units:type_name -> google.protobuf.Int64Value
-	57,  // 33: google.cloud.bigquery.v2.ExternalServiceCost.bytes_processed:type_name -> google.protobuf.Int64Value
-	57,  // 34: google.cloud.bigquery.v2.ExternalServiceCost.bytes_billed:type_name -> google.protobuf.Int64Value
-	57,  // 35: google.cloud.bigquery.v2.ExternalServiceCost.slot_ms:type_name -> google.protobuf.Int64Value
-	57,  // 36: google.cloud.bigquery.v2.ExportDataStatistics.file_count:type_name -> google.protobuf.Int64Value
-	57,  // 37: google.cloud.bigquery.v2.ExportDataStatistics.row_count:type_name -> google.protobuf.Int64Value
+	59,  // 26: google.cloud.bigquery.v2.QueryTimelineSample.elapsed_ms:type_name -> google.protobuf.Int64Value
+	59,  // 27: google.cloud.bigquery.v2.QueryTimelineSample.total_slot_ms:type_name -> google.protobuf.Int64Value
+	59,  // 28: google.cloud.bigquery.v2.QueryTimelineSample.pending_units:type_name -> google.protobuf.Int64Value
+	59,  // 29: google.cloud.bigquery.v2.QueryTimelineSample.completed_units:type_name -> google.protobuf.Int64Value
+	59,  // 30: google.cloud.bigquery.v2.QueryTimelineSample.active_units:type_name -> google.protobuf.Int64Value
+	60,  // 31: google.cloud.bigquery.v2.QueryTimelineSample.shuffle_ram_usage_ratio:type_name -> google.protobuf.DoubleValue
+	59,  // 32: google.cloud.bigquery.v2.QueryTimelineSample.estimated_runnable_units:type_name -> google.protobuf.Int64Value
+	59,  // 33: google.cloud.bigquery.v2.ExternalServiceCost.bytes_processed:type_name -> google.protobuf.Int64Value
+	59,  // 34: google.cloud.bigquery.v2.ExternalServiceCost.bytes_billed:type_name -> google.protobuf.Int64Value
+	59,  // 35: google.cloud.bigquery.v2.ExternalServiceCost.slot_ms:type_name -> google.protobuf.Int64Value
+	59,  // 36: google.cloud.bigquery.v2.ExportDataStatistics.file_count:type_name -> google.protobuf.Int64Value
+	59,  // 37: google.cloud.bigquery.v2.ExportDataStatistics.row_count:type_name -> google.protobuf.Int64Value
 	2,   // 38: google.cloud.bigquery.v2.BiEngineReason.code:type_name -> google.cloud.bigquery.v2.BiEngineReason.Code
 	3,   // 39: google.cloud.bigquery.v2.BiEngineStatistics.bi_engine_mode:type_name -> google.cloud.bigquery.v2.BiEngineStatistics.BiEngineMode
 	4,   // 40: google.cloud.bigquery.v2.BiEngineStatistics.acceleration_mode:type_name -> google.cloud.bigquery.v2.BiEngineStatistics.BiEngineAccelerationMode
-	19,  // 41: google.cloud.bigquery.v2.BiEngineStatistics.bi_engine_reasons:type_name -> google.cloud.bigquery.v2.BiEngineReason
+	21,  // 41: google.cloud.bigquery.v2.BiEngineStatistics.bi_engine_reasons:type_name -> google.cloud.bigquery.v2.BiEngineReason
 	5,   // 42: google.cloud.bigquery.v2.IndexUnusedReason.code:type_name -> google.cloud.bigquery.v2.IndexUnusedReason.Code
-	59,  // 43: google.cloud.bigquery.v2.IndexUnusedReason.base_table:type_name -> google.cloud.bigquery.v2.TableReference
-	59,  // 44: google.cloud.bigquery.v2.IndexPruningStats.base_table:type_name -> google.cloud.bigquery.v2.TableReference
-	59,  // 45: google.cloud.bigquery.v2.StoredColumnsUsage.base_table:type_name -> google.cloud.bigquery.v2.TableReference
-	51,  // 46: google.cloud.bigquery.v2.StoredColumnsUsage.stored_columns_unused_reasons:type_name -> google.cloud.bigquery.v2.StoredColumnsUsage.StoredColumnsUnusedReason
+	61,  // 43: google.cloud.bigquery.v2.IndexUnusedReason.base_table:type_name -> google.cloud.bigquery.v2.TableReference
+	61,  // 44: google.cloud.bigquery.v2.IndexPruningStats.base_table:type_name -> google.cloud.bigquery.v2.TableReference
+	61,  // 45: google.cloud.bigquery.v2.StoredColumnsUsage.base_table:type_name -> google.cloud.bigquery.v2.TableReference
+	53,  // 46: google.cloud.bigquery.v2.StoredColumnsUsage.stored_columns_unused_reasons:type_name -> google.cloud.bigquery.v2.StoredColumnsUsage.StoredColumnsUnusedReason
 	7,   // 47: google.cloud.bigquery.v2.SearchStatistics.index_usage_mode:type_name -> google.cloud.bigquery.v2.SearchStatistics.IndexUsageMode
-	21,  // 48: google.cloud.bigquery.v2.SearchStatistics.index_unused_reasons:type_name -> google.cloud.bigquery.v2.IndexUnusedReason
-	22,  // 49: google.cloud.bigquery.v2.SearchStatistics.index_pruning_stats:type_name -> google.cloud.bigquery.v2.IndexPruningStats
+	23,  // 48: google.cloud.bigquery.v2.SearchStatistics.index_unused_reasons:type_name -> google.cloud.bigquery.v2.IndexUnusedReason
+	24,  // 49: google.cloud.bigquery.v2.SearchStatistics.index_pruning_stats:type_name -> google.cloud.bigquery.v2.IndexPruningStats
 	8,   // 50: google.cloud.bigquery.v2.VectorSearchStatistics.index_usage_mode:type_name -> google.cloud.bigquery.v2.VectorSearchStatistics.IndexUsageMode
-	21,  // 51: google.cloud.bigquery.v2.VectorSearchStatistics.index_unused_reasons:type_name -> google.cloud.bigquery.v2.IndexUnusedReason
-	23,  // 52: google.cloud.bigquery.v2.VectorSearchStatistics.stored_columns_usages:type_name -> google.cloud.bigquery.v2.StoredColumnsUsage
-	60,  // 53: google.cloud.bigquery.v2.QueryInfo.optimization_details:type_name -> google.protobuf.Struct
-	57,  // 54: google.cloud.bigquery.v2.LoadQueryStatistics.input_files:type_name -> google.protobuf.Int64Value
-	57,  // 55: google.cloud.bigquery.v2.LoadQueryStatistics.input_file_bytes:type_name -> google.protobuf.Int64Value
-	57,  // 56: google.cloud.bigquery.v2.LoadQueryStatistics.output_rows:type_name -> google.protobuf.Int64Value
-	57,  // 57: google.cloud.bigquery.v2.LoadQueryStatistics.output_bytes:type_name -> google.protobuf.Int64Value
-	57,  // 58: google.cloud.bigquery.v2.LoadQueryStatistics.bad_records:type_name -> google.protobuf.Int64Value
+	23,  // 51: google.cloud.bigquery.v2.VectorSearchStatistics.index_unused_reasons:type_name -> google.cloud.bigquery.v2.IndexUnusedReason
+	25,  // 52: google.cloud.bigquery.v2.VectorSearchStatistics.stored_columns_usages:type_name -> google.cloud.bigquery.v2.StoredColumnsUsage
+	62,  // 53: google.cloud.bigquery.v2.QueryInfo.optimization_details:type_name -> google.protobuf.Struct
+	59,  // 54: google.cloud.bigquery.v2.LoadQueryStatistics.input_files:type_name -> google.protobuf.Int64Value
+	59,  // 55: google.cloud.bigquery.v2.LoadQueryStatistics.input_file_bytes:type_name -> google.protobuf.Int64Value
+	59,  // 56: google.cloud.bigquery.v2.LoadQueryStatistics.output_rows:type_name -> google.protobuf.Int64Value
+	59,  // 57: google.cloud.bigquery.v2.LoadQueryStatistics.output_bytes:type_name -> google.protobuf.Int64Value
+	59,  // 58: google.cloud.bigquery.v2.LoadQueryStatistics.bad_records:type_name -> google.protobuf.Int64Value
 	9,   // 59: google.cloud.bigquery.v2.IncrementalResultStats.disabled_reason:type_name -> google.cloud.bigquery.v2.IncrementalResultStats.DisabledReason
-	61,  // 60: google.cloud.bigquery.v2.IncrementalResultStats.result_set_last_replace_time:type_name -> google.protobuf.Timestamp
-	61,  // 61: google.cloud.bigquery.v2.IncrementalResultStats.result_set_last_modify_time:type_name -> google.protobuf.Timestamp
-	15,  // 62: google.cloud.bigquery.v2.JobStatistics2.query_plan:type_name -> google.cloud.bigquery.v2.ExplainQueryStage
-	57,  // 63: google.cloud.bigquery.v2.JobStatistics2.estimated_bytes_processed:type_name -> google.protobuf.Int64Value
-	16,  // 64: google.cloud.bigquery.v2.JobStatistics2.timeline:type_name -> google.cloud.bigquery.v2.QueryTimelineSample
-	57,  // 65: google.cloud.bigquery.v2.JobStatistics2.total_partitions_processed:type_name -> google.protobuf.Int64Value
-	57,  // 66: google.cloud.bigquery.v2.JobStatistics2.total_bytes_processed:type_name -> google.protobuf.Int64Value
-	57,  // 67: google.cloud.bigquery.v2.JobStatistics2.total_bytes_billed:type_name -> google.protobuf.Int64Value
-	62,  // 68: google.cloud.bigquery.v2.JobStatistics2.billing_tier:type_name -> google.protobuf.Int32Value
-	57,  // 69: google.cloud.bigquery.v2.JobStatistics2.total_slot_ms:type_name -> google.protobuf.Int64Value
-	63,  // 70: google.cloud.bigquery.v2.JobStatistics2.cache_hit:type_name -> google.protobuf.BoolValue
-	59,  // 71: google.cloud.bigquery.v2.JobStatistics2.referenced_tables:type_name -> google.cloud.bigquery.v2.TableReference
-	64,  // 72: google.cloud.bigquery.v2.JobStatistics2.referenced_routines:type_name -> google.cloud.bigquery.v2.RoutineReference
-	65,  // 73: google.cloud.bigquery.v2.JobStatistics2.schema:type_name -> google.cloud.bigquery.v2.TableSchema
-	57,  // 74: google.cloud.bigquery.v2.JobStatistics2.num_dml_affected_rows:type_name -> google.protobuf.Int64Value
-	38,  // 75: google.cloud.bigquery.v2.JobStatistics2.dml_stats:type_name -> google.cloud.bigquery.v2.DmlStats
-	66,  // 76: google.cloud.bigquery.v2.JobStatistics2.undeclared_query_parameters:type_name -> google.cloud.bigquery.v2.QueryParameter
-	59,  // 77: google.cloud.bigquery.v2.JobStatistics2.ddl_target_table:type_name -> google.cloud.bigquery.v2.TableReference
-	59,  // 78: google.cloud.bigquery.v2.JobStatistics2.ddl_destination_table:type_name -> google.cloud.bigquery.v2.TableReference
-	67,  // 79: google.cloud.bigquery.v2.JobStatistics2.ddl_target_row_access_policy:type_name -> google.cloud.bigquery.v2.RowAccessPolicyReference
-	57,  // 80: google.cloud.bigquery.v2.JobStatistics2.ddl_affected_row_access_policy_count:type_name -> google.protobuf.Int64Value
-	64,  // 81: google.cloud.bigquery.v2.JobStatistics2.ddl_target_routine:type_name -> google.cloud.bigquery.v2.RoutineReference
-	68,  // 82: google.cloud.bigquery.v2.JobStatistics2.ddl_target_dataset:type_name -> google.cloud.bigquery.v2.DatasetReference
-	33,  // 83: google.cloud.bigquery.v2.JobStatistics2.ml_statistics:type_name -> google.cloud.bigquery.v2.MlStatistics
-	18,  // 84: google.cloud.bigquery.v2.JobStatistics2.export_data_statistics:type_name -> google.cloud.bigquery.v2.ExportDataStatistics
-	17,  // 85: google.cloud.bigquery.v2.JobStatistics2.external_service_costs:type_name -> google.cloud.bigquery.v2.ExternalServiceCost
-	20,  // 86: google.cloud.bigquery.v2.JobStatistics2.bi_engine_statistics:type_name -> google.cloud.bigquery.v2.BiEngineStatistics
-	27,  // 87: google.cloud.bigquery.v2.JobStatistics2.load_query_statistics:type_name -> google.cloud.bigquery.v2.LoadQueryStatistics
-	59,  // 88: google.cloud.bigquery.v2.JobStatistics2.dcl_target_table:type_name -> google.cloud.bigquery.v2.TableReference
-	59,  // 89: google.cloud.bigquery.v2.JobStatistics2.dcl_target_view:type_name -> google.cloud.bigquery.v2.TableReference
-	68,  // 90: google.cloud.bigquery.v2.JobStatistics2.dcl_target_dataset:type_name -> google.cloud.bigquery.v2.DatasetReference
-	24,  // 91: google.cloud.bigquery.v2.JobStatistics2.search_statistics:type_name -> google.cloud.bigquery.v2.SearchStatistics
-	25,  // 92: google.cloud.bigquery.v2.JobStatistics2.vector_search_statistics:type_name -> google.cloud.bigquery.v2.VectorSearchStatistics
-	39,  // 93: google.cloud.bigquery.v2.JobStatistics2.performance_insights:type_name -> google.cloud.bigquery.v2.PerformanceInsights
-	26,  // 94: google.cloud.bigquery.v2.JobStatistics2.query_info:type_name -> google.cloud.bigquery.v2.QueryInfo
-	45,  // 95: google.cloud.bigquery.v2.JobStatistics2.spark_statistics:type_name -> google.cloud.bigquery.v2.SparkStatistics
-	57,  // 96: google.cloud.bigquery.v2.JobStatistics2.transferred_bytes:type_name -> google.protobuf.Int64Value
-	46,  // 97: google.cloud.bigquery.v2.JobStatistics2.materialized_view_statistics:type_name -> google.cloud.bigquery.v2.MaterializedViewStatistics
-	50,  // 98: google.cloud.bigquery.v2.JobStatistics2.metadata_cache_statistics:type_name -> google.cloud.bigquery.v2.MetadataCacheStatistics
-	28,  // 99: google.cloud.bigquery.v2.JobStatistics2.incremental_result_stats:type_name -> google.cloud.bigquery.v2.IncrementalResultStats
-	57,  // 100: google.cloud.bigquery.v2.JobStatistics3.input_files:type_name -> google.protobuf.Int64Value
-	57,  // 101: google.cloud.bigquery.v2.JobStatistics3.input_file_bytes:type_name -> google.protobuf.Int64Value
-	57,  // 102: google.cloud.bigquery.v2.JobStatistics3.output_rows:type_name -> google.protobuf.Int64Value
-	57,  // 103: google.cloud.bigquery.v2.JobStatistics3.output_bytes:type_name -> google.protobuf.Int64Value
-	57,  // 104: google.cloud.bigquery.v2.JobStatistics3.bad_records:type_name -> google.protobuf.Int64Value
-	16,  // 105: google.cloud.bigquery.v2.JobStatistics3.timeline:type_name -> google.cloud.bigquery.v2.QueryTimelineSample
-	57,  // 106: google.cloud.bigquery.v2.JobStatistics4.input_bytes:type_name -> google.protobuf.Int64Value
-	16,  // 107: google.cloud.bigquery.v2.JobStatistics4.timeline:type_name -> google.cloud.bigquery.v2.QueryTimelineSample
-	57,  // 108: google.cloud.bigquery.v2.CopyJobStatistics.copied_rows:type_name -> google.protobuf.Int64Value
-	57,  // 109: google.cloud.bigquery.v2.CopyJobStatistics.copied_logical_bytes:type_name -> google.protobuf.Int64Value
-	69,  // 110: google.cloud.bigquery.v2.MlStatistics.iteration_results:type_name -> google.cloud.bigquery.v2.Model.TrainingRun.IterationResult
-	70,  // 111: google.cloud.bigquery.v2.MlStatistics.model_type:type_name -> google.cloud.bigquery.v2.Model.ModelType
-	10,  // 112: google.cloud.bigquery.v2.MlStatistics.training_type:type_name -> google.cloud.bigquery.v2.MlStatistics.TrainingType
-	71,  // 113: google.cloud.bigquery.v2.MlStatistics.hparam_trials:type_name -> google.cloud.bigquery.v2.Model.HparamTuningTrial
-	11,  // 114: google.cloud.bigquery.v2.ScriptStatistics.evaluation_kind:type_name -> google.cloud.bigquery.v2.ScriptStatistics.EvaluationKind
-	52,  // 115: google.cloud.bigquery.v2.ScriptStatistics.stack_frames:type_name -> google.cloud.bigquery.v2.ScriptStatistics.ScriptStackFrame
-	57,  // 116: google.cloud.bigquery.v2.JobStatistics.total_bytes_processed:type_name -> google.protobuf.Int64Value
-	58,  // 117: google.cloud.bigquery.v2.JobStatistics.completion_ratio:type_name -> google.protobuf.DoubleValue
-	29,  // 118: google.cloud.bigquery.v2.JobStatistics.query:type_name -> google.cloud.bigquery.v2.JobStatistics2
-	30,  // 119: google.cloud.bigquery.v2.JobStatistics.load:type_name -> google.cloud.bigquery.v2.JobStatistics3
-	31,  // 120: google.cloud.bigquery.v2.JobStatistics.extract:type_name -> google.cloud.bigquery.v2.JobStatistics4
-	32,  // 121: google.cloud.bigquery.v2.JobStatistics.copy:type_name -> google.cloud.bigquery.v2.CopyJobStatistics
-	57,  // 122: google.cloud.bigquery.v2.JobStatistics.total_slot_ms:type_name -> google.protobuf.Int64Value
-	34,  // 123: google.cloud.bigquery.v2.JobStatistics.script_statistics:type_name -> google.cloud.bigquery.v2.ScriptStatistics
-	35,  // 124: google.cloud.bigquery.v2.JobStatistics.row_level_security_statistics:type_name -> google.cloud.bigquery.v2.RowLevelSecurityStatistics
-	36,  // 125: google.cloud.bigquery.v2.JobStatistics.data_masking_statistics:type_name -> google.cloud.bigquery.v2.DataMaskingStatistics
-	53,  // 126: google.cloud.bigquery.v2.JobStatistics.transaction_info:type_name -> google.cloud.bigquery.v2.JobStatistics.TransactionInfo
-	72,  // 127: google.cloud.bigquery.v2.JobStatistics.session_info:type_name -> google.cloud.bigquery.v2.SessionInfo
-	0,   // 128: google.cloud.bigquery.v2.JobStatistics.edition:type_name -> google.cloud.bigquery.v2.ReservationEdition
-	57,  // 129: google.cloud.bigquery.v2.DmlStats.inserted_row_count:type_name -> google.protobuf.Int64Value
-	57,  // 130: google.cloud.bigquery.v2.DmlStats.deleted_row_count:type_name -> google.protobuf.Int64Value
-	57,  // 131: google.cloud.bigquery.v2.DmlStats.updated_row_count:type_name -> google.protobuf.Int64Value
-	42,  // 132: google.cloud.bigquery.v2.PerformanceInsights.stage_performance_standalone_insights:type_name -> google.cloud.bigquery.v2.StagePerformanceStandaloneInsight
-	40,  // 133: google.cloud.bigquery.v2.PerformanceInsights.stage_performance_change_insights:type_name -> google.cloud.bigquery.v2.StagePerformanceChangeInsight
-	41,  // 134: google.cloud.bigquery.v2.StagePerformanceChangeInsight.input_data_change:type_name -> google.cloud.bigquery.v2.InputDataChange
-	19,  // 135: google.cloud.bigquery.v2.StagePerformanceStandaloneInsight.bi_engine_reasons:type_name -> google.cloud.bigquery.v2.BiEngineReason
-	43,  // 136: google.cloud.bigquery.v2.StagePerformanceStandaloneInsight.high_cardinality_joins:type_name -> google.cloud.bigquery.v2.HighCardinalityJoin
-	44,  // 137: google.cloud.bigquery.v2.StagePerformanceStandaloneInsight.partition_skew:type_name -> google.cloud.bigquery.v2.PartitionSkew
-	54,  // 138: google.cloud.bigquery.v2.PartitionSkew.skew_sources:type_name -> google.cloud.bigquery.v2.PartitionSkew.SkewSource
-	56,  // 139: google.cloud.bigquery.v2.SparkStatistics.endpoints:type_name -> google.cloud.bigquery.v2.SparkStatistics.EndpointsEntry
-	55,  // 140: google.cloud.bigquery.v2.SparkStatistics.logging_info:type_name -> google.cloud.bigquery.v2.SparkStatistics.LoggingInfo
-	47,  // 141: google.cloud.bigquery.v2.MaterializedViewStatistics.materialized_view:type_name -> google.cloud.bigquery.v2.MaterializedView
-	59,  // 142: google.cloud.bigquery.v2.MaterializedView.table_reference:type_name -> google.cloud.bigquery.v2.TableReference
-	12,  // 143: google.cloud.bigquery.v2.MaterializedView.rejected_reason:type_name -> google.cloud.bigquery.v2.MaterializedView.RejectedReason
-	59,  // 144: google.cloud.bigquery.v2.TableMetadataCacheUsage.table_reference:type_name -> google.cloud.bigquery.v2.TableReference
-	13,  // 145: google.cloud.bigquery.v2.TableMetadataCacheUsage.unused_reason:type_name -> google.cloud.bigquery.v2.TableMetadataCacheUsage.UnusedReason
-	73,  // 146: google.cloud.bigquery.v2.TableMetadataCacheUsage.staleness:type_name -> google.protobuf.Duration
-	48,  // 147: google.cloud.bigquery.v2.TableMetadataCacheUsage.pruning_stats:type_name -> google.cloud.bigquery.v2.PruningStats
-	49,  // 148: google.cloud.bigquery.v2.MetadataCacheStatistics.table_metadata_cache_usage:type_name -> google.cloud.bigquery.v2.TableMetadataCacheUsage
-	6,   // 149: google.cloud.bigquery.v2.StoredColumnsUsage.StoredColumnsUnusedReason.code:type_name -> google.cloud.bigquery.v2.StoredColumnsUsage.StoredColumnsUnusedReason.Code
-	150, // [150:150] is the sub-list for method output_type
-	150, // [150:150] is the sub-list for method input_type
-	150, // [150:150] is the sub-list for extension type_name
-	150, // [150:150] is the sub-list for extension extendee
-	0,   // [0:150] is the sub-list for field type_name
+	63,  // 60: google.cloud.bigquery.v2.IncrementalResultStats.result_set_last_replace_time:type_name -> google.protobuf.Timestamp
+	63,  // 61: google.cloud.bigquery.v2.IncrementalResultStats.result_set_last_modify_time:type_name -> google.protobuf.Timestamp
+	63,  // 62: google.cloud.bigquery.v2.IncrementalResultStats.first_incremental_row_time:type_name -> google.protobuf.Timestamp
+	63,  // 63: google.cloud.bigquery.v2.IncrementalResultStats.last_incremental_row_time:type_name -> google.protobuf.Timestamp
+	17,  // 64: google.cloud.bigquery.v2.JobStatistics2.query_plan:type_name -> google.cloud.bigquery.v2.ExplainQueryStage
+	59,  // 65: google.cloud.bigquery.v2.JobStatistics2.estimated_bytes_processed:type_name -> google.protobuf.Int64Value
+	18,  // 66: google.cloud.bigquery.v2.JobStatistics2.timeline:type_name -> google.cloud.bigquery.v2.QueryTimelineSample
+	59,  // 67: google.cloud.bigquery.v2.JobStatistics2.total_partitions_processed:type_name -> google.protobuf.Int64Value
+	59,  // 68: google.cloud.bigquery.v2.JobStatistics2.total_bytes_processed:type_name -> google.protobuf.Int64Value
+	59,  // 69: google.cloud.bigquery.v2.JobStatistics2.total_bytes_billed:type_name -> google.protobuf.Int64Value
+	64,  // 70: google.cloud.bigquery.v2.JobStatistics2.billing_tier:type_name -> google.protobuf.Int32Value
+	59,  // 71: google.cloud.bigquery.v2.JobStatistics2.total_slot_ms:type_name -> google.protobuf.Int64Value
+	65,  // 72: google.cloud.bigquery.v2.JobStatistics2.cache_hit:type_name -> google.protobuf.BoolValue
+	61,  // 73: google.cloud.bigquery.v2.JobStatistics2.referenced_tables:type_name -> google.cloud.bigquery.v2.TableReference
+	66,  // 74: google.cloud.bigquery.v2.JobStatistics2.referenced_routines:type_name -> google.cloud.bigquery.v2.RoutineReference
+	67,  // 75: google.cloud.bigquery.v2.JobStatistics2.referenced_property_graphs:type_name -> google.cloud.bigquery.v2.PropertyGraphReference
+	68,  // 76: google.cloud.bigquery.v2.JobStatistics2.schema:type_name -> google.cloud.bigquery.v2.TableSchema
+	59,  // 77: google.cloud.bigquery.v2.JobStatistics2.num_dml_affected_rows:type_name -> google.protobuf.Int64Value
+	40,  // 78: google.cloud.bigquery.v2.JobStatistics2.dml_stats:type_name -> google.cloud.bigquery.v2.DmlStats
+	69,  // 79: google.cloud.bigquery.v2.JobStatistics2.undeclared_query_parameters:type_name -> google.cloud.bigquery.v2.QueryParameter
+	61,  // 80: google.cloud.bigquery.v2.JobStatistics2.ddl_target_table:type_name -> google.cloud.bigquery.v2.TableReference
+	61,  // 81: google.cloud.bigquery.v2.JobStatistics2.ddl_destination_table:type_name -> google.cloud.bigquery.v2.TableReference
+	70,  // 82: google.cloud.bigquery.v2.JobStatistics2.ddl_target_row_access_policy:type_name -> google.cloud.bigquery.v2.RowAccessPolicyReference
+	59,  // 83: google.cloud.bigquery.v2.JobStatistics2.ddl_affected_row_access_policy_count:type_name -> google.protobuf.Int64Value
+	66,  // 84: google.cloud.bigquery.v2.JobStatistics2.ddl_target_routine:type_name -> google.cloud.bigquery.v2.RoutineReference
+	71,  // 85: google.cloud.bigquery.v2.JobStatistics2.ddl_target_dataset:type_name -> google.cloud.bigquery.v2.DatasetReference
+	35,  // 86: google.cloud.bigquery.v2.JobStatistics2.ml_statistics:type_name -> google.cloud.bigquery.v2.MlStatistics
+	20,  // 87: google.cloud.bigquery.v2.JobStatistics2.export_data_statistics:type_name -> google.cloud.bigquery.v2.ExportDataStatistics
+	19,  // 88: google.cloud.bigquery.v2.JobStatistics2.external_service_costs:type_name -> google.cloud.bigquery.v2.ExternalServiceCost
+	22,  // 89: google.cloud.bigquery.v2.JobStatistics2.bi_engine_statistics:type_name -> google.cloud.bigquery.v2.BiEngineStatistics
+	29,  // 90: google.cloud.bigquery.v2.JobStatistics2.load_query_statistics:type_name -> google.cloud.bigquery.v2.LoadQueryStatistics
+	61,  // 91: google.cloud.bigquery.v2.JobStatistics2.dcl_target_table:type_name -> google.cloud.bigquery.v2.TableReference
+	61,  // 92: google.cloud.bigquery.v2.JobStatistics2.dcl_target_view:type_name -> google.cloud.bigquery.v2.TableReference
+	71,  // 93: google.cloud.bigquery.v2.JobStatistics2.dcl_target_dataset:type_name -> google.cloud.bigquery.v2.DatasetReference
+	26,  // 94: google.cloud.bigquery.v2.JobStatistics2.search_statistics:type_name -> google.cloud.bigquery.v2.SearchStatistics
+	27,  // 95: google.cloud.bigquery.v2.JobStatistics2.vector_search_statistics:type_name -> google.cloud.bigquery.v2.VectorSearchStatistics
+	41,  // 96: google.cloud.bigquery.v2.JobStatistics2.performance_insights:type_name -> google.cloud.bigquery.v2.PerformanceInsights
+	28,  // 97: google.cloud.bigquery.v2.JobStatistics2.query_info:type_name -> google.cloud.bigquery.v2.QueryInfo
+	47,  // 98: google.cloud.bigquery.v2.JobStatistics2.spark_statistics:type_name -> google.cloud.bigquery.v2.SparkStatistics
+	59,  // 99: google.cloud.bigquery.v2.JobStatistics2.transferred_bytes:type_name -> google.protobuf.Int64Value
+	48,  // 100: google.cloud.bigquery.v2.JobStatistics2.materialized_view_statistics:type_name -> google.cloud.bigquery.v2.MaterializedViewStatistics
+	52,  // 101: google.cloud.bigquery.v2.JobStatistics2.metadata_cache_statistics:type_name -> google.cloud.bigquery.v2.MetadataCacheStatistics
+	30,  // 102: google.cloud.bigquery.v2.JobStatistics2.incremental_result_stats:type_name -> google.cloud.bigquery.v2.IncrementalResultStats
+	72,  // 103: google.cloud.bigquery.v2.JobStatistics2.gen_ai_stats:type_name -> google.cloud.bigquery.v2.GenAiStats
+	59,  // 104: google.cloud.bigquery.v2.JobStatistics3.input_files:type_name -> google.protobuf.Int64Value
+	59,  // 105: google.cloud.bigquery.v2.JobStatistics3.input_file_bytes:type_name -> google.protobuf.Int64Value
+	59,  // 106: google.cloud.bigquery.v2.JobStatistics3.output_rows:type_name -> google.protobuf.Int64Value
+	59,  // 107: google.cloud.bigquery.v2.JobStatistics3.output_bytes:type_name -> google.protobuf.Int64Value
+	59,  // 108: google.cloud.bigquery.v2.JobStatistics3.bad_records:type_name -> google.protobuf.Int64Value
+	18,  // 109: google.cloud.bigquery.v2.JobStatistics3.timeline:type_name -> google.cloud.bigquery.v2.QueryTimelineSample
+	59,  // 110: google.cloud.bigquery.v2.JobStatistics4.input_bytes:type_name -> google.protobuf.Int64Value
+	18,  // 111: google.cloud.bigquery.v2.JobStatistics4.timeline:type_name -> google.cloud.bigquery.v2.QueryTimelineSample
+	59,  // 112: google.cloud.bigquery.v2.CopyJobStatistics.copied_rows:type_name -> google.protobuf.Int64Value
+	59,  // 113: google.cloud.bigquery.v2.CopyJobStatistics.copied_logical_bytes:type_name -> google.protobuf.Int64Value
+	73,  // 114: google.cloud.bigquery.v2.MlStatistics.iteration_results:type_name -> google.cloud.bigquery.v2.Model.TrainingRun.IterationResult
+	74,  // 115: google.cloud.bigquery.v2.MlStatistics.model_type:type_name -> google.cloud.bigquery.v2.Model.ModelType
+	10,  // 116: google.cloud.bigquery.v2.MlStatistics.training_type:type_name -> google.cloud.bigquery.v2.MlStatistics.TrainingType
+	75,  // 117: google.cloud.bigquery.v2.MlStatistics.hparam_trials:type_name -> google.cloud.bigquery.v2.Model.HparamTuningTrial
+	11,  // 118: google.cloud.bigquery.v2.ScriptStatistics.evaluation_kind:type_name -> google.cloud.bigquery.v2.ScriptStatistics.EvaluationKind
+	54,  // 119: google.cloud.bigquery.v2.ScriptStatistics.stack_frames:type_name -> google.cloud.bigquery.v2.ScriptStatistics.ScriptStackFrame
+	59,  // 120: google.cloud.bigquery.v2.JobStatistics.total_bytes_processed:type_name -> google.protobuf.Int64Value
+	60,  // 121: google.cloud.bigquery.v2.JobStatistics.completion_ratio:type_name -> google.protobuf.DoubleValue
+	31,  // 122: google.cloud.bigquery.v2.JobStatistics.query:type_name -> google.cloud.bigquery.v2.JobStatistics2
+	32,  // 123: google.cloud.bigquery.v2.JobStatistics.load:type_name -> google.cloud.bigquery.v2.JobStatistics3
+	33,  // 124: google.cloud.bigquery.v2.JobStatistics.extract:type_name -> google.cloud.bigquery.v2.JobStatistics4
+	34,  // 125: google.cloud.bigquery.v2.JobStatistics.copy:type_name -> google.cloud.bigquery.v2.CopyJobStatistics
+	59,  // 126: google.cloud.bigquery.v2.JobStatistics.total_slot_ms:type_name -> google.protobuf.Int64Value
+	36,  // 127: google.cloud.bigquery.v2.JobStatistics.script_statistics:type_name -> google.cloud.bigquery.v2.ScriptStatistics
+	37,  // 128: google.cloud.bigquery.v2.JobStatistics.row_level_security_statistics:type_name -> google.cloud.bigquery.v2.RowLevelSecurityStatistics
+	38,  // 129: google.cloud.bigquery.v2.JobStatistics.data_masking_statistics:type_name -> google.cloud.bigquery.v2.DataMaskingStatistics
+	55,  // 130: google.cloud.bigquery.v2.JobStatistics.transaction_info:type_name -> google.cloud.bigquery.v2.JobStatistics.TransactionInfo
+	76,  // 131: google.cloud.bigquery.v2.JobStatistics.session_info:type_name -> google.cloud.bigquery.v2.SessionInfo
+	0,   // 132: google.cloud.bigquery.v2.JobStatistics.edition:type_name -> google.cloud.bigquery.v2.ReservationEdition
+	59,  // 133: google.cloud.bigquery.v2.DmlStats.inserted_row_count:type_name -> google.protobuf.Int64Value
+	59,  // 134: google.cloud.bigquery.v2.DmlStats.deleted_row_count:type_name -> google.protobuf.Int64Value
+	59,  // 135: google.cloud.bigquery.v2.DmlStats.updated_row_count:type_name -> google.protobuf.Int64Value
+	12,  // 136: google.cloud.bigquery.v2.DmlStats.dml_mode:type_name -> google.cloud.bigquery.v2.DmlStats.DmlMode
+	13,  // 137: google.cloud.bigquery.v2.DmlStats.fine_grained_dml_unused_reason:type_name -> google.cloud.bigquery.v2.DmlStats.FineGrainedDmlUnusedReason
+	44,  // 138: google.cloud.bigquery.v2.PerformanceInsights.stage_performance_standalone_insights:type_name -> google.cloud.bigquery.v2.StagePerformanceStandaloneInsight
+	42,  // 139: google.cloud.bigquery.v2.PerformanceInsights.stage_performance_change_insights:type_name -> google.cloud.bigquery.v2.StagePerformanceChangeInsight
+	43,  // 140: google.cloud.bigquery.v2.StagePerformanceChangeInsight.input_data_change:type_name -> google.cloud.bigquery.v2.InputDataChange
+	21,  // 141: google.cloud.bigquery.v2.StagePerformanceStandaloneInsight.bi_engine_reasons:type_name -> google.cloud.bigquery.v2.BiEngineReason
+	45,  // 142: google.cloud.bigquery.v2.StagePerformanceStandaloneInsight.high_cardinality_joins:type_name -> google.cloud.bigquery.v2.HighCardinalityJoin
+	46,  // 143: google.cloud.bigquery.v2.StagePerformanceStandaloneInsight.partition_skew:type_name -> google.cloud.bigquery.v2.PartitionSkew
+	56,  // 144: google.cloud.bigquery.v2.PartitionSkew.skew_sources:type_name -> google.cloud.bigquery.v2.PartitionSkew.SkewSource
+	58,  // 145: google.cloud.bigquery.v2.SparkStatistics.endpoints:type_name -> google.cloud.bigquery.v2.SparkStatistics.EndpointsEntry
+	57,  // 146: google.cloud.bigquery.v2.SparkStatistics.logging_info:type_name -> google.cloud.bigquery.v2.SparkStatistics.LoggingInfo
+	49,  // 147: google.cloud.bigquery.v2.MaterializedViewStatistics.materialized_view:type_name -> google.cloud.bigquery.v2.MaterializedView
+	61,  // 148: google.cloud.bigquery.v2.MaterializedView.table_reference:type_name -> google.cloud.bigquery.v2.TableReference
+	14,  // 149: google.cloud.bigquery.v2.MaterializedView.rejected_reason:type_name -> google.cloud.bigquery.v2.MaterializedView.RejectedReason
+	61,  // 150: google.cloud.bigquery.v2.TableMetadataCacheUsage.table_reference:type_name -> google.cloud.bigquery.v2.TableReference
+	15,  // 151: google.cloud.bigquery.v2.TableMetadataCacheUsage.unused_reason:type_name -> google.cloud.bigquery.v2.TableMetadataCacheUsage.UnusedReason
+	77,  // 152: google.cloud.bigquery.v2.TableMetadataCacheUsage.staleness:type_name -> google.protobuf.Duration
+	50,  // 153: google.cloud.bigquery.v2.TableMetadataCacheUsage.pruning_stats:type_name -> google.cloud.bigquery.v2.PruningStats
+	51,  // 154: google.cloud.bigquery.v2.MetadataCacheStatistics.table_metadata_cache_usage:type_name -> google.cloud.bigquery.v2.TableMetadataCacheUsage
+	6,   // 155: google.cloud.bigquery.v2.StoredColumnsUsage.StoredColumnsUnusedReason.code:type_name -> google.cloud.bigquery.v2.StoredColumnsUsage.StoredColumnsUnusedReason.Code
+	156, // [156:156] is the sub-list for method output_type
+	156, // [156:156] is the sub-list for method input_type
+	156, // [156:156] is the sub-list for extension type_name
+	156, // [156:156] is the sub-list for extension extendee
+	0,   // [0:156] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_bigquery_v2_job_stats_proto_init() }
@@ -5548,7 +5775,9 @@ func file_google_cloud_bigquery_v2_job_stats_proto_init() {
 		return
 	}
 	file_google_cloud_bigquery_v2_dataset_reference_proto_init()
+	file_google_cloud_bigquery_v2_gen_ai_stats_proto_init()
 	file_google_cloud_bigquery_v2_model_proto_init()
+	file_google_cloud_bigquery_v2_property_graph_reference_proto_init()
 	file_google_cloud_bigquery_v2_query_parameter_proto_init()
 	file_google_cloud_bigquery_v2_routine_reference_proto_init()
 	file_google_cloud_bigquery_v2_row_access_policy_reference_proto_init()
@@ -5558,6 +5787,7 @@ func file_google_cloud_bigquery_v2_job_stats_proto_init() {
 	file_google_cloud_bigquery_v2_job_stats_proto_msgTypes[7].OneofWrappers = []any{}
 	file_google_cloud_bigquery_v2_job_stats_proto_msgTypes[8].OneofWrappers = []any{}
 	file_google_cloud_bigquery_v2_job_stats_proto_msgTypes[9].OneofWrappers = []any{}
+	file_google_cloud_bigquery_v2_job_stats_proto_msgTypes[14].OneofWrappers = []any{}
 	file_google_cloud_bigquery_v2_job_stats_proto_msgTypes[15].OneofWrappers = []any{}
 	file_google_cloud_bigquery_v2_job_stats_proto_msgTypes[26].OneofWrappers = []any{}
 	file_google_cloud_bigquery_v2_job_stats_proto_msgTypes[28].OneofWrappers = []any{}
@@ -5571,7 +5801,7 @@ func file_google_cloud_bigquery_v2_job_stats_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_bigquery_v2_job_stats_proto_rawDesc), len(file_google_cloud_bigquery_v2_job_stats_proto_rawDesc)),
-			NumEnums:      14,
+			NumEnums:      16,
 			NumMessages:   43,
 			NumExtensions: 0,
 			NumServices:   0,

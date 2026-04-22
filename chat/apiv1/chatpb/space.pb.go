@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -39,6 +39,68 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// A view that specifies which fields should be populated on the
+// [`Space`](https://developers.google.com/workspace/chat/api/reference/rest/v1/spaces)
+// resource.
+// To ensure compatibility with future releases, we recommend that your code
+// account for additional values.
+type SpaceView int32
+
+const (
+	// The default / unset value.
+	SpaceView_SPACE_VIEW_UNSPECIFIED SpaceView = 0
+	// Populates only the Space resource name.
+	SpaceView_SPACE_VIEW_RESOURCE_NAME_ONLY SpaceView = 3
+	// Populates Space resource fields.  Note: the `permissionSettings` field
+	// will not be populated.
+	// Requests that specify SPACE_VIEW_EXPANDED must include scopes that allow
+	// reading space data, for example,
+	// https://www.googleapis.com/auth/chat.spaces or
+	// https://www.googleapis.com/auth/chat.spaces.readonly.
+	SpaceView_SPACE_VIEW_EXPANDED SpaceView = 4
+)
+
+// Enum value maps for SpaceView.
+var (
+	SpaceView_name = map[int32]string{
+		0: "SPACE_VIEW_UNSPECIFIED",
+		3: "SPACE_VIEW_RESOURCE_NAME_ONLY",
+		4: "SPACE_VIEW_EXPANDED",
+	}
+	SpaceView_value = map[string]int32{
+		"SPACE_VIEW_UNSPECIFIED":        0,
+		"SPACE_VIEW_RESOURCE_NAME_ONLY": 3,
+		"SPACE_VIEW_EXPANDED":           4,
+	}
+)
+
+func (x SpaceView) Enum() *SpaceView {
+	p := new(SpaceView)
+	*p = x
+	return p
+}
+
+func (x SpaceView) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (SpaceView) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_chat_v1_space_proto_enumTypes[0].Descriptor()
+}
+
+func (SpaceView) Type() protoreflect.EnumType {
+	return &file_google_chat_v1_space_proto_enumTypes[0]
+}
+
+func (x SpaceView) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use SpaceView.Descriptor instead.
+func (SpaceView) EnumDescriptor() ([]byte, []int) {
+	return file_google_chat_v1_space_proto_rawDescGZIP(), []int{0}
+}
+
 // Deprecated: Use `SpaceType` instead.
 type Space_Type int32
 
@@ -77,11 +139,11 @@ func (x Space_Type) String() string {
 }
 
 func (Space_Type) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_chat_v1_space_proto_enumTypes[0].Descriptor()
+	return file_google_chat_v1_space_proto_enumTypes[1].Descriptor()
 }
 
 func (Space_Type) Type() protoreflect.EnumType {
-	return &file_google_chat_v1_space_proto_enumTypes[0]
+	return &file_google_chat_v1_space_proto_enumTypes[1]
 }
 
 func (x Space_Type) Number() protoreflect.EnumNumber {
@@ -137,11 +199,11 @@ func (x Space_SpaceType) String() string {
 }
 
 func (Space_SpaceType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_chat_v1_space_proto_enumTypes[1].Descriptor()
+	return file_google_chat_v1_space_proto_enumTypes[2].Descriptor()
 }
 
 func (Space_SpaceType) Type() protoreflect.EnumType {
-	return &file_google_chat_v1_space_proto_enumTypes[1]
+	return &file_google_chat_v1_space_proto_enumTypes[2]
 }
 
 func (x Space_SpaceType) Number() protoreflect.EnumNumber {
@@ -198,11 +260,11 @@ func (x Space_SpaceThreadingState) String() string {
 }
 
 func (Space_SpaceThreadingState) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_chat_v1_space_proto_enumTypes[2].Descriptor()
+	return file_google_chat_v1_space_proto_enumTypes[3].Descriptor()
 }
 
 func (Space_SpaceThreadingState) Type() protoreflect.EnumType {
-	return &file_google_chat_v1_space_proto_enumTypes[2]
+	return &file_google_chat_v1_space_proto_enumTypes[3]
 }
 
 func (x Space_SpaceThreadingState) Number() protoreflect.EnumNumber {
@@ -256,11 +318,11 @@ func (x Space_PredefinedPermissionSettings) String() string {
 }
 
 func (Space_PredefinedPermissionSettings) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_chat_v1_space_proto_enumTypes[3].Descriptor()
+	return file_google_chat_v1_space_proto_enumTypes[4].Descriptor()
 }
 
 func (Space_PredefinedPermissionSettings) Type() protoreflect.EnumType {
-	return &file_google_chat_v1_space_proto_enumTypes[3]
+	return &file_google_chat_v1_space_proto_enumTypes[4]
 }
 
 func (x Space_PredefinedPermissionSettings) Number() protoreflect.EnumNumber {
@@ -318,11 +380,11 @@ func (x Space_AccessSettings_AccessState) String() string {
 }
 
 func (Space_AccessSettings_AccessState) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_chat_v1_space_proto_enumTypes[4].Descriptor()
+	return file_google_chat_v1_space_proto_enumTypes[5].Descriptor()
 }
 
 func (Space_AccessSettings_AccessState) Type() protoreflect.EnumType {
-	return &file_google_chat_v1_space_proto_enumTypes[4]
+	return &file_google_chat_v1_space_proto_enumTypes[5]
 }
 
 func (x Space_AccessSettings_AccessState) Number() protoreflect.EnumNumber {
@@ -1042,6 +1104,169 @@ func (x *FindDirectMessageRequest) GetName() string {
 	return ""
 }
 
+// A request to get group chat spaces based on user resources.
+type FindGroupChatsRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Resource names of all human users in group chat with the calling
+	// user. Chat apps can't be included in the request.
+	//
+	// The maximum number of users that can be specified in a single request is
+	// `49`.
+	//
+	// Format: `users/{user}`, where `{user}` is either the `id` for the
+	// [person](https://developers.google.com/people/api/rest/v1/people) from the
+	// People API, or the `id` for the
+	// [user](https://developers.google.com/admin-sdk/directory/reference/rest/v1/users)
+	// in the Directory API. For example, to find all group chats with the calling
+	// user and two other users, with People API profile IDs `123456789` and
+	// `987654321`, you can use `users/123456789` and `users/987654321`.
+	// You can also use the email as an alias for `{user}`. For example,
+	// `users/example@gmail.com` where `example@gmail.com` is the email of the
+	// Google Chat user.
+	Users []string `protobuf:"bytes,5,rep,name=users,proto3" json:"users,omitempty"`
+	// Optional. The maximum number of spaces to return. The service might return
+	// fewer than this value.
+	//
+	// If unspecified, at most 10 spaces are returned.
+	//
+	// The maximum value is 30. If you use a value more than 30, it's
+	// automatically changed to 30.
+	//
+	// Negative values return an `INVALID_ARGUMENT` error.
+	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	// Optional. A page token, received from a previous call to find group chats.
+	// Provide this parameter to retrieve the subsequent page.
+	//
+	// When paginating, all other parameters provided should match the call that
+	// provided the token. Passing different values may lead to unexpected
+	// results.
+	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	// Requested space view type. If unset, defaults to
+	// `SPACE_VIEW_RESOURCE_NAME_ONLY`. Requests that specify
+	// `SPACE_VIEW_EXPANDED` must include scopes that allow reading space data,
+	// for example,
+	// https://www.googleapis.com/auth/chat.spaces or
+	// https://www.googleapis.com/auth/chat.spaces.readonly.
+	SpaceView     SpaceView `protobuf:"varint,4,opt,name=space_view,json=spaceView,proto3,enum=google.chat.v1.SpaceView" json:"space_view,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FindGroupChatsRequest) Reset() {
+	*x = FindGroupChatsRequest{}
+	mi := &file_google_chat_v1_space_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FindGroupChatsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FindGroupChatsRequest) ProtoMessage() {}
+
+func (x *FindGroupChatsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_chat_v1_space_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FindGroupChatsRequest.ProtoReflect.Descriptor instead.
+func (*FindGroupChatsRequest) Descriptor() ([]byte, []int) {
+	return file_google_chat_v1_space_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *FindGroupChatsRequest) GetUsers() []string {
+	if x != nil {
+		return x.Users
+	}
+	return nil
+}
+
+func (x *FindGroupChatsRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *FindGroupChatsRequest) GetPageToken() string {
+	if x != nil {
+		return x.PageToken
+	}
+	return ""
+}
+
+func (x *FindGroupChatsRequest) GetSpaceView() SpaceView {
+	if x != nil {
+		return x.SpaceView
+	}
+	return SpaceView_SPACE_VIEW_UNSPECIFIED
+}
+
+// A response containing group chat spaces with exactly the calling user and the
+// requested users.
+type FindGroupChatsResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// List of spaces in the requested (or first) page.
+	Spaces []*Space `protobuf:"bytes,1,rep,name=spaces,proto3" json:"spaces,omitempty"`
+	// A token that you can send as `pageToken` to retrieve the next page of
+	// results. If empty, there are no subsequent pages.
+	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FindGroupChatsResponse) Reset() {
+	*x = FindGroupChatsResponse{}
+	mi := &file_google_chat_v1_space_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FindGroupChatsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FindGroupChatsResponse) ProtoMessage() {}
+
+func (x *FindGroupChatsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_chat_v1_space_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FindGroupChatsResponse.ProtoReflect.Descriptor instead.
+func (*FindGroupChatsResponse) Descriptor() ([]byte, []int) {
+	return file_google_chat_v1_space_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *FindGroupChatsResponse) GetSpaces() []*Space {
+	if x != nil {
+		return x.Spaces
+	}
+	return nil
+}
+
+func (x *FindGroupChatsResponse) GetNextPageToken() string {
+	if x != nil {
+		return x.NextPageToken
+	}
+	return ""
+}
+
 // A request to update a single space.
 type UpdateSpaceRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -1133,7 +1358,7 @@ type UpdateSpaceRequest struct {
 
 func (x *UpdateSpaceRequest) Reset() {
 	*x = UpdateSpaceRequest{}
-	mi := &file_google_chat_v1_space_proto_msgTypes[6]
+	mi := &file_google_chat_v1_space_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1145,7 +1370,7 @@ func (x *UpdateSpaceRequest) String() string {
 func (*UpdateSpaceRequest) ProtoMessage() {}
 
 func (x *UpdateSpaceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_chat_v1_space_proto_msgTypes[6]
+	mi := &file_google_chat_v1_space_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1158,7 +1383,7 @@ func (x *UpdateSpaceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateSpaceRequest.ProtoReflect.Descriptor instead.
 func (*UpdateSpaceRequest) Descriptor() ([]byte, []int) {
-	return file_google_chat_v1_space_proto_rawDescGZIP(), []int{6}
+	return file_google_chat_v1_space_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *UpdateSpaceRequest) GetSpace() *Space {
@@ -1314,7 +1539,7 @@ type SearchSpacesRequest struct {
 
 func (x *SearchSpacesRequest) Reset() {
 	*x = SearchSpacesRequest{}
-	mi := &file_google_chat_v1_space_proto_msgTypes[7]
+	mi := &file_google_chat_v1_space_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1326,7 +1551,7 @@ func (x *SearchSpacesRequest) String() string {
 func (*SearchSpacesRequest) ProtoMessage() {}
 
 func (x *SearchSpacesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_chat_v1_space_proto_msgTypes[7]
+	mi := &file_google_chat_v1_space_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1339,7 +1564,7 @@ func (x *SearchSpacesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchSpacesRequest.ProtoReflect.Descriptor instead.
 func (*SearchSpacesRequest) Descriptor() ([]byte, []int) {
-	return file_google_chat_v1_space_proto_rawDescGZIP(), []int{7}
+	return file_google_chat_v1_space_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *SearchSpacesRequest) GetUseAdminAccess() bool {
@@ -1394,7 +1619,7 @@ type SearchSpacesResponse struct {
 
 func (x *SearchSpacesResponse) Reset() {
 	*x = SearchSpacesResponse{}
-	mi := &file_google_chat_v1_space_proto_msgTypes[8]
+	mi := &file_google_chat_v1_space_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1406,7 +1631,7 @@ func (x *SearchSpacesResponse) String() string {
 func (*SearchSpacesResponse) ProtoMessage() {}
 
 func (x *SearchSpacesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_chat_v1_space_proto_msgTypes[8]
+	mi := &file_google_chat_v1_space_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1419,7 +1644,7 @@ func (x *SearchSpacesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchSpacesResponse.ProtoReflect.Descriptor instead.
 func (*SearchSpacesResponse) Descriptor() ([]byte, []int) {
-	return file_google_chat_v1_space_proto_rawDescGZIP(), []int{8}
+	return file_google_chat_v1_space_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *SearchSpacesResponse) GetSpaces() []*Space {
@@ -1466,7 +1691,7 @@ type DeleteSpaceRequest struct {
 
 func (x *DeleteSpaceRequest) Reset() {
 	*x = DeleteSpaceRequest{}
-	mi := &file_google_chat_v1_space_proto_msgTypes[9]
+	mi := &file_google_chat_v1_space_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1478,7 +1703,7 @@ func (x *DeleteSpaceRequest) String() string {
 func (*DeleteSpaceRequest) ProtoMessage() {}
 
 func (x *DeleteSpaceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_chat_v1_space_proto_msgTypes[9]
+	mi := &file_google_chat_v1_space_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1491,7 +1716,7 @@ func (x *DeleteSpaceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteSpaceRequest.ProtoReflect.Descriptor instead.
 func (*DeleteSpaceRequest) Descriptor() ([]byte, []int) {
-	return file_google_chat_v1_space_proto_rawDescGZIP(), []int{9}
+	return file_google_chat_v1_space_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *DeleteSpaceRequest) GetName() string {
@@ -1521,7 +1746,7 @@ type CompleteImportSpaceRequest struct {
 
 func (x *CompleteImportSpaceRequest) Reset() {
 	*x = CompleteImportSpaceRequest{}
-	mi := &file_google_chat_v1_space_proto_msgTypes[10]
+	mi := &file_google_chat_v1_space_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1533,7 +1758,7 @@ func (x *CompleteImportSpaceRequest) String() string {
 func (*CompleteImportSpaceRequest) ProtoMessage() {}
 
 func (x *CompleteImportSpaceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_chat_v1_space_proto_msgTypes[10]
+	mi := &file_google_chat_v1_space_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1546,7 +1771,7 @@ func (x *CompleteImportSpaceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CompleteImportSpaceRequest.ProtoReflect.Descriptor instead.
 func (*CompleteImportSpaceRequest) Descriptor() ([]byte, []int) {
-	return file_google_chat_v1_space_proto_rawDescGZIP(), []int{10}
+	return file_google_chat_v1_space_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *CompleteImportSpaceRequest) GetName() string {
@@ -1567,7 +1792,7 @@ type CompleteImportSpaceResponse struct {
 
 func (x *CompleteImportSpaceResponse) Reset() {
 	*x = CompleteImportSpaceResponse{}
-	mi := &file_google_chat_v1_space_proto_msgTypes[11]
+	mi := &file_google_chat_v1_space_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1579,7 +1804,7 @@ func (x *CompleteImportSpaceResponse) String() string {
 func (*CompleteImportSpaceResponse) ProtoMessage() {}
 
 func (x *CompleteImportSpaceResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_chat_v1_space_proto_msgTypes[11]
+	mi := &file_google_chat_v1_space_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1592,7 +1817,7 @@ func (x *CompleteImportSpaceResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CompleteImportSpaceResponse.ProtoReflect.Descriptor instead.
 func (*CompleteImportSpaceResponse) Descriptor() ([]byte, []int) {
-	return file_google_chat_v1_space_proto_rawDescGZIP(), []int{11}
+	return file_google_chat_v1_space_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *CompleteImportSpaceResponse) GetSpace() *Space {
@@ -1620,7 +1845,7 @@ type Space_SpaceDetails struct {
 
 func (x *Space_SpaceDetails) Reset() {
 	*x = Space_SpaceDetails{}
-	mi := &file_google_chat_v1_space_proto_msgTypes[12]
+	mi := &file_google_chat_v1_space_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1632,7 +1857,7 @@ func (x *Space_SpaceDetails) String() string {
 func (*Space_SpaceDetails) ProtoMessage() {}
 
 func (x *Space_SpaceDetails) ProtoReflect() protoreflect.Message {
-	mi := &file_google_chat_v1_space_proto_msgTypes[12]
+	mi := &file_google_chat_v1_space_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1676,7 +1901,7 @@ type Space_MembershipCount struct {
 
 func (x *Space_MembershipCount) Reset() {
 	*x = Space_MembershipCount{}
-	mi := &file_google_chat_v1_space_proto_msgTypes[13]
+	mi := &file_google_chat_v1_space_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1688,7 +1913,7 @@ func (x *Space_MembershipCount) String() string {
 func (*Space_MembershipCount) ProtoMessage() {}
 
 func (x *Space_MembershipCount) ProtoReflect() protoreflect.Message {
-	mi := &file_google_chat_v1_space_proto_msgTypes[13]
+	mi := &file_google_chat_v1_space_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1760,7 +1985,7 @@ type Space_AccessSettings struct {
 
 func (x *Space_AccessSettings) Reset() {
 	*x = Space_AccessSettings{}
-	mi := &file_google_chat_v1_space_proto_msgTypes[14]
+	mi := &file_google_chat_v1_space_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1772,7 +1997,7 @@ func (x *Space_AccessSettings) String() string {
 func (*Space_AccessSettings) ProtoMessage() {}
 
 func (x *Space_AccessSettings) ProtoReflect() protoreflect.Message {
-	mi := &file_google_chat_v1_space_proto_msgTypes[14]
+	mi := &file_google_chat_v1_space_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1832,7 +2057,7 @@ type Space_PermissionSettings struct {
 
 func (x *Space_PermissionSettings) Reset() {
 	*x = Space_PermissionSettings{}
-	mi := &file_google_chat_v1_space_proto_msgTypes[15]
+	mi := &file_google_chat_v1_space_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1844,7 +2069,7 @@ func (x *Space_PermissionSettings) String() string {
 func (*Space_PermissionSettings) ProtoMessage() {}
 
 func (x *Space_PermissionSettings) ProtoReflect() protoreflect.Message {
-	mi := &file_google_chat_v1_space_proto_msgTypes[15]
+	mi := &file_google_chat_v1_space_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1937,7 +2162,7 @@ type Space_PermissionSetting struct {
 
 func (x *Space_PermissionSetting) Reset() {
 	*x = Space_PermissionSetting{}
-	mi := &file_google_chat_v1_space_proto_msgTypes[16]
+	mi := &file_google_chat_v1_space_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1949,7 +2174,7 @@ func (x *Space_PermissionSetting) String() string {
 func (*Space_PermissionSetting) ProtoMessage() {}
 
 func (x *Space_PermissionSetting) ProtoReflect() protoreflect.Message {
-	mi := &file_google_chat_v1_space_proto_msgTypes[16]
+	mi := &file_google_chat_v1_space_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2094,7 +2319,17 @@ const file_google_chat_v1_space_proto_rawDesc = "" +
 	"\x19chat.googleapis.com/SpaceR\x04name\x12-\n" +
 	"\x10use_admin_access\x18\x02 \x01(\bB\x03\xe0A\x01R\x0euseAdminAccess\"3\n" +
 	"\x18FindDirectMessageRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\"\xb7\x01\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\"\xb2\x01\n" +
+	"\x15FindGroupChatsRequest\x12\x19\n" +
+	"\x05users\x18\x05 \x03(\tB\x03\xe0A\x01R\x05users\x12 \n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x128\n" +
+	"\n" +
+	"space_view\x18\x04 \x01(\x0e2\x19.google.chat.v1.SpaceViewR\tspaceView\"o\n" +
+	"\x16FindGroupChatsResponse\x12-\n" +
+	"\x06spaces\x18\x01 \x03(\v2\x15.google.chat.v1.SpaceR\x06spaces\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb7\x01\n" +
 	"\x12UpdateSpaceRequest\x120\n" +
 	"\x05space\x18\x01 \x01(\v2\x15.google.chat.v1.SpaceB\x03\xe0A\x02R\x05space\x12@\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
@@ -2120,7 +2355,11 @@ const file_google_chat_v1_space_proto_rawDesc = "" +
 	"\x04name\x18\x01 \x01(\tB!\xe0A\x02\xfaA\x1b\n" +
 	"\x19chat.googleapis.com/SpaceR\x04name\"J\n" +
 	"\x1bCompleteImportSpaceResponse\x12+\n" +
-	"\x05space\x18\x01 \x01(\v2\x15.google.chat.v1.SpaceR\x05spaceB\xa3\x01\n" +
+	"\x05space\x18\x01 \x01(\v2\x15.google.chat.v1.SpaceR\x05space*c\n" +
+	"\tSpaceView\x12\x1a\n" +
+	"\x16SPACE_VIEW_UNSPECIFIED\x10\x00\x12!\n" +
+	"\x1dSPACE_VIEW_RESOURCE_NAME_ONLY\x10\x03\x12\x17\n" +
+	"\x13SPACE_VIEW_EXPANDED\x10\x04B\xa3\x01\n" +
 	"\x12com.google.chat.v1B\n" +
 	"SpaceProtoP\x01Z,cloud.google.com/go/chat/apiv1/chatpb;chatpb\xa2\x02\vDYNAPIProto\xaa\x02\x13Google.Apps.Chat.V1\xca\x02\x13Google\\Apps\\Chat\\V1\xea\x02\x16Google::Apps::Chat::V1b\x06proto3"
 
@@ -2136,68 +2375,73 @@ func file_google_chat_v1_space_proto_rawDescGZIP() []byte {
 	return file_google_chat_v1_space_proto_rawDescData
 }
 
-var file_google_chat_v1_space_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
-var file_google_chat_v1_space_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
+var file_google_chat_v1_space_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
+var file_google_chat_v1_space_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
 var file_google_chat_v1_space_proto_goTypes = []any{
-	(Space_Type)(0),                         // 0: google.chat.v1.Space.Type
-	(Space_SpaceType)(0),                    // 1: google.chat.v1.Space.SpaceType
-	(Space_SpaceThreadingState)(0),          // 2: google.chat.v1.Space.SpaceThreadingState
-	(Space_PredefinedPermissionSettings)(0), // 3: google.chat.v1.Space.PredefinedPermissionSettings
-	(Space_AccessSettings_AccessState)(0),   // 4: google.chat.v1.Space.AccessSettings.AccessState
-	(*Space)(nil),                           // 5: google.chat.v1.Space
-	(*CreateSpaceRequest)(nil),              // 6: google.chat.v1.CreateSpaceRequest
-	(*ListSpacesRequest)(nil),               // 7: google.chat.v1.ListSpacesRequest
-	(*ListSpacesResponse)(nil),              // 8: google.chat.v1.ListSpacesResponse
-	(*GetSpaceRequest)(nil),                 // 9: google.chat.v1.GetSpaceRequest
-	(*FindDirectMessageRequest)(nil),        // 10: google.chat.v1.FindDirectMessageRequest
-	(*UpdateSpaceRequest)(nil),              // 11: google.chat.v1.UpdateSpaceRequest
-	(*SearchSpacesRequest)(nil),             // 12: google.chat.v1.SearchSpacesRequest
-	(*SearchSpacesResponse)(nil),            // 13: google.chat.v1.SearchSpacesResponse
-	(*DeleteSpaceRequest)(nil),              // 14: google.chat.v1.DeleteSpaceRequest
-	(*CompleteImportSpaceRequest)(nil),      // 15: google.chat.v1.CompleteImportSpaceRequest
-	(*CompleteImportSpaceResponse)(nil),     // 16: google.chat.v1.CompleteImportSpaceResponse
-	(*Space_SpaceDetails)(nil),              // 17: google.chat.v1.Space.SpaceDetails
-	(*Space_MembershipCount)(nil),           // 18: google.chat.v1.Space.MembershipCount
-	(*Space_AccessSettings)(nil),            // 19: google.chat.v1.Space.AccessSettings
-	(*Space_PermissionSettings)(nil),        // 20: google.chat.v1.Space.PermissionSettings
-	(*Space_PermissionSetting)(nil),         // 21: google.chat.v1.Space.PermissionSetting
-	(HistoryState)(0),                       // 22: google.chat.v1.HistoryState
-	(*timestamppb.Timestamp)(nil),           // 23: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),           // 24: google.protobuf.FieldMask
+	(SpaceView)(0),                          // 0: google.chat.v1.SpaceView
+	(Space_Type)(0),                         // 1: google.chat.v1.Space.Type
+	(Space_SpaceType)(0),                    // 2: google.chat.v1.Space.SpaceType
+	(Space_SpaceThreadingState)(0),          // 3: google.chat.v1.Space.SpaceThreadingState
+	(Space_PredefinedPermissionSettings)(0), // 4: google.chat.v1.Space.PredefinedPermissionSettings
+	(Space_AccessSettings_AccessState)(0),   // 5: google.chat.v1.Space.AccessSettings.AccessState
+	(*Space)(nil),                           // 6: google.chat.v1.Space
+	(*CreateSpaceRequest)(nil),              // 7: google.chat.v1.CreateSpaceRequest
+	(*ListSpacesRequest)(nil),               // 8: google.chat.v1.ListSpacesRequest
+	(*ListSpacesResponse)(nil),              // 9: google.chat.v1.ListSpacesResponse
+	(*GetSpaceRequest)(nil),                 // 10: google.chat.v1.GetSpaceRequest
+	(*FindDirectMessageRequest)(nil),        // 11: google.chat.v1.FindDirectMessageRequest
+	(*FindGroupChatsRequest)(nil),           // 12: google.chat.v1.FindGroupChatsRequest
+	(*FindGroupChatsResponse)(nil),          // 13: google.chat.v1.FindGroupChatsResponse
+	(*UpdateSpaceRequest)(nil),              // 14: google.chat.v1.UpdateSpaceRequest
+	(*SearchSpacesRequest)(nil),             // 15: google.chat.v1.SearchSpacesRequest
+	(*SearchSpacesResponse)(nil),            // 16: google.chat.v1.SearchSpacesResponse
+	(*DeleteSpaceRequest)(nil),              // 17: google.chat.v1.DeleteSpaceRequest
+	(*CompleteImportSpaceRequest)(nil),      // 18: google.chat.v1.CompleteImportSpaceRequest
+	(*CompleteImportSpaceResponse)(nil),     // 19: google.chat.v1.CompleteImportSpaceResponse
+	(*Space_SpaceDetails)(nil),              // 20: google.chat.v1.Space.SpaceDetails
+	(*Space_MembershipCount)(nil),           // 21: google.chat.v1.Space.MembershipCount
+	(*Space_AccessSettings)(nil),            // 22: google.chat.v1.Space.AccessSettings
+	(*Space_PermissionSettings)(nil),        // 23: google.chat.v1.Space.PermissionSettings
+	(*Space_PermissionSetting)(nil),         // 24: google.chat.v1.Space.PermissionSetting
+	(HistoryState)(0),                       // 25: google.chat.v1.HistoryState
+	(*timestamppb.Timestamp)(nil),           // 26: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),           // 27: google.protobuf.FieldMask
 }
 var file_google_chat_v1_space_proto_depIdxs = []int32{
-	0,  // 0: google.chat.v1.Space.type:type_name -> google.chat.v1.Space.Type
-	1,  // 1: google.chat.v1.Space.space_type:type_name -> google.chat.v1.Space.SpaceType
-	2,  // 2: google.chat.v1.Space.space_threading_state:type_name -> google.chat.v1.Space.SpaceThreadingState
-	17, // 3: google.chat.v1.Space.space_details:type_name -> google.chat.v1.Space.SpaceDetails
-	22, // 4: google.chat.v1.Space.space_history_state:type_name -> google.chat.v1.HistoryState
-	23, // 5: google.chat.v1.Space.create_time:type_name -> google.protobuf.Timestamp
-	23, // 6: google.chat.v1.Space.last_active_time:type_name -> google.protobuf.Timestamp
-	18, // 7: google.chat.v1.Space.membership_count:type_name -> google.chat.v1.Space.MembershipCount
-	19, // 8: google.chat.v1.Space.access_settings:type_name -> google.chat.v1.Space.AccessSettings
-	3,  // 9: google.chat.v1.Space.predefined_permission_settings:type_name -> google.chat.v1.Space.PredefinedPermissionSettings
-	20, // 10: google.chat.v1.Space.permission_settings:type_name -> google.chat.v1.Space.PermissionSettings
-	23, // 11: google.chat.v1.Space.import_mode_expire_time:type_name -> google.protobuf.Timestamp
-	5,  // 12: google.chat.v1.CreateSpaceRequest.space:type_name -> google.chat.v1.Space
-	5,  // 13: google.chat.v1.ListSpacesResponse.spaces:type_name -> google.chat.v1.Space
-	5,  // 14: google.chat.v1.UpdateSpaceRequest.space:type_name -> google.chat.v1.Space
-	24, // 15: google.chat.v1.UpdateSpaceRequest.update_mask:type_name -> google.protobuf.FieldMask
-	5,  // 16: google.chat.v1.SearchSpacesResponse.spaces:type_name -> google.chat.v1.Space
-	5,  // 17: google.chat.v1.CompleteImportSpaceResponse.space:type_name -> google.chat.v1.Space
-	4,  // 18: google.chat.v1.Space.AccessSettings.access_state:type_name -> google.chat.v1.Space.AccessSettings.AccessState
-	21, // 19: google.chat.v1.Space.PermissionSettings.manage_members_and_groups:type_name -> google.chat.v1.Space.PermissionSetting
-	21, // 20: google.chat.v1.Space.PermissionSettings.modify_space_details:type_name -> google.chat.v1.Space.PermissionSetting
-	21, // 21: google.chat.v1.Space.PermissionSettings.toggle_history:type_name -> google.chat.v1.Space.PermissionSetting
-	21, // 22: google.chat.v1.Space.PermissionSettings.use_at_mention_all:type_name -> google.chat.v1.Space.PermissionSetting
-	21, // 23: google.chat.v1.Space.PermissionSettings.manage_apps:type_name -> google.chat.v1.Space.PermissionSetting
-	21, // 24: google.chat.v1.Space.PermissionSettings.manage_webhooks:type_name -> google.chat.v1.Space.PermissionSetting
-	21, // 25: google.chat.v1.Space.PermissionSettings.post_messages:type_name -> google.chat.v1.Space.PermissionSetting
-	21, // 26: google.chat.v1.Space.PermissionSettings.reply_messages:type_name -> google.chat.v1.Space.PermissionSetting
-	27, // [27:27] is the sub-list for method output_type
-	27, // [27:27] is the sub-list for method input_type
-	27, // [27:27] is the sub-list for extension type_name
-	27, // [27:27] is the sub-list for extension extendee
-	0,  // [0:27] is the sub-list for field type_name
+	1,  // 0: google.chat.v1.Space.type:type_name -> google.chat.v1.Space.Type
+	2,  // 1: google.chat.v1.Space.space_type:type_name -> google.chat.v1.Space.SpaceType
+	3,  // 2: google.chat.v1.Space.space_threading_state:type_name -> google.chat.v1.Space.SpaceThreadingState
+	20, // 3: google.chat.v1.Space.space_details:type_name -> google.chat.v1.Space.SpaceDetails
+	25, // 4: google.chat.v1.Space.space_history_state:type_name -> google.chat.v1.HistoryState
+	26, // 5: google.chat.v1.Space.create_time:type_name -> google.protobuf.Timestamp
+	26, // 6: google.chat.v1.Space.last_active_time:type_name -> google.protobuf.Timestamp
+	21, // 7: google.chat.v1.Space.membership_count:type_name -> google.chat.v1.Space.MembershipCount
+	22, // 8: google.chat.v1.Space.access_settings:type_name -> google.chat.v1.Space.AccessSettings
+	4,  // 9: google.chat.v1.Space.predefined_permission_settings:type_name -> google.chat.v1.Space.PredefinedPermissionSettings
+	23, // 10: google.chat.v1.Space.permission_settings:type_name -> google.chat.v1.Space.PermissionSettings
+	26, // 11: google.chat.v1.Space.import_mode_expire_time:type_name -> google.protobuf.Timestamp
+	6,  // 12: google.chat.v1.CreateSpaceRequest.space:type_name -> google.chat.v1.Space
+	6,  // 13: google.chat.v1.ListSpacesResponse.spaces:type_name -> google.chat.v1.Space
+	0,  // 14: google.chat.v1.FindGroupChatsRequest.space_view:type_name -> google.chat.v1.SpaceView
+	6,  // 15: google.chat.v1.FindGroupChatsResponse.spaces:type_name -> google.chat.v1.Space
+	6,  // 16: google.chat.v1.UpdateSpaceRequest.space:type_name -> google.chat.v1.Space
+	27, // 17: google.chat.v1.UpdateSpaceRequest.update_mask:type_name -> google.protobuf.FieldMask
+	6,  // 18: google.chat.v1.SearchSpacesResponse.spaces:type_name -> google.chat.v1.Space
+	6,  // 19: google.chat.v1.CompleteImportSpaceResponse.space:type_name -> google.chat.v1.Space
+	5,  // 20: google.chat.v1.Space.AccessSettings.access_state:type_name -> google.chat.v1.Space.AccessSettings.AccessState
+	24, // 21: google.chat.v1.Space.PermissionSettings.manage_members_and_groups:type_name -> google.chat.v1.Space.PermissionSetting
+	24, // 22: google.chat.v1.Space.PermissionSettings.modify_space_details:type_name -> google.chat.v1.Space.PermissionSetting
+	24, // 23: google.chat.v1.Space.PermissionSettings.toggle_history:type_name -> google.chat.v1.Space.PermissionSetting
+	24, // 24: google.chat.v1.Space.PermissionSettings.use_at_mention_all:type_name -> google.chat.v1.Space.PermissionSetting
+	24, // 25: google.chat.v1.Space.PermissionSettings.manage_apps:type_name -> google.chat.v1.Space.PermissionSetting
+	24, // 26: google.chat.v1.Space.PermissionSettings.manage_webhooks:type_name -> google.chat.v1.Space.PermissionSetting
+	24, // 27: google.chat.v1.Space.PermissionSettings.post_messages:type_name -> google.chat.v1.Space.PermissionSetting
+	24, // 28: google.chat.v1.Space.PermissionSettings.reply_messages:type_name -> google.chat.v1.Space.PermissionSetting
+	29, // [29:29] is the sub-list for method output_type
+	29, // [29:29] is the sub-list for method input_type
+	29, // [29:29] is the sub-list for extension type_name
+	29, // [29:29] is the sub-list for extension extendee
+	0,  // [0:29] is the sub-list for field type_name
 }
 
 func init() { file_google_chat_v1_space_proto_init() }
@@ -2210,15 +2454,15 @@ func file_google_chat_v1_space_proto_init() {
 		(*Space_PredefinedPermissionSettings_)(nil),
 		(*Space_PermissionSettings_)(nil),
 	}
-	file_google_chat_v1_space_proto_msgTypes[15].OneofWrappers = []any{}
-	file_google_chat_v1_space_proto_msgTypes[16].OneofWrappers = []any{}
+	file_google_chat_v1_space_proto_msgTypes[17].OneofWrappers = []any{}
+	file_google_chat_v1_space_proto_msgTypes[18].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_chat_v1_space_proto_rawDesc), len(file_google_chat_v1_space_proto_rawDesc)),
-			NumEnums:      5,
-			NumMessages:   17,
+			NumEnums:      6,
+			NumMessages:   19,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

@@ -389,6 +389,14 @@ func TestBatchExecute_Query_PreparesRoutingHint(t *testing.T) {
 	client.locationRouter.observePartialResultSet(&sppb.PartialResultSet{
 		CacheUpdate: &sppb.CacheUpdate{DatabaseId: 7},
 	})
+	waitForAsyncRoutingUpdate(t, func() bool {
+		req := &sppb.ExecuteSqlRequest{
+			Sql: "SELECT 1",
+		}
+		client.locationRouter.prepareExecuteSQLRequest(context.Background(), req)
+		hint := req.GetRoutingHint()
+		return hint != nil && hint.GetDatabaseId() == 7
+	})
 
 	partitions, err := txn.PartitionQuery(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums), PartitionOptions{MaxPartitions: 1})
 	if err != nil {
@@ -446,6 +454,16 @@ func TestBatchExecute_Read_PreparesRoutingHint(t *testing.T) {
 	}
 	client.locationRouter.observePartialResultSet(&sppb.PartialResultSet{
 		CacheUpdate: &sppb.CacheUpdate{DatabaseId: 9},
+	})
+	waitForAsyncRoutingUpdate(t, func() bool {
+		req := &sppb.ReadRequest{
+			Table:   "Albums",
+			Columns: []string{"SingerId"},
+			KeySet:  &sppb.KeySet{},
+		}
+		client.locationRouter.prepareReadRequest(context.Background(), req)
+		hint := req.GetRoutingHint()
+		return hint != nil && hint.GetDatabaseId() == 9
 	})
 
 	partitions, err := txn.PartitionRead(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"}, PartitionOptions{MaxPartitions: 1})

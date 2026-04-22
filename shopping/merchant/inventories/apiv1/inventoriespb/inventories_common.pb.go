@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -300,7 +300,7 @@ func (x RegionalInventoryAttributes_Availability) Number() protoreflect.EnumNumb
 
 // Deprecated: Use RegionalInventoryAttributes_Availability.Descriptor instead.
 func (RegionalInventoryAttributes_Availability) EnumDescriptor() ([]byte, []int) {
-	return file_google_shopping_merchant_inventories_v1_inventories_common_proto_rawDescGZIP(), []int{1, 0}
+	return file_google_shopping_merchant_inventories_v1_inventories_common_proto_rawDescGZIP(), []int{2, 0}
 }
 
 // Local inventory attributes.
@@ -334,8 +334,24 @@ type LocalInventoryAttributes struct {
 	// Optional. Location of the product inside the store. Maximum length is 20
 	// bytes.
 	InstoreProductLocation *string `protobuf:"bytes,8,opt,name=instore_product_location,json=instoreProductLocation,proto3,oneof" json:"instore_product_location,omitempty"`
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	// Optional. An optional list of loyalty programs containing applicable
+	// loyalty member prices for this product at this store.
+	//
+	// This field is used to show store-specific member prices on Local
+	// Inventory Ads (LIA).
+	//
+	// To use this, the loyalty program must be configured in Google Merchant
+	// Center. The benefits provided must match the merchant's website and be
+	// clear to members. This is only applicable for merchants in supported
+	// countries.
+	//
+	// See [Loyalty program](https://support.google.com/merchants/answer/12922446)
+	// for details on supported countries and loyalty program configuration.
+	// For local inventory specific details, see the [Local inventory data
+	// specification](https://support.google.com/merchants/answer/3061342).
+	LoyaltyPrograms []*InventoryLoyaltyProgram `protobuf:"bytes,10,rep,name=loyalty_programs,json=loyaltyPrograms,proto3" json:"loyalty_programs,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *LocalInventoryAttributes) Reset() {
@@ -424,6 +440,125 @@ func (x *LocalInventoryAttributes) GetInstoreProductLocation() string {
 	return ""
 }
 
+func (x *LocalInventoryAttributes) GetLoyaltyPrograms() []*InventoryLoyaltyProgram {
+	if x != nil {
+		return x.LoyaltyPrograms
+	}
+	return nil
+}
+
+// A message that represents loyalty program.
+type InventoryLoyaltyProgram struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The label of the loyalty program. This is an internal label that uniquely
+	// identifies the relationship between a business entity and a loyalty
+	// program entity. The label must be provided if there are multiple loyalty
+	// programs available for the merchant, so that the system can associate
+	// the assets below (for example, price and points) with the correct business.
+	// The corresponding program must be linked to the Merchant Center account.
+	ProgramLabel *string `protobuf:"bytes,1,opt,name=program_label,json=programLabel,proto3,oneof" json:"program_label,omitempty"`
+	// The label of the tier within the loyalty program.
+	// Must match one of the labels within the program.
+	TierLabel *string `protobuf:"bytes,2,opt,name=tier_label,json=tierLabel,proto3,oneof" json:"tier_label,omitempty"`
+	// The price for members of the given tier, that is, the instant discount
+	// price. Must be smaller or equal to the regular price.
+	Price *typepb.Price `protobuf:"bytes,3,opt,name=price,proto3,oneof" json:"price,omitempty"`
+	// The cashback that can be used for future purchases.
+	CashbackForFutureUse *typepb.Price `protobuf:"bytes,4,opt,name=cashback_for_future_use,json=cashbackForFutureUse,proto3,oneof" json:"cashback_for_future_use,omitempty"`
+	// The amount of loyalty points earned on a purchase.
+	LoyaltyPoints *int64 `protobuf:"varint,5,opt,name=loyalty_points,json=loyaltyPoints,proto3,oneof" json:"loyalty_points,omitempty"`
+	// A date range during which the item is eligible for member price. If not
+	// specified, the member price is always applicable. The date range is
+	// represented by a pair of ISO 8601 dates separated by a space,
+	// comma, or slash.
+	MemberPriceEffectiveInterval *interval.Interval `protobuf:"bytes,6,opt,name=member_price_effective_interval,json=memberPriceEffectiveInterval,proto3,oneof" json:"member_price_effective_interval,omitempty"`
+	// The label of the shipping benefit. If the field has value, this offer has
+	// loyalty shipping benefit. If the field value isn't provided, the item is
+	// not eligible for loyalty shipping for the given loyalty tier.
+	ShippingLabel *string `protobuf:"bytes,7,opt,name=shipping_label,json=shippingLabel,proto3,oneof" json:"shipping_label,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *InventoryLoyaltyProgram) Reset() {
+	*x = InventoryLoyaltyProgram{}
+	mi := &file_google_shopping_merchant_inventories_v1_inventories_common_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *InventoryLoyaltyProgram) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*InventoryLoyaltyProgram) ProtoMessage() {}
+
+func (x *InventoryLoyaltyProgram) ProtoReflect() protoreflect.Message {
+	mi := &file_google_shopping_merchant_inventories_v1_inventories_common_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use InventoryLoyaltyProgram.ProtoReflect.Descriptor instead.
+func (*InventoryLoyaltyProgram) Descriptor() ([]byte, []int) {
+	return file_google_shopping_merchant_inventories_v1_inventories_common_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *InventoryLoyaltyProgram) GetProgramLabel() string {
+	if x != nil && x.ProgramLabel != nil {
+		return *x.ProgramLabel
+	}
+	return ""
+}
+
+func (x *InventoryLoyaltyProgram) GetTierLabel() string {
+	if x != nil && x.TierLabel != nil {
+		return *x.TierLabel
+	}
+	return ""
+}
+
+func (x *InventoryLoyaltyProgram) GetPrice() *typepb.Price {
+	if x != nil {
+		return x.Price
+	}
+	return nil
+}
+
+func (x *InventoryLoyaltyProgram) GetCashbackForFutureUse() *typepb.Price {
+	if x != nil {
+		return x.CashbackForFutureUse
+	}
+	return nil
+}
+
+func (x *InventoryLoyaltyProgram) GetLoyaltyPoints() int64 {
+	if x != nil && x.LoyaltyPoints != nil {
+		return *x.LoyaltyPoints
+	}
+	return 0
+}
+
+func (x *InventoryLoyaltyProgram) GetMemberPriceEffectiveInterval() *interval.Interval {
+	if x != nil {
+		return x.MemberPriceEffectiveInterval
+	}
+	return nil
+}
+
+func (x *InventoryLoyaltyProgram) GetShippingLabel() string {
+	if x != nil && x.ShippingLabel != nil {
+		return *x.ShippingLabel
+	}
+	return ""
+}
+
 // Regional inventory attributes.
 type RegionalInventoryAttributes struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -439,14 +574,34 @@ type RegionalInventoryAttributes struct {
 	// Optional.
 	// [Availability](https://support.google.com/merchants/answer/14644124) of the
 	// product in this region.
-	Availability  *RegionalInventoryAttributes_Availability `protobuf:"varint,4,opt,name=availability,proto3,enum=google.shopping.merchant.inventories.v1.RegionalInventoryAttributes_Availability,oneof" json:"availability,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Availability *RegionalInventoryAttributes_Availability `protobuf:"varint,4,opt,name=availability,proto3,enum=google.shopping.merchant.inventories.v1.RegionalInventoryAttributes_Availability,oneof" json:"availability,omitempty"`
+	// Optional. An optional list of loyalty programs containing applicable
+	// loyalty member prices for this product in this region.
+	//
+	// This field is used to show region-specific member prices on Product
+	// Listing Ads (PLA).
+	//
+	// To use this, the loyalty program must be configured in Google Merchant
+	// Center, and the merchant must be using the Regional Availability and
+	// Pricing (RAAP) feature. The benefits provided must match the merchant's
+	// website and be clear to members. This is only applicable for merchants in
+	// supported countries.
+	//
+	// See [Loyalty program](https://support.google.com/merchants/answer/12922446)
+	// for details on supported countries and loyalty program configuration.
+	// Also see [Regional availability and
+	// pricing](https://support.google.com/merchants/answer/14644124) and [How to
+	// set up regional member
+	// pricing](https://support.google.com/merchants/answer/16388178) for more
+	// information.
+	LoyaltyPrograms []*InventoryLoyaltyProgram `protobuf:"bytes,5,rep,name=loyalty_programs,json=loyaltyPrograms,proto3" json:"loyalty_programs,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *RegionalInventoryAttributes) Reset() {
 	*x = RegionalInventoryAttributes{}
-	mi := &file_google_shopping_merchant_inventories_v1_inventories_common_proto_msgTypes[1]
+	mi := &file_google_shopping_merchant_inventories_v1_inventories_common_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -458,7 +613,7 @@ func (x *RegionalInventoryAttributes) String() string {
 func (*RegionalInventoryAttributes) ProtoMessage() {}
 
 func (x *RegionalInventoryAttributes) ProtoReflect() protoreflect.Message {
-	mi := &file_google_shopping_merchant_inventories_v1_inventories_common_proto_msgTypes[1]
+	mi := &file_google_shopping_merchant_inventories_v1_inventories_common_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -471,7 +626,7 @@ func (x *RegionalInventoryAttributes) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RegionalInventoryAttributes.ProtoReflect.Descriptor instead.
 func (*RegionalInventoryAttributes) Descriptor() ([]byte, []int) {
-	return file_google_shopping_merchant_inventories_v1_inventories_common_proto_rawDescGZIP(), []int{1}
+	return file_google_shopping_merchant_inventories_v1_inventories_common_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *RegionalInventoryAttributes) GetPrice() *typepb.Price {
@@ -502,11 +657,19 @@ func (x *RegionalInventoryAttributes) GetAvailability() RegionalInventoryAttribu
 	return RegionalInventoryAttributes_REGIONAL_INVENTORY_AVAILABILITY_UNSPECIFIED
 }
 
+func (x *RegionalInventoryAttributes) GetLoyaltyPrograms() []*InventoryLoyaltyProgram {
+	if x != nil {
+		return x.LoyaltyPrograms
+	}
+	return nil
+}
+
 var File_google_shopping_merchant_inventories_v1_inventories_common_proto protoreflect.FileDescriptor
 
 const file_google_shopping_merchant_inventories_v1_inventories_common_proto_rawDesc = "" +
 	"\n" +
-	"@google/shopping/merchant/inventories/v1/inventories_common.proto\x12'google.shopping.merchant.inventories.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a google/shopping/type/types.proto\x1a\x1agoogle/type/interval.proto\"\xc5\t\n" +
+	"@google/shopping/merchant/inventories/v1/inventories_common.proto\x12'google.shopping.merchant.inventories.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a google/shopping/type/types.proto\x1a\x1agoogle/type/interval.proto\"\xb7\n" +
+	"\n" +
 	"\x18LocalInventoryAttributes\x126\n" +
 	"\x05price\x18\x01 \x01(\v2\x1b.google.shopping.type.PriceB\x03\xe0A\x01R\x05price\x12?\n" +
 	"\n" +
@@ -517,7 +680,9 @@ const file_google_shopping_merchant_inventories_v1_inventories_common_proto_rawD
 	"\rpickup_method\x18\x06 \x01(\x0e2N.google.shopping.merchant.inventories.v1.LocalInventoryAttributes.PickupMethodB\x03\xe0A\x01H\x02R\fpickupMethod\x88\x01\x01\x12t\n" +
 	"\n" +
 	"pickup_sla\x18\a \x01(\x0e2K.google.shopping.merchant.inventories.v1.LocalInventoryAttributes.PickupSlaB\x03\xe0A\x01H\x03R\tpickupSla\x88\x01\x01\x12B\n" +
-	"\x18instore_product_location\x18\b \x01(\tB\x03\xe0A\x01H\x04R\x16instoreProductLocation\x88\x01\x01\"\x8f\x01\n" +
+	"\x18instore_product_location\x18\b \x01(\tB\x03\xe0A\x01H\x04R\x16instoreProductLocation\x88\x01\x01\x12p\n" +
+	"\x10loyalty_programs\x18\n" +
+	" \x03(\v2@.google.shopping.merchant.inventories.v1.InventoryLoyaltyProgramB\x03\xe0A\x01R\x0floyaltyPrograms\"\x8f\x01\n" +
 	"\fAvailability\x12,\n" +
 	"(LOCAL_INVENTORY_AVAILABILITY_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bIN_STOCK\x10\x01\x12\x18\n" +
@@ -546,13 +711,30 @@ const file_google_shopping_merchant_inventories_v1_inventories_common_proto_rawD
 	"\t_quantityB\x10\n" +
 	"\x0e_pickup_methodB\r\n" +
 	"\v_pickup_slaB\x1b\n" +
-	"\x19_instore_product_location\"\xe0\x03\n" +
+	"\x19_instore_product_location\"\xc4\x04\n" +
+	"\x17InventoryLoyaltyProgram\x12(\n" +
+	"\rprogram_label\x18\x01 \x01(\tH\x00R\fprogramLabel\x88\x01\x01\x12\"\n" +
+	"\n" +
+	"tier_label\x18\x02 \x01(\tH\x01R\ttierLabel\x88\x01\x01\x126\n" +
+	"\x05price\x18\x03 \x01(\v2\x1b.google.shopping.type.PriceH\x02R\x05price\x88\x01\x01\x12W\n" +
+	"\x17cashback_for_future_use\x18\x04 \x01(\v2\x1b.google.shopping.type.PriceH\x03R\x14cashbackForFutureUse\x88\x01\x01\x12*\n" +
+	"\x0eloyalty_points\x18\x05 \x01(\x03H\x04R\rloyaltyPoints\x88\x01\x01\x12a\n" +
+	"\x1fmember_price_effective_interval\x18\x06 \x01(\v2\x15.google.type.IntervalH\x05R\x1cmemberPriceEffectiveInterval\x88\x01\x01\x12*\n" +
+	"\x0eshipping_label\x18\a \x01(\tH\x06R\rshippingLabel\x88\x01\x01B\x10\n" +
+	"\x0e_program_labelB\r\n" +
+	"\v_tier_labelB\b\n" +
+	"\x06_priceB\x1a\n" +
+	"\x18_cashback_for_future_useB\x11\n" +
+	"\x0f_loyalty_pointsB\"\n" +
+	" _member_price_effective_intervalB\x11\n" +
+	"\x0f_shipping_label\"\xd2\x04\n" +
 	"\x1bRegionalInventoryAttributes\x126\n" +
 	"\x05price\x18\x01 \x01(\v2\x1b.google.shopping.type.PriceB\x03\xe0A\x01R\x05price\x12?\n" +
 	"\n" +
 	"sale_price\x18\x02 \x01(\v2\x1b.google.shopping.type.PriceB\x03\xe0A\x01R\tsalePrice\x12U\n" +
 	"\x19sale_price_effective_date\x18\x03 \x01(\v2\x15.google.type.IntervalB\x03\xe0A\x01R\x16salePriceEffectiveDate\x12\x7f\n" +
-	"\favailability\x18\x04 \x01(\x0e2Q.google.shopping.merchant.inventories.v1.RegionalInventoryAttributes.AvailabilityB\x03\xe0A\x01H\x00R\favailability\x88\x01\x01\"_\n" +
+	"\favailability\x18\x04 \x01(\x0e2Q.google.shopping.merchant.inventories.v1.RegionalInventoryAttributes.AvailabilityB\x03\xe0A\x01H\x00R\favailability\x88\x01\x01\x12p\n" +
+	"\x10loyalty_programs\x18\x05 \x03(\v2@.google.shopping.merchant.inventories.v1.InventoryLoyaltyProgramB\x03\xe0A\x01R\x0floyaltyPrograms\"_\n" +
 	"\fAvailability\x12/\n" +
 	"+REGIONAL_INVENTORY_AVAILABILITY_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bIN_STOCK\x10\x01\x12\x10\n" +
@@ -573,33 +755,39 @@ func file_google_shopping_merchant_inventories_v1_inventories_common_proto_rawDe
 }
 
 var file_google_shopping_merchant_inventories_v1_inventories_common_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_google_shopping_merchant_inventories_v1_inventories_common_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_google_shopping_merchant_inventories_v1_inventories_common_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_google_shopping_merchant_inventories_v1_inventories_common_proto_goTypes = []any{
 	(LocalInventoryAttributes_Availability)(0),    // 0: google.shopping.merchant.inventories.v1.LocalInventoryAttributes.Availability
 	(LocalInventoryAttributes_PickupMethod)(0),    // 1: google.shopping.merchant.inventories.v1.LocalInventoryAttributes.PickupMethod
 	(LocalInventoryAttributes_PickupSla)(0),       // 2: google.shopping.merchant.inventories.v1.LocalInventoryAttributes.PickupSla
 	(RegionalInventoryAttributes_Availability)(0), // 3: google.shopping.merchant.inventories.v1.RegionalInventoryAttributes.Availability
 	(*LocalInventoryAttributes)(nil),              // 4: google.shopping.merchant.inventories.v1.LocalInventoryAttributes
-	(*RegionalInventoryAttributes)(nil),           // 5: google.shopping.merchant.inventories.v1.RegionalInventoryAttributes
-	(*typepb.Price)(nil),                          // 6: google.shopping.type.Price
-	(*interval.Interval)(nil),                     // 7: google.type.Interval
+	(*InventoryLoyaltyProgram)(nil),               // 5: google.shopping.merchant.inventories.v1.InventoryLoyaltyProgram
+	(*RegionalInventoryAttributes)(nil),           // 6: google.shopping.merchant.inventories.v1.RegionalInventoryAttributes
+	(*typepb.Price)(nil),                          // 7: google.shopping.type.Price
+	(*interval.Interval)(nil),                     // 8: google.type.Interval
 }
 var file_google_shopping_merchant_inventories_v1_inventories_common_proto_depIdxs = []int32{
-	6,  // 0: google.shopping.merchant.inventories.v1.LocalInventoryAttributes.price:type_name -> google.shopping.type.Price
-	6,  // 1: google.shopping.merchant.inventories.v1.LocalInventoryAttributes.sale_price:type_name -> google.shopping.type.Price
-	7,  // 2: google.shopping.merchant.inventories.v1.LocalInventoryAttributes.sale_price_effective_date:type_name -> google.type.Interval
+	7,  // 0: google.shopping.merchant.inventories.v1.LocalInventoryAttributes.price:type_name -> google.shopping.type.Price
+	7,  // 1: google.shopping.merchant.inventories.v1.LocalInventoryAttributes.sale_price:type_name -> google.shopping.type.Price
+	8,  // 2: google.shopping.merchant.inventories.v1.LocalInventoryAttributes.sale_price_effective_date:type_name -> google.type.Interval
 	0,  // 3: google.shopping.merchant.inventories.v1.LocalInventoryAttributes.availability:type_name -> google.shopping.merchant.inventories.v1.LocalInventoryAttributes.Availability
 	1,  // 4: google.shopping.merchant.inventories.v1.LocalInventoryAttributes.pickup_method:type_name -> google.shopping.merchant.inventories.v1.LocalInventoryAttributes.PickupMethod
 	2,  // 5: google.shopping.merchant.inventories.v1.LocalInventoryAttributes.pickup_sla:type_name -> google.shopping.merchant.inventories.v1.LocalInventoryAttributes.PickupSla
-	6,  // 6: google.shopping.merchant.inventories.v1.RegionalInventoryAttributes.price:type_name -> google.shopping.type.Price
-	6,  // 7: google.shopping.merchant.inventories.v1.RegionalInventoryAttributes.sale_price:type_name -> google.shopping.type.Price
-	7,  // 8: google.shopping.merchant.inventories.v1.RegionalInventoryAttributes.sale_price_effective_date:type_name -> google.type.Interval
-	3,  // 9: google.shopping.merchant.inventories.v1.RegionalInventoryAttributes.availability:type_name -> google.shopping.merchant.inventories.v1.RegionalInventoryAttributes.Availability
-	10, // [10:10] is the sub-list for method output_type
-	10, // [10:10] is the sub-list for method input_type
-	10, // [10:10] is the sub-list for extension type_name
-	10, // [10:10] is the sub-list for extension extendee
-	0,  // [0:10] is the sub-list for field type_name
+	5,  // 6: google.shopping.merchant.inventories.v1.LocalInventoryAttributes.loyalty_programs:type_name -> google.shopping.merchant.inventories.v1.InventoryLoyaltyProgram
+	7,  // 7: google.shopping.merchant.inventories.v1.InventoryLoyaltyProgram.price:type_name -> google.shopping.type.Price
+	7,  // 8: google.shopping.merchant.inventories.v1.InventoryLoyaltyProgram.cashback_for_future_use:type_name -> google.shopping.type.Price
+	8,  // 9: google.shopping.merchant.inventories.v1.InventoryLoyaltyProgram.member_price_effective_interval:type_name -> google.type.Interval
+	7,  // 10: google.shopping.merchant.inventories.v1.RegionalInventoryAttributes.price:type_name -> google.shopping.type.Price
+	7,  // 11: google.shopping.merchant.inventories.v1.RegionalInventoryAttributes.sale_price:type_name -> google.shopping.type.Price
+	8,  // 12: google.shopping.merchant.inventories.v1.RegionalInventoryAttributes.sale_price_effective_date:type_name -> google.type.Interval
+	3,  // 13: google.shopping.merchant.inventories.v1.RegionalInventoryAttributes.availability:type_name -> google.shopping.merchant.inventories.v1.RegionalInventoryAttributes.Availability
+	5,  // 14: google.shopping.merchant.inventories.v1.RegionalInventoryAttributes.loyalty_programs:type_name -> google.shopping.merchant.inventories.v1.InventoryLoyaltyProgram
+	15, // [15:15] is the sub-list for method output_type
+	15, // [15:15] is the sub-list for method input_type
+	15, // [15:15] is the sub-list for extension type_name
+	15, // [15:15] is the sub-list for extension extendee
+	0,  // [0:15] is the sub-list for field type_name
 }
 
 func init() { file_google_shopping_merchant_inventories_v1_inventories_common_proto_init() }
@@ -609,13 +797,14 @@ func file_google_shopping_merchant_inventories_v1_inventories_common_proto_init(
 	}
 	file_google_shopping_merchant_inventories_v1_inventories_common_proto_msgTypes[0].OneofWrappers = []any{}
 	file_google_shopping_merchant_inventories_v1_inventories_common_proto_msgTypes[1].OneofWrappers = []any{}
+	file_google_shopping_merchant_inventories_v1_inventories_common_proto_msgTypes[2].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_shopping_merchant_inventories_v1_inventories_common_proto_rawDesc), len(file_google_shopping_merchant_inventories_v1_inventories_common_proto_rawDesc)),
 			NumEnums:      4,
-			NumMessages:   2,
+			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

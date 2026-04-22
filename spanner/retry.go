@@ -45,14 +45,20 @@ var DefaultRetryBackoff = gax.Backoff{
 // retry info returned by Cloud Spanner and uses that if present.
 type spannerRetryer struct {
 	gax.Retryer
+	allowResourceExhaustedWithoutRetryInfo bool
 }
 
 // onCodes returns a spannerRetryer that will retry on the specified error
 // codes. For Internal errors, only errors that have one of a list of known
 // descriptions should be retried.
 func onCodes(bo gax.Backoff, cc ...codes.Code) gax.Retryer {
+	return onCodesWithResourceExhaustedRetryOption(bo, false, cc...)
+}
+
+func onCodesWithResourceExhaustedRetryOption(bo gax.Backoff, allowResourceExhaustedWithoutRetryInfo bool, cc ...codes.Code) gax.Retryer {
 	return &spannerRetryer{
-		Retryer: gax.OnCodes(cc, bo),
+		Retryer:                                gax.OnCodes(cc, bo),
+		allowResourceExhaustedWithoutRetryInfo: allowResourceExhaustedWithoutRetryInfo,
 	}
 }
 
@@ -77,7 +83,12 @@ func (r *spannerRetryer) Retry(err error) (time.Duration, bool) {
 	}
 
 	serverDelay, hasServerDelay := ExtractRetryDelay(err)
-	// Retry ResourceExhausted error only if there's a server delay in the trailer
+	// Location-aware retries move to a different replica immediately after marking
+	// cooldown/exclusion, so they should not sleep before retrying.
+	if errCode == codes.ResourceExhausted && r.allowResourceExhaustedWithoutRetryInfo {
+		return 0, true
+	}
+	// Retry ResourceExhausted error only if there's a server delay in the trailer.
 	if errCode == codes.ResourceExhausted && (!hasServerDelay || serverDelay <= 0) {
 		return 0, false
 	}

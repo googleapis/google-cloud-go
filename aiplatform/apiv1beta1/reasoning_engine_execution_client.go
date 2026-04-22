@@ -28,6 +28,8 @@ import (
 
 	aiplatformpb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	"cloud.google.com/go/longrunning"
+	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
@@ -50,6 +52,7 @@ var newReasoningEngineExecutionClientHook clientHook
 type ReasoningEngineExecutionCallOptions struct {
 	QueryReasoningEngine       []gax.CallOption
 	StreamQueryReasoningEngine []gax.CallOption
+	AsyncQueryReasoningEngine  []gax.CallOption
 	GetLocation                []gax.CallOption
 	ListLocations              []gax.CallOption
 	GetIamPolicy               []gax.CallOption
@@ -81,6 +84,7 @@ func defaultReasoningEngineExecutionCallOptions() *ReasoningEngineExecutionCallO
 	return &ReasoningEngineExecutionCallOptions{
 		QueryReasoningEngine:       []gax.CallOption{},
 		StreamQueryReasoningEngine: []gax.CallOption{},
+		AsyncQueryReasoningEngine:  []gax.CallOption{},
 		GetLocation:                []gax.CallOption{},
 		ListLocations:              []gax.CallOption{},
 		GetIamPolicy:               []gax.CallOption{},
@@ -98,6 +102,7 @@ func defaultReasoningEngineExecutionRESTCallOptions() *ReasoningEngineExecutionC
 	return &ReasoningEngineExecutionCallOptions{
 		QueryReasoningEngine:       []gax.CallOption{},
 		StreamQueryReasoningEngine: []gax.CallOption{},
+		AsyncQueryReasoningEngine:  []gax.CallOption{},
 		GetLocation:                []gax.CallOption{},
 		ListLocations:              []gax.CallOption{},
 		GetIamPolicy:               []gax.CallOption{},
@@ -118,6 +123,8 @@ type internalReasoningEngineExecutionClient interface {
 	Connection() *grpc.ClientConn
 	QueryReasoningEngine(context.Context, *aiplatformpb.QueryReasoningEngineRequest, ...gax.CallOption) (*aiplatformpb.QueryReasoningEngineResponse, error)
 	StreamQueryReasoningEngine(context.Context, *aiplatformpb.StreamQueryReasoningEngineRequest, ...gax.CallOption) (aiplatformpb.ReasoningEngineExecutionService_StreamQueryReasoningEngineClient, error)
+	AsyncQueryReasoningEngine(context.Context, *aiplatformpb.AsyncQueryReasoningEngineRequest, ...gax.CallOption) (*AsyncQueryReasoningEngineOperation, error)
+	AsyncQueryReasoningEngineOperation(name string) *AsyncQueryReasoningEngineOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -140,6 +147,11 @@ type ReasoningEngineExecutionClient struct {
 
 	// The call options for this service.
 	CallOptions *ReasoningEngineExecutionCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
 }
 
 // Wrapper methods routed to the internal client.
@@ -173,6 +185,17 @@ func (c *ReasoningEngineExecutionClient) QueryReasoningEngine(ctx context.Contex
 // StreamQueryReasoningEngine streams queries using a reasoning engine.
 func (c *ReasoningEngineExecutionClient) StreamQueryReasoningEngine(ctx context.Context, req *aiplatformpb.StreamQueryReasoningEngineRequest, opts ...gax.CallOption) (aiplatformpb.ReasoningEngineExecutionService_StreamQueryReasoningEngineClient, error) {
 	return c.internalClient.StreamQueryReasoningEngine(ctx, req, opts...)
+}
+
+// AsyncQueryReasoningEngine async query using a reasoning engine.
+func (c *ReasoningEngineExecutionClient) AsyncQueryReasoningEngine(ctx context.Context, req *aiplatformpb.AsyncQueryReasoningEngineRequest, opts ...gax.CallOption) (*AsyncQueryReasoningEngineOperation, error) {
+	return c.internalClient.AsyncQueryReasoningEngine(ctx, req, opts...)
+}
+
+// AsyncQueryReasoningEngineOperation returns a new AsyncQueryReasoningEngineOperation from a given name.
+// The name must be that of a previously created AsyncQueryReasoningEngineOperation, possibly from a different process.
+func (c *ReasoningEngineExecutionClient) AsyncQueryReasoningEngineOperation(name string) *AsyncQueryReasoningEngineOperation {
+	return c.internalClient.AsyncQueryReasoningEngineOperation(name)
 }
 
 // GetLocation gets information about a location.
@@ -249,6 +272,11 @@ type reasoningEngineExecutionGRPCClient struct {
 	// The gRPC API client.
 	reasoningEngineExecutionClient aiplatformpb.ReasoningEngineExecutionServiceClient
 
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
 	operationsClient longrunningpb.OperationsClient
 
 	iamPolicyClient iampb.IAMPolicyClient
@@ -315,6 +343,7 @@ func NewReasoningEngineExecutionClient(ctx context.Context, opts ...option.Clien
 
 		client.CallOptions.QueryReasoningEngine = append(client.CallOptions.QueryReasoningEngine, gax.WithClientMetrics(metrics))
 		client.CallOptions.StreamQueryReasoningEngine = append(client.CallOptions.StreamQueryReasoningEngine, gax.WithClientMetrics(metrics))
+		client.CallOptions.AsyncQueryReasoningEngine = append(client.CallOptions.AsyncQueryReasoningEngine, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
@@ -329,6 +358,17 @@ func NewReasoningEngineExecutionClient(ctx context.Context, opts ...option.Clien
 
 	client.internalClient = c
 
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	if err != nil {
+		// This error "should not happen", since we are just reusing old connection pool
+		// and never actually need to dial.
+		// If this does happen, we could leak connp. However, we cannot close conn:
+		// If the user invoked the constructor with option.WithGRPCConn,
+		// we would close a connection that's still in use.
+		// TODO: investigate error conditions.
+		return nil, err
+	}
+	c.LROClient = &client.LROClient
 	return &client, nil
 }
 
@@ -364,6 +404,11 @@ type reasoningEngineExecutionRESTClient struct {
 
 	// The http client.
 	httpClient *http.Client
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* headers to be sent with each request.
 	xGoogHeaders []string
@@ -417,6 +462,7 @@ func NewReasoningEngineExecutionRESTClient(ctx context.Context, opts ...option.C
 
 		callOpts.QueryReasoningEngine = append(callOpts.QueryReasoningEngine, gax.WithClientMetrics(metrics))
 		callOpts.StreamQueryReasoningEngine = append(callOpts.StreamQueryReasoningEngine, gax.WithClientMetrics(metrics))
+		callOpts.AsyncQueryReasoningEngine = append(callOpts.AsyncQueryReasoningEngine, gax.WithClientMetrics(metrics))
 		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
 		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
 		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
@@ -428,6 +474,16 @@ func NewReasoningEngineExecutionRESTClient(ctx context.Context, opts ...option.C
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 		callOpts.WaitOperation = append(callOpts.WaitOperation, gax.WithClientMetrics(metrics))
 	}
+
+	lroOpts := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opClient, err := lroauto.NewOperationsRESTClient(ctx, lroOpts...)
+	if err != nil {
+		return nil, err
+	}
+	c.LROClient = &opClient
 
 	return &ReasoningEngineExecutionClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -517,6 +573,32 @@ func (c *reasoningEngineExecutionGRPCClient) StreamQueryReasoningEngine(ctx cont
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *reasoningEngineExecutionGRPCClient) AsyncQueryReasoningEngine(ctx context.Context, req *aiplatformpb.AsyncQueryReasoningEngineRequest, opts ...gax.CallOption) (*AsyncQueryReasoningEngineOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.ReasoningEngineExecutionService/AsyncQueryReasoningEngine")
+	}
+	opts = append((*c.CallOptions).AsyncQueryReasoningEngine[0:len((*c.CallOptions).AsyncQueryReasoningEngine):len((*c.CallOptions).AsyncQueryReasoningEngine)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.reasoningEngineExecutionClient.AsyncQueryReasoningEngine, req, settings.GRPC, c.logger, "AsyncQueryReasoningEngine")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &AsyncQueryReasoningEngineOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *reasoningEngineExecutionGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -956,6 +1038,72 @@ func (c *streamQueryReasoningEngineRESTStreamClient) SendMsg(m interface{}) erro
 func (c *streamQueryReasoningEngineRESTStreamClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented, use Recv")
+}
+
+// AsyncQueryReasoningEngine async query using a reasoning engine.
+func (c *reasoningEngineExecutionRESTClient) AsyncQueryReasoningEngine(ctx context.Context, req *aiplatformpb.AsyncQueryReasoningEngineRequest, opts ...gax.CallOption) (*AsyncQueryReasoningEngineOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:asyncQuery", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.ReasoningEngineExecutionService/AsyncQueryReasoningEngine")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/reasoningEngines/*}:asyncQuery")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AsyncQueryReasoningEngine")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/ui/%s", resp.GetName())
+	return &AsyncQueryReasoningEngineOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
 }
 
 // GetLocation gets information about a location.
@@ -1568,4 +1716,22 @@ func (c *reasoningEngineExecutionRESTClient) WaitOperation(ctx context.Context, 
 		return nil, e
 	}
 	return resp, nil
+}
+
+// AsyncQueryReasoningEngineOperation returns a new AsyncQueryReasoningEngineOperation from a given name.
+// The name must be that of a previously created AsyncQueryReasoningEngineOperation, possibly from a different process.
+func (c *reasoningEngineExecutionGRPCClient) AsyncQueryReasoningEngineOperation(name string) *AsyncQueryReasoningEngineOperation {
+	return &AsyncQueryReasoningEngineOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// AsyncQueryReasoningEngineOperation returns a new AsyncQueryReasoningEngineOperation from a given name.
+// The name must be that of a previously created AsyncQueryReasoningEngineOperation, possibly from a different process.
+func (c *reasoningEngineExecutionRESTClient) AsyncQueryReasoningEngineOperation(name string) *AsyncQueryReasoningEngineOperation {
+	override := fmt.Sprintf("/ui/%s", name)
+	return &AsyncQueryReasoningEngineOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
 }

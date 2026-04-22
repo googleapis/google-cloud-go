@@ -17,9 +17,9 @@
 // Package chronicle is an auto-generated package for the
 // Chronicle API.
 //
-// The Google Cloud Security Operations API, popularly known as the Chronicle
-// API, serves endpoints that enable security analysts to analyze and
-// mitigate a security threat throughout its lifecycle
+// The Google Cloud Security Operations API (Chronicle API) provides
+// endpoints that help analysts investigate and mitigate security threats
+// throughout their lifecycle.
 //
 //	NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //

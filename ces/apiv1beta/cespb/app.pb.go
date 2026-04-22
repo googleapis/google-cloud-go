@@ -1516,8 +1516,13 @@ type ErrorHandlingSettings struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Optional. The strategy to use for error handling.
 	ErrorHandlingStrategy ErrorHandlingSettings_ErrorHandlingStrategy `protobuf:"varint,1,opt,name=error_handling_strategy,json=errorHandlingStrategy,proto3,enum=google.cloud.ces.v1beta.ErrorHandlingSettings_ErrorHandlingStrategy" json:"error_handling_strategy,omitempty"`
-	unknownFields         protoimpl.UnknownFields
-	sizeCache             protoimpl.SizeCache
+	// Optional. Configuration for handling fallback responses.
+	FallbackResponseConfig *ErrorHandlingSettings_FallbackResponseConfig `protobuf:"bytes,2,opt,name=fallback_response_config,json=fallbackResponseConfig,proto3" json:"fallback_response_config,omitempty"`
+	// Optional. Configuration for ending the session in case of system errors
+	// (e.g. LLM errors).
+	EndSessionConfig *ErrorHandlingSettings_EndSessionConfig `protobuf:"bytes,3,opt,name=end_session_config,json=endSessionConfig,proto3" json:"end_session_config,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *ErrorHandlingSettings) Reset() {
@@ -1555,6 +1560,20 @@ func (x *ErrorHandlingSettings) GetErrorHandlingStrategy() ErrorHandlingSettings
 		return x.ErrorHandlingStrategy
 	}
 	return ErrorHandlingSettings_ERROR_HANDLING_STRATEGY_UNSPECIFIED
+}
+
+func (x *ErrorHandlingSettings) GetFallbackResponseConfig() *ErrorHandlingSettings_FallbackResponseConfig {
+	if x != nil {
+		return x.FallbackResponseConfig
+	}
+	return nil
+}
+
+func (x *ErrorHandlingSettings) GetEndSessionConfig() *ErrorHandlingSettings_EndSessionConfig {
+	if x != nil {
+		return x.EndSessionConfig
+	}
+	return nil
 }
 
 // Threshold settings for metrics in an Evaluation.
@@ -1785,8 +1804,11 @@ type ConversationLoggingSettings struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Optional. Whether to disable conversation logging for the sessions.
 	DisableConversationLogging bool `protobuf:"varint,1,opt,name=disable_conversation_logging,json=disableConversationLogging,proto3" json:"disable_conversation_logging,omitempty"`
-	unknownFields              protoimpl.UnknownFields
-	sizeCache                  protoimpl.SizeCache
+	// Optional. Controls the retention window for the conversation.
+	// If not set, the conversation will be retained for 365 days.
+	RetentionWindow *durationpb.Duration `protobuf:"bytes,2,opt,name=retention_window,json=retentionWindow,proto3" json:"retention_window,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *ConversationLoggingSettings) Reset() {
@@ -1824,6 +1846,13 @@ func (x *ConversationLoggingSettings) GetDisableConversationLogging() bool {
 		return x.DisableConversationLogging
 	}
 	return false
+}
+
+func (x *ConversationLoggingSettings) GetRetentionWindow() *durationpb.Duration {
+	if x != nil {
+		return x.RetentionWindow
+	}
+	return nil
 }
 
 // Settings to describe the Cloud Logging behaviors for the app.
@@ -2214,6 +2243,117 @@ func (x *App_VariableDeclaration) GetSchema() *Schema {
 	return nil
 }
 
+// Configuration for handling fallback responses.
+type ErrorHandlingSettings_FallbackResponseConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The fallback messages in case of system errors (e.g. LLM
+	// errors), mapped by [supported language
+	// code](https://docs.cloud.google.com/customer-engagement-ai/conversational-agents/ps/reference/language).
+	CustomFallbackMessages map[string]string `protobuf:"bytes,1,rep,name=custom_fallback_messages,json=customFallbackMessages,proto3" json:"custom_fallback_messages,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Optional. The maximum number of fallback attempts to make before the
+	// agent emitting [EndSession][google.cloud.ces.v1beta.EndSession] Signal.
+	MaxFallbackAttempts int32 `protobuf:"varint,2,opt,name=max_fallback_attempts,json=maxFallbackAttempts,proto3" json:"max_fallback_attempts,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+}
+
+func (x *ErrorHandlingSettings_FallbackResponseConfig) Reset() {
+	*x = ErrorHandlingSettings_FallbackResponseConfig{}
+	mi := &file_google_cloud_ces_v1beta_app_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ErrorHandlingSettings_FallbackResponseConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ErrorHandlingSettings_FallbackResponseConfig) ProtoMessage() {}
+
+func (x *ErrorHandlingSettings_FallbackResponseConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_app_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ErrorHandlingSettings_FallbackResponseConfig.ProtoReflect.Descriptor instead.
+func (*ErrorHandlingSettings_FallbackResponseConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_app_proto_rawDescGZIP(), []int{9, 0}
+}
+
+func (x *ErrorHandlingSettings_FallbackResponseConfig) GetCustomFallbackMessages() map[string]string {
+	if x != nil {
+		return x.CustomFallbackMessages
+	}
+	return nil
+}
+
+func (x *ErrorHandlingSettings_FallbackResponseConfig) GetMaxFallbackAttempts() int32 {
+	if x != nil {
+		return x.MaxFallbackAttempts
+	}
+	return 0
+}
+
+// Configuration for ending the session in case of system errors (e.g. LLM
+// errors).
+type ErrorHandlingSettings_EndSessionConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Whether to escalate the session in
+	// [EndSession][google.cloud.ces.v1beta.EndSession]. If session is
+	// escalated, [metadata in
+	// EndSession][google.cloud.ces.v1beta.EndSession.metadata] will contain
+	// `session_escalated = true`. See
+	// https://docs.cloud.google.com/customer-engagement-ai/conversational-agents/ps/deploy/google-telephony-platform#transfer_a_call_to_a_human_agent
+	// for details.
+	EscalateSession *bool `protobuf:"varint,1,opt,name=escalate_session,json=escalateSession,proto3,oneof" json:"escalate_session,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *ErrorHandlingSettings_EndSessionConfig) Reset() {
+	*x = ErrorHandlingSettings_EndSessionConfig{}
+	mi := &file_google_cloud_ces_v1beta_app_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ErrorHandlingSettings_EndSessionConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ErrorHandlingSettings_EndSessionConfig) ProtoMessage() {}
+
+func (x *ErrorHandlingSettings_EndSessionConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_app_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ErrorHandlingSettings_EndSessionConfig.ProtoReflect.Descriptor instead.
+func (*ErrorHandlingSettings_EndSessionConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_app_proto_rawDescGZIP(), []int{9, 1}
+}
+
+func (x *ErrorHandlingSettings_EndSessionConfig) GetEscalateSession() bool {
+	if x != nil && x.EscalateSession != nil {
+		return *x.EscalateSession
+	}
+	return false
+}
+
 // Settings for golden evaluations.
 type EvaluationMetricsThresholds_GoldenEvaluationMetricsThresholds struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -2231,7 +2371,7 @@ type EvaluationMetricsThresholds_GoldenEvaluationMetricsThresholds struct {
 
 func (x *EvaluationMetricsThresholds_GoldenEvaluationMetricsThresholds) Reset() {
 	*x = EvaluationMetricsThresholds_GoldenEvaluationMetricsThresholds{}
-	mi := &file_google_cloud_ces_v1beta_app_proto_msgTypes[22]
+	mi := &file_google_cloud_ces_v1beta_app_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2243,7 +2383,7 @@ func (x *EvaluationMetricsThresholds_GoldenEvaluationMetricsThresholds) String()
 func (*EvaluationMetricsThresholds_GoldenEvaluationMetricsThresholds) ProtoMessage() {}
 
 func (x *EvaluationMetricsThresholds_GoldenEvaluationMetricsThresholds) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_app_proto_msgTypes[22]
+	mi := &file_google_cloud_ces_v1beta_app_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2292,7 +2432,7 @@ type EvaluationMetricsThresholds_ToolMatchingSettings struct {
 
 func (x *EvaluationMetricsThresholds_ToolMatchingSettings) Reset() {
 	*x = EvaluationMetricsThresholds_ToolMatchingSettings{}
-	mi := &file_google_cloud_ces_v1beta_app_proto_msgTypes[23]
+	mi := &file_google_cloud_ces_v1beta_app_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2304,7 +2444,7 @@ func (x *EvaluationMetricsThresholds_ToolMatchingSettings) String() string {
 func (*EvaluationMetricsThresholds_ToolMatchingSettings) ProtoMessage() {}
 
 func (x *EvaluationMetricsThresholds_ToolMatchingSettings) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_app_proto_msgTypes[23]
+	mi := &file_google_cloud_ces_v1beta_app_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2344,7 +2484,7 @@ type EvaluationMetricsThresholds_GoldenEvaluationMetricsThresholds_TurnLevelMetr
 
 func (x *EvaluationMetricsThresholds_GoldenEvaluationMetricsThresholds_TurnLevelMetricsThresholds) Reset() {
 	*x = EvaluationMetricsThresholds_GoldenEvaluationMetricsThresholds_TurnLevelMetricsThresholds{}
-	mi := &file_google_cloud_ces_v1beta_app_proto_msgTypes[24]
+	mi := &file_google_cloud_ces_v1beta_app_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2357,7 +2497,7 @@ func (*EvaluationMetricsThresholds_GoldenEvaluationMetricsThresholds_TurnLevelMe
 }
 
 func (x *EvaluationMetricsThresholds_GoldenEvaluationMetricsThresholds_TurnLevelMetricsThresholds) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_app_proto_msgTypes[24]
+	mi := &file_google_cloud_ces_v1beta_app_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2406,7 +2546,7 @@ type EvaluationMetricsThresholds_GoldenEvaluationMetricsThresholds_ExpectationLe
 
 func (x *EvaluationMetricsThresholds_GoldenEvaluationMetricsThresholds_ExpectationLevelMetricsThresholds) Reset() {
 	*x = EvaluationMetricsThresholds_GoldenEvaluationMetricsThresholds_ExpectationLevelMetricsThresholds{}
-	mi := &file_google_cloud_ces_v1beta_app_proto_msgTypes[25]
+	mi := &file_google_cloud_ces_v1beta_app_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2419,7 +2559,7 @@ func (*EvaluationMetricsThresholds_GoldenEvaluationMetricsThresholds_Expectation
 }
 
 func (x *EvaluationMetricsThresholds_GoldenEvaluationMetricsThresholds_ExpectationLevelMetricsThresholds) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_app_proto_msgTypes[25]
+	mi := &file_google_cloud_ces_v1beta_app_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2459,7 +2599,7 @@ type DataStoreSettings_Engine struct {
 
 func (x *DataStoreSettings_Engine) Reset() {
 	*x = DataStoreSettings_Engine{}
-	mi := &file_google_cloud_ces_v1beta_app_proto_msgTypes[26]
+	mi := &file_google_cloud_ces_v1beta_app_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2471,7 +2611,7 @@ func (x *DataStoreSettings_Engine) String() string {
 func (*DataStoreSettings_Engine) ProtoMessage() {}
 
 func (x *DataStoreSettings_Engine) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_app_proto_msgTypes[26]
+	mi := &file_google_cloud_ces_v1beta_app_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2519,7 +2659,7 @@ type EvaluationPersona_SpeechConfig struct {
 
 func (x *EvaluationPersona_SpeechConfig) Reset() {
 	*x = EvaluationPersona_SpeechConfig{}
-	mi := &file_google_cloud_ces_v1beta_app_proto_msgTypes[27]
+	mi := &file_google_cloud_ces_v1beta_app_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2531,7 +2671,7 @@ func (x *EvaluationPersona_SpeechConfig) String() string {
 func (*EvaluationPersona_SpeechConfig) ProtoMessage() {}
 
 func (x *EvaluationPersona_SpeechConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_app_proto_msgTypes[27]
+	mi := &file_google_cloud_ces_v1beta_app_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2664,9 +2804,20 @@ const file_google_cloud_ces_v1beta_app_proto_rawDesc = "" +
 	"\x16cloud_logging_settings\x18\x04 \x01(\v2-.google.cloud.ces.v1beta.CloudLoggingSettingsB\x03\xe0A\x01R\x14cloudLoggingSettings\x12}\n" +
 	"\x1dconversation_logging_settings\x18\x05 \x01(\v24.google.cloud.ces.v1beta.ConversationLoggingSettingsB\x03\xe0A\x01R\x1bconversationLoggingSettings\x12}\n" +
 	"!evaluation_audio_recording_config\x18\x06 \x01(\v2-.google.cloud.ces.v1beta.AudioRecordingConfigB\x03\xe0A\x01R\x1eevaluationAudioRecordingConfig\x12n\n" +
-	"\x18metric_analysis_settings\x18\a \x01(\v2/.google.cloud.ces.v1beta.MetricAnalysisSettingsB\x03\xe0A\x01R\x16metricAnalysisSettings\"\x8f\x02\n" +
+	"\x18metric_analysis_settings\x18\a \x01(\v2/.google.cloud.ces.v1beta.MetricAnalysisSettingsB\x03\xe0A\x01R\x16metricAnalysisSettings\"\xaa\a\n" +
 	"\x15ErrorHandlingSettings\x12\x81\x01\n" +
-	"\x17error_handling_strategy\x18\x01 \x01(\x0e2D.google.cloud.ces.v1beta.ErrorHandlingSettings.ErrorHandlingStrategyB\x03\xe0A\x01R\x15errorHandlingStrategy\"r\n" +
+	"\x17error_handling_strategy\x18\x01 \x01(\x0e2D.google.cloud.ces.v1beta.ErrorHandlingSettings.ErrorHandlingStrategyB\x03\xe0A\x01R\x15errorHandlingStrategy\x12\x84\x01\n" +
+	"\x18fallback_response_config\x18\x02 \x01(\v2E.google.cloud.ces.v1beta.ErrorHandlingSettings.FallbackResponseConfigB\x03\xe0A\x01R\x16fallbackResponseConfig\x12r\n" +
+	"\x12end_session_config\x18\x03 \x01(\v2?.google.cloud.ces.v1beta.ErrorHandlingSettings.EndSessionConfigB\x03\xe0A\x01R\x10endSessionConfig\x1a\xbf\x02\n" +
+	"\x16FallbackResponseConfig\x12\xa0\x01\n" +
+	"\x18custom_fallback_messages\x18\x01 \x03(\v2a.google.cloud.ces.v1beta.ErrorHandlingSettings.FallbackResponseConfig.CustomFallbackMessagesEntryB\x03\xe0A\x01R\x16customFallbackMessages\x127\n" +
+	"\x15max_fallback_attempts\x18\x02 \x01(\x05B\x03\xe0A\x01R\x13maxFallbackAttempts\x1aI\n" +
+	"\x1bCustomFallbackMessagesEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a\\\n" +
+	"\x10EndSessionConfig\x123\n" +
+	"\x10escalate_session\x18\x01 \x01(\bB\x03\xe0A\x01H\x00R\x0fescalateSession\x88\x01\x01B\x13\n" +
+	"\x11_escalate_session\"r\n" +
 	"\x15ErrorHandlingStrategy\x12'\n" +
 	"#ERROR_HANDLING_STRATEGY_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04NONE\x10\x01\x12\x15\n" +
@@ -2721,9 +2872,10 @@ const file_google_cloud_ces_v1beta_app_proto_rawDesc = "" +
 	"privateKey\x12#\n" +
 	"\n" +
 	"passphrase\x18\x03 \x01(\tB\x03\xe0A\x01R\n" +
-	"passphrase\"d\n" +
+	"passphrase\"\xaf\x01\n" +
 	"\x1bConversationLoggingSettings\x12E\n" +
-	"\x1cdisable_conversation_logging\x18\x01 \x01(\bB\x03\xe0A\x01R\x1adisableConversationLogging\"M\n" +
+	"\x1cdisable_conversation_logging\x18\x01 \x01(\bB\x03\xe0A\x01R\x1adisableConversationLogging\x12I\n" +
+	"\x10retention_window\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x0fretentionWindow\"M\n" +
 	"\x14CloudLoggingSettings\x125\n" +
 	"\x14enable_cloud_logging\x18\x01 \x01(\bB\x03\xe0A\x01R\x12enableCloudLogging\"g\n" +
 	"\x14AudioRecordingConfig\x12\"\n" +
@@ -2781,7 +2933,7 @@ func file_google_cloud_ces_v1beta_app_proto_rawDescGZIP() []byte {
 }
 
 var file_google_cloud_ces_v1beta_app_proto_enumTypes = make([]protoimpl.EnumInfo, 9)
-var file_google_cloud_ces_v1beta_app_proto_msgTypes = make([]protoimpl.MessageInfo, 28)
+var file_google_cloud_ces_v1beta_app_proto_msgTypes = make([]protoimpl.MessageInfo, 31)
 var file_google_cloud_ces_v1beta_app_proto_goTypes = []any{
 	(App_ToolExecutionMode)(0),                                   // 0: google.cloud.ces.v1beta.App.ToolExecutionMode
 	(AmbientSoundConfig_PrebuiltAmbientNoise)(0),                 // 1: google.cloud.ces.v1beta.AmbientSoundConfig.PrebuiltAmbientNoise
@@ -2792,42 +2944,45 @@ var file_google_cloud_ces_v1beta_app_proto_goTypes = []any{
 	(EvaluationSettings_ScenarioConversationInitiator)(0),                                                                   // 6: google.cloud.ces.v1beta.EvaluationSettings.ScenarioConversationInitiator
 	(DataStoreSettings_Engine_Type)(0),                                                                                      // 7: google.cloud.ces.v1beta.DataStoreSettings.Engine.Type
 	(EvaluationPersona_SpeechConfig_BackgroundEnvironment)(0),                                                               // 8: google.cloud.ces.v1beta.EvaluationPersona.SpeechConfig.BackgroundEnvironment
-	(*App)(nil),                         // 9: google.cloud.ces.v1beta.App
-	(*TimeZoneSettings)(nil),            // 10: google.cloud.ces.v1beta.TimeZoneSettings
-	(*LanguageSettings)(nil),            // 11: google.cloud.ces.v1beta.LanguageSettings
-	(*AudioProcessingConfig)(nil),       // 12: google.cloud.ces.v1beta.AudioProcessingConfig
-	(*AmbientSoundConfig)(nil),          // 13: google.cloud.ces.v1beta.AmbientSoundConfig
-	(*BargeInConfig)(nil),               // 14: google.cloud.ces.v1beta.BargeInConfig
-	(*SynthesizeSpeechConfig)(nil),      // 15: google.cloud.ces.v1beta.SynthesizeSpeechConfig
-	(*MetricAnalysisSettings)(nil),      // 16: google.cloud.ces.v1beta.MetricAnalysisSettings
-	(*LoggingSettings)(nil),             // 17: google.cloud.ces.v1beta.LoggingSettings
-	(*ErrorHandlingSettings)(nil),       // 18: google.cloud.ces.v1beta.ErrorHandlingSettings
-	(*EvaluationMetricsThresholds)(nil), // 19: google.cloud.ces.v1beta.EvaluationMetricsThresholds
-	(*EvaluationSettings)(nil),          // 20: google.cloud.ces.v1beta.EvaluationSettings
-	(*ClientCertificateSettings)(nil),   // 21: google.cloud.ces.v1beta.ClientCertificateSettings
-	(*ConversationLoggingSettings)(nil), // 22: google.cloud.ces.v1beta.ConversationLoggingSettings
-	(*CloudLoggingSettings)(nil),        // 23: google.cloud.ces.v1beta.CloudLoggingSettings
-	(*AudioRecordingConfig)(nil),        // 24: google.cloud.ces.v1beta.AudioRecordingConfig
-	(*RedactionConfig)(nil),             // 25: google.cloud.ces.v1beta.RedactionConfig
-	(*DataStoreSettings)(nil),           // 26: google.cloud.ces.v1beta.DataStoreSettings
-	(*EvaluationPersona)(nil),           // 27: google.cloud.ces.v1beta.EvaluationPersona
-	(*App_VariableDeclaration)(nil),     // 28: google.cloud.ces.v1beta.App.VariableDeclaration
-	nil,                                 // 29: google.cloud.ces.v1beta.App.MetadataEntry
-	nil,                                 // 30: google.cloud.ces.v1beta.AudioProcessingConfig.SynthesizeSpeechConfigsEntry
-	(*EvaluationMetricsThresholds_GoldenEvaluationMetricsThresholds)(nil),                                   // 31: google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds
-	(*EvaluationMetricsThresholds_ToolMatchingSettings)(nil),                                                // 32: google.cloud.ces.v1beta.EvaluationMetricsThresholds.ToolMatchingSettings
-	(*EvaluationMetricsThresholds_GoldenEvaluationMetricsThresholds_TurnLevelMetricsThresholds)(nil),        // 33: google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.TurnLevelMetricsThresholds
-	(*EvaluationMetricsThresholds_GoldenEvaluationMetricsThresholds_ExpectationLevelMetricsThresholds)(nil), // 34: google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.ExpectationLevelMetricsThresholds
-	(*DataStoreSettings_Engine)(nil),                                                                        // 35: google.cloud.ces.v1beta.DataStoreSettings.Engine
-	(*EvaluationPersona_SpeechConfig)(nil),                                                                  // 36: google.cloud.ces.v1beta.EvaluationPersona.SpeechConfig
-	(*ModelSettings)(nil),                                                                                   // 37: google.cloud.ces.v1beta.ModelSettings
-	(*ChannelProfile)(nil),                                                                                  // 38: google.cloud.ces.v1beta.ChannelProfile
-	(*timestamppb.Timestamp)(nil),                                                                           // 39: google.protobuf.Timestamp
-	(*durationpb.Duration)(nil),                                                                             // 40: google.protobuf.Duration
-	(*BigQueryExportSettings)(nil),                                                                          // 41: google.cloud.ces.v1beta.BigQueryExportSettings
-	(GoldenRunMethod)(0),                                                                                    // 42: google.cloud.ces.v1beta.GoldenRunMethod
-	(EvaluationToolCallBehaviour)(0),                                                                        // 43: google.cloud.ces.v1beta.EvaluationToolCallBehaviour
-	(*Schema)(nil),                                                                                          // 44: google.cloud.ces.v1beta.Schema
+	(*App)(nil),                                          // 9: google.cloud.ces.v1beta.App
+	(*TimeZoneSettings)(nil),                             // 10: google.cloud.ces.v1beta.TimeZoneSettings
+	(*LanguageSettings)(nil),                             // 11: google.cloud.ces.v1beta.LanguageSettings
+	(*AudioProcessingConfig)(nil),                        // 12: google.cloud.ces.v1beta.AudioProcessingConfig
+	(*AmbientSoundConfig)(nil),                           // 13: google.cloud.ces.v1beta.AmbientSoundConfig
+	(*BargeInConfig)(nil),                                // 14: google.cloud.ces.v1beta.BargeInConfig
+	(*SynthesizeSpeechConfig)(nil),                       // 15: google.cloud.ces.v1beta.SynthesizeSpeechConfig
+	(*MetricAnalysisSettings)(nil),                       // 16: google.cloud.ces.v1beta.MetricAnalysisSettings
+	(*LoggingSettings)(nil),                              // 17: google.cloud.ces.v1beta.LoggingSettings
+	(*ErrorHandlingSettings)(nil),                        // 18: google.cloud.ces.v1beta.ErrorHandlingSettings
+	(*EvaluationMetricsThresholds)(nil),                  // 19: google.cloud.ces.v1beta.EvaluationMetricsThresholds
+	(*EvaluationSettings)(nil),                           // 20: google.cloud.ces.v1beta.EvaluationSettings
+	(*ClientCertificateSettings)(nil),                    // 21: google.cloud.ces.v1beta.ClientCertificateSettings
+	(*ConversationLoggingSettings)(nil),                  // 22: google.cloud.ces.v1beta.ConversationLoggingSettings
+	(*CloudLoggingSettings)(nil),                         // 23: google.cloud.ces.v1beta.CloudLoggingSettings
+	(*AudioRecordingConfig)(nil),                         // 24: google.cloud.ces.v1beta.AudioRecordingConfig
+	(*RedactionConfig)(nil),                              // 25: google.cloud.ces.v1beta.RedactionConfig
+	(*DataStoreSettings)(nil),                            // 26: google.cloud.ces.v1beta.DataStoreSettings
+	(*EvaluationPersona)(nil),                            // 27: google.cloud.ces.v1beta.EvaluationPersona
+	(*App_VariableDeclaration)(nil),                      // 28: google.cloud.ces.v1beta.App.VariableDeclaration
+	nil,                                                  // 29: google.cloud.ces.v1beta.App.MetadataEntry
+	nil,                                                  // 30: google.cloud.ces.v1beta.AudioProcessingConfig.SynthesizeSpeechConfigsEntry
+	(*ErrorHandlingSettings_FallbackResponseConfig)(nil), // 31: google.cloud.ces.v1beta.ErrorHandlingSettings.FallbackResponseConfig
+	(*ErrorHandlingSettings_EndSessionConfig)(nil),       // 32: google.cloud.ces.v1beta.ErrorHandlingSettings.EndSessionConfig
+	nil, // 33: google.cloud.ces.v1beta.ErrorHandlingSettings.FallbackResponseConfig.CustomFallbackMessagesEntry
+	(*EvaluationMetricsThresholds_GoldenEvaluationMetricsThresholds)(nil),                                   // 34: google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds
+	(*EvaluationMetricsThresholds_ToolMatchingSettings)(nil),                                                // 35: google.cloud.ces.v1beta.EvaluationMetricsThresholds.ToolMatchingSettings
+	(*EvaluationMetricsThresholds_GoldenEvaluationMetricsThresholds_TurnLevelMetricsThresholds)(nil),        // 36: google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.TurnLevelMetricsThresholds
+	(*EvaluationMetricsThresholds_GoldenEvaluationMetricsThresholds_ExpectationLevelMetricsThresholds)(nil), // 37: google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.ExpectationLevelMetricsThresholds
+	(*DataStoreSettings_Engine)(nil),                                                                        // 38: google.cloud.ces.v1beta.DataStoreSettings.Engine
+	(*EvaluationPersona_SpeechConfig)(nil),                                                                  // 39: google.cloud.ces.v1beta.EvaluationPersona.SpeechConfig
+	(*ModelSettings)(nil),                                                                                   // 40: google.cloud.ces.v1beta.ModelSettings
+	(*ChannelProfile)(nil),                                                                                  // 41: google.cloud.ces.v1beta.ChannelProfile
+	(*timestamppb.Timestamp)(nil),                                                                           // 42: google.protobuf.Timestamp
+	(*durationpb.Duration)(nil),                                                                             // 43: google.protobuf.Duration
+	(*BigQueryExportSettings)(nil),                                                                          // 44: google.cloud.ces.v1beta.BigQueryExportSettings
+	(GoldenRunMethod)(0),                                                                                    // 45: google.cloud.ces.v1beta.GoldenRunMethod
+	(EvaluationToolCallBehaviour)(0),                                                                        // 46: google.cloud.ces.v1beta.EvaluationToolCallBehaviour
+	(*Schema)(nil),                                                                                          // 47: google.cloud.ces.v1beta.Schema
 }
 var file_google_cloud_ces_v1beta_app_proto_depIdxs = []int32{
 	11, // 0: google.cloud.ces.v1beta.App.language_settings:type_name -> google.cloud.ces.v1beta.LanguageSettings
@@ -2835,56 +2990,60 @@ var file_google_cloud_ces_v1beta_app_proto_depIdxs = []int32{
 	12, // 2: google.cloud.ces.v1beta.App.audio_processing_config:type_name -> google.cloud.ces.v1beta.AudioProcessingConfig
 	17, // 3: google.cloud.ces.v1beta.App.logging_settings:type_name -> google.cloud.ces.v1beta.LoggingSettings
 	18, // 4: google.cloud.ces.v1beta.App.error_handling_settings:type_name -> google.cloud.ces.v1beta.ErrorHandlingSettings
-	37, // 5: google.cloud.ces.v1beta.App.model_settings:type_name -> google.cloud.ces.v1beta.ModelSettings
+	40, // 5: google.cloud.ces.v1beta.App.model_settings:type_name -> google.cloud.ces.v1beta.ModelSettings
 	0,  // 6: google.cloud.ces.v1beta.App.tool_execution_mode:type_name -> google.cloud.ces.v1beta.App.ToolExecutionMode
 	19, // 7: google.cloud.ces.v1beta.App.evaluation_metrics_thresholds:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds
 	28, // 8: google.cloud.ces.v1beta.App.variable_declarations:type_name -> google.cloud.ces.v1beta.App.VariableDeclaration
 	28, // 9: google.cloud.ces.v1beta.App.predefined_variable_declarations:type_name -> google.cloud.ces.v1beta.App.VariableDeclaration
 	26, // 10: google.cloud.ces.v1beta.App.data_store_settings:type_name -> google.cloud.ces.v1beta.DataStoreSettings
-	38, // 11: google.cloud.ces.v1beta.App.default_channel_profile:type_name -> google.cloud.ces.v1beta.ChannelProfile
+	41, // 11: google.cloud.ces.v1beta.App.default_channel_profile:type_name -> google.cloud.ces.v1beta.ChannelProfile
 	29, // 12: google.cloud.ces.v1beta.App.metadata:type_name -> google.cloud.ces.v1beta.App.MetadataEntry
-	39, // 13: google.cloud.ces.v1beta.App.create_time:type_name -> google.protobuf.Timestamp
-	39, // 14: google.cloud.ces.v1beta.App.update_time:type_name -> google.protobuf.Timestamp
+	42, // 13: google.cloud.ces.v1beta.App.create_time:type_name -> google.protobuf.Timestamp
+	42, // 14: google.cloud.ces.v1beta.App.update_time:type_name -> google.protobuf.Timestamp
 	21, // 15: google.cloud.ces.v1beta.App.client_certificate_settings:type_name -> google.cloud.ces.v1beta.ClientCertificateSettings
 	27, // 16: google.cloud.ces.v1beta.App.evaluation_personas:type_name -> google.cloud.ces.v1beta.EvaluationPersona
 	20, // 17: google.cloud.ces.v1beta.App.evaluation_settings:type_name -> google.cloud.ces.v1beta.EvaluationSettings
 	30, // 18: google.cloud.ces.v1beta.AudioProcessingConfig.synthesize_speech_configs:type_name -> google.cloud.ces.v1beta.AudioProcessingConfig.SynthesizeSpeechConfigsEntry
 	14, // 19: google.cloud.ces.v1beta.AudioProcessingConfig.barge_in_config:type_name -> google.cloud.ces.v1beta.BargeInConfig
-	40, // 20: google.cloud.ces.v1beta.AudioProcessingConfig.inactivity_timeout:type_name -> google.protobuf.Duration
+	43, // 20: google.cloud.ces.v1beta.AudioProcessingConfig.inactivity_timeout:type_name -> google.protobuf.Duration
 	13, // 21: google.cloud.ces.v1beta.AudioProcessingConfig.ambient_sound_config:type_name -> google.cloud.ces.v1beta.AmbientSoundConfig
 	1,  // 22: google.cloud.ces.v1beta.AmbientSoundConfig.prebuilt_ambient_noise:type_name -> google.cloud.ces.v1beta.AmbientSoundConfig.PrebuiltAmbientNoise
 	25, // 23: google.cloud.ces.v1beta.LoggingSettings.redaction_config:type_name -> google.cloud.ces.v1beta.RedactionConfig
 	24, // 24: google.cloud.ces.v1beta.LoggingSettings.audio_recording_config:type_name -> google.cloud.ces.v1beta.AudioRecordingConfig
-	41, // 25: google.cloud.ces.v1beta.LoggingSettings.bigquery_export_settings:type_name -> google.cloud.ces.v1beta.BigQueryExportSettings
+	44, // 25: google.cloud.ces.v1beta.LoggingSettings.bigquery_export_settings:type_name -> google.cloud.ces.v1beta.BigQueryExportSettings
 	23, // 26: google.cloud.ces.v1beta.LoggingSettings.cloud_logging_settings:type_name -> google.cloud.ces.v1beta.CloudLoggingSettings
 	22, // 27: google.cloud.ces.v1beta.LoggingSettings.conversation_logging_settings:type_name -> google.cloud.ces.v1beta.ConversationLoggingSettings
 	24, // 28: google.cloud.ces.v1beta.LoggingSettings.evaluation_audio_recording_config:type_name -> google.cloud.ces.v1beta.AudioRecordingConfig
 	16, // 29: google.cloud.ces.v1beta.LoggingSettings.metric_analysis_settings:type_name -> google.cloud.ces.v1beta.MetricAnalysisSettings
 	2,  // 30: google.cloud.ces.v1beta.ErrorHandlingSettings.error_handling_strategy:type_name -> google.cloud.ces.v1beta.ErrorHandlingSettings.ErrorHandlingStrategy
-	31, // 31: google.cloud.ces.v1beta.EvaluationMetricsThresholds.golden_evaluation_metrics_thresholds:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds
-	3,  // 32: google.cloud.ces.v1beta.EvaluationMetricsThresholds.hallucination_metric_behavior:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.HallucinationMetricBehavior
-	3,  // 33: google.cloud.ces.v1beta.EvaluationMetricsThresholds.golden_hallucination_metric_behavior:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.HallucinationMetricBehavior
-	3,  // 34: google.cloud.ces.v1beta.EvaluationMetricsThresholds.scenario_hallucination_metric_behavior:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.HallucinationMetricBehavior
-	6,  // 35: google.cloud.ces.v1beta.EvaluationSettings.scenario_conversation_initiator:type_name -> google.cloud.ces.v1beta.EvaluationSettings.ScenarioConversationInitiator
-	42, // 36: google.cloud.ces.v1beta.EvaluationSettings.golden_run_method:type_name -> google.cloud.ces.v1beta.GoldenRunMethod
-	43, // 37: google.cloud.ces.v1beta.EvaluationSettings.golden_evaluation_tool_call_behaviour:type_name -> google.cloud.ces.v1beta.EvaluationToolCallBehaviour
-	43, // 38: google.cloud.ces.v1beta.EvaluationSettings.scenario_evaluation_tool_call_behaviour:type_name -> google.cloud.ces.v1beta.EvaluationToolCallBehaviour
-	35, // 39: google.cloud.ces.v1beta.DataStoreSettings.engines:type_name -> google.cloud.ces.v1beta.DataStoreSettings.Engine
-	36, // 40: google.cloud.ces.v1beta.EvaluationPersona.speech_config:type_name -> google.cloud.ces.v1beta.EvaluationPersona.SpeechConfig
-	44, // 41: google.cloud.ces.v1beta.App.VariableDeclaration.schema:type_name -> google.cloud.ces.v1beta.Schema
-	15, // 42: google.cloud.ces.v1beta.AudioProcessingConfig.SynthesizeSpeechConfigsEntry.value:type_name -> google.cloud.ces.v1beta.SynthesizeSpeechConfig
-	33, // 43: google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.turn_level_metrics_thresholds:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.TurnLevelMetricsThresholds
-	34, // 44: google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.expectation_level_metrics_thresholds:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.ExpectationLevelMetricsThresholds
-	32, // 45: google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.tool_matching_settings:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.ToolMatchingSettings
-	5,  // 46: google.cloud.ces.v1beta.EvaluationMetricsThresholds.ToolMatchingSettings.extra_tool_call_behavior:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.ToolMatchingSettings.ExtraToolCallBehavior
-	4,  // 47: google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.TurnLevelMetricsThresholds.semantic_similarity_channel:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.TurnLevelMetricsThresholds.SemanticSimilarityChannel
-	7,  // 48: google.cloud.ces.v1beta.DataStoreSettings.Engine.type:type_name -> google.cloud.ces.v1beta.DataStoreSettings.Engine.Type
-	8,  // 49: google.cloud.ces.v1beta.EvaluationPersona.SpeechConfig.environment:type_name -> google.cloud.ces.v1beta.EvaluationPersona.SpeechConfig.BackgroundEnvironment
-	50, // [50:50] is the sub-list for method output_type
-	50, // [50:50] is the sub-list for method input_type
-	50, // [50:50] is the sub-list for extension type_name
-	50, // [50:50] is the sub-list for extension extendee
-	0,  // [0:50] is the sub-list for field type_name
+	31, // 31: google.cloud.ces.v1beta.ErrorHandlingSettings.fallback_response_config:type_name -> google.cloud.ces.v1beta.ErrorHandlingSettings.FallbackResponseConfig
+	32, // 32: google.cloud.ces.v1beta.ErrorHandlingSettings.end_session_config:type_name -> google.cloud.ces.v1beta.ErrorHandlingSettings.EndSessionConfig
+	34, // 33: google.cloud.ces.v1beta.EvaluationMetricsThresholds.golden_evaluation_metrics_thresholds:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds
+	3,  // 34: google.cloud.ces.v1beta.EvaluationMetricsThresholds.hallucination_metric_behavior:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.HallucinationMetricBehavior
+	3,  // 35: google.cloud.ces.v1beta.EvaluationMetricsThresholds.golden_hallucination_metric_behavior:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.HallucinationMetricBehavior
+	3,  // 36: google.cloud.ces.v1beta.EvaluationMetricsThresholds.scenario_hallucination_metric_behavior:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.HallucinationMetricBehavior
+	6,  // 37: google.cloud.ces.v1beta.EvaluationSettings.scenario_conversation_initiator:type_name -> google.cloud.ces.v1beta.EvaluationSettings.ScenarioConversationInitiator
+	45, // 38: google.cloud.ces.v1beta.EvaluationSettings.golden_run_method:type_name -> google.cloud.ces.v1beta.GoldenRunMethod
+	46, // 39: google.cloud.ces.v1beta.EvaluationSettings.golden_evaluation_tool_call_behaviour:type_name -> google.cloud.ces.v1beta.EvaluationToolCallBehaviour
+	46, // 40: google.cloud.ces.v1beta.EvaluationSettings.scenario_evaluation_tool_call_behaviour:type_name -> google.cloud.ces.v1beta.EvaluationToolCallBehaviour
+	43, // 41: google.cloud.ces.v1beta.ConversationLoggingSettings.retention_window:type_name -> google.protobuf.Duration
+	38, // 42: google.cloud.ces.v1beta.DataStoreSettings.engines:type_name -> google.cloud.ces.v1beta.DataStoreSettings.Engine
+	39, // 43: google.cloud.ces.v1beta.EvaluationPersona.speech_config:type_name -> google.cloud.ces.v1beta.EvaluationPersona.SpeechConfig
+	47, // 44: google.cloud.ces.v1beta.App.VariableDeclaration.schema:type_name -> google.cloud.ces.v1beta.Schema
+	15, // 45: google.cloud.ces.v1beta.AudioProcessingConfig.SynthesizeSpeechConfigsEntry.value:type_name -> google.cloud.ces.v1beta.SynthesizeSpeechConfig
+	33, // 46: google.cloud.ces.v1beta.ErrorHandlingSettings.FallbackResponseConfig.custom_fallback_messages:type_name -> google.cloud.ces.v1beta.ErrorHandlingSettings.FallbackResponseConfig.CustomFallbackMessagesEntry
+	36, // 47: google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.turn_level_metrics_thresholds:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.TurnLevelMetricsThresholds
+	37, // 48: google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.expectation_level_metrics_thresholds:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.ExpectationLevelMetricsThresholds
+	35, // 49: google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.tool_matching_settings:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.ToolMatchingSettings
+	5,  // 50: google.cloud.ces.v1beta.EvaluationMetricsThresholds.ToolMatchingSettings.extra_tool_call_behavior:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.ToolMatchingSettings.ExtraToolCallBehavior
+	4,  // 51: google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.TurnLevelMetricsThresholds.semantic_similarity_channel:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.TurnLevelMetricsThresholds.SemanticSimilarityChannel
+	7,  // 52: google.cloud.ces.v1beta.DataStoreSettings.Engine.type:type_name -> google.cloud.ces.v1beta.DataStoreSettings.Engine.Type
+	8,  // 53: google.cloud.ces.v1beta.EvaluationPersona.SpeechConfig.environment:type_name -> google.cloud.ces.v1beta.EvaluationPersona.SpeechConfig.BackgroundEnvironment
+	54, // [54:54] is the sub-list for method output_type
+	54, // [54:54] is the sub-list for method input_type
+	54, // [54:54] is the sub-list for extension type_name
+	54, // [54:54] is the sub-list for extension extendee
+	0,  // [0:54] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_ces_v1beta_app_proto_init() }
@@ -2902,15 +3061,16 @@ func file_google_cloud_ces_v1beta_app_proto_init() {
 		(*AmbientSoundConfig_GcsUri)(nil),
 		(*AmbientSoundConfig_PrebuiltAmbientSound)(nil),
 	}
-	file_google_cloud_ces_v1beta_app_proto_msgTypes[24].OneofWrappers = []any{}
-	file_google_cloud_ces_v1beta_app_proto_msgTypes[25].OneofWrappers = []any{}
+	file_google_cloud_ces_v1beta_app_proto_msgTypes[23].OneofWrappers = []any{}
+	file_google_cloud_ces_v1beta_app_proto_msgTypes[27].OneofWrappers = []any{}
+	file_google_cloud_ces_v1beta_app_proto_msgTypes[28].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_ces_v1beta_app_proto_rawDesc), len(file_google_cloud_ces_v1beta_app_proto_rawDesc)),
 			NumEnums:      9,
-			NumMessages:   28,
+			NumMessages:   31,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

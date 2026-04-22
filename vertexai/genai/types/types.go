@@ -548,10 +548,80 @@ type MemoryBankCustomizationConfig struct {
 	ConsolidationConfig *MemoryBankCustomizationConfigConsolidationConfig `json:"consolidationConfig,omitempty"`
 }
 
+// Represents the active rule that determines when to flush the buffer.
+type MemoryGenerationTriggerConfigGenerationTriggerRule struct {
+	// Specifies to trigger generation if the stream is inactive for the specified duration
+	// after the most recent event. The duration must have a minute-level granularity.
+	IdleDuration time.Duration `json:"idleDuration,omitempty"`
+	// Specifies to trigger generation at a fixed interval. The duration must have a minute-level
+	// granularity.
+	FixedInterval time.Duration `json:"fixedInterval,omitempty"`
+	// Specifies to trigger generation when the token count reaches this limit.
+	TokenLimit *int32 `json:"tokenLimit,omitempty"`
+	// Specifies to trigger generation when the event count reaches this limit.
+	EventCount *int32 `json:"eventCount,omitempty"`
+}
+
+func (m *MemoryGenerationTriggerConfigGenerationTriggerRule) UnmarshalJSON(data []byte) error {
+	type Alias MemoryGenerationTriggerConfigGenerationTriggerRule
+	aux := &struct {
+		IdleDuration  *genai_types.InternalDurationJSON `json:"idleDuration,omitempty"`
+		FixedInterval *genai_types.InternalDurationJSON `json:"fixedInterval,omitempty"`
+		*Alias
+	}{
+		Alias: (*Alias)(m),
+	}
+
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+
+	if !reflect.ValueOf(aux.IdleDuration).IsZero() {
+		m.IdleDuration = time.Duration(*aux.IdleDuration)
+	}
+
+	if !reflect.ValueOf(aux.FixedInterval).IsZero() {
+		m.FixedInterval = time.Duration(*aux.FixedInterval)
+	}
+
+	return nil
+}
+
+func (m *MemoryGenerationTriggerConfigGenerationTriggerRule) MarshalJSON() ([]byte, error) {
+	type Alias MemoryGenerationTriggerConfigGenerationTriggerRule
+	aux := &struct {
+		IdleDuration  *genai_types.InternalDurationJSON `json:"idleDuration,omitempty"`
+		FixedInterval *genai_types.InternalDurationJSON `json:"fixedInterval,omitempty"`
+		*Alias
+	}{
+		Alias: (*Alias)(m),
+	}
+
+	if !reflect.ValueOf(m.IdleDuration).IsZero() {
+		aux.IdleDuration = (*genai_types.InternalDurationJSON)(&m.IdleDuration)
+	}
+
+	if !reflect.ValueOf(m.FixedInterval).IsZero() {
+		aux.FixedInterval = (*genai_types.InternalDurationJSON)(&m.FixedInterval)
+	}
+
+	return json.Marshal(aux)
+}
+
+// Represents configuration for triggering generation.
+type MemoryGenerationTriggerConfig struct {
+	// Optional. Represents the active rule that determines when to flush the buffer. If
+	// not set, then the stream will be force flushed immediately.
+	GenerationRule *MemoryGenerationTriggerConfigGenerationTriggerRule `json:"generationRule,omitempty"`
+}
+
 // Configuration for how to generate memories.
 type ReasoningEngineContextSpecMemoryBankConfigGenerationConfig struct {
 	// Optional. The model used to generate memories. Format: `projects/{project}/locations/{location}/publishers/google/models/{model}`.
 	Model string `json:"model,omitempty"`
+	// Optional. Specifies the default trigger configuration for generating memories using
+	// `IngestEvents`.
+	GenerationTriggerConfig *MemoryGenerationTriggerConfig `json:"generationTriggerConfig,omitempty"`
 }
 
 // Configuration for how to perform similarity search on memories.
@@ -808,6 +878,8 @@ type CreateAgentEngineConfig struct {
 	//     The scripts must be located in the `installation_scripts`
 	//     subdirectory and the path must be added to `extra_packages`.
 	BuildOptions map[string][]string `json:"buildOptions,omitempty"`
+	// Optional. Agent Gateway configuration for a Reasoning Engine deployment.
+	AgentGatewayConfig *ReasoningEngineSpecDeploymentSpecAgentGatewayConfig `json:"agentGatewayConfig,omitempty"`
 }
 
 // Traffic distribution configuration, where all traffic is sent to the latest Runtime
@@ -1111,6 +1183,8 @@ type UpdateAgentEngineConfig struct {
 	//     The scripts must be located in the `installation_scripts`
 	//     subdirectory and the path must be added to `extra_packages`.
 	BuildOptions map[string][]string `json:"buildOptions,omitempty"`
+	// Optional. Agent Gateway configuration for a Reasoning Engine deployment.
+	AgentGatewayConfig *ReasoningEngineSpecDeploymentSpecAgentGatewayConfig `json:"agentGatewayConfig,omitempty"`
 	// Optional. The update mask to apply. For the `FieldMask` definition, see
 	// https://protobuf.dev/reference/protobuf/google.protobuf/#field-mask.
 	UpdateMask string `json:"updateMask,omitempty"`
@@ -1553,6 +1627,8 @@ type GenerateAgentEngineMemoriesConfig struct {
 	Metadata map[string]*MemoryMetadataValue `json:"metadata,omitempty"`
 	// Optional. The strategy to use when applying metadata to existing memories.
 	MetadataMergeStrategy MemoryMetadataMergeStrategy `json:"metadataMergeStrategy,omitempty"`
+	// Optional. Restricts memory generation to a subset of memory topics.
+	AllowedTopics []*MemoryTopicID `json:"allowedTopics,omitempty"`
 }
 
 func (g *GenerateAgentEngineMemoriesConfig) UnmarshalJSON(data []byte) error {
@@ -1645,6 +1721,53 @@ type AgentEngineGenerateMemoriesOperation struct {
 type GetAgentEngineMemoryConfig struct {
 	// Optional. Used to override HTTP request options.
 	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
+}
+
+// The direct contents source event for ingesting events.
+type IngestionDirectContentsSourceEvent struct {
+	// Optional.
+	Content *genai_types.Content `json:"content,omitempty"`
+}
+
+// The direct contents source for ingesting events.
+type IngestionDirectContentsSource struct {
+	Events []*IngestionDirectContentsSourceEvent `json:"events,omitempty"`
+}
+
+// The configuration for the memory generation trigger.
+type GenerationTriggerConfig struct {
+}
+
+// Config for ingesting events.
+type IngestEventsConfig struct {
+	// Optional. Used to override HTTP request options.
+	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
+	// Optional. Waits for the underlying memory generation operation to complete
+	// before returning. Defaults to false.
+	WaitForCompletion *bool `json:"waitForCompletion,omitempty"`
+	// Optional. Forces a flush of all pending events in the stream and triggers memory
+	// generation immediately bypassing any conditions configured in the `generation_trigger_config`.
+	ForceFlush *bool `json:"forceFlush,omitempty"`
+}
+
+// Operation that ingests events into a memory bank.
+type MemoryBankIngestEventsOperation struct {
+	// The server-assigned name, which is only unique within the same service that originally
+	// returns it. If you use the default HTTP mapping, the `name` should be a resource
+	// name ending with `operations/{unique_id}`.
+	Name string `json:"name,omitempty"`
+	// Optional. Service-specific metadata associated with the operation. It typically contains
+	// progress information and common metadata such as create time. Some services might
+	// not provide such metadata. Any method that returns a long-running operation should
+	// document the metadata type, if any.
+	Metadata map[string]any `json:"metadata,omitempty"`
+	// If the value is `false`, it means the operation is still in progress. If `true`,
+	// the operation is completed, and either `error` or `response` is available.
+	Done bool `json:"done,omitempty"`
+	// Optional. The error result of the operation in case of failure or cancellation.
+	Error map[string]any `json:"error,omitempty"`
+	// Optional. The response for ingesting events.
+	Response *GenerateMemoriesResponse `json:"response,omitempty"`
 }
 
 // Config for listing agent engine memories.
@@ -2937,6 +3060,8 @@ type AgentEngineConfig struct {
 	AgentConfigSource *ReasoningEngineSpecSourceCodeSpecAgentConfigSource `json:"agentConfigSource,omitempty"`
 	// Optional. The container spec for the Agent Engine.
 	ContainerSpec *ReasoningEngineSpecContainerSpec `json:"containerSpec,omitempty"`
+	// Optional. Agent Gateway configuration for a Reasoning Engine deployment.
+	AgentGatewayConfig *ReasoningEngineSpecDeploymentSpecAgentGatewayConfig `json:"agentGatewayConfig,omitempty"`
 }
 
 // Config for checking a query job on an agent engine.

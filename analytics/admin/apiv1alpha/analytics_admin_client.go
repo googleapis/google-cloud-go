@@ -198,6 +198,7 @@ type AnalyticsAdminCallOptions struct {
 	UpdateSubpropertySyncConfig                  []gax.CallOption
 	GetSubpropertySyncConfig                     []gax.CallOption
 	GetReportingIdentitySettings                 []gax.CallOption
+	GetUserProvidedDataSettings                  []gax.CallOption
 }
 
 func defaultAnalyticsAdminGRPCClientOptions() []option.ClientOption {
@@ -2019,6 +2020,19 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 				})
 			}),
 		},
+		GetUserProvidedDataSettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
@@ -3692,6 +3706,18 @@ func defaultAnalyticsAdminRESTCallOptions() *AnalyticsAdminCallOptions {
 					http.StatusInternalServerError)
 			}),
 		},
+		GetUserProvidedDataSettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
 	}
 }
 
@@ -3854,6 +3880,7 @@ type internalAnalyticsAdminClient interface {
 	UpdateSubpropertySyncConfig(context.Context, *adminpb.UpdateSubpropertySyncConfigRequest, ...gax.CallOption) (*adminpb.SubpropertySyncConfig, error)
 	GetSubpropertySyncConfig(context.Context, *adminpb.GetSubpropertySyncConfigRequest, ...gax.CallOption) (*adminpb.SubpropertySyncConfig, error)
 	GetReportingIdentitySettings(context.Context, *adminpb.GetReportingIdentitySettingsRequest, ...gax.CallOption) (*adminpb.ReportingIdentitySettings, error)
+	GetUserProvidedDataSettings(context.Context, *adminpb.GetUserProvidedDataSettingsRequest, ...gax.CallOption) (*adminpb.UserProvidedDataSettings, error)
 }
 
 // AnalyticsAdminClient is a client for interacting with Google Analytics Admin API.
@@ -4772,9 +4799,14 @@ func (c *AnalyticsAdminClient) GetSubpropertySyncConfig(ctx context.Context, req
 	return c.internalClient.GetSubpropertySyncConfig(ctx, req, opts...)
 }
 
-// GetReportingIdentitySettings returns the singleton data retention settings for this property.
+// GetReportingIdentitySettings returns the reporting identity settings for this property.
 func (c *AnalyticsAdminClient) GetReportingIdentitySettings(ctx context.Context, req *adminpb.GetReportingIdentitySettingsRequest, opts ...gax.CallOption) (*adminpb.ReportingIdentitySettings, error) {
 	return c.internalClient.GetReportingIdentitySettings(ctx, req, opts...)
+}
+
+// GetUserProvidedDataSettings looks up settings related to user-provided data for a property.
+func (c *AnalyticsAdminClient) GetUserProvidedDataSettings(ctx context.Context, req *adminpb.GetUserProvidedDataSettingsRequest, opts ...gax.CallOption) (*adminpb.UserProvidedDataSettings, error) {
+	return c.internalClient.GetUserProvidedDataSettings(ctx, req, opts...)
 }
 
 // analyticsAdminGRPCClient is a client for interacting with Google Analytics Admin API over gRPC transport.
@@ -4999,6 +5031,7 @@ func NewAnalyticsAdminClient(ctx context.Context, opts ...option.ClientOption) (
 		client.CallOptions.UpdateSubpropertySyncConfig = append(client.CallOptions.UpdateSubpropertySyncConfig, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetSubpropertySyncConfig = append(client.CallOptions.GetSubpropertySyncConfig, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetReportingIdentitySettings = append(client.CallOptions.GetReportingIdentitySettings, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetUserProvidedDataSettings = append(client.CallOptions.GetUserProvidedDataSettings, gax.WithClientMetrics(metrics))
 	}
 
 	client.internalClient = c
@@ -5243,6 +5276,7 @@ func NewAnalyticsAdminRESTClient(ctx context.Context, opts ...option.ClientOptio
 		callOpts.UpdateSubpropertySyncConfig = append(callOpts.UpdateSubpropertySyncConfig, gax.WithClientMetrics(metrics))
 		callOpts.GetSubpropertySyncConfig = append(callOpts.GetSubpropertySyncConfig, gax.WithClientMetrics(metrics))
 		callOpts.GetReportingIdentitySettings = append(callOpts.GetReportingIdentitySettings, gax.WithClientMetrics(metrics))
+		callOpts.GetUserProvidedDataSettings = append(callOpts.GetUserProvidedDataSettings, gax.WithClientMetrics(metrics))
 	}
 
 	return &AnalyticsAdminClient{internalClient: c, CallOptions: callOpts}, nil
@@ -9548,6 +9582,30 @@ func (c *analyticsAdminGRPCClient) GetReportingIdentitySettings(ctx context.Cont
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = executeRPC(ctx, c.analyticsAdminClient.GetReportingIdentitySettings, req, settings.GRPC, c.logger, "GetReportingIdentitySettings")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) GetUserProvidedDataSettings(ctx context.Context, req *adminpb.GetUserProvidedDataSettingsRequest, opts ...gax.CallOption) (*adminpb.UserProvidedDataSettings, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetUserProvidedDataSettings")
+	}
+	opts = append((*c.CallOptions).GetUserProvidedDataSettings[0:len((*c.CallOptions).GetUserProvidedDataSettings):len((*c.CallOptions).GetUserProvidedDataSettings)], opts...)
+	var resp *adminpb.UserProvidedDataSettings
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.analyticsAdminClient.GetUserProvidedDataSettings, req, settings.GRPC, c.logger, "GetUserProvidedDataSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -19152,7 +19210,7 @@ func (c *analyticsAdminRESTClient) GetSubpropertySyncConfig(ctx context.Context,
 	return resp, nil
 }
 
-// GetReportingIdentitySettings returns the singleton data retention settings for this property.
+// GetReportingIdentitySettings returns the reporting identity settings for this property.
 func (c *analyticsAdminRESTClient) GetReportingIdentitySettings(ctx context.Context, req *adminpb.GetReportingIdentitySettingsRequest, opts ...gax.CallOption) (*adminpb.ReportingIdentitySettings, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -19193,6 +19251,63 @@ func (c *analyticsAdminRESTClient) GetReportingIdentitySettings(ctx context.Cont
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetReportingIdentitySettings")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetUserProvidedDataSettings looks up settings related to user-provided data for a property.
+func (c *analyticsAdminRESTClient) GetUserProvidedDataSettings(ctx context.Context, req *adminpb.GetUserProvidedDataSettingsRequest, opts ...gax.CallOption) (*adminpb.UserProvidedDataSettings, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//analyticsadmin.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.analytics.admin.v1alpha.AnalyticsAdminService/GetUserProvidedDataSettings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=properties/*/userProvidedDataSettings}")
+	}
+	opts = append((*c.CallOptions).GetUserProvidedDataSettings[0:len((*c.CallOptions).GetUserProvidedDataSettings):len((*c.CallOptions).GetUserProvidedDataSettings)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.UserProvidedDataSettings{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetUserProvidedDataSettings")
 		if err != nil {
 			return err
 		}

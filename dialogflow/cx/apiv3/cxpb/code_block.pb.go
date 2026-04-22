@@ -89,8 +89,8 @@ const file_google_cloud_dialogflow_cx_v3_code_block_proto_rawDesc = "" +
 	"\n" +
 	".google/cloud/dialogflow/cx/v3/code_block.proto\x12\x1dgoogle.cloud.dialogflow.cx.v3\x1a\x1fgoogle/api/field_behavior.proto\"$\n" +
 	"\tCodeBlock\x12\x17\n" +
-	"\x04code\x18\x01 \x01(\tB\x03\xe0A\x01R\x04codeB\x8d\x01\n" +
-	"!com.google.cloud.dialogflow.cx.v3B\x0eCodeBlockProtoP\x01Z1cloud.google.com/go/dialogflow/cx/apiv3/cxpb;cxpb\xa2\x02\x02DF\xaa\x02\x1dGoogle.Cloud.Dialogflow.Cx.V3b\x06proto3"
+	"\x04code\x18\x01 \x01(\tB\x03\xe0A\x01R\x04codeB\xb1\x01\n" +
+	"!com.google.cloud.dialogflow.cx.v3B\x0eCodeBlockProtoP\x01Z1cloud.google.com/go/dialogflow/cx/apiv3/cxpb;cxpb\xa2\x02\x02DF\xaa\x02\x1dGoogle.Cloud.Dialogflow.Cx.V3\xea\x02!Google::Cloud::Dialogflow::CX::V3b\x06proto3"
 
 var (
 	file_google_cloud_dialogflow_cx_v3_code_block_proto_rawDescOnce sync.Once

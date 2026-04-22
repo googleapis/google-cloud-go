@@ -383,6 +383,11 @@ func createFromProtoValue(vproto *pb.Value, c *Client) (interface{}, error) {
 	case *pb.Value_BytesValue:
 		return v.BytesValue, nil
 	case *pb.Value_ReferenceValue:
+		parts := strings.Split(v.ReferenceValue, "/")
+		if len(parts) < 6 || len(parts)%2 == 0 {
+			// TODO(firestore): The SDK does not currently support decoding reference values for collections or databases.
+			return nil, fmt.Errorf("firestore: the SDK does not support decoding reference values for collections or databases. Actual path value: %q", v.ReferenceValue)
+		}
 		return pathToDoc(v.ReferenceValue, c)
 	case *pb.Value_GeoPointValue:
 		return v.GeoPointValue, nil

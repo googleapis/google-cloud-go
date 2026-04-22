@@ -56,6 +56,7 @@ type CallOptions struct {
 	ListIndexes       []gax.CallOption
 	GetIndex          []gax.CallOption
 	CreateIndex       []gax.CallOption
+	UpdateIndex       []gax.CallOption
 	DeleteIndex       []gax.CallOption
 	ImportDataObjects []gax.CallOption
 	ExportDataObjects []gax.CallOption
@@ -180,6 +181,7 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		UpdateIndex: []gax.CallOption{},
 		DeleteIndex: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -304,6 +306,7 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		UpdateIndex: []gax.CallOption{},
 		DeleteIndex: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -353,6 +356,8 @@ type internalClient interface {
 	GetIndex(context.Context, *vectorsearchpb.GetIndexRequest, ...gax.CallOption) (*vectorsearchpb.Index, error)
 	CreateIndex(context.Context, *vectorsearchpb.CreateIndexRequest, ...gax.CallOption) (*CreateIndexOperation, error)
 	CreateIndexOperation(name string) *CreateIndexOperation
+	UpdateIndex(context.Context, *vectorsearchpb.UpdateIndexRequest, ...gax.CallOption) (*UpdateIndexOperation, error)
+	UpdateIndexOperation(name string) *UpdateIndexOperation
 	DeleteIndex(context.Context, *vectorsearchpb.DeleteIndexRequest, ...gax.CallOption) (*DeleteIndexOperation, error)
 	DeleteIndexOperation(name string) *DeleteIndexOperation
 	ImportDataObjects(context.Context, *vectorsearchpb.ImportDataObjectsRequest, ...gax.CallOption) (*ImportDataObjectsOperation, error)
@@ -475,6 +480,17 @@ func (c *Client) CreateIndexOperation(name string) *CreateIndexOperation {
 	return c.internalClient.CreateIndexOperation(name)
 }
 
+// UpdateIndex updates the parameters of a single Index.
+func (c *Client) UpdateIndex(ctx context.Context, req *vectorsearchpb.UpdateIndexRequest, opts ...gax.CallOption) (*UpdateIndexOperation, error) {
+	return c.internalClient.UpdateIndex(ctx, req, opts...)
+}
+
+// UpdateIndexOperation returns a new UpdateIndexOperation from a given name.
+// The name must be that of a previously created UpdateIndexOperation, possibly from a different process.
+func (c *Client) UpdateIndexOperation(name string) *UpdateIndexOperation {
+	return c.internalClient.UpdateIndexOperation(name)
+}
+
 // DeleteIndex deletes a single Index.
 func (c *Client) DeleteIndex(ctx context.Context, req *vectorsearchpb.DeleteIndexRequest, opts ...gax.CallOption) (*DeleteIndexOperation, error) {
 	return c.internalClient.DeleteIndex(ctx, req, opts...)
@@ -514,14 +530,22 @@ func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationReq
 }
 
 // ListLocations lists information about the supported locations for this service.
-// This method can be called in two ways:
 //
-//	List all public locations: Use the path GET /v1/locations.
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)] field:
 //
-//	List project-visible locations: Use the path
-//	GET /v1/projects/{project_id}/locations. This may include public
-//	locations as well as private or other locations specifically visible
-//	to the project.
+//	Global locations: If name is empty, the method lists the
+//	public locations available to all projects. * Project-specific
+//	locations: If name follows the format
+//	projects/{project}, the method lists locations visible to that
+//	specific project. This includes public, private, or other
+//	project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *Client) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -637,6 +661,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.ListIndexes = append(client.CallOptions.ListIndexes, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetIndex = append(client.CallOptions.GetIndex, gax.WithClientMetrics(metrics))
 		client.CallOptions.CreateIndex = append(client.CallOptions.CreateIndex, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateIndex = append(client.CallOptions.UpdateIndex, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteIndex = append(client.CallOptions.DeleteIndex, gax.WithClientMetrics(metrics))
 		client.CallOptions.ImportDataObjects = append(client.CallOptions.ImportDataObjects, gax.WithClientMetrics(metrics))
 		client.CallOptions.ExportDataObjects = append(client.CallOptions.ExportDataObjects, gax.WithClientMetrics(metrics))
@@ -764,6 +789,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.ListIndexes = append(callOpts.ListIndexes, gax.WithClientMetrics(metrics))
 		callOpts.GetIndex = append(callOpts.GetIndex, gax.WithClientMetrics(metrics))
 		callOpts.CreateIndex = append(callOpts.CreateIndex, gax.WithClientMetrics(metrics))
+		callOpts.UpdateIndex = append(callOpts.UpdateIndex, gax.WithClientMetrics(metrics))
 		callOpts.DeleteIndex = append(callOpts.DeleteIndex, gax.WithClientMetrics(metrics))
 		callOpts.ImportDataObjects = append(callOpts.ImportDataObjects, gax.WithClientMetrics(metrics))
 		callOpts.ExportDataObjects = append(callOpts.ExportDataObjects, gax.WithClientMetrics(metrics))
@@ -1074,6 +1100,29 @@ func (c *gRPCClient) CreateIndex(ctx context.Context, req *vectorsearchpb.Create
 		return nil, err
 	}
 	return &CreateIndexOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) UpdateIndex(ctx context.Context, req *vectorsearchpb.UpdateIndexRequest, opts ...gax.CallOption) (*UpdateIndexOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "index.name", url.QueryEscape(req.GetIndex().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vectorsearch.v1.VectorSearchService/UpdateIndex")
+	}
+	opts = append((*c.CallOptions).UpdateIndex[0:len((*c.CallOptions).UpdateIndex):len((*c.CallOptions).UpdateIndex)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateIndex, req, settings.GRPC, c.logger, "UpdateIndex")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateIndexOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -1891,6 +1940,80 @@ func (c *restClient) CreateIndex(ctx context.Context, req *vectorsearchpb.Create
 	}, nil
 }
 
+// UpdateIndex updates the parameters of a single Index.
+func (c *restClient) UpdateIndex(ctx context.Context, req *vectorsearchpb.UpdateIndexRequest, opts ...gax.CallOption) (*UpdateIndexOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetIndex()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetIndex().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "index.name", url.QueryEscape(req.GetIndex().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vectorsearch.v1.VectorSearchService/UpdateIndex")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{index.name=projects/*/locations/*/collections/*/indexes/*}")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateIndex")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateIndexOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // DeleteIndex deletes a single Index.
 func (c *restClient) DeleteIndex(ctx context.Context, req *vectorsearchpb.DeleteIndexRequest, opts ...gax.CallOption) (*DeleteIndexOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -2141,14 +2264,22 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 }
 
 // ListLocations lists information about the supported locations for this service.
-// This method can be called in two ways:
 //
-//	List all public locations: Use the path GET /v1/locations.
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)] field:
 //
-//	List project-visible locations: Use the path
-//	GET /v1/projects/{project_id}/locations. This may include public
-//	locations as well as private or other locations specifically visible
-//	to the project.
+//	Global locations: If name is empty, the method lists the
+//	public locations available to all projects. * Project-specific
+//	locations: If name follows the format
+//	projects/{project}, the method lists locations visible to that
+//	specific project. This includes public, private, or other
+//	project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
@@ -2572,6 +2703,24 @@ func (c *gRPCClient) UpdateCollectionOperation(name string) *UpdateCollectionOpe
 func (c *restClient) UpdateCollectionOperation(name string) *UpdateCollectionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateCollectionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// UpdateIndexOperation returns a new UpdateIndexOperation from a given name.
+// The name must be that of a previously created UpdateIndexOperation, possibly from a different process.
+func (c *gRPCClient) UpdateIndexOperation(name string) *UpdateIndexOperation {
+	return &UpdateIndexOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateIndexOperation returns a new UpdateIndexOperation from a given name.
+// The name must be that of a previously created UpdateIndexOperation, possibly from a different process.
+func (c *restClient) UpdateIndexOperation(name string) *UpdateIndexOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateIndexOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

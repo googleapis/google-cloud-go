@@ -1716,7 +1716,7 @@ type ProductAttributes struct {
 	// categories through the API.
 	GoogleProductCategory *string `protobuf:"bytes,25,opt,name=google_product_category,json=googleProductCategory,proto3,oneof" json:"google_product_category,omitempty"`
 	// Global Trade Item Numbers
-	// ([GTIN](https://support.google.com/merchants/answer/188494#gtin)) of the
+	// ([GTIN](https://support.google.com/merchants/answer/6324461)) of the
 	// item.
 	// You can provide up to 10 GTINs.
 	Gtins []string `protobuf:"bytes,140,rep,name=gtins,proto3" json:"gtins,omitempty"`
@@ -1726,7 +1726,7 @@ type ProductAttributes struct {
 	// which the item is made. For example, "Leather" or "Cotton".
 	Material *string `protobuf:"bytes,28,opt,name=material,proto3,oneof" json:"material,omitempty"`
 	// Manufacturer Part Number
-	// ([MPN](https://support.google.com/merchants/answer/188494#mpn)) of the
+	// ([MPN](https://support.google.com/merchants/answer/6324482)) of the
 	// item.
 	Mpn *string `protobuf:"bytes,29,opt,name=mpn,proto3,oneof" json:"mpn,omitempty"`
 	// The item's [pattern](https://support.google.com/merchants/answer/6324483).
@@ -1797,9 +1797,14 @@ type ProductAttributes struct {
 	ShippingTransitBusinessDays []*ProductAttributes_ShippingBusinessDaysConfig `protobuf:"bytes,144,rep,name=shipping_transit_business_days,json=shippingTransitBusinessDays,proto3" json:"shipping_transit_business_days,omitempty"`
 	// The handling cutoff times for shipping.
 	HandlingCutoffTimes []*HandlingCutoffTime `protobuf:"bytes,141,rep,name=handling_cutoff_times,json=handlingCutoffTimes,proto3" json:"handling_cutoff_times,omitempty"`
-	// The shipping label of the product, used to group product in account-level
-	// shipping rules.
+	// The shipping label of the product, used to group products in account-level
+	// shipping rules. Max. 100 characters. For more information, see
+	// [Shipping label](https://support.google.com/merchants/answer/6324504).
 	ShippingLabel *string `protobuf:"bytes,46,opt,name=shipping_label,json=shippingLabel,proto3,oneof" json:"shipping_label,omitempty"`
+	// The return label of the product, used to group products in account-level
+	// return policies. Max. 100 characters. For more information, see
+	// [Return policy label](https://support.google.com/merchants/answer/9445425).
+	ReturnPolicyLabel *string `protobuf:"bytes,170,opt,name=return_policy_label,json=returnPolicyLabel,proto3,oneof" json:"return_policy_label,omitempty"`
 	// The transit time label of the product, used to group product in
 	// account-level transit time tables.
 	TransitTimeLabel *string `protobuf:"bytes,47,opt,name=transit_time_label,json=transitTimeLabel,proto3,oneof" json:"transit_time_label,omitempty"`
@@ -1959,8 +1964,13 @@ type ProductAttributes struct {
 	AutoPricingMinPrice *typepb.Price `protobuf:"bytes,124,opt,name=auto_pricing_min_price,json=autoPricingMinPrice,proto3" json:"auto_pricing_min_price,omitempty"`
 	// The list of sustainability incentive programs.
 	SustainabilityIncentives []*ProductSustainabilityIncentive `protobuf:"bytes,138,rep,name=sustainability_incentives,json=sustainabilityIncentives,proto3" json:"sustainability_incentives,omitempty"`
-	unknownFields            protoimpl.UnknownFields
-	sizeCache                protoimpl.SizeCache
+	// Optional. A list of video URLs for the item. Use this attribute to provide
+	// more visuals for your product beyond your image attributes. See the [Help
+	// Center article](https://support.google.com/merchants/answer/15216925) for
+	// more information.
+	VideoLinks    []string `protobuf:"bytes,169,rep,name=video_links,json=videoLinks,proto3" json:"video_links,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ProductAttributes) Reset() {
@@ -2357,6 +2367,13 @@ func (x *ProductAttributes) GetShippingLabel() string {
 	return ""
 }
 
+func (x *ProductAttributes) GetReturnPolicyLabel() string {
+	if x != nil && x.ReturnPolicyLabel != nil {
+		return *x.ReturnPolicyLabel
+	}
+	return ""
+}
+
 func (x *ProductAttributes) GetTransitTimeLabel() string {
 	if x != nil && x.TransitTimeLabel != nil {
 		return *x.TransitTimeLabel
@@ -2665,6 +2682,13 @@ func (x *ProductAttributes) GetSustainabilityIncentives() []*ProductSustainabili
 	return nil
 }
 
+func (x *ProductAttributes) GetVideoLinks() []string {
+	if x != nil {
+		return x.VideoLinks
+	}
+	return nil
+}
+
 // The ShippingWeight of the product.
 type ShippingWeight struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -2965,9 +2989,11 @@ type ProductInstallment struct {
 	// The up-front down payment amount the buyer has to pay.
 	Downpayment *typepb.Price `protobuf:"bytes,3,opt,name=downpayment,proto3,oneof" json:"downpayment,omitempty"`
 	// Type of installment payments.
-	CreditType    *CreditType `protobuf:"varint,4,opt,name=credit_type,json=creditType,proto3,enum=google.shopping.merchant.products.v1.CreditType,oneof" json:"credit_type,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	CreditType *CreditType `protobuf:"varint,4,opt,name=credit_type,json=creditType,proto3,enum=google.shopping.merchant.products.v1.CreditType,oneof" json:"credit_type,omitempty"`
+	// Optional. Annual percentage rate for `credit_type` finance
+	AnnualPercentageRate *float64 `protobuf:"fixed64,5,opt,name=annual_percentage_rate,json=annualPercentageRate,proto3,oneof" json:"annual_percentage_rate,omitempty"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
 }
 
 func (x *ProductInstallment) Reset() {
@@ -3026,6 +3052,13 @@ func (x *ProductInstallment) GetCreditType() CreditType {
 		return *x.CreditType
 	}
 	return CreditType_CREDIT_TYPE_UNSPECIFIED
+}
+
+func (x *ProductInstallment) GetAnnualPercentageRate() float64 {
+	if x != nil && x.AnnualPercentageRate != nil {
+		return *x.AnnualPercentageRate
+	}
+	return 0
 }
 
 // A message that represents loyalty points.
@@ -4800,7 +4833,7 @@ var File_google_shopping_merchant_products_v1_products_common_proto protoreflect
 
 const file_google_shopping_merchant_products_v1_products_common_proto_rawDesc = "" +
 	"\n" +
-	":google/shopping/merchant/products/v1/products_common.proto\x12$google.shopping.merchant.products.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/shopping/type/types.proto\x1a\x1agoogle/type/interval.proto\"\xaeR\n" +
+	":google/shopping/merchant/products/v1/products_common.proto\x12$google.shopping.merchant.products.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/shopping/type/types.proto\x1a\x1agoogle/type/interval.proto\"\xa3S\n" +
 	"\x11ProductAttributes\x120\n" +
 	"\x11identifier_exists\x18\x04 \x01(\bH\x00R\x10identifierExists\x88\x01\x01\x12 \n" +
 	"\tis_bundle\x18\x05 \x01(\bH\x01R\bisBundle\x88\x01\x01\x12\x19\n" +
@@ -4858,55 +4891,58 @@ const file_google_shopping_merchant_products_v1_products_common_proto_rawDesc = 
 	"\x1fshipping_handling_business_days\x18\x8f\x01 \x03(\v2R.google.shopping.merchant.products.v1.ProductAttributes.ShippingBusinessDaysConfigR\x1cshippingHandlingBusinessDays\x12\x98\x01\n" +
 	"\x1eshipping_transit_business_days\x18\x90\x01 \x03(\v2R.google.shopping.merchant.products.v1.ProductAttributes.ShippingBusinessDaysConfigR\x1bshippingTransitBusinessDays\x12m\n" +
 	"\x15handling_cutoff_times\x18\x8d\x01 \x03(\v28.google.shopping.merchant.products.v1.HandlingCutoffTimeR\x13handlingCutoffTimes\x12*\n" +
-	"\x0eshipping_label\x18. \x01(\tH\x17R\rshippingLabel\x88\x01\x01\x121\n" +
-	"\x12transit_time_label\x18/ \x01(\tH\x18R\x10transitTimeLabel\x88\x01\x01\x12\x17\n" +
-	"\x04size\x180 \x01(\tH\x19R\x04size\x88\x01\x01\x12V\n" +
-	"\vsize_system\x181 \x01(\x0e20.google.shopping.merchant.products.v1.SizeSystemH\x1aR\n" +
+	"\x0eshipping_label\x18. \x01(\tH\x17R\rshippingLabel\x88\x01\x01\x124\n" +
+	"\x13return_policy_label\x18\xaa\x01 \x01(\tH\x18R\x11returnPolicyLabel\x88\x01\x01\x121\n" +
+	"\x12transit_time_label\x18/ \x01(\tH\x19R\x10transitTimeLabel\x88\x01\x01\x12\x17\n" +
+	"\x04size\x180 \x01(\tH\x1aR\x04size\x88\x01\x01\x12V\n" +
+	"\vsize_system\x181 \x01(\x0e20.google.shopping.merchant.products.v1.SizeSystemH\x1bR\n" +
 	"sizeSystem\x88\x01\x01\x12M\n" +
 	"\n" +
 	"size_types\x182 \x03(\x0e2..google.shopping.merchant.products.v1.SizeTypeR\tsizeTypes\x12x\n" +
-	"\x17energy_efficiency_class\x185 \x01(\x0e2;.google.shopping.merchant.products.v1.EnergyEfficiencyClassH\x1bR\x15energyEfficiencyClass\x88\x01\x01\x12\x7f\n" +
-	"\x1bmin_energy_efficiency_class\x186 \x01(\x0e2;.google.shopping.merchant.products.v1.EnergyEfficiencyClassH\x1cR\x18minEnergyEfficiencyClass\x88\x01\x01\x12\x7f\n" +
-	"\x1bmax_energy_efficiency_class\x187 \x01(\x0e2;.google.shopping.merchant.products.v1.EnergyEfficiencyClassH\x1dR\x18maxEnergyEfficiencyClass\x88\x01\x01\x12j\n" +
+	"\x17energy_efficiency_class\x185 \x01(\x0e2;.google.shopping.merchant.products.v1.EnergyEfficiencyClassH\x1cR\x15energyEfficiencyClass\x88\x01\x01\x12\x7f\n" +
+	"\x1bmin_energy_efficiency_class\x186 \x01(\x0e2;.google.shopping.merchant.products.v1.EnergyEfficiencyClassH\x1dR\x18minEnergyEfficiencyClass\x88\x01\x01\x12\x7f\n" +
+	"\x1bmax_energy_efficiency_class\x187 \x01(\x0e2;.google.shopping.merchant.products.v1.EnergyEfficiencyClassH\x1eR\x18maxEnergyEfficiencyClass\x88\x01\x01\x12j\n" +
 	"\x14unit_pricing_measure\x188 \x01(\v28.google.shopping.merchant.products.v1.UnitPricingMeasureR\x12unitPricingMeasure\x12w\n" +
 	"\x19unit_pricing_base_measure\x189 \x01(\v2<.google.shopping.merchant.products.v1.UnitPricingBaseMeasureR\x16unitPricingBaseMeasure\x12!\n" +
-	"\tmultipack\x18: \x01(\x03H\x1eR\tmultipack\x88\x01\x01\x12&\n" +
-	"\fads_grouping\x18; \x01(\tH\x1fR\vadsGrouping\x88\x01\x01\x12\x1d\n" +
+	"\tmultipack\x18: \x01(\x03H\x1fR\tmultipack\x88\x01\x01\x12&\n" +
+	"\fads_grouping\x18; \x01(\tH R\vadsGrouping\x88\x01\x01\x12\x1d\n" +
 	"\n" +
 	"ads_labels\x18< \x03(\tR\tadsLabels\x12&\n" +
-	"\fads_redirect\x18= \x01(\tH R\vadsRedirect\x88\x01\x01\x12H\n" +
+	"\fads_redirect\x18= \x01(\tH!R\vadsRedirect\x88\x01\x01\x12H\n" +
 	"\x12cost_of_goods_sold\x18> \x01(\v2\x1b.google.shopping.type.PriceR\x0fcostOfGoodsSold\x12\\\n" +
 	"\x0fproduct_details\x18? \x03(\v23.google.shopping.merchant.products.v1.ProductDetailR\x0eproductDetails\x12-\n" +
 	"\x12product_highlights\x18@ \x03(\tR\x11productHighlights\x12)\n" +
-	"\x0edisplay_ads_id\x18A \x01(\tH!R\fdisplayAdsId\x88\x01\x01\x125\n" +
+	"\x0edisplay_ads_id\x18A \x01(\tH\"R\fdisplayAdsId\x88\x01\x01\x125\n" +
 	"\x17display_ads_similar_ids\x18B \x03(\tR\x14displayAdsSimilarIds\x12/\n" +
-	"\x11display_ads_title\x18C \x01(\tH\"R\x0fdisplayAdsTitle\x88\x01\x01\x12-\n" +
-	"\x10display_ads_link\x18D \x01(\tH#R\x0edisplayAdsLink\x88\x01\x01\x12/\n" +
-	"\x11display_ads_value\x18E \x01(\x01H$R\x0fdisplayAdsValue\x88\x01\x01\x12#\n" +
+	"\x11display_ads_title\x18C \x01(\tH#R\x0fdisplayAdsTitle\x88\x01\x01\x12-\n" +
+	"\x10display_ads_link\x18D \x01(\tH$R\x0edisplayAdsLink\x88\x01\x01\x12/\n" +
+	"\x11display_ads_value\x18E \x01(\x01H%R\x0fdisplayAdsValue\x88\x01\x01\x12#\n" +
 	"\rpromotion_ids\x18F \x03(\tR\fpromotionIds\x12\\\n" +
-	"\rpickup_method\x18P \x01(\x0e22.google.shopping.merchant.products.v1.PickupMethodH%R\fpickupMethod\x88\x01\x01\x12S\n" +
+	"\rpickup_method\x18P \x01(\x0e22.google.shopping.merchant.products.v1.PickupMethodH&R\fpickupMethod\x88\x01\x01\x12S\n" +
 	"\n" +
-	"pickup_sla\x18Q \x01(\x0e2/.google.shopping.merchant.products.v1.PickupSlaH&R\tpickupSla\x88\x01\x01\x12(\n" +
-	"\rlink_template\x18R \x01(\tH'R\flinkTemplate\x88\x01\x01\x125\n" +
-	"\x14mobile_link_template\x18S \x01(\tH(R\x12mobileLinkTemplate\x88\x01\x01\x12)\n" +
-	"\x0ecustom_label_0\x18G \x01(\tH)R\fcustomLabel0\x88\x01\x01\x12)\n" +
-	"\x0ecustom_label_1\x18H \x01(\tH*R\fcustomLabel1\x88\x01\x01\x12)\n" +
-	"\x0ecustom_label_2\x18I \x01(\tH+R\fcustomLabel2\x88\x01\x01\x12)\n" +
-	"\x0ecustom_label_3\x18J \x01(\tH,R\fcustomLabel3\x88\x01\x01\x12)\n" +
-	"\x0ecustom_label_4\x18K \x01(\tH-R\fcustomLabel4\x88\x01\x01\x12f\n" +
+	"pickup_sla\x18Q \x01(\x0e2/.google.shopping.merchant.products.v1.PickupSlaH'R\tpickupSla\x88\x01\x01\x12(\n" +
+	"\rlink_template\x18R \x01(\tH(R\flinkTemplate\x88\x01\x01\x125\n" +
+	"\x14mobile_link_template\x18S \x01(\tH)R\x12mobileLinkTemplate\x88\x01\x01\x12)\n" +
+	"\x0ecustom_label_0\x18G \x01(\tH*R\fcustomLabel0\x88\x01\x01\x12)\n" +
+	"\x0ecustom_label_1\x18H \x01(\tH+R\fcustomLabel1\x88\x01\x01\x12)\n" +
+	"\x0ecustom_label_2\x18I \x01(\tH,R\fcustomLabel2\x88\x01\x01\x12)\n" +
+	"\x0ecustom_label_3\x18J \x01(\tH-R\fcustomLabel3\x88\x01\x01\x12)\n" +
+	"\x0ecustom_label_4\x18K \x01(\tH.R\fcustomLabel4\x88\x01\x01\x12f\n" +
 	"\x15included_destinations\x18L \x03(\x0e21.google.shopping.type.Destination.DestinationEnumR\x14includedDestinations\x12f\n" +
 	"\x15excluded_destinations\x18M \x03(\x0e21.google.shopping.type.Destination.DestinationEnumR\x14excludedDestinations\x12E\n" +
 	"\x1fshopping_ads_excluded_countries\x18N \x03(\tR\x1cshoppingAdsExcludedCountries\x121\n" +
-	"\x12external_seller_id\x18\x01 \x01(\tH.R\x10externalSellerId\x88\x01\x01\x12F\n" +
-	"\x05pause\x18\r \x01(\x0e2+.google.shopping.merchant.products.v1.PauseH/R\x05pause\x88\x01\x01\x122\n" +
+	"\x12external_seller_id\x18\x01 \x01(\tH/R\x10externalSellerId\x88\x01\x01\x12F\n" +
+	"\x05pause\x18\r \x01(\x0e2+.google.shopping.merchant.products.v1.PauseH0R\x05pause\x88\x01\x01\x122\n" +
 	"\x15lifestyle_image_links\x18\x0e \x03(\tR\x13lifestyleImageLinks\x12\x92\x01\n" +
 	"\"cloud_export_additional_properties\x18T \x03(\v2E.google.shopping.merchant.products.v1.CloudExportAdditionalPropertiesR\x1fcloudExportAdditionalProperties\x122\n" +
-	"\x12virtual_model_link\x18\x82\x01 \x01(\tH0R\x10virtualModelLink\x88\x01\x01\x12b\n" +
+	"\x12virtual_model_link\x18\x82\x01 \x01(\tH1R\x10virtualModelLink\x88\x01\x01\x12b\n" +
 	"\x0ecertifications\x18{ \x03(\v2:.google.shopping.merchant.products.v1.ProductCertificationR\x0ecertifications\x12f\n" +
-	"\x10structured_title\x18\x84\x01 \x01(\v25.google.shopping.merchant.products.v1.StructuredTitleH1R\x0fstructuredTitle\x88\x01\x01\x12x\n" +
-	"\x16structured_description\x18\x85\x01 \x01(\v2;.google.shopping.merchant.products.v1.StructuredDescriptionH2R\x15structuredDescription\x88\x01\x01\x12P\n" +
+	"\x10structured_title\x18\x84\x01 \x01(\v25.google.shopping.merchant.products.v1.StructuredTitleH2R\x0fstructuredTitle\x88\x01\x01\x12x\n" +
+	"\x16structured_description\x18\x85\x01 \x01(\v2;.google.shopping.merchant.products.v1.StructuredDescriptionH3R\x15structuredDescription\x88\x01\x01\x12P\n" +
 	"\x16auto_pricing_min_price\x18| \x01(\v2\x1b.google.shopping.type.PriceR\x13autoPricingMinPrice\x12\x82\x01\n" +
-	"\x19sustainability_incentives\x18\x8a\x01 \x03(\v2D.google.shopping.merchant.products.v1.ProductSustainabilityIncentiveR\x18sustainabilityIncentives\x1a\x83\x01\n" +
+	"\x19sustainability_incentives\x18\x8a\x01 \x03(\v2D.google.shopping.merchant.products.v1.ProductSustainabilityIncentiveR\x18sustainabilityIncentives\x12%\n" +
+	"\vvideo_links\x18\xa9\x01 \x03(\tB\x03\xe0A\x01R\n" +
+	"videoLinks\x1a\x83\x01\n" +
 	"\x1aShippingBusinessDaysConfig\x12\x1d\n" +
 	"\acountry\x18\x01 \x01(\tH\x00R\acountry\x88\x01\x01\x12(\n" +
 	"\rbusiness_days\x18\x02 \x01(\tH\x01R\fbusinessDays\x88\x01\x01B\n" +
@@ -5038,7 +5074,8 @@ const file_google_shopping_merchant_products_v1_products_common_proto_rawDesc = 
 	"\x18_sell_on_google_quantityB\x14\n" +
 	"\x12_max_handling_timeB\x14\n" +
 	"\x12_min_handling_timeB\x11\n" +
-	"\x0f_shipping_labelB\x15\n" +
+	"\x0f_shipping_labelB\x16\n" +
+	"\x14_return_policy_labelB\x15\n" +
 	"\x13_transit_time_labelB\a\n" +
 	"\x05_sizeB\x0e\n" +
 	"\f_size_systemB\x1a\n" +
@@ -5082,15 +5119,17 @@ const file_google_shopping_merchant_products_v1_products_common_proto_rawDesc = 
 	"\x10SubscriptionCost\x12P\n" +
 	"\x06period\x18\x01 \x01(\x0e28.google.shopping.merchant.products.v1.SubscriptionPeriodR\x06period\x12#\n" +
 	"\rperiod_length\x18\x02 \x01(\x03R\fperiodLength\x123\n" +
-	"\x06amount\x18\x03 \x01(\v2\x1b.google.shopping.type.PriceR\x06amount\"\x9d\x02\n" +
+	"\x06amount\x18\x03 \x01(\v2\x1b.google.shopping.type.PriceR\x06amount\"\xf8\x02\n" +
 	"\x12ProductInstallment\x12\x16\n" +
 	"\x06months\x18\x01 \x01(\x03R\x06months\x123\n" +
 	"\x06amount\x18\x02 \x01(\v2\x1b.google.shopping.type.PriceR\x06amount\x12B\n" +
 	"\vdownpayment\x18\x03 \x01(\v2\x1b.google.shopping.type.PriceH\x00R\vdownpayment\x88\x01\x01\x12V\n" +
 	"\vcredit_type\x18\x04 \x01(\x0e20.google.shopping.merchant.products.v1.CreditTypeH\x01R\n" +
-	"creditType\x88\x01\x01B\x0e\n" +
+	"creditType\x88\x01\x01\x12>\n" +
+	"\x16annual_percentage_rate\x18\x05 \x01(\x01B\x03\xe0A\x01H\x02R\x14annualPercentageRate\x88\x01\x01B\x0e\n" +
 	"\f_downpaymentB\x0e\n" +
-	"\f_credit_type\"\\\n" +
+	"\f_credit_typeB\x19\n" +
+	"\x17_annual_percentage_rate\"\\\n" +
 	"\rLoyaltyPoints\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12!\n" +
 	"\fpoints_value\x18\x02 \x01(\x03R\vpointsValue\x12\x14\n" +

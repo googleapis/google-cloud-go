@@ -1,8 +1,8 @@
-# SaaS Runtime API
+# App Lifecycle Manager API
 
 [![Go Reference](https://pkg.go.dev/badge/cloud.google.com/go/saasplatform.svg)](https://pkg.go.dev/cloud.google.com/go/saasplatform)
 
-Go Client Library for SaaS Runtime API.
+Go Client Library for App Lifecycle Manager API.
 
 ## Install
 

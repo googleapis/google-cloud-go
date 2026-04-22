@@ -36,10 +36,16 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/metadata"
 )
 
 var cidGen = newClientIDGenerator()
+
+const (
+	routedKeepaliveTime    = 2 * time.Second
+	routedKeepaliveTimeout = 20 * time.Second
+)
 
 type clientIDGenerator struct {
 	mu  sync.Mutex
@@ -318,11 +324,13 @@ func (sc *sessionClient) createEndpointClient(ctx context.Context, address strin
 		opts = append(opts, option.WithGRPCDialOption(grpc.WithAuthority(sc.endpointAuthority)))
 	}
 	opts = append(opts, option.WithEndpoint(address))
-	if _, ok := sc.connPool.(*gmeWrapper); ok {
-		// Endpoint-specific clients should keep a single connection per endpoint
-		// when the parent client uses GCPMultiEndpoint.
-		opts = append(opts, option.WithGRPCConnectionPool(1))
-	}
+	// Routed endpoint clients should keep a single connection per endpoint so
+	// bypass traffic does not fan out into the parent's broader pool sizing.
+	opts = append(opts, option.WithGRPCConnectionPool(1))
+	opts = append(opts, option.WithGRPCDialOption(grpc.WithKeepaliveParams(keepalive.ClientParameters{
+		Time:    routedKeepaliveTime,
+		Timeout: routedKeepaliveTimeout,
+	})))
 	return newGRPCSpannerClient(ctx, sc, 0, opts...)
 }
 

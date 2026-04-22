@@ -141,6 +141,48 @@ func TestRetryerRespectsServerDelayResourceExhausted(t *testing.T) {
 	}
 }
 
+func TestRetryerLocationAwareResourceExhaustedRetriesImmediatelyWithoutRetryInfo(t *testing.T) {
+	t.Parallel()
+
+	retryer := onCodesWithResourceExhaustedRetryOption(
+		gax.Backoff{Initial: time.Second, Max: time.Second, Multiplier: 1},
+		true,
+		codes.ResourceExhausted,
+	)
+	delay, shouldRetry := retryer.Retry(status.Error(codes.ResourceExhausted, "server overloaded"))
+	if !shouldRetry {
+		t.Fatalf("expected shouldRetry to be true")
+	}
+	if delay != 0 {
+		t.Fatalf("retry delay mismatch:\ngot: %v\nwant: %v", delay, time.Duration(0))
+	}
+}
+
+func TestRetryerLocationAwareResourceExhaustedIgnoresServerDelay(t *testing.T) {
+	t.Parallel()
+
+	serverDelay := 50 * time.Millisecond
+	s := status.New(codes.ResourceExhausted, "server overloaded")
+	s, err := s.WithDetails(&edpb.RetryInfo{
+		RetryDelay: durationpb.New(serverDelay),
+	})
+	if err != nil {
+		t.Fatalf("Error setting retry details: %v", err)
+	}
+	retryer := onCodesWithResourceExhaustedRetryOption(
+		gax.Backoff{Initial: time.Second, Max: time.Second, Multiplier: 1},
+		true,
+		codes.ResourceExhausted,
+	)
+	delay, shouldRetry := retryer.Retry(toSpannerErrorWithCommitInfo(s.Err(), true))
+	if !shouldRetry {
+		t.Fatalf("expected shouldRetry to be true")
+	}
+	if delay != 0 {
+		t.Fatalf("retry delay mismatch:\ngot: %v\nwant: %v", delay, time.Duration(0))
+	}
+}
+
 func TestRunWithRetryOnInternalAuthError(t *testing.T) {
 	ctx := context.Background()
 	targetErr := status.Error(codes.Internal, "Authentication backend internal server error. Please retry")

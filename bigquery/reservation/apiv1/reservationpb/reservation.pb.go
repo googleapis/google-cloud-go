@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -189,7 +189,7 @@ const (
 	// reservation will scale up to 1000 slots with 200 baseline and 800 idle
 	// slots.
 	// 2. if there are 500 idle slots available in other reservations, the
-	// reservation will scale up to 700 slots with 200 baseline and 300 idle
+	// reservation will scale up to 700 slots with 200 baseline and 500 idle
 	// slots.
 	// Please note, in this mode, the reservation might not be able to scale up
 	// to max_slots.
@@ -2450,8 +2450,24 @@ type Assignment struct {
 	//
 	// This feature is not yet generally available.
 	SchedulingPolicy *SchedulingPolicy `protobuf:"bytes,11,opt,name=scheduling_policy,json=schedulingPolicy,proto3" json:"scheduling_policy,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	// Optional. Represents the principal for this assignment. If not empty, jobs
+	// run by this principal will utilize the associated reservation. Otherwise,
+	// jobs will fall back to using the reservation assigned to the project,
+	// folder, or organization (in that order). If no reservation is assigned at
+	// any of these levels, on-demand capacity will be used.
+	//
+	// The supported formats are:
+	//
+	//   - `principal://goog/subject/USER_EMAIL_ADDRESS` for users,
+	//   - `principal://iam.googleapis.com/projects/-/serviceAccounts/SA_EMAIL_ADDRESS`
+	//     for service accounts,
+	//   - `principal://iam.googleapis.com/projects/PROJECT_NUMBER/locations/global/workloadIdentityPools/POOL_ID/subject/SUBJECT_ID`
+	//     for workload identity pool identities.
+	//   - The special value `unknown_or_deleted_user` represents principals which
+	//     cannot be read from the user info service, for example deleted users.
+	Principal     string `protobuf:"bytes,12,opt,name=principal,proto3" json:"principal,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Assignment) Reset() {
@@ -2525,6 +2541,13 @@ func (x *Assignment) GetSchedulingPolicy() *SchedulingPolicy {
 		return x.SchedulingPolicy
 	}
 	return nil
+}
+
+func (x *Assignment) GetPrincipal() string {
+	if x != nil {
+		return x.Principal
+	}
+	return ""
 }
 
 // The request for
@@ -3752,7 +3775,7 @@ const file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDesc = "" +
 	"\x1fMergeCapacityCommitmentsRequest\x12R\n" +
 	"\x06parent\x18\x01 \x01(\tB:\xfaA7\x125bigqueryreservation.googleapis.com/CapacityCommitmentR\x06parent\x126\n" +
 	"\x17capacity_commitment_ids\x18\x02 \x03(\tR\x15capacityCommitmentIds\x129\n" +
-	"\x16capacity_commitment_id\x18\x03 \x01(\tB\x03\xe0A\x01R\x14capacityCommitmentId\"\xe3\x06\n" +
+	"\x16capacity_commitment_id\x18\x03 \x01(\tB\x03\xe0A\x01R\x14capacityCommitmentId\"\x86\a\n" +
 	"\n" +
 	"Assignment\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x1f\n" +
@@ -3761,7 +3784,8 @@ const file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDesc = "" +
 	"\x05state\x18\x06 \x01(\x0e26.google.cloud.bigquery.reservation.v1.Assignment.StateB\x03\xe0A\x03R\x05state\x12@\n" +
 	"\x19enable_gemini_in_bigquery\x18\n" +
 	" \x01(\bB\x05\xe0A\x01\x18\x01R\x16enableGeminiInBigquery\x12h\n" +
-	"\x11scheduling_policy\x18\v \x01(\v26.google.cloud.bigquery.reservation.v1.SchedulingPolicyB\x03\xe0A\x01R\x10schedulingPolicy\"\xdc\x01\n" +
+	"\x11scheduling_policy\x18\v \x01(\v26.google.cloud.bigquery.reservation.v1.SchedulingPolicyB\x03\xe0A\x01R\x10schedulingPolicy\x12!\n" +
+	"\tprincipal\x18\f \x01(\tB\x03\xe0A\x01R\tprincipal\"\xdc\x01\n" +
 	"\aJobType\x12\x18\n" +
 	"\x14JOB_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bPIPELINE\x10\x01\x12\t\n" +

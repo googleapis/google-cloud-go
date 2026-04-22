@@ -6,5 +6,5 @@
     "distribution_name": "cloud.google.com/go/identitytoolkit/apiv2",
     "language": "go",
     "library_type": "GAPIC_AUTO",
-    "release_level": "stable"
+    "release_level": "preview"
 }

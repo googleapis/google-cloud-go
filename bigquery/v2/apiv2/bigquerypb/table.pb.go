@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -262,9 +262,9 @@ type ViewDefinition struct {
 	// Describes user-defined function resources used in the query.
 	UserDefinedFunctionResources []*UserDefinedFunctionResource `protobuf:"bytes,2,rep,name=user_defined_function_resources,json=userDefinedFunctionResources,proto3" json:"user_defined_function_resources,omitempty"`
 	// Specifies whether to use BigQuery's legacy SQL for this view.
-	// The default value is true. If set to false, the view will use
-	// BigQuery's GoogleSQL:
-	// https://cloud.google.com/bigquery/sql-reference/
+	// The default value is true. If set to false, the view uses
+	// BigQuery's
+	// [GoogleSQL](https://docs.cloud.google.com/bigquery/docs/introduction-sql).
 	//
 	// Queries and views that reference this view must use the same flag value.
 	// A wrapper is used here because the default value is True.

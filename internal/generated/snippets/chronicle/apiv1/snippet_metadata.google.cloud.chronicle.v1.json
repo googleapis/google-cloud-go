@@ -654,6 +654,876 @@
     {
       "clientMethod": {
         "client": {
+          "fullName": "google.cloud.chronicle.v1.DataTableClient",
+          "shortName": "DataTableClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.DataTableClient.BulkCreateDataTableRows",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.DataTableService.BulkCreateDataTableRows",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.DataTableService",
+            "shortName": "DataTableService"
+          },
+          "shortName": "BulkCreateDataTableRows"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.BulkCreateDataTableRowsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.BulkCreateDataTableRowsResponse",
+        "shortName": "BulkCreateDataTableRows"
+      },
+      "description": "BulkCreateDataTableRows create data table rows in bulk.",
+      "file": "DataTableClient/BulkCreateDataTableRows/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_DataTableService_BulkCreateDataTableRows_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle BulkCreateDataTableRows Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.DataTableClient",
+          "shortName": "DataTableClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.DataTableClient.BulkGetDataTableRows",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.DataTableService.BulkGetDataTableRows",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.DataTableService",
+            "shortName": "DataTableService"
+          },
+          "shortName": "BulkGetDataTableRows"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.BulkGetDataTableRowsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.BulkGetDataTableRowsResponse",
+        "shortName": "BulkGetDataTableRows"
+      },
+      "description": "BulkGetDataTableRows get data table rows in bulk.",
+      "file": "DataTableClient/BulkGetDataTableRows/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_DataTableService_BulkGetDataTableRows_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle BulkGetDataTableRows Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.DataTableClient",
+          "shortName": "DataTableClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.DataTableClient.BulkReplaceDataTableRows",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.DataTableService.BulkReplaceDataTableRows",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.DataTableService",
+            "shortName": "DataTableService"
+          },
+          "shortName": "BulkReplaceDataTableRows"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.BulkReplaceDataTableRowsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.BulkReplaceDataTableRowsResponse",
+        "shortName": "BulkReplaceDataTableRows"
+      },
+      "description": "BulkReplaceDataTableRows replace all existing data table rows with new data table rows.",
+      "file": "DataTableClient/BulkReplaceDataTableRows/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_DataTableService_BulkReplaceDataTableRows_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle BulkReplaceDataTableRows Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.DataTableClient",
+          "shortName": "DataTableClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.DataTableClient.BulkUpdateDataTableRows",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.DataTableService.BulkUpdateDataTableRows",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.DataTableService",
+            "shortName": "DataTableService"
+          },
+          "shortName": "BulkUpdateDataTableRows"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.BulkUpdateDataTableRowsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.BulkUpdateDataTableRowsResponse",
+        "shortName": "BulkUpdateDataTableRows"
+      },
+      "description": "BulkUpdateDataTableRows update data table rows in bulk.",
+      "file": "DataTableClient/BulkUpdateDataTableRows/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_DataTableService_BulkUpdateDataTableRows_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle BulkUpdateDataTableRows Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.DataTableClient",
+          "shortName": "DataTableClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.DataTableClient.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataTableClient/CancelOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_DataTableService_CancelOperation_sync",
+      "segments": [
+        {
+          "end": 51,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle CancelOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.DataTableClient",
+          "shortName": "DataTableClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.DataTableClient.CreateDataTable",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.DataTableService.CreateDataTable",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.DataTableService",
+            "shortName": "DataTableService"
+          },
+          "shortName": "CreateDataTable"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.CreateDataTableRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.DataTable",
+        "shortName": "CreateDataTable"
+      },
+      "description": "CreateDataTable create a new data table.",
+      "file": "DataTableClient/CreateDataTable/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_DataTableService_CreateDataTable_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle CreateDataTable Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.DataTableClient",
+          "shortName": "DataTableClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.DataTableClient.CreateDataTableRow",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.DataTableService.CreateDataTableRow",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.DataTableService",
+            "shortName": "DataTableService"
+          },
+          "shortName": "CreateDataTableRow"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.CreateDataTableRowRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.DataTableRow",
+        "shortName": "CreateDataTableRow"
+      },
+      "description": "CreateDataTableRow create a new data table row.",
+      "file": "DataTableClient/CreateDataTableRow/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_DataTableService_CreateDataTableRow_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle CreateDataTableRow Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.DataTableClient",
+          "shortName": "DataTableClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.DataTableClient.DeleteDataTable",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.DataTableService.DeleteDataTable",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.DataTableService",
+            "shortName": "DataTableService"
+          },
+          "shortName": "DeleteDataTable"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.DeleteDataTableRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteDataTable"
+      },
+      "description": "DeleteDataTable delete data table.",
+      "file": "DataTableClient/DeleteDataTable/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_DataTableService_DeleteDataTable_sync",
+      "segments": [
+        {
+          "end": 51,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle DeleteDataTable Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.DataTableClient",
+          "shortName": "DataTableClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.DataTableClient.DeleteDataTableRow",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.DataTableService.DeleteDataTableRow",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.DataTableService",
+            "shortName": "DataTableService"
+          },
+          "shortName": "DeleteDataTableRow"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.DeleteDataTableRowRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteDataTableRow"
+      },
+      "description": "DeleteDataTableRow delete data table row.",
+      "file": "DataTableClient/DeleteDataTableRow/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_DataTableService_DeleteDataTableRow_sync",
+      "segments": [
+        {
+          "end": 51,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle DeleteDataTableRow Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.DataTableClient",
+          "shortName": "DataTableClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.DataTableClient.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataTableClient/DeleteOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_DataTableService_DeleteOperation_sync",
+      "segments": [
+        {
+          "end": 51,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle DeleteOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.DataTableClient",
+          "shortName": "DataTableClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.DataTableClient.GetDataTable",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.DataTableService.GetDataTable",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.DataTableService",
+            "shortName": "DataTableService"
+          },
+          "shortName": "GetDataTable"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.GetDataTableRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.DataTable",
+        "shortName": "GetDataTable"
+      },
+      "description": "GetDataTable get data table info.",
+      "file": "DataTableClient/GetDataTable/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_DataTableService_GetDataTable_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle GetDataTable Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.DataTableClient",
+          "shortName": "DataTableClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.DataTableClient.GetDataTableOperationErrors",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.DataTableService.GetDataTableOperationErrors",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.DataTableService",
+            "shortName": "DataTableService"
+          },
+          "shortName": "GetDataTableOperationErrors"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.GetDataTableOperationErrorsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.DataTableOperationErrors",
+        "shortName": "GetDataTableOperationErrors"
+      },
+      "description": "GetDataTableOperationErrors get the error for a data table operation.",
+      "file": "DataTableClient/GetDataTableOperationErrors/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_DataTableService_GetDataTableOperationErrors_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle GetDataTableOperationErrors Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.DataTableClient",
+          "shortName": "DataTableClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.DataTableClient.GetDataTableRow",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.DataTableService.GetDataTableRow",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.DataTableService",
+            "shortName": "DataTableService"
+          },
+          "shortName": "GetDataTableRow"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.GetDataTableRowRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.DataTableRow",
+        "shortName": "GetDataTableRow"
+      },
+      "description": "GetDataTableRow get data table row",
+      "file": "DataTableClient/GetDataTableRow/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_DataTableService_GetDataTableRow_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle GetDataTableRow Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.DataTableClient",
+          "shortName": "DataTableClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.DataTableClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataTableClient/GetOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_DataTableService_GetOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle GetOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.DataTableClient",
+          "shortName": "DataTableClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.DataTableClient.ListDataTableRows",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.DataTableService.ListDataTableRows",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.DataTableService",
+            "shortName": "DataTableService"
+          },
+          "shortName": "ListDataTableRows"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.ListDataTableRowsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DataTableRowIterator",
+        "shortName": "ListDataTableRows"
+      },
+      "description": "ListDataTableRows list data table rows.",
+      "file": "DataTableClient/ListDataTableRows/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_DataTableService_ListDataTableRows_sync",
+      "segments": [
+        {
+          "end": 66,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle ListDataTableRows Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.DataTableClient",
+          "shortName": "DataTableClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.DataTableClient.ListDataTables",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.DataTableService.ListDataTables",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.DataTableService",
+            "shortName": "DataTableService"
+          },
+          "shortName": "ListDataTables"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.ListDataTablesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DataTableIterator",
+        "shortName": "ListDataTables"
+      },
+      "description": "ListDataTables list data tables.",
+      "file": "DataTableClient/ListDataTables/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_DataTableService_ListDataTables_sync",
+      "segments": [
+        {
+          "end": 66,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle ListDataTables Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.DataTableClient",
+          "shortName": "DataTableClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.DataTableClient.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "DataTableClient/ListOperations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_DataTableService_ListOperations_sync",
+      "segments": [
+        {
+          "end": 66,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.DataTableClient",
+          "shortName": "DataTableClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.DataTableClient.UpdateDataTable",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.DataTableService.UpdateDataTable",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.DataTableService",
+            "shortName": "DataTableService"
+          },
+          "shortName": "UpdateDataTable"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.UpdateDataTableRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.DataTable",
+        "shortName": "UpdateDataTable"
+      },
+      "description": "UpdateDataTable update data table.",
+      "file": "DataTableClient/UpdateDataTable/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_DataTableService_UpdateDataTable_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle UpdateDataTable Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.DataTableClient",
+          "shortName": "DataTableClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.DataTableClient.UpdateDataTableRow",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.DataTableService.UpdateDataTableRow",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.DataTableService",
+            "shortName": "DataTableService"
+          },
+          "shortName": "UpdateDataTableRow"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.UpdateDataTableRowRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.DataTableRow",
+        "shortName": "UpdateDataTableRow"
+      },
+      "description": "UpdateDataTableRow update data table row",
+      "file": "DataTableClient/UpdateDataTableRow/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_DataTableService_UpdateDataTableRow_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle UpdateDataTableRow Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
           "fullName": "google.cloud.chronicle.v1.EntityClient",
           "shortName": "EntityClient"
         },

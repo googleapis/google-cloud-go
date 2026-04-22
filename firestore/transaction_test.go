@@ -25,6 +25,7 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 func TestRunTransaction(t *testing.T) {
@@ -680,6 +681,72 @@ func TestTransaction_WithReadOptions(t *testing.T) {
 		tx.WithReadOptions(ReadTime(tm)).Get(docref)
 		return nil
 	}); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestRunTransaction_VectorQuery(t *testing.T) {
+	ctx := context.Background()
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	const db = "projects/projectID/databases/(default)"
+	tid := []byte{1}
+
+	beginReq := &pb.BeginTransactionRequest{Database: db}
+	beginRes := &pb.BeginTransactionResponse{Transaction: tid}
+	commitReq := &pb.CommitRequest{Database: db, Transaction: tid}
+
+	srv.addRPC(beginReq, beginRes)
+
+	distanceThreshold := 20.0
+	srv.addRPC(
+		&pb.RunQueryRequest{
+			Parent: db + "/documents",
+			QueryType: &pb.RunQueryRequest_StructuredQuery{
+				StructuredQuery: &pb.StructuredQuery{
+					From: []*pb.StructuredQuery_CollectionSelector{{CollectionId: "C"}},
+					FindNearest: &pb.StructuredQuery_FindNearest{
+						VectorField: &pb.StructuredQuery_FieldReference{FieldPath: "vectorField"},
+						QueryVector: &pb.Value{ValueType: &pb.Value_MapValue{MapValue: &pb.MapValue{
+							Fields: map[string]*pb.Value{
+								"__type__": {ValueType: &pb.Value_StringValue{StringValue: "__vector__"}},
+								"value": {ValueType: &pb.Value_ArrayValue{ArrayValue: &pb.ArrayValue{
+									Values: []*pb.Value{
+										{ValueType: &pb.Value_DoubleValue{DoubleValue: 1.0}},
+										{ValueType: &pb.Value_DoubleValue{DoubleValue: 2.0}},
+										{ValueType: &pb.Value_DoubleValue{DoubleValue: 3.0}},
+									},
+								}}},
+							},
+						}}},
+						DistanceMeasure:     pb.StructuredQuery_FindNearest_EUCLIDEAN,
+						Limit:               &wrapperspb.Int32Value{Value: 10},
+						DistanceResultField: "distance",
+						DistanceThreshold:   &wrapperspb.DoubleValue{Value: distanceThreshold},
+					},
+				},
+			},
+			ConsistencySelector: &pb.RunQueryRequest_Transaction{Transaction: tid},
+		},
+		[]interface{}{},
+	)
+	srv.addRPC(commitReq, &pb.CommitResponse{CommitTime: aTimestamp})
+
+	err := c.RunTransaction(ctx, func(_ context.Context, tx *Transaction) error {
+		vq := c.Collection("C").FindNearest("vectorField", []float64{1.0, 2.0, 3.0}, 10, DistanceMeasureEuclidean, &FindNearestOptions{
+			DistanceResultField: "distance",
+			DistanceThreshold:   &distanceThreshold,
+		})
+		it := tx.Documents(vq)
+		defer it.Stop()
+		_, err := it.Next()
+		if err != iterator.Done {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
 		t.Fatal(err)
 	}
 }

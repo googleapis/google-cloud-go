@@ -94,6 +94,11 @@ func createAgentEngineConfigToVertex(fromObject map[string]any, parentObject map
 		genai.InternalSetValueByPath(parentObject, []string{"pythonVersion"}, fromPythonVersion)
 	}
 
+	fromAgentGatewayConfig := genai.InternalGetValueByPath(fromObject, []string{"agentGatewayConfig"})
+	if fromAgentGatewayConfig != nil {
+		genai.InternalSetValueByPath(parentObject, []string{"agentGatewayConfig"}, fromAgentGatewayConfig)
+	}
+
 	return toObject, nil
 }
 
@@ -290,6 +295,11 @@ func updateAgentEngineConfigToVertex(fromObject map[string]any, parentObject map
 	fromPythonVersion := genai.InternalGetValueByPath(fromObject, []string{"pythonVersion"})
 	if fromPythonVersion != nil {
 		genai.InternalSetValueByPath(parentObject, []string{"pythonVersion"}, fromPythonVersion)
+	}
+
+	fromAgentGatewayConfig := genai.InternalGetValueByPath(fromObject, []string{"agentGatewayConfig"})
+	if fromAgentGatewayConfig != nil {
+		genai.InternalSetValueByPath(parentObject, []string{"agentGatewayConfig"}, fromAgentGatewayConfig)
 	}
 
 	fromUpdateMask := genai.InternalGetValueByPath(fromObject, []string{"updateMask"})

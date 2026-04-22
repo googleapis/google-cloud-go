@@ -53,6 +53,7 @@ const (
 	ChatService_DeleteSpace_FullMethodName                    = "/google.chat.v1.ChatService/DeleteSpace"
 	ChatService_CompleteImportSpace_FullMethodName            = "/google.chat.v1.ChatService/CompleteImportSpace"
 	ChatService_FindDirectMessage_FullMethodName              = "/google.chat.v1.ChatService/FindDirectMessage"
+	ChatService_FindGroupChats_FullMethodName                 = "/google.chat.v1.ChatService/FindGroupChats"
 	ChatService_CreateMembership_FullMethodName               = "/google.chat.v1.ChatService/CreateMembership"
 	ChatService_UpdateMembership_FullMethodName               = "/google.chat.v1.ChatService/UpdateMembership"
 	ChatService_DeleteMembership_FullMethodName               = "/google.chat.v1.ChatService/DeleteMembership"
@@ -605,6 +606,27 @@ type ChatServiceClient interface {
 	//   - `https://www.googleapis.com/auth/chat.spaces.readonly`
 	//   - `https://www.googleapis.com/auth/chat.spaces`
 	FindDirectMessage(ctx context.Context, in *FindDirectMessageRequest, opts ...grpc.CallOption) (*Space, error)
+	// Returns all spaces with `spaceType == GROUP_CHAT`, whose
+	// human memberships contain exactly the calling user, and the users specified
+	// in `FindGroupChatsRequest.users`. Only members that have joined the
+	// conversation are supported. For an example, see [Find group
+	// chats](https://developers.google.com/workspace/chat/find-group-chats).
+	//
+	// If the calling user blocks, or is blocked by, some users, and no spaces
+	// with the entire specified set of users are found, this method returns
+	// spaces that don't include the blocked or blocking users.
+	//
+	// The specified set of users must contain only human (non-app) memberships.
+	// A request that contains non-human users doesn't return any spaces.
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.memberships.readonly`
+	//   - `https://www.googleapis.com/auth/chat.memberships`
+	FindGroupChats(ctx context.Context, in *FindGroupChatsRequest, opts ...grpc.CallOption) (*FindGroupChatsResponse, error)
 	// Creates a membership for the calling Chat app, a user, or a Google Group.
 	// Creating memberships for other Chat apps isn't supported.
 	// When creating a membership, if the specified member has their auto-accept
@@ -1223,6 +1245,15 @@ func (c *chatServiceClient) CompleteImportSpace(ctx context.Context, in *Complet
 func (c *chatServiceClient) FindDirectMessage(ctx context.Context, in *FindDirectMessageRequest, opts ...grpc.CallOption) (*Space, error) {
 	out := new(Space)
 	err := c.cc.Invoke(ctx, ChatService_FindDirectMessage_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatServiceClient) FindGroupChats(ctx context.Context, in *FindGroupChatsRequest, opts ...grpc.CallOption) (*FindGroupChatsResponse, error) {
+	out := new(FindGroupChatsResponse)
+	err := c.cc.Invoke(ctx, ChatService_FindGroupChats_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1971,6 +2002,27 @@ type ChatServiceServer interface {
 	//   - `https://www.googleapis.com/auth/chat.spaces.readonly`
 	//   - `https://www.googleapis.com/auth/chat.spaces`
 	FindDirectMessage(context.Context, *FindDirectMessageRequest) (*Space, error)
+	// Returns all spaces with `spaceType == GROUP_CHAT`, whose
+	// human memberships contain exactly the calling user, and the users specified
+	// in `FindGroupChatsRequest.users`. Only members that have joined the
+	// conversation are supported. For an example, see [Find group
+	// chats](https://developers.google.com/workspace/chat/find-group-chats).
+	//
+	// If the calling user blocks, or is blocked by, some users, and no spaces
+	// with the entire specified set of users are found, this method returns
+	// spaces that don't include the blocked or blocking users.
+	//
+	// The specified set of users must contain only human (non-app) memberships.
+	// A request that contains non-human users doesn't return any spaces.
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.memberships.readonly`
+	//   - `https://www.googleapis.com/auth/chat.memberships`
+	FindGroupChats(context.Context, *FindGroupChatsRequest) (*FindGroupChatsResponse, error)
 	// Creates a membership for the calling Chat app, a user, or a Google Group.
 	// Creating memberships for other Chat apps isn't supported.
 	// When creating a membership, if the specified member has their auto-accept
@@ -2483,6 +2535,9 @@ func (UnimplementedChatServiceServer) CompleteImportSpace(context.Context, *Comp
 func (UnimplementedChatServiceServer) FindDirectMessage(context.Context, *FindDirectMessageRequest) (*Space, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FindDirectMessage not implemented")
 }
+func (UnimplementedChatServiceServer) FindGroupChats(context.Context, *FindGroupChatsRequest) (*FindGroupChatsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FindGroupChats not implemented")
+}
 func (UnimplementedChatServiceServer) CreateMembership(context.Context, *CreateMembershipRequest) (*Membership, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateMembership not implemented")
 }
@@ -2887,6 +2942,24 @@ func _ChatService_FindDirectMessage_Handler(srv interface{}, ctx context.Context
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ChatServiceServer).FindDirectMessage(ctx, req.(*FindDirectMessageRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatService_FindGroupChats_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FindGroupChatsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).FindGroupChats(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ChatService_FindGroupChats_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).FindGroupChats(ctx, req.(*FindGroupChatsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -3401,6 +3474,10 @@ var ChatService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "FindDirectMessage",
 			Handler:    _ChatService_FindDirectMessage_Handler,
+		},
+		{
+			MethodName: "FindGroupChats",
+			Handler:    _ChatService_FindGroupChats_Handler,
 		},
 		{
 			MethodName: "CreateMembership",

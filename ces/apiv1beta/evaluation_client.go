@@ -79,6 +79,7 @@ type EvaluationCallOptions struct {
 	UpdateScheduledEvaluationRun []gax.CallOption
 	DeleteScheduledEvaluationRun []gax.CallOption
 	TestPersonaVoice             []gax.CallOption
+	ExportEvaluations            []gax.CallOption
 	GetLocation                  []gax.CallOption
 	ListLocations                []gax.CallOption
 	CancelOperation              []gax.CallOption
@@ -507,6 +508,19 @@ func defaultEvaluationCallOptions() *EvaluationCallOptions {
 				})
 			}),
 		},
+		ExportEvaluations: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -890,6 +904,18 @@ func defaultEvaluationRESTCallOptions() *EvaluationCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		ExportEvaluations: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -939,6 +965,8 @@ type internalEvaluationClient interface {
 	UpdateScheduledEvaluationRun(context.Context, *cespb.UpdateScheduledEvaluationRunRequest, ...gax.CallOption) (*cespb.ScheduledEvaluationRun, error)
 	DeleteScheduledEvaluationRun(context.Context, *cespb.DeleteScheduledEvaluationRunRequest, ...gax.CallOption) error
 	TestPersonaVoice(context.Context, *cespb.TestPersonaVoiceRequest, ...gax.CallOption) (*cespb.TestPersonaVoiceResponse, error)
+	ExportEvaluations(context.Context, *cespb.ExportEvaluationsRequest, ...gax.CallOption) (*ExportEvaluationsOperation, error)
+	ExportEvaluationsOperation(name string) *ExportEvaluationsOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -1169,6 +1197,17 @@ func (c *EvaluationClient) TestPersonaVoice(ctx context.Context, req *cespb.Test
 	return c.internalClient.TestPersonaVoice(ctx, req, opts...)
 }
 
+// ExportEvaluations exports evaluations.
+func (c *EvaluationClient) ExportEvaluations(ctx context.Context, req *cespb.ExportEvaluationsRequest, opts ...gax.CallOption) (*ExportEvaluationsOperation, error) {
+	return c.internalClient.ExportEvaluations(ctx, req, opts...)
+}
+
+// ExportEvaluationsOperation returns a new ExportEvaluationsOperation from a given name.
+// The name must be that of a previously created ExportEvaluationsOperation, possibly from a different process.
+func (c *EvaluationClient) ExportEvaluationsOperation(name string) *ExportEvaluationsOperation {
+	return c.internalClient.ExportEvaluationsOperation(name)
+}
+
 // GetLocation gets information about a location.
 func (c *EvaluationClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
@@ -1325,6 +1364,7 @@ func NewEvaluationClient(ctx context.Context, opts ...option.ClientOption) (*Eva
 		client.CallOptions.UpdateScheduledEvaluationRun = append(client.CallOptions.UpdateScheduledEvaluationRun, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteScheduledEvaluationRun = append(client.CallOptions.DeleteScheduledEvaluationRun, gax.WithClientMetrics(metrics))
 		client.CallOptions.TestPersonaVoice = append(client.CallOptions.TestPersonaVoice, gax.WithClientMetrics(metrics))
+		client.CallOptions.ExportEvaluations = append(client.CallOptions.ExportEvaluations, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
 		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
@@ -1468,6 +1508,7 @@ func NewEvaluationRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		callOpts.UpdateScheduledEvaluationRun = append(callOpts.UpdateScheduledEvaluationRun, gax.WithClientMetrics(metrics))
 		callOpts.DeleteScheduledEvaluationRun = append(callOpts.DeleteScheduledEvaluationRun, gax.WithClientMetrics(metrics))
 		callOpts.TestPersonaVoice = append(callOpts.TestPersonaVoice, gax.WithClientMetrics(metrics))
+		callOpts.ExportEvaluations = append(callOpts.ExportEvaluations, gax.WithClientMetrics(metrics))
 		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
 		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
 		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
@@ -2412,6 +2453,32 @@ func (c *evaluationGRPCClient) TestPersonaVoice(ctx context.Context, req *cespb.
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *evaluationGRPCClient) ExportEvaluations(ctx context.Context, req *cespb.ExportEvaluationsRequest, opts ...gax.CallOption) (*ExportEvaluationsOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/ExportEvaluations")
+	}
+	opts = append((*c.CallOptions).ExportEvaluations[0:len((*c.CallOptions).ExportEvaluations):len((*c.CallOptions).ExportEvaluations)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.evaluationClient.ExportEvaluations, req, settings.GRPC, c.logger, "ExportEvaluations")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ExportEvaluationsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *evaluationGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -4595,6 +4662,72 @@ func (c *evaluationRESTClient) TestPersonaVoice(ctx context.Context, req *cespb.
 	return resp, nil
 }
 
+// ExportEvaluations exports evaluations.
+func (c *evaluationRESTClient) ExportEvaluations(ctx context.Context, req *cespb.ExportEvaluationsRequest, opts ...gax.CallOption) (*ExportEvaluationsOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v/evaluations:export", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ces.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ces.v1beta.EvaluationService/ExportEvaluations")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*/apps/*}/evaluations:export")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExportEvaluations")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	return &ExportEvaluationsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // GetLocation gets information about a location.
 func (c *evaluationRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -4981,6 +5114,24 @@ func (c *evaluationGRPCClient) DeleteEvaluationRunOperation(name string) *Delete
 func (c *evaluationRESTClient) DeleteEvaluationRunOperation(name string) *DeleteEvaluationRunOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &DeleteEvaluationRunOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// ExportEvaluationsOperation returns a new ExportEvaluationsOperation from a given name.
+// The name must be that of a previously created ExportEvaluationsOperation, possibly from a different process.
+func (c *evaluationGRPCClient) ExportEvaluationsOperation(name string) *ExportEvaluationsOperation {
+	return &ExportEvaluationsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// ExportEvaluationsOperation returns a new ExportEvaluationsOperation from a given name.
+// The name must be that of a previously created ExportEvaluationsOperation, possibly from a different process.
+func (c *evaluationRESTClient) ExportEvaluationsOperation(name string) *ExportEvaluationsOperation {
+	override := fmt.Sprintf("/v1beta/%s", name)
+	return &ExportEvaluationsOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

@@ -371,6 +371,8 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 		t.setTimestamp,
 		t.release,
 		asGRPCSpannerClient(client),
+		true,
+		false,
 	)
 }
 

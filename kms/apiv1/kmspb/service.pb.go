@@ -4437,6 +4437,7 @@ type Digest struct {
 	//	*Digest_Sha256
 	//	*Digest_Sha384
 	//	*Digest_Sha512
+	//	*Digest_ExternalMu
 	Digest        isDigest_Digest `protobuf_oneof:"digest"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -4506,6 +4507,15 @@ func (x *Digest) GetSha512() []byte {
 	return nil
 }
 
+func (x *Digest) GetExternalMu() []byte {
+	if x != nil {
+		if x, ok := x.Digest.(*Digest_ExternalMu); ok {
+			return x.ExternalMu
+		}
+	}
+	return nil
+}
+
 type isDigest_Digest interface {
 	isDigest_Digest()
 }
@@ -4525,11 +4535,21 @@ type Digest_Sha512 struct {
 	Sha512 []byte `protobuf:"bytes,3,opt,name=sha512,proto3,oneof"`
 }
 
+type Digest_ExternalMu struct {
+	// A message digest produced with SHAKE-256, to be used with ML-DSA
+	// external-μ algorithms only. See "message representative" note in
+	// section 6.2, algorithm 7 of the FIPS-204 standard:
+	// https://doi.org/10.6028/nist.fips.204
+	ExternalMu []byte `protobuf:"bytes,4,opt,name=external_mu,json=externalMu,proto3,oneof"`
+}
+
 func (*Digest_Sha256) isDigest_Digest() {}
 
 func (*Digest_Sha384) isDigest_Digest() {}
 
 func (*Digest_Sha512) isDigest_Digest() {}
+
+func (*Digest_ExternalMu) isDigest_Digest() {}
 
 // Cloud KMS metadata for the given
 // [google.cloud.location.Location][google.cloud.location.Location].
@@ -4993,11 +5013,13 @@ const file_google_cloud_kms_v1_service_proto_rawDesc = "" +
 	"\x1bGenerateRandomBytesResponse\x12\x12\n" +
 	"\x04data\x18\x01 \x01(\fR\x04data\x12<\n" +
 	"\vdata_crc32c\x18\x03 \x01(\v2\x1b.google.protobuf.Int64ValueR\n" +
-	"dataCrc32c\"`\n" +
+	"dataCrc32c\"\x83\x01\n" +
 	"\x06Digest\x12\x18\n" +
 	"\x06sha256\x18\x01 \x01(\fH\x00R\x06sha256\x12\x18\n" +
 	"\x06sha384\x18\x02 \x01(\fH\x00R\x06sha384\x12\x18\n" +
-	"\x06sha512\x18\x03 \x01(\fH\x00R\x06sha512B\b\n" +
+	"\x06sha512\x18\x03 \x01(\fH\x00R\x06sha512\x12!\n" +
+	"\vexternal_mu\x18\x04 \x01(\fH\x00R\n" +
+	"externalMuB\b\n" +
 	"\x06digest\"\x9b\x01\n" +
 	"\x10LocationMetadata\x12#\n" +
 	"\rhsm_available\x18\x01 \x01(\bR\fhsmAvailable\x12#\n" +
@@ -5273,6 +5295,7 @@ func file_google_cloud_kms_v1_service_proto_init() {
 		(*Digest_Sha256)(nil),
 		(*Digest_Sha384)(nil),
 		(*Digest_Sha512)(nil),
+		(*Digest_ExternalMu)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

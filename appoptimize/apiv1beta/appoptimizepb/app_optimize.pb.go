@@ -974,9 +974,9 @@ const file_google_cloud_appoptimize_v1beta_app_optimize_proto_rawDesc = "" +
 	"\vListReports\x123.google.cloud.appoptimize.v1beta.ListReportsRequest\x1a4.google.cloud.appoptimize.v1beta.ListReportsResponse\"@\xdaA\x06parent\x82\xd3\xe4\x93\x021\x12//v1beta/{parent=projects/*/locations/*}/reports\x12\x9c\x01\n" +
 	"\fDeleteReport\x124.google.cloud.appoptimize.v1beta.DeleteReportRequest\x1a\x16.google.protobuf.Empty\">\xdaA\x04name\x82\xd3\xe4\x93\x021*//v1beta/{name=projects/*/locations/*/reports/*}\x12\xbd\x01\n" +
 	"\n" +
-	"ReadReport\x122.google.cloud.appoptimize.v1beta.ReadReportRequest\x1a3.google.cloud.appoptimize.v1beta.ReadReportResponse\"F\xdaA\x04name\x82\xd3\xe4\x93\x029:\x01*\"4/v1beta/{name=projects/*/locations/*/reports/*}:read\x1aN\xcaA\x1aappoptimize.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xea\x01\xeaAg\n" +
+	"ReadReport\x122.google.cloud.appoptimize.v1beta.ReadReportRequest\x1a3.google.cloud.appoptimize.v1beta.ReadReportResponse\"F\xdaA\x04name\x82\xd3\xe4\x93\x029:\x01*\"4/v1beta/{name=projects/*/locations/*/reports/*}:read\x1aN\xcaA\x1aappoptimize.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\x8c\x02\xeaAg\n" +
 	"!apphub.googleapis.com/Application\x12Bprojects/{project}/locations/{location}/applications/{application}\n" +
-	"#com.google.cloud.appoptimize.v1betaB\x10AppOptimizeProtoP\x01ZEcloud.google.com/go/appoptimize/apiv1beta/appoptimizepb;appoptimizepbb\x06proto3"
+	"#com.google.cloud.appoptimize.v1betaB\x10AppOptimizeProtoP\x01ZEcloud.google.com/go/appoptimize/apiv1beta/appoptimizepb;appoptimizepb\xaa\x02\x1fGoogle.Cloud.AppOptimize.V1Betab\x06proto3"
 
 var (
 	file_google_cloud_appoptimize_v1beta_app_optimize_proto_rawDescOnce sync.Once

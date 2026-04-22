@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -1441,10 +1441,10 @@ type QueryRequest struct {
 	// query are modified. The default value is true.
 	UseQueryCache *wrapperspb.BoolValue `protobuf:"bytes,9,opt,name=use_query_cache,json=useQueryCache,proto3" json:"use_query_cache,omitempty"`
 	// Specifies whether to use BigQuery's legacy SQL dialect for this query. The
-	// default value is true. If set to false, the query will use BigQuery's
-	// GoogleSQL: https://cloud.google.com/bigquery/sql-reference/ When
-	// useLegacySql is set to false, the value of flattenResults is ignored; query
-	// will be run as if flattenResults is false.
+	// default value is true. If set to false, the query uses BigQuery's
+	// [GoogleSQL](https://docs.cloud.google.com/bigquery/docs/introduction-sql).
+	// When useLegacySql is set to false, the value of flattenResults is ignored;
+	// query will be run as if flattenResults is false.
 	UseLegacySql *wrapperspb.BoolValue `protobuf:"bytes,10,opt,name=use_legacy_sql,json=useLegacySql,proto3" json:"use_legacy_sql,omitempty"`
 	// GoogleSQL only. Set to POSITIONAL to use positional (?) query parameters
 	// or to NAMED to use named (@myparam) query parameters in this query.
