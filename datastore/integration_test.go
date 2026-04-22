@@ -491,7 +491,7 @@ func TestIntegration_GetWithReadTime(t *testing.T) {
 	}
 
 	rt1 := RT{time.Now()}
-	k := NameKey("RT", "ReadTime", nil)
+	k := NameKey("RT", "ReadTimeGet"+suffix, nil)
 
 	tx, err := client.NewTransaction(ctx)
 	if err != nil {
@@ -506,16 +506,17 @@ func TestIntegration_GetWithReadTime(t *testing.T) {
 		t.Fatalf("Transaction.Commit: %v\n", err)
 	}
 
+	time.Sleep(2 * time.Second)
 	testutil.Retry(t, 5, time.Duration(10*time.Second), func(r *testutil.R) {
 		got := RT{}
 		tm := ReadTime(time.Now())
-
-		client.WithReadOptions(tm)
 
 		newCtx, cancel := context.WithTimeout(context.Background(), time.Second*20)
 		newClient := newTestClient(newCtx, t)
 		defer cancel()
 		defer newClient.Close()
+
+		newClient.WithReadOptions(tm)
 
 		// If the Entity isn't available at the requested read time, we get
 		// a "datastore: no such entity" error. The ReadTime is otherwise not
@@ -541,7 +542,7 @@ func TestIntegration_RunWithReadTime(t *testing.T) {
 	}
 
 	rt1 := RT{time.Now()}
-	k := NameKey("RT", "ReadTime", nil)
+	k := NameKey("RT", "ReadTimeRun"+suffix, nil)
 
 	tx, err := client.NewTransaction(ctx)
 	if err != nil {
@@ -556,6 +557,7 @@ func TestIntegration_RunWithReadTime(t *testing.T) {
 		t.Fatalf("Transaction.Commit: %v\n", err)
 	}
 
+	time.Sleep(2 * time.Second)
 	testutil.Retry(t, 5, time.Duration(10*time.Second), func(r *testutil.R) {
 		got := RT{}
 		time.Sleep(readTimeConsistencyBuffer)
