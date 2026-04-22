@@ -2623,7 +2623,7 @@ libraries:
       - internal/generated/snippets/shopping/
     tag_format: '{id}/v{version}'
   - id: spanner
-    version: 1.90.0
+    version: 1.91.0
     last_generated_commit: ""
     apis:
       - path: google/spanner/adapter/v1
