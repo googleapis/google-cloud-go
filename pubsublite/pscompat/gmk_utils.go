@@ -45,6 +45,26 @@ type KafkaPublishConfig struct {
 	SaramaConfig *sarama.Config
 }
 
+// KafkaSubscribeConfig holds configuration for connecting to Google Managed
+// Kafka for receiving messages.
+type KafkaSubscribeConfig struct {
+	// BootstrapServers is the Kafka bootstrap server address.
+	// Use BuildGMKBootstrapServer() to construct this for GMK clusters.
+	BootstrapServers string
+
+	// TopicName is the Kafka topic name to subscribe to.
+	TopicName string
+
+	// SubscriptionName is used as the Kafka consumer group ID. Consumers with the
+	// same SubscriptionName share the load of consuming from the topic.
+	SubscriptionName string
+
+	// SaramaConfig is an optional pre-built Sarama configuration. If nil,
+	// NewGMKSaramaConfig() will be called to build one with GCP OAUTHBEARER
+	// authentication. Auto-commit is disabled for PSL-like semantics.
+	SaramaConfig *sarama.Config
+}
+
 // BuildGMKBootstrapServer constructs the bootstrap server URL for a Google
 // Managed Kafka cluster.
 func BuildGMKBootstrapServer(projectID, region, clusterID string) string {
@@ -64,7 +84,6 @@ func NewGMKSaramaConfig(ctx context.Context) (*sarama.Config, error) {
 	config.Producer.Return.Errors = true
 	config.Producer.RequiredAcks = sarama.WaitForAll
 	config.Producer.Idempotent = true
-	// Sarama requires MaxOpenRequests = 1 for idempotent producers.
 	config.Net.MaxOpenRequests = 1
 
 	// TLS

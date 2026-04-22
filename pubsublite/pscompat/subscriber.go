@@ -16,7 +16,10 @@ package pscompat
 import (
 	"context"
 	"errors"
+	"fmt"
 	"sync"
+
+	"github.com/IBM/sarama"
 
 	"cloud.google.com/go/pubsub"
 	"cloud.google.com/go/pubsublite/internal/wire"
@@ -286,6 +289,10 @@ func NewSubscriberClient(ctx context.Context, subscription string, opts ...optio
 // valid subscription path has the format:
 // "projects/PROJECT_ID/locations/LOCATION/subscriptions/SUBSCRIPTION_ID".
 func NewSubscriberClientWithSettings(ctx context.Context, subscription string, settings ReceiveSettings, opts ...option.ClientOption) (*SubscriberClient, error) {
+	if settings.Backend == ManagedKafka {
+		return newManagedKafkaSubscriberClient(ctx, settings)
+	}
+
 	subscriptionPath, err := wire.ParseSubscriptionPath(subscription)
 	if err != nil {
 		return nil, err
@@ -306,6 +313,57 @@ func NewSubscriberClientWithSettings(ctx context.Context, subscription string, s
 		wireSubFactory: factory,
 	}
 	return subClient, nil
+}
+
+// kafkaWireSubscriberFactory creates a Kafka-backed wire.Subscriber on demand.
+// A fresh ConsumerGroup is built per Receive invocation so each Receive gets
+// its own isolated consumer.
+type kafkaWireSubscriberFactory struct {
+	ctx    context.Context
+	config *KafkaSubscribeConfig
+}
+
+func (f *kafkaWireSubscriberFactory) New(_ context.Context, receiver wire.MessageReceiverFunc, _ wire.ReassignmentHandlerFunc) (wire.Subscriber, error) {
+	saramaCfg := f.config.SaramaConfig
+	if saramaCfg == nil {
+		var err error
+		saramaCfg, err = NewGMKSaramaConfig(f.ctx)
+		if err != nil {
+			return nil, fmt.Errorf("gmk: failed to create Sarama config: %w", err)
+		}
+	}
+	// Disable auto-commit so Ack() controls offset commits.
+	saramaCfg.Consumer.Offsets.AutoCommit.Enable = false
+
+	group, err := sarama.NewConsumerGroup([]string{f.config.BootstrapServers}, f.config.SubscriptionName, saramaCfg)
+	if err != nil {
+		return nil, fmt.Errorf("gmk: failed to create consumer group: %w", err)
+	}
+	return wire.NewKafkaSubscriber(group, f.config.TopicName, f.config.SubscriptionName, receiver), nil
+}
+
+// newManagedKafkaSubscriberClient creates a SubscriberClient backed by a Sarama
+// ConsumerGroup connected to Google Managed Kafka.
+func newManagedKafkaSubscriberClient(ctx context.Context, settings ReceiveSettings) (*SubscriberClient, error) {
+	kafkaCfg := settings.KafkaConfig
+	if kafkaCfg == nil {
+		return nil, fmt.Errorf("gmk: ReceiveSettings.KafkaConfig must be set when Backend is ManagedKafka")
+	}
+	if kafkaCfg.BootstrapServers == "" {
+		return nil, fmt.Errorf("gmk: KafkaSubscribeConfig.BootstrapServers must not be empty")
+	}
+	if kafkaCfg.TopicName == "" {
+		return nil, fmt.Errorf("gmk: KafkaSubscribeConfig.TopicName must not be empty")
+	}
+	if kafkaCfg.SubscriptionName == "" {
+		return nil, fmt.Errorf("gmk: KafkaSubscribeConfig.SubscriptionName must not be empty")
+	}
+
+	return &SubscriberClient{
+		clientCtx:      ctx,
+		settings:       settings,
+		wireSubFactory: &kafkaWireSubscriberFactory{ctx: ctx, config: kafkaCfg},
+	}, nil
 }
 
 // Receive calls f with the messages from the subscription. It blocks until ctx
