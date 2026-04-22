@@ -507,6 +507,32 @@ func TestSignedURL_EmulatorHost(t *testing.T) {
 	}
 }
 
+func TestSignedURL_SchemelessEndpoint(t *testing.T) {
+	ctx := context.Background()
+	ep := "storage.europe-west3.rep.googleapis.com"
+	client, err := NewClient(ctx, option.WithEndpoint(ep), option.WithoutAuthentication())
+	if err != nil {
+		t.Fatalf("NewClient: %v", err)
+	}
+	defer client.Close()
+
+	u, err := client.Bucket("my-bucket").SignedURL("my-object", &SignedURLOptions{
+		Method:         "GET",
+		Expires:        time.Now().Add(time.Hour),
+		GoogleAccessID: "xxx@xxx.com",
+		SignBytes: func(b []byte) ([]byte, error) {
+			return []byte("signed"), nil
+		},
+	})
+	if err != nil {
+		t.Fatalf("SignedURL: %v", err)
+	}
+
+	if !strings.HasPrefix(u, "https://"+ep) {
+		t.Errorf("SignedURL %q does not start with expected endpoint %q", u, "https://"+ep)
+	}
+}
+
 func TestSignedURL_MissingOptions(t *testing.T) {
 	now, _ := time.Parse(time.RFC3339, "2002-10-01T00:00:00-05:00")
 	expires, _ := time.Parse(time.RFC3339, "2002-10-15T00:00:00-05:00")
@@ -2372,6 +2398,14 @@ func TestWithEndpoint(t *testing.T) {
 			WantScheme:          "http",
 		},
 		{
+			desc:                "With schemeless regional endpoint",
+			CustomEndpoint:      "storage.europe-west3.rep.googleapis.com",
+			StorageEmulatorHost: "",
+			WantRawBasePath:     "https://storage.europe-west3.rep.googleapis.com/storage/v1/",
+			WantXMLHost:         "storage.europe-west3.rep.googleapis.com",
+			WantScheme:          "https",
+		},
+		{
 			desc:                "Endpoint overrides emulator host when both are specified - https",
 			CustomEndpoint:      "https://fake.gcs.com:8080/storage/v1",
 			StorageEmulatorHost: "http://emu.com",
@@ -2490,16 +2524,22 @@ func TestOperationsWithEndpoint(t *testing.T) {
 			wantScheme:          "https",
 			wantHost:            "end",
 		},
+		{
+			desc:                "schemeless endpoint specified",
+			CustomEndpoint:      "storage.europe-west3.rep.googleapis.com",
+			StorageEmulatorHost: "",
+			wantScheme:          "https",
+			wantHost:            "storage.europe-west3.rep.googleapis.com",
+		},
 	}
 
 	for _, tc := range testCases {
 		ctx := context.Background()
 		t.Run(tc.desc, func(t *testing.T) {
+			t.Setenv("STORAGE_EMULATOR_HOST", tc.StorageEmulatorHost)
 			timeout := time.After(time.Second)
 			done := make(chan bool, 1)
 			go func() {
-				t.Setenv("STORAGE_EMULATOR_HOST", tc.StorageEmulatorHost)
-
 				c, err := NewClient(ctx, option.WithHTTPClient(hClient), option.WithEndpoint(tc.CustomEndpoint))
 				if err != nil {
 					t.Errorf("error creating client: %v", err)
