@@ -516,7 +516,7 @@ func TestIntegration_GetWithReadTime(t *testing.T) {
 		defer cancel()
 		defer newClient.Close()
 
-		newClient.WithReadOptions(tm)
+		newClient = newClient.WithReadOptions(tm)
 
 		// If the Entity isn't available at the requested read time, we get
 		// a "datastore: no such entity" error. The ReadTime is otherwise not
