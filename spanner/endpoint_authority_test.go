@@ -20,7 +20,6 @@ import (
 	"context"
 	"fmt"
 	"testing"
-	"time"
 
 	"cloud.google.com/go/spanner/apiv1/spannerpb"
 	"cloud.google.com/go/spanner/internal/testutil"
@@ -106,14 +105,5 @@ func TestNormalizeAuthorityTarget(t *testing.T) {
 				t.Fatalf("normalizeAuthorityTarget(%q) = %q, want %q", tc.target, got, tc.want)
 			}
 		})
-	}
-}
-
-func TestRoutedEndpointKeepaliveDefaults(t *testing.T) {
-	if got, want := routedKeepaliveTime, 2*time.Second; got != want {
-		t.Fatalf("routedKeepaliveTime = %v, want %v", got, want)
-	}
-	if got, want := routedKeepaliveTimeout, 20*time.Second; got != want {
-		t.Fatalf("routedKeepaliveTimeout = %v, want %v", got, want)
 	}
 }

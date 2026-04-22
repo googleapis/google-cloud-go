@@ -20,80 +20,31 @@ import (
 	"context"
 	"sync"
 	"sync/atomic"
-
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/connectivity"
 )
 
 // grpcChannelEndpoint is a channelEndpoint backed by a real gRPC connection.
 type grpcChannelEndpoint struct {
 	address string
 	client  spannerClient
-	conn    *grpc.ClientConn
-	active  atomic.Int64
+	healthy atomic.Bool
 }
-
-var (
-	_ channelEndpoint      = (*grpcChannelEndpoint)(nil)
-	_ channelEndpointCache = (*endpointClientCache)(nil)
-)
 
 func (e *grpcChannelEndpoint) Address() string {
 	return e.address
 }
 
 func (e *grpcChannelEndpoint) IsHealthy() bool {
-	if e == nil || e.conn == nil {
-		return false
-	}
-	return e.conn.GetState() == connectivity.Ready
-}
-
-func (e *grpcChannelEndpoint) IsTransientFailure() bool {
-	if e == nil || e.conn == nil {
-		return false
-	}
-	return e.conn.GetState() == connectivity.TransientFailure
-}
-
-func (e *grpcChannelEndpoint) GetConn() *grpc.ClientConn {
-	if e == nil {
-		return nil
-	}
-	return e.conn
-}
-
-func (e *grpcChannelEndpoint) IncrementActiveRequests() {
-	if e == nil {
-		return
-	}
-	e.active.Add(1)
-}
-
-func (e *grpcChannelEndpoint) DecrementActiveRequests() {
-	if e == nil {
-		return
-	}
-	e.active.Add(-1)
-}
-
-func (e *grpcChannelEndpoint) ActiveRequestCount() int {
-	if e == nil {
-		return 0
-	}
-	return int(e.active.Load())
+	return e.healthy.Load()
 }
 
 // endpointClientCache implements channelEndpointCache with actual gRPC
 // connections to specific server addresses.
 type endpointClientCache struct {
-	mu              sync.RWMutex
-	endpoints       map[string]*grpcChannelEndpoint
-	inflight        map[string]*endpointClientCreation
-	evicted         map[string]struct{}
-	defaultEndpoint channelEndpoint
-	clientFactory   func(ctx context.Context, address string) (spannerClient, error)
-	closed          bool
+	mu            sync.RWMutex
+	endpoints     map[string]*grpcChannelEndpoint
+	inflight      map[string]*endpointClientCreation
+	clientFactory func(ctx context.Context, address string) (spannerClient, error)
+	closed        bool
 }
 
 type endpointClientCreation struct {
@@ -102,16 +53,10 @@ type endpointClientCreation struct {
 }
 
 func newEndpointClientCache(clientFactory func(ctx context.Context, address string) (spannerClient, error)) *endpointClientCache {
-	return newEndpointClientCacheWithDefaultAddress(clientFactory, "")
-}
-
-func newEndpointClientCacheWithDefaultAddress(clientFactory func(ctx context.Context, address string) (spannerClient, error), defaultAddress string) *endpointClientCache {
 	return &endpointClientCache{
-		endpoints:       make(map[string]*grpcChannelEndpoint),
-		inflight:        make(map[string]*endpointClientCreation),
-		evicted:         make(map[string]struct{}),
-		defaultEndpoint: &passthroughChannelEndpoint{address: defaultAddress},
-		clientFactory:   clientFactory,
+		endpoints:     make(map[string]*grpcChannelEndpoint),
+		inflight:      make(map[string]*endpointClientCreation),
+		clientFactory: clientFactory,
 	}
 }
 
@@ -121,9 +66,6 @@ func newEndpointClientCacheWithDefaultAddress(clientFactory func(ctx context.Con
 func (c *endpointClientCache) Get(ctx context.Context, address string) channelEndpoint {
 	if ctx == nil {
 		ctx = context.Background()
-	}
-	if address == c.defaultEndpoint.Address() {
-		return c.defaultEndpoint
 	}
 	// Fast path: read lock.
 	c.mu.RLock()
@@ -159,18 +101,16 @@ func (c *endpointClientCache) Get(ctx context.Context, address string) channelEn
 
 	c.mu.Lock()
 	delete(c.inflight, address)
-	_, wasEvicted := c.evicted[address]
-	delete(c.evicted, address)
-	if err == nil && !c.closed && !wasEvicted {
+	if err == nil && !c.closed {
 		ep := &grpcChannelEndpoint{
 			address: address,
 			client:  client,
-			conn:    client.Connection(),
 		}
+		ep.healthy.Store(true)
 		c.endpoints[address] = ep
 		creation.ep = ep
 	}
-	shouldCloseClient := (c.closed || wasEvicted) && client != nil
+	shouldCloseClient := c.closed && client != nil
 	close(creation.done)
 	c.mu.Unlock()
 
@@ -178,44 +118,6 @@ func (c *endpointClientCache) Get(ctx context.Context, address string) channelEn
 		_ = client.Close()
 	}
 	return creation.ep
-}
-
-// GetIfPresent returns a cached endpoint without creating a new gRPC connection.
-func (c *endpointClientCache) GetIfPresent(address string) channelEndpoint {
-	if address == c.defaultEndpoint.Address() {
-		return c.defaultEndpoint
-	}
-	c.mu.RLock()
-	defer c.mu.RUnlock()
-	ep, ok := c.endpoints[address]
-	if !ok {
-		return nil
-	}
-	return ep
-}
-
-// Evict removes a cached endpoint and closes its underlying client.
-func (c *endpointClientCache) Evict(address string) {
-	if address == c.defaultEndpoint.Address() {
-		return
-	}
-
-	c.mu.Lock()
-	ep := c.endpoints[address]
-	if ep != nil {
-		delete(c.endpoints, address)
-	} else if _, ok := c.inflight[address]; ok {
-		c.evicted[address] = struct{}{}
-	}
-	c.mu.Unlock()
-
-	if ep != nil && ep.client != nil {
-		_ = ep.client.Close()
-	}
-}
-
-func (c *endpointClientCache) DefaultChannel() channelEndpoint {
-	return c.defaultEndpoint
 }
 
 // ClientFor resolves a channelEndpoint to the underlying spannerClient.

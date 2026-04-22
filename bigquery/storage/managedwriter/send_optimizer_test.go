@@ -41,12 +41,12 @@ func TestSendOptimizer(t *testing.T) {
 	}
 	exampleStreamID := "foo"
 	exampleTraceID := "trace_id"
-	exampleReqFull := proto.CloneOf(exampleReq)
+	exampleReqFull := proto.Clone(exampleReq).(*storagepb.AppendRowsRequest)
 	exampleReqFull.WriteStream = exampleStreamID
 	exampleReqFull.TraceId = buildTraceID(&streamSettings{TraceID: exampleTraceID})
 	exampleDP := &descriptorpb.DescriptorProto{Name: proto.String("schema")}
 	exampleReqFull.GetProtoRows().WriterSchema = &storagepb.ProtoSchema{
-		ProtoDescriptor: proto.CloneOf(exampleDP),
+		ProtoDescriptor: proto.Clone(exampleDP).(*descriptorpb.DescriptorProto),
 	}
 
 	ctx := context.Background()
@@ -64,9 +64,9 @@ func TestSendOptimizer(t *testing.T) {
 			reqs: func() []*pendingWrite {
 				tmpl := newVersionedTemplate().revise(reviseProtoSchema(exampleDP))
 				return []*pendingWrite{
-					newPendingWrite(ctx, nil, proto.CloneOf(exampleReq), tmpl, exampleStreamID, exampleTraceID),
-					newPendingWrite(ctx, nil, proto.CloneOf(exampleReq), tmpl, exampleStreamID, exampleTraceID),
-					newPendingWrite(ctx, nil, proto.CloneOf(exampleReq), tmpl, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), tmpl, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), tmpl, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), tmpl, exampleStreamID, exampleTraceID),
 				}
 			}(),
 			sendResults: []error{
@@ -75,9 +75,9 @@ func TestSendOptimizer(t *testing.T) {
 				io.EOF,
 			},
 			wantReqs: []*storagepb.AppendRowsRequest{
-				proto.CloneOf(exampleReqFull),
-				proto.CloneOf(exampleReqFull),
-				proto.CloneOf(exampleReqFull),
+				proto.Clone(exampleReqFull).(*storagepb.AppendRowsRequest),
+				proto.Clone(exampleReqFull).(*storagepb.AppendRowsRequest),
+				proto.Clone(exampleReqFull).(*storagepb.AppendRowsRequest),
 			},
 		},
 		{
@@ -86,9 +86,9 @@ func TestSendOptimizer(t *testing.T) {
 			reqs: func() []*pendingWrite {
 				tmpl := newVersionedTemplate().revise(reviseProtoSchema(exampleDP))
 				return []*pendingWrite{
-					newPendingWrite(ctx, nil, proto.CloneOf(exampleReq), tmpl, exampleStreamID, exampleTraceID),
-					newPendingWrite(ctx, nil, proto.CloneOf(exampleReq), tmpl, exampleStreamID, exampleTraceID),
-					newPendingWrite(ctx, nil, proto.CloneOf(exampleReq), tmpl, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), tmpl, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), tmpl, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), tmpl, exampleStreamID, exampleTraceID),
 				}
 			}(),
 			sendResults: []error{
@@ -99,8 +99,8 @@ func TestSendOptimizer(t *testing.T) {
 			wantReqs: func() []*storagepb.AppendRowsRequest {
 				want := make([]*storagepb.AppendRowsRequest, 3)
 				// first has no redactions.
-				want[0] = proto.CloneOf(exampleReqFull)
-				req := proto.CloneOf(want[0])
+				want[0] = proto.Clone(exampleReqFull).(*storagepb.AppendRowsRequest)
+				req := proto.Clone(want[0]).(*storagepb.AppendRowsRequest)
 				req.GetProtoRows().WriterSchema = nil
 				req.TraceId = ""
 				req.WriteStream = ""
@@ -116,9 +116,9 @@ func TestSendOptimizer(t *testing.T) {
 			reqs: func() []*pendingWrite {
 				tmpl := newVersionedTemplate().revise(reviseProtoSchema(exampleDP))
 				return []*pendingWrite{
-					newPendingWrite(ctx, nil, proto.CloneOf(exampleReq), tmpl, exampleStreamID, exampleTraceID),
-					newPendingWrite(ctx, nil, proto.CloneOf(exampleReq), tmpl, exampleStreamID, exampleTraceID),
-					newPendingWrite(ctx, nil, proto.CloneOf(exampleReq), tmpl, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), tmpl, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), tmpl, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), tmpl, exampleStreamID, exampleTraceID),
 				}
 			}(),
 			sendResults: []error{
@@ -128,8 +128,8 @@ func TestSendOptimizer(t *testing.T) {
 			},
 			wantReqs: func() []*storagepb.AppendRowsRequest {
 				want := make([]*storagepb.AppendRowsRequest, 3)
-				want[0] = proto.CloneOf(exampleReqFull)
-				req := proto.CloneOf(want[0])
+				want[0] = proto.Clone(exampleReqFull).(*storagepb.AppendRowsRequest)
+				req := proto.Clone(want[0]).(*storagepb.AppendRowsRequest)
 				req.GetProtoRows().WriterSchema = nil
 				req.TraceId = ""
 				req.WriteStream = ""
@@ -146,9 +146,9 @@ func TestSendOptimizer(t *testing.T) {
 			reqs: func() []*pendingWrite {
 				tmpl := newVersionedTemplate().revise(reviseProtoSchema(exampleDP))
 				return []*pendingWrite{
-					newPendingWrite(ctx, nil, proto.CloneOf(exampleReq), tmpl, exampleStreamID, exampleTraceID),
-					newPendingWrite(ctx, nil, proto.CloneOf(exampleReq), tmpl, exampleStreamID, exampleTraceID),
-					newPendingWrite(ctx, nil, proto.CloneOf(exampleReq), tmpl, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), tmpl, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), tmpl, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), tmpl, exampleStreamID, exampleTraceID),
 				}
 			}(),
 			sendResults: []error{
@@ -157,9 +157,9 @@ func TestSendOptimizer(t *testing.T) {
 				io.EOF,
 			},
 			wantReqs: []*storagepb.AppendRowsRequest{
-				proto.CloneOf(exampleReqFull),
-				proto.CloneOf(exampleReqFull),
-				proto.CloneOf(exampleReqFull),
+				proto.Clone(exampleReqFull).(*storagepb.AppendRowsRequest),
+				proto.Clone(exampleReqFull).(*storagepb.AppendRowsRequest),
+				proto.Clone(exampleReqFull).(*storagepb.AppendRowsRequest),
 			},
 		},
 		{
@@ -168,9 +168,9 @@ func TestSendOptimizer(t *testing.T) {
 			reqs: func() []*pendingWrite {
 				tmpl := newVersionedTemplate().revise(reviseProtoSchema(exampleDP))
 				return []*pendingWrite{
-					newPendingWrite(ctx, nil, proto.CloneOf(exampleReq), tmpl, exampleStreamID, exampleTraceID),
-					newPendingWrite(ctx, nil, proto.CloneOf(exampleReq), tmpl, exampleStreamID, exampleTraceID),
-					newPendingWrite(ctx, nil, proto.CloneOf(exampleReq), tmpl, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), tmpl, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), tmpl, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), tmpl, exampleStreamID, exampleTraceID),
 				}
 			}(),
 			sendResults: []error{
@@ -180,8 +180,8 @@ func TestSendOptimizer(t *testing.T) {
 			},
 			wantReqs: func() []*storagepb.AppendRowsRequest {
 				want := make([]*storagepb.AppendRowsRequest, 3)
-				want[0] = proto.CloneOf(exampleReqFull)
-				req := proto.CloneOf(want[0])
+				want[0] = proto.Clone(exampleReqFull).(*storagepb.AppendRowsRequest)
+				req := proto.Clone(want[0]).(*storagepb.AppendRowsRequest)
 				req.GetProtoRows().WriterSchema = nil
 				req.TraceId = ""
 				want[1] = req
@@ -196,10 +196,10 @@ func TestSendOptimizer(t *testing.T) {
 				tmplA := newVersionedTemplate().revise(reviseProtoSchema(exampleDP))
 				tmplB := newVersionedTemplate().revise(reviseProtoSchema(protodesc.ToDescriptorProto((&testdata.AllSupportedTypes{}).ProtoReflect().Descriptor())))
 
-				reqA := proto.CloneOf(exampleReq)
+				reqA := proto.Clone(exampleReq).(*storagepb.AppendRowsRequest)
 				reqA.WriteStream = "alpha"
 
-				reqB := proto.CloneOf(exampleReq)
+				reqB := proto.Clone(exampleReq).(*storagepb.AppendRowsRequest)
 				reqB.WriteStream = "beta"
 
 				writes := make([]*pendingWrite, 10)
@@ -231,24 +231,24 @@ func TestSendOptimizer(t *testing.T) {
 			wantReqs: func() []*storagepb.AppendRowsRequest {
 				want := make([]*storagepb.AppendRowsRequest, 10)
 
-				wantReqAFull := proto.CloneOf(exampleReqFull)
+				wantReqAFull := proto.Clone(exampleReqFull).(*storagepb.AppendRowsRequest)
 				wantReqAFull.WriteStream = "alpha"
 
-				wantReqANoTrace := proto.CloneOf(wantReqAFull)
+				wantReqANoTrace := proto.Clone(wantReqAFull).(*storagepb.AppendRowsRequest)
 				wantReqANoTrace.TraceId = ""
 
-				wantReqAOpt := proto.CloneOf(wantReqAFull)
+				wantReqAOpt := proto.Clone(wantReqAFull).(*storagepb.AppendRowsRequest)
 				wantReqAOpt.GetProtoRows().WriterSchema = nil
 				wantReqAOpt.TraceId = ""
 
-				wantReqBFull := proto.CloneOf(exampleReqFull)
+				wantReqBFull := proto.Clone(exampleReqFull).(*storagepb.AppendRowsRequest)
 				wantReqBFull.WriteStream = "beta"
 				wantReqBFull.GetProtoRows().GetWriterSchema().ProtoDescriptor = protodesc.ToDescriptorProto((&testdata.AllSupportedTypes{}).ProtoReflect().Descriptor())
 
-				wantReqBNoTrace := proto.CloneOf(wantReqBFull)
+				wantReqBNoTrace := proto.Clone(wantReqBFull).(*storagepb.AppendRowsRequest)
 				wantReqBNoTrace.TraceId = ""
 
-				wantReqBOpt := proto.CloneOf(wantReqBFull)
+				wantReqBOpt := proto.Clone(wantReqBFull).(*storagepb.AppendRowsRequest)
 				wantReqBOpt.GetProtoRows().WriterSchema = nil
 				wantReqBOpt.TraceId = ""
 
@@ -273,7 +273,7 @@ func TestSendOptimizer(t *testing.T) {
 				tmplOld := newVersionedTemplate().revise(reviseProtoSchema(exampleDP))
 				tmplNew := tmplOld.revise(reviseProtoSchema(&descriptorpb.DescriptorProto{Name: proto.String("new")}))
 
-				example := proto.CloneOf(exampleReq)
+				example := proto.Clone(exampleReq).(*storagepb.AppendRowsRequest)
 
 				writes := make([]*pendingWrite, 4)
 				writes[0] = newPendingWrite(ctx, nil, example, tmplOld, exampleStreamID, exampleTraceID)
@@ -292,13 +292,13 @@ func TestSendOptimizer(t *testing.T) {
 			wantReqs: func() []*storagepb.AppendRowsRequest {
 				want := make([]*storagepb.AppendRowsRequest, 4)
 
-				wantBaseReqFull := proto.CloneOf(exampleReqFull)
+				wantBaseReqFull := proto.Clone(exampleReqFull).(*storagepb.AppendRowsRequest)
 
-				wantBaseReqOpt := proto.CloneOf(wantBaseReqFull)
+				wantBaseReqOpt := proto.Clone(wantBaseReqFull).(*storagepb.AppendRowsRequest)
 				wantBaseReqOpt.TraceId = ""
 				wantBaseReqOpt.GetProtoRows().WriterSchema = nil
 
-				wantEvolved := proto.CloneOf(wantBaseReqOpt)
+				wantEvolved := proto.Clone(wantBaseReqOpt).(*storagepb.AppendRowsRequest)
 				wantEvolved.GetProtoRows().WriterSchema = &storagepb.ProtoSchema{
 					ProtoDescriptor: &descriptorpb.DescriptorProto{Name: proto.String("new")},
 				}
@@ -315,7 +315,7 @@ func TestSendOptimizer(t *testing.T) {
 	for _, tc := range testCases {
 		testARC := &testAppendRowsClient{}
 		testARC.sendF = func(req *storagepb.AppendRowsRequest) error {
-			testARC.requests = append(testARC.requests, proto.CloneOf(req))
+			testARC.requests = append(testARC.requests, proto.Clone(req).(*storagepb.AppendRowsRequest))
 			respErr := tc.sendResults[0]
 			tc.sendResults = tc.sendResults[1:]
 			return respErr

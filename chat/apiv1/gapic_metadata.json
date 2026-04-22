@@ -80,11 +80,6 @@
                 "FindDirectMessage"
               ]
             },
-            "FindGroupChats": {
-              "methods": [
-                "FindGroupChats"
-              ]
-            },
             "GetAttachment": {
               "methods": [
                 "GetAttachment"
@@ -298,11 +293,6 @@
             "FindDirectMessage": {
               "methods": [
                 "FindDirectMessage"
-              ]
-            },
-            "FindGroupChats": {
-              "methods": [
-                "FindGroupChats"
               ]
             },
             "GetAttachment": {

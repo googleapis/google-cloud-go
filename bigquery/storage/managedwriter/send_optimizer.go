@@ -217,7 +217,7 @@ func (vt *versionedTemplate) revise(changes ...templateRevisionF) *versionedTemp
 	}
 	out := &versionedTemplate{
 		versionTime: time.Now(),
-		tmpl:        proto.CloneOf(before.tmpl),
+		tmpl:        proto.Clone(before.tmpl).(*storagepb.AppendRowsRequest),
 	}
 	for _, r := range changes {
 		r(out.tmpl)
@@ -246,7 +246,7 @@ func reviseProtoSchema(newSchema *descriptorpb.DescriptorProto) templateRevision
 			m.Rows = &storagepb.AppendRowsRequest_ProtoRows{
 				ProtoRows: &storagepb.AppendRowsRequest_ProtoData{
 					WriterSchema: &storagepb.ProtoSchema{
-						ProtoDescriptor: proto.CloneOf(newSchema),
+						ProtoDescriptor: proto.Clone(newSchema).(*descriptorpb.DescriptorProto),
 					},
 				},
 			}

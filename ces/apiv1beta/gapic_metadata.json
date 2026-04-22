@@ -654,11 +654,6 @@
                 "DeleteScheduledEvaluationRun"
               ]
             },
-            "ExportEvaluations": {
-              "methods": [
-                "ExportEvaluations"
-              ]
-            },
             "GenerateEvaluation": {
               "methods": [
                 "GenerateEvaluation"
@@ -847,11 +842,6 @@
             "DeleteScheduledEvaluationRun": {
               "methods": [
                 "DeleteScheduledEvaluationRun"
-              ]
-            },
-            "ExportEvaluations": {
-              "methods": [
-                "ExportEvaluations"
               ]
             },
             "GenerateEvaluation": {

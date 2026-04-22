@@ -587,26 +587,6 @@ func (vq VectorQuery) Documents(ctx context.Context) *DocumentIterator {
 	return vq.q.Documents(ctx)
 }
 
-func (vq VectorQuery) query() *Query {
-	return &vq.q
-}
-
-// Serialize creates a RunQueryRequest wire-format byte slice from a VectorQuery object.
-// This can be used in combination with Deserialize to marshal VectorQuery objects.
-// This could be useful, for instance, if executing a query formed in one
-// process in another.
-func (vq VectorQuery) Serialize() ([]byte, error) {
-	return vq.q.Serialize()
-}
-
-// Deserialize takes a slice of bytes holding the wire-format message of RunQueryRequest,
-// the underlying proto message used by Queries. It then populates and returns a
-// VectorQuery object that can be used to execute that VectorQuery.
-func (vq VectorQuery) Deserialize(bytes []byte) (VectorQuery, error) {
-	q, err := vq.q.Deserialize(bytes)
-	return VectorQuery{q: q}, err
-}
-
 // FindNearestPath is like [Query.FindNearest] but it accepts a [FieldPath].
 func (q Query) FindNearestPath(vectorFieldPath FieldPath, queryVector any, limit int, measure DistanceMeasure, options *FindNearestOptions) VectorQuery {
 	vq := VectorQuery{q: q}
@@ -1374,10 +1354,6 @@ func (it *DocumentIterator) ExplainMetrics() (*ExplainMetrics, error) {
 // Next returns the next result. Its second return value is iterator.Done if there
 // are no more results. Once Next returns Done, all subsequent calls will return
 // Done.
-//
-// In addition, if Next returns an error other than iterator.Done, all
-// subsequent calls will return the same error. To continue iteration, a new
-// DocumentIterator must be created.
 func (it *DocumentIterator) Next() (*DocumentSnapshot, error) {
 	if it.err != nil {
 		return nil, it.err
@@ -1564,10 +1540,6 @@ type QuerySnapshotIterator struct {
 //
 // Next is not expected to return iterator.Done unless it is called after Stop.
 // Rarely, networking issues may also cause iterator.Done to be returned.
-//
-// In addition, if Next returns an error other than iterator.Done, all
-// subsequent calls will return the same error. To continue iteration, a new
-// QuerySnapshotIterator must be created.
 func (it *QuerySnapshotIterator) Next() (*QuerySnapshot, error) {
 	if it.err != nil {
 		return nil, it.err
@@ -2229,6 +2201,9 @@ func toPipelineCursorFilterWithValues(q *Query, orders []order, values []interfa
 // All of the operations of the query will be converted to pipeline stages.
 // For example, `query.Where("f", "==", 1).Limit(10).OrderBy("f", Asc).Pipeline()` is equivalent to
 // `client.Pipeline().Collection("C").Where(Equal("f", 1)).Limit(10).Sort(Ascending("f"))`.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func (q Query) Pipeline() *Pipeline {
 	return q.toPipeline()
 }
@@ -2236,6 +2211,9 @@ func (q Query) Pipeline() *Pipeline {
 // Pipeline creates a new [Pipeline] from the aggregation query.
 // All of the operations of the underlying query will be converted to pipeline stages,
 // and an aggregate stage will be added for the aggregations.
+//
+// Experimental: Firestore Pipelines is currently in preview and is subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
 func (aq *AggregationQuery) Pipeline() *Pipeline {
 	p := aq.query.toPipeline()
 	if p.err != nil {

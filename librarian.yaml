@@ -12,22 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 language: go
-version: v0.10.2-0.20260421180302-dc35d110f9bb
+version: v0.10.1-0.20260408193841-095ea7e727aa
 repo: googleapis/google-cloud-go
 sources:
   googleapis:
-    commit: 939ba3bf8408af83f0f73ae35c76c4b11a8c8c8d
-    sha256: 70829cda81b9c69ae4f5f2a42f347c263b62cd69eb6a87b70555aab6ae5b6d74
-tools:
-  go:
-    - name: github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic
-      version: v0.58.0
-    - name: golang.org/x/tools/cmd/goimports
-      version: v0.44.0
-    - name: google.golang.org/grpc/cmd/protoc-gen-go-grpc
-      version: v1.3.0
-    - name: google.golang.org/protobuf/cmd/protoc-gen-go
-      version: v1.36.11
+    commit: cd090841ab172574e740c214c99df00aef9c0dee
+    sha256: 08e4b7744dc23b6e3320a3f1d05db9f40853aaf1089d06bfb8d79044b7a66f21
 release: {}
 default:
   tag_format: '{name}/v{version}'
@@ -1136,7 +1126,7 @@ libraries:
             - F_open_telemetry_attributes
           path: google/cloud/financialservices/v1
   - name: firestore
-    version: 1.22.0
+    version: 1.21.0
     apis:
       - path: google/firestore/v1
       - path: google/firestore/admin/v1
@@ -1464,7 +1454,6 @@ libraries:
       - path: google/maps/routeoptimization/v1
       - path: google/maps/solar/v1
       - path: google/maps/fleetengine/delivery/v1
-    title_override: Google Maps Platform
     go:
       go_apis:
         - enabled_generator_features:
@@ -1835,7 +1824,7 @@ libraries:
     go:
       nested_module: v2
   - name: pubsub/v2
-    version: 2.6.0
+    version: 2.5.1
     apis:
       - path: google/pubsub/v1
     keep:
@@ -2262,7 +2251,7 @@ libraries:
             - F_open_telemetry_attributes
           path: google/shopping/merchant/productstudio/v1alpha
   - name: spanner
-    version: 1.90.0
+    version: 1.89.0
     apis:
       - path: google/spanner/v1
       - path: google/spanner/adapter/v1

@@ -1303,7 +1303,7 @@ libraries:
       - internal/generated/snippets/financialservices/
     tag_format: '{id}/v{version}'
   - id: firestore
-    version: 1.22.0
+    version: 1.21.0
     last_generated_commit: ""
     apis:
       - path: google/firestore/admin/v1
@@ -2157,7 +2157,7 @@ libraries:
       - internal/generated/snippets/pubsub/
     tag_format: '{id}/v{version}'
   - id: pubsub/v2
-    version: 2.6.0
+    version: 2.5.1
     last_generated_commit: ""
     apis:
       - path: google/pubsub/v1
@@ -2623,7 +2623,7 @@ libraries:
       - internal/generated/snippets/shopping/
     tag_format: '{id}/v{version}'
   - id: spanner
-    version: 1.90.0
+    version: 1.89.0
     last_generated_commit: ""
     apis:
       - path: google/spanner/adapter/v1

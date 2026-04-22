@@ -654,36 +654,24 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	sc.mu.Unlock()
 
 	var locationRouter *locationRouter
-	var sharedLocationAwareState *locationAwareState
-	if isExperimentalLocationAPIEnabledForConfig(config) {
+	if isExperimentalLocationAPIEnabled() {
 		sc.baseClientOpts = endpointClientOpts
-		defaultEndpointAddress := ""
 		if conn := pool.Conn(); conn != nil {
 			sc.endpointAuthority = normalizeAuthorityTarget(conn.Target())
-			defaultEndpointAddress = sc.endpointAuthority
 		}
-		// Some transport wrappers, such as GCPMultiEndpoint and GCPFallback,
-		// intentionally do not expose a concrete default *grpc.ClientConn and
-		// return nil from Conn(). In that case location-aware routing remains
-		// enabled; we only skip deriving the default endpoint metadata used for
-		// authority preservation and default-endpoint diagnostics.
-		epCache := newEndpointClientCacheWithDefaultAddress(sc.createEndpointClient, defaultEndpointAddress)
+		epCache := newEndpointClientCache(sc.createEndpointClient)
 		locationRouter = newLocationRouter(epCache)
-		locationRouter.lifecycleManager = newEndpointLifecycleManager(epCache)
-		locationRouter.finder.setLifecycleManager(locationRouter.lifecycleManager)
-		sharedLocationAwareState = newLocationAwareState(
-			nil,
-			locationRouter,
-			epCache,
-			newEndpointOverloadCooldownTracker(),
-		)
 	}
 
 	// Create a session manager.
-	sp, err := newSessionManager(sc, config.SessionPoolConfig, sharedLocationAwareState)
+	sp, err := newSessionManager(sc, config.SessionPoolConfig)
 	if err != nil {
 		sc.close()
 		return nil, err
+	}
+
+	if locationRouter != nil {
+		sp.locationRouter = locationRouter
 	}
 
 	if enableLogClientOptions() {

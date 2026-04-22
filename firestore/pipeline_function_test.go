@@ -188,13 +188,14 @@ func TestLogicalFunctions(t *testing.T) {
 		},
 		{
 			desc: "IfNull",
-			expr: IfNull(FieldOf("a"), 1),
+			expr: IfNull(FieldOf("a"), 1, 2),
 			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
 				FunctionValue: &pb.Function{
 					Name: "if_null",
 					Args: []*pb.Value{
 						{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "a"}},
 						{ValueType: &pb.Value_IntegerValue{IntegerValue: 1}},
+						{ValueType: &pb.Value_IntegerValue{IntegerValue: 2}},
 					},
 				},
 			}},
@@ -205,33 +206,6 @@ func TestLogicalFunctions(t *testing.T) {
 			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
 				FunctionValue: &pb.Function{
 					Name: "if_null",
-					Args: []*pb.Value{
-						{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "a"}},
-						{ValueType: &pb.Value_IntegerValue{IntegerValue: 1}},
-					},
-				},
-			}},
-		},
-		{
-			desc: "Coalesce",
-			expr: Coalesce(FieldOf("a"), 1, 2),
-			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
-				FunctionValue: &pb.Function{
-					Name: "coalesce",
-					Args: []*pb.Value{
-						{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "a"}},
-						{ValueType: &pb.Value_IntegerValue{IntegerValue: 1}},
-						{ValueType: &pb.Value_IntegerValue{IntegerValue: 2}},
-					},
-				},
-			}},
-		},
-		{
-			desc: "baseExpression Coalesce",
-			expr: FieldOf("a").Coalesce(1),
-			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
-				FunctionValue: &pb.Function{
-					Name: "coalesce",
 					Args: []*pb.Value{
 						{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "a"}},
 						{ValueType: &pb.Value_IntegerValue{IntegerValue: 1}},
@@ -735,30 +709,6 @@ func TestKeyFunctions(t *testing.T) {
 				},
 			}},
 		},
-		{
-			desc: "Parent",
-			expr: GetParent("field"),
-			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
-				FunctionValue: &pb.Function{
-					Name: "parent",
-					Args: []*pb.Value{
-						{ValueType: &pb.Value_StringValue{StringValue: "field"}},
-					},
-				},
-			}},
-		},
-		{
-			desc: "baseExpression GetParent",
-			expr: FieldOf("field").GetParent(),
-			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
-				FunctionValue: &pb.Function{
-					Name: "parent",
-					Args: []*pb.Value{
-						{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "field"}},
-					},
-				},
-			}},
-		},
 	}
 
 	for _, tc := range testcases {
@@ -1019,8 +969,8 @@ func TestArrayFunctions(t *testing.T) {
 			}},
 		},
 		{
-			desc: "ArraySliceToEnd",
-			expr: ArraySliceToEnd("field", 1),
+			desc: "ArraySlice",
+			expr: ArraySlice("field", 1),
 			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
 				FunctionValue: &pb.Function{
 					Name: "array_slice",
@@ -1033,7 +983,7 @@ func TestArrayFunctions(t *testing.T) {
 		},
 		{
 			desc: "ArraySliceWithLength",
-			expr: ArraySlice("field", 1, 2),
+			expr: ArraySliceLength("field", 1, 2),
 			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
 				FunctionValue: &pb.Function{
 					Name: "array_slice",
@@ -1045,140 +995,51 @@ func TestArrayFunctions(t *testing.T) {
 				},
 			}},
 		},
-		{
-			desc: "ArrayFilter",
-			expr: ArrayFilter("field", "item", FieldOf("item").GreaterThan(5)),
-			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
-				FunctionValue: &pb.Function{
-					Name: "array_filter",
-					Args: []*pb.Value{
-						{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "field"}},
-						{ValueType: &pb.Value_StringValue{StringValue: "item"}},
-						{ValueType: &pb.Value_FunctionValue{
-							FunctionValue: &pb.Function{
-								Name: "greater_than",
-								Args: []*pb.Value{
-									{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "item"}},
-									{ValueType: &pb.Value_IntegerValue{IntegerValue: 5}},
-								},
-							},
-						}},
-					},
-				},
-			}},
-		},
-		{
-			desc: "baseExpression ArrayFilter",
-			expr: FieldOf("field").ArrayFilter("item", FieldOf("item").GreaterThan(5)),
-			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
-				FunctionValue: &pb.Function{
-					Name: "array_filter",
-					Args: []*pb.Value{
-						{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "field"}},
-						{ValueType: &pb.Value_StringValue{StringValue: "item"}},
-						{ValueType: &pb.Value_FunctionValue{
-							FunctionValue: &pb.Function{
-								Name: "greater_than",
-								Args: []*pb.Value{
-									{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "item"}},
-									{ValueType: &pb.Value_IntegerValue{IntegerValue: 5}},
-								},
-							},
-						}},
-					},
-				},
-			}},
-		},
-		{
-			desc: "ArrayTransform",
-			expr: ArrayTransform("field", "item", FieldOf("item").Add(1)),
-			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
-				FunctionValue: &pb.Function{
-					Name: "array_transform",
-					Args: []*pb.Value{
-						{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "field"}},
-						{ValueType: &pb.Value_StringValue{StringValue: "item"}},
-						{ValueType: &pb.Value_FunctionValue{
-							FunctionValue: &pb.Function{
-								Name: "add",
-								Args: []*pb.Value{
-									{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "item"}},
-									{ValueType: &pb.Value_IntegerValue{IntegerValue: 1}},
-								},
-							},
-						}},
-					},
-				},
-			}},
-		},
-		{
-			desc: "baseExpression ArrayTransform",
-			expr: FieldOf("field").ArrayTransform("item", FieldOf("item").Multiply(2)),
-			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
-				FunctionValue: &pb.Function{
-					Name: "array_transform",
-					Args: []*pb.Value{
-						{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "field"}},
-						{ValueType: &pb.Value_StringValue{StringValue: "item"}},
-						{ValueType: &pb.Value_FunctionValue{
-							FunctionValue: &pb.Function{
-								Name: "multiply",
-								Args: []*pb.Value{
-									{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "item"}},
-									{ValueType: &pb.Value_IntegerValue{IntegerValue: 2}},
-								},
-							},
-						}},
-					},
-				},
-			}},
-		},
-		{
-			desc: "ArrayTransformWithIndex",
-			expr: ArrayTransformWithIndex("field", "item", "idx", FieldOf("item").Add(FieldOf("idx"))),
-			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
-				FunctionValue: &pb.Function{
-					Name: "array_transform",
-					Args: []*pb.Value{
-						{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "field"}},
-						{ValueType: &pb.Value_StringValue{StringValue: "item"}},
-						{ValueType: &pb.Value_StringValue{StringValue: "idx"}},
-						{ValueType: &pb.Value_FunctionValue{
-							FunctionValue: &pb.Function{
-								Name: "add",
-								Args: []*pb.Value{
-									{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "item"}},
-									{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "idx"}},
-								},
-							},
-						}},
-					},
-				},
-			}},
-		},
-		{
-			desc: "baseExpression ArrayTransformWithIndex",
-			expr: FieldOf("field").ArrayTransformWithIndex("item", "idx", FieldOf("item").Add(FieldOf("idx"))),
-			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
-				FunctionValue: &pb.Function{
-					Name: "array_transform",
-					Args: []*pb.Value{
-						{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "field"}},
-						{ValueType: &pb.Value_StringValue{StringValue: "item"}},
-						{ValueType: &pb.Value_StringValue{StringValue: "idx"}},
-						{ValueType: &pb.Value_FunctionValue{
-							FunctionValue: &pb.Function{
-								Name: "add",
-								Args: []*pb.Value{
-									{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "item"}},
-									{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "idx"}},
-								},
-							},
-						}},
-					},
-				},
-			}},
-		},
+		// TODO: Uncomment this after fixing the proto representation of this function.
+		// {
+		// 	desc: "ArrayFilter",
+		// 	expr: ArrayFilter("field", "item", FieldOf("item").GreaterThan(5)),
+		// 	want: &pb.Value{ValueType: &pb.Value_FunctionValue{
+		// 		FunctionValue: &pb.Function{
+		// 			Name: "array_filter",
+		// 			Args: []*pb.Value{
+		// 				{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "field"}},
+		// 				{ValueType: &pb.Value_StringValue{StringValue: "item"}},
+		// 				{ValueType: &pb.Value_FunctionValue{
+		// 					FunctionValue: &pb.Function{
+		// 						Name: "greater_than",
+		// 						Args: []*pb.Value{
+		// 							{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "item"}},
+		// 							{ValueType: &pb.Value_IntegerValue{IntegerValue: 5}},
+		// 						},
+		// 					},
+		// 				}},
+		// 			},
+		// 		},
+		// 	}},
+		// },
+		// {
+		// 	desc: "baseExpression ArrayFilter",
+		// 	expr: FieldOf("field").ArrayFilter("item", FieldOf("item").GreaterThan(5)),
+		// 	want: &pb.Value{ValueType: &pb.Value_FunctionValue{
+		// 		FunctionValue: &pb.Function{
+		// 			Name: "array_filter",
+		// 			Args: []*pb.Value{
+		// 				{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "field"}},
+		// 				{ValueType: &pb.Value_StringValue{StringValue: "item"}},
+		// 				{ValueType: &pb.Value_FunctionValue{
+		// 					FunctionValue: &pb.Function{
+		// 						Name: "greater_than",
+		// 						Args: []*pb.Value{
+		// 							{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "item"}},
+		// 							{ValueType: &pb.Value_IntegerValue{IntegerValue: 5}},
+		// 						},
+		// 					},
+		// 				}},
+		// 			},
+		// 		},
+		// 	}},
+		// },
 		{
 			desc: "ArrayIndexOf",
 			expr: ArrayIndexOf("field", "search"),

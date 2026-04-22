@@ -2760,11 +2760,6 @@
         "grpc": {
           "libraryClient": "ReasoningEngineExecutionClient",
           "rpcs": {
-            "AsyncQueryReasoningEngine": {
-              "methods": [
-                "AsyncQueryReasoningEngine"
-              ]
-            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"

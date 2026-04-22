@@ -352,11 +352,6 @@
               "methods": [
                 "UpdateCollection"
               ]
-            },
-            "UpdateIndex": {
-              "methods": [
-                "UpdateIndex"
-              ]
             }
           }
         },
@@ -446,11 +441,6 @@
             "UpdateCollection": {
               "methods": [
                 "UpdateCollection"
-              ]
-            },
-            "UpdateIndex": {
-              "methods": [
-                "UpdateIndex"
               ]
             }
           }

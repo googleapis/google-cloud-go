@@ -363,8 +363,6 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 	} else {
 		setTransactionID = nil
 	}
-	retryResourceExhausted := shouldRetryResourceExhaustedInStreaming(client)
-	allowRetryResourceExhaustedWithoutDelay := shouldAllowRetryResourceExhaustedWithoutDelayInStreaming(client)
 	return streamWithTransactionCallbacks(
 		contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader),
 		sh.session.logger,
@@ -412,8 +410,6 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		t.setTimestamp,
 		t.release,
 		asGRPCSpannerClient(client),
-		retryResourceExhausted,
-		allowRetryResourceExhaustedWithoutDelay,
 	)
 }
 
@@ -724,8 +720,6 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 		setTransactionID = nil
 	}
 	client := sh.getClient()
-	retryResourceExhausted := shouldRetryResourceExhaustedInStreaming(client)
-	allowRetryResourceExhaustedWithoutDelay := shouldAllowRetryResourceExhaustedWithoutDelayInStreaming(client)
 	return streamWithTransactionCallbacks(
 		contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader),
 		sh.session.logger,
@@ -766,9 +760,7 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 		t.updatePrecommitToken,
 		t.setTimestamp,
 		t.release,
-		asGRPCSpannerClient(client),
-		retryResourceExhausted,
-		allowRetryResourceExhaustedWithoutDelay)
+		asGRPCSpannerClient(client))
 }
 
 func (t *txReadOnly) prepareExecuteSQL(ctx context.Context, stmt Statement, options QueryOptions) (*sppb.ExecuteSqlRequest, *sessionHandle, error) {
@@ -1004,14 +996,13 @@ func (t *ReadOnlyTransaction) acquire(ctx context.Context) (*sessionHandle, *spp
 
 func (t *ReadOnlyTransaction) acquireSingleUse(ctx context.Context) (*sessionHandle, *sppb.TransactionSelector, error) {
 	t.mu.Lock()
+	defer t.mu.Unlock()
 	switch t.state {
 	case txClosed:
-		t.mu.Unlock()
 		// A closed single-use transaction can never be reused.
 		return nil, nil, errTxClosed()
 	case txNew:
 		t.state = txClosed
-		t.mu.Unlock()
 		ts := &sppb.TransactionSelector{
 			Selector: &sppb.TransactionSelector_SingleUse{
 				SingleUse: &sppb.TransactionOptions{
@@ -1028,13 +1019,10 @@ func (t *ReadOnlyTransaction) acquireSingleUse(ctx context.Context) (*sessionHan
 
 		// Install session handle into t, which can be used for readonly
 		// operations later.
-		t.mu.Lock()
 		t.sh = sh
-		t.mu.Unlock()
 		return sh, ts, nil
 	}
 	us := t.state
-	t.mu.Unlock()
 
 	// SingleUse transaction should only be in either txNew state or txClosed
 	// state.

@@ -306,61 +306,6 @@ func (StoragePoolType) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_netapp_v1_common_proto_rawDescGZIP(), []int{4}
 }
 
-// Defines the scale-type of a UNIFIED Storage Pool.
-type ScaleType int32
-
-const (
-	// Unspecified scale type.
-	ScaleType_SCALE_TYPE_UNSPECIFIED ScaleType = 0
-	// Represents standard capacity and performance scale-type.
-	// Suitable for general purpose workloads.
-	ScaleType_SCALE_TYPE_DEFAULT ScaleType = 1
-	// Represents higher capacity and performance scale-type.
-	// Suitable for more demanding workloads.
-	ScaleType_SCALE_TYPE_SCALEOUT ScaleType = 2
-)
-
-// Enum value maps for ScaleType.
-var (
-	ScaleType_name = map[int32]string{
-		0: "SCALE_TYPE_UNSPECIFIED",
-		1: "SCALE_TYPE_DEFAULT",
-		2: "SCALE_TYPE_SCALEOUT",
-	}
-	ScaleType_value = map[string]int32{
-		"SCALE_TYPE_UNSPECIFIED": 0,
-		"SCALE_TYPE_DEFAULT":     1,
-		"SCALE_TYPE_SCALEOUT":    2,
-	}
-)
-
-func (x ScaleType) Enum() *ScaleType {
-	p := new(ScaleType)
-	*p = x
-	return p
-}
-
-func (x ScaleType) String() string {
-	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
-}
-
-func (ScaleType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_netapp_v1_common_proto_enumTypes[5].Descriptor()
-}
-
-func (ScaleType) Type() protoreflect.EnumType {
-	return &file_google_cloud_netapp_v1_common_proto_enumTypes[5]
-}
-
-func (x ScaleType) Number() protoreflect.EnumNumber {
-	return protoreflect.EnumNumber(x)
-}
-
-// Deprecated: Use ScaleType.Descriptor instead.
-func (ScaleType) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_netapp_v1_common_proto_rawDescGZIP(), []int{5}
-}
-
 // Schedule for Hybrid Replication.
 // New enum values may be added in future to support different frequency of
 // replication.
@@ -404,11 +349,11 @@ func (x HybridReplicationSchedule) String() string {
 }
 
 func (HybridReplicationSchedule) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_netapp_v1_common_proto_enumTypes[6].Descriptor()
+	return file_google_cloud_netapp_v1_common_proto_enumTypes[5].Descriptor()
 }
 
 func (HybridReplicationSchedule) Type() protoreflect.EnumType {
-	return &file_google_cloud_netapp_v1_common_proto_enumTypes[6]
+	return &file_google_cloud_netapp_v1_common_proto_enumTypes[5]
 }
 
 func (x HybridReplicationSchedule) Number() protoreflect.EnumNumber {
@@ -417,7 +362,7 @@ func (x HybridReplicationSchedule) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use HybridReplicationSchedule.Descriptor instead.
 func (HybridReplicationSchedule) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_netapp_v1_common_proto_rawDescGZIP(), []int{6}
+	return file_google_cloud_netapp_v1_common_proto_rawDescGZIP(), []int{5}
 }
 
 // QoS (Quality of Service) Types of the storage pool
@@ -457,11 +402,11 @@ func (x QosType) String() string {
 }
 
 func (QosType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_netapp_v1_common_proto_enumTypes[7].Descriptor()
+	return file_google_cloud_netapp_v1_common_proto_enumTypes[6].Descriptor()
 }
 
 func (QosType) Type() protoreflect.EnumType {
-	return &file_google_cloud_netapp_v1_common_proto_enumTypes[7]
+	return &file_google_cloud_netapp_v1_common_proto_enumTypes[6]
 }
 
 func (x QosType) Number() protoreflect.EnumNumber {
@@ -470,7 +415,7 @@ func (x QosType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use QosType.Descriptor instead.
 func (QosType) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_netapp_v1_common_proto_rawDescGZIP(), []int{7}
+	return file_google_cloud_netapp_v1_common_proto_rawDescGZIP(), []int{6}
 }
 
 // OS types for the host group
@@ -514,11 +459,11 @@ func (x OsType) String() string {
 }
 
 func (OsType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_netapp_v1_common_proto_enumTypes[8].Descriptor()
+	return file_google_cloud_netapp_v1_common_proto_enumTypes[7].Descriptor()
 }
 
 func (OsType) Type() protoreflect.EnumType {
-	return &file_google_cloud_netapp_v1_common_proto_enumTypes[8]
+	return &file_google_cloud_netapp_v1_common_proto_enumTypes[7]
 }
 
 func (x OsType) Number() protoreflect.EnumNumber {
@@ -527,7 +472,7 @@ func (x OsType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use OsType.Descriptor instead.
 func (OsType) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_netapp_v1_common_proto_rawDescGZIP(), []int{8}
+	return file_google_cloud_netapp_v1_common_proto_rawDescGZIP(), []int{7}
 }
 
 // Metadata for a given
@@ -682,11 +627,7 @@ const file_google_cloud_netapp_v1_common_proto_rawDesc = "" +
 	"\x0fStoragePoolType\x12!\n" +
 	"\x1dSTORAGE_POOL_TYPE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04FILE\x10\x01\x12\v\n" +
-	"\aUNIFIED\x10\x02*X\n" +
-	"\tScaleType\x12\x1a\n" +
-	"\x16SCALE_TYPE_UNSPECIFIED\x10\x00\x12\x16\n" +
-	"\x12SCALE_TYPE_DEFAULT\x10\x01\x12\x17\n" +
-	"\x13SCALE_TYPE_SCALEOUT\x10\x02*u\n" +
+	"\aUNIFIED\x10\x02*u\n" +
 	"\x19HybridReplicationSchedule\x12+\n" +
 	"'HYBRID_REPLICATION_SCHEDULE_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10EVERY_10_MINUTES\x10\x01\x12\n" +
@@ -717,7 +658,7 @@ func file_google_cloud_netapp_v1_common_proto_rawDescGZIP() []byte {
 	return file_google_cloud_netapp_v1_common_proto_rawDescData
 }
 
-var file_google_cloud_netapp_v1_common_proto_enumTypes = make([]protoimpl.EnumInfo, 9)
+var file_google_cloud_netapp_v1_common_proto_enumTypes = make([]protoimpl.EnumInfo, 8)
 var file_google_cloud_netapp_v1_common_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_google_cloud_netapp_v1_common_proto_goTypes = []any{
 	(ServiceLevel)(0),              // 0: google.cloud.netapp.v1.ServiceLevel
@@ -725,12 +666,11 @@ var file_google_cloud_netapp_v1_common_proto_goTypes = []any{
 	(EncryptionType)(0),            // 2: google.cloud.netapp.v1.EncryptionType
 	(DirectoryServiceType)(0),      // 3: google.cloud.netapp.v1.DirectoryServiceType
 	(StoragePoolType)(0),           // 4: google.cloud.netapp.v1.StoragePoolType
-	(ScaleType)(0),                 // 5: google.cloud.netapp.v1.ScaleType
-	(HybridReplicationSchedule)(0), // 6: google.cloud.netapp.v1.HybridReplicationSchedule
-	(QosType)(0),                   // 7: google.cloud.netapp.v1.QosType
-	(OsType)(0),                    // 8: google.cloud.netapp.v1.OsType
-	(*LocationMetadata)(nil),       // 9: google.cloud.netapp.v1.LocationMetadata
-	(*UserCommands)(nil),           // 10: google.cloud.netapp.v1.UserCommands
+	(HybridReplicationSchedule)(0), // 5: google.cloud.netapp.v1.HybridReplicationSchedule
+	(QosType)(0),                   // 6: google.cloud.netapp.v1.QosType
+	(OsType)(0),                    // 7: google.cloud.netapp.v1.OsType
+	(*LocationMetadata)(nil),       // 8: google.cloud.netapp.v1.LocationMetadata
+	(*UserCommands)(nil),           // 9: google.cloud.netapp.v1.UserCommands
 }
 var file_google_cloud_netapp_v1_common_proto_depIdxs = []int32{
 	0, // 0: google.cloud.netapp.v1.LocationMetadata.supported_service_levels:type_name -> google.cloud.netapp.v1.ServiceLevel
@@ -752,7 +692,7 @@ func file_google_cloud_netapp_v1_common_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_netapp_v1_common_proto_rawDesc), len(file_google_cloud_netapp_v1_common_proto_rawDesc)),
-			NumEnums:      9,
+			NumEnums:      8,
 			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
