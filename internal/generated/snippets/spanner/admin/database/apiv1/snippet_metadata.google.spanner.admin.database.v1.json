@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/spanner/admin/database/apiv1",
-    "version": "1.90.0"
+    "version": "1.91.0"
   },
   "snippets": [
     {

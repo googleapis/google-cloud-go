@@ -2262,7 +2262,7 @@ libraries:
             - F_open_telemetry_attributes
           path: google/shopping/merchant/productstudio/v1alpha
   - name: spanner
-    version: 1.90.0
+    version: 1.91.0
     apis:
       - path: google/spanner/v1
       - path: google/spanner/adapter/v1
