@@ -1439,6 +1439,7 @@ func (iac *InstanceAdminClient) CreateInstance(ctx context.Context, conf *Instan
 		InstanceType: conf.InstanceType,
 		Labels:       conf.Labels,
 		Tags:         conf.Tags,
+		Edition:      conf.Edition,
 		Clusters: []ClusterConfig{
 			{
 				InstanceID:        conf.InstanceId,
@@ -1507,7 +1508,7 @@ func (iac *InstanceAdminClient) updateInstance(ctx context.Context, conf *Instan
 		ireq.Instance.Type = btapb.Instance_Type(conf.InstanceType)
 		mask.Paths = append(mask.Paths, "type")
 	}
-	if btapb.Instance_Edition(conf.Edition) != btapb.Instance_EDITION_UNSPECIFIED {
+	if conf.Edition != EditionUnspecified {
 		ireq.Instance.Edition = btapb.Instance_Edition(conf.Edition)
 		mask.Paths = append(mask.Paths, "edition")
 	}
