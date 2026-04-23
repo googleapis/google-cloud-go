@@ -180,8 +180,9 @@ func (c *Client) NewTransaction(ctx context.Context, opts ...TransactionOption) 
 }
 
 func (t *Transaction) parseTransactionOptions() (*pb.TransactionOptions, string) {
+	const defaultSpanName = "cloud.google.com/go/datastore.Transaction.BeginTransaction"
 	if t.settings == nil {
-		return nil, ""
+		return nil, defaultSpanName
 	}
 
 	if t.settings.readOnly {
@@ -202,7 +203,7 @@ func (t *Transaction) parseTransactionOptions() (*pb.TransactionOptions, string)
 			}},
 		}, "cloud.google.com/go/datastore.Transaction.ReadWriteTransaction"
 	}
-	return nil, ""
+	return nil, defaultSpanName
 }
 
 // beginTransaction makes BeginTransaction rpc
@@ -214,10 +215,10 @@ func (t *Transaction) beginTransaction() (txnID []byte, err error) {
 	}
 
 	txOptionsPb, spanName := t.parseTransactionOptions()
-	ctx := t.ctx
+	ctx := trace.StartSpan(t.ctx, spanName)
+	defer func() { trace.EndSpan(ctx, err) }()
+
 	if txOptionsPb != nil {
-		ctx = trace.StartSpan(t.ctx, spanName)
-		defer func() { trace.EndSpan(ctx, err) }()
 		req.TransactionOptions = txOptionsPb
 	}
 
