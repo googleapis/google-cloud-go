@@ -275,6 +275,17 @@ func TestNewCredentials_ImpersonatedAndExternal(t *testing.T) {
 			if tok.Value != wantTok {
 				t.Errorf("got %q, want %q", tok.Value, wantTok)
 			}
+			// Assertions for JSON and UniverseDomain propagation
+			if len(creds.JSON()) == 0 {
+				t.Error("expected non-empty JSON from credentials")
+			}
+			ud, err := creds.UniverseDomain(context.Background())
+			if err != nil {
+				t.Fatal(err)
+			}
+			if ud != internal.DefaultUniverseDomain {
+				t.Errorf("got %q, want %q", ud, internal.DefaultUniverseDomain)
+			}
 		})
 	}
 }

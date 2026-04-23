@@ -215,7 +215,11 @@ func baseCredsForImpersonation(t string, b []byte, opts *Options, creds *auth.Cr
 		if err != nil {
 			return nil, err
 		}
-		baseCreds = sourceCreds
+		baseCreds = auth.NewCredentials(&auth.CredentialsOptions{
+			TokenProvider:          sourceCreds,
+			JSON:                   b,
+			UniverseDomainProvider: auth.CredentialsPropertyFunc(creds.UniverseDomain),
+		})
 	}
 	return baseCreds, nil
 }
