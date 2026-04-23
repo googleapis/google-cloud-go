@@ -1486,4 +1486,73 @@ func TestIssue5225(t *testing.T) {
 			t.Errorf("got x.T = %v, want %v", x.T, want)
 		}
 	})
+
+	// Case 6: *[]byte, but Property has string
+	t.Run("String To *[]byte", func(t *testing.T) {
+		type PtrSliceType struct {
+			ID *[]byte `datastore:"id"`
+		}
+		x := &PtrSliceType{}
+		ps := []Property{
+			{Name: "id", Value: "some-id"},
+		}
+		err := LoadStruct(x, ps)
+		if err != nil {
+			t.Errorf("LoadStruct failed: %v", err)
+		}
+		if x.ID == nil || string(*x.ID) != "some-id" {
+			got := "nil"
+			if x.ID != nil {
+				got = string(*x.ID)
+			}
+			t.Errorf("got x.ID = %q, want %q", got, "some-id")
+		}
+	})
+
+	// Case 7: *[]byte, but Property has []byte
+	t.Run("[]byte To *[]byte", func(t *testing.T) {
+		type PtrSliceType struct {
+			ID *[]byte `datastore:"id"`
+		}
+		x := &PtrSliceType{}
+		ps := []Property{
+			{Name: "id", Value: []byte("some-id")},
+		}
+		err := LoadStruct(x, ps)
+		if err != nil {
+			t.Errorf("LoadStruct failed: %v", err)
+		}
+		if x.ID == nil || string(*x.ID) != "some-id" {
+			got := "nil"
+			if x.ID != nil {
+				got = string(*x.ID)
+			}
+			t.Errorf("got x.ID = %q, want %q", got, "some-id")
+		}
+	})
+
+	// Case 8: Saving *[]byte
+	t.Run("Save *[]byte", func(t *testing.T) {
+		type PtrSliceType struct {
+			ID *[]byte `datastore:"id"`
+		}
+		data := []byte("some-id")
+		x := &PtrSliceType{ID: &data}
+		props, err := SaveStruct(x)
+		if err != nil {
+			t.Errorf("SaveStruct failed: %v", err)
+		}
+		found := false
+		for _, p := range props {
+			if p.Name == "id" {
+				found = true
+				if string(p.Value.([]byte)) != "some-id" {
+					t.Errorf("got p.Value = %q, want %q", string(p.Value.([]byte)), "some-id")
+				}
+			}
+		}
+		if !found {
+			t.Errorf("property 'id' not found in %v", props)
+		}
+	})
 }

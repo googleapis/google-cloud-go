@@ -520,7 +520,7 @@ func isEmptyValue(v reflect.Value) bool {
 // isValidPointerType reports whether a struct field can be a pointer to type t
 // for the purposes of saving and loading.
 func isValidPointerType(t reflect.Type) bool {
-	if t == typeOfTime || t == typeOfGeoPoint {
+	if t == typeOfTime || t == typeOfGeoPoint || t == typeOfByteSlice {
 		return true
 	}
 	switch t.Kind() {

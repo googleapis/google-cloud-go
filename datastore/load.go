@@ -379,13 +379,22 @@ func setVal(v reflect.Value, p Property) (s string) {
 			}
 			v.Elem().SetBool(x)
 		case string:
-			if v.Elem().Kind() != reflect.String {
-				return typeMismatchReason(p, v)
+			if v.Elem().Kind() == reflect.String {
+				v.Elem().SetString(x)
+				return ""
 			}
-			v.Elem().SetString(x)
+			if v.Elem().Kind() == reflect.Slice && v.Elem().Type().Elem().Kind() == reflect.Uint8 {
+				v.Elem().SetBytes([]byte(x))
+				return ""
+			}
+			return typeMismatchReason(p, v)
 		case []byte:
 			if v.Elem().Kind() == reflect.String {
 				v.Elem().SetString(string(x))
+				return ""
+			}
+			if v.Elem().Kind() == reflect.Slice && v.Elem().Type().Elem().Kind() == reflect.Uint8 {
+				v.Elem().SetBytes(x)
 				return ""
 			}
 			return typeMismatchReason(p, v)
