@@ -1125,13 +1125,16 @@ func TestIntegration_BeginLaterPerf(t *testing.T) {
 	numKeys := 10
 
 	res := make(chan RunTransactionResult)
+
+	// Create a single client to be reused across all repetitions and their cleanups.
+	ctx := context.Background()
+	client := newTestClient(ctx, t)
+	t.Cleanup(func() {
+		client.Close()
+	})
+
 	for i, runOption := range runOptions {
 		sumRunTime := float64(0)
-
-		// Create client
-		ctx := context.Background()
-		client := newTestClient(ctx, t)
-		defer client.Close()
 
 		for rep := 0; rep < numRepetitions; rep++ {
 			// Populate data for each repetition to avoid contention
@@ -1139,7 +1142,7 @@ func TestIntegration_BeginLaterPerf(t *testing.T) {
 			repKeys, _, cleanupData := populateData(t, client, numKeys, now, fmt.Sprintf("BeginLaterPerf_%v_%d_%d", runOption, now, rep))
 			currentCleanup := cleanupData // Capture loop variable
 			t.Cleanup(func() {
-				currentCleanup(newTestClient(ctx, t))
+				currentCleanup(client)
 			})
 			go runTransaction(ctx, client, repKeys, res, runOption, t)
 		}
