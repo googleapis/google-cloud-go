@@ -76,7 +76,7 @@ libraries:
       - internal/generated/snippets/ai/
     tag_format: '{id}/v{version}'
   - id: aiplatform
-    version: 1.124.0
+    version: 1.125.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/aiplatform/v1
@@ -116,7 +116,7 @@ libraries:
       - internal/generated/snippets/alloydb/
     tag_format: '{id}/v{version}'
   - id: analytics
-    version: 0.33.0
+    version: 0.34.0
     last_generated_commit: ""
     apis:
       - path: google/analytics/admin/v1alpha
@@ -158,7 +158,7 @@ libraries:
       - internal/generated/snippets/apigeeconnect/
     tag_format: '{id}/v{version}'
   - id: apigeeregistry
-    version: 0.13.0
+    version: 0.14.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/apigeeregistry/v1
@@ -244,7 +244,7 @@ libraries:
       - internal/generated/snippets/apphub/
     tag_format: '{id}/v{version}'
   - id: appoptimize
-    version: 0.2.0
+    version: 0.3.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/appoptimize/v1beta
@@ -618,7 +618,7 @@ libraries:
       - internal/generated/snippets/certificatemanager/
     tag_format: '{id}/v{version}'
   - id: ces
-    version: 0.7.0
+    version: 0.8.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/ces/v1beta
@@ -648,7 +648,7 @@ libraries:
       - internal/generated/snippets/channel/
     tag_format: '{id}/v{version}'
   - id: chat
-    version: 0.21.0
+    version: 0.22.0
     last_generated_commit: ""
     apis:
       - path: google/chat/v1
@@ -662,7 +662,7 @@ libraries:
       - internal/generated/snippets/chat/
     tag_format: '{id}/v{version}'
   - id: chronicle
-    version: 0.5.0
+    version: 0.6.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/chronicle/v1
@@ -798,7 +798,7 @@ libraries:
       - internal/generated/snippets/commerce/
     tag_format: '{id}/v{version}'
   - id: compute
-    version: 1.60.0
+    version: 1.61.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/compute/v1
@@ -840,7 +840,7 @@ libraries:
       - internal/generated/snippets/confidentialcomputing/
     tag_format: '{id}/v{version}'
   - id: config
-    version: 1.9.0
+    version: 1.10.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/config/v1
@@ -1004,7 +1004,7 @@ libraries:
       - internal/generated/snippets/datamanager/
     tag_format: '{id}/v{version}'
   - id: dataplex
-    version: 1.32.0
+    version: 1.33.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/dataplex/v1
@@ -1018,7 +1018,7 @@ libraries:
       - internal/generated/snippets/dataplex/
     tag_format: '{id}/v{version}'
   - id: dataproc
-    version: 2.19.0
+    version: 2.20.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/dataproc/v1
@@ -1121,7 +1121,7 @@ libraries:
       - internal/generated/snippets/devicestreaming/
     tag_format: '{id}/v{version}'
   - id: dialogflow
-    version: 1.80.0
+    version: 1.81.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/dialogflow/cx/v3
@@ -1141,7 +1141,7 @@ libraries:
       - internal/generated/snippets/dialogflow/
     tag_format: '{id}/v{version}'
   - id: discoveryengine
-    version: 1.27.0
+    version: 1.28.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/discoveryengine/v1
@@ -1462,7 +1462,7 @@ libraries:
       - internal/generated/snippets/hypercomputecluster/
     tag_format: '{id}/v{version}'
   - id: iam
-    version: 1.9.0
+    version: 1.10.0
     last_generated_commit: ""
     apis:
       - path: google/iam/credentials/v1
@@ -1498,7 +1498,7 @@ libraries:
       - internal/generated/snippets/iap/
     tag_format: '{id}/v{version}'
   - id: identitytoolkit
-    version: 0.5.0
+    version: 0.6.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/identitytoolkit/v2
@@ -1540,7 +1540,7 @@ libraries:
       - internal/generated/snippets/iot/
     tag_format: '{id}/v{version}'
   - id: kms
-    version: 1.29.0
+    version: 1.30.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/kms/v1
@@ -1704,7 +1704,7 @@ libraries:
       - internal/generated/snippets/managedkafka/
     tag_format: '{id}/v{version}'
   - id: maps
-    version: 1.33.0
+    version: 1.34.0
     last_generated_commit: ""
     apis:
       - path: google/maps/addressvalidation/v1
@@ -1812,7 +1812,7 @@ libraries:
       - internal/generated/snippets/migrationcenter/
     tag_format: '{id}/v{version}'
   - id: modelarmor
-    version: 0.9.0
+    version: 0.10.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/modelarmor/v1
@@ -1846,7 +1846,7 @@ libraries:
       - internal/generated/snippets/monitoring/
     tag_format: '{id}/v{version}'
   - id: netapp
-    version: 1.15.0
+    version: 1.16.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/netapp/v1
@@ -1878,7 +1878,7 @@ libraries:
       - internal/generated/snippets/networkconnectivity/
     tag_format: '{id}/v{version}'
   - id: networkmanagement
-    version: 1.26.0
+    version: 1.27.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/networkmanagement/v1
@@ -1906,7 +1906,7 @@ libraries:
       - internal/generated/snippets/networksecurity/
     tag_format: '{id}/v{version}'
   - id: networkservices
-    version: 0.9.0
+    version: 0.10.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/networkservices/v1
@@ -2078,7 +2078,7 @@ libraries:
       - internal/generated/snippets/phishingprotection/
     tag_format: '{id}/v{version}'
   - id: policysimulator
-    version: 0.7.0
+    version: 0.8.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/policysimulator/v1
@@ -2343,7 +2343,7 @@ libraries:
       - internal/generated/snippets/run/
     tag_format: '{id}/v{version}'
   - id: saasplatform
-    version: 0.5.0
+    version: 0.6.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/saasplatform/saasservicemgmt/v1beta1
@@ -2557,7 +2557,7 @@ libraries:
       - internal/generated/snippets/shell/
     tag_format: '{id}/v{version}'
   - id: shopping
-    version: 1.9.0
+    version: 1.10.0
     last_generated_commit: ""
     apis:
       - path: google/shopping/css/v1
@@ -2849,7 +2849,7 @@ libraries:
       - internal/generated/snippets/translate/
     tag_format: '{id}/v{version}'
   - id: vectorsearch
-    version: 0.9.0
+    version: 0.10.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/vectorsearch/v1beta
@@ -2865,7 +2865,7 @@ libraries:
       - internal/generated/snippets/vectorsearch/
     tag_format: '{id}/v{version}'
   - id: vertexai
-    version: 0.19.0
+    version: 0.20.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -2926,7 +2926,7 @@ libraries:
       - internal/generated/snippets/vision/
     tag_format: '{id}/v{version}'
   - id: visionai
-    version: 0.8.0
+    version: 0.9.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/visionai/v1
