@@ -179,8 +179,14 @@ func (c *Client) NewTransaction(ctx context.Context, opts ...TransactionOption) 
 	return c.newTransaction(ctx, newTransactionSettings(opts))
 }
 
+// parseTransactionOptions returns the protobuf TransactionOptions and the span name
+// to be used for tracing the transaction.
 func (t *Transaction) parseTransactionOptions() (*pb.TransactionOptions, string) {
-	const defaultSpanName = "cloud.google.com/go/datastore.Transaction.BeginTransaction"
+	const (
+		defaultSpanName   = "cloud.google.com/go/datastore.Transaction.BeginTransaction"
+		readOnlySpanName  = "cloud.google.com/go/datastore.Transaction.ReadOnlyTransaction"
+		readWriteSpanName = "cloud.google.com/go/datastore.Transaction.ReadWriteTransaction"
+	)
 	if t.settings == nil {
 		return nil, defaultSpanName
 	}
@@ -193,7 +199,7 @@ func (t *Transaction) parseTransactionOptions() (*pb.TransactionOptions, string)
 
 		return &pb.TransactionOptions{
 			Mode: &pb.TransactionOptions_ReadOnly_{ReadOnly: ro},
-		}, "cloud.google.com/go/datastore.Transaction.ReadOnlyTransaction"
+		}, readOnlySpanName
 	}
 
 	if t.settings.prevID != nil {
@@ -201,7 +207,7 @@ func (t *Transaction) parseTransactionOptions() (*pb.TransactionOptions, string)
 			Mode: &pb.TransactionOptions_ReadWrite_{ReadWrite: &pb.TransactionOptions_ReadWrite{
 				PreviousTransaction: t.settings.prevID,
 			}},
-		}, "cloud.google.com/go/datastore.Transaction.ReadWriteTransaction"
+		}, readWriteSpanName
 	}
 	return nil, defaultSpanName
 }
