@@ -22,10 +22,10 @@ import (
 
 func TestEnableBigtableConnectionPool(t *testing.T) {
 	tests := []struct {
-		desc          string
-		emulatorHost  string
-		connPoolEnv   string
-		want          bool
+		desc         string
+		emulatorHost string
+		connPoolEnv  string
+		want         bool
 	}{
 		{
 			desc:         "emulator host set, should return false",
