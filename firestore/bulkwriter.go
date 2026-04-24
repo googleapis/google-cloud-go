@@ -360,10 +360,10 @@ func (bw *BulkWriter) send(i interface{}) {
 				// Do we need separate retry bundler?
 				_, isRetryable := batchWriteRetryCodes[codes.Code(s.Code)]
 				if j.attempts < maxRetryAttempts && isRetryable {
-err := bw.bundler.Add(j, 0)
-if err != nil {
-	j.setError(fmt.Errorf("firestore: bulk write retry failed %w original error %v", err, status.Error(codes.Code(s.Code), s.Message)))
-}
+					err := bw.bundler.Add(j, 0)
+					if err != nil {
+						j.setError(fmt.Errorf("firestore: bulk write retry failed %w original error %v", err, status.Error(codes.Code(s.Code), s.Message)))
+					}
 				} else {
 					j.setError(status.Error(codes.Code(s.Code), s.Message))
 				}
