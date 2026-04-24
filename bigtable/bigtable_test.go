@@ -1698,7 +1698,8 @@ func TestExecuteQuery(t *testing.T) {
 	var gotRecvMsgCount int
 	var mockRecvMsgResps []recvMsgResp
 	var gotSendMsgReqs []*btpb.ExecuteQueryRequest
-	var testPreparedQueryTTL = 10 * time.Second
+	const defaultPreparedQueryTTL = 10 * time.Second
+	var testPreparedQueryTTL = defaultPreparedQueryTTL
 
 	// start emulated server
 	testEnv, gotErr := NewEmulatedEnv(IntegrationTestConfig{})
@@ -2028,7 +2029,7 @@ func TestExecuteQuery(t *testing.T) {
 		if tc.testTTL != 0 {
 			testPreparedQueryTTL = tc.testTTL
 		} else {
-			testPreparedQueryTTL = 10 * time.Second
+			testPreparedQueryTTL = defaultPreparedQueryTTL
 		}
 
 		// Reset vars for the test
