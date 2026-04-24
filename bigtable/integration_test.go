@@ -38,6 +38,7 @@ import (
 
 	cryptorand "crypto/rand"
 
+	"cloud.google.com/go/bigtable/bttest"
 	btapb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/iam"
@@ -485,6 +486,23 @@ func TestIntegration_NoopMetricsProvider(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ReadRows: %v", err)
 	}
+}
+
+func TestIntegration_NewClientWithEmulatorHost(t *testing.T) {
+	srv, err := bttest.NewServer("localhost:0")
+	if err != nil {
+		t.Fatalf("failed to start bttest server: %v", err)
+	}
+	defer srv.Close()
+
+	t.Setenv("BIGTABLE_EMULATOR_HOST", srv.Addr)
+
+	ctx := context.Background()
+	client, err := NewClient(ctx, "test-project", "test-instance")
+	if err != nil {
+		t.Fatalf("NewClient failed with emulator host: %v", err)
+	}
+	defer client.Close()
 }
 
 func TestIntegration_ExportBuiltInMetrics(t *testing.T) {
