@@ -33,6 +33,12 @@ func TestEnableBigtableConnectionPool(t *testing.T) {
 			want:         false,
 		},
 		{
+			desc:         "emulator host set, conn pool env true, should return false",
+			emulatorHost: "localhost:8086",
+			connPoolEnv:  "true",
+			want:         false,
+		},
+		{
 			desc:         "emulator host not set, conn pool env not set, should return true",
 			emulatorHost: "",
 			connPoolEnv:  "",
