@@ -43,6 +43,7 @@ type mockServer struct {
 	modAckErrs    []error
 	wg            sync.WaitGroup
 	sub           *pb.Subscription
+	stopped       bool
 }
 
 type pullResponse struct {
@@ -99,11 +100,24 @@ func (s *mockServer) wait() {
 	s.wg.Wait()
 }
 
+func (s *mockServer) stop() {
+	s.mu.Lock()
+	s.stopped = true
+	s.mu.Unlock()
+}
+
 func (s *mockServer) StreamingPull(stream pb.Subscriber_StreamingPullServer) error {
-	s.wg.Add(1)
+	s.mu.Lock()
+	if s.stopped {
+		s.mu.Unlock()
+		return errors.New("mock server stopped")
+	}
+	// Add 2 to the WaitGroup: one for this main loop and one for the receive goroutine below.
+	s.wg.Add(2)
+	s.mu.Unlock()
+
 	defer s.wg.Done()
 	errc := make(chan error, 1)
-	s.wg.Add(1)
 	go func() {
 		defer s.wg.Done()
 		for {
