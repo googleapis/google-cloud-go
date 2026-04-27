@@ -18,16 +18,7 @@ sources:
   googleapis:
     commit: 939ba3bf8408af83f0f73ae35c76c4b11a8c8c8d
     sha256: 70829cda81b9c69ae4f5f2a42f347c263b62cd69eb6a87b70555aab6ae5b6d74
-tools:
-  go:
-    - name: github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic
-      version: v0.58.0
-    - name: golang.org/x/tools/cmd/goimports
-      version: v0.44.0
-    - name: google.golang.org/grpc/cmd/protoc-gen-go-grpc
-      version: v1.3.0
-    - name: google.golang.org/protobuf/cmd/protoc-gen-go
-      version: v1.36.11
+tools: {}
 release: {}
 default:
   tag_format: '{name}/v{version}'
@@ -935,7 +926,7 @@ libraries:
             - F_open_telemetry_attributes
           path: google/cloud/dataqna/v1alpha
   - name: datastore
-    version: 1.22.0
+    version: 1.23.0
     apis:
       - path: google/datastore/v1
       - path: google/datastore/admin/v1
@@ -1465,7 +1456,6 @@ libraries:
       - path: google/maps/solar/v1
       - path: google/maps/fleetengine/delivery/v1
       - path: google/maps/mapmanagement/v2beta
-    title_override: Google Maps Platform
     go:
       go_apis:
         - enabled_generator_features:

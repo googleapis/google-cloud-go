@@ -1,5 +1,7 @@
 # Changes
 
+## [1.23.0](https://github.com/googleapis/google-cloud-go/releases/tag/datastore%2Fv1.23.0) (2026-04-27)
+
 ## [1.22.0](https://github.com/googleapis/google-cloud-go/releases/tag/datastore%2Fv1.22.0) (2026-02-04)
 
 ### Features
