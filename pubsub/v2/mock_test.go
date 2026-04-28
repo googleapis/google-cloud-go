@@ -112,10 +112,11 @@ func (s *mockServer) StreamingPull(stream pb.Subscriber_StreamingPullServer) err
 		s.mu.Unlock()
 		return errors.New("mock server stopped")
 	}
+	// this first Add accounts for the outer send loop.
 	s.wg.Add(1)
 	defer s.wg.Done()
 
-	// increment the waitgroup again to account for the goroutine below
+	// this second Add accounts for the recv loop inside the goroutine.
 	s.wg.Add(1)
 	s.mu.Unlock()
 
