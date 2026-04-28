@@ -112,11 +112,13 @@ func (s *mockServer) StreamingPull(stream pb.Subscriber_StreamingPullServer) err
 		s.mu.Unlock()
 		return errors.New("mock server stopped")
 	}
-	// Add 2 to the WaitGroup: one for this main loop and one for the receive goroutine below.
-	s.wg.Add(2)
+	s.wg.Add(1)
+	defer s.wg.Done()
+
+	// increment the waitgroup again to account for the goroutine below
+	s.wg.Add(1)
 	s.mu.Unlock()
 
-	defer s.wg.Done()
 	errc := make(chan error, 1)
 	go func() {
 		defer s.wg.Done()
