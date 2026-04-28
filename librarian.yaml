@@ -21,7 +21,7 @@ sources:
 tools: 
   go:
     - name: github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic
-      version: v0.59.0
+      version: v0.60.0
     - name: golang.org/x/tools/cmd/goimports
       version: v0.44.0
     - name: google.golang.org/grpc/cmd/protoc-gen-go-grpc
