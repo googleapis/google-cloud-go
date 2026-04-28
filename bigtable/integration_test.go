@@ -2273,6 +2273,7 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 		InstanceType: DEVELOPMENT,
 		Labels:       map[string]string{"test-label-key": "test-label-value"},
 		Tags:         map[string]string{"tagKeys/12345": "tagValues/6789"},
+		Edition:      Enterprise,
 	}
 
 	// CreateInstance can be flaky; retry before marking as failing.
@@ -2293,6 +2294,9 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 	}
 	if got, want := iInfo.Labels, conf.Labels; !cmp.Equal(got, want) {
 		t.Fatalf("Labels: %v, want: %v", got, want)
+	}
+	if iInfo.Edition != Enterprise {
+		t.Fatalf("Instance edition is not Enterprise: %v", iInfo.Edition)
 	}
 
 	// Update everything we can about the instance in one call.

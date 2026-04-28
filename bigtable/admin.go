@@ -1378,7 +1378,7 @@ const (
 	EditionUnspecified Edition = Edition(btapb.Instance_EDITION_UNSPECIFIED)
 	// Enterprise edition is the default edition.
 	Enterprise Edition = Edition(btapb.Instance_ENTERPRISE)
-	// Enterprise Plus edition is the edition with higher limits and more features than Enterprise edition.
+	// EnterprisePlus edition is the edition with higher limits and more features than Enterprise edition.
 	EnterprisePlus Edition = Edition(btapb.Instance_ENTERPRISE_PLUS)
 )
 

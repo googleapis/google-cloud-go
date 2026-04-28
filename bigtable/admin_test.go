@@ -1195,7 +1195,6 @@ func TestInstanceAdmin_CreateInstance_WithAutoscaling(t *testing.T) {
 		StorageType:       SSD,
 		NodeScalingFactor: NodeScalingFactor1X,
 		AutoscalingConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10, StorageUtilizationPerNode: 3000},
-		Edition:           Enterprise,
 	})
 	if err != nil {
 		t.Fatalf("CreateInstance failed: %v", err)
@@ -1218,10 +1217,6 @@ func TestInstanceAdmin_CreateInstance_WithAutoscaling(t *testing.T) {
 	wantCPU := int32(10)
 	if gotCPU := gotConfig.AutoscalingTargets.CpuUtilizationPercent; wantCPU != gotCPU {
 		t.Fatalf("want autoscaling cpu = %v, got = %v", wantCPU, gotCPU)
-	}
-	wantEdition := btapb.Instance_ENTERPRISE
-	if gotEdition := mock.createInstanceReq.Instance.Edition; wantEdition != gotEdition {
-		t.Errorf("want edition = %v, got = %v", wantEdition, gotEdition)
 	}
 
 	err = c.CreateInstance(context.Background(), &InstanceConf{
