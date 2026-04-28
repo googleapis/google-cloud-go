@@ -1465,6 +1465,7 @@ libraries:
       - path: google/maps/solar/v1
       - path: google/maps/fleetengine/delivery/v1
       - path: google/maps/mapmanagement/v2beta
+    title_override: Google Maps Platform
     go:
       go_apis:
         - enabled_generator_features:
