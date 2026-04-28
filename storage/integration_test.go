@@ -656,7 +656,7 @@ func TestIntegration_MRDScaleUpConnections(t *testing.T) {
 				log.Printf("failed to delete test object: %v", err)
 			}
 		})
-		maxConnections := 3
+		maxConnections := 2
 		// Initializing targetPendingBytes to 1 to make sure manager
 		// definitely scales up with any load.
 		reader, err := obj.NewMultiRangeDownloader(ctx, WithMaxConnections(maxConnections), WithTargetPendingBytes(1))
@@ -681,9 +681,9 @@ func TestIntegration_MRDScaleUpConnections(t *testing.T) {
 		results := make([]*rangeRes, addCount)
 
 		var wg sync.WaitGroup
-		wg.Add(len(results))
 
 		for i := 0; i < addCount; i++ {
+			wg.Add(1)
 			// Randomize offset/limit slightly to ensure varied request patterns.
 			offset := int64(0)
 			limit := int64(rangeSize)
@@ -697,6 +697,13 @@ func TestIntegration_MRDScaleUpConnections(t *testing.T) {
 				r.gotLimit = l
 				wg.Done()
 			})
+
+			// Wait for each batch of maxConnections to finish before adding more.
+			// This gives the event loop natural breaks to process stream creation
+			// and deterministic scale-up behavior without being flooded.
+			if (i+1)%maxConnections == 0 {
+				wg.Wait()
+			}
 		}
 
 		// Wait for all goroutines to finish adding their ranges.

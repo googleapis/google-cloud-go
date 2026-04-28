@@ -133,6 +133,12 @@ func NewIntegrationEnv() (IntegrationEnv, error) {
 	universeDomain := os.Getenv("GCLOUD_TESTS_BIGTABLE_UNIVERSE_DOMAIN")
 	c.ClientOpts = append(c.ClientOpts, option.WithUniverseDomain(universeDomain))
 
+	if c.AttemptDirectPath {
+		os.Unsetenv("GOOGLE_CLOUD_DISABLE_DIRECT_PATH")
+	} else {
+		os.Setenv("GOOGLE_CLOUD_DISABLE_DIRECT_PATH", "true")
+	}
+
 	if legacyUseProd != "" {
 		fmt.Println("WARNING: using legacy commandline arg -use_prod, please switch to -it.*")
 		parts := strings.SplitN(legacyUseProd, ",", 3)

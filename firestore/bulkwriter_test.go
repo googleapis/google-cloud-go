@@ -245,6 +245,15 @@ func TestBulkWriterErrors(t *testing.T) {
 				return b.Delete(c.Doc("C/b"))
 			},
 		},
+		{
+			name: "cannot write with cancelled context",
+			test: func(ignored *BulkWriter) (*BulkWriterJob, error) {
+				ctx, cancel := context.WithCancel(context.Background())
+				bw := c.BulkWriter(ctx)
+				cancel()
+				return bw.Delete(c.Doc("C/c"))
+			},
+		},
 	}
 
 	for _, tc := range tcs {
@@ -477,5 +486,30 @@ func TestBulkWriterConcurrent(t *testing.T) {
 		if wr == nil && err == nil {
 			t.Errorf("job %d returned nil WriteResult and nil error", i)
 		}
+	}
+}
+
+func TestBulkWriterSendCancelled(t *testing.T) {
+	c, _, cleanup := newMock(t)
+	defer cleanup()
+
+	ctx, cancel := context.WithCancel(context.Background())
+	bw := c.BulkWriter(ctx)
+
+	j, err := bw.Create(c.Doc("C/a"), testData)
+	if err != nil {
+		t.Fatalf("Create failed: %v", err)
+	}
+
+	cancel() // Cancel context before Flush/send can complete successfully
+
+	bw.Flush()
+
+	_, err = j.Results()
+	if err == nil {
+		t.Fatal("wanted error, got nil")
+	}
+	if err != context.Canceled {
+		t.Errorf("want context.Canceled, got %v", err)
 	}
 }

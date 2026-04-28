@@ -1698,6 +1698,8 @@ func TestExecuteQuery(t *testing.T) {
 	var gotRecvMsgCount int
 	var mockRecvMsgResps []recvMsgResp
 	var gotSendMsgReqs []*btpb.ExecuteQueryRequest
+	const defaultPreparedQueryTTL = 10 * time.Second
+	var testPreparedQueryTTL = defaultPreparedQueryTTL
 
 	// start emulated server
 	testEnv, gotErr := NewEmulatedEnv(IntegrationTestConfig{})
@@ -1711,7 +1713,7 @@ func TestExecuteQuery(t *testing.T) {
 		grpc.WithStreamInterceptor(
 			newStreamClientInterceptor(&gotRecvMsgCount, &gotSendMsgReqs, &mockRecvMsgResps)),
 		grpc.WithUnaryInterceptor(
-			newUnaryClientInterceptor(&gotPrepReqCount, &mockPrepQueryResps)),
+			newUnaryClientInterceptor(&gotPrepReqCount, &mockPrepQueryResps, &testPreparedQueryTTL)),
 	)
 	if gotErr != nil {
 		t.Fatalf("grpc.Dial failed: %v", gotErr)
@@ -1747,6 +1749,7 @@ func TestExecuteQuery(t *testing.T) {
 	preparedQuery2 := "second mock prepared query"
 	for _, tc := range []struct {
 		desc                  string
+		testTTL               time.Duration
 		mockPrepQueryResps    []prepareQueryResp
 		mockRecvMsgResps      []recvMsgResp
 		wantExecReqPrepQuerys [][]byte
@@ -1911,7 +1914,8 @@ func TestExecuteQuery(t *testing.T) {
 				7. RecvMsg - gets resume token
 				8. RecvMsg - gets EOF
 			*/
-			desc: "retry on time-based expired query",
+			desc:    "retry on time-based expired query",
+			testTTL: 50 * time.Millisecond,
 			mockPrepQueryResps: []prepareQueryResp{
 				newPrepareQueryResp(preparedQuery1, colFamAddress), // PrepareStatement
 				newPrepareQueryResp(preparedQuery1, colFamAddress), // From Execute, because expired query
@@ -1919,7 +1923,7 @@ func TestExecuteQuery(t *testing.T) {
 			mockRecvMsgResps: []recvMsgResp{
 				newExecQueryRespFullBatch(true, nil /* sleep */, []string{colFamAddress}),
 				{
-					sleep: ptr(testPreparedQueryTTL + 2*time.Second),
+					sleep: ptr(150 * time.Millisecond),
 					err:   status.Error(codes.DeadlineExceeded, "context deadline exceeded"), // retryable
 				},
 				newExecQueryRespResumeToken(),
@@ -2022,6 +2026,12 @@ func TestExecuteQuery(t *testing.T) {
 		mockPrepQueryResps = tc.mockPrepQueryResps
 		mockRecvMsgResps = tc.mockRecvMsgResps
 
+		if tc.testTTL != 0 {
+			testPreparedQueryTTL = tc.testTTL
+		} else {
+			testPreparedQueryTTL = defaultPreparedQueryTTL
+		}
+
 		// Reset vars for the test
 		gotPrepReqCount = 0
 		gotRecvMsgCount = 0
@@ -2081,7 +2091,6 @@ func TestExecuteQuery(t *testing.T) {
 	}
 }
 
-const testPreparedQueryTTL = 10 * time.Second
 const colFamAddress = "address"
 const colFamAddressNew = "address-new" // Used only for values and not metadata
 const colFamInfo = "info"
@@ -2373,7 +2382,7 @@ func newStreamClientInterceptor(recvMsgCount *int, reqPtrs *[]*btpb.ExecuteQuery
 	}
 }
 
-func newUnaryClientInterceptor(prepReqCount *int, respPtrs *[]prepareQueryResp) func(
+func newUnaryClientInterceptor(prepReqCount *int, respPtrs *[]prepareQueryResp, ttl *time.Duration) func(
 	ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 	return func(ctx context.Context, method string, req, reply interface{},
 		cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
@@ -2392,7 +2401,7 @@ func newUnaryClientInterceptor(prepReqCount *int, respPtrs *[]prepareQueryResp) 
 
 		pqr, _ := reply.(*btpb.PrepareQueryResponse)
 		pqr.PreparedQuery = resps[*prepReqCount].resp.PreparedQuery
-		pqr.ValidUntil = timestamppb.New(time.Now().Add(testPreparedQueryTTL))
+		pqr.ValidUntil = timestamppb.New(time.Now().Add(*ttl))
 		pqr.Metadata = resps[*prepReqCount].resp.Metadata
 		return nil
 	}
