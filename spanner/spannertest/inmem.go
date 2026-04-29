@@ -1131,7 +1131,6 @@ func idList(ss []string) (ids []spansql.ID) {
 	return
 }
 
-
 // ColProtoTypes satisfies the columnProtoTyper interface, providing the exact
 // Spanner proto type for the ChangeRecord TVF result column and bypassing the
 // placeholder ARRAY<JSON> type in Cols().
