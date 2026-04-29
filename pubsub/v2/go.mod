@@ -2,8 +2,6 @@ module cloud.google.com/go/pubsub/v2
 
 go 1.25.0
 
-replace cloud.google.com/go => ../../
-
 require (
 	cloud.google.com/go v0.123.0
 	cloud.google.com/go/iam v1.7.0
