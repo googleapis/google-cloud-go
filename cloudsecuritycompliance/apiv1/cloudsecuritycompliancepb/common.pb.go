@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -253,6 +253,14 @@ const (
 	CloudControlCategory_CC_CATEGORY_PRIVACY CloudControlCategory = 14
 	// The business continuity and disaster recovery (BCDR) category.
 	CloudControlCategory_CC_CATEGORY_BCDR CloudControlCategory = 15
+	// The admin access category.
+	CloudControlCategory_CC_CATEGORY_ADMIN_ACCESS CloudControlCategory = 16
+	// DRZ (Data Residency).
+	CloudControlCategory_CC_CATEGORY_DATA_RESIDENCY CloudControlCategory = 17
+	// RUR (Resource Usage Restriction).
+	CloudControlCategory_CC_CATEGORY_RESOURCE_USAGE_RESTRICTION CloudControlCategory = 18
+	// SERVICE SPECIFIC
+	CloudControlCategory_CC_CATEGORY_SERVICE_SPECIFIC CloudControlCategory = 19
 )
 
 // Enum value maps for CloudControlCategory.
@@ -274,6 +282,10 @@ var (
 		13: "CC_CATEGORY_VULNERABILITY_MANAGEMENT",
 		14: "CC_CATEGORY_PRIVACY",
 		15: "CC_CATEGORY_BCDR",
+		16: "CC_CATEGORY_ADMIN_ACCESS",
+		17: "CC_CATEGORY_DATA_RESIDENCY",
+		18: "CC_CATEGORY_RESOURCE_USAGE_RESTRICTION",
+		19: "CC_CATEGORY_SERVICE_SPECIFIC",
 	}
 	CloudControlCategory_value = map[string]int32{
 		"CLOUD_CONTROL_CATEGORY_UNSPECIFIED":                   0,
@@ -292,6 +304,10 @@ var (
 		"CC_CATEGORY_VULNERABILITY_MANAGEMENT":                 13,
 		"CC_CATEGORY_PRIVACY":                                  14,
 		"CC_CATEGORY_BCDR":                                     15,
+		"CC_CATEGORY_ADMIN_ACCESS":                             16,
+		"CC_CATEGORY_DATA_RESIDENCY":                           17,
+		"CC_CATEGORY_RESOURCE_USAGE_RESTRICTION":               18,
+		"CC_CATEGORY_SERVICE_SPECIFIC":                         19,
 	}
 )
 
@@ -762,13 +778,134 @@ func (ParameterSpec_ValueType) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_cloudsecuritycompliance_v1_common_proto_rawDescGZIP(), []int{5, 0}
 }
 
+// The regulatory control family.
+type Control_Family int32
+
+const (
+	// Default value. This value is unused.
+	Control_FAMILY_UNSPECIFIED Control_Family = 0
+	// Access control
+	Control_AC Control_Family = 1
+	// Awareness and araining
+	Control_AT Control_Family = 2
+	// Audit and accountability
+	Control_AU Control_Family = 3
+	// Certification, accreditation, and security assessments
+	Control_CA Control_Family = 4
+	// Configuration management
+	Control_CM Control_Family = 5
+	// Contingency planning
+	Control_CP Control_Family = 6
+	// Identification and authentication
+	Control_IA Control_Family = 7
+	// Incident response
+	Control_IR Control_Family = 8
+	// Maintenance
+	Control_MA Control_Family = 9
+	// Media protection
+	Control_MP Control_Family = 10
+	// Physical and environmental protection
+	Control_PE Control_Family = 11
+	// Security planning
+	Control_PL Control_Family = 12
+	// Personnel aecurity
+	Control_PS Control_Family = 13
+	// Risk assessment
+	Control_RA Control_Family = 14
+	// System services and acquisition
+	Control_SA Control_Family = 15
+	// System and communications protection
+	Control_SC Control_Family = 16
+	// System and information integrity
+	Control_SI Control_Family = 17
+	// Supply chain risk management
+	Control_SR Control_Family = 18
+)
+
+// Enum value maps for Control_Family.
+var (
+	Control_Family_name = map[int32]string{
+		0:  "FAMILY_UNSPECIFIED",
+		1:  "AC",
+		2:  "AT",
+		3:  "AU",
+		4:  "CA",
+		5:  "CM",
+		6:  "CP",
+		7:  "IA",
+		8:  "IR",
+		9:  "MA",
+		10: "MP",
+		11: "PE",
+		12: "PL",
+		13: "PS",
+		14: "RA",
+		15: "SA",
+		16: "SC",
+		17: "SI",
+		18: "SR",
+	}
+	Control_Family_value = map[string]int32{
+		"FAMILY_UNSPECIFIED": 0,
+		"AC":                 1,
+		"AT":                 2,
+		"AU":                 3,
+		"CA":                 4,
+		"CM":                 5,
+		"CP":                 6,
+		"IA":                 7,
+		"IR":                 8,
+		"MA":                 9,
+		"MP":                 10,
+		"PE":                 11,
+		"PL":                 12,
+		"PS":                 13,
+		"RA":                 14,
+		"SA":                 15,
+		"SC":                 16,
+		"SI":                 17,
+		"SR":                 18,
+	}
+)
+
+func (x Control_Family) Enum() *Control_Family {
+	p := new(Control_Family)
+	*p = x
+	return p
+}
+
+func (x Control_Family) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Control_Family) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_cloudsecuritycompliance_v1_common_proto_enumTypes[11].Descriptor()
+}
+
+func (Control_Family) Type() protoreflect.EnumType {
+	return &file_google_cloud_cloudsecuritycompliance_v1_common_proto_enumTypes[11]
+}
+
+func (x Control_Family) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Control_Family.Descriptor instead.
+func (Control_Family) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_cloudsecuritycompliance_v1_common_proto_rawDescGZIP(), []int{18, 0}
+}
+
 // A framework is a collection of cloud controls and regulatory controls
 // that represent security best practices or industry-defined standards such as
 // FedRAMP or NIST.
 type Framework struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. Identifier. The name of the framework, in the format
-	// `organizations/{organization}/locations/{location}/frameworks/{framework_id}`.
+	// Required. Identifier. The name of the framework, in one of the following
+	// formats:
+	// `organizations/{organization}/locations/{location}/frameworks/{framework}`
+	// or
+	// `projects/{project}/locations/{location}/frameworks/{framework}`.
+	//
 	// The only supported location is `global`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. The major version of the framework, which is incremented in
@@ -900,8 +1037,11 @@ func (x *Framework) GetSupportedEnforcementModes() []EnforcementMode {
 // The details of a cloud control.
 type CloudControlDetails struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The name of the cloud control, in the format
-	// `organizations/{organization}/locations/{location}/cloudControls/{cloud-control}`.
+	// Required. The name of the cloud control, in one of the following formats:
+	// `organizations/{organization}/locations/{location}/cloudControls/{cloud_control}`
+	// or
+	// `projects/{project}/locations/{location}/cloudControls/{cloud_control}`.
+	//
 	// The only supported location is `global`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. The major version of the cloud control.
@@ -966,8 +1106,10 @@ func (x *CloudControlDetails) GetParameters() []*Parameter {
 	return nil
 }
 
-// The reference of a framework, in the format
-// `organizations/{organization}/locations/{location}/frameworks/{framework}`.
+// The reference of a framework, in one of the following formats:
+// - `organizations/{organization}/locations/{location}/frameworks/{framework}`
+// - `projects/{project}/locations/{location}/frameworks/{framework}`.
+//
 // The only supported location is `global`.
 type FrameworkReference struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -1086,8 +1228,12 @@ func (x *Parameter) GetParameterValue() *ParamValue {
 // use to define your organization's security or compliance intent.
 type CloudControl struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. Identifier. The name of the cloud control, in the format
-	// `organizations/{organization}/locations/{location}/cloudControls/{cloud_control_id}`.
+	// Required. Identifier. The name of the cloud control, in either of the
+	// formats:
+	// `organizations/{organization}/locations/{location}/cloudControls/{cloud_control}`
+	// or
+	// `projects/{project}/locations/{location}/cloudControls/{cloud_control}`.
+	//
 	// The only supported location is `global`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. The major version of the cloud control, which is incremented
@@ -1790,27 +1936,27 @@ type isParamValue_Kind interface {
 }
 
 type ParamValue_StringValue struct {
-	// A string value.
+	// Optional. A string value.
 	StringValue string `protobuf:"bytes,3,opt,name=string_value,json=stringValue,proto3,oneof"`
 }
 
 type ParamValue_BoolValue struct {
-	// A boolean value.
+	// Optional. A boolean value.
 	BoolValue bool `protobuf:"varint,4,opt,name=bool_value,json=boolValue,proto3,oneof"`
 }
 
 type ParamValue_StringListValue struct {
-	// A repeated string.
+	// Optional. A repeated string.
 	StringListValue *StringList `protobuf:"bytes,5,opt,name=string_list_value,json=stringListValue,proto3,oneof"`
 }
 
 type ParamValue_NumberValue struct {
-	// A double value.
+	// Optional. A double value.
 	NumberValue float64 `protobuf:"fixed64,6,opt,name=number_value,json=numberValue,proto3,oneof"`
 }
 
 type ParamValue_OneofValue struct {
-	// Sub-parameter values.
+	// Optional. Sub-parameter values.
 	OneofValue *Parameter `protobuf:"bytes,7,opt,name=oneof_value,json=oneofValue,proto3,oneof"`
 }
 
@@ -2281,6 +2427,171 @@ func (x *OperationMetadata) GetApiVersion() string {
 	return ""
 }
 
+// The regulatory control.
+type Control struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. The name of a regulatory control, in one of the following
+	// formats:
+	// - `organizations/{organization}/locations/{location}/controls/{control}`
+	// - `projects/{project}/locations/{location}/controls/{control}`.
+	//
+	// The only supported location is `global`.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Output only. The friendly name for the regulatory control.
+	DisplayName string `protobuf:"bytes,3,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
+	// Output only. The description of the regulatory control.
+	Description string `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
+	// Output only. The regulatory group that the control belongs to.
+	Family Control_Family `protobuf:"varint,5,opt,name=family,proto3,enum=google.cloud.cloudsecuritycompliance.v1.Control_Family" json:"family,omitempty"`
+	// Output only. The regulatory family that the control belongs to.
+	ControlFamily *ControlFamily `protobuf:"bytes,6,opt,name=control_family,json=controlFamily,proto3" json:"control_family,omitempty"`
+	// Output only. The entity that's responsible for the control, whether Google,
+	// you as the customer, or both.
+	ResponsibilityType RegulatoryControlResponsibilityType `protobuf:"varint,7,opt,name=responsibility_type,json=responsibilityType,proto3,enum=google.cloud.cloudsecuritycompliance.v1.RegulatoryControlResponsibilityType" json:"responsibility_type,omitempty"`
+	// Output only. A description of Google's responsibility for the regulatory
+	// control.
+	GoogleResponsibilityDescription string `protobuf:"bytes,8,opt,name=google_responsibility_description,json=googleResponsibilityDescription,proto3" json:"google_responsibility_description,omitempty"`
+	// Output only. A description of Google's responsibility for implementing the
+	// regulatory control.
+	GoogleResponsibilityImplementation string `protobuf:"bytes,9,opt,name=google_responsibility_implementation,json=googleResponsibilityImplementation,proto3" json:"google_responsibility_implementation,omitempty"`
+	// Output only. A description of your responsibility for the regulatory
+	// control.
+	CustomerResponsibilityDescription string `protobuf:"bytes,10,opt,name=customer_responsibility_description,json=customerResponsibilityDescription,proto3" json:"customer_responsibility_description,omitempty"`
+	// Output only. A description of the your responsibility for implementing the
+	// regulatory control.
+	CustomerResponsibilityImplementation string `protobuf:"bytes,11,opt,name=customer_responsibility_implementation,json=customerResponsibilityImplementation,proto3" json:"customer_responsibility_implementation,omitempty"`
+	// Output only. A description of the responsibility that's shared between
+	// Google and you in implementing this control.
+	SharedResponsibilityDescription string `protobuf:"bytes,12,opt,name=shared_responsibility_description,json=sharedResponsibilityDescription,proto3" json:"shared_responsibility_description,omitempty"`
+	// Output only. A link to the documentation that's related to this control.
+	AdditionalContentUri string `protobuf:"bytes,13,opt,name=additional_content_uri,json=additionalContentUri,proto3" json:"additional_content_uri,omitempty"`
+	// Output only. The frameworks that include this control.
+	RelatedFrameworks []string `protobuf:"bytes,14,rep,name=related_frameworks,json=relatedFrameworks,proto3" json:"related_frameworks,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *Control) Reset() {
+	*x = Control{}
+	mi := &file_google_cloud_cloudsecuritycompliance_v1_common_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Control) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Control) ProtoMessage() {}
+
+func (x *Control) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_cloudsecuritycompliance_v1_common_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Control.ProtoReflect.Descriptor instead.
+func (*Control) Descriptor() ([]byte, []int) {
+	return file_google_cloud_cloudsecuritycompliance_v1_common_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *Control) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Control) GetDisplayName() string {
+	if x != nil {
+		return x.DisplayName
+	}
+	return ""
+}
+
+func (x *Control) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+func (x *Control) GetFamily() Control_Family {
+	if x != nil {
+		return x.Family
+	}
+	return Control_FAMILY_UNSPECIFIED
+}
+
+func (x *Control) GetControlFamily() *ControlFamily {
+	if x != nil {
+		return x.ControlFamily
+	}
+	return nil
+}
+
+func (x *Control) GetResponsibilityType() RegulatoryControlResponsibilityType {
+	if x != nil {
+		return x.ResponsibilityType
+	}
+	return RegulatoryControlResponsibilityType_REGULATORY_CONTROL_RESPONSIBILITY_TYPE_UNSPECIFIED
+}
+
+func (x *Control) GetGoogleResponsibilityDescription() string {
+	if x != nil {
+		return x.GoogleResponsibilityDescription
+	}
+	return ""
+}
+
+func (x *Control) GetGoogleResponsibilityImplementation() string {
+	if x != nil {
+		return x.GoogleResponsibilityImplementation
+	}
+	return ""
+}
+
+func (x *Control) GetCustomerResponsibilityDescription() string {
+	if x != nil {
+		return x.CustomerResponsibilityDescription
+	}
+	return ""
+}
+
+func (x *Control) GetCustomerResponsibilityImplementation() string {
+	if x != nil {
+		return x.CustomerResponsibilityImplementation
+	}
+	return ""
+}
+
+func (x *Control) GetSharedResponsibilityDescription() string {
+	if x != nil {
+		return x.SharedResponsibilityDescription
+	}
+	return ""
+}
+
+func (x *Control) GetAdditionalContentUri() string {
+	if x != nil {
+		return x.AdditionalContentUri
+	}
+	return ""
+}
+
+func (x *Control) GetRelatedFrameworks() []string {
+	if x != nil {
+		return x.RelatedFrameworks
+	}
+	return nil
+}
+
 // The regulatory family of the control.
 type ControlFamily struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -2294,7 +2605,7 @@ type ControlFamily struct {
 
 func (x *ControlFamily) Reset() {
 	*x = ControlFamily{}
-	mi := &file_google_cloud_cloudsecuritycompliance_v1_common_proto_msgTypes[18]
+	mi := &file_google_cloud_cloudsecuritycompliance_v1_common_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2306,7 +2617,7 @@ func (x *ControlFamily) String() string {
 func (*ControlFamily) ProtoMessage() {}
 
 func (x *ControlFamily) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_cloudsecuritycompliance_v1_common_proto_msgTypes[18]
+	mi := &file_google_cloud_cloudsecuritycompliance_v1_common_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2319,7 +2630,7 @@ func (x *ControlFamily) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ControlFamily.ProtoReflect.Descriptor instead.
 func (*ControlFamily) Descriptor() ([]byte, []int) {
-	return file_google_cloud_cloudsecuritycompliance_v1_common_proto_rawDescGZIP(), []int{18}
+	return file_google_cloud_cloudsecuritycompliance_v1_common_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *ControlFamily) GetFamilyId() string {
@@ -2340,7 +2651,7 @@ var File_google_cloud_cloudsecuritycompliance_v1_common_proto protoreflect.FileD
 
 const file_google_cloud_cloudsecuritycompliance_v1_common_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/cloudsecuritycompliance/v1/common.proto\x12'google.cloud.cloudsecuritycompliance.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbd\b\n" +
+	"4google/cloud/cloudsecuritycompliance/v1/common.proto\x12'google.cloud.cloudsecuritycompliance.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfd\b\n" +
 	"\tFramework\x12\x1a\n" +
 	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\bR\x04name\x12/\n" +
 	"\x11major_revision_id\x18\x02 \x01(\x03B\x03\xe0A\x03R\x0fmajorRevisionId\x12&\n" +
@@ -2357,23 +2668,23 @@ const file_google_cloud_cloudsecuritycompliance_v1_common_proto_rawDesc = "" +
 	"\x1aFRAMEWORK_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bBUILT_IN\x10\x01\x12\n" +
 	"\n" +
-	"\x06CUSTOM\x10\x02:\x97\x01\xeaA\x93\x01\n" +
-	"0cloudsecuritycompliance.googleapis.com/Framework\x12Horganizations/{organization}/locations/{location}/frameworks/{framework}*\n" +
+	"\x06CUSTOM\x10\x02:\xd7\x01\xeaA\xd3\x01\n" +
+	"0cloudsecuritycompliance.googleapis.com/Framework\x12Horganizations/{organization}/locations/{location}/frameworks/{framework}\x12>projects/{project}/locations/{location}/frameworks/{framework}*\n" +
 	"frameworks2\tframework\"\xb8\x01\n" +
 	"\x13CloudControlDetails\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12/\n" +
 	"\x11major_revision_id\x18\x02 \x01(\x03B\x03\xe0A\x02R\x0fmajorRevisionId\x12W\n" +
 	"\n" +
 	"parameters\x18\x04 \x03(\v22.google.cloud.cloudsecuritycompliance.v1.ParameterB\x03\xe0A\x01R\n" +
-	"parameters\"\x83\x01\n" +
-	"\x12FrameworkReference\x12!\n" +
-	"\tframework\x18\x01 \x01(\tB\x03\xe0A\x02R\tframework\x124\n" +
+	"parameters\"\xb8\x01\n" +
+	"\x12FrameworkReference\x12V\n" +
+	"\tframework\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
+	"0cloudsecuritycompliance.googleapis.com/FrameworkR\tframework\x124\n" +
 	"\x11major_revision_id\x18\x02 \x01(\x03B\x03\xe0A\x01H\x00R\x0fmajorRevisionId\x88\x01\x01B\x14\n" +
 	"\x12_major_revision_id\"\x87\x01\n" +
 	"\tParameter\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12a\n" +
-	"\x0fparameter_value\x18\x02 \x01(\v23.google.cloud.cloudsecuritycompliance.v1.ParamValueB\x03\xe0A\x02R\x0eparameterValue\"\xcc\n" +
-	"\n" +
+	"\x0fparameter_value\x18\x02 \x01(\v23.google.cloud.cloudsecuritycompliance.v1.ParamValueB\x03\xe0A\x02R\x0eparameterValue\"\x93\v\n" +
 	"\fCloudControl\x12\x1a\n" +
 	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\bR\x04name\x12/\n" +
 	"\x11major_revision_id\x18\x02 \x01(\x03B\x03\xe0A\x03R\x0fmajorRevisionId\x12%\n" +
@@ -2397,8 +2708,8 @@ const file_google_cloud_cloudsecuritycompliance_v1_common_proto_rawDesc = "" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06CUSTOM\x10\x01\x12\f\n" +
-	"\bBUILT_IN\x10\x02:\xa7\x01\xeaA\xa3\x01\n" +
-	"3cloudsecuritycompliance.googleapis.com/CloudControl\x12Oorganizations/{organization}/locations/{location}/cloudControls/{cloud_control}*\rcloudControls2\fcloudControl\"\x81\x06\n" +
+	"\bBUILT_IN\x10\x02:\xee\x01\xeaA\xea\x01\n" +
+	"3cloudsecuritycompliance.googleapis.com/CloudControl\x12Oorganizations/{organization}/locations/{location}/cloudControls/{cloud_control}\x12Eprojects/{project}/locations/{location}/cloudControls/{cloud_control}*\rcloudControls2\fcloudControl\"\x81\x06\n" +
 	"\rParameterSpec\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12&\n" +
 	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12%\n" +
@@ -2439,15 +2750,15 @@ const file_google_cloud_cloudsecuritycompliance_v1_common_proto_rawDesc = "" +
 	"\x03max\x18\x02 \x01(\x03B\x03\xe0A\x02R\x03max\")\n" +
 	"\n" +
 	"StringList\x12\x1b\n" +
-	"\x06values\x18\x01 \x03(\tB\x03\xe0A\x02R\x06values\"\xb9\x02\n" +
+	"\x06values\x18\x01 \x03(\tB\x03\xe0A\x02R\x06values\"\xd2\x02\n" +
 	"\n" +
-	"ParamValue\x12#\n" +
-	"\fstring_value\x18\x03 \x01(\tH\x00R\vstringValue\x12\x1f\n" +
+	"ParamValue\x12(\n" +
+	"\fstring_value\x18\x03 \x01(\tB\x03\xe0A\x01H\x00R\vstringValue\x12$\n" +
 	"\n" +
-	"bool_value\x18\x04 \x01(\bH\x00R\tboolValue\x12a\n" +
-	"\x11string_list_value\x18\x05 \x01(\v23.google.cloud.cloudsecuritycompliance.v1.StringListH\x00R\x0fstringListValue\x12#\n" +
-	"\fnumber_value\x18\x06 \x01(\x01H\x00R\vnumberValue\x12U\n" +
-	"\voneof_value\x18\a \x01(\v22.google.cloud.cloudsecuritycompliance.v1.ParameterH\x00R\n" +
+	"bool_value\x18\x04 \x01(\bB\x03\xe0A\x01H\x00R\tboolValue\x12f\n" +
+	"\x11string_list_value\x18\x05 \x01(\v23.google.cloud.cloudsecuritycompliance.v1.StringListB\x03\xe0A\x01H\x00R\x0fstringListValue\x12(\n" +
+	"\fnumber_value\x18\x06 \x01(\x01B\x03\xe0A\x01H\x00R\vnumberValue\x12Z\n" +
+	"\voneof_value\x18\a \x01(\v22.google.cloud.cloudsecuritycompliance.v1.ParameterB\x03\xe0A\x01H\x00R\n" +
 	"oneofValueB\x06\n" +
 	"\x04kind\"\xc4\x02\n" +
 	"\x19ParameterSubstitutionRule\x12\x8a\x01\n" +
@@ -2480,7 +2791,45 @@ const file_google_cloud_cloudsecuritycompliance_v1_common_proto_rawDesc = "" +
 	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
 	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
 	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion\"O\n" +
+	"apiVersion\"\xc7\n" +
+	"\n" +
+	"\aControl\x12\x17\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12&\n" +
+	"\fdisplay_name\x18\x03 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12%\n" +
+	"\vdescription\x18\x04 \x01(\tB\x03\xe0A\x03R\vdescription\x12T\n" +
+	"\x06family\x18\x05 \x01(\x0e27.google.cloud.cloudsecuritycompliance.v1.Control.FamilyB\x03\xe0A\x03R\x06family\x12b\n" +
+	"\x0econtrol_family\x18\x06 \x01(\v26.google.cloud.cloudsecuritycompliance.v1.ControlFamilyB\x03\xe0A\x03R\rcontrolFamily\x12\x82\x01\n" +
+	"\x13responsibility_type\x18\a \x01(\x0e2L.google.cloud.cloudsecuritycompliance.v1.RegulatoryControlResponsibilityTypeB\x03\xe0A\x03R\x12responsibilityType\x12O\n" +
+	"!google_responsibility_description\x18\b \x01(\tB\x03\xe0A\x03R\x1fgoogleResponsibilityDescription\x12U\n" +
+	"$google_responsibility_implementation\x18\t \x01(\tB\x03\xe0A\x03R\"googleResponsibilityImplementation\x12S\n" +
+	"#customer_responsibility_description\x18\n" +
+	" \x01(\tB\x03\xe0A\x03R!customerResponsibilityDescription\x12Y\n" +
+	"&customer_responsibility_implementation\x18\v \x01(\tB\x03\xe0A\x03R$customerResponsibilityImplementation\x12O\n" +
+	"!shared_responsibility_description\x18\f \x01(\tB\x03\xe0A\x03R\x1fsharedResponsibilityDescription\x129\n" +
+	"\x16additional_content_uri\x18\r \x01(\tB\x03\xe0A\x03R\x14additionalContentUri\x122\n" +
+	"\x12related_frameworks\x18\x0e \x03(\tB\x03\xe0A\x03R\x11relatedFrameworks\"\xb0\x01\n" +
+	"\x06Family\x12\x16\n" +
+	"\x12FAMILY_UNSPECIFIED\x10\x00\x12\x06\n" +
+	"\x02AC\x10\x01\x12\x06\n" +
+	"\x02AT\x10\x02\x12\x06\n" +
+	"\x02AU\x10\x03\x12\x06\n" +
+	"\x02CA\x10\x04\x12\x06\n" +
+	"\x02CM\x10\x05\x12\x06\n" +
+	"\x02CP\x10\x06\x12\x06\n" +
+	"\x02IA\x10\a\x12\x06\n" +
+	"\x02IR\x10\b\x12\x06\n" +
+	"\x02MA\x10\t\x12\x06\n" +
+	"\x02MP\x10\n" +
+	"\x12\x06\n" +
+	"\x02PE\x10\v\x12\x06\n" +
+	"\x02PL\x10\f\x12\x06\n" +
+	"\x02PS\x10\r\x12\x06\n" +
+	"\x02RA\x10\x0e\x12\x06\n" +
+	"\x02SA\x10\x0f\x12\x06\n" +
+	"\x02SC\x10\x10\x12\x06\n" +
+	"\x02SI\x10\x11\x12\x06\n" +
+	"\x02SR\x10\x12:\xc9\x01\xeaA\xc5\x01\n" +
+	".cloudsecuritycompliance.googleapis.com/Control\x12Dorganizations/{organization}/locations/{location}/controls/{control}\x12:projects/{project}/locations/{location}/controls/{control}*\bcontrols2\acontrol\"O\n" +
 	"\rControlFamily\x12\x1b\n" +
 	"\tfamily_id\x18\x01 \x01(\tR\bfamilyId\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName*\x83\x01\n" +
@@ -2503,7 +2852,7 @@ const file_google_cloud_cloudsecuritycompliance_v1_common_proto_rawDesc = "" +
 	"\x11ASSURED_WORKLOADS\x10\x02\x12\x11\n" +
 	"\rDATA_SECURITY\x10\x03\x12\x19\n" +
 	"\x15GOOGLE_BEST_PRACTICES\x10\x04\x12\x14\n" +
-	"\x10CUSTOM_FRAMEWORK\x10\x05*\xf2\x04\n" +
+	"\x10CUSTOM_FRAMEWORK\x10\x05*\xfe\x05\n" +
 	"\x14CloudControlCategory\x12&\n" +
 	"\"CLOUD_CONTROL_CATEGORY_UNSPECIFIED\x10\x00\x12\x1e\n" +
 	"\x1aCC_CATEGORY_INFRASTRUCTURE\x10\x01\x12'\n" +
@@ -2521,7 +2870,11 @@ const file_google_cloud_cloudsecuritycompliance_v1_common_proto_rawDesc = "" +
 	"!CC_CATEGORY_LEGAL_AND_DISCLOSURES\x10\f\x12(\n" +
 	"$CC_CATEGORY_VULNERABILITY_MANAGEMENT\x10\r\x12\x17\n" +
 	"\x13CC_CATEGORY_PRIVACY\x10\x0e\x12\x14\n" +
-	"\x10CC_CATEGORY_BCDR\x10\x0f*L\n" +
+	"\x10CC_CATEGORY_BCDR\x10\x0f\x12\x1c\n" +
+	"\x18CC_CATEGORY_ADMIN_ACCESS\x10\x10\x12\x1e\n" +
+	"\x1aCC_CATEGORY_DATA_RESIDENCY\x10\x11\x12*\n" +
+	"&CC_CATEGORY_RESOURCE_USAGE_RESTRICTION\x10\x12\x12 \n" +
+	"\x1cCC_CATEGORY_SERVICE_SPECIFIC\x10\x13*L\n" +
 	"\rCloudProvider\x12\x1e\n" +
 	"\x1aCLOUD_PROVIDER_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03AWS\x10\x01\x12\t\n" +
@@ -2560,8 +2913,8 @@ func file_google_cloud_cloudsecuritycompliance_v1_common_proto_rawDescGZIP() []b
 	return file_google_cloud_cloudsecuritycompliance_v1_common_proto_rawDescData
 }
 
-var file_google_cloud_cloudsecuritycompliance_v1_common_proto_enumTypes = make([]protoimpl.EnumInfo, 11)
-var file_google_cloud_cloudsecuritycompliance_v1_common_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
+var file_google_cloud_cloudsecuritycompliance_v1_common_proto_enumTypes = make([]protoimpl.EnumInfo, 12)
+var file_google_cloud_cloudsecuritycompliance_v1_common_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
 var file_google_cloud_cloudsecuritycompliance_v1_common_proto_goTypes = []any{
 	(RegulatoryControlResponsibilityType)(0), // 0: google.cloud.cloudsecuritycompliance.v1.RegulatoryControlResponsibilityType
 	(EnforcementMode)(0),                     // 1: google.cloud.cloudsecuritycompliance.v1.EnforcementMode
@@ -2574,67 +2927,72 @@ var file_google_cloud_cloudsecuritycompliance_v1_common_proto_goTypes = []any{
 	(Framework_FrameworkType)(0),             // 8: google.cloud.cloudsecuritycompliance.v1.Framework.FrameworkType
 	(CloudControl_Type)(0),                   // 9: google.cloud.cloudsecuritycompliance.v1.CloudControl.Type
 	(ParameterSpec_ValueType)(0),             // 10: google.cloud.cloudsecuritycompliance.v1.ParameterSpec.ValueType
-	(*Framework)(nil),                        // 11: google.cloud.cloudsecuritycompliance.v1.Framework
-	(*CloudControlDetails)(nil),              // 12: google.cloud.cloudsecuritycompliance.v1.CloudControlDetails
-	(*FrameworkReference)(nil),               // 13: google.cloud.cloudsecuritycompliance.v1.FrameworkReference
-	(*Parameter)(nil),                        // 14: google.cloud.cloudsecuritycompliance.v1.Parameter
-	(*CloudControl)(nil),                     // 15: google.cloud.cloudsecuritycompliance.v1.CloudControl
-	(*ParameterSpec)(nil),                    // 16: google.cloud.cloudsecuritycompliance.v1.ParameterSpec
-	(*Validation)(nil),                       // 17: google.cloud.cloudsecuritycompliance.v1.Validation
-	(*AllowedValues)(nil),                    // 18: google.cloud.cloudsecuritycompliance.v1.AllowedValues
-	(*RegexpPattern)(nil),                    // 19: google.cloud.cloudsecuritycompliance.v1.RegexpPattern
-	(*IntRange)(nil),                         // 20: google.cloud.cloudsecuritycompliance.v1.IntRange
-	(*StringList)(nil),                       // 21: google.cloud.cloudsecuritycompliance.v1.StringList
-	(*ParamValue)(nil),                       // 22: google.cloud.cloudsecuritycompliance.v1.ParamValue
-	(*ParameterSubstitutionRule)(nil),        // 23: google.cloud.cloudsecuritycompliance.v1.ParameterSubstitutionRule
-	(*AttributeSubstitutionRule)(nil),        // 24: google.cloud.cloudsecuritycompliance.v1.AttributeSubstitutionRule
-	(*PlaceholderSubstitutionRule)(nil),      // 25: google.cloud.cloudsecuritycompliance.v1.PlaceholderSubstitutionRule
-	(*Rule)(nil),                             // 26: google.cloud.cloudsecuritycompliance.v1.Rule
-	(*CELExpression)(nil),                    // 27: google.cloud.cloudsecuritycompliance.v1.CELExpression
-	(*OperationMetadata)(nil),                // 28: google.cloud.cloudsecuritycompliance.v1.OperationMetadata
-	(*ControlFamily)(nil),                    // 29: google.cloud.cloudsecuritycompliance.v1.ControlFamily
-	(*timestamppb.Timestamp)(nil),            // 30: google.protobuf.Timestamp
+	(Control_Family)(0),                      // 11: google.cloud.cloudsecuritycompliance.v1.Control.Family
+	(*Framework)(nil),                        // 12: google.cloud.cloudsecuritycompliance.v1.Framework
+	(*CloudControlDetails)(nil),              // 13: google.cloud.cloudsecuritycompliance.v1.CloudControlDetails
+	(*FrameworkReference)(nil),               // 14: google.cloud.cloudsecuritycompliance.v1.FrameworkReference
+	(*Parameter)(nil),                        // 15: google.cloud.cloudsecuritycompliance.v1.Parameter
+	(*CloudControl)(nil),                     // 16: google.cloud.cloudsecuritycompliance.v1.CloudControl
+	(*ParameterSpec)(nil),                    // 17: google.cloud.cloudsecuritycompliance.v1.ParameterSpec
+	(*Validation)(nil),                       // 18: google.cloud.cloudsecuritycompliance.v1.Validation
+	(*AllowedValues)(nil),                    // 19: google.cloud.cloudsecuritycompliance.v1.AllowedValues
+	(*RegexpPattern)(nil),                    // 20: google.cloud.cloudsecuritycompliance.v1.RegexpPattern
+	(*IntRange)(nil),                         // 21: google.cloud.cloudsecuritycompliance.v1.IntRange
+	(*StringList)(nil),                       // 22: google.cloud.cloudsecuritycompliance.v1.StringList
+	(*ParamValue)(nil),                       // 23: google.cloud.cloudsecuritycompliance.v1.ParamValue
+	(*ParameterSubstitutionRule)(nil),        // 24: google.cloud.cloudsecuritycompliance.v1.ParameterSubstitutionRule
+	(*AttributeSubstitutionRule)(nil),        // 25: google.cloud.cloudsecuritycompliance.v1.AttributeSubstitutionRule
+	(*PlaceholderSubstitutionRule)(nil),      // 26: google.cloud.cloudsecuritycompliance.v1.PlaceholderSubstitutionRule
+	(*Rule)(nil),                             // 27: google.cloud.cloudsecuritycompliance.v1.Rule
+	(*CELExpression)(nil),                    // 28: google.cloud.cloudsecuritycompliance.v1.CELExpression
+	(*OperationMetadata)(nil),                // 29: google.cloud.cloudsecuritycompliance.v1.OperationMetadata
+	(*Control)(nil),                          // 30: google.cloud.cloudsecuritycompliance.v1.Control
+	(*ControlFamily)(nil),                    // 31: google.cloud.cloudsecuritycompliance.v1.ControlFamily
+	(*timestamppb.Timestamp)(nil),            // 32: google.protobuf.Timestamp
 }
 var file_google_cloud_cloudsecuritycompliance_v1_common_proto_depIdxs = []int32{
 	8,  // 0: google.cloud.cloudsecuritycompliance.v1.Framework.type:type_name -> google.cloud.cloudsecuritycompliance.v1.Framework.FrameworkType
-	12, // 1: google.cloud.cloudsecuritycompliance.v1.Framework.cloud_control_details:type_name -> google.cloud.cloudsecuritycompliance.v1.CloudControlDetails
+	13, // 1: google.cloud.cloudsecuritycompliance.v1.Framework.cloud_control_details:type_name -> google.cloud.cloudsecuritycompliance.v1.CloudControlDetails
 	2,  // 2: google.cloud.cloudsecuritycompliance.v1.Framework.category:type_name -> google.cloud.cloudsecuritycompliance.v1.FrameworkCategory
 	4,  // 3: google.cloud.cloudsecuritycompliance.v1.Framework.supported_cloud_providers:type_name -> google.cloud.cloudsecuritycompliance.v1.CloudProvider
 	7,  // 4: google.cloud.cloudsecuritycompliance.v1.Framework.supported_target_resource_types:type_name -> google.cloud.cloudsecuritycompliance.v1.TargetResourceType
 	1,  // 5: google.cloud.cloudsecuritycompliance.v1.Framework.supported_enforcement_modes:type_name -> google.cloud.cloudsecuritycompliance.v1.EnforcementMode
-	14, // 6: google.cloud.cloudsecuritycompliance.v1.CloudControlDetails.parameters:type_name -> google.cloud.cloudsecuritycompliance.v1.Parameter
-	22, // 7: google.cloud.cloudsecuritycompliance.v1.Parameter.parameter_value:type_name -> google.cloud.cloudsecuritycompliance.v1.ParamValue
+	15, // 6: google.cloud.cloudsecuritycompliance.v1.CloudControlDetails.parameters:type_name -> google.cloud.cloudsecuritycompliance.v1.Parameter
+	23, // 7: google.cloud.cloudsecuritycompliance.v1.Parameter.parameter_value:type_name -> google.cloud.cloudsecuritycompliance.v1.ParamValue
 	1,  // 8: google.cloud.cloudsecuritycompliance.v1.CloudControl.supported_enforcement_modes:type_name -> google.cloud.cloudsecuritycompliance.v1.EnforcementMode
-	16, // 9: google.cloud.cloudsecuritycompliance.v1.CloudControl.parameter_spec:type_name -> google.cloud.cloudsecuritycompliance.v1.ParameterSpec
-	26, // 10: google.cloud.cloudsecuritycompliance.v1.CloudControl.rules:type_name -> google.cloud.cloudsecuritycompliance.v1.Rule
+	17, // 9: google.cloud.cloudsecuritycompliance.v1.CloudControl.parameter_spec:type_name -> google.cloud.cloudsecuritycompliance.v1.ParameterSpec
+	27, // 10: google.cloud.cloudsecuritycompliance.v1.CloudControl.rules:type_name -> google.cloud.cloudsecuritycompliance.v1.Rule
 	5,  // 11: google.cloud.cloudsecuritycompliance.v1.CloudControl.severity:type_name -> google.cloud.cloudsecuritycompliance.v1.Severity
 	4,  // 12: google.cloud.cloudsecuritycompliance.v1.CloudControl.supported_cloud_providers:type_name -> google.cloud.cloudsecuritycompliance.v1.CloudProvider
 	3,  // 13: google.cloud.cloudsecuritycompliance.v1.CloudControl.categories:type_name -> google.cloud.cloudsecuritycompliance.v1.CloudControlCategory
-	30, // 14: google.cloud.cloudsecuritycompliance.v1.CloudControl.create_time:type_name -> google.protobuf.Timestamp
+	32, // 14: google.cloud.cloudsecuritycompliance.v1.CloudControl.create_time:type_name -> google.protobuf.Timestamp
 	7,  // 15: google.cloud.cloudsecuritycompliance.v1.CloudControl.supported_target_resource_types:type_name -> google.cloud.cloudsecuritycompliance.v1.TargetResourceType
 	10, // 16: google.cloud.cloudsecuritycompliance.v1.ParameterSpec.value_type:type_name -> google.cloud.cloudsecuritycompliance.v1.ParameterSpec.ValueType
-	22, // 17: google.cloud.cloudsecuritycompliance.v1.ParameterSpec.default_value:type_name -> google.cloud.cloudsecuritycompliance.v1.ParamValue
-	23, // 18: google.cloud.cloudsecuritycompliance.v1.ParameterSpec.substitution_rules:type_name -> google.cloud.cloudsecuritycompliance.v1.ParameterSubstitutionRule
-	16, // 19: google.cloud.cloudsecuritycompliance.v1.ParameterSpec.sub_parameters:type_name -> google.cloud.cloudsecuritycompliance.v1.ParameterSpec
-	17, // 20: google.cloud.cloudsecuritycompliance.v1.ParameterSpec.validation:type_name -> google.cloud.cloudsecuritycompliance.v1.Validation
-	18, // 21: google.cloud.cloudsecuritycompliance.v1.Validation.allowed_values:type_name -> google.cloud.cloudsecuritycompliance.v1.AllowedValues
-	20, // 22: google.cloud.cloudsecuritycompliance.v1.Validation.int_range:type_name -> google.cloud.cloudsecuritycompliance.v1.IntRange
-	19, // 23: google.cloud.cloudsecuritycompliance.v1.Validation.regexp_pattern:type_name -> google.cloud.cloudsecuritycompliance.v1.RegexpPattern
-	22, // 24: google.cloud.cloudsecuritycompliance.v1.AllowedValues.values:type_name -> google.cloud.cloudsecuritycompliance.v1.ParamValue
-	21, // 25: google.cloud.cloudsecuritycompliance.v1.ParamValue.string_list_value:type_name -> google.cloud.cloudsecuritycompliance.v1.StringList
-	14, // 26: google.cloud.cloudsecuritycompliance.v1.ParamValue.oneof_value:type_name -> google.cloud.cloudsecuritycompliance.v1.Parameter
-	25, // 27: google.cloud.cloudsecuritycompliance.v1.ParameterSubstitutionRule.placeholder_substitution_rule:type_name -> google.cloud.cloudsecuritycompliance.v1.PlaceholderSubstitutionRule
-	24, // 28: google.cloud.cloudsecuritycompliance.v1.ParameterSubstitutionRule.attribute_substitution_rule:type_name -> google.cloud.cloudsecuritycompliance.v1.AttributeSubstitutionRule
-	27, // 29: google.cloud.cloudsecuritycompliance.v1.Rule.cel_expression:type_name -> google.cloud.cloudsecuritycompliance.v1.CELExpression
+	23, // 17: google.cloud.cloudsecuritycompliance.v1.ParameterSpec.default_value:type_name -> google.cloud.cloudsecuritycompliance.v1.ParamValue
+	24, // 18: google.cloud.cloudsecuritycompliance.v1.ParameterSpec.substitution_rules:type_name -> google.cloud.cloudsecuritycompliance.v1.ParameterSubstitutionRule
+	17, // 19: google.cloud.cloudsecuritycompliance.v1.ParameterSpec.sub_parameters:type_name -> google.cloud.cloudsecuritycompliance.v1.ParameterSpec
+	18, // 20: google.cloud.cloudsecuritycompliance.v1.ParameterSpec.validation:type_name -> google.cloud.cloudsecuritycompliance.v1.Validation
+	19, // 21: google.cloud.cloudsecuritycompliance.v1.Validation.allowed_values:type_name -> google.cloud.cloudsecuritycompliance.v1.AllowedValues
+	21, // 22: google.cloud.cloudsecuritycompliance.v1.Validation.int_range:type_name -> google.cloud.cloudsecuritycompliance.v1.IntRange
+	20, // 23: google.cloud.cloudsecuritycompliance.v1.Validation.regexp_pattern:type_name -> google.cloud.cloudsecuritycompliance.v1.RegexpPattern
+	23, // 24: google.cloud.cloudsecuritycompliance.v1.AllowedValues.values:type_name -> google.cloud.cloudsecuritycompliance.v1.ParamValue
+	22, // 25: google.cloud.cloudsecuritycompliance.v1.ParamValue.string_list_value:type_name -> google.cloud.cloudsecuritycompliance.v1.StringList
+	15, // 26: google.cloud.cloudsecuritycompliance.v1.ParamValue.oneof_value:type_name -> google.cloud.cloudsecuritycompliance.v1.Parameter
+	26, // 27: google.cloud.cloudsecuritycompliance.v1.ParameterSubstitutionRule.placeholder_substitution_rule:type_name -> google.cloud.cloudsecuritycompliance.v1.PlaceholderSubstitutionRule
+	25, // 28: google.cloud.cloudsecuritycompliance.v1.ParameterSubstitutionRule.attribute_substitution_rule:type_name -> google.cloud.cloudsecuritycompliance.v1.AttributeSubstitutionRule
+	28, // 29: google.cloud.cloudsecuritycompliance.v1.Rule.cel_expression:type_name -> google.cloud.cloudsecuritycompliance.v1.CELExpression
 	6,  // 30: google.cloud.cloudsecuritycompliance.v1.Rule.rule_action_types:type_name -> google.cloud.cloudsecuritycompliance.v1.RuleActionType
-	21, // 31: google.cloud.cloudsecuritycompliance.v1.CELExpression.resource_types_values:type_name -> google.cloud.cloudsecuritycompliance.v1.StringList
-	30, // 32: google.cloud.cloudsecuritycompliance.v1.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
-	30, // 33: google.cloud.cloudsecuritycompliance.v1.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
-	34, // [34:34] is the sub-list for method output_type
-	34, // [34:34] is the sub-list for method input_type
-	34, // [34:34] is the sub-list for extension type_name
-	34, // [34:34] is the sub-list for extension extendee
-	0,  // [0:34] is the sub-list for field type_name
+	22, // 31: google.cloud.cloudsecuritycompliance.v1.CELExpression.resource_types_values:type_name -> google.cloud.cloudsecuritycompliance.v1.StringList
+	32, // 32: google.cloud.cloudsecuritycompliance.v1.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
+	32, // 33: google.cloud.cloudsecuritycompliance.v1.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
+	11, // 34: google.cloud.cloudsecuritycompliance.v1.Control.family:type_name -> google.cloud.cloudsecuritycompliance.v1.Control.Family
+	31, // 35: google.cloud.cloudsecuritycompliance.v1.Control.control_family:type_name -> google.cloud.cloudsecuritycompliance.v1.ControlFamily
+	0,  // 36: google.cloud.cloudsecuritycompliance.v1.Control.responsibility_type:type_name -> google.cloud.cloudsecuritycompliance.v1.RegulatoryControlResponsibilityType
+	37, // [37:37] is the sub-list for method output_type
+	37, // [37:37] is the sub-list for method input_type
+	37, // [37:37] is the sub-list for extension type_name
+	37, // [37:37] is the sub-list for extension extendee
+	0,  // [0:37] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_cloudsecuritycompliance_v1_common_proto_init() }
@@ -2670,8 +3028,8 @@ func file_google_cloud_cloudsecuritycompliance_v1_common_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_cloudsecuritycompliance_v1_common_proto_rawDesc), len(file_google_cloud_cloudsecuritycompliance_v1_common_proto_rawDesc)),
-			NumEnums:      11,
-			NumMessages:   19,
+			NumEnums:      12,
+			NumMessages:   20,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

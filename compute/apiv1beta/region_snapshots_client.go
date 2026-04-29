@@ -50,6 +50,7 @@ type RegionSnapshotsCallOptions struct {
 	SetIamPolicy       []gax.CallOption
 	SetLabels          []gax.CallOption
 	TestIamPermissions []gax.CallOption
+	UpdateKmsKey       []gax.CallOption
 }
 
 func defaultRegionSnapshotsRESTCallOptions() *RegionSnapshotsCallOptions {
@@ -105,6 +106,9 @@ func defaultRegionSnapshotsRESTCallOptions() *RegionSnapshotsCallOptions {
 		TestIamPermissions: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		UpdateKmsKey: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 
@@ -121,6 +125,7 @@ type internalRegionSnapshotsClient interface {
 	SetIamPolicy(context.Context, *computepb.SetIamPolicyRegionSnapshotRequest, ...gax.CallOption) (*computepb.Policy, error)
 	SetLabels(context.Context, *computepb.SetLabelsRegionSnapshotRequest, ...gax.CallOption) (*Operation, error)
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsRegionSnapshotRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
+	UpdateKmsKey(context.Context, *computepb.UpdateKmsKeyRegionSnapshotRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // RegionSnapshotsClient is a client for interacting with Google Compute Engine API.
@@ -211,6 +216,12 @@ func (c *RegionSnapshotsClient) TestIamPermissions(ctx context.Context, req *com
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
+// UpdateKmsKey rotates the customer-managed
+// encryption key to the latest version for the specified snapshot.
+func (c *RegionSnapshotsClient) UpdateKmsKey(ctx context.Context, req *computepb.UpdateKmsKeyRegionSnapshotRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.UpdateKmsKey(ctx, req, opts...)
+}
+
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type regionSnapshotsRESTClient struct {
 	// The http endpoint to connect to.
@@ -280,6 +291,7 @@ func NewRegionSnapshotsRESTClient(ctx context.Context, opts ...option.ClientOpti
 		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
 		callOpts.SetLabels = append(callOpts.SetLabels, gax.WithClientMetrics(metrics))
 		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+		callOpts.UpdateKmsKey = append(callOpts.UpdateKmsKey, gax.WithClientMetrics(metrics))
 	}
 
 	o := []option.ClientOption{
@@ -877,4 +889,79 @@ func (c *regionSnapshotsRESTClient) TestIamPermissions(ctx context.Context, req 
 		return nil, e
 	}
 	return resp, nil
+}
+
+// UpdateKmsKey rotates the customer-managed
+// encryption key to the latest version for the specified snapshot.
+func (c *regionSnapshotsRESTClient) UpdateKmsKey(ctx context.Context, req *computepb.UpdateKmsKeyRegionSnapshotRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetRegionSnapshotUpdateKmsKeyRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/snapshots/%v/updateKmsKey", req.GetProject(), req.GetRegion(), req.GetSnapshot())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "snapshot", url.QueryEscape(req.GetSnapshot()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/regions/%v/snapshots/%v", req.GetProject(), req.GetRegion(), req.GetSnapshot()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionSnapshots/UpdateKmsKey")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/snapshots/{snapshot}/updateKmsKey")
+	}
+	opts = append((*c.CallOptions).UpdateKmsKey[0:len((*c.CallOptions).UpdateKmsKey):len((*c.CallOptions).UpdateKmsKey)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateKmsKey")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
+	return op, nil
 }

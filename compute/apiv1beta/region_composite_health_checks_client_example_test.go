@@ -131,6 +131,31 @@ func ExampleRegionCompositeHealthChecksClient_Get() {
 	_ = resp
 }
 
+func ExampleRegionCompositeHealthChecksClient_GetHealth() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := compute.NewRegionCompositeHealthChecksRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.GetHealthRegionCompositeHealthCheckRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1beta/computepb#GetHealthRegionCompositeHealthCheckRequest.
+	}
+	resp, err := c.GetHealth(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleRegionCompositeHealthChecksClient_Insert() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.

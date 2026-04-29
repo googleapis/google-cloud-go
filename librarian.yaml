@@ -16,9 +16,9 @@ version: v0.11.0
 repo: googleapis/google-cloud-go
 sources:
   googleapis:
-    commit: 939ba3bf8408af83f0f73ae35c76c4b11a8c8c8d
-    sha256: 70829cda81b9c69ae4f5f2a42f347c263b62cd69eb6a87b70555aab6ae5b6d74
-tools: 
+    commit: 7edd1a451462607fc38c08dfeed1a6219d0db327
+    sha256: c2b0dbd1acc248f2deba3bba4d0f4c05cf793baa0d50b92a91be69acb08aa7e8
+tools:
   go:
     - name: github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic
       version: v0.59.0
@@ -83,6 +83,7 @@ libraries:
           path: google/ai/generativelanguage/v1alpha
   - name: aiplatform
     version: 1.124.0
+    skip_generate: true
     apis:
       - path: google/cloud/aiplatform/v1
       - path: google/cloud/aiplatform/v1beta1

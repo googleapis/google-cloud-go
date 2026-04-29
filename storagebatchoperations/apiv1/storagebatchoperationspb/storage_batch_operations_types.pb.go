@@ -1756,13 +1756,25 @@ type Counters struct {
 	TotalObjectCount int64 `protobuf:"varint,1,opt,name=total_object_count,json=totalObjectCount,proto3" json:"total_object_count,omitempty"`
 	// Output only. Number of objects completed.
 	SucceededObjectCount int64 `protobuf:"varint,2,opt,name=succeeded_object_count,json=succeededObjectCount,proto3" json:"succeeded_object_count,omitempty"`
-	// Output only. Number of objects failed.
+	// Output only. The number of objects that failed due to user errors or
+	// service errors.
 	FailedObjectCount int64 `protobuf:"varint,3,opt,name=failed_object_count,json=failedObjectCount,proto3" json:"failed_object_count,omitempty"`
 	// Output only. Number of bytes found from source. This field is only
 	// populated for jobs with a prefix list object configuration.
 	TotalBytesFound *int64 `protobuf:"varint,4,opt,name=total_bytes_found,json=totalBytesFound,proto3,oneof" json:"total_bytes_found,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	// Output only. Number of object custom contexts created. This field is only
+	// populated for jobs with the UpdateObjectCustomContext transformation.
+	ObjectCustomContextsCreated *int64 `protobuf:"varint,5,opt,name=object_custom_contexts_created,json=objectCustomContextsCreated,proto3,oneof" json:"object_custom_contexts_created,omitempty"`
+	// Output only. Number of object custom contexts deleted. This field is only
+	// populated for jobs with the UpdateObjectCustomContext transformation.
+	ObjectCustomContextsDeleted *int64 `protobuf:"varint,6,opt,name=object_custom_contexts_deleted,json=objectCustomContextsDeleted,proto3,oneof" json:"object_custom_contexts_deleted,omitempty"`
+	// Output only. Number of object custom contexts updated. This counter tracks
+	// custom contexts where the key already existed, but the payload was
+	// modified. This field is only populated for jobs with the
+	// UpdateObjectCustomContext transformation.
+	ObjectCustomContextsUpdated *int64 `protobuf:"varint,7,opt,name=object_custom_contexts_updated,json=objectCustomContextsUpdated,proto3,oneof" json:"object_custom_contexts_updated,omitempty"`
+	unknownFields               protoimpl.UnknownFields
+	sizeCache                   protoimpl.SizeCache
 }
 
 func (x *Counters) Reset() {
@@ -1819,6 +1831,27 @@ func (x *Counters) GetFailedObjectCount() int64 {
 func (x *Counters) GetTotalBytesFound() int64 {
 	if x != nil && x.TotalBytesFound != nil {
 		return *x.TotalBytesFound
+	}
+	return 0
+}
+
+func (x *Counters) GetObjectCustomContextsCreated() int64 {
+	if x != nil && x.ObjectCustomContextsCreated != nil {
+		return *x.ObjectCustomContextsCreated
+	}
+	return 0
+}
+
+func (x *Counters) GetObjectCustomContextsDeleted() int64 {
+	if x != nil && x.ObjectCustomContextsDeleted != nil {
+		return *x.ObjectCustomContextsDeleted
+	}
+	return 0
+}
+
+func (x *Counters) GetObjectCustomContextsUpdated() int64 {
+	if x != nil && x.ObjectCustomContextsUpdated != nil {
+		return *x.ObjectCustomContextsUpdated
 	}
 	return 0
 }
@@ -2128,13 +2161,19 @@ const file_google_cloud_storagebatchoperations_v1_storage_batch_operations_types
 	"\rErrorLogEntry\x12%\n" +
 	"\n" +
 	"object_uri\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\x03R\tobjectUri\x12+\n" +
-	"\rerror_details\x18\x03 \x03(\tB\x06\xe0A\x01\xe0A\x03R\ferrorDetails\"\xf9\x01\n" +
+	"\rerror_details\x18\x03 \x03(\tB\x06\xe0A\x01\xe0A\x03R\ferrorDetails\"\xcf\x04\n" +
 	"\bCounters\x121\n" +
 	"\x12total_object_count\x18\x01 \x01(\x03B\x03\xe0A\x03R\x10totalObjectCount\x129\n" +
 	"\x16succeeded_object_count\x18\x02 \x01(\x03B\x03\xe0A\x03R\x14succeededObjectCount\x123\n" +
 	"\x13failed_object_count\x18\x03 \x01(\x03B\x03\xe0A\x03R\x11failedObjectCount\x124\n" +
-	"\x11total_bytes_found\x18\x04 \x01(\x03B\x03\xe0A\x03H\x00R\x0ftotalBytesFound\x88\x01\x01B\x14\n" +
-	"\x12_total_bytes_found\"\x92\x03\n" +
+	"\x11total_bytes_found\x18\x04 \x01(\x03B\x03\xe0A\x03H\x00R\x0ftotalBytesFound\x88\x01\x01\x12M\n" +
+	"\x1eobject_custom_contexts_created\x18\x05 \x01(\x03B\x03\xe0A\x03H\x01R\x1bobjectCustomContextsCreated\x88\x01\x01\x12M\n" +
+	"\x1eobject_custom_contexts_deleted\x18\x06 \x01(\x03B\x03\xe0A\x03H\x02R\x1bobjectCustomContextsDeleted\x88\x01\x01\x12M\n" +
+	"\x1eobject_custom_contexts_updated\x18\a \x01(\x03B\x03\xe0A\x03H\x03R\x1bobjectCustomContextsUpdated\x88\x01\x01B\x14\n" +
+	"\x12_total_bytes_foundB!\n" +
+	"\x1f_object_custom_contexts_createdB!\n" +
+	"\x1f_object_custom_contexts_deletedB!\n" +
+	"\x1f_object_custom_contexts_updated\"\x92\x03\n" +
 	"\rLoggingConfig\x12j\n" +
 	"\vlog_actions\x18\x01 \x03(\x0e2D.google.cloud.storagebatchoperations.v1.LoggingConfig.LoggableActionB\x03\xe0A\x02R\n" +
 	"logActions\x12z\n" +

@@ -443,6 +443,107 @@ func (Index_IndexField_ArrayConfig) EnumDescriptor() ([]byte, []int) {
 	return file_google_firestore_admin_v1_index_proto_rawDescGZIP(), []int{0, 0, 1}
 }
 
+// Ways to index the text field value.
+type Index_IndexField_SearchConfig_TextIndexType int32
+
+const (
+	// The index type is unspecified. Not a valid option.
+	Index_IndexField_SearchConfig_TEXT_INDEX_TYPE_UNSPECIFIED Index_IndexField_SearchConfig_TextIndexType = 0
+	// Field values are tokenized. This is the only way currently supported
+	// for MONGODB_COMPATIBLE_API.
+	Index_IndexField_SearchConfig_TOKENIZED Index_IndexField_SearchConfig_TextIndexType = 1
+)
+
+// Enum value maps for Index_IndexField_SearchConfig_TextIndexType.
+var (
+	Index_IndexField_SearchConfig_TextIndexType_name = map[int32]string{
+		0: "TEXT_INDEX_TYPE_UNSPECIFIED",
+		1: "TOKENIZED",
+	}
+	Index_IndexField_SearchConfig_TextIndexType_value = map[string]int32{
+		"TEXT_INDEX_TYPE_UNSPECIFIED": 0,
+		"TOKENIZED":                   1,
+	}
+)
+
+func (x Index_IndexField_SearchConfig_TextIndexType) Enum() *Index_IndexField_SearchConfig_TextIndexType {
+	p := new(Index_IndexField_SearchConfig_TextIndexType)
+	*p = x
+	return p
+}
+
+func (x Index_IndexField_SearchConfig_TextIndexType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Index_IndexField_SearchConfig_TextIndexType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_firestore_admin_v1_index_proto_enumTypes[6].Descriptor()
+}
+
+func (Index_IndexField_SearchConfig_TextIndexType) Type() protoreflect.EnumType {
+	return &file_google_firestore_admin_v1_index_proto_enumTypes[6]
+}
+
+func (x Index_IndexField_SearchConfig_TextIndexType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Index_IndexField_SearchConfig_TextIndexType.Descriptor instead.
+func (Index_IndexField_SearchConfig_TextIndexType) EnumDescriptor() ([]byte, []int) {
+	return file_google_firestore_admin_v1_index_proto_rawDescGZIP(), []int{0, 0, 1, 0}
+}
+
+// Types of text matches that are supported for the
+// field.
+type Index_IndexField_SearchConfig_TextMatchType int32
+
+const (
+	// The match type is unspecified. Not a valid option.
+	Index_IndexField_SearchConfig_TEXT_MATCH_TYPE_UNSPECIFIED Index_IndexField_SearchConfig_TextMatchType = 0
+	// Match on any indexed field. This is the only way currently supported
+	// for MONGODB_COMPATIBLE_API.
+	Index_IndexField_SearchConfig_MATCH_GLOBALLY Index_IndexField_SearchConfig_TextMatchType = 1
+)
+
+// Enum value maps for Index_IndexField_SearchConfig_TextMatchType.
+var (
+	Index_IndexField_SearchConfig_TextMatchType_name = map[int32]string{
+		0: "TEXT_MATCH_TYPE_UNSPECIFIED",
+		1: "MATCH_GLOBALLY",
+	}
+	Index_IndexField_SearchConfig_TextMatchType_value = map[string]int32{
+		"TEXT_MATCH_TYPE_UNSPECIFIED": 0,
+		"MATCH_GLOBALLY":              1,
+	}
+)
+
+func (x Index_IndexField_SearchConfig_TextMatchType) Enum() *Index_IndexField_SearchConfig_TextMatchType {
+	p := new(Index_IndexField_SearchConfig_TextMatchType)
+	*p = x
+	return p
+}
+
+func (x Index_IndexField_SearchConfig_TextMatchType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Index_IndexField_SearchConfig_TextMatchType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_firestore_admin_v1_index_proto_enumTypes[7].Descriptor()
+}
+
+func (Index_IndexField_SearchConfig_TextMatchType) Type() protoreflect.EnumType {
+	return &file_google_firestore_admin_v1_index_proto_enumTypes[7]
+}
+
+func (x Index_IndexField_SearchConfig_TextMatchType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Index_IndexField_SearchConfig_TextMatchType.Descriptor instead.
+func (Index_IndexField_SearchConfig_TextMatchType) EnumDescriptor() ([]byte, []int) {
+	return file_google_firestore_admin_v1_index_proto_rawDescGZIP(), []int{0, 0, 1, 1}
+}
+
 // Cloud Firestore indexes enable simple and complex queries against
 // documents in a database.
 type Index struct {
@@ -491,9 +592,13 @@ type Index struct {
 	ShardCount int32 `protobuf:"varint,8,opt,name=shard_count,json=shardCount,proto3" json:"shard_count,omitempty"`
 	// Optional. Whether it is an unique index. Unique index ensures all values
 	// for the indexed field(s) are unique across documents.
-	Unique        bool `protobuf:"varint,10,opt,name=unique,proto3" json:"unique,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Unique bool `protobuf:"varint,10,opt,name=unique,proto3" json:"unique,omitempty"`
+	// Optional. Options for search indexes that are at the index definition
+	// level. This field is only currently supported for indexes with
+	// MONGODB_COMPATIBLE_API ApiScope.
+	SearchIndexOptions *Index_SearchIndexOptions `protobuf:"bytes,9,opt,name=search_index_options,json=searchIndexOptions,proto3" json:"search_index_options,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *Index) Reset() {
@@ -589,6 +694,13 @@ func (x *Index) GetUnique() bool {
 	return false
 }
 
+func (x *Index) GetSearchIndexOptions() *Index_SearchIndexOptions {
+	if x != nil {
+		return x.SearchIndexOptions
+	}
+	return nil
+}
+
 // A field in an index.
 // The field_path describes which field is indexed, the value_mode describes
 // how the field value is indexed.
@@ -605,6 +717,7 @@ type Index_IndexField struct {
 	//	*Index_IndexField_Order_
 	//	*Index_IndexField_ArrayConfig_
 	//	*Index_IndexField_VectorConfig_
+	//	*Index_IndexField_SearchConfig_
 	ValueMode     isIndex_IndexField_ValueMode `protobuf_oneof:"value_mode"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -681,6 +794,15 @@ func (x *Index_IndexField) GetVectorConfig() *Index_IndexField_VectorConfig {
 	return nil
 }
 
+func (x *Index_IndexField) GetSearchConfig() *Index_IndexField_SearchConfig {
+	if x != nil {
+		if x, ok := x.ValueMode.(*Index_IndexField_SearchConfig_); ok {
+			return x.SearchConfig
+		}
+	}
+	return nil
+}
+
 type isIndex_IndexField_ValueMode interface {
 	isIndex_IndexField_ValueMode()
 }
@@ -702,11 +824,85 @@ type Index_IndexField_VectorConfig_ struct {
 	VectorConfig *Index_IndexField_VectorConfig `protobuf:"bytes,4,opt,name=vector_config,json=vectorConfig,proto3,oneof"`
 }
 
+type Index_IndexField_SearchConfig_ struct {
+	// Indicates that this field supports search operations. This field
+	// is only currently supported for indexes with MONGODB_COMPATIBLE_API
+	// ApiScope.
+	SearchConfig *Index_IndexField_SearchConfig `protobuf:"bytes,5,opt,name=search_config,json=searchConfig,proto3,oneof"`
+}
+
 func (*Index_IndexField_Order_) isIndex_IndexField_ValueMode() {}
 
 func (*Index_IndexField_ArrayConfig_) isIndex_IndexField_ValueMode() {}
 
 func (*Index_IndexField_VectorConfig_) isIndex_IndexField_ValueMode() {}
+
+func (*Index_IndexField_SearchConfig_) isIndex_IndexField_ValueMode() {}
+
+// Options for search indexes at the definition level.
+type Index_SearchIndexOptions struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The language to use for text search indexes. Used as the
+	// default language if not overridden at the document level by specifying
+	// the `text_language_override_field`. The language is specified as a BCP 47
+	// language code.
+	// For indexes with MONGODB_COMPATIBLE_API ApiScope: If unspecified, the
+	// default language is English.
+	// For indexes with `ANY_API` ApiScope: If unspecified, the default behavior
+	// is autodetect.
+	TextLanguage string `protobuf:"bytes,1,opt,name=text_language,json=textLanguage,proto3" json:"text_language,omitempty"`
+	// Optional. The field in the document that specifies which language to use
+	// for that specific document. For indexes with MONGODB_COMPATIBLE_API
+	// ApiScope: if unspecified, the language is taken from the "language" field
+	// if it exists or from `text_language` if it does not.
+	TextLanguageOverrideFieldPath string `protobuf:"bytes,2,opt,name=text_language_override_field_path,json=textLanguageOverrideFieldPath,proto3" json:"text_language_override_field_path,omitempty"`
+	unknownFields                 protoimpl.UnknownFields
+	sizeCache                     protoimpl.SizeCache
+}
+
+func (x *Index_SearchIndexOptions) Reset() {
+	*x = Index_SearchIndexOptions{}
+	mi := &file_google_firestore_admin_v1_index_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Index_SearchIndexOptions) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Index_SearchIndexOptions) ProtoMessage() {}
+
+func (x *Index_SearchIndexOptions) ProtoReflect() protoreflect.Message {
+	mi := &file_google_firestore_admin_v1_index_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Index_SearchIndexOptions.ProtoReflect.Descriptor instead.
+func (*Index_SearchIndexOptions) Descriptor() ([]byte, []int) {
+	return file_google_firestore_admin_v1_index_proto_rawDescGZIP(), []int{0, 1}
+}
+
+func (x *Index_SearchIndexOptions) GetTextLanguage() string {
+	if x != nil {
+		return x.TextLanguage
+	}
+	return ""
+}
+
+func (x *Index_SearchIndexOptions) GetTextLanguageOverrideFieldPath() string {
+	if x != nil {
+		return x.TextLanguageOverrideFieldPath
+	}
+	return ""
+}
 
 // The index configuration to support vector search operations
 type Index_IndexField_VectorConfig struct {
@@ -728,7 +924,7 @@ type Index_IndexField_VectorConfig struct {
 
 func (x *Index_IndexField_VectorConfig) Reset() {
 	*x = Index_IndexField_VectorConfig{}
-	mi := &file_google_firestore_admin_v1_index_proto_msgTypes[2]
+	mi := &file_google_firestore_admin_v1_index_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -740,7 +936,7 @@ func (x *Index_IndexField_VectorConfig) String() string {
 func (*Index_IndexField_VectorConfig) ProtoMessage() {}
 
 func (x *Index_IndexField_VectorConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_firestore_admin_v1_index_proto_msgTypes[2]
+	mi := &file_google_firestore_admin_v1_index_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -790,6 +986,63 @@ type Index_IndexField_VectorConfig_Flat struct {
 
 func (*Index_IndexField_VectorConfig_Flat) isIndex_IndexField_VectorConfig_Type() {}
 
+// The configuration for how to index a field for search.
+type Index_IndexField_SearchConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The specification for building a text search index for a
+	// field.
+	TextSpec *Index_IndexField_SearchConfig_SearchTextSpec `protobuf:"bytes,1,opt,name=text_spec,json=textSpec,proto3" json:"text_spec,omitempty"`
+	// Optional. The specification for building a geo search index for a
+	// field.
+	GeoSpec       *Index_IndexField_SearchConfig_SearchGeoSpec `protobuf:"bytes,2,opt,name=geo_spec,json=geoSpec,proto3" json:"geo_spec,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Index_IndexField_SearchConfig) Reset() {
+	*x = Index_IndexField_SearchConfig{}
+	mi := &file_google_firestore_admin_v1_index_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Index_IndexField_SearchConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Index_IndexField_SearchConfig) ProtoMessage() {}
+
+func (x *Index_IndexField_SearchConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_firestore_admin_v1_index_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Index_IndexField_SearchConfig.ProtoReflect.Descriptor instead.
+func (*Index_IndexField_SearchConfig) Descriptor() ([]byte, []int) {
+	return file_google_firestore_admin_v1_index_proto_rawDescGZIP(), []int{0, 0, 1}
+}
+
+func (x *Index_IndexField_SearchConfig) GetTextSpec() *Index_IndexField_SearchConfig_SearchTextSpec {
+	if x != nil {
+		return x.TextSpec
+	}
+	return nil
+}
+
+func (x *Index_IndexField_SearchConfig) GetGeoSpec() *Index_IndexField_SearchConfig_SearchGeoSpec {
+	if x != nil {
+		return x.GeoSpec
+	}
+	return nil
+}
+
 // An index that stores vectors in a flat data structure, and supports
 // exhaustive search.
 type Index_IndexField_VectorConfig_FlatIndex struct {
@@ -800,7 +1053,7 @@ type Index_IndexField_VectorConfig_FlatIndex struct {
 
 func (x *Index_IndexField_VectorConfig_FlatIndex) Reset() {
 	*x = Index_IndexField_VectorConfig_FlatIndex{}
-	mi := &file_google_firestore_admin_v1_index_proto_msgTypes[3]
+	mi := &file_google_firestore_admin_v1_index_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -812,7 +1065,7 @@ func (x *Index_IndexField_VectorConfig_FlatIndex) String() string {
 func (*Index_IndexField_VectorConfig_FlatIndex) ProtoMessage() {}
 
 func (x *Index_IndexField_VectorConfig_FlatIndex) ProtoReflect() protoreflect.Message {
-	mi := &file_google_firestore_admin_v1_index_proto_msgTypes[3]
+	mi := &file_google_firestore_admin_v1_index_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -828,11 +1081,161 @@ func (*Index_IndexField_VectorConfig_FlatIndex) Descriptor() ([]byte, []int) {
 	return file_google_firestore_admin_v1_index_proto_rawDescGZIP(), []int{0, 0, 0, 0}
 }
 
+// Specification of how the field should be indexed for search text
+// indexes.
+type Index_IndexField_SearchConfig_SearchTextIndexSpec struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. How to index the text field value.
+	IndexType Index_IndexField_SearchConfig_TextIndexType `protobuf:"varint,1,opt,name=index_type,json=indexType,proto3,enum=google.firestore.admin.v1.Index_IndexField_SearchConfig_TextIndexType" json:"index_type,omitempty"`
+	// Required. How to match the text field value.
+	MatchType     Index_IndexField_SearchConfig_TextMatchType `protobuf:"varint,2,opt,name=match_type,json=matchType,proto3,enum=google.firestore.admin.v1.Index_IndexField_SearchConfig_TextMatchType" json:"match_type,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Index_IndexField_SearchConfig_SearchTextIndexSpec) Reset() {
+	*x = Index_IndexField_SearchConfig_SearchTextIndexSpec{}
+	mi := &file_google_firestore_admin_v1_index_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Index_IndexField_SearchConfig_SearchTextIndexSpec) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Index_IndexField_SearchConfig_SearchTextIndexSpec) ProtoMessage() {}
+
+func (x *Index_IndexField_SearchConfig_SearchTextIndexSpec) ProtoReflect() protoreflect.Message {
+	mi := &file_google_firestore_admin_v1_index_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Index_IndexField_SearchConfig_SearchTextIndexSpec.ProtoReflect.Descriptor instead.
+func (*Index_IndexField_SearchConfig_SearchTextIndexSpec) Descriptor() ([]byte, []int) {
+	return file_google_firestore_admin_v1_index_proto_rawDescGZIP(), []int{0, 0, 1, 0}
+}
+
+func (x *Index_IndexField_SearchConfig_SearchTextIndexSpec) GetIndexType() Index_IndexField_SearchConfig_TextIndexType {
+	if x != nil {
+		return x.IndexType
+	}
+	return Index_IndexField_SearchConfig_TEXT_INDEX_TYPE_UNSPECIFIED
+}
+
+func (x *Index_IndexField_SearchConfig_SearchTextIndexSpec) GetMatchType() Index_IndexField_SearchConfig_TextMatchType {
+	if x != nil {
+		return x.MatchType
+	}
+	return Index_IndexField_SearchConfig_TEXT_MATCH_TYPE_UNSPECIFIED
+}
+
+// The specification for how to build a text search index for a field.
+type Index_IndexField_SearchConfig_SearchTextSpec struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Specifications for how the field should be indexed.
+	// Repeated so that the field can be indexed in multiple ways.
+	IndexSpecs    []*Index_IndexField_SearchConfig_SearchTextIndexSpec `protobuf:"bytes,1,rep,name=index_specs,json=indexSpecs,proto3" json:"index_specs,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Index_IndexField_SearchConfig_SearchTextSpec) Reset() {
+	*x = Index_IndexField_SearchConfig_SearchTextSpec{}
+	mi := &file_google_firestore_admin_v1_index_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Index_IndexField_SearchConfig_SearchTextSpec) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Index_IndexField_SearchConfig_SearchTextSpec) ProtoMessage() {}
+
+func (x *Index_IndexField_SearchConfig_SearchTextSpec) ProtoReflect() protoreflect.Message {
+	mi := &file_google_firestore_admin_v1_index_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Index_IndexField_SearchConfig_SearchTextSpec.ProtoReflect.Descriptor instead.
+func (*Index_IndexField_SearchConfig_SearchTextSpec) Descriptor() ([]byte, []int) {
+	return file_google_firestore_admin_v1_index_proto_rawDescGZIP(), []int{0, 0, 1, 1}
+}
+
+func (x *Index_IndexField_SearchConfig_SearchTextSpec) GetIndexSpecs() []*Index_IndexField_SearchConfig_SearchTextIndexSpec {
+	if x != nil {
+		return x.IndexSpecs
+	}
+	return nil
+}
+
+// The specification for how to build a geo search index for a field.
+type Index_IndexField_SearchConfig_SearchGeoSpec struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Disables geoJSON indexing for the field. By default,
+	// geoJSON points are indexed.
+	GeoJsonIndexingDisabled bool `protobuf:"varint,1,opt,name=geo_json_indexing_disabled,json=geoJsonIndexingDisabled,proto3" json:"geo_json_indexing_disabled,omitempty"`
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
+}
+
+func (x *Index_IndexField_SearchConfig_SearchGeoSpec) Reset() {
+	*x = Index_IndexField_SearchConfig_SearchGeoSpec{}
+	mi := &file_google_firestore_admin_v1_index_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Index_IndexField_SearchConfig_SearchGeoSpec) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Index_IndexField_SearchConfig_SearchGeoSpec) ProtoMessage() {}
+
+func (x *Index_IndexField_SearchConfig_SearchGeoSpec) ProtoReflect() protoreflect.Message {
+	mi := &file_google_firestore_admin_v1_index_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Index_IndexField_SearchConfig_SearchGeoSpec.ProtoReflect.Descriptor instead.
+func (*Index_IndexField_SearchConfig_SearchGeoSpec) Descriptor() ([]byte, []int) {
+	return file_google_firestore_admin_v1_index_proto_rawDescGZIP(), []int{0, 0, 1, 2}
+}
+
+func (x *Index_IndexField_SearchConfig_SearchGeoSpec) GetGeoJsonIndexingDisabled() bool {
+	if x != nil {
+		return x.GeoJsonIndexingDisabled
+	}
+	return false
+}
+
 var File_google_firestore_admin_v1_index_proto protoreflect.FileDescriptor
 
 const file_google_firestore_admin_v1_index_proto_rawDesc = "" +
 	"\n" +
-	"%google/firestore/admin/v1/index.proto\x12\x19google.firestore.admin.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x92\f\n" +
+	"%google/firestore/admin/v1/index.proto\x12\x19google.firestore.admin.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xa4\x15\n" +
 	"\x05Index\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12L\n" +
 	"\vquery_scope\x18\x02 \x01(\x0e2+.google.firestore.admin.v1.Index.QueryScopeR\n" +
@@ -845,19 +1248,40 @@ const file_google_firestore_admin_v1_index_proto_rawDesc = "" +
 	"\vshard_count\x18\b \x01(\x05B\x03\xe0A\x01R\n" +
 	"shardCount\x12\x1b\n" +
 	"\x06unique\x18\n" +
-	" \x01(\bB\x03\xe0A\x01R\x06unique\x1a\xe0\x04\n" +
+	" \x01(\bB\x03\xe0A\x01R\x06unique\x12j\n" +
+	"\x14search_index_options\x18\t \x01(\v23.google.firestore.admin.v1.Index.SearchIndexOptionsB\x03\xe0A\x01R\x12searchIndexOptions\x1a\xf6\v\n" +
 	"\n" +
 	"IndexField\x12\x1d\n" +
 	"\n" +
 	"field_path\x18\x01 \x01(\tR\tfieldPath\x12I\n" +
 	"\x05order\x18\x02 \x01(\x0e21.google.firestore.admin.v1.Index.IndexField.OrderH\x00R\x05order\x12\\\n" +
 	"\farray_config\x18\x03 \x01(\x0e27.google.firestore.admin.v1.Index.IndexField.ArrayConfigH\x00R\varrayConfig\x12_\n" +
-	"\rvector_config\x18\x04 \x01(\v28.google.firestore.admin.v1.Index.IndexField.VectorConfigH\x00R\fvectorConfig\x1a\xa0\x01\n" +
+	"\rvector_config\x18\x04 \x01(\v28.google.firestore.admin.v1.Index.IndexField.VectorConfigH\x00R\fvectorConfig\x12_\n" +
+	"\rsearch_config\x18\x05 \x01(\v28.google.firestore.admin.v1.Index.IndexField.SearchConfigH\x00R\fsearchConfig\x1a\xa0\x01\n" +
 	"\fVectorConfig\x12!\n" +
 	"\tdimension\x18\x01 \x01(\x05B\x03\xe0A\x02R\tdimension\x12X\n" +
 	"\x04flat\x18\x02 \x01(\v2B.google.firestore.admin.v1.Index.IndexField.VectorConfig.FlatIndexH\x00R\x04flat\x1a\v\n" +
 	"\tFlatIndexB\x06\n" +
-	"\x04type\"=\n" +
+	"\x04type\x1a\xb2\x06\n" +
+	"\fSearchConfig\x12i\n" +
+	"\ttext_spec\x18\x01 \x01(\v2G.google.firestore.admin.v1.Index.IndexField.SearchConfig.SearchTextSpecB\x03\xe0A\x01R\btextSpec\x12f\n" +
+	"\bgeo_spec\x18\x02 \x01(\v2F.google.firestore.admin.v1.Index.IndexField.SearchConfig.SearchGeoSpecB\x03\xe0A\x01R\ageoSpec\x1a\xed\x01\n" +
+	"\x13SearchTextIndexSpec\x12j\n" +
+	"\n" +
+	"index_type\x18\x01 \x01(\x0e2F.google.firestore.admin.v1.Index.IndexField.SearchConfig.TextIndexTypeB\x03\xe0A\x02R\tindexType\x12j\n" +
+	"\n" +
+	"match_type\x18\x02 \x01(\x0e2F.google.firestore.admin.v1.Index.IndexField.SearchConfig.TextMatchTypeB\x03\xe0A\x02R\tmatchType\x1a\x84\x01\n" +
+	"\x0eSearchTextSpec\x12r\n" +
+	"\vindex_specs\x18\x01 \x03(\v2L.google.firestore.admin.v1.Index.IndexField.SearchConfig.SearchTextIndexSpecB\x03\xe0A\x02R\n" +
+	"indexSpecs\x1aQ\n" +
+	"\rSearchGeoSpec\x12@\n" +
+	"\x1ageo_json_indexing_disabled\x18\x01 \x01(\bB\x03\xe0A\x01R\x17geoJsonIndexingDisabled\"?\n" +
+	"\rTextIndexType\x12\x1f\n" +
+	"\x1bTEXT_INDEX_TYPE_UNSPECIFIED\x10\x00\x12\r\n" +
+	"\tTOKENIZED\x10\x01\"D\n" +
+	"\rTextMatchType\x12\x1f\n" +
+	"\x1bTEXT_MATCH_TYPE_UNSPECIFIED\x10\x00\x12\x12\n" +
+	"\x0eMATCH_GLOBALLY\x10\x01\"=\n" +
 	"\x05Order\x12\x15\n" +
 	"\x11ORDER_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tASCENDING\x10\x01\x12\x0e\n" +
@@ -867,7 +1291,10 @@ const file_google_firestore_admin_v1_index_proto_rawDesc = "" +
 	"\x18ARRAY_CONFIG_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCONTAINS\x10\x01B\f\n" +
 	"\n" +
-	"value_mode\"i\n" +
+	"value_mode\x1a\x8d\x01\n" +
+	"\x12SearchIndexOptions\x12(\n" +
+	"\rtext_language\x18\x01 \x01(\tB\x03\xe0A\x01R\ftextLanguage\x12M\n" +
+	"!text_language_override_field_path\x18\x02 \x01(\tB\x03\xe0A\x01R\x1dtextLanguageOverrideFieldPath\"i\n" +
 	"\n" +
 	"QueryScope\x12\x1b\n" +
 	"\x17QUERY_SCOPE_UNSPECIFIED\x10\x00\x12\x0e\n" +
@@ -907,35 +1334,49 @@ func file_google_firestore_admin_v1_index_proto_rawDescGZIP() []byte {
 	return file_google_firestore_admin_v1_index_proto_rawDescData
 }
 
-var file_google_firestore_admin_v1_index_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
-var file_google_firestore_admin_v1_index_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_google_firestore_admin_v1_index_proto_enumTypes = make([]protoimpl.EnumInfo, 8)
+var file_google_firestore_admin_v1_index_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_google_firestore_admin_v1_index_proto_goTypes = []any{
-	(Index_QueryScope)(0),                           // 0: google.firestore.admin.v1.Index.QueryScope
-	(Index_ApiScope)(0),                             // 1: google.firestore.admin.v1.Index.ApiScope
-	(Index_State)(0),                                // 2: google.firestore.admin.v1.Index.State
-	(Index_Density)(0),                              // 3: google.firestore.admin.v1.Index.Density
-	(Index_IndexField_Order)(0),                     // 4: google.firestore.admin.v1.Index.IndexField.Order
-	(Index_IndexField_ArrayConfig)(0),               // 5: google.firestore.admin.v1.Index.IndexField.ArrayConfig
-	(*Index)(nil),                                   // 6: google.firestore.admin.v1.Index
-	(*Index_IndexField)(nil),                        // 7: google.firestore.admin.v1.Index.IndexField
-	(*Index_IndexField_VectorConfig)(nil),           // 8: google.firestore.admin.v1.Index.IndexField.VectorConfig
-	(*Index_IndexField_VectorConfig_FlatIndex)(nil), // 9: google.firestore.admin.v1.Index.IndexField.VectorConfig.FlatIndex
+	(Index_QueryScope)(0),                                     // 0: google.firestore.admin.v1.Index.QueryScope
+	(Index_ApiScope)(0),                                       // 1: google.firestore.admin.v1.Index.ApiScope
+	(Index_State)(0),                                          // 2: google.firestore.admin.v1.Index.State
+	(Index_Density)(0),                                        // 3: google.firestore.admin.v1.Index.Density
+	(Index_IndexField_Order)(0),                               // 4: google.firestore.admin.v1.Index.IndexField.Order
+	(Index_IndexField_ArrayConfig)(0),                         // 5: google.firestore.admin.v1.Index.IndexField.ArrayConfig
+	(Index_IndexField_SearchConfig_TextIndexType)(0),          // 6: google.firestore.admin.v1.Index.IndexField.SearchConfig.TextIndexType
+	(Index_IndexField_SearchConfig_TextMatchType)(0),          // 7: google.firestore.admin.v1.Index.IndexField.SearchConfig.TextMatchType
+	(*Index)(nil),                                             // 8: google.firestore.admin.v1.Index
+	(*Index_IndexField)(nil),                                  // 9: google.firestore.admin.v1.Index.IndexField
+	(*Index_SearchIndexOptions)(nil),                          // 10: google.firestore.admin.v1.Index.SearchIndexOptions
+	(*Index_IndexField_VectorConfig)(nil),                     // 11: google.firestore.admin.v1.Index.IndexField.VectorConfig
+	(*Index_IndexField_SearchConfig)(nil),                     // 12: google.firestore.admin.v1.Index.IndexField.SearchConfig
+	(*Index_IndexField_VectorConfig_FlatIndex)(nil),           // 13: google.firestore.admin.v1.Index.IndexField.VectorConfig.FlatIndex
+	(*Index_IndexField_SearchConfig_SearchTextIndexSpec)(nil), // 14: google.firestore.admin.v1.Index.IndexField.SearchConfig.SearchTextIndexSpec
+	(*Index_IndexField_SearchConfig_SearchTextSpec)(nil),      // 15: google.firestore.admin.v1.Index.IndexField.SearchConfig.SearchTextSpec
+	(*Index_IndexField_SearchConfig_SearchGeoSpec)(nil),       // 16: google.firestore.admin.v1.Index.IndexField.SearchConfig.SearchGeoSpec
 }
 var file_google_firestore_admin_v1_index_proto_depIdxs = []int32{
-	0, // 0: google.firestore.admin.v1.Index.query_scope:type_name -> google.firestore.admin.v1.Index.QueryScope
-	1, // 1: google.firestore.admin.v1.Index.api_scope:type_name -> google.firestore.admin.v1.Index.ApiScope
-	7, // 2: google.firestore.admin.v1.Index.fields:type_name -> google.firestore.admin.v1.Index.IndexField
-	2, // 3: google.firestore.admin.v1.Index.state:type_name -> google.firestore.admin.v1.Index.State
-	3, // 4: google.firestore.admin.v1.Index.density:type_name -> google.firestore.admin.v1.Index.Density
-	4, // 5: google.firestore.admin.v1.Index.IndexField.order:type_name -> google.firestore.admin.v1.Index.IndexField.Order
-	5, // 6: google.firestore.admin.v1.Index.IndexField.array_config:type_name -> google.firestore.admin.v1.Index.IndexField.ArrayConfig
-	8, // 7: google.firestore.admin.v1.Index.IndexField.vector_config:type_name -> google.firestore.admin.v1.Index.IndexField.VectorConfig
-	9, // 8: google.firestore.admin.v1.Index.IndexField.VectorConfig.flat:type_name -> google.firestore.admin.v1.Index.IndexField.VectorConfig.FlatIndex
-	9, // [9:9] is the sub-list for method output_type
-	9, // [9:9] is the sub-list for method input_type
-	9, // [9:9] is the sub-list for extension type_name
-	9, // [9:9] is the sub-list for extension extendee
-	0, // [0:9] is the sub-list for field type_name
+	0,  // 0: google.firestore.admin.v1.Index.query_scope:type_name -> google.firestore.admin.v1.Index.QueryScope
+	1,  // 1: google.firestore.admin.v1.Index.api_scope:type_name -> google.firestore.admin.v1.Index.ApiScope
+	9,  // 2: google.firestore.admin.v1.Index.fields:type_name -> google.firestore.admin.v1.Index.IndexField
+	2,  // 3: google.firestore.admin.v1.Index.state:type_name -> google.firestore.admin.v1.Index.State
+	3,  // 4: google.firestore.admin.v1.Index.density:type_name -> google.firestore.admin.v1.Index.Density
+	10, // 5: google.firestore.admin.v1.Index.search_index_options:type_name -> google.firestore.admin.v1.Index.SearchIndexOptions
+	4,  // 6: google.firestore.admin.v1.Index.IndexField.order:type_name -> google.firestore.admin.v1.Index.IndexField.Order
+	5,  // 7: google.firestore.admin.v1.Index.IndexField.array_config:type_name -> google.firestore.admin.v1.Index.IndexField.ArrayConfig
+	11, // 8: google.firestore.admin.v1.Index.IndexField.vector_config:type_name -> google.firestore.admin.v1.Index.IndexField.VectorConfig
+	12, // 9: google.firestore.admin.v1.Index.IndexField.search_config:type_name -> google.firestore.admin.v1.Index.IndexField.SearchConfig
+	13, // 10: google.firestore.admin.v1.Index.IndexField.VectorConfig.flat:type_name -> google.firestore.admin.v1.Index.IndexField.VectorConfig.FlatIndex
+	15, // 11: google.firestore.admin.v1.Index.IndexField.SearchConfig.text_spec:type_name -> google.firestore.admin.v1.Index.IndexField.SearchConfig.SearchTextSpec
+	16, // 12: google.firestore.admin.v1.Index.IndexField.SearchConfig.geo_spec:type_name -> google.firestore.admin.v1.Index.IndexField.SearchConfig.SearchGeoSpec
+	6,  // 13: google.firestore.admin.v1.Index.IndexField.SearchConfig.SearchTextIndexSpec.index_type:type_name -> google.firestore.admin.v1.Index.IndexField.SearchConfig.TextIndexType
+	7,  // 14: google.firestore.admin.v1.Index.IndexField.SearchConfig.SearchTextIndexSpec.match_type:type_name -> google.firestore.admin.v1.Index.IndexField.SearchConfig.TextMatchType
+	14, // 15: google.firestore.admin.v1.Index.IndexField.SearchConfig.SearchTextSpec.index_specs:type_name -> google.firestore.admin.v1.Index.IndexField.SearchConfig.SearchTextIndexSpec
+	16, // [16:16] is the sub-list for method output_type
+	16, // [16:16] is the sub-list for method input_type
+	16, // [16:16] is the sub-list for extension type_name
+	16, // [16:16] is the sub-list for extension extendee
+	0,  // [0:16] is the sub-list for field type_name
 }
 
 func init() { file_google_firestore_admin_v1_index_proto_init() }
@@ -947,8 +1388,9 @@ func file_google_firestore_admin_v1_index_proto_init() {
 		(*Index_IndexField_Order_)(nil),
 		(*Index_IndexField_ArrayConfig_)(nil),
 		(*Index_IndexField_VectorConfig_)(nil),
+		(*Index_IndexField_SearchConfig_)(nil),
 	}
-	file_google_firestore_admin_v1_index_proto_msgTypes[2].OneofWrappers = []any{
+	file_google_firestore_admin_v1_index_proto_msgTypes[3].OneofWrappers = []any{
 		(*Index_IndexField_VectorConfig_Flat)(nil),
 	}
 	type x struct{}
@@ -956,8 +1398,8 @@ func file_google_firestore_admin_v1_index_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_firestore_admin_v1_index_proto_rawDesc), len(file_google_firestore_admin_v1_index_proto_rawDesc)),
-			NumEnums:      6,
-			NumMessages:   4,
+			NumEnums:      8,
+			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

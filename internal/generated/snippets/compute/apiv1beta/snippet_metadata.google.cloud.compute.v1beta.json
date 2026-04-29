@@ -3694,6 +3694,52 @@
     {
       "clientMethod": {
         "client": {
+          "fullName": "google.cloud.compute.v1beta.DisksClient",
+          "shortName": "DisksClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.DisksClient.UpdateKmsKey",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.Disks.UpdateKmsKey",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.Disks",
+            "shortName": "Disks"
+          },
+          "shortName": "UpdateKmsKey"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.UpdateKmsKeyDiskRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*Operation",
+        "shortName": "UpdateKmsKey"
+      },
+      "description": "UpdateKmsKey rotates the customer-managed\nencryption key to the latest version for the specified persistent disk.",
+      "file": "DisksClient/UpdateKmsKey/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_Disks_UpdateKmsKey_sync",
+      "segments": [
+        {
+          "end": 56,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute UpdateKmsKey Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
           "fullName": "google.cloud.compute.v1beta.ExternalVpnGatewaysClient",
           "shortName": "ExternalVpnGatewaysClient"
         },
@@ -25777,6 +25823,52 @@
           "fullName": "google.cloud.compute.v1beta.RegionCompositeHealthChecksClient",
           "shortName": "RegionCompositeHealthChecksClient"
         },
+        "fullName": "google.cloud.compute.v1beta.RegionCompositeHealthChecksClient.GetHealth",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.RegionCompositeHealthChecks.GetHealth",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.RegionCompositeHealthChecks",
+            "shortName": "RegionCompositeHealthChecks"
+          },
+          "shortName": "GetHealth"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.GetHealthRegionCompositeHealthCheckRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.CompositeHealthCheckHealth",
+        "shortName": "GetHealth"
+      },
+      "description": "GetHealth gets the most recent health check results for this\nregional CompositeHealthCheck.",
+      "file": "RegionCompositeHealthChecksClient/GetHealth/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_RegionCompositeHealthChecks_GetHealth_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute GetHealth Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.RegionCompositeHealthChecksClient",
+          "shortName": "RegionCompositeHealthChecksClient"
+        },
         "fullName": "google.cloud.compute.v1beta.RegionCompositeHealthChecksClient.Insert",
         "method": {
           "fullName": "google.cloud.compute.v1beta.RegionCompositeHealthChecks.Insert",
@@ -26924,6 +27016,52 @@
     {
       "clientMethod": {
         "client": {
+          "fullName": "google.cloud.compute.v1beta.RegionDisksClient",
+          "shortName": "RegionDisksClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.RegionDisksClient.UpdateKmsKey",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.RegionDisks.UpdateKmsKey",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.RegionDisks",
+            "shortName": "RegionDisks"
+          },
+          "shortName": "UpdateKmsKey"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.UpdateKmsKeyRegionDiskRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*Operation",
+        "shortName": "UpdateKmsKey"
+      },
+      "description": "UpdateKmsKey rotates the customer-managed\nencryption key to the latest version for the specified persistent disk.",
+      "file": "RegionDisksClient/UpdateKmsKey/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_RegionDisks_UpdateKmsKey_sync",
+      "segments": [
+        {
+          "end": 56,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute UpdateKmsKey Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
           "fullName": "google.cloud.compute.v1beta.RegionHealthAggregationPoliciesClient",
           "shortName": "RegionHealthAggregationPoliciesClient"
         },
@@ -28024,6 +28162,52 @@
         }
       ],
       "title": "compute Get Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.RegionHealthSourcesClient",
+          "shortName": "RegionHealthSourcesClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.RegionHealthSourcesClient.GetHealth",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.RegionHealthSources.GetHealth",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.RegionHealthSources",
+            "shortName": "RegionHealthSources"
+          },
+          "shortName": "GetHealth"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.GetHealthRegionHealthSourceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.HealthSourceHealth",
+        "shortName": "GetHealth"
+      },
+      "description": "GetHealth gets the most recent health check results for this\nregional HealthSource.",
+      "file": "RegionHealthSourcesClient/GetHealth/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_RegionHealthSources_GetHealth_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute GetHealth Sample"
     },
     {
       "clientMethod": {
@@ -34280,6 +34464,52 @@
         }
       ],
       "title": "compute TestIamPermissions Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.RegionSnapshotsClient",
+          "shortName": "RegionSnapshotsClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.RegionSnapshotsClient.UpdateKmsKey",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.RegionSnapshots.UpdateKmsKey",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.RegionSnapshots",
+            "shortName": "RegionSnapshots"
+          },
+          "shortName": "UpdateKmsKey"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.UpdateKmsKeyRegionSnapshotRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*Operation",
+        "shortName": "UpdateKmsKey"
+      },
+      "description": "UpdateKmsKey rotates the customer-managed\nencryption key to the latest version for the specified snapshot.",
+      "file": "RegionSnapshotsClient/UpdateKmsKey/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_RegionSnapshots_UpdateKmsKey_sync",
+      "segments": [
+        {
+          "end": 56,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute UpdateKmsKey Sample"
     },
     {
       "clientMethod": {
@@ -41502,6 +41732,52 @@
         }
       ],
       "title": "compute TestIamPermissions Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.SnapshotsClient",
+          "shortName": "SnapshotsClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.SnapshotsClient.UpdateKmsKey",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.Snapshots.UpdateKmsKey",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.Snapshots",
+            "shortName": "Snapshots"
+          },
+          "shortName": "UpdateKmsKey"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.UpdateKmsKeySnapshotRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*Operation",
+        "shortName": "UpdateKmsKey"
+      },
+      "description": "UpdateKmsKey rotates the customer-managed\nencryption key to the latest version for the specified snapshot.",
+      "file": "SnapshotsClient/UpdateKmsKey/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_Snapshots_UpdateKmsKey_sync",
+      "segments": [
+        {
+          "end": 56,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute UpdateKmsKey Sample"
     },
     {
       "clientMethod": {

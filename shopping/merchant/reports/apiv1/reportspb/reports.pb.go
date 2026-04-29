@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,6 +42,9 @@ const (
 
 // Status of the product aggregated for all reporting contexts.
 //
+// Reporting contexts included in the computation of the aggregated status can
+// be restricted using a filter on the `reporting_context` field.
+//
 // Here's an example of how the aggregated status is computed:
 //
 // Free listings | Shopping ads | Status
@@ -56,13 +59,15 @@ type ProductView_AggregatedReportingContextStatus int32
 const (
 	// Not specified.
 	ProductView_AGGREGATED_REPORTING_CONTEXT_STATUS_UNSPECIFIED ProductView_AggregatedReportingContextStatus = 0
-	// Product is not eligible or is disapproved for all reporting contexts.
+	// Product is not eligible or is disapproved for all reporting contexts and
+	// countries.
 	ProductView_NOT_ELIGIBLE_OR_DISAPPROVED ProductView_AggregatedReportingContextStatus = 1
-	// Product's status is pending in all reporting contexts.
+	// Product's status is pending in all reporting contexts and countries.
 	ProductView_PENDING ProductView_AggregatedReportingContextStatus = 2
-	// Product is eligible for some (but not all) reporting contexts.
+	// Product is eligible for some (but not all) reporting contexts and
+	// countries.
 	ProductView_ELIGIBLE_LIMITED ProductView_AggregatedReportingContextStatus = 3
-	// Product is eligible for all reporting contexts.
+	// Product is eligible for all reporting contexts and countries.
 	ProductView_ELIGIBLE ProductView_AggregatedReportingContextStatus = 4
 )
 
@@ -462,6 +467,59 @@ func (MarketingMethod_MarketingMethodEnum) EnumDescriptor() ([]byte, []int) {
 	return file_google_shopping_merchant_reports_v1_reports_proto_rawDescGZIP(), []int{13, 0}
 }
 
+// Store types.
+type StoreType_StoreTypeEnum int32
+
+const (
+	// Not specified.
+	StoreType_STORE_TYPE_ENUM_UNSPECIFIED StoreType_StoreTypeEnum = 0
+	// Online store.
+	StoreType_ONLINE_STORE StoreType_StoreTypeEnum = 1
+	// Local (physical) stores.
+	StoreType_LOCAL_STORES StoreType_StoreTypeEnum = 2
+)
+
+// Enum value maps for StoreType_StoreTypeEnum.
+var (
+	StoreType_StoreTypeEnum_name = map[int32]string{
+		0: "STORE_TYPE_ENUM_UNSPECIFIED",
+		1: "ONLINE_STORE",
+		2: "LOCAL_STORES",
+	}
+	StoreType_StoreTypeEnum_value = map[string]int32{
+		"STORE_TYPE_ENUM_UNSPECIFIED": 0,
+		"ONLINE_STORE":                1,
+		"LOCAL_STORES":                2,
+	}
+)
+
+func (x StoreType_StoreTypeEnum) Enum() *StoreType_StoreTypeEnum {
+	p := new(StoreType_StoreTypeEnum)
+	*p = x
+	return p
+}
+
+func (x StoreType_StoreTypeEnum) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (StoreType_StoreTypeEnum) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_shopping_merchant_reports_v1_reports_proto_enumTypes[7].Descriptor()
+}
+
+func (StoreType_StoreTypeEnum) Type() protoreflect.EnumType {
+	return &file_google_shopping_merchant_reports_v1_reports_proto_enumTypes[7]
+}
+
+func (x StoreType_StoreTypeEnum) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use StoreType_StoreTypeEnum.Descriptor instead.
+func (StoreType_StoreTypeEnum) EnumDescriptor() ([]byte, []int) {
+	return file_google_shopping_merchant_reports_v1_reports_proto_rawDescGZIP(), []int{14, 0}
+}
+
 // Report granularity values.
 type ReportGranularity_ReportGranularityEnum int32
 
@@ -499,11 +557,11 @@ func (x ReportGranularity_ReportGranularityEnum) String() string {
 }
 
 func (ReportGranularity_ReportGranularityEnum) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_shopping_merchant_reports_v1_reports_proto_enumTypes[7].Descriptor()
+	return file_google_shopping_merchant_reports_v1_reports_proto_enumTypes[8].Descriptor()
 }
 
 func (ReportGranularity_ReportGranularityEnum) Type() protoreflect.EnumType {
-	return &file_google_shopping_merchant_reports_v1_reports_proto_enumTypes[7]
+	return &file_google_shopping_merchant_reports_v1_reports_proto_enumTypes[8]
 }
 
 func (x ReportGranularity_ReportGranularityEnum) Number() protoreflect.EnumNumber {
@@ -512,7 +570,7 @@ func (x ReportGranularity_ReportGranularityEnum) Number() protoreflect.EnumNumbe
 
 // Deprecated: Use ReportGranularity_ReportGranularityEnum.Descriptor instead.
 func (ReportGranularity_ReportGranularityEnum) EnumDescriptor() ([]byte, []int) {
-	return file_google_shopping_merchant_reports_v1_reports_proto_rawDescGZIP(), []int{14, 0}
+	return file_google_shopping_merchant_reports_v1_reports_proto_rawDescGZIP(), []int{15, 0}
 }
 
 // Relative demand values.
@@ -569,11 +627,11 @@ func (x RelativeDemand_RelativeDemandEnum) String() string {
 }
 
 func (RelativeDemand_RelativeDemandEnum) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_shopping_merchant_reports_v1_reports_proto_enumTypes[8].Descriptor()
+	return file_google_shopping_merchant_reports_v1_reports_proto_enumTypes[9].Descriptor()
 }
 
 func (RelativeDemand_RelativeDemandEnum) Type() protoreflect.EnumType {
-	return &file_google_shopping_merchant_reports_v1_reports_proto_enumTypes[8]
+	return &file_google_shopping_merchant_reports_v1_reports_proto_enumTypes[9]
 }
 
 func (x RelativeDemand_RelativeDemandEnum) Number() protoreflect.EnumNumber {
@@ -582,7 +640,7 @@ func (x RelativeDemand_RelativeDemandEnum) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use RelativeDemand_RelativeDemandEnum.Descriptor instead.
 func (RelativeDemand_RelativeDemandEnum) EnumDescriptor() ([]byte, []int) {
-	return file_google_shopping_merchant_reports_v1_reports_proto_rawDescGZIP(), []int{15, 0}
+	return file_google_shopping_merchant_reports_v1_reports_proto_rawDescGZIP(), []int{16, 0}
 }
 
 // Relative demand change type values.
@@ -626,11 +684,11 @@ func (x RelativeDemandChangeType_RelativeDemandChangeTypeEnum) String() string {
 }
 
 func (RelativeDemandChangeType_RelativeDemandChangeTypeEnum) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_shopping_merchant_reports_v1_reports_proto_enumTypes[9].Descriptor()
+	return file_google_shopping_merchant_reports_v1_reports_proto_enumTypes[10].Descriptor()
 }
 
 func (RelativeDemandChangeType_RelativeDemandChangeTypeEnum) Type() protoreflect.EnumType {
-	return &file_google_shopping_merchant_reports_v1_reports_proto_enumTypes[9]
+	return &file_google_shopping_merchant_reports_v1_reports_proto_enumTypes[10]
 }
 
 func (x RelativeDemandChangeType_RelativeDemandChangeTypeEnum) Number() protoreflect.EnumNumber {
@@ -639,7 +697,7 @@ func (x RelativeDemandChangeType_RelativeDemandChangeTypeEnum) Number() protoref
 
 // Deprecated: Use RelativeDemandChangeType_RelativeDemandChangeTypeEnum.Descriptor instead.
 func (RelativeDemandChangeType_RelativeDemandChangeTypeEnum) EnumDescriptor() ([]byte, []int) {
-	return file_google_shopping_merchant_reports_v1_reports_proto_rawDescGZIP(), []int{16, 0}
+	return file_google_shopping_merchant_reports_v1_reports_proto_rawDescGZIP(), []int{17, 0}
 }
 
 // Traffic source values.
@@ -683,11 +741,11 @@ func (x TrafficSource_TrafficSourceEnum) String() string {
 }
 
 func (TrafficSource_TrafficSourceEnum) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_shopping_merchant_reports_v1_reports_proto_enumTypes[10].Descriptor()
+	return file_google_shopping_merchant_reports_v1_reports_proto_enumTypes[11].Descriptor()
 }
 
 func (TrafficSource_TrafficSourceEnum) Type() protoreflect.EnumType {
-	return &file_google_shopping_merchant_reports_v1_reports_proto_enumTypes[10]
+	return &file_google_shopping_merchant_reports_v1_reports_proto_enumTypes[11]
 }
 
 func (x TrafficSource_TrafficSourceEnum) Number() protoreflect.EnumNumber {
@@ -696,7 +754,7 @@ func (x TrafficSource_TrafficSourceEnum) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use TrafficSource_TrafficSourceEnum.Descriptor instead.
 func (TrafficSource_TrafficSourceEnum) EnumDescriptor() ([]byte, []int) {
-	return file_google_shopping_merchant_reports_v1_reports_proto_rawDescGZIP(), []int{17, 0}
+	return file_google_shopping_merchant_reports_v1_reports_proto_rawDescGZIP(), []int{18, 0}
 }
 
 // Request message for the `ReportService.Search` method.
@@ -710,10 +768,10 @@ type SearchRequest struct {
 	// For details on how to construct your query, see the [Query Language
 	// guide](/merchant/api/guides/reports/query-language). For the full list of
 	// available tables and fields, see the [Available
-	// fields](/merchant/api/reference/rest/reports_v1/accounts.reports).
+	// fields][google.shopping.merchant.reports.v1.ReportRow].
 	Query string `protobuf:"bytes,2,opt,name=query,proto3" json:"query,omitempty"`
 	// Optional. Number of `ReportRows` to retrieve in a single page. Defaults to
-	// 1000. Values above 5000 are coerced to 5000.
+	// 1000. Values above 100,000 are coerced to 100,000.
 	PageSize int32 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// Optional. Token of the page to retrieve. If not specified, the first page
 	// of results is returned. In order to request the next page of results, the
@@ -1001,6 +1059,12 @@ type ProductPerformanceView struct {
 	// If the customer country cannot be determined, a special 'ZZ' code is
 	// returned.
 	CustomerCountryCode *string `protobuf:"bytes,4,opt,name=customer_country_code,json=customerCountryCode,proto3,oneof" json:"customer_country_code,omitempty"`
+	// Store type to which metrics apply. Can be `ONLINE_STORE` or
+	// `LOCAL_STORES`. Segment.
+	//
+	// For `LOCAL_STORES` store type, further segmentation by a specific store
+	// is not available.
+	StoreType *StoreType_StoreTypeEnum `protobuf:"varint,32,opt,name=store_type,json=storeType,proto3,enum=google.shopping.merchant.reports.v1.StoreType_StoreTypeEnum,oneof" json:"store_type,omitempty"`
 	// Merchant-provided id of the product. Segment.
 	OfferId *string `protobuf:"bytes,5,opt,name=offer_id,json=offerId,proto3,oneof" json:"offer_id,omitempty"`
 	// Title of the product. Segment.
@@ -1142,6 +1206,13 @@ func (x *ProductPerformanceView) GetCustomerCountryCode() string {
 		return *x.CustomerCountryCode
 	}
 	return ""
+}
+
+func (x *ProductPerformanceView) GetStoreType() StoreType_StoreTypeEnum {
+	if x != nil && x.StoreType != nil {
+		return *x.StoreType
+	}
+	return StoreType_STORE_TYPE_ENUM_UNSPECIFIED
 }
 
 func (x *ProductPerformanceView) GetOfferId() string {
@@ -1314,12 +1385,13 @@ func (x *ProductPerformanceView) GetConversionRate() float64 {
 
 // Fields available for query in `product_view` table.
 //
-// Products in the current inventory. Products in this table are the same as in
-// Products sub-API but not all product attributes from Products sub-API are
-// available for query in this table. In contrast to Products sub-API, this
-// table allows to filter the returned list of products by product attributes.
-// To retrieve a single product by `id` or list all products, Products sub-API
-// should be used.
+// Products in the current inventory. Products in this table are the
+// same as a [Product resource in Products
+// sub-API](https://developers.google.com/merchant/api/reference/rest/products_v1/accounts.products)
+// but not all product attributes from Products sub-API are available for query
+// in this table. In contrast to Products sub-API, this table allows to filter
+// the returned list of products by product attributes. To retrieve a single
+// product by `id` or list all products, Products sub-API should be used.
 //
 // Values are only set for fields requested explicitly in the request's search
 // query.
@@ -1397,8 +1469,31 @@ type ProductView struct {
 	CreationTime *timestamppb.Timestamp `protobuf:"bytes,24,opt,name=creation_time,json=creationTime,proto3" json:"creation_time,omitempty"`
 	// Expiration date for the product, specified on insertion.
 	ExpirationDate *date.Date `protobuf:"bytes,25,opt,name=expiration_date,json=expirationDate,proto3" json:"expiration_date,omitempty"`
-	// Aggregated status.
+	// Aggregated status across all reporting contexts.
+	//
+	// Reporting contexts included in the computation of the aggregated status can
+	// be restricted using a filter on the `reporting_context` field.
 	AggregatedReportingContextStatus *ProductView_AggregatedReportingContextStatus `protobuf:"varint,26,opt,name=aggregated_reporting_context_status,json=aggregatedReportingContextStatus,proto3,enum=google.shopping.merchant.reports.v1.ProductView_AggregatedReportingContextStatus,oneof" json:"aggregated_reporting_context_status,omitempty"`
+	// Detailed product status per reporting context.
+	//
+	// Reporting contexts included in this list can be restricted using a filter
+	// on the `reporting_context` field.
+	//
+	// Equivalent to
+	// [`ProductStatus.destination_statuses`][google.shopping.merchant.products.v1.ProductStatus]
+	// in Products API.
+	//
+	// **This field cannot be used for sorting or filtering the results.**
+	StatusPerReportingContext []*ProductView_StatusPerReportingContext `protobuf:"bytes,32,rep,name=status_per_reporting_context,json=statusPerReportingContext,proto3" json:"status_per_reporting_context,omitempty"`
+	// Reporting context to restrict the query to.
+	//
+	// Restricts the reporting contexts returned in `status_per_reporting_context`
+	// and `item_issues`, and used to compute
+	// `aggregated_reporting_context_status`.
+	//
+	// **This field can only be used in the `WHERE` clause and cannot be selected
+	// in the `SELECT` clause.**
+	ReportingContext *typepb.ReportingContext_ReportingContextEnum `protobuf:"varint,33,opt,name=reporting_context,json=reportingContext,proto3,enum=google.shopping.type.ReportingContext_ReportingContextEnum,oneof" json:"reporting_context,omitempty"`
 	// List of item issues for the product.
 	//
 	// **This field cannot be used for sorting the results.**
@@ -1410,9 +1505,8 @@ type ProductView struct {
 	// Estimated performance potential compared to highest performing products of
 	// the merchant.
 	ClickPotential ProductView_ClickPotential `protobuf:"varint,29,opt,name=click_potential,json=clickPotential,proto3,enum=google.shopping.merchant.reports.v1.ProductView_ClickPotential" json:"click_potential,omitempty"`
-	// Rank of the product based on its click potential. A product with
-	// `click_potential_rank` 1 has the highest click potential among the
-	// merchant's products that fulfill the search query conditions.
+	// Normalized click potential of the product. Values range from 1 to 1000,
+	// where 1 is the highest click potential and 1000 is the theoretical lowest.
 	ClickPotentialRank *int64 `protobuf:"varint,30,opt,name=click_potential_rank,json=clickPotentialRank,proto3,oneof" json:"click_potential_rank,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
@@ -1635,6 +1729,20 @@ func (x *ProductView) GetAggregatedReportingContextStatus() ProductView_Aggregat
 		return *x.AggregatedReportingContextStatus
 	}
 	return ProductView_AGGREGATED_REPORTING_CONTEXT_STATUS_UNSPECIFIED
+}
+
+func (x *ProductView) GetStatusPerReportingContext() []*ProductView_StatusPerReportingContext {
+	if x != nil {
+		return x.StatusPerReportingContext
+	}
+	return nil
+}
+
+func (x *ProductView) GetReportingContext() typepb.ReportingContext_ReportingContextEnum {
+	if x != nil && x.ReportingContext != nil {
+		return *x.ReportingContext
+	}
+	return typepb.ReportingContext_ReportingContextEnum(0)
 }
 
 func (x *ProductView) GetItemIssues() []*ProductView_ItemIssue {
@@ -3147,6 +3255,43 @@ func (*MarketingMethod) Descriptor() ([]byte, []int) {
 	return file_google_shopping_merchant_reports_v1_reports_proto_rawDescGZIP(), []int{13}
 }
 
+// Store where the product is sold (online versus local stores).
+type StoreType struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StoreType) Reset() {
+	*x = StoreType{}
+	mi := &file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StoreType) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StoreType) ProtoMessage() {}
+
+func (x *StoreType) ProtoReflect() protoreflect.Message {
+	mi := &file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StoreType.ProtoReflect.Descriptor instead.
+func (*StoreType) Descriptor() ([]byte, []int) {
+	return file_google_shopping_merchant_reports_v1_reports_proto_rawDescGZIP(), []int{14}
+}
+
 // Granularity of the Best sellers report. Best sellers reports are computed
 // over a week and a month timeframe.
 type ReportGranularity struct {
@@ -3157,7 +3302,7 @@ type ReportGranularity struct {
 
 func (x *ReportGranularity) Reset() {
 	*x = ReportGranularity{}
-	mi := &file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[14]
+	mi := &file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3169,7 +3314,7 @@ func (x *ReportGranularity) String() string {
 func (*ReportGranularity) ProtoMessage() {}
 
 func (x *ReportGranularity) ProtoReflect() protoreflect.Message {
-	mi := &file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[14]
+	mi := &file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3182,7 +3327,7 @@ func (x *ReportGranularity) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReportGranularity.ProtoReflect.Descriptor instead.
 func (*ReportGranularity) Descriptor() ([]byte, []int) {
-	return file_google_shopping_merchant_reports_v1_reports_proto_rawDescGZIP(), []int{14}
+	return file_google_shopping_merchant_reports_v1_reports_proto_rawDescGZIP(), []int{15}
 }
 
 // Relative demand of a product cluster or brand in the Best sellers report.
@@ -3194,7 +3339,7 @@ type RelativeDemand struct {
 
 func (x *RelativeDemand) Reset() {
 	*x = RelativeDemand{}
-	mi := &file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[15]
+	mi := &file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3206,7 +3351,7 @@ func (x *RelativeDemand) String() string {
 func (*RelativeDemand) ProtoMessage() {}
 
 func (x *RelativeDemand) ProtoReflect() protoreflect.Message {
-	mi := &file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[15]
+	mi := &file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3219,7 +3364,7 @@ func (x *RelativeDemand) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RelativeDemand.ProtoReflect.Descriptor instead.
 func (*RelativeDemand) Descriptor() ([]byte, []int) {
-	return file_google_shopping_merchant_reports_v1_reports_proto_rawDescGZIP(), []int{15}
+	return file_google_shopping_merchant_reports_v1_reports_proto_rawDescGZIP(), []int{16}
 }
 
 // Relative demand of a product cluster or brand in the Best sellers report
@@ -3232,7 +3377,7 @@ type RelativeDemandChangeType struct {
 
 func (x *RelativeDemandChangeType) Reset() {
 	*x = RelativeDemandChangeType{}
-	mi := &file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[16]
+	mi := &file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3244,7 +3389,7 @@ func (x *RelativeDemandChangeType) String() string {
 func (*RelativeDemandChangeType) ProtoMessage() {}
 
 func (x *RelativeDemandChangeType) ProtoReflect() protoreflect.Message {
-	mi := &file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[16]
+	mi := &file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3257,7 +3402,7 @@ func (x *RelativeDemandChangeType) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RelativeDemandChangeType.ProtoReflect.Descriptor instead.
 func (*RelativeDemandChangeType) Descriptor() ([]byte, []int) {
-	return file_google_shopping_merchant_reports_v1_reports_proto_rawDescGZIP(), []int{16}
+	return file_google_shopping_merchant_reports_v1_reports_proto_rawDescGZIP(), []int{17}
 }
 
 // Traffic source of impressions in the Competitive visibility report.
@@ -3269,7 +3414,7 @@ type TrafficSource struct {
 
 func (x *TrafficSource) Reset() {
 	*x = TrafficSource{}
-	mi := &file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[17]
+	mi := &file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3281,7 +3426,7 @@ func (x *TrafficSource) String() string {
 func (*TrafficSource) ProtoMessage() {}
 
 func (x *TrafficSource) ProtoReflect() protoreflect.Message {
-	mi := &file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[17]
+	mi := &file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3294,7 +3439,7 @@ func (x *TrafficSource) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TrafficSource.ProtoReflect.Descriptor instead.
 func (*TrafficSource) Descriptor() ([]byte, []int) {
-	return file_google_shopping_merchant_reports_v1_reports_proto_rawDescGZIP(), []int{17}
+	return file_google_shopping_merchant_reports_v1_reports_proto_rawDescGZIP(), []int{18}
 }
 
 // Item issue associated with the product.
@@ -3312,7 +3457,7 @@ type ProductView_ItemIssue struct {
 
 func (x *ProductView_ItemIssue) Reset() {
 	*x = ProductView_ItemIssue{}
-	mi := &file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[18]
+	mi := &file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3324,7 +3469,7 @@ func (x *ProductView_ItemIssue) String() string {
 func (*ProductView_ItemIssue) ProtoMessage() {}
 
 func (x *ProductView_ItemIssue) ProtoReflect() protoreflect.Message {
-	mi := &file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[18]
+	mi := &file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3361,6 +3506,89 @@ func (x *ProductView_ItemIssue) GetResolution() ProductView_ItemIssue_ItemIssueR
 	return ProductView_ItemIssue_ITEM_ISSUE_RESOLUTION_UNSPECIFIED
 }
 
+// Status of the product for a specific reporting context.
+//
+// Equivalent to
+// [`DestinationStatus`][google.shopping.merchant.products.v1.ProductStatus.DestinationStatus]
+// in Products API.
+type ProductView_StatusPerReportingContext struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Reporting context the status applies to.
+	ReportingContext *typepb.ReportingContext_ReportingContextEnum `protobuf:"varint,1,opt,name=reporting_context,json=reportingContext,proto3,enum=google.shopping.type.ReportingContext_ReportingContextEnum,oneof" json:"reporting_context,omitempty"`
+	// List of approved countries in the reporting context, represented in
+	// [ISO 3166](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) format, for
+	// example, `US`.
+	ApprovedCountries []string `protobuf:"bytes,2,rep,name=approved_countries,json=approvedCountries,proto3" json:"approved_countries,omitempty"`
+	// List of disapproved countries in the reporting context, represented in
+	// [ISO 3166](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) format, for
+	// example, `US`.
+	DisapprovedCountries []string `protobuf:"bytes,3,rep,name=disapproved_countries,json=disapprovedCountries,proto3" json:"disapproved_countries,omitempty"`
+	// List of pending countries in the reporting context, represented in
+	// [ISO 3166](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) format, for
+	// example, `US`.
+	PendingCountries []string `protobuf:"bytes,4,rep,name=pending_countries,json=pendingCountries,proto3" json:"pending_countries,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *ProductView_StatusPerReportingContext) Reset() {
+	*x = ProductView_StatusPerReportingContext{}
+	mi := &file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ProductView_StatusPerReportingContext) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProductView_StatusPerReportingContext) ProtoMessage() {}
+
+func (x *ProductView_StatusPerReportingContext) ProtoReflect() protoreflect.Message {
+	mi := &file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ProductView_StatusPerReportingContext.ProtoReflect.Descriptor instead.
+func (*ProductView_StatusPerReportingContext) Descriptor() ([]byte, []int) {
+	return file_google_shopping_merchant_reports_v1_reports_proto_rawDescGZIP(), []int{4, 1}
+}
+
+func (x *ProductView_StatusPerReportingContext) GetReportingContext() typepb.ReportingContext_ReportingContextEnum {
+	if x != nil && x.ReportingContext != nil {
+		return *x.ReportingContext
+	}
+	return typepb.ReportingContext_ReportingContextEnum(0)
+}
+
+func (x *ProductView_StatusPerReportingContext) GetApprovedCountries() []string {
+	if x != nil {
+		return x.ApprovedCountries
+	}
+	return nil
+}
+
+func (x *ProductView_StatusPerReportingContext) GetDisapprovedCountries() []string {
+	if x != nil {
+		return x.DisapprovedCountries
+	}
+	return nil
+}
+
+func (x *ProductView_StatusPerReportingContext) GetPendingCountries() []string {
+	if x != nil {
+		return x.PendingCountries
+	}
+	return nil
+}
+
 // Issue type.
 type ProductView_ItemIssue_ItemIssueType struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -3375,7 +3603,7 @@ type ProductView_ItemIssue_ItemIssueType struct {
 
 func (x *ProductView_ItemIssue_ItemIssueType) Reset() {
 	*x = ProductView_ItemIssue_ItemIssueType{}
-	mi := &file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[19]
+	mi := &file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3387,7 +3615,7 @@ func (x *ProductView_ItemIssue_ItemIssueType) String() string {
 func (*ProductView_ItemIssue_ItemIssueType) ProtoMessage() {}
 
 func (x *ProductView_ItemIssue_ItemIssueType) ProtoReflect() protoreflect.Message {
-	mi := &file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[19]
+	mi := &file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3421,8 +3649,15 @@ func (x *ProductView_ItemIssue_ItemIssueType) GetCanonicalAttribute() string {
 type ProductView_ItemIssue_ItemIssueSeverity struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Issue severity per reporting context.
+	//
+	// Reporting contexts included in this list can be restricted using a
+	// filter on the `reporting_context` field.
 	SeverityPerReportingContext []*ProductView_ItemIssue_ItemIssueSeverity_IssueSeverityPerReportingContext `protobuf:"bytes,1,rep,name=severity_per_reporting_context,json=severityPerReportingContext,proto3" json:"severity_per_reporting_context,omitempty"`
 	// Aggregated severity of the issue for all reporting contexts it affects.
+	//
+	// Reporting contexts included in the computation of the aggregated
+	// severity can be restricted using a filter on the `reporting_context`
+	// field.
 	//
 	// **This field can be used for filtering the results.**
 	AggregatedSeverity *ProductView_ItemIssue_ItemIssueSeverity_AggregatedIssueSeverity `protobuf:"varint,2,opt,name=aggregated_severity,json=aggregatedSeverity,proto3,enum=google.shopping.merchant.reports.v1.ProductView_ItemIssue_ItemIssueSeverity_AggregatedIssueSeverity,oneof" json:"aggregated_severity,omitempty"`
@@ -3432,7 +3667,7 @@ type ProductView_ItemIssue_ItemIssueSeverity struct {
 
 func (x *ProductView_ItemIssue_ItemIssueSeverity) Reset() {
 	*x = ProductView_ItemIssue_ItemIssueSeverity{}
-	mi := &file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[20]
+	mi := &file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3444,7 +3679,7 @@ func (x *ProductView_ItemIssue_ItemIssueSeverity) String() string {
 func (*ProductView_ItemIssue_ItemIssueSeverity) ProtoMessage() {}
 
 func (x *ProductView_ItemIssue_ItemIssueSeverity) ProtoReflect() protoreflect.Message {
-	mi := &file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[20]
+	mi := &file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3491,7 +3726,7 @@ type ProductView_ItemIssue_ItemIssueSeverity_IssueSeverityPerReportingContext st
 
 func (x *ProductView_ItemIssue_ItemIssueSeverity_IssueSeverityPerReportingContext) Reset() {
 	*x = ProductView_ItemIssue_ItemIssueSeverity_IssueSeverityPerReportingContext{}
-	mi := &file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[21]
+	mi := &file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3503,7 +3738,7 @@ func (x *ProductView_ItemIssue_ItemIssueSeverity_IssueSeverityPerReportingContex
 func (*ProductView_ItemIssue_ItemIssueSeverity_IssueSeverityPerReportingContext) ProtoMessage() {}
 
 func (x *ProductView_ItemIssue_ItemIssueSeverity_IssueSeverityPerReportingContext) ProtoReflect() protoreflect.Message {
-	mi := &file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[21]
+	mi := &file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3566,45 +3801,48 @@ const file_google_shopping_merchant_reports_v1_reports_proto_rawDesc = "" +
 	"&competitive_visibility_competitor_view\x18\b \x01(\v2H.google.shopping.merchant.reports.v1.CompetitiveVisibilityCompetitorViewR#competitiveVisibilityCompetitorView\x12\xa1\x01\n" +
 	"(competitive_visibility_top_merchant_view\x18\t \x01(\v2I.google.shopping.merchant.reports.v1.CompetitiveVisibilityTopMerchantViewR$competitiveVisibilityTopMerchantView\x12\x9a\x01\n" +
 	"%competitive_visibility_benchmark_view\x18\n" +
-	" \x01(\v2G.google.shopping.merchant.reports.v1.CompetitiveVisibilityBenchmarkViewR\"competitiveVisibilityBenchmarkView\"\xa8\r\n" +
+	" \x01(\v2G.google.shopping.merchant.reports.v1.CompetitiveVisibilityBenchmarkViewR\"competitiveVisibilityBenchmarkView\"\x99\x0e\n" +
 	"\x16ProductPerformanceView\x12x\n" +
 	"\x10marketing_method\x18\x01 \x01(\x0e2H.google.shopping.merchant.reports.v1.MarketingMethod.MarketingMethodEnumH\x00R\x0fmarketingMethod\x88\x01\x01\x12%\n" +
 	"\x04date\x18\x02 \x01(\v2\x11.google.type.DateR\x04date\x12%\n" +
 	"\x04week\x18\x03 \x01(\v2\x11.google.type.DateR\x04week\x127\n" +
-	"\x15customer_country_code\x18\x04 \x01(\tH\x01R\x13customerCountryCode\x88\x01\x01\x12\x1e\n" +
-	"\boffer_id\x18\x05 \x01(\tH\x02R\aofferId\x88\x01\x01\x12\x19\n" +
-	"\x05title\x18\x06 \x01(\tH\x03R\x05title\x88\x01\x01\x12\x19\n" +
-	"\x05brand\x18\a \x01(\tH\x04R\x05brand\x88\x01\x01\x12$\n" +
-	"\vcategory_l1\x18\b \x01(\tH\x05R\n" +
+	"\x15customer_country_code\x18\x04 \x01(\tH\x01R\x13customerCountryCode\x88\x01\x01\x12`\n" +
+	"\n" +
+	"store_type\x18  \x01(\x0e2<.google.shopping.merchant.reports.v1.StoreType.StoreTypeEnumH\x02R\tstoreType\x88\x01\x01\x12\x1e\n" +
+	"\boffer_id\x18\x05 \x01(\tH\x03R\aofferId\x88\x01\x01\x12\x19\n" +
+	"\x05title\x18\x06 \x01(\tH\x04R\x05title\x88\x01\x01\x12\x19\n" +
+	"\x05brand\x18\a \x01(\tH\x05R\x05brand\x88\x01\x01\x12$\n" +
+	"\vcategory_l1\x18\b \x01(\tH\x06R\n" +
 	"categoryL1\x88\x01\x01\x12$\n" +
-	"\vcategory_l2\x18\t \x01(\tH\x06R\n" +
+	"\vcategory_l2\x18\t \x01(\tH\aR\n" +
 	"categoryL2\x88\x01\x01\x12$\n" +
 	"\vcategory_l3\x18\n" +
-	" \x01(\tH\aR\n" +
+	" \x01(\tH\bR\n" +
 	"categoryL3\x88\x01\x01\x12$\n" +
-	"\vcategory_l4\x18\v \x01(\tH\bR\n" +
+	"\vcategory_l4\x18\v \x01(\tH\tR\n" +
 	"categoryL4\x88\x01\x01\x12$\n" +
-	"\vcategory_l5\x18\f \x01(\tH\tR\n" +
+	"\vcategory_l5\x18\f \x01(\tH\n" +
+	"R\n" +
 	"categoryL5\x88\x01\x01\x12+\n" +
-	"\x0fproduct_type_l1\x18\r \x01(\tH\n" +
-	"R\rproductTypeL1\x88\x01\x01\x12+\n" +
-	"\x0fproduct_type_l2\x18\x0e \x01(\tH\vR\rproductTypeL2\x88\x01\x01\x12+\n" +
-	"\x0fproduct_type_l3\x18\x0f \x01(\tH\fR\rproductTypeL3\x88\x01\x01\x12+\n" +
-	"\x0fproduct_type_l4\x18\x10 \x01(\tH\rR\rproductTypeL4\x88\x01\x01\x12+\n" +
-	"\x0fproduct_type_l5\x18\x11 \x01(\tH\x0eR\rproductTypeL5\x88\x01\x01\x12(\n" +
-	"\rcustom_label0\x18\x12 \x01(\tH\x0fR\fcustomLabel0\x88\x01\x01\x12(\n" +
-	"\rcustom_label1\x18\x13 \x01(\tH\x10R\fcustomLabel1\x88\x01\x01\x12(\n" +
-	"\rcustom_label2\x18\x14 \x01(\tH\x11R\fcustomLabel2\x88\x01\x01\x12(\n" +
-	"\rcustom_label3\x18\x15 \x01(\tH\x12R\fcustomLabel3\x88\x01\x01\x12(\n" +
-	"\rcustom_label4\x18\x16 \x01(\tH\x13R\fcustomLabel4\x88\x01\x01\x12\x1b\n" +
-	"\x06clicks\x18\x17 \x01(\x03H\x14R\x06clicks\x88\x01\x01\x12%\n" +
-	"\vimpressions\x18\x18 \x01(\x03H\x15R\vimpressions\x88\x01\x01\x121\n" +
-	"\x12click_through_rate\x18\x19 \x01(\x01H\x16R\x10clickThroughRate\x88\x01\x01\x12%\n" +
-	"\vconversions\x18\x1a \x01(\x01H\x17R\vconversions\x88\x01\x01\x12F\n" +
+	"\x0fproduct_type_l1\x18\r \x01(\tH\vR\rproductTypeL1\x88\x01\x01\x12+\n" +
+	"\x0fproduct_type_l2\x18\x0e \x01(\tH\fR\rproductTypeL2\x88\x01\x01\x12+\n" +
+	"\x0fproduct_type_l3\x18\x0f \x01(\tH\rR\rproductTypeL3\x88\x01\x01\x12+\n" +
+	"\x0fproduct_type_l4\x18\x10 \x01(\tH\x0eR\rproductTypeL4\x88\x01\x01\x12+\n" +
+	"\x0fproduct_type_l5\x18\x11 \x01(\tH\x0fR\rproductTypeL5\x88\x01\x01\x12(\n" +
+	"\rcustom_label0\x18\x12 \x01(\tH\x10R\fcustomLabel0\x88\x01\x01\x12(\n" +
+	"\rcustom_label1\x18\x13 \x01(\tH\x11R\fcustomLabel1\x88\x01\x01\x12(\n" +
+	"\rcustom_label2\x18\x14 \x01(\tH\x12R\fcustomLabel2\x88\x01\x01\x12(\n" +
+	"\rcustom_label3\x18\x15 \x01(\tH\x13R\fcustomLabel3\x88\x01\x01\x12(\n" +
+	"\rcustom_label4\x18\x16 \x01(\tH\x14R\fcustomLabel4\x88\x01\x01\x12\x1b\n" +
+	"\x06clicks\x18\x17 \x01(\x03H\x15R\x06clicks\x88\x01\x01\x12%\n" +
+	"\vimpressions\x18\x18 \x01(\x03H\x16R\vimpressions\x88\x01\x01\x121\n" +
+	"\x12click_through_rate\x18\x19 \x01(\x01H\x17R\x10clickThroughRate\x88\x01\x01\x12%\n" +
+	"\vconversions\x18\x1a \x01(\x01H\x18R\vconversions\x88\x01\x01\x12F\n" +
 	"\x10conversion_value\x18\x1b \x01(\v2\x1b.google.shopping.type.PriceR\x0fconversionValue\x12,\n" +
-	"\x0fconversion_rate\x18\x1c \x01(\x01H\x18R\x0econversionRate\x88\x01\x01B\x13\n" +
+	"\x0fconversion_rate\x18\x1c \x01(\x01H\x19R\x0econversionRate\x88\x01\x01B\x13\n" +
 	"\x11_marketing_methodB\x18\n" +
-	"\x16_customer_country_codeB\v\n" +
+	"\x16_customer_country_codeB\r\n" +
+	"\v_store_typeB\v\n" +
 	"\t_offer_idB\b\n" +
 	"\x06_titleB\b\n" +
 	"\x06_brandB\x0e\n" +
@@ -3627,7 +3865,7 @@ const file_google_shopping_merchant_reports_v1_reports_proto_rawDesc = "" +
 	"\f_impressionsB\x15\n" +
 	"\x13_click_through_rateB\x0e\n" +
 	"\f_conversionsB\x12\n" +
-	"\x10_conversion_rate\"\xc8\x1b\n" +
+	"\x10_conversion_rate\"\x8f \n" +
 	"\vProductView\x12\x13\n" +
 	"\x02id\x18\x01 \x01(\tH\x00R\x02id\x88\x01\x01\x12H\n" +
 	"\achannel\x18\x1c \x01(\x0e2).google.shopping.type.Channel.ChannelEnumH\x01R\achannel\x88\x01\x01\x12(\n" +
@@ -3663,11 +3901,13 @@ const file_google_shopping_merchant_reports_v1_reports_proto_rawDesc = "" +
 	"\x0ethumbnail_link\x18\x17 \x01(\tH\x15R\rthumbnailLink\x88\x01\x01\x12?\n" +
 	"\rcreation_time\x18\x18 \x01(\v2\x1a.google.protobuf.TimestampR\fcreationTime\x12:\n" +
 	"\x0fexpiration_date\x18\x19 \x01(\v2\x11.google.type.DateR\x0eexpirationDate\x12\xa5\x01\n" +
-	"#aggregated_reporting_context_status\x18\x1a \x01(\x0e2Q.google.shopping.merchant.reports.v1.ProductView.AggregatedReportingContextStatusH\x16R aggregatedReportingContextStatus\x88\x01\x01\x12[\n" +
+	"#aggregated_reporting_context_status\x18\x1a \x01(\x0e2Q.google.shopping.merchant.reports.v1.ProductView.AggregatedReportingContextStatusH\x16R aggregatedReportingContextStatus\x88\x01\x01\x12\x8b\x01\n" +
+	"\x1cstatus_per_reporting_context\x18  \x03(\v2J.google.shopping.merchant.reports.v1.ProductView.StatusPerReportingContextR\x19statusPerReportingContext\x12m\n" +
+	"\x11reporting_context\x18! \x01(\x0e2;.google.shopping.type.ReportingContext.ReportingContextEnumH\x17R\x10reportingContext\x88\x01\x01\x12[\n" +
 	"\vitem_issues\x18\x1b \x03(\v2:.google.shopping.merchant.reports.v1.ProductView.ItemIssueR\n" +
 	"itemIssues\x12h\n" +
 	"\x0fclick_potential\x18\x1d \x01(\x0e2?.google.shopping.merchant.reports.v1.ProductView.ClickPotentialR\x0eclickPotential\x125\n" +
-	"\x14click_potential_rank\x18\x1e \x01(\x03H\x17R\x12clickPotentialRank\x88\x01\x01\x1a\xc0\n" +
+	"\x14click_potential_rank\x18\x1e \x01(\x03H\x18R\x12clickPotentialRank\x88\x01\x01\x1a\xc0\n" +
 	"\n" +
 	"\tItemIssue\x12\\\n" +
 	"\x04type\x18\x01 \x01(\v2H.google.shopping.merchant.reports.v1.ProductView.ItemIssue.ItemIssueTypeR\x04type\x12h\n" +
@@ -3698,7 +3938,13 @@ const file_google_shopping_merchant_reports_v1_reports_proto_rawDesc = "" +
 	"!ITEM_ISSUE_RESOLUTION_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fMERCHANT_ACTION\x10\x01\x12\x16\n" +
 	"\x12PENDING_PROCESSING\x10\x02B\r\n" +
-	"\v_resolution\"\xa9\x01\n" +
+	"\v_resolution\x1a\xb1\x02\n" +
+	"\x19StatusPerReportingContext\x12m\n" +
+	"\x11reporting_context\x18\x01 \x01(\x0e2;.google.shopping.type.ReportingContext.ReportingContextEnumH\x00R\x10reportingContext\x88\x01\x01\x12-\n" +
+	"\x12approved_countries\x18\x02 \x03(\tR\x11approvedCountries\x123\n" +
+	"\x15disapproved_countries\x18\x03 \x03(\tR\x14disapprovedCountries\x12+\n" +
+	"\x11pending_countries\x18\x04 \x03(\tR\x10pendingCountriesB\x14\n" +
+	"\x12_reporting_context\"\xa9\x01\n" +
 	" AggregatedReportingContextStatus\x123\n" +
 	"/AGGREGATED_REPORTING_CONTEXT_STATUS_UNSPECIFIED\x10\x00\x12\x1f\n" +
 	"\x1bNOT_ELIGIBLE_OR_DISAPPROVED\x10\x01\x12\v\n" +
@@ -3735,7 +3981,8 @@ const file_google_shopping_merchant_reports_v1_reports_proto_rawDesc = "" +
 	"\x0f_shipping_labelB\x10\n" +
 	"\x0e_item_group_idB\x11\n" +
 	"\x0f_thumbnail_linkB&\n" +
-	"$_aggregated_reporting_context_statusB\x17\n" +
+	"$_aggregated_reporting_context_statusB\x14\n" +
+	"\x12_reporting_contextB\x17\n" +
 	"\x15_click_potential_rank\"\xcd\a\n" +
 	"\x1fPriceCompetitivenessProductView\x123\n" +
 	"\x13report_country_code\x18\x01 \x01(\tH\x00R\x11reportCountryCode\x88\x01\x01\x12\x13\n" +
@@ -3969,7 +4216,12 @@ const file_google_shopping_merchant_reports_v1_reports_proto_rawDesc = "" +
 	"\x13MarketingMethodEnum\x12%\n" +
 	"!MARKETING_METHOD_ENUM_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aORGANIC\x10\x01\x12\a\n" +
-	"\x03ADS\x10\x02\"n\n" +
+	"\x03ADS\x10\x02\"a\n" +
+	"\tStoreType\"T\n" +
+	"\rStoreTypeEnum\x12\x1f\n" +
+	"\x1bSTORE_TYPE_ENUM_UNSPECIFIED\x10\x00\x12\x10\n" +
+	"\fONLINE_STORE\x10\x01\x12\x10\n" +
+	"\fLOCAL_STORES\x10\x02\"n\n" +
 	"\x11ReportGranularity\"Y\n" +
 	"\x15ReportGranularityEnum\x12'\n" +
 	"#REPORT_GRANULARITY_ENUM_UNSPECIFIED\x10\x00\x12\n" +
@@ -4015,8 +4267,8 @@ func file_google_shopping_merchant_reports_v1_reports_proto_rawDescGZIP() []byte
 	return file_google_shopping_merchant_reports_v1_reports_proto_rawDescData
 }
 
-var file_google_shopping_merchant_reports_v1_reports_proto_enumTypes = make([]protoimpl.EnumInfo, 11)
-var file_google_shopping_merchant_reports_v1_reports_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
+var file_google_shopping_merchant_reports_v1_reports_proto_enumTypes = make([]protoimpl.EnumInfo, 12)
+var file_google_shopping_merchant_reports_v1_reports_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
 var file_google_shopping_merchant_reports_v1_reports_proto_goTypes = []any{
 	(ProductView_AggregatedReportingContextStatus)(0),                                // 0: google.shopping.merchant.reports.v1.ProductView.AggregatedReportingContextStatus
 	(ProductView_ClickPotential)(0),                                                  // 1: google.shopping.merchant.reports.v1.ProductView.ClickPotential
@@ -4025,99 +4277,106 @@ var file_google_shopping_merchant_reports_v1_reports_proto_goTypes = []any{
 	(PriceInsightsProductView_Effectiveness)(0),                                      // 4: google.shopping.merchant.reports.v1.PriceInsightsProductView.Effectiveness
 	(BestSellersProductClusterView_InventoryStatus)(0),                               // 5: google.shopping.merchant.reports.v1.BestSellersProductClusterView.InventoryStatus
 	(MarketingMethod_MarketingMethodEnum)(0),                                         // 6: google.shopping.merchant.reports.v1.MarketingMethod.MarketingMethodEnum
-	(ReportGranularity_ReportGranularityEnum)(0),                                     // 7: google.shopping.merchant.reports.v1.ReportGranularity.ReportGranularityEnum
-	(RelativeDemand_RelativeDemandEnum)(0),                                           // 8: google.shopping.merchant.reports.v1.RelativeDemand.RelativeDemandEnum
-	(RelativeDemandChangeType_RelativeDemandChangeTypeEnum)(0),                       // 9: google.shopping.merchant.reports.v1.RelativeDemandChangeType.RelativeDemandChangeTypeEnum
-	(TrafficSource_TrafficSourceEnum)(0),                                             // 10: google.shopping.merchant.reports.v1.TrafficSource.TrafficSourceEnum
-	(*SearchRequest)(nil),                                                            // 11: google.shopping.merchant.reports.v1.SearchRequest
-	(*SearchResponse)(nil),                                                           // 12: google.shopping.merchant.reports.v1.SearchResponse
-	(*ReportRow)(nil),                                                                // 13: google.shopping.merchant.reports.v1.ReportRow
-	(*ProductPerformanceView)(nil),                                                   // 14: google.shopping.merchant.reports.v1.ProductPerformanceView
-	(*ProductView)(nil),                                                              // 15: google.shopping.merchant.reports.v1.ProductView
-	(*PriceCompetitivenessProductView)(nil),                                          // 16: google.shopping.merchant.reports.v1.PriceCompetitivenessProductView
-	(*PriceInsightsProductView)(nil),                                                 // 17: google.shopping.merchant.reports.v1.PriceInsightsProductView
-	(*BestSellersProductClusterView)(nil),                                            // 18: google.shopping.merchant.reports.v1.BestSellersProductClusterView
-	(*BestSellersBrandView)(nil),                                                     // 19: google.shopping.merchant.reports.v1.BestSellersBrandView
-	(*NonProductPerformanceView)(nil),                                                // 20: google.shopping.merchant.reports.v1.NonProductPerformanceView
-	(*CompetitiveVisibilityCompetitorView)(nil),                                      // 21: google.shopping.merchant.reports.v1.CompetitiveVisibilityCompetitorView
-	(*CompetitiveVisibilityTopMerchantView)(nil),                                     // 22: google.shopping.merchant.reports.v1.CompetitiveVisibilityTopMerchantView
-	(*CompetitiveVisibilityBenchmarkView)(nil),                                       // 23: google.shopping.merchant.reports.v1.CompetitiveVisibilityBenchmarkView
-	(*MarketingMethod)(nil),                                                          // 24: google.shopping.merchant.reports.v1.MarketingMethod
-	(*ReportGranularity)(nil),                                                        // 25: google.shopping.merchant.reports.v1.ReportGranularity
-	(*RelativeDemand)(nil),                                                           // 26: google.shopping.merchant.reports.v1.RelativeDemand
-	(*RelativeDemandChangeType)(nil),                                                 // 27: google.shopping.merchant.reports.v1.RelativeDemandChangeType
-	(*TrafficSource)(nil),                                                            // 28: google.shopping.merchant.reports.v1.TrafficSource
-	(*ProductView_ItemIssue)(nil),                                                    // 29: google.shopping.merchant.reports.v1.ProductView.ItemIssue
-	(*ProductView_ItemIssue_ItemIssueType)(nil),                                      // 30: google.shopping.merchant.reports.v1.ProductView.ItemIssue.ItemIssueType
-	(*ProductView_ItemIssue_ItemIssueSeverity)(nil),                                  // 31: google.shopping.merchant.reports.v1.ProductView.ItemIssue.ItemIssueSeverity
-	(*ProductView_ItemIssue_ItemIssueSeverity_IssueSeverityPerReportingContext)(nil), // 32: google.shopping.merchant.reports.v1.ProductView.ItemIssue.ItemIssueSeverity.IssueSeverityPerReportingContext
-	(*date.Date)(nil),                                                                // 33: google.type.Date
-	(*typepb.Price)(nil),                                                             // 34: google.shopping.type.Price
-	(typepb.Channel_ChannelEnum)(0),                                                  // 35: google.shopping.type.Channel.ChannelEnum
-	(*timestamppb.Timestamp)(nil),                                                    // 36: google.protobuf.Timestamp
-	(typepb.ReportingContext_ReportingContextEnum)(0),                                // 37: google.shopping.type.ReportingContext.ReportingContextEnum
+	(StoreType_StoreTypeEnum)(0),                                                     // 7: google.shopping.merchant.reports.v1.StoreType.StoreTypeEnum
+	(ReportGranularity_ReportGranularityEnum)(0),                                     // 8: google.shopping.merchant.reports.v1.ReportGranularity.ReportGranularityEnum
+	(RelativeDemand_RelativeDemandEnum)(0),                                           // 9: google.shopping.merchant.reports.v1.RelativeDemand.RelativeDemandEnum
+	(RelativeDemandChangeType_RelativeDemandChangeTypeEnum)(0),                       // 10: google.shopping.merchant.reports.v1.RelativeDemandChangeType.RelativeDemandChangeTypeEnum
+	(TrafficSource_TrafficSourceEnum)(0),                                             // 11: google.shopping.merchant.reports.v1.TrafficSource.TrafficSourceEnum
+	(*SearchRequest)(nil),                                                            // 12: google.shopping.merchant.reports.v1.SearchRequest
+	(*SearchResponse)(nil),                                                           // 13: google.shopping.merchant.reports.v1.SearchResponse
+	(*ReportRow)(nil),                                                                // 14: google.shopping.merchant.reports.v1.ReportRow
+	(*ProductPerformanceView)(nil),                                                   // 15: google.shopping.merchant.reports.v1.ProductPerformanceView
+	(*ProductView)(nil),                                                              // 16: google.shopping.merchant.reports.v1.ProductView
+	(*PriceCompetitivenessProductView)(nil),                                          // 17: google.shopping.merchant.reports.v1.PriceCompetitivenessProductView
+	(*PriceInsightsProductView)(nil),                                                 // 18: google.shopping.merchant.reports.v1.PriceInsightsProductView
+	(*BestSellersProductClusterView)(nil),                                            // 19: google.shopping.merchant.reports.v1.BestSellersProductClusterView
+	(*BestSellersBrandView)(nil),                                                     // 20: google.shopping.merchant.reports.v1.BestSellersBrandView
+	(*NonProductPerformanceView)(nil),                                                // 21: google.shopping.merchant.reports.v1.NonProductPerformanceView
+	(*CompetitiveVisibilityCompetitorView)(nil),                                      // 22: google.shopping.merchant.reports.v1.CompetitiveVisibilityCompetitorView
+	(*CompetitiveVisibilityTopMerchantView)(nil),                                     // 23: google.shopping.merchant.reports.v1.CompetitiveVisibilityTopMerchantView
+	(*CompetitiveVisibilityBenchmarkView)(nil),                                       // 24: google.shopping.merchant.reports.v1.CompetitiveVisibilityBenchmarkView
+	(*MarketingMethod)(nil),                                                          // 25: google.shopping.merchant.reports.v1.MarketingMethod
+	(*StoreType)(nil),                                                                // 26: google.shopping.merchant.reports.v1.StoreType
+	(*ReportGranularity)(nil),                                                        // 27: google.shopping.merchant.reports.v1.ReportGranularity
+	(*RelativeDemand)(nil),                                                           // 28: google.shopping.merchant.reports.v1.RelativeDemand
+	(*RelativeDemandChangeType)(nil),                                                 // 29: google.shopping.merchant.reports.v1.RelativeDemandChangeType
+	(*TrafficSource)(nil),                                                            // 30: google.shopping.merchant.reports.v1.TrafficSource
+	(*ProductView_ItemIssue)(nil),                                                    // 31: google.shopping.merchant.reports.v1.ProductView.ItemIssue
+	(*ProductView_StatusPerReportingContext)(nil),                                    // 32: google.shopping.merchant.reports.v1.ProductView.StatusPerReportingContext
+	(*ProductView_ItemIssue_ItemIssueType)(nil),                                      // 33: google.shopping.merchant.reports.v1.ProductView.ItemIssue.ItemIssueType
+	(*ProductView_ItemIssue_ItemIssueSeverity)(nil),                                  // 34: google.shopping.merchant.reports.v1.ProductView.ItemIssue.ItemIssueSeverity
+	(*ProductView_ItemIssue_ItemIssueSeverity_IssueSeverityPerReportingContext)(nil), // 35: google.shopping.merchant.reports.v1.ProductView.ItemIssue.ItemIssueSeverity.IssueSeverityPerReportingContext
+	(*date.Date)(nil),                                                                // 36: google.type.Date
+	(*typepb.Price)(nil),                                                             // 37: google.shopping.type.Price
+	(typepb.Channel_ChannelEnum)(0),                                                  // 38: google.shopping.type.Channel.ChannelEnum
+	(*timestamppb.Timestamp)(nil),                                                    // 39: google.protobuf.Timestamp
+	(typepb.ReportingContext_ReportingContextEnum)(0),                                // 40: google.shopping.type.ReportingContext.ReportingContextEnum
 }
 var file_google_shopping_merchant_reports_v1_reports_proto_depIdxs = []int32{
-	13, // 0: google.shopping.merchant.reports.v1.SearchResponse.results:type_name -> google.shopping.merchant.reports.v1.ReportRow
-	14, // 1: google.shopping.merchant.reports.v1.ReportRow.product_performance_view:type_name -> google.shopping.merchant.reports.v1.ProductPerformanceView
-	20, // 2: google.shopping.merchant.reports.v1.ReportRow.non_product_performance_view:type_name -> google.shopping.merchant.reports.v1.NonProductPerformanceView
-	15, // 3: google.shopping.merchant.reports.v1.ReportRow.product_view:type_name -> google.shopping.merchant.reports.v1.ProductView
-	16, // 4: google.shopping.merchant.reports.v1.ReportRow.price_competitiveness_product_view:type_name -> google.shopping.merchant.reports.v1.PriceCompetitivenessProductView
-	17, // 5: google.shopping.merchant.reports.v1.ReportRow.price_insights_product_view:type_name -> google.shopping.merchant.reports.v1.PriceInsightsProductView
-	18, // 6: google.shopping.merchant.reports.v1.ReportRow.best_sellers_product_cluster_view:type_name -> google.shopping.merchant.reports.v1.BestSellersProductClusterView
-	19, // 7: google.shopping.merchant.reports.v1.ReportRow.best_sellers_brand_view:type_name -> google.shopping.merchant.reports.v1.BestSellersBrandView
-	21, // 8: google.shopping.merchant.reports.v1.ReportRow.competitive_visibility_competitor_view:type_name -> google.shopping.merchant.reports.v1.CompetitiveVisibilityCompetitorView
-	22, // 9: google.shopping.merchant.reports.v1.ReportRow.competitive_visibility_top_merchant_view:type_name -> google.shopping.merchant.reports.v1.CompetitiveVisibilityTopMerchantView
-	23, // 10: google.shopping.merchant.reports.v1.ReportRow.competitive_visibility_benchmark_view:type_name -> google.shopping.merchant.reports.v1.CompetitiveVisibilityBenchmarkView
+	14, // 0: google.shopping.merchant.reports.v1.SearchResponse.results:type_name -> google.shopping.merchant.reports.v1.ReportRow
+	15, // 1: google.shopping.merchant.reports.v1.ReportRow.product_performance_view:type_name -> google.shopping.merchant.reports.v1.ProductPerformanceView
+	21, // 2: google.shopping.merchant.reports.v1.ReportRow.non_product_performance_view:type_name -> google.shopping.merchant.reports.v1.NonProductPerformanceView
+	16, // 3: google.shopping.merchant.reports.v1.ReportRow.product_view:type_name -> google.shopping.merchant.reports.v1.ProductView
+	17, // 4: google.shopping.merchant.reports.v1.ReportRow.price_competitiveness_product_view:type_name -> google.shopping.merchant.reports.v1.PriceCompetitivenessProductView
+	18, // 5: google.shopping.merchant.reports.v1.ReportRow.price_insights_product_view:type_name -> google.shopping.merchant.reports.v1.PriceInsightsProductView
+	19, // 6: google.shopping.merchant.reports.v1.ReportRow.best_sellers_product_cluster_view:type_name -> google.shopping.merchant.reports.v1.BestSellersProductClusterView
+	20, // 7: google.shopping.merchant.reports.v1.ReportRow.best_sellers_brand_view:type_name -> google.shopping.merchant.reports.v1.BestSellersBrandView
+	22, // 8: google.shopping.merchant.reports.v1.ReportRow.competitive_visibility_competitor_view:type_name -> google.shopping.merchant.reports.v1.CompetitiveVisibilityCompetitorView
+	23, // 9: google.shopping.merchant.reports.v1.ReportRow.competitive_visibility_top_merchant_view:type_name -> google.shopping.merchant.reports.v1.CompetitiveVisibilityTopMerchantView
+	24, // 10: google.shopping.merchant.reports.v1.ReportRow.competitive_visibility_benchmark_view:type_name -> google.shopping.merchant.reports.v1.CompetitiveVisibilityBenchmarkView
 	6,  // 11: google.shopping.merchant.reports.v1.ProductPerformanceView.marketing_method:type_name -> google.shopping.merchant.reports.v1.MarketingMethod.MarketingMethodEnum
-	33, // 12: google.shopping.merchant.reports.v1.ProductPerformanceView.date:type_name -> google.type.Date
-	33, // 13: google.shopping.merchant.reports.v1.ProductPerformanceView.week:type_name -> google.type.Date
-	34, // 14: google.shopping.merchant.reports.v1.ProductPerformanceView.conversion_value:type_name -> google.shopping.type.Price
-	35, // 15: google.shopping.merchant.reports.v1.ProductView.channel:type_name -> google.shopping.type.Channel.ChannelEnum
-	34, // 16: google.shopping.merchant.reports.v1.ProductView.price:type_name -> google.shopping.type.Price
-	36, // 17: google.shopping.merchant.reports.v1.ProductView.creation_time:type_name -> google.protobuf.Timestamp
-	33, // 18: google.shopping.merchant.reports.v1.ProductView.expiration_date:type_name -> google.type.Date
-	0,  // 19: google.shopping.merchant.reports.v1.ProductView.aggregated_reporting_context_status:type_name -> google.shopping.merchant.reports.v1.ProductView.AggregatedReportingContextStatus
-	29, // 20: google.shopping.merchant.reports.v1.ProductView.item_issues:type_name -> google.shopping.merchant.reports.v1.ProductView.ItemIssue
-	1,  // 21: google.shopping.merchant.reports.v1.ProductView.click_potential:type_name -> google.shopping.merchant.reports.v1.ProductView.ClickPotential
-	34, // 22: google.shopping.merchant.reports.v1.PriceCompetitivenessProductView.price:type_name -> google.shopping.type.Price
-	34, // 23: google.shopping.merchant.reports.v1.PriceCompetitivenessProductView.benchmark_price:type_name -> google.shopping.type.Price
-	34, // 24: google.shopping.merchant.reports.v1.PriceInsightsProductView.price:type_name -> google.shopping.type.Price
-	34, // 25: google.shopping.merchant.reports.v1.PriceInsightsProductView.suggested_price:type_name -> google.shopping.type.Price
-	4,  // 26: google.shopping.merchant.reports.v1.PriceInsightsProductView.effectiveness:type_name -> google.shopping.merchant.reports.v1.PriceInsightsProductView.Effectiveness
-	33, // 27: google.shopping.merchant.reports.v1.BestSellersProductClusterView.report_date:type_name -> google.type.Date
-	7,  // 28: google.shopping.merchant.reports.v1.BestSellersProductClusterView.report_granularity:type_name -> google.shopping.merchant.reports.v1.ReportGranularity.ReportGranularityEnum
-	5,  // 29: google.shopping.merchant.reports.v1.BestSellersProductClusterView.inventory_status:type_name -> google.shopping.merchant.reports.v1.BestSellersProductClusterView.InventoryStatus
-	5,  // 30: google.shopping.merchant.reports.v1.BestSellersProductClusterView.brand_inventory_status:type_name -> google.shopping.merchant.reports.v1.BestSellersProductClusterView.InventoryStatus
-	8,  // 31: google.shopping.merchant.reports.v1.BestSellersProductClusterView.relative_demand:type_name -> google.shopping.merchant.reports.v1.RelativeDemand.RelativeDemandEnum
-	8,  // 32: google.shopping.merchant.reports.v1.BestSellersProductClusterView.previous_relative_demand:type_name -> google.shopping.merchant.reports.v1.RelativeDemand.RelativeDemandEnum
-	9,  // 33: google.shopping.merchant.reports.v1.BestSellersProductClusterView.relative_demand_change:type_name -> google.shopping.merchant.reports.v1.RelativeDemandChangeType.RelativeDemandChangeTypeEnum
-	33, // 34: google.shopping.merchant.reports.v1.BestSellersBrandView.report_date:type_name -> google.type.Date
-	7,  // 35: google.shopping.merchant.reports.v1.BestSellersBrandView.report_granularity:type_name -> google.shopping.merchant.reports.v1.ReportGranularity.ReportGranularityEnum
-	8,  // 36: google.shopping.merchant.reports.v1.BestSellersBrandView.relative_demand:type_name -> google.shopping.merchant.reports.v1.RelativeDemand.RelativeDemandEnum
-	8,  // 37: google.shopping.merchant.reports.v1.BestSellersBrandView.previous_relative_demand:type_name -> google.shopping.merchant.reports.v1.RelativeDemand.RelativeDemandEnum
-	9,  // 38: google.shopping.merchant.reports.v1.BestSellersBrandView.relative_demand_change:type_name -> google.shopping.merchant.reports.v1.RelativeDemandChangeType.RelativeDemandChangeTypeEnum
-	33, // 39: google.shopping.merchant.reports.v1.NonProductPerformanceView.date:type_name -> google.type.Date
-	33, // 40: google.shopping.merchant.reports.v1.NonProductPerformanceView.week:type_name -> google.type.Date
-	33, // 41: google.shopping.merchant.reports.v1.CompetitiveVisibilityCompetitorView.date:type_name -> google.type.Date
-	10, // 42: google.shopping.merchant.reports.v1.CompetitiveVisibilityCompetitorView.traffic_source:type_name -> google.shopping.merchant.reports.v1.TrafficSource.TrafficSourceEnum
-	33, // 43: google.shopping.merchant.reports.v1.CompetitiveVisibilityTopMerchantView.date:type_name -> google.type.Date
-	10, // 44: google.shopping.merchant.reports.v1.CompetitiveVisibilityTopMerchantView.traffic_source:type_name -> google.shopping.merchant.reports.v1.TrafficSource.TrafficSourceEnum
-	33, // 45: google.shopping.merchant.reports.v1.CompetitiveVisibilityBenchmarkView.date:type_name -> google.type.Date
-	10, // 46: google.shopping.merchant.reports.v1.CompetitiveVisibilityBenchmarkView.traffic_source:type_name -> google.shopping.merchant.reports.v1.TrafficSource.TrafficSourceEnum
-	30, // 47: google.shopping.merchant.reports.v1.ProductView.ItemIssue.type:type_name -> google.shopping.merchant.reports.v1.ProductView.ItemIssue.ItemIssueType
-	31, // 48: google.shopping.merchant.reports.v1.ProductView.ItemIssue.severity:type_name -> google.shopping.merchant.reports.v1.ProductView.ItemIssue.ItemIssueSeverity
-	2,  // 49: google.shopping.merchant.reports.v1.ProductView.ItemIssue.resolution:type_name -> google.shopping.merchant.reports.v1.ProductView.ItemIssue.ItemIssueResolution
-	32, // 50: google.shopping.merchant.reports.v1.ProductView.ItemIssue.ItemIssueSeverity.severity_per_reporting_context:type_name -> google.shopping.merchant.reports.v1.ProductView.ItemIssue.ItemIssueSeverity.IssueSeverityPerReportingContext
-	3,  // 51: google.shopping.merchant.reports.v1.ProductView.ItemIssue.ItemIssueSeverity.aggregated_severity:type_name -> google.shopping.merchant.reports.v1.ProductView.ItemIssue.ItemIssueSeverity.AggregatedIssueSeverity
-	37, // 52: google.shopping.merchant.reports.v1.ProductView.ItemIssue.ItemIssueSeverity.IssueSeverityPerReportingContext.reporting_context:type_name -> google.shopping.type.ReportingContext.ReportingContextEnum
-	11, // 53: google.shopping.merchant.reports.v1.ReportService.Search:input_type -> google.shopping.merchant.reports.v1.SearchRequest
-	12, // 54: google.shopping.merchant.reports.v1.ReportService.Search:output_type -> google.shopping.merchant.reports.v1.SearchResponse
-	54, // [54:55] is the sub-list for method output_type
-	53, // [53:54] is the sub-list for method input_type
-	53, // [53:53] is the sub-list for extension type_name
-	53, // [53:53] is the sub-list for extension extendee
-	0,  // [0:53] is the sub-list for field type_name
+	36, // 12: google.shopping.merchant.reports.v1.ProductPerformanceView.date:type_name -> google.type.Date
+	36, // 13: google.shopping.merchant.reports.v1.ProductPerformanceView.week:type_name -> google.type.Date
+	7,  // 14: google.shopping.merchant.reports.v1.ProductPerformanceView.store_type:type_name -> google.shopping.merchant.reports.v1.StoreType.StoreTypeEnum
+	37, // 15: google.shopping.merchant.reports.v1.ProductPerformanceView.conversion_value:type_name -> google.shopping.type.Price
+	38, // 16: google.shopping.merchant.reports.v1.ProductView.channel:type_name -> google.shopping.type.Channel.ChannelEnum
+	37, // 17: google.shopping.merchant.reports.v1.ProductView.price:type_name -> google.shopping.type.Price
+	39, // 18: google.shopping.merchant.reports.v1.ProductView.creation_time:type_name -> google.protobuf.Timestamp
+	36, // 19: google.shopping.merchant.reports.v1.ProductView.expiration_date:type_name -> google.type.Date
+	0,  // 20: google.shopping.merchant.reports.v1.ProductView.aggregated_reporting_context_status:type_name -> google.shopping.merchant.reports.v1.ProductView.AggregatedReportingContextStatus
+	32, // 21: google.shopping.merchant.reports.v1.ProductView.status_per_reporting_context:type_name -> google.shopping.merchant.reports.v1.ProductView.StatusPerReportingContext
+	40, // 22: google.shopping.merchant.reports.v1.ProductView.reporting_context:type_name -> google.shopping.type.ReportingContext.ReportingContextEnum
+	31, // 23: google.shopping.merchant.reports.v1.ProductView.item_issues:type_name -> google.shopping.merchant.reports.v1.ProductView.ItemIssue
+	1,  // 24: google.shopping.merchant.reports.v1.ProductView.click_potential:type_name -> google.shopping.merchant.reports.v1.ProductView.ClickPotential
+	37, // 25: google.shopping.merchant.reports.v1.PriceCompetitivenessProductView.price:type_name -> google.shopping.type.Price
+	37, // 26: google.shopping.merchant.reports.v1.PriceCompetitivenessProductView.benchmark_price:type_name -> google.shopping.type.Price
+	37, // 27: google.shopping.merchant.reports.v1.PriceInsightsProductView.price:type_name -> google.shopping.type.Price
+	37, // 28: google.shopping.merchant.reports.v1.PriceInsightsProductView.suggested_price:type_name -> google.shopping.type.Price
+	4,  // 29: google.shopping.merchant.reports.v1.PriceInsightsProductView.effectiveness:type_name -> google.shopping.merchant.reports.v1.PriceInsightsProductView.Effectiveness
+	36, // 30: google.shopping.merchant.reports.v1.BestSellersProductClusterView.report_date:type_name -> google.type.Date
+	8,  // 31: google.shopping.merchant.reports.v1.BestSellersProductClusterView.report_granularity:type_name -> google.shopping.merchant.reports.v1.ReportGranularity.ReportGranularityEnum
+	5,  // 32: google.shopping.merchant.reports.v1.BestSellersProductClusterView.inventory_status:type_name -> google.shopping.merchant.reports.v1.BestSellersProductClusterView.InventoryStatus
+	5,  // 33: google.shopping.merchant.reports.v1.BestSellersProductClusterView.brand_inventory_status:type_name -> google.shopping.merchant.reports.v1.BestSellersProductClusterView.InventoryStatus
+	9,  // 34: google.shopping.merchant.reports.v1.BestSellersProductClusterView.relative_demand:type_name -> google.shopping.merchant.reports.v1.RelativeDemand.RelativeDemandEnum
+	9,  // 35: google.shopping.merchant.reports.v1.BestSellersProductClusterView.previous_relative_demand:type_name -> google.shopping.merchant.reports.v1.RelativeDemand.RelativeDemandEnum
+	10, // 36: google.shopping.merchant.reports.v1.BestSellersProductClusterView.relative_demand_change:type_name -> google.shopping.merchant.reports.v1.RelativeDemandChangeType.RelativeDemandChangeTypeEnum
+	36, // 37: google.shopping.merchant.reports.v1.BestSellersBrandView.report_date:type_name -> google.type.Date
+	8,  // 38: google.shopping.merchant.reports.v1.BestSellersBrandView.report_granularity:type_name -> google.shopping.merchant.reports.v1.ReportGranularity.ReportGranularityEnum
+	9,  // 39: google.shopping.merchant.reports.v1.BestSellersBrandView.relative_demand:type_name -> google.shopping.merchant.reports.v1.RelativeDemand.RelativeDemandEnum
+	9,  // 40: google.shopping.merchant.reports.v1.BestSellersBrandView.previous_relative_demand:type_name -> google.shopping.merchant.reports.v1.RelativeDemand.RelativeDemandEnum
+	10, // 41: google.shopping.merchant.reports.v1.BestSellersBrandView.relative_demand_change:type_name -> google.shopping.merchant.reports.v1.RelativeDemandChangeType.RelativeDemandChangeTypeEnum
+	36, // 42: google.shopping.merchant.reports.v1.NonProductPerformanceView.date:type_name -> google.type.Date
+	36, // 43: google.shopping.merchant.reports.v1.NonProductPerformanceView.week:type_name -> google.type.Date
+	36, // 44: google.shopping.merchant.reports.v1.CompetitiveVisibilityCompetitorView.date:type_name -> google.type.Date
+	11, // 45: google.shopping.merchant.reports.v1.CompetitiveVisibilityCompetitorView.traffic_source:type_name -> google.shopping.merchant.reports.v1.TrafficSource.TrafficSourceEnum
+	36, // 46: google.shopping.merchant.reports.v1.CompetitiveVisibilityTopMerchantView.date:type_name -> google.type.Date
+	11, // 47: google.shopping.merchant.reports.v1.CompetitiveVisibilityTopMerchantView.traffic_source:type_name -> google.shopping.merchant.reports.v1.TrafficSource.TrafficSourceEnum
+	36, // 48: google.shopping.merchant.reports.v1.CompetitiveVisibilityBenchmarkView.date:type_name -> google.type.Date
+	11, // 49: google.shopping.merchant.reports.v1.CompetitiveVisibilityBenchmarkView.traffic_source:type_name -> google.shopping.merchant.reports.v1.TrafficSource.TrafficSourceEnum
+	33, // 50: google.shopping.merchant.reports.v1.ProductView.ItemIssue.type:type_name -> google.shopping.merchant.reports.v1.ProductView.ItemIssue.ItemIssueType
+	34, // 51: google.shopping.merchant.reports.v1.ProductView.ItemIssue.severity:type_name -> google.shopping.merchant.reports.v1.ProductView.ItemIssue.ItemIssueSeverity
+	2,  // 52: google.shopping.merchant.reports.v1.ProductView.ItemIssue.resolution:type_name -> google.shopping.merchant.reports.v1.ProductView.ItemIssue.ItemIssueResolution
+	40, // 53: google.shopping.merchant.reports.v1.ProductView.StatusPerReportingContext.reporting_context:type_name -> google.shopping.type.ReportingContext.ReportingContextEnum
+	35, // 54: google.shopping.merchant.reports.v1.ProductView.ItemIssue.ItemIssueSeverity.severity_per_reporting_context:type_name -> google.shopping.merchant.reports.v1.ProductView.ItemIssue.ItemIssueSeverity.IssueSeverityPerReportingContext
+	3,  // 55: google.shopping.merchant.reports.v1.ProductView.ItemIssue.ItemIssueSeverity.aggregated_severity:type_name -> google.shopping.merchant.reports.v1.ProductView.ItemIssue.ItemIssueSeverity.AggregatedIssueSeverity
+	40, // 56: google.shopping.merchant.reports.v1.ProductView.ItemIssue.ItemIssueSeverity.IssueSeverityPerReportingContext.reporting_context:type_name -> google.shopping.type.ReportingContext.ReportingContextEnum
+	12, // 57: google.shopping.merchant.reports.v1.ReportService.Search:input_type -> google.shopping.merchant.reports.v1.SearchRequest
+	13, // 58: google.shopping.merchant.reports.v1.ReportService.Search:output_type -> google.shopping.merchant.reports.v1.SearchResponse
+	58, // [58:59] is the sub-list for method output_type
+	57, // [57:58] is the sub-list for method input_type
+	57, // [57:57] is the sub-list for extension type_name
+	57, // [57:57] is the sub-list for extension extendee
+	0,  // [0:57] is the sub-list for field type_name
 }
 
 func init() { file_google_shopping_merchant_reports_v1_reports_proto_init() }
@@ -4135,17 +4394,18 @@ func file_google_shopping_merchant_reports_v1_reports_proto_init() {
 	file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[10].OneofWrappers = []any{}
 	file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[11].OneofWrappers = []any{}
 	file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[12].OneofWrappers = []any{}
-	file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[18].OneofWrappers = []any{}
 	file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[19].OneofWrappers = []any{}
 	file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[20].OneofWrappers = []any{}
 	file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[21].OneofWrappers = []any{}
+	file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[22].OneofWrappers = []any{}
+	file_google_shopping_merchant_reports_v1_reports_proto_msgTypes[23].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_shopping_merchant_reports_v1_reports_proto_rawDesc), len(file_google_shopping_merchant_reports_v1_reports_proto_rawDesc)),
-			NumEnums:      11,
-			NumMessages:   22,
+			NumEnums:      12,
+			NumMessages:   24,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,8 +42,10 @@ const (
 // Request message for [ListFrameworks][].
 type ListFrameworksRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The parent resource name, in the format
-	// `organizations/{organization}/locations/{location}`.
+	// Required. The parent resource name, in one of the following formats:
+	// - `organizations/{organization}/locations/{location}`
+	// - `projects/{project}/locations/{location}`.
+	//
 	// The only supported location is `global`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. The maximum number of frameworks to return. The default value is
@@ -170,8 +172,12 @@ func (x *ListFrameworksResponse) GetNextPageToken() string {
 // The request message for [GetFramework][].
 type GetFrameworkRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The name of the framework to retrieve, in the format
-	// `organizations/{organization}/locations/{location}/frameworks/{framework_id}`
+	// Required. The name of the framework to retrieve, in one of the following
+	// formats:
+	// `organizations/{organization}/locations/{location}/frameworks/{framework}`
+	// or
+	// `projects/{project}/locations/{location}/frameworks/{framework}`.
+	//
 	// The only supported location is `global`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. The framework major version to retrieve. If not specified, the
@@ -228,8 +234,10 @@ func (x *GetFrameworkRequest) GetMajorRevisionId() int64 {
 // The request message for [CreateFramework][].
 type CreateFrameworkRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The parent resource name, in the format
-	// `organizations/{organization}/locations/{location}`.
+	// Required. The parent resource name, in one of the following formats:
+	// - `organizations/{organization}/locations/{location}`
+	// - `projects/{project}/locations/{location}`.
+	//
 	// The only supported location is `global`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The identifier (ID) of the framework. The ID is not the full name
@@ -363,8 +371,11 @@ func (x *UpdateFrameworkRequest) GetMajorRevisionId() int64 {
 // Request message for [DeleteFramework][].
 type DeleteFrameworkRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The name of the resource, in the format
-	// `organizations/{organization}/locations/{location}/frameworks/{framework}`.
+	// Required. The name of the resource, in one of the following formats:
+	// `organizations/{organization}/locations/{location}/frameworks/{framework}`
+	// or
+	// `projects/{project}/locations/{location}/frameworks/{framework}`.
+	//
 	// The only supported location is `global`.
 	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -411,8 +422,10 @@ func (x *DeleteFrameworkRequest) GetName() string {
 // Request message for [ListCloudControls][].
 type ListCloudControlsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The parent resource name, in the format
-	// `organizations/{organization}/locations/{location}`.
+	// Required. The parent resource name, in one of the following formats:
+	// - `organizations/{organization}/locations/{location}`
+	// - `projects/{project}/locations/{location}`.
+	//
 	// The only supported location is `global`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. The maximum number of cloud controls to return. The default value
@@ -543,8 +556,12 @@ func (x *ListCloudControlsResponse) GetNextPageToken() string {
 // The request message for [GetCloudControl][].
 type GetCloudControlRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The name of the cloud control to retrieve, in the format
-	// `organizations/{organization}/locations/{location}/cloudControls/{cloud_control}`.
+	// Required. The name of the cloud control to retrieve, in one of the
+	// following formats:
+	// `organizations/{organization}/locations/{location}/cloudControls/{cloud_control}`
+	// or
+	// `projects/{project}/locations/{location}/cloudControls/{cloud_control}`.
+	//
 	// The only supported location is `global`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. The major version of the cloud control to retrieve. If not
@@ -601,8 +618,10 @@ func (x *GetCloudControlRequest) GetMajorRevisionId() int64 {
 // The request message for [CreateCloudControl][].
 type CreateCloudControlRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The parent resource name, in the format
-	// `organizations/{organization}/locations/{location}`.
+	// Required. The parent resource name, in one of the following formats:
+	// - `organizations/{organization}/locations/{location}`.
+	// - `projects/{project}/locations/{location}`.
+	//
 	// The only supported location is `global`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The identifier for the cloud control, which is the last segment
@@ -737,8 +756,12 @@ func (x *UpdateCloudControlRequest) GetCloudControl() *CloudControl {
 // The request message for [DeleteCloudControl][].
 type DeleteCloudControlRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The name of the cloud control to delete, in the format
-	// `organizations/{organization}/locations/{location}/CloudControls/{CloudControl}`.
+	// Required. The name of the cloud control to delete, in one of the following
+	// formats:
+	// `organizations/{organization}/locations/{location}/CloudControls/{CloudControl}`
+	// or
+	// `projects/{project}/locations/{location}/CloudControls/{CloudControl}`.
+	//
 	// The only supported location is `global`.
 	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -835,18 +858,18 @@ const file_google_cloud_cloudsecuritycompliance_v1_config_proto_rawDesc = "" +
 	"\rcloud_control\x18\x02 \x01(\v25.google.cloud.cloudsecuritycompliance.v1.CloudControlB\x03\xe0A\x02R\fcloudControl\"l\n" +
 	"\x19DeleteCloudControlRequest\x12O\n" +
 	"\x04name\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\n" +
-	"3cloudsecuritycompliance.googleapis.com/CloudControlR\x04name2\xa1\x12\n" +
-	"\x06Config\x12\xd7\x01\n" +
-	"\x0eListFrameworks\x12>.google.cloud.cloudsecuritycompliance.v1.ListFrameworksRequest\x1a?.google.cloud.cloudsecuritycompliance.v1.ListFrameworksResponse\"D\xdaA\x06parent\x82\xd3\xe4\x93\x025\x123/v1/{parent=organizations/*/locations/*}/frameworks\x12\xc4\x01\n" +
-	"\fGetFramework\x12<.google.cloud.cloudsecuritycompliance.v1.GetFrameworkRequest\x1a2.google.cloud.cloudsecuritycompliance.v1.Framework\"B\xdaA\x04name\x82\xd3\xe4\x93\x025\x123/v1/{name=organizations/*/locations/*/frameworks/*}\x12\xee\x01\n" +
-	"\x0fCreateFramework\x12?.google.cloud.cloudsecuritycompliance.v1.CreateFrameworkRequest\x1a2.google.cloud.cloudsecuritycompliance.v1.Framework\"f\xdaA\x1dparent,framework,framework_id\x82\xd3\xe4\x93\x02@:\tframework\"3/v1/{parent=organizations/*/locations/*}/frameworks\x12\xf0\x01\n" +
-	"\x0fUpdateFramework\x12?.google.cloud.cloudsecuritycompliance.v1.UpdateFrameworkRequest\x1a2.google.cloud.cloudsecuritycompliance.v1.Framework\"h\xdaA\x15framework,update_mask\x82\xd3\xe4\x93\x02J:\tframework2=/v1/{framework.name=organizations/*/locations/*/frameworks/*}\x12\xae\x01\n" +
-	"\x0fDeleteFramework\x12?.google.cloud.cloudsecuritycompliance.v1.DeleteFrameworkRequest\x1a\x16.google.protobuf.Empty\"B\xdaA\x04name\x82\xd3\xe4\x93\x025*3/v1/{name=organizations/*/locations/*/frameworks/*}\x12\xe3\x01\n" +
-	"\x11ListCloudControls\x12A.google.cloud.cloudsecuritycompliance.v1.ListCloudControlsRequest\x1aB.google.cloud.cloudsecuritycompliance.v1.ListCloudControlsResponse\"G\xdaA\x06parent\x82\xd3\xe4\x93\x028\x126/v1/{parent=organizations/*/locations/*}/cloudControls\x12\xd0\x01\n" +
-	"\x0fGetCloudControl\x12?.google.cloud.cloudsecuritycompliance.v1.GetCloudControlRequest\x1a5.google.cloud.cloudsecuritycompliance.v1.CloudControl\"E\xdaA\x04name\x82\xd3\xe4\x93\x028\x126/v1/{name=organizations/*/locations/*/cloudControls/*}\x12\x86\x02\n" +
-	"\x12CreateCloudControl\x12B.google.cloud.cloudsecuritycompliance.v1.CreateCloudControlRequest\x1a5.google.cloud.cloudsecuritycompliance.v1.CloudControl\"u\xdaA%parent,cloud_control,cloud_control_id\x82\xd3\xe4\x93\x02G:\rcloud_control\"6/v1/{parent=organizations/*/locations/*}/cloudControls\x12\x88\x02\n" +
-	"\x12UpdateCloudControl\x12B.google.cloud.cloudsecuritycompliance.v1.UpdateCloudControlRequest\x1a5.google.cloud.cloudsecuritycompliance.v1.CloudControl\"w\xdaA\x19cloud_control,update_mask\x82\xd3\xe4\x93\x02U:\rcloud_control2D/v1/{cloud_control.name=organizations/*/locations/*/cloudControls/*}\x12\xb7\x01\n" +
-	"\x12DeleteCloudControl\x12B.google.cloud.cloudsecuritycompliance.v1.DeleteCloudControlRequest\x1a\x16.google.protobuf.Empty\"E\xdaA\x04name\x82\xd3\xe4\x93\x028*6/v1/{name=organizations/*/locations/*/cloudControls/*}\x1aZ\xcaA&cloudsecuritycompliance.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xa4\x02\n" +
+	"3cloudsecuritycompliance.googleapis.com/CloudControlR\x04name2\xf7\x16\n" +
+	"\x06Config\x12\x89\x02\n" +
+	"\x0eListFrameworks\x12>.google.cloud.cloudsecuritycompliance.v1.ListFrameworksRequest\x1a?.google.cloud.cloudsecuritycompliance.v1.ListFrameworksResponse\"v\xdaA\x06parent\x82\xd3\xe4\x93\x02gZ0\x12./v1/{parent=projects/*/locations/*}/frameworks\x123/v1/{parent=organizations/*/locations/*}/frameworks\x12\xf6\x01\n" +
+	"\fGetFramework\x12<.google.cloud.cloudsecuritycompliance.v1.GetFrameworkRequest\x1a2.google.cloud.cloudsecuritycompliance.v1.Framework\"t\xdaA\x04name\x82\xd3\xe4\x93\x02gZ0\x12./v1/{name=projects/*/locations/*/frameworks/*}\x123/v1/{name=organizations/*/locations/*/frameworks/*}\x12\xac\x02\n" +
+	"\x0fCreateFramework\x12?.google.cloud.cloudsecuritycompliance.v1.CreateFrameworkRequest\x1a2.google.cloud.cloudsecuritycompliance.v1.Framework\"\xa3\x01\xdaA\x1dparent,framework,framework_id\x82\xd3\xe4\x93\x02}:\tframeworkZ;:\tframework\"./v1/{parent=projects/*/locations/*}/frameworks\"3/v1/{parent=organizations/*/locations/*}/frameworks\x12\xb9\x02\n" +
+	"\x0fUpdateFramework\x12?.google.cloud.cloudsecuritycompliance.v1.UpdateFrameworkRequest\x1a2.google.cloud.cloudsecuritycompliance.v1.Framework\"\xb0\x01\xdaA\x15framework,update_mask\x82\xd3\xe4\x93\x02\x91\x01:\tframeworkZE:\tframework28/v1/{framework.name=projects/*/locations/*/frameworks/*}2=/v1/{framework.name=organizations/*/locations/*/frameworks/*}\x12\xe0\x01\n" +
+	"\x0fDeleteFramework\x12?.google.cloud.cloudsecuritycompliance.v1.DeleteFrameworkRequest\x1a\x16.google.protobuf.Empty\"t\xdaA\x04name\x82\xd3\xe4\x93\x02gZ0*./v1/{name=projects/*/locations/*/frameworks/*}*3/v1/{name=organizations/*/locations/*/frameworks/*}\x12\x98\x02\n" +
+	"\x11ListCloudControls\x12A.google.cloud.cloudsecuritycompliance.v1.ListCloudControlsRequest\x1aB.google.cloud.cloudsecuritycompliance.v1.ListCloudControlsResponse\"|\xdaA\x06parent\x82\xd3\xe4\x93\x02mZ3\x121/v1/{parent=projects/*/locations/*}/cloudControls\x126/v1/{parent=organizations/*/locations/*}/cloudControls\x12\x85\x02\n" +
+	"\x0fGetCloudControl\x12?.google.cloud.cloudsecuritycompliance.v1.GetCloudControlRequest\x1a5.google.cloud.cloudsecuritycompliance.v1.CloudControl\"z\xdaA\x04name\x82\xd3\xe4\x93\x02mZ3\x121/v1/{name=projects/*/locations/*/cloudControls/*}\x126/v1/{name=organizations/*/locations/*/cloudControls/*}\x12\xcc\x02\n" +
+	"\x12CreateCloudControl\x12B.google.cloud.cloudsecuritycompliance.v1.CreateCloudControlRequest\x1a5.google.cloud.cloudsecuritycompliance.v1.CloudControl\"\xba\x01\xdaA%parent,cloud_control,cloud_control_id\x82\xd3\xe4\x93\x02\x8b\x01:\rcloud_controlZB:\rcloud_control\"1/v1/{parent=projects/*/locations/*}/cloudControls\"6/v1/{parent=organizations/*/locations/*}/cloudControls\x12\xdc\x02\n" +
+	"\x12UpdateCloudControl\x12B.google.cloud.cloudsecuritycompliance.v1.UpdateCloudControlRequest\x1a5.google.cloud.cloudsecuritycompliance.v1.CloudControl\"\xca\x01\xdaA\x19cloud_control,update_mask\x82\xd3\xe4\x93\x02\xa7\x01:\rcloud_controlZP:\rcloud_control2?/v1/{cloud_control.name=projects/*/locations/*/cloudControls/*}2D/v1/{cloud_control.name=organizations/*/locations/*/cloudControls/*}\x12\xec\x01\n" +
+	"\x12DeleteCloudControl\x12B.google.cloud.cloudsecuritycompliance.v1.DeleteCloudControlRequest\x1a\x16.google.protobuf.Empty\"z\xdaA\x04name\x82\xd3\xe4\x93\x02mZ3*1/v1/{name=projects/*/locations/*/cloudControls/*}*6/v1/{name=organizations/*/locations/*/cloudControls/*}\x1aZ\xcaA&cloudsecuritycompliance.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xa4\x02\n" +
 	"+com.google.cloud.cloudsecuritycompliance.v1B\vConfigProtoP\x01Zecloud.google.com/go/cloudsecuritycompliance/apiv1/cloudsecuritycompliancepb;cloudsecuritycompliancepb\xaa\x02'Google.Cloud.CloudSecurityCompliance.V1\xca\x02'Google\\Cloud\\CloudSecurityCompliance\\V1\xea\x02*Google::Cloud::CloudSecurityCompliance::V1b\x06proto3"
 
 var (
