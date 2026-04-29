@@ -46,6 +46,7 @@ type RegionCompositeHealthChecksCallOptions struct {
 	AggregatedList     []gax.CallOption
 	Delete             []gax.CallOption
 	Get                []gax.CallOption
+	GetHealth          []gax.CallOption
 	Insert             []gax.CallOption
 	List               []gax.CallOption
 	Patch              []gax.CallOption
@@ -70,6 +71,18 @@ func defaultRegionCompositeHealthChecksRESTCallOptions() *RegionCompositeHealthC
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
 		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetHealth: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -113,6 +126,7 @@ type internalRegionCompositeHealthChecksClient interface {
 	AggregatedList(context.Context, *computepb.AggregatedListRegionCompositeHealthChecksRequest, ...gax.CallOption) *CompositeHealthChecksScopedListPairIterator
 	Delete(context.Context, *computepb.DeleteRegionCompositeHealthCheckRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetRegionCompositeHealthCheckRequest, ...gax.CallOption) (*computepb.CompositeHealthCheck, error)
+	GetHealth(context.Context, *computepb.GetHealthRegionCompositeHealthCheckRequest, ...gax.CallOption) (*computepb.CompositeHealthCheckHealth, error)
 	Insert(context.Context, *computepb.InsertRegionCompositeHealthCheckRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListRegionCompositeHealthChecksRequest, ...gax.CallOption) *CompositeHealthCheckIterator
 	Patch(context.Context, *computepb.PatchRegionCompositeHealthCheckRequest, ...gax.CallOption) (*Operation, error)
@@ -171,6 +185,12 @@ func (c *RegionCompositeHealthChecksClient) Delete(ctx context.Context, req *com
 // Get returns the specified CompositeHealthCheck resource in the given region.
 func (c *RegionCompositeHealthChecksClient) Get(ctx context.Context, req *computepb.GetRegionCompositeHealthCheckRequest, opts ...gax.CallOption) (*computepb.CompositeHealthCheck, error) {
 	return c.internalClient.Get(ctx, req, opts...)
+}
+
+// GetHealth gets the most recent health check results for this
+// regional CompositeHealthCheck.
+func (c *RegionCompositeHealthChecksClient) GetHealth(ctx context.Context, req *computepb.GetHealthRegionCompositeHealthCheckRequest, opts ...gax.CallOption) (*computepb.CompositeHealthCheckHealth, error) {
+	return c.internalClient.GetHealth(ctx, req, opts...)
 }
 
 // Insert create a CompositeHealthCheck in the specified project in the given region
@@ -261,6 +281,7 @@ func NewRegionCompositeHealthChecksRESTClient(ctx context.Context, opts ...optio
 		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientMetrics(metrics))
 		callOpts.Delete = append(callOpts.Delete, gax.WithClientMetrics(metrics))
 		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.GetHealth = append(callOpts.GetHealth, gax.WithClientMetrics(metrics))
 		callOpts.Insert = append(callOpts.Insert, gax.WithClientMetrics(metrics))
 		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
 		callOpts.Patch = append(callOpts.Patch, gax.WithClientMetrics(metrics))
@@ -527,6 +548,59 @@ func (c *regionCompositeHealthChecksRESTClient) Get(ctx context.Context, req *co
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "Get")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetHealth gets the most recent health check results for this
+// regional CompositeHealthCheck.
+func (c *regionCompositeHealthChecksRESTClient) GetHealth(ctx context.Context, req *computepb.GetHealthRegionCompositeHealthCheckRequest, opts ...gax.CallOption) (*computepb.CompositeHealthCheckHealth, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/compositeHealthChecks/%v/getHealth", req.GetProject(), req.GetRegion(), req.GetCompositeHealthCheck())
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "composite_health_check", url.QueryEscape(req.GetCompositeHealthCheck()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/regions/%v/compositeHealthChecks/%v", req.GetProject(), req.GetRegion(), req.GetCompositeHealthCheck()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionCompositeHealthChecks/GetHealth")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/compositeHealthChecks/{composite_health_check}/getHealth")
+	}
+	opts = append((*c.CallOptions).GetHealth[0:len((*c.CallOptions).GetHealth):len((*c.CallOptions).GetHealth)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.CompositeHealthCheckHealth{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetHealth")
 		if err != nil {
 			return err
 		}

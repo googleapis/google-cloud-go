@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import (
 	interval "google.golang.org/genproto/googleapis/type/interval"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -184,6 +185,64 @@ func (FindingClass) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_cloudsecuritycompliance_v1_monitoring_proto_rawDescGZIP(), []int{1}
 }
 
+// Specifies the view of the framework compliance summary to be returned.
+// New values may be added in the future.
+type FrameworkComplianceSummaryView int32
+
+const (
+	// The default / unset value. The API will default to the BASIC view.
+	FrameworkComplianceSummaryView_FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_UNSPECIFIED FrameworkComplianceSummaryView = 0
+	// Includes basic compliance metadata, but omits trend data.
+	FrameworkComplianceSummaryView_FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_BASIC FrameworkComplianceSummaryView = 1
+	// Includes all information, including
+	// [finding_count][google.cloud.cloudsecuritycompliance.v1main.FrameworkComplianceSummary.finding_count]
+	// and
+	// [controls_passing_trend][google.cloud.cloudsecuritycompliance.v1main.FrameworkComplianceSummary.controls_passing_trend].
+	// Trend data is provided for the last 30 days.
+	FrameworkComplianceSummaryView_FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_FULL FrameworkComplianceSummaryView = 2
+)
+
+// Enum value maps for FrameworkComplianceSummaryView.
+var (
+	FrameworkComplianceSummaryView_name = map[int32]string{
+		0: "FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_UNSPECIFIED",
+		1: "FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_BASIC",
+		2: "FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_FULL",
+	}
+	FrameworkComplianceSummaryView_value = map[string]int32{
+		"FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_UNSPECIFIED": 0,
+		"FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_BASIC":       1,
+		"FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_FULL":        2,
+	}
+)
+
+func (x FrameworkComplianceSummaryView) Enum() *FrameworkComplianceSummaryView {
+	p := new(FrameworkComplianceSummaryView)
+	*p = x
+	return p
+}
+
+func (x FrameworkComplianceSummaryView) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (FrameworkComplianceSummaryView) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_cloudsecuritycompliance_v1_monitoring_proto_enumTypes[2].Descriptor()
+}
+
+func (FrameworkComplianceSummaryView) Type() protoreflect.EnumType {
+	return &file_google_cloud_cloudsecuritycompliance_v1_monitoring_proto_enumTypes[2]
+}
+
+func (x FrameworkComplianceSummaryView) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use FrameworkComplianceSummaryView.Descriptor instead.
+func (FrameworkComplianceSummaryView) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_cloudsecuritycompliance_v1_monitoring_proto_rawDescGZIP(), []int{2}
+}
+
 // The request message for
 // [ListFrameworkComplianceSummariesRequest][google.cloud.cloudsecuritycompliance.v1.ListFrameworkComplianceSummariesRequest].
 type ListFrameworkComplianceSummariesRequest struct {
@@ -197,7 +256,9 @@ type ListFrameworkComplianceSummariesRequest struct {
 	// should return.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	// Optional. The filtering results.
-	Filter        string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
+	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
+	// Optional. Specifies the level of detail to return in the response.
+	View          FrameworkComplianceSummaryView `protobuf:"varint,5,opt,name=view,proto3,enum=google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceSummaryView" json:"view,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -258,6 +319,13 @@ func (x *ListFrameworkComplianceSummariesRequest) GetFilter() string {
 		return x.Filter
 	}
 	return ""
+}
+
+func (x *ListFrameworkComplianceSummariesRequest) GetView() FrameworkComplianceSummaryView {
+	if x != nil {
+		return x.View
+	}
+	return FrameworkComplianceSummaryView_FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_UNSPECIFIED
 }
 
 // The response message for
@@ -467,7 +535,9 @@ type FetchFrameworkComplianceReportRequest struct {
 	// Required. The name of the framework compliance report to retrieve.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. The end time of the report.
-	EndTime       *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=end_time,json=endTime,proto3" json:"end_time,omitempty"`
+	EndTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=end_time,json=endTime,proto3" json:"end_time,omitempty"`
+	// Optional. The filtering results.
+	Filter        string `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -514,6 +584,13 @@ func (x *FetchFrameworkComplianceReportRequest) GetEndTime() *timestamppb.Timest
 		return x.EndTime
 	}
 	return nil
+}
+
+func (x *FetchFrameworkComplianceReportRequest) GetFilter() string {
+	if x != nil {
+		return x.Filter
+	}
+	return ""
 }
 
 // The request message for [ListFindingSummaries][].
@@ -1013,8 +1090,12 @@ type FrameworkComplianceSummary struct {
 	MinorRevisionId int64 `protobuf:"varint,9,opt,name=minor_revision_id,json=minorRevisionId,proto3" json:"minor_revision_id,omitempty"`
 	// The target resource details for the framework.
 	TargetResourceDetails []*TargetResourceDetails `protobuf:"bytes,10,rep,name=target_resource_details,json=targetResourceDetails,proto3" json:"target_resource_details,omitempty"`
-	unknownFields         protoimpl.UnknownFields
-	sizeCache             protoimpl.SizeCache
+	// Output only. The count of the findings generated against the framework.
+	FindingCount int64 `protobuf:"varint,11,opt,name=finding_count,json=findingCount,proto3" json:"finding_count,omitempty"`
+	// Output only. The trend of controls that are passing for the given duration.
+	ControlsPassingTrend *Trend `protobuf:"bytes,12,opt,name=controls_passing_trend,json=controlsPassingTrend,proto3" json:"controls_passing_trend,omitempty"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
 }
 
 func (x *FrameworkComplianceSummary) Reset() {
@@ -1113,6 +1194,20 @@ func (x *FrameworkComplianceSummary) GetMinorRevisionId() int64 {
 func (x *FrameworkComplianceSummary) GetTargetResourceDetails() []*TargetResourceDetails {
 	if x != nil {
 		return x.TargetResourceDetails
+	}
+	return nil
+}
+
+func (x *FrameworkComplianceSummary) GetFindingCount() int64 {
+	if x != nil {
+		return x.FindingCount
+	}
+	return 0
+}
+
+func (x *FrameworkComplianceSummary) GetControlsPassingTrend() *Trend {
+	if x != nil {
+		return x.ControlsPassingTrend
 	}
 	return nil
 }
@@ -1884,17 +1979,74 @@ func (x *TargetResourceDetails) GetMinorRevisionId() int64 {
 	return 0
 }
 
+// The trend of a compliance metric.
+type Trend struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. The duration for the trend.
+	Duration *durationpb.Duration `protobuf:"bytes,1,opt,name=duration,proto3" json:"duration,omitempty"`
+	// Output only. The trend value as a percentage. The value can be positive or
+	// negative.
+	ValuePercent  float64 `protobuf:"fixed64,2,opt,name=value_percent,json=valuePercent,proto3" json:"value_percent,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Trend) Reset() {
+	*x = Trend{}
+	mi := &file_google_cloud_cloudsecuritycompliance_v1_monitoring_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Trend) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Trend) ProtoMessage() {}
+
+func (x *Trend) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_cloudsecuritycompliance_v1_monitoring_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Trend.ProtoReflect.Descriptor instead.
+func (*Trend) Descriptor() ([]byte, []int) {
+	return file_google_cloud_cloudsecuritycompliance_v1_monitoring_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *Trend) GetDuration() *durationpb.Duration {
+	if x != nil {
+		return x.Duration
+	}
+	return nil
+}
+
+func (x *Trend) GetValuePercent() float64 {
+	if x != nil {
+		return x.ValuePercent
+	}
+	return 0
+}
+
 var File_google_cloud_cloudsecuritycompliance_v1_monitoring_proto protoreflect.FileDescriptor
 
 const file_google_cloud_cloudsecuritycompliance_v1_monitoring_proto_rawDesc = "" +
 	"\n" +
-	"8google/cloud/cloudsecuritycompliance/v1/monitoring.proto\x12'google.cloud.cloudsecuritycompliance.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/cloudsecuritycompliance/v1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1agoogle/type/interval.proto\"\xef\x01\n" +
+	"8google/cloud/cloudsecuritycompliance/v1/monitoring.proto\x12'google.cloud.cloudsecuritycompliance.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/cloudsecuritycompliance/v1/common.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1agoogle/type/interval.proto\"\xd1\x02\n" +
 	"'ListFrameworkComplianceSummariesRequest\x12a\n" +
 	"\x06parent\x18\x01 \x01(\tBI\xe0A\x02\xfaAC\x12Acloudsecuritycompliance.googleapis.com/FrameworkComplianceSummaryR\x06parent\x12 \n" +
 	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\xe3\x01\n" +
+	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12`\n" +
+	"\x04view\x18\x05 \x01(\x0e2G.google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceSummaryViewB\x03\xe0A\x01R\x04view\"\xe3\x01\n" +
 	"(ListFrameworkComplianceSummariesResponse\x12\x89\x01\n" +
 	"\x1eframework_compliance_summaries\x18\x01 \x03(\v2C.google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceSummaryR\x1cframeworkComplianceSummaries\x12+\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\"\xcf\n" +
@@ -1914,11 +2066,12 @@ const file_google_cloud_cloudsecuritycompliance_v1_monitoring_proto_rawDesc = ""
 	" \x01(\x03R\x0fmajorRevisionId\x12*\n" +
 	"\x11minor_revision_id\x18\v \x01(\x03R\x0fminorRevisionId\x12v\n" +
 	"\x17target_resource_details\x18\f \x03(\v2>.google.cloud.cloudsecuritycompliance.v1.TargetResourceDetailsR\x15targetResourceDetails:\xab\x03\xeaA\xa7\x03\n" +
-	"@cloudsecuritycompliance.googleapis.com/FrameworkComplianceReport\x12`projects/{project}/locations/{location}/frameworkComplianceReports/{framework_compliance_report}\x12^folders/{folder}/locations/{location}/frameworkComplianceReports/{framework_compliance_report}\x12jorganizations/{organization}/locations/{location}/frameworkComplianceReports/{framework_compliance_report}*\x1aframeworkComplianceReports2\x19frameworkComplianceReport\"\xc1\x01\n" +
+	"@cloudsecuritycompliance.googleapis.com/FrameworkComplianceReport\x12`projects/{project}/locations/{location}/frameworkComplianceReports/{framework_compliance_report}\x12^folders/{folder}/locations/{location}/frameworkComplianceReports/{framework_compliance_report}\x12jorganizations/{organization}/locations/{location}/frameworkComplianceReports/{framework_compliance_report}*\x1aframeworkComplianceReports2\x19frameworkComplianceReport\"\xde\x01\n" +
 	"%FetchFrameworkComplianceReportRequest\x12\\\n" +
 	"\x04name\x18\x01 \x01(\tBH\xe0A\x02\xfaAB\n" +
 	"@cloudsecuritycompliance.googleapis.com/FrameworkComplianceReportR\x04name\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\aendTime\"\x95\x02\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\aendTime\x12\x1b\n" +
+	"\x06filter\x18\x03 \x01(\tB\x03\xe0A\x01R\x06filter\"\x95\x02\n" +
 	"\x1bListFindingSummariesRequest\x12U\n" +
 	"\x06parent\x18\x01 \x01(\tB=\xe0A\x02\xfaA7\x125cloudsecuritycompliance.googleapis.com/FindingSummaryR\x06parent\x12 \n" +
 	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
@@ -1950,7 +2103,8 @@ const file_google_cloud_cloudsecuritycompliance_v1_monitoring_proto_rawDesc = ""
 	"\x10passing_controls\x18\x01 \x01(\x05R\x0fpassingControls\x12)\n" +
 	"\x10failing_controls\x18\x02 \x01(\x05R\x0ffailingControls\x12:\n" +
 	"\x19assessed_passing_controls\x18\x03 \x01(\x05R\x17assessedPassingControls\x122\n" +
-	"\x15not_assessed_controls\x18\x04 \x01(\x05R\x13notAssessedControls\"\xe6\t\n" +
+	"\x15not_assessed_controls\x18\x04 \x01(\x05R\x13notAssessedControls\"\xfb\n" +
+	"\n" +
 	"\x1aFrameworkComplianceSummary\x12\x1c\n" +
 	"\tframework\x18\x01 \x01(\tR\tframework\x12\x7f\n" +
 	"\x1acontrol_assessment_details\x18\x02 \x01(\v2A.google.cloud.cloudsecuritycompliance.v1.ControlAssessmentDetailsR\x18controlAssessmentDetails\x12g\n" +
@@ -1962,7 +2116,9 @@ const file_google_cloud_cloudsecuritycompliance_v1_monitoring_proto_rawDesc = ""
 	"\x11major_revision_id\x18\b \x01(\x03R\x0fmajorRevisionId\x12*\n" +
 	"\x11minor_revision_id\x18\t \x01(\x03R\x0fminorRevisionId\x12v\n" +
 	"\x17target_resource_details\x18\n" +
-	" \x03(\v2>.google.cloud.cloudsecuritycompliance.v1.TargetResourceDetailsR\x15targetResourceDetails:\xb8\x03\xeaA\xb4\x03\n" +
+	" \x03(\v2>.google.cloud.cloudsecuritycompliance.v1.TargetResourceDetailsR\x15targetResourceDetails\x12(\n" +
+	"\rfinding_count\x18\v \x01(\x03B\x03\xe0A\x03R\ffindingCount\x12i\n" +
+	"\x16controls_passing_trend\x18\f \x01(\v2..google.cloud.cloudsecuritycompliance.v1.TrendB\x03\xe0A\x03R\x14controlsPassingTrend:\xb8\x03\xeaA\xb4\x03\n" +
 	"Acloudsecuritycompliance.googleapis.com/FrameworkComplianceSummary\x12cprojects/{project}/locations/{location}/frameworkComplianceSummaries/{framework_compliance_summary}\x12afolders/{folder}/locations/{location}/frameworkComplianceSummaries/{framework_compliance_summary}\x12morganizations/{organization}/locations/{location}/frameworkComplianceSummaries/{framework_compliance_summary}*\x1cframeworkComplianceSummaries2\x1aframeworkComplianceSummary\"\xe6\x05\n" +
 	"\x0eFindingSummary\x12)\n" +
 	"\x10finding_category\x18\x01 \x01(\tR\x0ffindingCategory\x12Z\n" +
@@ -2032,7 +2188,10 @@ const file_google_cloud_cloudsecuritycompliance_v1_monitoring_proto_rawDesc = ""
 	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"updateTime\x12*\n" +
 	"\x11major_revision_id\x18\x06 \x01(\x03R\x0fmajorRevisionId\x12*\n" +
-	"\x11minor_revision_id\x18\a \x01(\x03R\x0fminorRevisionId*\x90\x01\n" +
+	"\x11minor_revision_id\x18\a \x01(\x03R\x0fminorRevisionId\"m\n" +
+	"\x05Trend\x12:\n" +
+	"\bduration\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x03R\bduration\x12(\n" +
+	"\rvalue_percent\x18\x02 \x01(\x01B\x03\xe0A\x03R\fvaluePercent*\x90\x01\n" +
 	"\x0fEvaluationState\x12 \n" +
 	"\x1cEVALUATION_STATE_UNSPECIFIED\x10\x00\x12\x1b\n" +
 	"\x17EVALUATION_STATE_PASSED\x10\x01\x12\x1b\n" +
@@ -2050,7 +2209,11 @@ const file_google_cloud_cloudsecuritycompliance_v1_monitoring_proto_rawDesc = ""
 	"\x11TOXIC_COMBINATION\x10\a\x12\x17\n" +
 	"\x13SENSITIVE_DATA_RISK\x10\b\x12\x0e\n" +
 	"\n" +
-	"CHOKEPOINT\x10\t2\xd5\x11\n" +
+	"CHOKEPOINT\x10\t*\xac\x01\n" +
+	"\x1eFrameworkComplianceSummaryView\x121\n" +
+	"-FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_UNSPECIFIED\x10\x00\x12+\n" +
+	"'FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_BASIC\x10\x01\x12*\n" +
+	"&FRAMEWORK_COMPLIANCE_SUMMARY_VIEW_FULL\x10\x022\xd5\x11\n" +
 	"\n" +
 	"Monitoring\x12\xa8\x03\n" +
 	" ListFrameworkComplianceSummaries\x12P.google.cloud.cloudsecuritycompliance.v1.ListFrameworkComplianceSummariesRequest\x1aQ.google.cloud.cloudsecuritycompliance.v1.ListFrameworkComplianceSummariesResponse\"\xde\x01\xdaA\x06parent\x82\xd3\xe4\x93\x02\xce\x01ZA\x12?/v1/{parent=folders/*/locations/*}/frameworkComplianceSummariesZB\x12@/v1/{parent=projects/*/locations/*}/frameworkComplianceSummaries\x12E/v1/{parent=organizations/*/locations/*}/frameworkComplianceSummaries\x12\xe0\x02\n" +
@@ -2073,96 +2236,102 @@ func file_google_cloud_cloudsecuritycompliance_v1_monitoring_proto_rawDescGZIP()
 	return file_google_cloud_cloudsecuritycompliance_v1_monitoring_proto_rawDescData
 }
 
-var file_google_cloud_cloudsecuritycompliance_v1_monitoring_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_google_cloud_cloudsecuritycompliance_v1_monitoring_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
+var file_google_cloud_cloudsecuritycompliance_v1_monitoring_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_google_cloud_cloudsecuritycompliance_v1_monitoring_proto_msgTypes = make([]protoimpl.MessageInfo, 21)
 var file_google_cloud_cloudsecuritycompliance_v1_monitoring_proto_goTypes = []any{
-	(EvaluationState)(0), // 0: google.cloud.cloudsecuritycompliance.v1.EvaluationState
-	(FindingClass)(0),    // 1: google.cloud.cloudsecuritycompliance.v1.FindingClass
-	(*ListFrameworkComplianceSummariesRequest)(nil),    // 2: google.cloud.cloudsecuritycompliance.v1.ListFrameworkComplianceSummariesRequest
-	(*ListFrameworkComplianceSummariesResponse)(nil),   // 3: google.cloud.cloudsecuritycompliance.v1.ListFrameworkComplianceSummariesResponse
-	(*FrameworkComplianceReport)(nil),                  // 4: google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceReport
-	(*FetchFrameworkComplianceReportRequest)(nil),      // 5: google.cloud.cloudsecuritycompliance.v1.FetchFrameworkComplianceReportRequest
-	(*ListFindingSummariesRequest)(nil),                // 6: google.cloud.cloudsecuritycompliance.v1.ListFindingSummariesRequest
-	(*ListFindingSummariesResponse)(nil),               // 7: google.cloud.cloudsecuritycompliance.v1.ListFindingSummariesResponse
-	(*ListControlComplianceSummariesRequest)(nil),      // 8: google.cloud.cloudsecuritycompliance.v1.ListControlComplianceSummariesRequest
-	(*ListControlComplianceSummariesResponse)(nil),     // 9: google.cloud.cloudsecuritycompliance.v1.ListControlComplianceSummariesResponse
-	(*AggregateFrameworkComplianceReportRequest)(nil),  // 10: google.cloud.cloudsecuritycompliance.v1.AggregateFrameworkComplianceReportRequest
-	(*AggregateFrameworkComplianceReportResponse)(nil), // 11: google.cloud.cloudsecuritycompliance.v1.AggregateFrameworkComplianceReportResponse
-	(*ControlAssessmentDetails)(nil),                   // 12: google.cloud.cloudsecuritycompliance.v1.ControlAssessmentDetails
-	(*FrameworkComplianceSummary)(nil),                 // 13: google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceSummary
-	(*FindingSummary)(nil),                             // 14: google.cloud.cloudsecuritycompliance.v1.FindingSummary
-	(*ControlComplianceSummary)(nil),                   // 15: google.cloud.cloudsecuritycompliance.v1.ControlComplianceSummary
-	(*CloudControlReport)(nil),                         // 16: google.cloud.cloudsecuritycompliance.v1.CloudControlReport
-	(*ManualCloudControlAssessmentDetails)(nil),        // 17: google.cloud.cloudsecuritycompliance.v1.ManualCloudControlAssessmentDetails
-	(*CloudControlAssessmentDetails)(nil),              // 18: google.cloud.cloudsecuritycompliance.v1.CloudControlAssessmentDetails
-	(*SimilarControls)(nil),                            // 19: google.cloud.cloudsecuritycompliance.v1.SimilarControls
-	(*AggregatedComplianceReport)(nil),                 // 20: google.cloud.cloudsecuritycompliance.v1.AggregatedComplianceReport
-	(*TargetResourceDetails)(nil),                      // 21: google.cloud.cloudsecuritycompliance.v1.TargetResourceDetails
-	(*timestamppb.Timestamp)(nil),                      // 22: google.protobuf.Timestamp
-	(Framework_FrameworkType)(0),                       // 23: google.cloud.cloudsecuritycompliance.v1.Framework.FrameworkType
-	(CloudProvider)(0),                                 // 24: google.cloud.cloudsecuritycompliance.v1.CloudProvider
-	(FrameworkCategory)(0),                             // 25: google.cloud.cloudsecuritycompliance.v1.FrameworkCategory
-	(*interval.Interval)(nil),                          // 26: google.type.Interval
-	(Severity)(0),                                      // 27: google.cloud.cloudsecuritycompliance.v1.Severity
-	(RegulatoryControlResponsibilityType)(0),           // 28: google.cloud.cloudsecuritycompliance.v1.RegulatoryControlResponsibilityType
-	(CloudControl_Type)(0),                             // 29: google.cloud.cloudsecuritycompliance.v1.CloudControl.Type
-	(*Rule)(nil),                                       // 30: google.cloud.cloudsecuritycompliance.v1.Rule
-	(EnforcementMode)(0),                               // 31: google.cloud.cloudsecuritycompliance.v1.EnforcementMode
+	(EvaluationState)(0),                               // 0: google.cloud.cloudsecuritycompliance.v1.EvaluationState
+	(FindingClass)(0),                                  // 1: google.cloud.cloudsecuritycompliance.v1.FindingClass
+	(FrameworkComplianceSummaryView)(0),                // 2: google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceSummaryView
+	(*ListFrameworkComplianceSummariesRequest)(nil),    // 3: google.cloud.cloudsecuritycompliance.v1.ListFrameworkComplianceSummariesRequest
+	(*ListFrameworkComplianceSummariesResponse)(nil),   // 4: google.cloud.cloudsecuritycompliance.v1.ListFrameworkComplianceSummariesResponse
+	(*FrameworkComplianceReport)(nil),                  // 5: google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceReport
+	(*FetchFrameworkComplianceReportRequest)(nil),      // 6: google.cloud.cloudsecuritycompliance.v1.FetchFrameworkComplianceReportRequest
+	(*ListFindingSummariesRequest)(nil),                // 7: google.cloud.cloudsecuritycompliance.v1.ListFindingSummariesRequest
+	(*ListFindingSummariesResponse)(nil),               // 8: google.cloud.cloudsecuritycompliance.v1.ListFindingSummariesResponse
+	(*ListControlComplianceSummariesRequest)(nil),      // 9: google.cloud.cloudsecuritycompliance.v1.ListControlComplianceSummariesRequest
+	(*ListControlComplianceSummariesResponse)(nil),     // 10: google.cloud.cloudsecuritycompliance.v1.ListControlComplianceSummariesResponse
+	(*AggregateFrameworkComplianceReportRequest)(nil),  // 11: google.cloud.cloudsecuritycompliance.v1.AggregateFrameworkComplianceReportRequest
+	(*AggregateFrameworkComplianceReportResponse)(nil), // 12: google.cloud.cloudsecuritycompliance.v1.AggregateFrameworkComplianceReportResponse
+	(*ControlAssessmentDetails)(nil),                   // 13: google.cloud.cloudsecuritycompliance.v1.ControlAssessmentDetails
+	(*FrameworkComplianceSummary)(nil),                 // 14: google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceSummary
+	(*FindingSummary)(nil),                             // 15: google.cloud.cloudsecuritycompliance.v1.FindingSummary
+	(*ControlComplianceSummary)(nil),                   // 16: google.cloud.cloudsecuritycompliance.v1.ControlComplianceSummary
+	(*CloudControlReport)(nil),                         // 17: google.cloud.cloudsecuritycompliance.v1.CloudControlReport
+	(*ManualCloudControlAssessmentDetails)(nil),        // 18: google.cloud.cloudsecuritycompliance.v1.ManualCloudControlAssessmentDetails
+	(*CloudControlAssessmentDetails)(nil),              // 19: google.cloud.cloudsecuritycompliance.v1.CloudControlAssessmentDetails
+	(*SimilarControls)(nil),                            // 20: google.cloud.cloudsecuritycompliance.v1.SimilarControls
+	(*AggregatedComplianceReport)(nil),                 // 21: google.cloud.cloudsecuritycompliance.v1.AggregatedComplianceReport
+	(*TargetResourceDetails)(nil),                      // 22: google.cloud.cloudsecuritycompliance.v1.TargetResourceDetails
+	(*Trend)(nil),                                      // 23: google.cloud.cloudsecuritycompliance.v1.Trend
+	(*timestamppb.Timestamp)(nil),                      // 24: google.protobuf.Timestamp
+	(Framework_FrameworkType)(0),                       // 25: google.cloud.cloudsecuritycompliance.v1.Framework.FrameworkType
+	(CloudProvider)(0),                                 // 26: google.cloud.cloudsecuritycompliance.v1.CloudProvider
+	(FrameworkCategory)(0),                             // 27: google.cloud.cloudsecuritycompliance.v1.FrameworkCategory
+	(*interval.Interval)(nil),                          // 28: google.type.Interval
+	(Severity)(0),                                      // 29: google.cloud.cloudsecuritycompliance.v1.Severity
+	(RegulatoryControlResponsibilityType)(0),           // 30: google.cloud.cloudsecuritycompliance.v1.RegulatoryControlResponsibilityType
+	(CloudControl_Type)(0),                             // 31: google.cloud.cloudsecuritycompliance.v1.CloudControl.Type
+	(*Rule)(nil),                                       // 32: google.cloud.cloudsecuritycompliance.v1.Rule
+	(EnforcementMode)(0),                               // 33: google.cloud.cloudsecuritycompliance.v1.EnforcementMode
+	(*durationpb.Duration)(nil),                        // 34: google.protobuf.Duration
 }
 var file_google_cloud_cloudsecuritycompliance_v1_monitoring_proto_depIdxs = []int32{
-	13, // 0: google.cloud.cloudsecuritycompliance.v1.ListFrameworkComplianceSummariesResponse.framework_compliance_summaries:type_name -> google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceSummary
-	22, // 1: google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceReport.update_time:type_name -> google.protobuf.Timestamp
-	12, // 2: google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceReport.control_assessment_details:type_name -> google.cloud.cloudsecuritycompliance.v1.ControlAssessmentDetails
-	23, // 3: google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceReport.framework_type:type_name -> google.cloud.cloudsecuritycompliance.v1.Framework.FrameworkType
-	24, // 4: google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceReport.supported_cloud_providers:type_name -> google.cloud.cloudsecuritycompliance.v1.CloudProvider
-	25, // 5: google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceReport.framework_categories:type_name -> google.cloud.cloudsecuritycompliance.v1.FrameworkCategory
-	21, // 6: google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceReport.target_resource_details:type_name -> google.cloud.cloudsecuritycompliance.v1.TargetResourceDetails
-	22, // 7: google.cloud.cloudsecuritycompliance.v1.FetchFrameworkComplianceReportRequest.end_time:type_name -> google.protobuf.Timestamp
-	22, // 8: google.cloud.cloudsecuritycompliance.v1.ListFindingSummariesRequest.end_time:type_name -> google.protobuf.Timestamp
-	14, // 9: google.cloud.cloudsecuritycompliance.v1.ListFindingSummariesResponse.finding_summaries:type_name -> google.cloud.cloudsecuritycompliance.v1.FindingSummary
-	22, // 10: google.cloud.cloudsecuritycompliance.v1.ListControlComplianceSummariesRequest.end_time:type_name -> google.protobuf.Timestamp
-	15, // 11: google.cloud.cloudsecuritycompliance.v1.ListControlComplianceSummariesResponse.control_compliance_summaries:type_name -> google.cloud.cloudsecuritycompliance.v1.ControlComplianceSummary
-	26, // 12: google.cloud.cloudsecuritycompliance.v1.AggregateFrameworkComplianceReportRequest.interval:type_name -> google.type.Interval
-	20, // 13: google.cloud.cloudsecuritycompliance.v1.AggregateFrameworkComplianceReportResponse.aggregated_compliance_reports:type_name -> google.cloud.cloudsecuritycompliance.v1.AggregatedComplianceReport
-	12, // 14: google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceSummary.control_assessment_details:type_name -> google.cloud.cloudsecuritycompliance.v1.ControlAssessmentDetails
-	23, // 15: google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceSummary.framework_type:type_name -> google.cloud.cloudsecuritycompliance.v1.Framework.FrameworkType
-	24, // 16: google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceSummary.supported_cloud_providers:type_name -> google.cloud.cloudsecuritycompliance.v1.CloudProvider
-	25, // 17: google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceSummary.framework_categories:type_name -> google.cloud.cloudsecuritycompliance.v1.FrameworkCategory
-	21, // 18: google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceSummary.target_resource_details:type_name -> google.cloud.cloudsecuritycompliance.v1.TargetResourceDetails
-	1,  // 19: google.cloud.cloudsecuritycompliance.v1.FindingSummary.finding_class:type_name -> google.cloud.cloudsecuritycompliance.v1.FindingClass
-	27, // 20: google.cloud.cloudsecuritycompliance.v1.FindingSummary.severity:type_name -> google.cloud.cloudsecuritycompliance.v1.Severity
-	22, // 21: google.cloud.cloudsecuritycompliance.v1.FindingSummary.update_time:type_name -> google.protobuf.Timestamp
-	0,  // 22: google.cloud.cloudsecuritycompliance.v1.ControlComplianceSummary.overall_evaluation_state:type_name -> google.cloud.cloudsecuritycompliance.v1.EvaluationState
-	19, // 23: google.cloud.cloudsecuritycompliance.v1.ControlComplianceSummary.similar_controls:type_name -> google.cloud.cloudsecuritycompliance.v1.SimilarControls
-	16, // 24: google.cloud.cloudsecuritycompliance.v1.ControlComplianceSummary.cloud_control_reports:type_name -> google.cloud.cloudsecuritycompliance.v1.CloudControlReport
-	28, // 25: google.cloud.cloudsecuritycompliance.v1.ControlComplianceSummary.control_responsibility_type:type_name -> google.cloud.cloudsecuritycompliance.v1.RegulatoryControlResponsibilityType
-	17, // 26: google.cloud.cloudsecuritycompliance.v1.CloudControlReport.manual_cloud_control_assessment_details:type_name -> google.cloud.cloudsecuritycompliance.v1.ManualCloudControlAssessmentDetails
-	18, // 27: google.cloud.cloudsecuritycompliance.v1.CloudControlReport.cloud_control_assessment_details:type_name -> google.cloud.cloudsecuritycompliance.v1.CloudControlAssessmentDetails
-	19, // 28: google.cloud.cloudsecuritycompliance.v1.CloudControlReport.similar_controls:type_name -> google.cloud.cloudsecuritycompliance.v1.SimilarControls
-	29, // 29: google.cloud.cloudsecuritycompliance.v1.CloudControlReport.cloud_control_type:type_name -> google.cloud.cloudsecuritycompliance.v1.CloudControl.Type
-	30, // 30: google.cloud.cloudsecuritycompliance.v1.CloudControlReport.rules:type_name -> google.cloud.cloudsecuritycompliance.v1.Rule
-	27, // 31: google.cloud.cloudsecuritycompliance.v1.CloudControlReport.finding_severity:type_name -> google.cloud.cloudsecuritycompliance.v1.Severity
-	31, // 32: google.cloud.cloudsecuritycompliance.v1.CloudControlReport.enforcement_mode:type_name -> google.cloud.cloudsecuritycompliance.v1.EnforcementMode
-	0,  // 33: google.cloud.cloudsecuritycompliance.v1.CloudControlAssessmentDetails.evaluation_state:type_name -> google.cloud.cloudsecuritycompliance.v1.EvaluationState
-	12, // 34: google.cloud.cloudsecuritycompliance.v1.AggregatedComplianceReport.control_assessment_details:type_name -> google.cloud.cloudsecuritycompliance.v1.ControlAssessmentDetails
-	22, // 35: google.cloud.cloudsecuritycompliance.v1.AggregatedComplianceReport.report_time:type_name -> google.protobuf.Timestamp
-	22, // 36: google.cloud.cloudsecuritycompliance.v1.TargetResourceDetails.create_time:type_name -> google.protobuf.Timestamp
-	22, // 37: google.cloud.cloudsecuritycompliance.v1.TargetResourceDetails.update_time:type_name -> google.protobuf.Timestamp
-	2,  // 38: google.cloud.cloudsecuritycompliance.v1.Monitoring.ListFrameworkComplianceSummaries:input_type -> google.cloud.cloudsecuritycompliance.v1.ListFrameworkComplianceSummariesRequest
-	6,  // 39: google.cloud.cloudsecuritycompliance.v1.Monitoring.ListFindingSummaries:input_type -> google.cloud.cloudsecuritycompliance.v1.ListFindingSummariesRequest
-	5,  // 40: google.cloud.cloudsecuritycompliance.v1.Monitoring.FetchFrameworkComplianceReport:input_type -> google.cloud.cloudsecuritycompliance.v1.FetchFrameworkComplianceReportRequest
-	8,  // 41: google.cloud.cloudsecuritycompliance.v1.Monitoring.ListControlComplianceSummaries:input_type -> google.cloud.cloudsecuritycompliance.v1.ListControlComplianceSummariesRequest
-	10, // 42: google.cloud.cloudsecuritycompliance.v1.Monitoring.AggregateFrameworkComplianceReport:input_type -> google.cloud.cloudsecuritycompliance.v1.AggregateFrameworkComplianceReportRequest
-	3,  // 43: google.cloud.cloudsecuritycompliance.v1.Monitoring.ListFrameworkComplianceSummaries:output_type -> google.cloud.cloudsecuritycompliance.v1.ListFrameworkComplianceSummariesResponse
-	7,  // 44: google.cloud.cloudsecuritycompliance.v1.Monitoring.ListFindingSummaries:output_type -> google.cloud.cloudsecuritycompliance.v1.ListFindingSummariesResponse
-	4,  // 45: google.cloud.cloudsecuritycompliance.v1.Monitoring.FetchFrameworkComplianceReport:output_type -> google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceReport
-	9,  // 46: google.cloud.cloudsecuritycompliance.v1.Monitoring.ListControlComplianceSummaries:output_type -> google.cloud.cloudsecuritycompliance.v1.ListControlComplianceSummariesResponse
-	11, // 47: google.cloud.cloudsecuritycompliance.v1.Monitoring.AggregateFrameworkComplianceReport:output_type -> google.cloud.cloudsecuritycompliance.v1.AggregateFrameworkComplianceReportResponse
-	43, // [43:48] is the sub-list for method output_type
-	38, // [38:43] is the sub-list for method input_type
-	38, // [38:38] is the sub-list for extension type_name
-	38, // [38:38] is the sub-list for extension extendee
-	0,  // [0:38] is the sub-list for field type_name
+	2,  // 0: google.cloud.cloudsecuritycompliance.v1.ListFrameworkComplianceSummariesRequest.view:type_name -> google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceSummaryView
+	14, // 1: google.cloud.cloudsecuritycompliance.v1.ListFrameworkComplianceSummariesResponse.framework_compliance_summaries:type_name -> google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceSummary
+	24, // 2: google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceReport.update_time:type_name -> google.protobuf.Timestamp
+	13, // 3: google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceReport.control_assessment_details:type_name -> google.cloud.cloudsecuritycompliance.v1.ControlAssessmentDetails
+	25, // 4: google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceReport.framework_type:type_name -> google.cloud.cloudsecuritycompliance.v1.Framework.FrameworkType
+	26, // 5: google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceReport.supported_cloud_providers:type_name -> google.cloud.cloudsecuritycompliance.v1.CloudProvider
+	27, // 6: google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceReport.framework_categories:type_name -> google.cloud.cloudsecuritycompliance.v1.FrameworkCategory
+	22, // 7: google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceReport.target_resource_details:type_name -> google.cloud.cloudsecuritycompliance.v1.TargetResourceDetails
+	24, // 8: google.cloud.cloudsecuritycompliance.v1.FetchFrameworkComplianceReportRequest.end_time:type_name -> google.protobuf.Timestamp
+	24, // 9: google.cloud.cloudsecuritycompliance.v1.ListFindingSummariesRequest.end_time:type_name -> google.protobuf.Timestamp
+	15, // 10: google.cloud.cloudsecuritycompliance.v1.ListFindingSummariesResponse.finding_summaries:type_name -> google.cloud.cloudsecuritycompliance.v1.FindingSummary
+	24, // 11: google.cloud.cloudsecuritycompliance.v1.ListControlComplianceSummariesRequest.end_time:type_name -> google.protobuf.Timestamp
+	16, // 12: google.cloud.cloudsecuritycompliance.v1.ListControlComplianceSummariesResponse.control_compliance_summaries:type_name -> google.cloud.cloudsecuritycompliance.v1.ControlComplianceSummary
+	28, // 13: google.cloud.cloudsecuritycompliance.v1.AggregateFrameworkComplianceReportRequest.interval:type_name -> google.type.Interval
+	21, // 14: google.cloud.cloudsecuritycompliance.v1.AggregateFrameworkComplianceReportResponse.aggregated_compliance_reports:type_name -> google.cloud.cloudsecuritycompliance.v1.AggregatedComplianceReport
+	13, // 15: google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceSummary.control_assessment_details:type_name -> google.cloud.cloudsecuritycompliance.v1.ControlAssessmentDetails
+	25, // 16: google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceSummary.framework_type:type_name -> google.cloud.cloudsecuritycompliance.v1.Framework.FrameworkType
+	26, // 17: google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceSummary.supported_cloud_providers:type_name -> google.cloud.cloudsecuritycompliance.v1.CloudProvider
+	27, // 18: google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceSummary.framework_categories:type_name -> google.cloud.cloudsecuritycompliance.v1.FrameworkCategory
+	22, // 19: google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceSummary.target_resource_details:type_name -> google.cloud.cloudsecuritycompliance.v1.TargetResourceDetails
+	23, // 20: google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceSummary.controls_passing_trend:type_name -> google.cloud.cloudsecuritycompliance.v1.Trend
+	1,  // 21: google.cloud.cloudsecuritycompliance.v1.FindingSummary.finding_class:type_name -> google.cloud.cloudsecuritycompliance.v1.FindingClass
+	29, // 22: google.cloud.cloudsecuritycompliance.v1.FindingSummary.severity:type_name -> google.cloud.cloudsecuritycompliance.v1.Severity
+	24, // 23: google.cloud.cloudsecuritycompliance.v1.FindingSummary.update_time:type_name -> google.protobuf.Timestamp
+	0,  // 24: google.cloud.cloudsecuritycompliance.v1.ControlComplianceSummary.overall_evaluation_state:type_name -> google.cloud.cloudsecuritycompliance.v1.EvaluationState
+	20, // 25: google.cloud.cloudsecuritycompliance.v1.ControlComplianceSummary.similar_controls:type_name -> google.cloud.cloudsecuritycompliance.v1.SimilarControls
+	17, // 26: google.cloud.cloudsecuritycompliance.v1.ControlComplianceSummary.cloud_control_reports:type_name -> google.cloud.cloudsecuritycompliance.v1.CloudControlReport
+	30, // 27: google.cloud.cloudsecuritycompliance.v1.ControlComplianceSummary.control_responsibility_type:type_name -> google.cloud.cloudsecuritycompliance.v1.RegulatoryControlResponsibilityType
+	18, // 28: google.cloud.cloudsecuritycompliance.v1.CloudControlReport.manual_cloud_control_assessment_details:type_name -> google.cloud.cloudsecuritycompliance.v1.ManualCloudControlAssessmentDetails
+	19, // 29: google.cloud.cloudsecuritycompliance.v1.CloudControlReport.cloud_control_assessment_details:type_name -> google.cloud.cloudsecuritycompliance.v1.CloudControlAssessmentDetails
+	20, // 30: google.cloud.cloudsecuritycompliance.v1.CloudControlReport.similar_controls:type_name -> google.cloud.cloudsecuritycompliance.v1.SimilarControls
+	31, // 31: google.cloud.cloudsecuritycompliance.v1.CloudControlReport.cloud_control_type:type_name -> google.cloud.cloudsecuritycompliance.v1.CloudControl.Type
+	32, // 32: google.cloud.cloudsecuritycompliance.v1.CloudControlReport.rules:type_name -> google.cloud.cloudsecuritycompliance.v1.Rule
+	29, // 33: google.cloud.cloudsecuritycompliance.v1.CloudControlReport.finding_severity:type_name -> google.cloud.cloudsecuritycompliance.v1.Severity
+	33, // 34: google.cloud.cloudsecuritycompliance.v1.CloudControlReport.enforcement_mode:type_name -> google.cloud.cloudsecuritycompliance.v1.EnforcementMode
+	0,  // 35: google.cloud.cloudsecuritycompliance.v1.CloudControlAssessmentDetails.evaluation_state:type_name -> google.cloud.cloudsecuritycompliance.v1.EvaluationState
+	13, // 36: google.cloud.cloudsecuritycompliance.v1.AggregatedComplianceReport.control_assessment_details:type_name -> google.cloud.cloudsecuritycompliance.v1.ControlAssessmentDetails
+	24, // 37: google.cloud.cloudsecuritycompliance.v1.AggregatedComplianceReport.report_time:type_name -> google.protobuf.Timestamp
+	24, // 38: google.cloud.cloudsecuritycompliance.v1.TargetResourceDetails.create_time:type_name -> google.protobuf.Timestamp
+	24, // 39: google.cloud.cloudsecuritycompliance.v1.TargetResourceDetails.update_time:type_name -> google.protobuf.Timestamp
+	34, // 40: google.cloud.cloudsecuritycompliance.v1.Trend.duration:type_name -> google.protobuf.Duration
+	3,  // 41: google.cloud.cloudsecuritycompliance.v1.Monitoring.ListFrameworkComplianceSummaries:input_type -> google.cloud.cloudsecuritycompliance.v1.ListFrameworkComplianceSummariesRequest
+	7,  // 42: google.cloud.cloudsecuritycompliance.v1.Monitoring.ListFindingSummaries:input_type -> google.cloud.cloudsecuritycompliance.v1.ListFindingSummariesRequest
+	6,  // 43: google.cloud.cloudsecuritycompliance.v1.Monitoring.FetchFrameworkComplianceReport:input_type -> google.cloud.cloudsecuritycompliance.v1.FetchFrameworkComplianceReportRequest
+	9,  // 44: google.cloud.cloudsecuritycompliance.v1.Monitoring.ListControlComplianceSummaries:input_type -> google.cloud.cloudsecuritycompliance.v1.ListControlComplianceSummariesRequest
+	11, // 45: google.cloud.cloudsecuritycompliance.v1.Monitoring.AggregateFrameworkComplianceReport:input_type -> google.cloud.cloudsecuritycompliance.v1.AggregateFrameworkComplianceReportRequest
+	4,  // 46: google.cloud.cloudsecuritycompliance.v1.Monitoring.ListFrameworkComplianceSummaries:output_type -> google.cloud.cloudsecuritycompliance.v1.ListFrameworkComplianceSummariesResponse
+	8,  // 47: google.cloud.cloudsecuritycompliance.v1.Monitoring.ListFindingSummaries:output_type -> google.cloud.cloudsecuritycompliance.v1.ListFindingSummariesResponse
+	5,  // 48: google.cloud.cloudsecuritycompliance.v1.Monitoring.FetchFrameworkComplianceReport:output_type -> google.cloud.cloudsecuritycompliance.v1.FrameworkComplianceReport
+	10, // 49: google.cloud.cloudsecuritycompliance.v1.Monitoring.ListControlComplianceSummaries:output_type -> google.cloud.cloudsecuritycompliance.v1.ListControlComplianceSummariesResponse
+	12, // 50: google.cloud.cloudsecuritycompliance.v1.Monitoring.AggregateFrameworkComplianceReport:output_type -> google.cloud.cloudsecuritycompliance.v1.AggregateFrameworkComplianceReportResponse
+	46, // [46:51] is the sub-list for method output_type
+	41, // [41:46] is the sub-list for method input_type
+	41, // [41:41] is the sub-list for extension type_name
+	41, // [41:41] is the sub-list for extension extendee
+	0,  // [0:41] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_cloudsecuritycompliance_v1_monitoring_proto_init() }
@@ -2180,8 +2349,8 @@ func file_google_cloud_cloudsecuritycompliance_v1_monitoring_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_cloudsecuritycompliance_v1_monitoring_proto_rawDesc), len(file_google_cloud_cloudsecuritycompliance_v1_monitoring_proto_rawDesc)),
-			NumEnums:      2,
-			NumMessages:   20,
+			NumEnums:      3,
+			NumMessages:   21,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

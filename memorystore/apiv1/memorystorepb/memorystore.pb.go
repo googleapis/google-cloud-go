@@ -337,16 +337,34 @@ const (
 	Instance_HIGHMEM_XLARGE Instance_NodeType = 3
 	// Standard small.
 	Instance_STANDARD_SMALL Instance_NodeType = 4
+	// Custom micro.
+	Instance_CUSTOM_MICRO Instance_NodeType = 5
+	// Custom mini.
+	Instance_CUSTOM_MINI Instance_NodeType = 6
+	// High cpu medium.
+	Instance_HIGHCPU_MEDIUM Instance_NodeType = 7
+	// Standard large.
+	Instance_STANDARD_LARGE Instance_NodeType = 8
+	// High memory 2x large.
+	Instance_HIGHMEM_2XLARGE Instance_NodeType = 9
+	// Custom pico.
+	Instance_CUSTOM_PICO Instance_NodeType = 10
 )
 
 // Enum value maps for Instance_NodeType.
 var (
 	Instance_NodeType_name = map[int32]string{
-		0: "NODE_TYPE_UNSPECIFIED",
-		1: "SHARED_CORE_NANO",
-		2: "HIGHMEM_MEDIUM",
-		3: "HIGHMEM_XLARGE",
-		4: "STANDARD_SMALL",
+		0:  "NODE_TYPE_UNSPECIFIED",
+		1:  "SHARED_CORE_NANO",
+		2:  "HIGHMEM_MEDIUM",
+		3:  "HIGHMEM_XLARGE",
+		4:  "STANDARD_SMALL",
+		5:  "CUSTOM_MICRO",
+		6:  "CUSTOM_MINI",
+		7:  "HIGHCPU_MEDIUM",
+		8:  "STANDARD_LARGE",
+		9:  "HIGHMEM_2XLARGE",
+		10: "CUSTOM_PICO",
 	}
 	Instance_NodeType_value = map[string]int32{
 		"NODE_TYPE_UNSPECIFIED": 0,
@@ -354,6 +372,12 @@ var (
 		"HIGHMEM_MEDIUM":        2,
 		"HIGHMEM_XLARGE":        3,
 		"STANDARD_SMALL":        4,
+		"CUSTOM_MICRO":          5,
+		"CUSTOM_MINI":           6,
+		"HIGHCPU_MEDIUM":        7,
+		"STANDARD_LARGE":        8,
+		"HIGHMEM_2XLARGE":       9,
+		"CUSTOM_PICO":           10,
 	}
 )
 
@@ -5362,7 +5386,7 @@ var File_google_cloud_memorystore_v1_memorystore_proto protoreflect.FileDescript
 
 const file_google_cloud_memorystore_v1_memorystore_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/memorystore/v1/memorystore.proto\x12\x1bgoogle.cloud.memorystore.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/type/dayofweek.proto\x1a\x1bgoogle/type/timeofday.proto\"\x9a/\n" +
+	"-google/cloud/memorystore/v1/memorystore.proto\x12\x1bgoogle.cloud.memorystore.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/type/dayofweek.proto\x1a\x1bgoogle/type/timeofday.proto\"\x8c0\n" +
 	"\bInstance\x12^\n" +
 	"\n" +
 	"gcs_source\x18\x17 \x01(\v25.google.cloud.memorystore.v1.Instance.GcsBackupSourceB\x06\xe0A\x01\xe0A\x05H\x00R\tgcsSource\x12w\n" +
@@ -5464,13 +5488,20 @@ const file_google_cloud_memorystore_v1_memorystore_proto_rawDesc = "" +
 	"\x15TransitEncryptionMode\x12'\n" +
 	"#TRANSIT_ENCRYPTION_MODE_UNSPECIFIED\x10\x00\x12\x1f\n" +
 	"\x1bTRANSIT_ENCRYPTION_DISABLED\x10\x01\x12\x19\n" +
-	"\x15SERVER_AUTHENTICATION\x10\x02\"w\n" +
+	"\x15SERVER_AUTHENTICATION\x10\x02\"\xe8\x01\n" +
 	"\bNodeType\x12\x19\n" +
 	"\x15NODE_TYPE_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10SHARED_CORE_NANO\x10\x01\x12\x12\n" +
 	"\x0eHIGHMEM_MEDIUM\x10\x02\x12\x12\n" +
 	"\x0eHIGHMEM_XLARGE\x10\x03\x12\x12\n" +
-	"\x0eSTANDARD_SMALL\x10\x04\"S\n" +
+	"\x0eSTANDARD_SMALL\x10\x04\x12\x10\n" +
+	"\fCUSTOM_MICRO\x10\x05\x12\x0f\n" +
+	"\vCUSTOM_MINI\x10\x06\x12\x12\n" +
+	"\x0eHIGHCPU_MEDIUM\x10\a\x12\x12\n" +
+	"\x0eSTANDARD_LARGE\x10\b\x12\x13\n" +
+	"\x0fHIGHMEM_2XLARGE\x10\t\x12\x0f\n" +
+	"\vCUSTOM_PICO\x10\n" +
+	"\"S\n" +
 	"\x04Mode\x12\x14\n" +
 	"\x10MODE_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\n" +

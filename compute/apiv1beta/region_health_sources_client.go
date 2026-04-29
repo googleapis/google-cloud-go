@@ -46,6 +46,7 @@ type RegionHealthSourcesCallOptions struct {
 	AggregatedList     []gax.CallOption
 	Delete             []gax.CallOption
 	Get                []gax.CallOption
+	GetHealth          []gax.CallOption
 	Insert             []gax.CallOption
 	List               []gax.CallOption
 	Patch              []gax.CallOption
@@ -70,6 +71,18 @@ func defaultRegionHealthSourcesRESTCallOptions() *RegionHealthSourcesCallOptions
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
 		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetHealth: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -113,6 +126,7 @@ type internalRegionHealthSourcesClient interface {
 	AggregatedList(context.Context, *computepb.AggregatedListRegionHealthSourcesRequest, ...gax.CallOption) *HealthSourcesScopedListPairIterator
 	Delete(context.Context, *computepb.DeleteRegionHealthSourceRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetRegionHealthSourceRequest, ...gax.CallOption) (*computepb.HealthSource, error)
+	GetHealth(context.Context, *computepb.GetHealthRegionHealthSourceRequest, ...gax.CallOption) (*computepb.HealthSourceHealth, error)
 	Insert(context.Context, *computepb.InsertRegionHealthSourceRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListRegionHealthSourcesRequest, ...gax.CallOption) *HealthSourceIterator
 	Patch(context.Context, *computepb.PatchRegionHealthSourceRequest, ...gax.CallOption) (*Operation, error)
@@ -171,6 +185,12 @@ func (c *RegionHealthSourcesClient) Delete(ctx context.Context, req *computepb.D
 // Get returns the specified HealthSource resource in the given region.
 func (c *RegionHealthSourcesClient) Get(ctx context.Context, req *computepb.GetRegionHealthSourceRequest, opts ...gax.CallOption) (*computepb.HealthSource, error) {
 	return c.internalClient.Get(ctx, req, opts...)
+}
+
+// GetHealth gets the most recent health check results for this
+// regional HealthSource.
+func (c *RegionHealthSourcesClient) GetHealth(ctx context.Context, req *computepb.GetHealthRegionHealthSourceRequest, opts ...gax.CallOption) (*computepb.HealthSourceHealth, error) {
+	return c.internalClient.GetHealth(ctx, req, opts...)
 }
 
 // Insert create a HealthSource in the specified project in the given region
@@ -261,6 +281,7 @@ func NewRegionHealthSourcesRESTClient(ctx context.Context, opts ...option.Client
 		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientMetrics(metrics))
 		callOpts.Delete = append(callOpts.Delete, gax.WithClientMetrics(metrics))
 		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.GetHealth = append(callOpts.GetHealth, gax.WithClientMetrics(metrics))
 		callOpts.Insert = append(callOpts.Insert, gax.WithClientMetrics(metrics))
 		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
 		callOpts.Patch = append(callOpts.Patch, gax.WithClientMetrics(metrics))
@@ -527,6 +548,59 @@ func (c *regionHealthSourcesRESTClient) Get(ctx context.Context, req *computepb.
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "Get")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetHealth gets the most recent health check results for this
+// regional HealthSource.
+func (c *regionHealthSourcesRESTClient) GetHealth(ctx context.Context, req *computepb.GetHealthRegionHealthSourceRequest, opts ...gax.CallOption) (*computepb.HealthSourceHealth, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/healthSources/%v/getHealth", req.GetProject(), req.GetRegion(), req.GetHealthSource())
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "health_source", url.QueryEscape(req.GetHealthSource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/regions/%v/healthSources/%v", req.GetProject(), req.GetRegion(), req.GetHealthSource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionHealthSources/GetHealth")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/healthSources/{health_source}/getHealth")
+	}
+	opts = append((*c.CallOptions).GetHealth[0:len((*c.CallOptions).GetHealth):len((*c.CallOptions).GetHealth)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.HealthSourceHealth{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetHealth")
 		if err != nil {
 			return err
 		}

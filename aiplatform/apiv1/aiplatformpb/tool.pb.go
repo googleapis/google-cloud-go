@@ -21,15 +21,14 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-	unsafe "unsafe"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	latlng "google.golang.org/genproto/googleapis/type/latlng"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
+	unsafe "unsafe"
 )
 
 const (
@@ -157,7 +156,7 @@ func (x Tool_ComputerUse_Environment) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Tool_ComputerUse_Environment.Descriptor instead.
 func (Tool_ComputerUse_Environment) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_tool_proto_rawDescGZIP(), []int{0, 2, 0}
+	return file_google_cloud_aiplatform_v1_tool_proto_rawDescGZIP(), []int{0, 3, 0}
 }
 
 // Supported programming languages for the generated code.
@@ -424,6 +423,10 @@ type Tool struct {
 	// Optional. Tool to support searching public web data, powered by Vertex AI
 	// Search and Sec4 compliance.
 	EnterpriseWebSearch *EnterpriseWebSearch `protobuf:"bytes,6,opt,name=enterprise_web_search,json=enterpriseWebSearch,proto3" json:"enterprise_web_search,omitempty"`
+	// Optional. If specified, Vertex AI will use Parallel.ai to search for
+	// information to answer user queries. The search results will be grounded on
+	// Parallel.ai and presented to the model for response generation
+	ParallelAiSearch *Tool_ParallelAiSearch `protobuf:"bytes,13,opt,name=parallel_ai_search,json=parallelAiSearch,proto3" json:"parallel_ai_search,omitempty"`
 	// Optional. CodeExecution tool type.
 	// Enables the model to execute code as part of generation.
 	CodeExecution *Tool_CodeExecution `protobuf:"bytes,4,opt,name=code_execution,json=codeExecution,proto3" json:"code_execution,omitempty"`
@@ -505,6 +508,13 @@ func (x *Tool) GetGoogleMaps() *GoogleMaps {
 func (x *Tool) GetEnterpriseWebSearch() *EnterpriseWebSearch {
 	if x != nil {
 		return x.EnterpriseWebSearch
+	}
+	return nil
+}
+
+func (x *Tool) GetParallelAiSearch() *Tool_ParallelAiSearch {
+	if x != nil {
+		return x.ParallelAiSearch
 	}
 	return nil
 }
@@ -2137,6 +2147,83 @@ func (x *Tool_GoogleSearch) GetBlockingConfidence() Tool_PhishBlockThreshold {
 	return Tool_PHISH_BLOCK_THRESHOLD_UNSPECIFIED
 }
 
+// ParallelAiSearch tool type.
+// A tool that uses the Parallel.ai search engine for grounding.
+type Tool_ParallelAiSearch struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The API key for ParallelAiSearch.
+	// If an API key is not provided, the system will attempt to verify access
+	// by checking for an active Parallel.ai subscription through the Google
+	// Cloud Marketplace.
+	// See https://docs.parallel.ai/search/search-quickstart for more details.
+	ApiKey string `protobuf:"bytes,1,opt,name=api_key,json=apiKey,proto3" json:"api_key,omitempty"`
+	// Optional. Custom configs for ParallelAiSearch.
+	// This field can be used to pass any parameter from the Parallel.ai
+	// Search API.
+	// See the Parallel.ai documentation for the full list of available
+	// parameters and their usage:
+	// https://docs.parallel.ai/api-reference/search-beta/search
+	// Currently only `source_policy`, `excerpts`, `max_results`, `mode`,
+	// `fetch_policy` can be set via this field. For example:
+	//
+	//	{
+	//	  "source_policy": {
+	//	    "include_domains": ["google.com", "wikipedia.org"],
+	//	    "exclude_domains": ["example.com"]
+	//	  },
+	//	  "fetch_policy": {
+	//	    "max_age_seconds": 3600
+	//	  }
+	//	}
+	CustomConfigs *structpb.Struct `protobuf:"bytes,3,opt,name=custom_configs,json=customConfigs,proto3" json:"custom_configs,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Tool_ParallelAiSearch) Reset() {
+	*x = Tool_ParallelAiSearch{}
+	mi := &file_google_cloud_aiplatform_v1_tool_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Tool_ParallelAiSearch) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Tool_ParallelAiSearch) ProtoMessage() {}
+
+func (x *Tool_ParallelAiSearch) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1_tool_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Tool_ParallelAiSearch.ProtoReflect.Descriptor instead.
+func (*Tool_ParallelAiSearch) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1_tool_proto_rawDescGZIP(), []int{0, 1}
+}
+
+func (x *Tool_ParallelAiSearch) GetApiKey() string {
+	if x != nil {
+		return x.ApiKey
+	}
+	return ""
+}
+
+func (x *Tool_ParallelAiSearch) GetCustomConfigs() *structpb.Struct {
+	if x != nil {
+		return x.CustomConfigs
+	}
+	return nil
+}
+
 // Tool that executes code generated by the model, and automatically returns
 // the result to the model.
 //
@@ -2150,7 +2237,7 @@ type Tool_CodeExecution struct {
 
 func (x *Tool_CodeExecution) Reset() {
 	*x = Tool_CodeExecution{}
-	mi := &file_google_cloud_aiplatform_v1_tool_proto_msgTypes[23]
+	mi := &file_google_cloud_aiplatform_v1_tool_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2162,7 +2249,7 @@ func (x *Tool_CodeExecution) String() string {
 func (*Tool_CodeExecution) ProtoMessage() {}
 
 func (x *Tool_CodeExecution) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_tool_proto_msgTypes[23]
+	mi := &file_google_cloud_aiplatform_v1_tool_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2175,7 +2262,7 @@ func (x *Tool_CodeExecution) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Tool_CodeExecution.ProtoReflect.Descriptor instead.
 func (*Tool_CodeExecution) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_tool_proto_rawDescGZIP(), []int{0, 1}
+	return file_google_cloud_aiplatform_v1_tool_proto_rawDescGZIP(), []int{0, 2}
 }
 
 // Tool to support computer use.
@@ -2196,7 +2283,7 @@ type Tool_ComputerUse struct {
 
 func (x *Tool_ComputerUse) Reset() {
 	*x = Tool_ComputerUse{}
-	mi := &file_google_cloud_aiplatform_v1_tool_proto_msgTypes[24]
+	mi := &file_google_cloud_aiplatform_v1_tool_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2208,7 +2295,7 @@ func (x *Tool_ComputerUse) String() string {
 func (*Tool_ComputerUse) ProtoMessage() {}
 
 func (x *Tool_ComputerUse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_tool_proto_msgTypes[24]
+	mi := &file_google_cloud_aiplatform_v1_tool_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2221,7 +2308,7 @@ func (x *Tool_ComputerUse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Tool_ComputerUse.ProtoReflect.Descriptor instead.
 func (*Tool_ComputerUse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_aiplatform_v1_tool_proto_rawDescGZIP(), []int{0, 2}
+	return file_google_cloud_aiplatform_v1_tool_proto_rawDescGZIP(), []int{0, 3}
 }
 
 func (x *Tool_ComputerUse) GetEnvironment() Tool_ComputerUse_Environment {
@@ -2254,7 +2341,7 @@ type VertexRagStore_RagResource struct {
 
 func (x *VertexRagStore_RagResource) Reset() {
 	*x = VertexRagStore_RagResource{}
-	mi := &file_google_cloud_aiplatform_v1_tool_proto_msgTypes[25]
+	mi := &file_google_cloud_aiplatform_v1_tool_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2266,7 +2353,7 @@ func (x *VertexRagStore_RagResource) String() string {
 func (*VertexRagStore_RagResource) ProtoMessage() {}
 
 func (x *VertexRagStore_RagResource) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_tool_proto_msgTypes[25]
+	mi := &file_google_cloud_aiplatform_v1_tool_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2315,7 +2402,7 @@ type VertexAISearch_DataStoreSpec struct {
 
 func (x *VertexAISearch_DataStoreSpec) Reset() {
 	*x = VertexAISearch_DataStoreSpec{}
-	mi := &file_google_cloud_aiplatform_v1_tool_proto_msgTypes[26]
+	mi := &file_google_cloud_aiplatform_v1_tool_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2327,7 +2414,7 @@ func (x *VertexAISearch_DataStoreSpec) String() string {
 func (*VertexAISearch_DataStoreSpec) ProtoMessage() {}
 
 func (x *VertexAISearch_DataStoreSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_tool_proto_msgTypes[26]
+	mi := &file_google_cloud_aiplatform_v1_tool_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2376,7 +2463,7 @@ type RagRetrievalConfig_Filter struct {
 
 func (x *RagRetrievalConfig_Filter) Reset() {
 	*x = RagRetrievalConfig_Filter{}
-	mi := &file_google_cloud_aiplatform_v1_tool_proto_msgTypes[27]
+	mi := &file_google_cloud_aiplatform_v1_tool_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2388,7 +2475,7 @@ func (x *RagRetrievalConfig_Filter) String() string {
 func (*RagRetrievalConfig_Filter) ProtoMessage() {}
 
 func (x *RagRetrievalConfig_Filter) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_tool_proto_msgTypes[27]
+	mi := &file_google_cloud_aiplatform_v1_tool_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2474,7 +2561,7 @@ type RagRetrievalConfig_Ranking struct {
 
 func (x *RagRetrievalConfig_Ranking) Reset() {
 	*x = RagRetrievalConfig_Ranking{}
-	mi := &file_google_cloud_aiplatform_v1_tool_proto_msgTypes[28]
+	mi := &file_google_cloud_aiplatform_v1_tool_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2486,7 +2573,7 @@ func (x *RagRetrievalConfig_Ranking) String() string {
 func (*RagRetrievalConfig_Ranking) ProtoMessage() {}
 
 func (x *RagRetrievalConfig_Ranking) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_tool_proto_msgTypes[28]
+	mi := &file_google_cloud_aiplatform_v1_tool_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2557,7 +2644,7 @@ type RagRetrievalConfig_Ranking_RankService struct {
 
 func (x *RagRetrievalConfig_Ranking_RankService) Reset() {
 	*x = RagRetrievalConfig_Ranking_RankService{}
-	mi := &file_google_cloud_aiplatform_v1_tool_proto_msgTypes[29]
+	mi := &file_google_cloud_aiplatform_v1_tool_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2569,7 +2656,7 @@ func (x *RagRetrievalConfig_Ranking_RankService) String() string {
 func (*RagRetrievalConfig_Ranking_RankService) ProtoMessage() {}
 
 func (x *RagRetrievalConfig_Ranking_RankService) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_tool_proto_msgTypes[29]
+	mi := &file_google_cloud_aiplatform_v1_tool_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2604,7 +2691,7 @@ type RagRetrievalConfig_Ranking_LlmRanker struct {
 
 func (x *RagRetrievalConfig_Ranking_LlmRanker) Reset() {
 	*x = RagRetrievalConfig_Ranking_LlmRanker{}
-	mi := &file_google_cloud_aiplatform_v1_tool_proto_msgTypes[30]
+	mi := &file_google_cloud_aiplatform_v1_tool_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2616,7 +2703,7 @@ func (x *RagRetrievalConfig_Ranking_LlmRanker) String() string {
 func (*RagRetrievalConfig_Ranking_LlmRanker) ProtoMessage() {}
 
 func (x *RagRetrievalConfig_Ranking_LlmRanker) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_tool_proto_msgTypes[30]
+	mi := &file_google_cloud_aiplatform_v1_tool_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2643,7 +2730,7 @@ var File_google_cloud_aiplatform_v1_tool_proto protoreflect.FileDescriptor
 
 const file_google_cloud_aiplatform_v1_tool_proto_rawDesc = "" +
 	"\n" +
-	"%google/cloud/aiplatform/v1/tool.proto\x12\x1agoogle.cloud.aiplatform.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/aiplatform/v1/openapi.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x18google/type/latlng.proto\"\x88\f\n" +
+	"%google/cloud/aiplatform/v1/tool.proto\x12\x1agoogle.cloud.aiplatform.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/aiplatform/v1/openapi.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x18google/type/latlng.proto\"\xe5\r\n" +
 	"\x04Tool\x12i\n" +
 	"\x15function_declarations\x18\x01 \x03(\v2/.google.cloud.aiplatform.v1.FunctionDeclarationB\x03\xe0A\x01R\x14functionDeclarations\x12H\n" +
 	"\tretrieval\x18\x02 \x01(\v2%.google.cloud.aiplatform.v1.RetrievalB\x03\xe0A\x01R\tretrieval\x12W\n" +
@@ -2651,7 +2738,8 @@ const file_google_cloud_aiplatform_v1_tool_proto_rawDesc = "" +
 	"\x17google_search_retrieval\x18\x03 \x01(\v21.google.cloud.aiplatform.v1.GoogleSearchRetrievalB\x03\xe0A\x01R\x15googleSearchRetrieval\x12L\n" +
 	"\vgoogle_maps\x18\x05 \x01(\v2&.google.cloud.aiplatform.v1.GoogleMapsB\x03\xe0A\x01R\n" +
 	"googleMaps\x12h\n" +
-	"\x15enterprise_web_search\x18\x06 \x01(\v2/.google.cloud.aiplatform.v1.EnterpriseWebSearchB\x03\xe0A\x01R\x13enterpriseWebSearch\x12Z\n" +
+	"\x15enterprise_web_search\x18\x06 \x01(\v2/.google.cloud.aiplatform.v1.EnterpriseWebSearchB\x03\xe0A\x01R\x13enterpriseWebSearch\x12d\n" +
+	"\x12parallel_ai_search\x18\r \x01(\v21.google.cloud.aiplatform.v1.Tool.ParallelAiSearchB\x03\xe0A\x01R\x10parallelAiSearch\x12Z\n" +
 	"\x0ecode_execution\x18\x04 \x01(\v2..google.cloud.aiplatform.v1.Tool.CodeExecutionB\x03\xe0A\x01R\rcodeExecution\x12L\n" +
 	"\vurl_context\x18\n" +
 	" \x01(\v2&.google.cloud.aiplatform.v1.UrlContextB\x03\xe0A\x01R\n" +
@@ -2660,7 +2748,10 @@ const file_google_cloud_aiplatform_v1_tool_proto_rawDesc = "" +
 	"\fGoogleSearch\x12,\n" +
 	"\x0fexclude_domains\x18\x03 \x03(\tB\x03\xe0A\x01R\x0eexcludeDomains\x12o\n" +
 	"\x13blocking_confidence\x18\x04 \x01(\x0e24.google.cloud.aiplatform.v1.Tool.PhishBlockThresholdB\x03\xe0A\x01H\x00R\x12blockingConfidence\x88\x01\x01B\x16\n" +
-	"\x14_blocking_confidence\x1a\x0f\n" +
+	"\x14_blocking_confidence\x1au\n" +
+	"\x10ParallelAiSearch\x12\x1c\n" +
+	"\aapi_key\x18\x01 \x01(\tB\x03\xe0A\x01R\x06apiKey\x12C\n" +
+	"\x0ecustom_configs\x18\x03 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\rcustomConfigs\x1a\x0f\n" +
 	"\rCodeExecution\x1a\xfc\x01\n" +
 	"\vComputerUse\x12_\n" +
 	"\venvironment\x18\x01 \x01(\x0e28.google.cloud.aiplatform.v1.Tool.ComputerUse.EnvironmentB\x03\xe0A\x02R\venvironment\x12G\n" +
@@ -2839,7 +2930,7 @@ func file_google_cloud_aiplatform_v1_tool_proto_rawDescGZIP() []byte {
 }
 
 var file_google_cloud_aiplatform_v1_tool_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
-var file_google_cloud_aiplatform_v1_tool_proto_msgTypes = make([]protoimpl.MessageInfo, 31)
+var file_google_cloud_aiplatform_v1_tool_proto_msgTypes = make([]protoimpl.MessageInfo, 32)
 var file_google_cloud_aiplatform_v1_tool_proto_goTypes = []any{
 	(Tool_PhishBlockThreshold)(0),                  // 0: google.cloud.aiplatform.v1.Tool.PhishBlockThreshold
 	(Tool_ComputerUse_Environment)(0),              // 1: google.cloud.aiplatform.v1.Tool.ComputerUse.Environment
@@ -2870,19 +2961,20 @@ var file_google_cloud_aiplatform_v1_tool_proto_goTypes = []any{
 	(*RetrievalConfig)(nil),                        // 26: google.cloud.aiplatform.v1.RetrievalConfig
 	(*RagRetrievalConfig)(nil),                     // 27: google.cloud.aiplatform.v1.RagRetrievalConfig
 	(*Tool_GoogleSearch)(nil),                      // 28: google.cloud.aiplatform.v1.Tool.GoogleSearch
-	(*Tool_CodeExecution)(nil),                     // 29: google.cloud.aiplatform.v1.Tool.CodeExecution
-	(*Tool_ComputerUse)(nil),                       // 30: google.cloud.aiplatform.v1.Tool.ComputerUse
-	(*VertexRagStore_RagResource)(nil),             // 31: google.cloud.aiplatform.v1.VertexRagStore.RagResource
-	(*VertexAISearch_DataStoreSpec)(nil),           // 32: google.cloud.aiplatform.v1.VertexAISearch.DataStoreSpec
-	(*RagRetrievalConfig_Filter)(nil),              // 33: google.cloud.aiplatform.v1.RagRetrievalConfig.Filter
-	(*RagRetrievalConfig_Ranking)(nil),             // 34: google.cloud.aiplatform.v1.RagRetrievalConfig.Ranking
-	(*RagRetrievalConfig_Ranking_RankService)(nil), // 35: google.cloud.aiplatform.v1.RagRetrievalConfig.Ranking.RankService
-	(*RagRetrievalConfig_Ranking_LlmRanker)(nil),   // 36: google.cloud.aiplatform.v1.RagRetrievalConfig.Ranking.LlmRanker
-	(*Schema)(nil),                                 // 37: google.cloud.aiplatform.v1.Schema
-	(*structpb.Value)(nil),                         // 38: google.protobuf.Value
-	(*structpb.Struct)(nil),                        // 39: google.protobuf.Struct
-	(structpb.NullValue)(0),                        // 40: google.protobuf.NullValue
-	(*latlng.LatLng)(nil),                          // 41: google.type.LatLng
+	(*Tool_ParallelAiSearch)(nil),                  // 29: google.cloud.aiplatform.v1.Tool.ParallelAiSearch
+	(*Tool_CodeExecution)(nil),                     // 30: google.cloud.aiplatform.v1.Tool.CodeExecution
+	(*Tool_ComputerUse)(nil),                       // 31: google.cloud.aiplatform.v1.Tool.ComputerUse
+	(*VertexRagStore_RagResource)(nil),             // 32: google.cloud.aiplatform.v1.VertexRagStore.RagResource
+	(*VertexAISearch_DataStoreSpec)(nil),           // 33: google.cloud.aiplatform.v1.VertexAISearch.DataStoreSpec
+	(*RagRetrievalConfig_Filter)(nil),              // 34: google.cloud.aiplatform.v1.RagRetrievalConfig.Filter
+	(*RagRetrievalConfig_Ranking)(nil),             // 35: google.cloud.aiplatform.v1.RagRetrievalConfig.Ranking
+	(*RagRetrievalConfig_Ranking_RankService)(nil), // 36: google.cloud.aiplatform.v1.RagRetrievalConfig.Ranking.RankService
+	(*RagRetrievalConfig_Ranking_LlmRanker)(nil),   // 37: google.cloud.aiplatform.v1.RagRetrievalConfig.Ranking.LlmRanker
+	(*Schema)(nil),                                 // 38: google.cloud.aiplatform.v1.Schema
+	(*structpb.Value)(nil),                         // 39: google.protobuf.Value
+	(*structpb.Struct)(nil),                        // 40: google.protobuf.Struct
+	(structpb.NullValue)(0),                        // 41: google.protobuf.NullValue
+	(*latlng.LatLng)(nil),                          // 42: google.type.LatLng
 }
 var file_google_cloud_aiplatform_v1_tool_proto_depIdxs = []int32{
 	8,  // 0: google.cloud.aiplatform.v1.Tool.function_declarations:type_name -> google.cloud.aiplatform.v1.FunctionDeclaration
@@ -2891,45 +2983,47 @@ var file_google_cloud_aiplatform_v1_tool_proto_depIdxs = []int32{
 	20, // 3: google.cloud.aiplatform.v1.Tool.google_search_retrieval:type_name -> google.cloud.aiplatform.v1.GoogleSearchRetrieval
 	21, // 4: google.cloud.aiplatform.v1.Tool.google_maps:type_name -> google.cloud.aiplatform.v1.GoogleMaps
 	22, // 5: google.cloud.aiplatform.v1.Tool.enterprise_web_search:type_name -> google.cloud.aiplatform.v1.EnterpriseWebSearch
-	29, // 6: google.cloud.aiplatform.v1.Tool.code_execution:type_name -> google.cloud.aiplatform.v1.Tool.CodeExecution
-	7,  // 7: google.cloud.aiplatform.v1.Tool.url_context:type_name -> google.cloud.aiplatform.v1.UrlContext
-	30, // 8: google.cloud.aiplatform.v1.Tool.computer_use:type_name -> google.cloud.aiplatform.v1.Tool.ComputerUse
-	37, // 9: google.cloud.aiplatform.v1.FunctionDeclaration.parameters:type_name -> google.cloud.aiplatform.v1.Schema
-	38, // 10: google.cloud.aiplatform.v1.FunctionDeclaration.parameters_json_schema:type_name -> google.protobuf.Value
-	37, // 11: google.cloud.aiplatform.v1.FunctionDeclaration.response:type_name -> google.cloud.aiplatform.v1.Schema
-	38, // 12: google.cloud.aiplatform.v1.FunctionDeclaration.response_json_schema:type_name -> google.protobuf.Value
-	39, // 13: google.cloud.aiplatform.v1.FunctionCall.args:type_name -> google.protobuf.Struct
-	10, // 14: google.cloud.aiplatform.v1.FunctionCall.partial_args:type_name -> google.cloud.aiplatform.v1.PartialArg
-	40, // 15: google.cloud.aiplatform.v1.PartialArg.null_value:type_name -> google.protobuf.NullValue
-	12, // 16: google.cloud.aiplatform.v1.FunctionResponsePart.inline_data:type_name -> google.cloud.aiplatform.v1.FunctionResponseBlob
-	13, // 17: google.cloud.aiplatform.v1.FunctionResponsePart.file_data:type_name -> google.cloud.aiplatform.v1.FunctionResponseFileData
-	39, // 18: google.cloud.aiplatform.v1.FunctionResponse.response:type_name -> google.protobuf.Struct
-	11, // 19: google.cloud.aiplatform.v1.FunctionResponse.parts:type_name -> google.cloud.aiplatform.v1.FunctionResponsePart
-	2,  // 20: google.cloud.aiplatform.v1.ExecutableCode.language:type_name -> google.cloud.aiplatform.v1.ExecutableCode.Language
-	3,  // 21: google.cloud.aiplatform.v1.CodeExecutionResult.outcome:type_name -> google.cloud.aiplatform.v1.CodeExecutionResult.Outcome
-	19, // 22: google.cloud.aiplatform.v1.Retrieval.vertex_ai_search:type_name -> google.cloud.aiplatform.v1.VertexAISearch
-	18, // 23: google.cloud.aiplatform.v1.Retrieval.vertex_rag_store:type_name -> google.cloud.aiplatform.v1.VertexRagStore
-	31, // 24: google.cloud.aiplatform.v1.VertexRagStore.rag_resources:type_name -> google.cloud.aiplatform.v1.VertexRagStore.RagResource
-	27, // 25: google.cloud.aiplatform.v1.VertexRagStore.rag_retrieval_config:type_name -> google.cloud.aiplatform.v1.RagRetrievalConfig
-	32, // 26: google.cloud.aiplatform.v1.VertexAISearch.data_store_specs:type_name -> google.cloud.aiplatform.v1.VertexAISearch.DataStoreSpec
-	23, // 27: google.cloud.aiplatform.v1.GoogleSearchRetrieval.dynamic_retrieval_config:type_name -> google.cloud.aiplatform.v1.DynamicRetrievalConfig
-	0,  // 28: google.cloud.aiplatform.v1.EnterpriseWebSearch.blocking_confidence:type_name -> google.cloud.aiplatform.v1.Tool.PhishBlockThreshold
-	4,  // 29: google.cloud.aiplatform.v1.DynamicRetrievalConfig.mode:type_name -> google.cloud.aiplatform.v1.DynamicRetrievalConfig.Mode
-	25, // 30: google.cloud.aiplatform.v1.ToolConfig.function_calling_config:type_name -> google.cloud.aiplatform.v1.FunctionCallingConfig
-	26, // 31: google.cloud.aiplatform.v1.ToolConfig.retrieval_config:type_name -> google.cloud.aiplatform.v1.RetrievalConfig
-	5,  // 32: google.cloud.aiplatform.v1.FunctionCallingConfig.mode:type_name -> google.cloud.aiplatform.v1.FunctionCallingConfig.Mode
-	41, // 33: google.cloud.aiplatform.v1.RetrievalConfig.lat_lng:type_name -> google.type.LatLng
-	33, // 34: google.cloud.aiplatform.v1.RagRetrievalConfig.filter:type_name -> google.cloud.aiplatform.v1.RagRetrievalConfig.Filter
-	34, // 35: google.cloud.aiplatform.v1.RagRetrievalConfig.ranking:type_name -> google.cloud.aiplatform.v1.RagRetrievalConfig.Ranking
-	0,  // 36: google.cloud.aiplatform.v1.Tool.GoogleSearch.blocking_confidence:type_name -> google.cloud.aiplatform.v1.Tool.PhishBlockThreshold
-	1,  // 37: google.cloud.aiplatform.v1.Tool.ComputerUse.environment:type_name -> google.cloud.aiplatform.v1.Tool.ComputerUse.Environment
-	35, // 38: google.cloud.aiplatform.v1.RagRetrievalConfig.Ranking.rank_service:type_name -> google.cloud.aiplatform.v1.RagRetrievalConfig.Ranking.RankService
-	36, // 39: google.cloud.aiplatform.v1.RagRetrievalConfig.Ranking.llm_ranker:type_name -> google.cloud.aiplatform.v1.RagRetrievalConfig.Ranking.LlmRanker
-	40, // [40:40] is the sub-list for method output_type
-	40, // [40:40] is the sub-list for method input_type
-	40, // [40:40] is the sub-list for extension type_name
-	40, // [40:40] is the sub-list for extension extendee
-	0,  // [0:40] is the sub-list for field type_name
+	29, // 6: google.cloud.aiplatform.v1.Tool.parallel_ai_search:type_name -> google.cloud.aiplatform.v1.Tool.ParallelAiSearch
+	30, // 7: google.cloud.aiplatform.v1.Tool.code_execution:type_name -> google.cloud.aiplatform.v1.Tool.CodeExecution
+	7,  // 8: google.cloud.aiplatform.v1.Tool.url_context:type_name -> google.cloud.aiplatform.v1.UrlContext
+	31, // 9: google.cloud.aiplatform.v1.Tool.computer_use:type_name -> google.cloud.aiplatform.v1.Tool.ComputerUse
+	38, // 10: google.cloud.aiplatform.v1.FunctionDeclaration.parameters:type_name -> google.cloud.aiplatform.v1.Schema
+	39, // 11: google.cloud.aiplatform.v1.FunctionDeclaration.parameters_json_schema:type_name -> google.protobuf.Value
+	38, // 12: google.cloud.aiplatform.v1.FunctionDeclaration.response:type_name -> google.cloud.aiplatform.v1.Schema
+	39, // 13: google.cloud.aiplatform.v1.FunctionDeclaration.response_json_schema:type_name -> google.protobuf.Value
+	40, // 14: google.cloud.aiplatform.v1.FunctionCall.args:type_name -> google.protobuf.Struct
+	10, // 15: google.cloud.aiplatform.v1.FunctionCall.partial_args:type_name -> google.cloud.aiplatform.v1.PartialArg
+	41, // 16: google.cloud.aiplatform.v1.PartialArg.null_value:type_name -> google.protobuf.NullValue
+	12, // 17: google.cloud.aiplatform.v1.FunctionResponsePart.inline_data:type_name -> google.cloud.aiplatform.v1.FunctionResponseBlob
+	13, // 18: google.cloud.aiplatform.v1.FunctionResponsePart.file_data:type_name -> google.cloud.aiplatform.v1.FunctionResponseFileData
+	40, // 19: google.cloud.aiplatform.v1.FunctionResponse.response:type_name -> google.protobuf.Struct
+	11, // 20: google.cloud.aiplatform.v1.FunctionResponse.parts:type_name -> google.cloud.aiplatform.v1.FunctionResponsePart
+	2,  // 21: google.cloud.aiplatform.v1.ExecutableCode.language:type_name -> google.cloud.aiplatform.v1.ExecutableCode.Language
+	3,  // 22: google.cloud.aiplatform.v1.CodeExecutionResult.outcome:type_name -> google.cloud.aiplatform.v1.CodeExecutionResult.Outcome
+	19, // 23: google.cloud.aiplatform.v1.Retrieval.vertex_ai_search:type_name -> google.cloud.aiplatform.v1.VertexAISearch
+	18, // 24: google.cloud.aiplatform.v1.Retrieval.vertex_rag_store:type_name -> google.cloud.aiplatform.v1.VertexRagStore
+	32, // 25: google.cloud.aiplatform.v1.VertexRagStore.rag_resources:type_name -> google.cloud.aiplatform.v1.VertexRagStore.RagResource
+	27, // 26: google.cloud.aiplatform.v1.VertexRagStore.rag_retrieval_config:type_name -> google.cloud.aiplatform.v1.RagRetrievalConfig
+	33, // 27: google.cloud.aiplatform.v1.VertexAISearch.data_store_specs:type_name -> google.cloud.aiplatform.v1.VertexAISearch.DataStoreSpec
+	23, // 28: google.cloud.aiplatform.v1.GoogleSearchRetrieval.dynamic_retrieval_config:type_name -> google.cloud.aiplatform.v1.DynamicRetrievalConfig
+	0,  // 29: google.cloud.aiplatform.v1.EnterpriseWebSearch.blocking_confidence:type_name -> google.cloud.aiplatform.v1.Tool.PhishBlockThreshold
+	4,  // 30: google.cloud.aiplatform.v1.DynamicRetrievalConfig.mode:type_name -> google.cloud.aiplatform.v1.DynamicRetrievalConfig.Mode
+	25, // 31: google.cloud.aiplatform.v1.ToolConfig.function_calling_config:type_name -> google.cloud.aiplatform.v1.FunctionCallingConfig
+	26, // 32: google.cloud.aiplatform.v1.ToolConfig.retrieval_config:type_name -> google.cloud.aiplatform.v1.RetrievalConfig
+	5,  // 33: google.cloud.aiplatform.v1.FunctionCallingConfig.mode:type_name -> google.cloud.aiplatform.v1.FunctionCallingConfig.Mode
+	42, // 34: google.cloud.aiplatform.v1.RetrievalConfig.lat_lng:type_name -> google.type.LatLng
+	34, // 35: google.cloud.aiplatform.v1.RagRetrievalConfig.filter:type_name -> google.cloud.aiplatform.v1.RagRetrievalConfig.Filter
+	35, // 36: google.cloud.aiplatform.v1.RagRetrievalConfig.ranking:type_name -> google.cloud.aiplatform.v1.RagRetrievalConfig.Ranking
+	0,  // 37: google.cloud.aiplatform.v1.Tool.GoogleSearch.blocking_confidence:type_name -> google.cloud.aiplatform.v1.Tool.PhishBlockThreshold
+	40, // 38: google.cloud.aiplatform.v1.Tool.ParallelAiSearch.custom_configs:type_name -> google.protobuf.Struct
+	1,  // 39: google.cloud.aiplatform.v1.Tool.ComputerUse.environment:type_name -> google.cloud.aiplatform.v1.Tool.ComputerUse.Environment
+	36, // 40: google.cloud.aiplatform.v1.RagRetrievalConfig.Ranking.rank_service:type_name -> google.cloud.aiplatform.v1.RagRetrievalConfig.Ranking.RankService
+	37, // 41: google.cloud.aiplatform.v1.RagRetrievalConfig.Ranking.llm_ranker:type_name -> google.cloud.aiplatform.v1.RagRetrievalConfig.Ranking.LlmRanker
+	42, // [42:42] is the sub-list for method output_type
+	42, // [42:42] is the sub-list for method input_type
+	42, // [42:42] is the sub-list for extension type_name
+	42, // [42:42] is the sub-list for extension extendee
+	0,  // [0:42] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_aiplatform_v1_tool_proto_init() }
@@ -2957,23 +3051,23 @@ func file_google_cloud_aiplatform_v1_tool_proto_init() {
 	file_google_cloud_aiplatform_v1_tool_proto_msgTypes[17].OneofWrappers = []any{}
 	file_google_cloud_aiplatform_v1_tool_proto_msgTypes[20].OneofWrappers = []any{}
 	file_google_cloud_aiplatform_v1_tool_proto_msgTypes[22].OneofWrappers = []any{}
-	file_google_cloud_aiplatform_v1_tool_proto_msgTypes[27].OneofWrappers = []any{
+	file_google_cloud_aiplatform_v1_tool_proto_msgTypes[28].OneofWrappers = []any{
 		(*RagRetrievalConfig_Filter_VectorDistanceThreshold)(nil),
 		(*RagRetrievalConfig_Filter_VectorSimilarityThreshold)(nil),
 	}
-	file_google_cloud_aiplatform_v1_tool_proto_msgTypes[28].OneofWrappers = []any{
+	file_google_cloud_aiplatform_v1_tool_proto_msgTypes[29].OneofWrappers = []any{
 		(*RagRetrievalConfig_Ranking_RankService_)(nil),
 		(*RagRetrievalConfig_Ranking_LlmRanker_)(nil),
 	}
-	file_google_cloud_aiplatform_v1_tool_proto_msgTypes[29].OneofWrappers = []any{}
 	file_google_cloud_aiplatform_v1_tool_proto_msgTypes[30].OneofWrappers = []any{}
+	file_google_cloud_aiplatform_v1_tool_proto_msgTypes[31].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_aiplatform_v1_tool_proto_rawDesc), len(file_google_cloud_aiplatform_v1_tool_proto_rawDesc)),
 			NumEnums:      6,
-			NumMessages:   31,
+			NumMessages:   32,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

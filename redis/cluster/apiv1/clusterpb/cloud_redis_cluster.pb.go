@@ -165,6 +165,12 @@ const (
 	NodeType_REDIS_HIGHMEM_XLARGE NodeType = 3
 	// Redis standard small node_type.
 	NodeType_REDIS_STANDARD_SMALL NodeType = 4
+	// Redis highcpu medium node_type.
+	NodeType_REDIS_HIGHCPU_MEDIUM NodeType = 7
+	// Redis standard large node_type.
+	NodeType_REDIS_STANDARD_LARGE NodeType = 8
+	// Redis highmem 2xlarge node_type.
+	NodeType_REDIS_HIGHMEM_2XLARGE NodeType = 9
 )
 
 // Enum value maps for NodeType.
@@ -175,6 +181,9 @@ var (
 		2: "REDIS_HIGHMEM_MEDIUM",
 		3: "REDIS_HIGHMEM_XLARGE",
 		4: "REDIS_STANDARD_SMALL",
+		7: "REDIS_HIGHCPU_MEDIUM",
+		8: "REDIS_STANDARD_LARGE",
+		9: "REDIS_HIGHMEM_2XLARGE",
 	}
 	NodeType_value = map[string]int32{
 		"NODE_TYPE_UNSPECIFIED":  0,
@@ -182,6 +191,9 @@ var (
 		"REDIS_HIGHMEM_MEDIUM":   2,
 		"REDIS_HIGHMEM_XLARGE":   3,
 		"REDIS_STANDARD_SMALL":   4,
+		"REDIS_HIGHCPU_MEDIUM":   7,
+		"REDIS_STANDARD_LARGE":   8,
+		"REDIS_HIGHMEM_2XLARGE":  9,
 	}
 )
 
@@ -5449,13 +5461,16 @@ const file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDesc = "" 
 	"\x11AuthorizationMode\x12\x19\n" +
 	"\x15AUTH_MODE_UNSPECIFIED\x10\x00\x12\x16\n" +
 	"\x12AUTH_MODE_IAM_AUTH\x10\x01\x12\x16\n" +
-	"\x12AUTH_MODE_DISABLED\x10\x02*\x8f\x01\n" +
+	"\x12AUTH_MODE_DISABLED\x10\x02*\xde\x01\n" +
 	"\bNodeType\x12\x19\n" +
 	"\x15NODE_TYPE_UNSPECIFIED\x10\x00\x12\x1a\n" +
 	"\x16REDIS_SHARED_CORE_NANO\x10\x01\x12\x18\n" +
 	"\x14REDIS_HIGHMEM_MEDIUM\x10\x02\x12\x18\n" +
 	"\x14REDIS_HIGHMEM_XLARGE\x10\x03\x12\x18\n" +
-	"\x14REDIS_STANDARD_SMALL\x10\x04*\x99\x01\n" +
+	"\x14REDIS_STANDARD_SMALL\x10\x04\x12\x18\n" +
+	"\x14REDIS_HIGHCPU_MEDIUM\x10\a\x12\x18\n" +
+	"\x14REDIS_STANDARD_LARGE\x10\b\x12\x19\n" +
+	"\x15REDIS_HIGHMEM_2XLARGE\x10\t*\x99\x01\n" +
 	"\x15TransitEncryptionMode\x12'\n" +
 	"#TRANSIT_ENCRYPTION_MODE_UNSPECIFIED\x10\x00\x12$\n" +
 	" TRANSIT_ENCRYPTION_MODE_DISABLED\x10\x01\x121\n" +

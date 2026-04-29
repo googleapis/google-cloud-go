@@ -62,6 +62,7 @@ type DisksCallOptions struct {
 	StopGroupAsyncReplication []gax.CallOption
 	TestIamPermissions        []gax.CallOption
 	Update                    []gax.CallOption
+	UpdateKmsKey              []gax.CallOption
 }
 
 func defaultDisksRESTCallOptions() *DisksCallOptions {
@@ -159,6 +160,9 @@ func defaultDisksRESTCallOptions() *DisksCallOptions {
 		Update: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		UpdateKmsKey: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 
@@ -186,6 +190,7 @@ type internalDisksClient interface {
 	StopGroupAsyncReplication(context.Context, *computepb.StopGroupAsyncReplicationDiskRequest, ...gax.CallOption) (*Operation, error)
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsDiskRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 	Update(context.Context, *computepb.UpdateDiskRequest, ...gax.CallOption) (*Operation, error)
+	UpdateKmsKey(context.Context, *computepb.UpdateKmsKeyDiskRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // DisksClient is a client for interacting with Google Compute Engine API.
@@ -345,6 +350,12 @@ func (c *DisksClient) Update(ctx context.Context, req *computepb.UpdateDiskReque
 	return c.internalClient.Update(ctx, req, opts...)
 }
 
+// UpdateKmsKey rotates the customer-managed
+// encryption key to the latest version for the specified persistent disk.
+func (c *DisksClient) UpdateKmsKey(ctx context.Context, req *computepb.UpdateKmsKeyDiskRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.UpdateKmsKey(ctx, req, opts...)
+}
+
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type disksRESTClient struct {
 	// The http endpoint to connect to.
@@ -425,6 +436,7 @@ func NewDisksRESTClient(ctx context.Context, opts ...option.ClientOption) (*Disk
 		callOpts.StopGroupAsyncReplication = append(callOpts.StopGroupAsyncReplication, gax.WithClientMetrics(metrics))
 		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
 		callOpts.Update = append(callOpts.Update, gax.WithClientMetrics(metrics))
+		callOpts.UpdateKmsKey = append(callOpts.UpdateKmsKey, gax.WithClientMetrics(metrics))
 	}
 
 	o := []option.ClientOption{
@@ -1861,6 +1873,81 @@ func (c *disksRESTClient) Update(ctx context.Context, req *computepb.UpdateDiskR
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "Update")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
+	return op, nil
+}
+
+// UpdateKmsKey rotates the customer-managed
+// encryption key to the latest version for the specified persistent disk.
+func (c *disksRESTClient) UpdateKmsKey(ctx context.Context, req *computepb.UpdateKmsKeyDiskRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetDiskUpdateKmsKeyRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/disks/%v/updateKmsKey", req.GetProject(), req.GetZone(), req.GetDisk())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "disk", url.QueryEscape(req.GetDisk()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/zones/%v/disks/%v", req.GetProject(), req.GetZone(), req.GetDisk()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.Disks/UpdateKmsKey")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/zones/{zone}/disks/{disk}/updateKmsKey")
+	}
+	opts = append((*c.CallOptions).UpdateKmsKey[0:len((*c.CallOptions).UpdateKmsKey):len((*c.CallOptions).UpdateKmsKey)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateKmsKey")
 		if err != nil {
 			return err
 		}

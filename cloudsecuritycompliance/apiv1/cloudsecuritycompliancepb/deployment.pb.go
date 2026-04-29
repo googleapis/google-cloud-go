@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -52,6 +52,8 @@ const (
 	DeploymentState_DEPLOYMENT_STATE_CREATING DeploymentState = 2
 	// Deployment is being deleted.
 	DeploymentState_DEPLOYMENT_STATE_DELETING DeploymentState = 3
+	// Deployment is being updated.
+	DeploymentState_DEPLOYMENT_STATE_UPDATING DeploymentState = 8
 	// Deployment has failed. All the changes made by the deployment were
 	// successfully rolled back. You can retry or delete a deployment that's
 	// in this state.
@@ -75,6 +77,7 @@ var (
 		1: "DEPLOYMENT_STATE_VALIDATING",
 		2: "DEPLOYMENT_STATE_CREATING",
 		3: "DEPLOYMENT_STATE_DELETING",
+		8: "DEPLOYMENT_STATE_UPDATING",
 		4: "DEPLOYMENT_STATE_FAILED",
 		5: "DEPLOYMENT_STATE_READY",
 		6: "DEPLOYMENT_STATE_PARTIALLY_DEPLOYED",
@@ -85,6 +88,7 @@ var (
 		"DEPLOYMENT_STATE_VALIDATING":         1,
 		"DEPLOYMENT_STATE_CREATING":           2,
 		"DEPLOYMENT_STATE_DELETING":           3,
+		"DEPLOYMENT_STATE_UPDATING":           8,
 		"DEPLOYMENT_STATE_FAILED":             4,
 		"DEPLOYMENT_STATE_READY":              5,
 		"DEPLOYMENT_STATE_PARTIALLY_DEPLOYED": 6,
@@ -125,7 +129,9 @@ func (DeploymentState) EnumDescriptor() ([]byte, []int) {
 type FrameworkDeployment struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Identifier. The name of the framework deployment, in the format
-	// `organizations/{organization}/locations/{location}/frameworkDeployments/{framework_deployment_id}`.
+	// `organizations/{organization}/locations/{location}/frameworkDeployments/{framework_deployment}`
+	// or
+	// `projects/{project}/locations/{location}/frameworkDeployments/{framework_deployment}`.
 	// The only supported location is `global`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. The details of the target resource that you want to deploy the
@@ -306,7 +312,9 @@ func (x *FrameworkDeployment) GetCloudControlDeploymentReferences() []*CloudCont
 type CloudControlDeployment struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Identifier. The name for the cloud control deployment, in the format
-	// `organizations/{organization}/locations/{location}/cloudControlDeployments/{cloud_control_deployment_id}`.
+	// `organizations/{organization}/locations/{location}/cloudControlDeployments/{cloud_control_deployment}`
+	// or
+	// `projects/{project}/locations/{location}/cloudControlDeployments/{cloud_control_deployment}`.
 	// The only supported location is `global`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. The details of the target resource that the cloud control is
@@ -826,7 +834,9 @@ func (x *CloudControlMetadata) GetEnforcementMode() EnforcementMode {
 type CreateFrameworkDeploymentRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The parent resource of the framework deployment in the format
-	// `organizations/{organization}/locations/{location}`.
+	// `organizations/{organization}/locations/{location}`
+	// or
+	// `projects/{project}/locations/{location}`.
 	// Only the global location is supported.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. An identifier for the framework deployment that's unique in scope
@@ -895,7 +905,9 @@ type DeleteFrameworkDeploymentRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The name of the framework deployment that you want to delete,
 	// in the format
-	// `organizations/{organization}/locations/{location}/frameworkDeployments/{framework_deployment_id}`.
+	// `organizations/{organization}/locations/{location}/frameworkDeployments/{framework_deployment}`
+	// or
+	// `projects/{project}/locations/{location}/frameworkDeployments/{framework_deployment}`.
 	// The only supported location is `global`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. An opaque identifier for the current version of the resource.
@@ -959,7 +971,9 @@ func (x *DeleteFrameworkDeploymentRequest) GetEtag() string {
 type GetFrameworkDeploymentRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The name of the framework deployment, in the format
-	// `organizations/{organization}/locations/{location}/frameworkDeployments/{framework_deployment_id}`.
+	// `organizations/{organization}/locations/{location}/frameworkDeployments/{framework_deployment}`
+	// or
+	// `projects/{project}/locations/{location}/frameworkDeployments/{framework_deployment}`.
 	// The only supported location is `global`.
 	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -1007,7 +1021,9 @@ func (x *GetFrameworkDeploymentRequest) GetName() string {
 type ListFrameworkDeploymentsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The parent resource of the framework deployment, in the format
-	// `organizations/{organization}/locations/{location}`.
+	// `organizations/{organization}/locations/{location}`
+	// or
+	// `projects/{project}/locations/{location}`.
 	// The only supported location is `global`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. The requested page size. The server might return fewer items than
@@ -1157,7 +1173,9 @@ func (x *ListFrameworkDeploymentsResponse) GetNextPageToken() string {
 type GetCloudControlDeploymentRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The name for the cloud control deployment, in the format
-	// `organizations/{organization}/locations/{location}/cloudControlDeployments/{cloud_control_deployment_id}`.
+	// `organizations/{organization}/locations/{location}/cloudControlDeployments/{cloud_control_deployment}`
+	// or
+	// `projects/{project}/locations/{location}/cloudControlDeployments/{cloud_control_deployment}`.
 	// The only supported location is `global`.
 	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -1205,8 +1223,9 @@ func (x *GetCloudControlDeploymentRequest) GetName() string {
 type ListCloudControlDeploymentsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The parent resource for the cloud control deployment, in the
-	// format `organizations/{organization}/locations/{location}`. The only
-	// supported location is `global`.
+	// format `organizations/{organization}/locations/{location}` or
+	// `projects/{project}/locations/{location}`.
+	// The only supported location is `global`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. The requested page size. The server might return fewer items than
 	// you requested.
@@ -1355,7 +1374,9 @@ func (x *ListCloudControlDeploymentsResponse) GetNextPageToken() string {
 type CloudControlDeploymentReference struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Output only. The name of the CloudControlDeployment. The format is
-	// `organizations/{org}/locations/{location}/cloudControlDeployments/{cloud_control_deployment_id}`.
+	// `organizations/{organization}/locations/{location}/cloudControlDeployments/{cloud_control_deployment}`
+	// or
+	// `projects/{project}/locations/{location}/cloudControlDeployments/{cloud_control_deployment}`.
 	// The only supported location is `global`.
 	CloudControlDeployment string `protobuf:"bytes,1,opt,name=cloud_control_deployment,json=cloudControlDeployment,proto3" json:"cloud_control_deployment,omitempty"`
 	unknownFields          protoimpl.UnknownFields
@@ -1403,7 +1424,9 @@ func (x *CloudControlDeploymentReference) GetCloudControlDeployment() string {
 type FrameworkDeploymentReference struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Output only. The name of the framework deployment, in the format
-	// `organizations/{org}/locations/{location}/frameworkDeployments/{framework_deployment_id}`.
+	// `organizations/{organization}/locations/{location}/frameworkDeployments/{framework_deployment}`
+	// or
+	// `projects/{project}/locations/{location}/frameworkDeployments/{framework_deployment}`.
 	// The only supported location is `global`.
 	FrameworkDeployment string `protobuf:"bytes,1,opt,name=framework_deployment,json=frameworkDeployment,proto3" json:"framework_deployment,omitempty"`
 	// Optional. The reference to the framework that this deployment is for.
@@ -1413,7 +1436,7 @@ type FrameworkDeploymentReference struct {
 	//
 	//	{
 	//	  framework:
-	//	  "organizations/{org}/locations/{location}/frameworks/{framework}",
+	//	  "organizations/{organization}/locations/{location}/frameworks/{framework}",
 	//	  major_revision_id: 1
 	//	}
 	//
@@ -1483,7 +1506,7 @@ var File_google_cloud_cloudsecuritycompliance_v1_deployment_proto protoreflect.F
 
 const file_google_cloud_cloudsecuritycompliance_v1_deployment_proto_rawDesc = "" +
 	"\n" +
-	"8google/cloud/cloudsecuritycompliance/v1/deployment.proto\x12'google.cloud.cloudsecuritycompliance.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/cloudsecuritycompliance/v1/common.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa1\t\n" +
+	"8google/cloud/cloudsecuritycompliance/v1/deployment.proto\x12'google.cloud.cloudsecuritycompliance.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/cloudsecuritycompliance/v1/common.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf6\t\n" +
 	"\x13FrameworkDeployment\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12x\n" +
 	"\x16target_resource_config\x18\x02 \x01(\v2=.google.cloud.cloudsecuritycompliance.v1.TargetResourceConfigB\x03\xe0A\x02R\x14targetResourceConfig\x12=\n" +
@@ -1499,8 +1522,9 @@ const file_google_cloud_cloudsecuritycompliance_v1_deployment_proto_rawDesc = ""
 	"updateTime\x12\x17\n" +
 	"\x04etag\x18\v \x01(\tB\x03\xe0A\x01R\x04etag\x12D\n" +
 	"\x1ctarget_resource_display_name\x18\r \x01(\tB\x03\xe0A\x03R\x19targetResourceDisplayName\x12\x9c\x01\n" +
-	"#cloud_control_deployment_references\x18\x0e \x03(\v2H.google.cloud.cloudsecuritycompliance.v1.CloudControlDeploymentReferenceB\x03\xe0A\x03R cloudControlDeploymentReferences:\xca\x01\xeaA\xc6\x01\n" +
-	":cloudsecuritycompliance.googleapis.com/FrameworkDeployment\x12]organizations/{organization}/locations/{location}/frameworkDeployments/{framework_deployment}*\x14frameworkDeployments2\x13frameworkDeployment\"\xc5\t\n" +
+	"#cloud_control_deployment_references\x18\x0e \x03(\v2H.google.cloud.cloudsecuritycompliance.v1.CloudControlDeploymentReferenceB\x03\xe0A\x03R cloudControlDeploymentReferences:\x9f\x02\xeaA\x9b\x02\n" +
+	":cloudsecuritycompliance.googleapis.com/FrameworkDeployment\x12]organizations/{organization}/locations/{location}/frameworkDeployments/{framework_deployment}\x12Sprojects/{project}/locations/{location}/frameworkDeployments/{framework_deployment}*\x14frameworkDeployments2\x13frameworkDeployment\"\xa1\n" +
+	"\n" +
 	"\x16CloudControlDeployment\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12x\n" +
 	"\x16target_resource_config\x18\x02 \x01(\v2=.google.cloud.cloudsecuritycompliance.v1.TargetResourceConfigB\x03\xe0A\x02R\x14targetResourceConfig\x12,\n" +
@@ -1516,8 +1540,8 @@ const file_google_cloud_cloudsecuritycompliance_v1_deployment_proto_rawDesc = ""
 	"#parameter_substituted_cloud_control\x18\n" +
 	" \x01(\v25.google.cloud.cloudsecuritycompliance.v1.CloudControlB\x03\xe0A\x03R parameterSubstitutedCloudControl\x12\x92\x01\n" +
 	"\x1fframework_deployment_references\x18\v \x03(\v2E.google.cloud.cloudsecuritycompliance.v1.FrameworkDeploymentReferenceB\x03\xe0A\x03R\x1dframeworkDeploymentReferences\x12D\n" +
-	"\x1ctarget_resource_display_name\x18\f \x01(\tB\x03\xe0A\x03R\x19targetResourceDisplayName:\xda\x01\xeaA\xd6\x01\n" +
-	"=cloudsecuritycompliance.googleapis.com/CloudControlDeployment\x12dorganizations/{organization}/locations/{location}/cloudControlDeployments/{cloud_control_deployment}*\x17cloudControlDeployments2\x16cloudControlDeployment\"\x80\x02\n" +
+	"\x1ctarget_resource_display_name\x18\f \x01(\tB\x03\xe0A\x03R\x19targetResourceDisplayName:\xb6\x02\xeaA\xb2\x02\n" +
+	"=cloudsecuritycompliance.googleapis.com/CloudControlDeployment\x12dorganizations/{organization}/locations/{location}/cloudControlDeployments/{cloud_control_deployment}\x12Zprojects/{project}/locations/{location}/cloudControlDeployments/{cloud_control_deployment}*\x17cloudControlDeployments2\x16cloudControlDeployment\"\x80\x02\n" +
 	"\x14TargetResourceConfig\x12?\n" +
 	"\x18existing_target_resource\x18\x01 \x01(\tB\x03\xe0A\x01H\x00R\x16existingTargetResource\x12\x93\x01\n" +
 	"\x1ftarget_resource_creation_config\x18\x02 \x01(\v2E.google.cloud.cloudsecuritycompliance.v1.TargetResourceCreationConfigB\x03\xe0A\x01H\x00R\x1ctargetResourceCreationConfigB\x11\n" +
@@ -1577,26 +1601,27 @@ const file_google_cloud_cloudsecuritycompliance_v1_deployment_proto_rawDesc = ""
 	"\x14framework_deployment\x18\x01 \x01(\tBB\xe0A\x03\xfaA<\n" +
 	":cloudsecuritycompliance.googleapis.com/FrameworkDeploymentR\x13frameworkDeployment\x12q\n" +
 	"\x13framework_reference\x18\x02 \x01(\v2;.google.cloud.cloudsecuritycompliance.v1.FrameworkReferenceB\x03\xe0A\x01R\x12frameworkReference\x129\n" +
-	"\x16framework_display_name\x18\x03 \x01(\tB\x03\xe0A\x01R\x14frameworkDisplayName*\x9c\x02\n" +
+	"\x16framework_display_name\x18\x03 \x01(\tB\x03\xe0A\x01R\x14frameworkDisplayName*\xbb\x02\n" +
 	"\x0fDeploymentState\x12 \n" +
 	"\x1cDEPLOYMENT_STATE_UNSPECIFIED\x10\x00\x12\x1f\n" +
 	"\x1bDEPLOYMENT_STATE_VALIDATING\x10\x01\x12\x1d\n" +
 	"\x19DEPLOYMENT_STATE_CREATING\x10\x02\x12\x1d\n" +
-	"\x19DEPLOYMENT_STATE_DELETING\x10\x03\x12\x1b\n" +
+	"\x19DEPLOYMENT_STATE_DELETING\x10\x03\x12\x1d\n" +
+	"\x19DEPLOYMENT_STATE_UPDATING\x10\b\x12\x1b\n" +
 	"\x17DEPLOYMENT_STATE_FAILED\x10\x04\x12\x1a\n" +
 	"\x16DEPLOYMENT_STATE_READY\x10\x05\x12'\n" +
 	"#DEPLOYMENT_STATE_PARTIALLY_DEPLOYED\x10\x06\x12&\n" +
-	"\"DEPLOYMENT_STATE_PARTIALLY_DELETED\x10\a2\xfd\r\n" +
+	"\"DEPLOYMENT_STATE_PARTIALLY_DELETED\x10\a2\x88\x11\n" +
 	"\n" +
-	"Deployment\x12\xec\x02\n" +
-	"\x19CreateFrameworkDeployment\x12I.google.cloud.cloudsecuritycompliance.v1.CreateFrameworkDeploymentRequest\x1a\x1d.google.longrunning.Operation\"\xe4\x01\xcaAP\n" +
-	"\x13FrameworkDeployment\x129google.cloud.cloudsecuritycompliance.v1.OperationMetadata\xdaA3parent,framework_deployment,framework_deployment_id\x82\xd3\xe4\x93\x02U:\x14framework_deployment\"=/v1/{parent=organizations/*/locations/*}/frameworkDeployments\x12\xa9\x02\n" +
-	"\x19DeleteFrameworkDeployment\x12I.google.cloud.cloudsecuritycompliance.v1.DeleteFrameworkDeploymentRequest\x1a\x1d.google.longrunning.Operation\"\xa1\x01\xcaAR\n" +
-	"\x15google.protobuf.Empty\x129google.cloud.cloudsecuritycompliance.v1.OperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02?*=/v1/{name=organizations/*/locations/*/frameworkDeployments/*}\x12\xec\x01\n" +
-	"\x16GetFrameworkDeployment\x12F.google.cloud.cloudsecuritycompliance.v1.GetFrameworkDeploymentRequest\x1a<.google.cloud.cloudsecuritycompliance.v1.FrameworkDeployment\"L\xdaA\x04name\x82\xd3\xe4\x93\x02?\x12=/v1/{name=organizations/*/locations/*/frameworkDeployments/*}\x12\xff\x01\n" +
-	"\x18ListFrameworkDeployments\x12H.google.cloud.cloudsecuritycompliance.v1.ListFrameworkDeploymentsRequest\x1aI.google.cloud.cloudsecuritycompliance.v1.ListFrameworkDeploymentsResponse\"N\xdaA\x06parent\x82\xd3\xe4\x93\x02?\x12=/v1/{parent=organizations/*/locations/*}/frameworkDeployments\x12\xf8\x01\n" +
-	"\x19GetCloudControlDeployment\x12I.google.cloud.cloudsecuritycompliance.v1.GetCloudControlDeploymentRequest\x1a?.google.cloud.cloudsecuritycompliance.v1.CloudControlDeployment\"O\xdaA\x04name\x82\xd3\xe4\x93\x02B\x12@/v1/{name=organizations/*/locations/*/cloudControlDeployments/*}\x12\x8b\x02\n" +
-	"\x1bListCloudControlDeployments\x12K.google.cloud.cloudsecuritycompliance.v1.ListCloudControlDeploymentsRequest\x1aL.google.cloud.cloudsecuritycompliance.v1.ListCloudControlDeploymentsResponse\"Q\xdaA\x06parent\x82\xd3\xe4\x93\x02B\x12@/v1/{parent=organizations/*/locations/*}/cloudControlDeployments\x1aZ\xcaA&cloudsecuritycompliance.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xa8\x02\n" +
+	"Deployment\x12\xbf\x03\n" +
+	"\x19CreateFrameworkDeployment\x12I.google.cloud.cloudsecuritycompliance.v1.CreateFrameworkDeploymentRequest\x1a\x1d.google.longrunning.Operation\"\xb7\x02\xcaAP\n" +
+	"\x13FrameworkDeployment\x129google.cloud.cloudsecuritycompliance.v1.OperationMetadata\xdaA3parent,framework_deployment,framework_deployment_id\x82\xd3\xe4\x93\x02\xa7\x01:\x14framework_deploymentZP:\x14framework_deployment\"8/v1/{parent=projects/*/locations/*}/frameworkDeployments\"=/v1/{parent=organizations/*/locations/*}/frameworkDeployments\x12\xe5\x02\n" +
+	"\x19DeleteFrameworkDeployment\x12I.google.cloud.cloudsecuritycompliance.v1.DeleteFrameworkDeploymentRequest\x1a\x1d.google.longrunning.Operation\"\xdd\x01\xcaAR\n" +
+	"\x15google.protobuf.Empty\x129google.cloud.cloudsecuritycompliance.v1.OperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02{Z:*8/v1/{name=projects/*/locations/*/frameworkDeployments/*}*=/v1/{name=organizations/*/locations/*/frameworkDeployments/*}\x12\xa9\x02\n" +
+	"\x16GetFrameworkDeployment\x12F.google.cloud.cloudsecuritycompliance.v1.GetFrameworkDeploymentRequest\x1a<.google.cloud.cloudsecuritycompliance.v1.FrameworkDeployment\"\x88\x01\xdaA\x04name\x82\xd3\xe4\x93\x02{Z:\x128/v1/{name=projects/*/locations/*/frameworkDeployments/*}\x12=/v1/{name=organizations/*/locations/*/frameworkDeployments/*}\x12\xbc\x02\n" +
+	"\x18ListFrameworkDeployments\x12H.google.cloud.cloudsecuritycompliance.v1.ListFrameworkDeploymentsRequest\x1aI.google.cloud.cloudsecuritycompliance.v1.ListFrameworkDeploymentsResponse\"\x8a\x01\xdaA\x06parent\x82\xd3\xe4\x93\x02{Z:\x128/v1/{parent=projects/*/locations/*}/frameworkDeployments\x12=/v1/{parent=organizations/*/locations/*}/frameworkDeployments\x12\xb9\x02\n" +
+	"\x19GetCloudControlDeployment\x12I.google.cloud.cloudsecuritycompliance.v1.GetCloudControlDeploymentRequest\x1a?.google.cloud.cloudsecuritycompliance.v1.CloudControlDeployment\"\x8f\x01\xdaA\x04name\x82\xd3\xe4\x93\x02\x81\x01Z=\x12;/v1/{name=projects/*/locations/*/cloudControlDeployments/*}\x12@/v1/{name=organizations/*/locations/*/cloudControlDeployments/*}\x12\xcc\x02\n" +
+	"\x1bListCloudControlDeployments\x12K.google.cloud.cloudsecuritycompliance.v1.ListCloudControlDeploymentsRequest\x1aL.google.cloud.cloudsecuritycompliance.v1.ListCloudControlDeploymentsResponse\"\x91\x01\xdaA\x06parent\x82\xd3\xe4\x93\x02\x81\x01Z=\x12;/v1/{parent=projects/*/locations/*}/cloudControlDeployments\x12@/v1/{parent=organizations/*/locations/*}/cloudControlDeployments\x1aZ\xcaA&cloudsecuritycompliance.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xa8\x02\n" +
 	"+com.google.cloud.cloudsecuritycompliance.v1B\x0fDeploymentProtoP\x01Zecloud.google.com/go/cloudsecuritycompliance/apiv1/cloudsecuritycompliancepb;cloudsecuritycompliancepb\xaa\x02'Google.Cloud.CloudSecurityCompliance.V1\xca\x02'Google\\Cloud\\CloudSecurityCompliance\\V1\xea\x02*Google::Cloud::CloudSecurityCompliance::V1b\x06proto3"
 
 var (

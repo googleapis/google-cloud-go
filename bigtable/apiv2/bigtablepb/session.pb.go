@@ -51,24 +51,24 @@ const (
 	SessionType_SESSION_TYPE_AUTHORIZED_VIEW   SessionType = 2
 	SessionType_SESSION_TYPE_MATERIALIZED_VIEW SessionType = 3
 	// For internal protocol testing only.
-	SessionType_SESSION_TYPE_TEST SessionType = -1
+	SessionType_SESSION_TYPE_TEST SessionType = 9999
 )
 
 // Enum value maps for SessionType.
 var (
 	SessionType_name = map[int32]string{
-		0:  "SESSION_TYPE_UNSET",
-		1:  "SESSION_TYPE_TABLE",
-		2:  "SESSION_TYPE_AUTHORIZED_VIEW",
-		3:  "SESSION_TYPE_MATERIALIZED_VIEW",
-		-1: "SESSION_TYPE_TEST",
+		0:    "SESSION_TYPE_UNSET",
+		1:    "SESSION_TYPE_TABLE",
+		2:    "SESSION_TYPE_AUTHORIZED_VIEW",
+		3:    "SESSION_TYPE_MATERIALIZED_VIEW",
+		9999: "SESSION_TYPE_TEST",
 	}
 	SessionType_value = map[string]int32{
 		"SESSION_TYPE_UNSET":             0,
 		"SESSION_TYPE_TABLE":             1,
 		"SESSION_TYPE_AUTHORIZED_VIEW":   2,
 		"SESSION_TYPE_MATERIALIZED_VIEW": 3,
-		"SESSION_TYPE_TEST":              -1,
+		"SESSION_TYPE_TEST":              9999,
 	}
 )
 
@@ -3815,13 +3815,13 @@ const file_google_bigtable_v2_session_proto_rawDesc = "" +
 	"\bmetadata\x18\x02 \x03(\v21.google.bigtable.v2.SessionRefreshConfig.MetadataB\x03\xe0A\x03R\bmetadata\x1a<\n" +
 	"\bMetadata\x12\x15\n" +
 	"\x03key\x18\x01 \x01(\tB\x03\xe0A\x03R\x03key\x12\x19\n" +
-	"\x05value\x18\x02 \x01(\fB\x03\xe0A\x03R\x05value*\xa3\x01\n" +
+	"\x05value\x18\x02 \x01(\fB\x03\xe0A\x03R\x05value*\x9b\x01\n" +
 	"\vSessionType\x12\x16\n" +
 	"\x12SESSION_TYPE_UNSET\x10\x00\x12\x16\n" +
 	"\x12SESSION_TYPE_TABLE\x10\x01\x12 \n" +
 	"\x1cSESSION_TYPE_AUTHORIZED_VIEW\x10\x02\x12\"\n" +
-	"\x1eSESSION_TYPE_MATERIALIZED_VIEW\x10\x03\x12\x1e\n" +
-	"\x11SESSION_TYPE_TEST\x10\xff\xff\xff\xff\xff\xff\xff\xff\xff\x01:o\n" +
+	"\x1eSESSION_TYPE_MATERIALIZED_VIEW\x10\x03\x12\x16\n" +
+	"\x11SESSION_TYPE_TEST\x10\x8fN:o\n" +
 	"\x11open_session_type\x12\x1f.google.protobuf.MessageOptions\x18\xaa؝B \x01(\x0e2\x1f.google.bigtable.v2.SessionTypeR\x0fopenSessionType:o\n" +
 	"\x11vrpc_session_type\x12\x1f.google.protobuf.MessageOptions\x18\xd5ݝB \x03(\x0e2\x1f.google.bigtable.v2.SessionTypeR\x0fvrpcSessionType:l\n" +
 	"\x10rpc_session_type\x12\x1e.google.protobuf.MethodOptions\x18\x84\xda\xe4A \x01(\x0e2\x1f.google.bigtable.v2.SessionTypeR\x0erpcSessionTypeB\xb6\x01\n" +

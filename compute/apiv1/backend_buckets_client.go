@@ -24,6 +24,7 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"sort"
 	"time"
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
@@ -43,12 +44,14 @@ var newBackendBucketsClientHook clientHook
 // BackendBucketsCallOptions contains the retry settings for each method of BackendBucketsClient.
 type BackendBucketsCallOptions struct {
 	AddSignedUrlKey       []gax.CallOption
+	AggregatedList        []gax.CallOption
 	Delete                []gax.CallOption
 	DeleteSignedUrlKey    []gax.CallOption
 	Get                   []gax.CallOption
 	GetIamPolicy          []gax.CallOption
 	Insert                []gax.CallOption
 	List                  []gax.CallOption
+	ListUsable            []gax.CallOption
 	Patch                 []gax.CallOption
 	SetEdgeSecurityPolicy []gax.CallOption
 	SetIamPolicy          []gax.CallOption
@@ -60,6 +63,18 @@ func defaultBackendBucketsRESTCallOptions() *BackendBucketsCallOptions {
 	return &BackendBucketsCallOptions{
 		AddSignedUrlKey: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		AggregatedList: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
 		},
 		Delete: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
@@ -106,6 +121,18 @@ func defaultBackendBucketsRESTCallOptions() *BackendBucketsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		ListUsable: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 		Patch: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
@@ -130,12 +157,14 @@ type internalBackendBucketsClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	AddSignedUrlKey(context.Context, *computepb.AddSignedUrlKeyBackendBucketRequest, ...gax.CallOption) (*Operation, error)
+	AggregatedList(context.Context, *computepb.AggregatedListBackendBucketsRequest, ...gax.CallOption) *BackendBucketsScopedListPairIterator
 	Delete(context.Context, *computepb.DeleteBackendBucketRequest, ...gax.CallOption) (*Operation, error)
 	DeleteSignedUrlKey(context.Context, *computepb.DeleteSignedUrlKeyBackendBucketRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetBackendBucketRequest, ...gax.CallOption) (*computepb.BackendBucket, error)
 	GetIamPolicy(context.Context, *computepb.GetIamPolicyBackendBucketRequest, ...gax.CallOption) (*computepb.Policy, error)
 	Insert(context.Context, *computepb.InsertBackendBucketRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListBackendBucketsRequest, ...gax.CallOption) *BackendBucketIterator
+	ListUsable(context.Context, *computepb.ListUsableBackendBucketsRequest, ...gax.CallOption) *BackendBucketIterator
 	Patch(context.Context, *computepb.PatchBackendBucketRequest, ...gax.CallOption) (*Operation, error)
 	SetEdgeSecurityPolicy(context.Context, *computepb.SetEdgeSecurityPolicyBackendBucketRequest, ...gax.CallOption) (*Operation, error)
 	SetIamPolicy(context.Context, *computepb.SetIamPolicyBackendBucketRequest, ...gax.CallOption) (*computepb.Policy, error)
@@ -184,6 +213,15 @@ func (c *BackendBucketsClient) AddSignedUrlKey(ctx context.Context, req *compute
 	return c.internalClient.AddSignedUrlKey(ctx, req, opts...)
 }
 
+// AggregatedList retrieves the list of all BackendBucket resources, regional and global,
+// available to the specified project.
+//
+// To prevent failure, it is recommended that you set the
+// returnPartialSuccess parameter to true.
+func (c *BackendBucketsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListBackendBucketsRequest, opts ...gax.CallOption) *BackendBucketsScopedListPairIterator {
+	return c.internalClient.AggregatedList(ctx, req, opts...)
+}
+
 // Delete deletes the specified BackendBucket resource.
 func (c *BackendBucketsClient) Delete(ctx context.Context, req *computepb.DeleteBackendBucketRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
@@ -216,6 +254,11 @@ func (c *BackendBucketsClient) Insert(ctx context.Context, req *computepb.Insert
 // project.
 func (c *BackendBucketsClient) List(ctx context.Context, req *computepb.ListBackendBucketsRequest, opts ...gax.CallOption) *BackendBucketIterator {
 	return c.internalClient.List(ctx, req, opts...)
+}
+
+// ListUsable retrieves a list of all usable backend buckets in the specified project.
+func (c *BackendBucketsClient) ListUsable(ctx context.Context, req *computepb.ListUsableBackendBucketsRequest, opts ...gax.CallOption) *BackendBucketIterator {
+	return c.internalClient.ListUsable(ctx, req, opts...)
 }
 
 // Patch updates the specified BackendBucket resource with the data included in the
@@ -310,12 +353,14 @@ func NewBackendBucketsRESTClient(ctx context.Context, opts ...option.ClientOptio
 		)
 
 		callOpts.AddSignedUrlKey = append(callOpts.AddSignedUrlKey, gax.WithClientMetrics(metrics))
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientMetrics(metrics))
 		callOpts.Delete = append(callOpts.Delete, gax.WithClientMetrics(metrics))
 		callOpts.DeleteSignedUrlKey = append(callOpts.DeleteSignedUrlKey, gax.WithClientMetrics(metrics))
 		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
 		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
 		callOpts.Insert = append(callOpts.Insert, gax.WithClientMetrics(metrics))
 		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+		callOpts.ListUsable = append(callOpts.ListUsable, gax.WithClientMetrics(metrics))
 		callOpts.Patch = append(callOpts.Patch, gax.WithClientMetrics(metrics))
 		callOpts.SetEdgeSecurityPolicy = append(callOpts.SetEdgeSecurityPolicy, gax.WithClientMetrics(metrics))
 		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
@@ -449,6 +494,109 @@ func (c *backendBucketsRESTClient) AddSignedUrlKey(ctx context.Context, req *com
 		},
 	}
 	return op, nil
+}
+
+// AggregatedList retrieves the list of all BackendBucket resources, regional and global,
+// available to the specified project.
+//
+// To prevent failure, it is recommended that you set the
+// returnPartialSuccess parameter to true.
+func (c *backendBucketsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListBackendBucketsRequest, opts ...gax.CallOption) *BackendBucketsScopedListPairIterator {
+	it := &BackendBucketsScopedListPairIterator{}
+	req = proto.Clone(req).(*computepb.AggregatedListBackendBucketsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]BackendBucketsScopedListPair, string, error) {
+		resp := &computepb.BackendBucketAggregatedList{}
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
+		}
+		if pageSize > math.MaxInt32 {
+			req.MaxResults = proto.Uint32(uint32(math.MaxInt32))
+		} else if pageSize != 0 {
+			req.MaxResults = proto.Uint32(uint32(pageSize))
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/backendBuckets", req.GetProject())
+
+		params := url.Values{}
+		if req != nil && req.Filter != nil {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req != nil && req.IncludeAllScopes != nil {
+			params.Add("includeAllScopes", fmt.Sprintf("%v", req.GetIncludeAllScopes()))
+		}
+		if req != nil && req.MaxResults != nil {
+			params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
+		}
+		if req != nil && req.OrderBy != nil {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req != nil && req.PageToken != nil {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req != nil && req.ReturnPartialSuccess != nil {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+		if req != nil && req.ServiceProjectNumber != nil {
+			params.Add("serviceProjectNumber", fmt.Sprintf("%v", req.GetServiceProjectNumber()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "AggregatedList")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+
+		elems := make([]BackendBucketsScopedListPair, 0, len(resp.GetItems()))
+		for k, v := range resp.GetItems() {
+			elems = append(elems, BackendBucketsScopedListPair{k, v})
+		}
+		sort.Slice(elems, func(i, j int) bool { return elems[i].Key < elems[j].Key })
+
+		return elems, resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetMaxResults())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // Delete deletes the specified BackendBucket resource.
@@ -826,6 +974,92 @@ func (c *backendBucketsRESTClient) List(ctx context.Context, req *computepb.List
 			httpReq.Header = headers
 
 			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "List")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetItems(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetMaxResults())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ListUsable retrieves a list of all usable backend buckets in the specified project.
+func (c *backendBucketsRESTClient) ListUsable(ctx context.Context, req *computepb.ListUsableBackendBucketsRequest, opts ...gax.CallOption) *BackendBucketIterator {
+	it := &BackendBucketIterator{}
+	req = proto.Clone(req).(*computepb.ListUsableBackendBucketsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.BackendBucket, string, error) {
+		resp := &computepb.BackendBucketListUsable{}
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
+		}
+		if pageSize > math.MaxInt32 {
+			req.MaxResults = proto.Uint32(uint32(math.MaxInt32))
+		} else if pageSize != 0 {
+			req.MaxResults = proto.Uint32(uint32(pageSize))
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendBuckets/listUsable", req.GetProject())
+
+		params := url.Values{}
+		if req != nil && req.Filter != nil {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req != nil && req.MaxResults != nil {
+			params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
+		}
+		if req != nil && req.OrderBy != nil {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req != nil && req.PageToken != nil {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req != nil && req.ReturnPartialSuccess != nil {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListUsable")
 			if err != nil {
 				return err
 			}

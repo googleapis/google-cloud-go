@@ -64,7 +64,11 @@ type CommitResponse struct {
 	// in response to requests that included a `RoutingHint` field, but may also
 	// be obtained by explicit location-fetching RPCs which may be added in the
 	// future.
-	CacheUpdate   *CacheUpdate `protobuf:"bytes,6,opt,name=cache_update,json=cacheUpdate,proto3" json:"cache_update,omitempty"`
+	CacheUpdate *CacheUpdate `protobuf:"bytes,6,opt,name=cache_update,json=cacheUpdate,proto3" json:"cache_update,omitempty"`
+	// The isolation level used for the read-write transaction.
+	IsolationLevel TransactionOptions_IsolationLevel `protobuf:"varint,7,opt,name=isolation_level,json=isolationLevel,proto3,enum=google.spanner.v1.TransactionOptions_IsolationLevel" json:"isolation_level,omitempty"`
+	// The read lock mode used for the read-write transaction.
+	ReadLockMode  TransactionOptions_ReadWrite_ReadLockMode `protobuf:"varint,8,opt,name=read_lock_mode,json=readLockMode,proto3,enum=google.spanner.v1.TransactionOptions_ReadWrite_ReadLockMode" json:"read_lock_mode,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -143,6 +147,20 @@ func (x *CommitResponse) GetCacheUpdate() *CacheUpdate {
 	return nil
 }
 
+func (x *CommitResponse) GetIsolationLevel() TransactionOptions_IsolationLevel {
+	if x != nil {
+		return x.IsolationLevel
+	}
+	return TransactionOptions_ISOLATION_LEVEL_UNSPECIFIED
+}
+
+func (x *CommitResponse) GetReadLockMode() TransactionOptions_ReadWrite_ReadLockMode {
+	if x != nil {
+		return x.ReadLockMode
+	}
+	return TransactionOptions_ReadWrite_READ_LOCK_MODE_UNSPECIFIED
+}
+
 type isCommitResponse_MultiplexedSessionRetry interface {
 	isCommitResponse_MultiplexedSessionRetry()
 }
@@ -211,13 +229,15 @@ var File_google_spanner_v1_commit_response_proto protoreflect.FileDescriptor
 
 const file_google_spanner_v1_commit_response_proto_rawDesc = "" +
 	"\n" +
-	"'google/spanner/v1/commit_response.proto\x12\x11google.spanner.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/spanner/v1/location.proto\x1a#google/spanner/v1/transaction.proto\"\xed\x03\n" +
+	"'google/spanner/v1/commit_response.proto\x12\x11google.spanner.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/spanner/v1/location.proto\x1a#google/spanner/v1/transaction.proto\"\xb0\x05\n" +
 	"\x0eCommitResponse\x12E\n" +
 	"\x10commit_timestamp\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\x0fcommitTimestamp\x12P\n" +
 	"\fcommit_stats\x18\x02 \x01(\v2-.google.spanner.v1.CommitResponse.CommitStatsR\vcommitStats\x12^\n" +
 	"\x0fprecommit_token\x18\x04 \x01(\v23.google.spanner.v1.MultiplexedSessionPrecommitTokenH\x00R\x0eprecommitToken\x12I\n" +
 	"\x12snapshot_timestamp\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\x11snapshotTimestamp\x12F\n" +
-	"\fcache_update\x18\x06 \x01(\v2\x1e.google.spanner.v1.CacheUpdateB\x03\xe0A\x01R\vcacheUpdate\x1a4\n" +
+	"\fcache_update\x18\x06 \x01(\v2\x1e.google.spanner.v1.CacheUpdateB\x03\xe0A\x01R\vcacheUpdate\x12]\n" +
+	"\x0fisolation_level\x18\a \x01(\x0e24.google.spanner.v1.TransactionOptions.IsolationLevelR\x0eisolationLevel\x12b\n" +
+	"\x0eread_lock_mode\x18\b \x01(\x0e2<.google.spanner.v1.TransactionOptions.ReadWrite.ReadLockModeR\freadLockMode\x1a4\n" +
 	"\vCommitStats\x12%\n" +
 	"\x0emutation_count\x18\x01 \x01(\x03R\rmutationCountB\x19\n" +
 	"\x17MultiplexedSessionRetryB\xb6\x01\n" +
@@ -237,11 +257,13 @@ func file_google_spanner_v1_commit_response_proto_rawDescGZIP() []byte {
 
 var file_google_spanner_v1_commit_response_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_google_spanner_v1_commit_response_proto_goTypes = []any{
-	(*CommitResponse)(nil),                   // 0: google.spanner.v1.CommitResponse
-	(*CommitResponse_CommitStats)(nil),       // 1: google.spanner.v1.CommitResponse.CommitStats
-	(*timestamppb.Timestamp)(nil),            // 2: google.protobuf.Timestamp
-	(*MultiplexedSessionPrecommitToken)(nil), // 3: google.spanner.v1.MultiplexedSessionPrecommitToken
-	(*CacheUpdate)(nil),                      // 4: google.spanner.v1.CacheUpdate
+	(*CommitResponse)(nil),                         // 0: google.spanner.v1.CommitResponse
+	(*CommitResponse_CommitStats)(nil),             // 1: google.spanner.v1.CommitResponse.CommitStats
+	(*timestamppb.Timestamp)(nil),                  // 2: google.protobuf.Timestamp
+	(*MultiplexedSessionPrecommitToken)(nil),       // 3: google.spanner.v1.MultiplexedSessionPrecommitToken
+	(*CacheUpdate)(nil),                            // 4: google.spanner.v1.CacheUpdate
+	(TransactionOptions_IsolationLevel)(0),         // 5: google.spanner.v1.TransactionOptions.IsolationLevel
+	(TransactionOptions_ReadWrite_ReadLockMode)(0), // 6: google.spanner.v1.TransactionOptions.ReadWrite.ReadLockMode
 }
 var file_google_spanner_v1_commit_response_proto_depIdxs = []int32{
 	2, // 0: google.spanner.v1.CommitResponse.commit_timestamp:type_name -> google.protobuf.Timestamp
@@ -249,11 +271,13 @@ var file_google_spanner_v1_commit_response_proto_depIdxs = []int32{
 	3, // 2: google.spanner.v1.CommitResponse.precommit_token:type_name -> google.spanner.v1.MultiplexedSessionPrecommitToken
 	2, // 3: google.spanner.v1.CommitResponse.snapshot_timestamp:type_name -> google.protobuf.Timestamp
 	4, // 4: google.spanner.v1.CommitResponse.cache_update:type_name -> google.spanner.v1.CacheUpdate
-	5, // [5:5] is the sub-list for method output_type
-	5, // [5:5] is the sub-list for method input_type
-	5, // [5:5] is the sub-list for extension type_name
-	5, // [5:5] is the sub-list for extension extendee
-	0, // [0:5] is the sub-list for field type_name
+	5, // 5: google.spanner.v1.CommitResponse.isolation_level:type_name -> google.spanner.v1.TransactionOptions.IsolationLevel
+	6, // 6: google.spanner.v1.CommitResponse.read_lock_mode:type_name -> google.spanner.v1.TransactionOptions.ReadWrite.ReadLockMode
+	7, // [7:7] is the sub-list for method output_type
+	7, // [7:7] is the sub-list for method input_type
+	7, // [7:7] is the sub-list for extension type_name
+	7, // [7:7] is the sub-list for extension extendee
+	0, // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_google_spanner_v1_commit_response_proto_init() }
