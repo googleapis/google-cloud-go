@@ -149,13 +149,13 @@ func (l *lexer) lexIdent() token {
 		l.pos++
 	}
 	val := l.input[start:l.pos]
-	
+
 	// Check if it's an operator
 	switch val {
 	case "AND", "OR", "NOT":
 		return token{typ: tokOp, val: val}
 	}
-	
+
 	return token{typ: tokIdent, val: val}
 }
 
@@ -202,7 +202,7 @@ func (p *parser) parseOr() (ASTNode, error) {
 		right, err := p.parseAnd()
 		if err != nil {
 			return nil, err
-        }
+		}
 		left = &opNode{op: "OR", left: left, right: right}
 	}
 	return left, nil
