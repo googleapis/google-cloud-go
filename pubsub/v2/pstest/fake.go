@@ -37,6 +37,7 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	pb "cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
+	"cloud.google.com/go/internal/filter"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -926,7 +927,7 @@ type subscription struct {
 	streams         []*stream
 	done            chan struct{}
 	timeNowFunc     func() time.Time
-	filter          astNode
+	filter          filter.ASTNode
 }
 
 func newSubscription(t *topic, mu *sync.Mutex, timeNowFunc func() time.Time, deadLetterTopic *topic, ps *pb.Subscription) *subscription {
@@ -1197,7 +1198,7 @@ func orderMsgs(msgs map[string]*message, enableMessageOrdering bool) map[string]
 	return result
 }
 
-func filterMsgs(msgs map[string]*message, filter astNode) {
+func filterMsgs(msgs map[string]*message, filter filter.ASTNode) {
 	if filter == nil {
 		return
 	}
