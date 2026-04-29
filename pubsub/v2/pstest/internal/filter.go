@@ -369,7 +369,7 @@ func Evaluate(node ASTNode, attrs map[string]string) bool {
 				return false
 			}
 			v, exists := attrs[key]
-			return exists && v != valNode.val
+			return !exists || v != valNode.val
 		}
 	case *funcNode:
 		if n.name == hasPrefixStr {

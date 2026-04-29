@@ -111,7 +111,7 @@ func Test_filterByAttrs(t *testing.T) {
 
 		{
 			filter: "attributes.name != \"com\"",
-			want:   []int{2, 3, 5, 6, 7, 13},
+			want:   []int{2, 3, 5, 6, 7, 8, 10, 11, 13},
 		},
 		{
 			filter: "attributes.name = \"contains\\\"quote\"",
