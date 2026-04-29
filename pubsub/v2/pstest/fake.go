@@ -37,7 +37,7 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	pb "cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
-	"cloud.google.com/go/internal/filter"
+	"cloud.google.com/go/pubsub/v2/pstest/internal/filter"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

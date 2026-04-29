@@ -15,7 +15,7 @@
 package pstest
 
 import (
-	"cloud.google.com/go/internal/filter"
+	"cloud.google.com/go/pubsub/v2/pstest/internal/filter"
 )
 
 const (
