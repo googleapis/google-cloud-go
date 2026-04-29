@@ -134,7 +134,7 @@ jobs:
     # review, even if they don't block the PR.
     - name: Add breaking change label
       if: ${{ steps.detect.outputs.breaking_change_found == 'true' && !github.event.pull_request.head.repo.fork }}
-      uses: actions/github-script@v8
+      uses: actions/github-script@v9
       with:
         script: |
           github.rest.issues.addLabels({
@@ -150,7 +150,7 @@ jobs:
     # the failed presubmit check is the primary signal.
     - name: Post breaking change details as a comment
       if: ${{ steps.ga_check.outcome == 'success' && !github.event.pull_request.head.repo.fork }}
-      uses: actions/github-script@v8
+      uses: actions/github-script@v9
       with:
         script: |
           const fs = require('fs');
