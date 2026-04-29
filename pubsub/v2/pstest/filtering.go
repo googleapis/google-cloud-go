@@ -15,7 +15,7 @@
 package pstest
 
 import (
-	"cloud.google.com/go/pubsub/v2/pstest/internal/filter"
+	filter "cloud.google.com/go/pubsub/v2/pstest/internal"
 )
 
 const (
@@ -24,8 +24,8 @@ const (
 )
 
 // ValidateFilter validates if the filter string is parsable.
-func ValidateFilter(filter string) error {
-	_, err := parseFilter(filter)
+func ValidateFilter(f string) error {
+	_, err := parseFilter(f)
 	return err
 }
 
@@ -33,21 +33,3 @@ func ValidateFilter(filter string) error {
 func parseFilter(filterStr string) (filter.ASTNode, error) {
 	return filter.ParseFilter(filterStr)
 }
-
-// filterByAttrs efficiently deletes unmatched items from the map.
-func filterByAttrs[T map[K]U, U any, K comparable](items T, f filter.ASTNode, getAttrs func(U) map[string]string) {
-	if f == nil {
-		return
-	}
-	for key, item := range items {
-		attrs := getAttrs(item)
-		if !filter.Evaluate(f, attrs) {
-			delete(items, key)
-		}
-	}
-}
-
-
-
-
-

@@ -37,7 +37,7 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	pb "cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
-	"cloud.google.com/go/pubsub/v2/pstest/internal/filter"
+	filter "cloud.google.com/go/pubsub/v2/pstest/internal"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -578,11 +578,11 @@ func (s *GServer) CreateSubscription(_ context.Context, ps *pb.Subscription) (*p
 
 	sub := newSubscription(top, &s.mu, s.now, deadLetterTopic, ps)
 	if ps.Filter != "" {
-		filter, err := parseFilter(ps.Filter)
+		f, err := parseFilter(ps.Filter)
 		if err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "bad filter: %v", err)
 		}
-		sub.filter = filter
+		sub.filter = f
 	}
 
 	top.subs[ps.Name] = sub
@@ -747,11 +747,11 @@ func (s *GServer) UpdateSubscription(_ context.Context, req *pb.UpdateSubscripti
 			sub.proto.RetryPolicy = req.Subscription.RetryPolicy
 
 		case "filter":
-			filter, err := parseFilter(req.Subscription.Filter)
+			f, err := parseFilter(req.Subscription.Filter)
 			if err != nil {
 				return nil, status.Errorf(codes.InvalidArgument, "bad filter: %v", err)
 			}
-			sub.filter = filter
+			sub.filter = f
 			sub.proto.Filter = req.Subscription.Filter
 
 		case "enable_exactly_once_delivery":
@@ -1198,14 +1198,16 @@ func orderMsgs(msgs map[string]*message, enableMessageOrdering bool) map[string]
 	return result
 }
 
-func filterMsgs(msgs map[string]*message, filter filter.ASTNode) {
-	if filter == nil {
+func filterMsgs(msgs map[string]*message, f filter.ASTNode) {
+	if f == nil {
 		return
 	}
 
-	filterByAttrs(msgs, filter, func(m *message) map[string]string {
-		return m.proto.Message.Attributes
-	})
+	for id, m := range msgs {
+		if !filter.Evaluate(f, m.proto.Message.Attributes) {
+			delete(msgs, id)
+		}
+	}
 }
 
 func (s *subscription) deliver() {

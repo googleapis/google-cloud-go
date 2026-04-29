@@ -57,6 +57,7 @@ const (
 	tokLParen
 	tokRParen
 	tokComma
+	tokInvalid
 )
 
 type token struct {
@@ -116,16 +117,26 @@ func (l *lexer) nextToken() token {
 
 	// Handle invalid character or fallback
 	l.pos++
-	return token{typ: tokEOF}
+	return token{typ: tokInvalid, val: string(ch)}
 }
 
 func (l *lexer) lexString() token {
 	l.pos++ // skip opening quote
 	start := l.pos
-	for l.pos < len(l.input) && l.input[l.pos] != '"' {
+	for l.pos < len(l.input) {
+		if l.input[l.pos] == '\\' && l.pos+1 < len(l.input) {
+			l.pos += 2
+			continue
+		}
+		if l.input[l.pos] == '"' {
+			break
+		}
 		l.pos++
 	}
 	val := l.input[start:l.pos]
+	// Simple unescape for \" and \\
+	val = strings.ReplaceAll(val, "\\\"", "\"")
+	val = strings.ReplaceAll(val, "\\\\", "\\")
 	if l.pos < len(l.input) {
 		l.pos++ // skip closing quote
 	}
@@ -257,6 +268,9 @@ func (p *parser) parsePrimary() (ASTNode, error) {
 				}
 			}
 			p.next() // skip ')'
+			if name == hasPrefixStr && len(args) != 2 {
+				return nil, fmt.Errorf("hasPrefix requires exactly 2 arguments")
+			}
 			return &funcNode{name: name, args: args}, nil
 		}
 		if p.curr.typ == tokOp && (p.curr.val == ":" || p.curr.val == "=" || p.curr.val == "!=") {
@@ -281,6 +295,8 @@ func (p *parser) parsePrimary() (ASTNode, error) {
 		return &stringNode{val: val}, nil
 	case tokEOF:
 		return nil, fmt.Errorf("unexpected EOF")
+	case tokInvalid:
+		return nil, fmt.Errorf("invalid character: %s", p.curr.val)
 	default:
 		return nil, fmt.Errorf("unexpected token: %v", p.curr)
 	}
@@ -353,7 +369,7 @@ func Evaluate(node ASTNode, attrs map[string]string) bool {
 				return false
 			}
 			v, exists := attrs[key]
-			return !exists || v != valNode.val
+			return exists && v != valNode.val
 		}
 	case *funcNode:
 		if n.name == hasPrefixStr {
