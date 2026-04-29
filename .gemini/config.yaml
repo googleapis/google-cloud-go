@@ -2,8 +2,6 @@
 # More info:
 # https://developers.google.com/gemini-code-assist/docs/customize-gemini-behavior-github
 have_fun: false
-ignore_patterns:
-  - *.pb.go
 memory_config:
   disabled: false
 code_review:
