@@ -15,9 +15,8 @@
 package pstest
 
 import (
-	"go.einride.tech/aip/filtering"
-	"go.einride.tech/aip/filtering/exprs"
-	expr "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
+	"fmt"
+	"strings"
 )
 
 const (
@@ -31,180 +30,371 @@ func ValidateFilter(filter string) error {
 	return err
 }
 
-// parseFilter validates a filter string and returns a Filter.
-func parseFilter(filter string) (filtering.Filter, error) {
-	request := request{filter}
-
-	// Declare the functions and identifiers that are allowed in the filter.
-	declarations, err := filtering.NewDeclarations(
-		filtering.DeclareFunction(
-			hasPrefixStr,
-			filtering.NewFunctionOverload(hasPrefixStr,
-				filtering.TypeBool,
-				filtering.TypeString,
-				filtering.TypeString,
-			),
-		),
-		filtering.DeclareIdent(
-			attributesStr,
-			filtering.TypeMap(
-				filtering.TypeString,
-				filtering.TypeString,
-			),
-		),
-		filtering.DeclareStandardFunctions(),
-	)
-	if err != nil {
-		return filtering.Filter{}, err
-	}
-	return filtering.ParseFilter(request, declarations)
+// parseFilter validates a filter string and returns an AST node.
+func parseFilter(filter string) (astNode, error) {
+	l := &lexer{input: filter}
+	p := &parser{lexer: l}
+	return p.parse()
 }
 
-// request implements filtering.Request.
-type request struct {
-	filter string
-}
-
-func (r request) GetFilter() string {
-	return r.filter
-}
-
-type messageAttrs map[string]string
-
-// hasKey returns true if the attribute key exists.
-func (a messageAttrs) hasKey(key string) bool {
-	_, ok := a[key]
-	return ok
-}
-
-// hasExpectedValue returns true if the attribute key exists and has the given value.
-func (a messageAttrs) hasExpectedValue(key, value string) bool {
-	v, ok := a[key]
-	return ok && v == value
-}
-
-// hasPrefix returns true if the attribute key exists and has the given prefix.
-func (a messageAttrs) hasPrefix(key, prefix string) bool {
-	v, ok := a[key]
-	if !ok {
-		return false
+// filterByAttrs efficiently deletes unmatched items from the map.
+func filterByAttrs[T map[K]U, U any, K comparable](items T, filter astNode, getAttrs func(U) map[string]string) {
+	if filter == nil {
+		return
 	}
-	return len(v) >= len(prefix) && v[:len(prefix)] == prefix
-}
-
-// atomicMatch matches expressions that are not dependent on child expressions.
-func atomicMatch(attributes messageAttrs, currExpr *expr.Expr) bool {
-	var key, value string
-	// Match "=" function.
-	// Example: `attributes.name = "com"`
-	matcher := exprs.MatchFunction(
-		filtering.FunctionEquals,
-		exprs.MatchAnyMember(exprs.MatchText(attributesStr), &key),
-		exprs.MatchAnyString(&value),
-	)
-	if matcher(currExpr) {
-		return attributes.hasExpectedValue(key, value)
-	}
-
-	// Match "!=" function.
-	// Example: `attributes.name != "com"`
-	matcher = exprs.MatchFunction(
-		filtering.FunctionNotEquals,
-		exprs.MatchAnyMember(exprs.MatchText(attributesStr), &key),
-		exprs.MatchAnyString(&value),
-	)
-	if matcher(currExpr) {
-		return !attributes.hasExpectedValue(key, value)
-	}
-
-	// Match ":" function.
-	// Example: `attributes:name`
-	matcher = exprs.MatchFunction(
-		filtering.FunctionHas,
-		exprs.MatchText(attributesStr),
-		exprs.MatchAnyString(&key),
-	)
-	if matcher(currExpr) {
-		return attributes.hasKey(key)
-	}
-
-	// Match "hasPrefix" function.
-	// Example: `hasPrefix(attributes.name, "co")`
-	matcher = exprs.MatchFunction(
-		"hasPrefix",
-		exprs.MatchAnyMember(exprs.MatchText(attributesStr), &key),
-		exprs.MatchAnyString(&value),
-	)
-	if matcher(currExpr) {
-		return attributes.hasPrefix(key, value)
-	}
-
-	return true
-}
-
-// compositeMatch matches expressions that are dependent on child expressions.
-func compositeMatch(attributes messageAttrs, currExpr *expr.Expr) bool {
-	// Match "NOT" function.
-	// Example: `NOT attributes:name`
-	var e1, e2 *expr.Expr
-	matcher := exprs.MatchFunction(
-		filtering.FunctionNot,
-		exprs.MatchAny(&e1),
-	)
-	if matcher(currExpr) {
-		return !match(attributes, e1)
-	}
-
-	// Match "AND" function.
-	// Example: `attributes:lang = "en" AND attributes:name`
-	matcher = exprs.MatchFunction(
-		filtering.FunctionAnd,
-		exprs.MatchAny(&e1),
-		exprs.MatchAny(&e2),
-	)
-	if matcher(currExpr) {
-		return match(attributes, e1) && match(attributes, e2)
-	}
-
-	// Match "OR" function.
-	// Example: `attributes:lang = "en" OR attributes:name`
-	matcher = exprs.MatchFunction(
-		filtering.FunctionOr,
-		exprs.MatchAny(&e1),
-		exprs.MatchAny(&e2),
-	)
-	if matcher(currExpr) {
-		return match(attributes, e1) || match(attributes, e2)
-	}
-
-	return true
-}
-
-func match(attributes messageAttrs, currExpr *expr.Expr) bool {
-	// atomicMatch first to avoid deep recursion.
-	return atomicMatch(attributes, currExpr) && compositeMatch(attributes, currExpr)
-}
-
-// getAttrsFunc is a function that returns attributes from an item with any type.
-type getAttrsFunc[T any] func(T) messageAttrs
-
-// Make it generic so it's easy to be tested.
-//
-// Accept a map as input to efficiently delete unmatched items.
-func filterByAttrs[T map[K]U, U any, K comparable](items T, filter *filtering.Filter, getAttrs getAttrsFunc[U]) {
 	for key, item := range items {
-		walkFn := func(currExpr, parentExpr *expr.Expr) bool {
-			_, ok := currExpr.ExprKind.(*expr.Expr_CallExpr) // only match call expressions
-			if !ok {
-				return true
-			}
-			attrs := getAttrs(item)
-			result := match(attrs, currExpr)
-			if !result && parentExpr == nil {
-				delete(items, key)
-			}
-			return result
+		attrs := getAttrs(item)
+		if !evaluate(filter, attrs) {
+			delete(items, key)
 		}
-		filtering.Walk(walkFn, filter.CheckedExpr.Expr)
 	}
 }
+
+
+type tokenType int
+
+const (
+	tokEOF tokenType = iota
+	tokIdent
+	tokOp
+	tokString
+	tokLParen
+	tokRParen
+	tokComma
+)
+
+type token struct {
+	typ tokenType
+	val string
+}
+
+type lexer struct {
+	input string
+	pos   int
+}
+
+func (l *lexer) nextToken() token {
+	for l.pos < len(l.input) && isWhitespace(l.input[l.pos]) {
+		l.pos++
+	}
+
+	if l.pos >= len(l.input) {
+		return token{typ: tokEOF}
+	}
+
+	ch := l.input[l.pos]
+
+	switch ch {
+	case '(':
+		l.pos++
+		return token{typ: tokLParen, val: "("}
+	case ')':
+		l.pos++
+		return token{typ: tokRParen, val: ")"}
+	case ',':
+		l.pos++
+		return token{typ: tokComma, val: ","}
+	case ':':
+		l.pos++
+		return token{typ: tokOp, val: ":"}
+	case '=':
+		l.pos++
+		return token{typ: tokOp, val: "="}
+	case '!':
+		if l.pos+1 < len(l.input) && l.input[l.pos+1] == '=' {
+			l.pos += 2
+			return token{typ: tokOp, val: "!="}
+		}
+	case '-':
+		l.pos++
+		return token{typ: tokOp, val: "-"}
+	}
+
+	if ch == '"' {
+		return l.lexString()
+	}
+
+	if isAlphaNumeric(ch) || ch == '_' || ch == '-' || ch == '.' {
+		return l.lexIdent()
+	}
+
+	// Handle invalid character or fallback
+	l.pos++
+	return token{typ: tokEOF} // Or return an error token
+}
+
+func (l *lexer) lexString() token {
+	l.pos++ // skip opening quote
+	start := l.pos
+	for l.pos < len(l.input) && l.input[l.pos] != '"' {
+		// Handle escapes here if needed
+		l.pos++
+	}
+	val := l.input[start:l.pos]
+	if l.pos < len(l.input) {
+		l.pos++ // skip closing quote
+	}
+	return token{typ: tokString, val: val}
+}
+
+func (l *lexer) lexIdent() token {
+	start := l.pos
+	for l.pos < len(l.input) && (isAlphaNumeric(l.input[l.pos]) || l.input[l.pos] == '_' || l.input[l.pos] == '-' || l.input[l.pos] == '.') {
+		l.pos++
+	}
+	val := l.input[start:l.pos]
+	
+	// Check if it's an operator
+	switch val {
+	case "AND", "OR", "NOT":
+		return token{typ: tokOp, val: val}
+	}
+	
+	return token{typ: tokIdent, val: val}
+}
+
+func isWhitespace(ch byte) bool {
+	return ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r'
+}
+
+func isAlphaNumeric(ch byte) bool {
+	return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || (ch >= '0' && ch <= '9')
+}
+
+type astNode interface {
+}
+
+type identNode struct {
+	name string
+}
+
+type stringNode struct {
+	val string
+}
+
+type opNode struct {
+	op    string // ":", "=", "!=", "AND", "OR", "NOT", "-"
+	left  astNode
+	right astNode
+}
+
+type funcNode struct {
+	name string
+	args []astNode
+}
+
+type parser struct {
+	lexer *lexer
+	curr  token
+}
+
+func (p *parser) next() {
+	p.curr = p.lexer.nextToken()
+}
+
+func (p *parser) parse() (astNode, error) {
+	p.next()
+	node, err := p.parseExpr()
+	if err != nil {
+		return nil, err
+	}
+	if p.curr.typ != tokEOF {
+		return nil, fmt.Errorf("unexpected trailing tokens: %v", p.curr)
+	}
+	return node, nil
+}
+
+func (p *parser) parseExpr() (astNode, error) {
+	return p.parseOr()
+}
+
+func (p *parser) parseOr() (astNode, error) {
+	left, err := p.parseAnd()
+	if err != nil {
+		return nil, err
+	}
+	for p.curr.typ == tokOp && p.curr.val == "OR" {
+		p.next()
+		right, err := p.parseAnd()
+		if err != nil {
+			return nil, err
+        }
+		left = &opNode{op: "OR", left: left, right: right}
+	}
+	return left, nil
+}
+
+func (p *parser) parseAnd() (astNode, error) {
+	left, err := p.parseUnary()
+	if err != nil {
+		return nil, err
+	}
+	for p.curr.typ == tokOp && p.curr.val == "AND" {
+		p.next()
+		right, err := p.parseUnary()
+		if err != nil {
+			return nil, err
+		}
+		left = &opNode{op: "AND", left: left, right: right}
+	}
+	return left, nil
+}
+
+func (p *parser) parseUnary() (astNode, error) {
+	if p.curr.typ == tokOp && (p.curr.val == "NOT" || p.curr.val == "-") {
+		op := p.curr.val
+		p.next()
+		expr, err := p.parseUnary()
+		if err != nil {
+			return nil, err
+		}
+		return &opNode{op: op, left: expr}, nil
+	}
+	return p.parsePrimary()
+}
+
+func (p *parser) parsePrimary() (astNode, error) {
+	switch p.curr.typ {
+	case tokLParen:
+		p.next()
+		expr, err := p.parseExpr()
+		if err != nil {
+			return nil, err
+		}
+		if p.curr.typ != tokRParen {
+			return nil, fmt.Errorf("expected ')'")
+		}
+		p.next()
+		return expr, nil
+	case tokIdent:
+		name := p.curr.val
+		p.next()
+		if p.curr.typ == tokLParen {
+			// Function call
+			p.next()
+			var args []astNode
+			for p.curr.typ != tokRParen {
+				arg, err := p.parseExpr()
+				if err != nil {
+					return nil, err
+				}
+				args = append(args, arg)
+				if p.curr.typ == tokComma {
+					p.next()
+				}
+			}
+			p.next() // skip ')'
+			return &funcNode{name: name, args: args}, nil
+		}
+		if p.curr.typ == tokOp && (p.curr.val == ":" || p.curr.val == "=" || p.curr.val == "!=") {
+			op := p.curr.val
+			p.next()
+			var right astNode
+			if p.curr.typ == tokString {
+				right = &stringNode{val: p.curr.val}
+				p.next()
+			} else if p.curr.typ == tokIdent {
+				right = &identNode{name: p.curr.val}
+				p.next()
+			} else {
+				return nil, fmt.Errorf("expected string or ident on right of operator")
+			}
+			return &opNode{op: op, left: &identNode{name: name}, right: right}, nil
+		}
+		return &identNode{name: name}, nil
+	case tokString:
+		val := p.curr.val
+		p.next()
+		return &stringNode{val: val}, nil
+	case tokEOF:
+		return nil, fmt.Errorf("unexpected EOF")
+	default:
+		return nil, fmt.Errorf("unexpected token: %v", p.curr)
+	}
+}
+
+func evaluate(node astNode, attrs map[string]string) bool {
+	switch n := node.(type) {
+	case *identNode:
+		return false
+	case *stringNode:
+		return false
+	case *opNode:
+		switch n.op {
+		case "OR":
+			return evaluate(n.left, attrs) || evaluate(n.right, attrs)
+		case "AND":
+			return evaluate(n.left, attrs) && evaluate(n.right, attrs)
+		case "NOT", "-":
+			return !evaluate(n.left, attrs)
+		case ":":
+			ident, ok := n.left.(*identNode)
+			if !ok || ident.name != attributesStr {
+				return false
+			}
+			key, ok := n.right.(*stringNode)
+			if ok {
+				_, exists := attrs[key.val]
+				return exists
+			}
+			rightIdent, ok := n.right.(*identNode)
+			if ok {
+				_, exists := attrs[rightIdent.name]
+				return exists
+			}
+			return false
+		case "=":
+			ident, ok := n.left.(*identNode)
+			if !ok {
+				return false
+			}
+			if !strings.HasPrefix(ident.name, attributesStr+".") {
+				return false
+			}
+			key := ident.name[len(attributesStr)+1:]
+			valNode, ok := n.right.(*stringNode)
+			if !ok {
+				return false
+			}
+			v, exists := attrs[key]
+			return exists && v == valNode.val
+		case "!=":
+			ident, ok := n.left.(*identNode)
+			if !ok {
+				return false
+			}
+			if !strings.HasPrefix(ident.name, attributesStr+".") {
+				return false
+			}
+			key := ident.name[len(attributesStr)+1:]
+			valNode, ok := n.right.(*stringNode)
+			if !ok {
+				return false
+			}
+			v, exists := attrs[key]
+			return !exists || v != valNode.val
+		}
+	case *funcNode:
+		if n.name == hasPrefixStr {
+			if len(n.args) != 2 {
+				return false
+			}
+			ident, ok := n.args[0].(*identNode)
+			if !ok || !strings.HasPrefix(ident.name, attributesStr+".") {
+				return false
+			}
+			key := ident.name[len(attributesStr)+1:]
+			prefixNode, ok := n.args[1].(*stringNode)
+			if !ok {
+				return false
+			}
+			v, exists := attrs[key]
+			return exists && strings.HasPrefix(v, prefixNode.val)
+		}
+	}
+	return false
+}
+
+
+
+

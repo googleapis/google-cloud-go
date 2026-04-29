@@ -16,6 +16,8 @@ package pstest
 
 import "testing"
 
+type messageAttrs map[string]string
+
 // checkKeys returns true if the keys of a and b are equal.
 func checkKeys(a map[int]messageAttrs, b []int) bool {
 	if len(a) != len(b) {
@@ -140,7 +142,7 @@ func Test_filterByAttrs(t *testing.T) {
 				t.Error(err)
 			}
 			attrs := getAttrs()
-			filterByAttrs(attrs, &filter, func(msgAttrs messageAttrs) messageAttrs { return msgAttrs })
+			filterByAttrs(attrs, filter, func(msgAttrs messageAttrs) map[string]string { return msgAttrs })
 			if !checkKeys(attrs, tc.want) {
 				t.Errorf("filterByAttrs(%v, %v) = %v, want keys %v", attrs, tc.filter, attrs, tc.want)
 			}
