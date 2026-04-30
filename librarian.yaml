@@ -522,6 +522,7 @@ libraries:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_wrapper_types_for_page_size
+            - F_proto_cloneof
           import_path: bigquery/v2/apiv2
           path: google/cloud/bigquery/v2
   - name: bigtable
@@ -1848,6 +1849,7 @@ libraries:
         - enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
+            - F_proto_cloneof
           import_path: pubsub/v2/apiv1
           no_metadata: true
           path: google/pubsub/v1
@@ -1860,6 +1862,7 @@ libraries:
       go_apis:
         - enabled_generator_features:
             - F_open_telemetry_attributes
+            - F_proto_cloneof
           path: google/cloud/pubsublite/v1
   - name: rapidmigrationassessment
     version: 1.4.0
@@ -2009,10 +2012,12 @@ libraries:
         - enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
+            - F_proto_cloneof
           path: google/cloud/secretmanager/v1
         - enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
+            - F_proto_cloneof
           path: google/cloud/secretmanager/v1beta2
   - name: securesourcemanager
     version: 1.7.0

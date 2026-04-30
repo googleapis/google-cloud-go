@@ -542,7 +542,7 @@ func (c *rowAccessPolicyGRPCClient) ListRowAccessPolicies(ctx context.Context, r
 	}
 	opts = append((*c.CallOptions).ListRowAccessPolicies[0:len((*c.CallOptions).ListRowAccessPolicies):len((*c.CallOptions).ListRowAccessPolicies)], opts...)
 	it := &RowAccessPolicyIterator{}
-	req = proto.Clone(req).(*bigquerypb.ListRowAccessPoliciesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*bigquerypb.RowAccessPolicy, string, error) {
 		resp := &bigquerypb.ListRowAccessPoliciesResponse{}
 		if pageToken != "" {
@@ -696,7 +696,7 @@ func (c *rowAccessPolicyGRPCClient) BatchDeleteRowAccessPolicies(ctx context.Con
 // ListRowAccessPolicies lists all row access policies on the specified table.
 func (c *rowAccessPolicyRESTClient) ListRowAccessPolicies(ctx context.Context, req *bigquerypb.ListRowAccessPoliciesRequest, opts ...gax.CallOption) *RowAccessPolicyIterator {
 	it := &RowAccessPolicyIterator{}
-	req = proto.Clone(req).(*bigquerypb.ListRowAccessPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*bigquerypb.RowAccessPolicy, string, error) {
 		resp := &bigquerypb.ListRowAccessPoliciesResponse{}
