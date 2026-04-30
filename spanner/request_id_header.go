@@ -366,10 +366,6 @@ type requestIDWrap struct {
 	gsc        *grpcSpannerClient
 }
 
-type logicalRequestIDWrap struct {
-	logicalKey string
-}
-
 func (gsc *grpcSpannerClient) generateRequestIDHeaderInjector() *requestIDWrap {
 	// Setup and track x-goog-request-id.
 	md := new(metadata.MD)
@@ -401,9 +397,4 @@ func (opt requestIDCallOption) logicalRequestKey() string {
 func (riw *requestIDWrap) withNextRetryAttempt(attempt uint32) gax.CallOption {
 	riw.gsc.generateAndInsertRequestID(riw.md, riw.nthRequest, attempt)
 	return requestIDCallOption{md: riw.md}
-}
-
-func (riw logicalRequestIDWrap) withNextRetryAttempt(attempt uint32) gax.CallOption {
-	md := metadata.MD{xSpannerRequestIDHeader: []string{fmt.Sprintf("%s.%d", riw.logicalKey, attempt)}}
-	return requestIDCallOption{md: &md}
 }

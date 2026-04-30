@@ -63,63 +63,47 @@ func newLocationRouter(endpointCache channelEndpointCache) *locationRouter {
 }
 
 func (r *locationRouter) prepareReadRequest(ctx context.Context, req *sppb.ReadRequest) channelEndpoint {
-	return r.prepareReadRequestWithCooldownTracker(ctx, req, nil)
-}
-
-func (r *locationRouter) prepareReadRequestWithCooldownTracker(ctx context.Context, req *sppb.ReadRequest, cooldowns *endpointOverloadCooldownTracker) channelEndpoint {
 	if r == nil || req == nil {
 		return nil
 	}
 	if txID := transactionIDFromSelector(req.GetTransaction()); txID != "" {
 		if preferLeader, ok := r.getReadOnlyTransactionPreferLeader(txID); ok {
-			return r.finder.findServerReadWithCooldownTracker(ctx, req, preferLeader, cooldowns)
+			return r.finder.findServerRead(ctx, req, preferLeader)
 		}
-		if ep := r.getTransactionAffinity(txID); ep != nil && !isEndpointCoolingDown(cooldowns, ep.Address()) {
+		if ep := r.getTransactionAffinity(txID); ep != nil {
 			return ep
 		}
 	}
-	return r.finder.findServerReadWithCooldownTracker(ctx, req, preferLeaderFromSelector(req.GetTransaction()), cooldowns)
+	return r.finder.findServerRead(ctx, req, preferLeaderFromSelector(req.GetTransaction()))
 }
 
 func (r *locationRouter) prepareExecuteSQLRequest(ctx context.Context, req *sppb.ExecuteSqlRequest) channelEndpoint {
-	return r.prepareExecuteSQLRequestWithCooldownTracker(ctx, req, nil)
-}
-
-func (r *locationRouter) prepareExecuteSQLRequestWithCooldownTracker(ctx context.Context, req *sppb.ExecuteSqlRequest, cooldowns *endpointOverloadCooldownTracker) channelEndpoint {
 	if r == nil || req == nil {
 		return nil
 	}
 	if txID := transactionIDFromSelector(req.GetTransaction()); txID != "" {
 		if preferLeader, ok := r.getReadOnlyTransactionPreferLeader(txID); ok {
-			return r.finder.findServerExecuteSQLWithCooldownTracker(ctx, req, preferLeader, cooldowns)
+			return r.finder.findServerExecuteSQL(ctx, req, preferLeader)
 		}
-		if ep := r.getTransactionAffinity(txID); ep != nil && !isEndpointCoolingDown(cooldowns, ep.Address()) {
+		if ep := r.getTransactionAffinity(txID); ep != nil {
 			return ep
 		}
 	}
-	return r.finder.findServerExecuteSQLWithCooldownTracker(ctx, req, preferLeaderFromSelector(req.GetTransaction()), cooldowns)
+	return r.finder.findServerExecuteSQL(ctx, req, preferLeaderFromSelector(req.GetTransaction()))
 }
 
 func (r *locationRouter) prepareBeginTransactionRequest(ctx context.Context, req *sppb.BeginTransactionRequest) channelEndpoint {
-	return r.prepareBeginTransactionRequestWithCooldownTracker(ctx, req, nil)
-}
-
-func (r *locationRouter) prepareBeginTransactionRequestWithCooldownTracker(ctx context.Context, req *sppb.BeginTransactionRequest, cooldowns *endpointOverloadCooldownTracker) channelEndpoint {
 	if r == nil || req == nil {
 		return nil
 	}
-	return r.finder.findServerBeginTransactionWithCooldownTracker(ctx, req, cooldowns)
+	return r.finder.findServerBeginTransaction(ctx, req)
 }
 
 func (r *locationRouter) prepareCommitRequest(ctx context.Context, req *sppb.CommitRequest) channelEndpoint {
-	return r.prepareCommitRequestWithCooldownTracker(ctx, req, nil)
-}
-
-func (r *locationRouter) prepareCommitRequestWithCooldownTracker(ctx context.Context, req *sppb.CommitRequest, cooldowns *endpointOverloadCooldownTracker) channelEndpoint {
 	if r == nil || req == nil {
 		return nil
 	}
-	return r.finder.fillCommitRoutingHintWithCooldownTracker(ctx, req, cooldowns)
+	return r.finder.fillCommitRoutingHint(ctx, req)
 }
 
 func (r *locationRouter) observePartialResultSet(prs *sppb.PartialResultSet) {

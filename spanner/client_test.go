@@ -994,9 +994,7 @@ func TestLocationAwareExecuteSql_ReroutesToNextReplicaAndMarksCooldownScopes(t *
 		t.Fatalf("session client type = %T, want *locationAwareSpannerClient", sh.getClient())
 	}
 	clock := newLifecycleTestClock(time.Unix(100, 0))
-	lac.endpointCooldowns = newEndpointOverloadCooldownTrackerWithOptions(time.Minute, time.Minute, 10*time.Minute, clock.Now, func(n int64) int64 {
-		return n - 1
-	})
+	setEndpointRoutingConfigForTest(t, lac.endpointCache, clock.Now)
 
 	callOpts := testCallOptionsWithRequestID("1.proc.1.1.55.1")
 	resp, err := lac.ExecuteSql(context.Background(), req, callOpts...)
@@ -1023,7 +1021,7 @@ func TestLocationAwareExecuteSql_ReroutesToNextReplicaAndMarksCooldownScopes(t *
 		t.Fatalf("replica A session = %q, want %q", got, want)
 	}
 
-	if !lac.endpointCooldowns.isCoolingDown(harness.ReplicaAddresses[0]) {
+	if !lac.endpointCache.isCoolingDown(harness.ReplicaAddresses[0]) {
 		t.Fatalf("expected routed address %q to enter overload cooldown after RESOURCE_EXHAUSTED", harness.ReplicaAddresses[0])
 	}
 }
@@ -1288,10 +1286,8 @@ func TestClient_Single_StreamingReadCooldownSkipsReplicaOnNextRequestForBypassTr
 		t.Fatalf("session client type = %T, want *locationAwareSpannerClient", sh.getClient())
 	}
 	clock := newLifecycleTestClock(time.Unix(100, 0))
-	cooldownTracker := newEndpointOverloadCooldownTrackerWithOptions(time.Minute, time.Minute, 10*time.Minute, clock.Now, func(n int64) int64 {
-		return n - 1
-	})
-	client.sm.setLocationAwareState(client.locationRouter, cooldownTracker)
+	setEndpointRoutingConfigForTest(t, client.locationRouter.endpointCache, clock.Now)
+	client.sm.setLocationAwareState(client.locationRouter)
 	sh.recycle()
 
 	iter := client.Single().Read(context.Background(), "Albums", KeySets(Key{"b"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
@@ -1305,7 +1301,7 @@ func TestClient_Single_StreamingReadCooldownSkipsReplicaOnNextRequestForBypassTr
 		t.Fatal("first iter.Next() returned nil row")
 	}
 	iter.Stop()
-	if !cooldownTracker.isCoolingDown(harness.ReplicaAddresses[0]) {
+	if !client.locationRouter.endpointCache.isCoolingDown(harness.ReplicaAddresses[0]) {
 		t.Fatalf("expected routed address %q to enter cooldown", harness.ReplicaAddresses[0])
 	}
 
@@ -1395,8 +1391,8 @@ func TestClient_LocationAwareWrappersShareStateAcrossHandles(t *testing.T) {
 	if lac1 == lac2 {
 		t.Fatalf("expected a fresh location-aware wrapper per handle")
 	}
-	if lac1.endpointCooldowns != lac2.endpointCooldowns {
-		t.Fatalf("expected handles to share cooldown tracker")
+	if lac1.endpointCache != lac2.endpointCache {
+		t.Fatalf("expected handles to share endpoint cache")
 	}
 	if lac1.state != lac2.state {
 		t.Fatalf("expected handles to share client-level location-aware state")
@@ -1959,14 +1955,12 @@ func TestLocationAwareExecuteSql_CooldownRoutesToNextReplicaAndEndpointBecomesEl
 		t.Fatalf("session client type = %T, want *locationAwareSpannerClient", sh.getClient())
 	}
 	clock := newLifecycleTestClock(time.Unix(100, 0))
-	lac.endpointCooldowns = newEndpointOverloadCooldownTrackerWithOptions(time.Minute, time.Minute, 10*time.Minute, clock.Now, func(n int64) int64 {
-		return n - 1
-	})
+	setEndpointRoutingConfigForTest(t, lac.endpointCache, clock.Now)
 
 	if _, err := lac.ExecuteSql(context.Background(), req, testCallOptionsWithRequestID("1.proc.1.1.80.1")...); err != nil {
 		t.Fatalf("first ExecuteSql() returned unexpected error: %v", err)
 	}
-	if !lac.endpointCooldowns.isCoolingDown(harness.ReplicaAddresses[0]) {
+	if !lac.endpointCache.isCoolingDown(harness.ReplicaAddresses[0]) {
 		t.Fatalf("expected routed address %q to enter cooldown", harness.ReplicaAddresses[0])
 	}
 
@@ -1990,10 +1984,10 @@ func TestLocationAwareExecuteSql_CooldownRoutesToNextReplicaAndEndpointBecomesEl
 	if _, err := lac.ExecuteSql(context.Background(), req, testCallOptionsWithRequestID("1.proc.1.1.80.3")...); err != nil {
 		t.Fatalf("third ExecuteSql() returned unexpected error: %v", err)
 	}
-	if lac.endpointCooldowns.isCoolingDown(harness.ReplicaAddresses[0]) {
+	if lac.endpointCache.isCoolingDown(harness.ReplicaAddresses[0]) {
 		t.Fatalf("expected routed address %q cooldown to remain expired after cooldown-window re-entry", harness.ReplicaAddresses[0])
 	}
-	if _, ok := lac.endpointCooldowns.entries[harness.ReplicaAddresses[0]]; !ok {
+	if _, ok := endpointRoutingStateEntries(lac.endpointCache)[harness.ReplicaAddresses[0]]; !ok {
 		t.Fatalf("expected routed address %q failure state to remain tracked until quiet-window reset", harness.ReplicaAddresses[0])
 	}
 
@@ -2071,17 +2065,15 @@ func TestLocationAwareExecuteSql_CooldownRetriesAlternateReplicaWhenAllRoutedRep
 		t.Fatalf("session client type = %T, want *locationAwareSpannerClient", sh.getClient())
 	}
 	clock := newLifecycleTestClock(time.Unix(100, 0))
-	lac.endpointCooldowns = newEndpointOverloadCooldownTrackerWithOptions(time.Minute, time.Minute, 10*time.Minute, clock.Now, func(n int64) int64 {
-		return n - 1
-	})
+	setEndpointRoutingConfigForTest(t, lac.endpointCache, clock.Now)
 
 	if _, err := lac.ExecuteSql(context.Background(), req, testCallOptionsWithRequestID("1.proc.1.1.81.1")...); err != nil {
 		t.Fatalf("ExecuteSql() returned unexpected error: %v", err)
 	}
-	if !lac.endpointCooldowns.isCoolingDown(harness.ReplicaAddresses[0]) {
+	if !lac.endpointCache.isCoolingDown(harness.ReplicaAddresses[0]) {
 		t.Fatalf("expected routed address %q to enter cooldown", harness.ReplicaAddresses[0])
 	}
-	if !lac.endpointCooldowns.isCoolingDown(harness.ReplicaAddresses[1]) {
+	if !lac.endpointCache.isCoolingDown(harness.ReplicaAddresses[1]) {
 		t.Fatalf("expected second routed address %q to enter cooldown", harness.ReplicaAddresses[1])
 	}
 
@@ -2228,10 +2220,8 @@ func TestClient_Single_StreamingReadUnavailableSkipsReplicaOnNextRequestForBypas
 		t.Fatalf("session client type = %T, want *locationAwareSpannerClient", sh.getClient())
 	}
 	clock := newLifecycleTestClock(time.Unix(100, 0))
-	cooldownTracker := newEndpointOverloadCooldownTrackerWithOptions(time.Minute, time.Minute, 10*time.Minute, clock.Now, func(n int64) int64 {
-		return n - 1
-	})
-	client.sm.setLocationAwareState(client.locationRouter, cooldownTracker)
+	setEndpointRoutingConfigForTest(t, client.locationRouter.endpointCache, clock.Now)
+	client.sm.setLocationAwareState(client.locationRouter)
 	sh.recycle()
 
 	iter := client.Single().Read(context.Background(), "Albums", KeySets(Key{"b"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
@@ -2245,7 +2235,7 @@ func TestClient_Single_StreamingReadUnavailableSkipsReplicaOnNextRequestForBypas
 		t.Fatal("first iter.Next() returned nil row")
 	}
 	iter.Stop()
-	if !cooldownTracker.isCoolingDown(harness.ReplicaAddresses[0]) {
+	if !client.locationRouter.endpointCache.isCoolingDown(harness.ReplicaAddresses[0]) {
 		t.Fatalf("expected routed address %q to enter cooldown", harness.ReplicaAddresses[0])
 	}
 
@@ -2423,9 +2413,7 @@ func TestLocationAwareExecuteStreamingSql_CooldownRoutesToNextReplicaAndEndpoint
 		t.Fatalf("session client type = %T, want *locationAwareSpannerClient", sh.getClient())
 	}
 	clock := newLifecycleTestClock(time.Unix(100, 0))
-	lac.endpointCooldowns = newEndpointOverloadCooldownTrackerWithOptions(time.Minute, time.Minute, 10*time.Minute, clock.Now, func(n int64) int64 {
-		return n - 1
-	})
+	setEndpointRoutingConfigForTest(t, lac.endpointCache, clock.Now)
 
 	stream, err := lac.ExecuteStreamingSql(context.Background(), req, testCallOptionsWithRequestID("1.proc.1.1.82.1")...)
 	if err != nil {
@@ -2435,7 +2423,7 @@ func TestLocationAwareExecuteStreamingSql_CooldownRoutesToNextReplicaAndEndpoint
 	if status.Code(err) != codes.ResourceExhausted {
 		t.Fatalf("first stream Recv() error = %v, want RESOURCE_EXHAUSTED", err)
 	}
-	if !lac.endpointCooldowns.isCoolingDown(harness.ReplicaAddresses[0]) {
+	if !lac.endpointCache.isCoolingDown(harness.ReplicaAddresses[0]) {
 		t.Fatalf("expected routed address %q to enter cooldown", harness.ReplicaAddresses[0])
 	}
 
@@ -2469,10 +2457,10 @@ func TestLocationAwareExecuteStreamingSql_CooldownRoutesToNextReplicaAndEndpoint
 	if err != nil {
 		t.Fatalf("third stream Recv() returned unexpected error: %v", err)
 	}
-	if lac.endpointCooldowns.isCoolingDown(harness.ReplicaAddresses[0]) {
+	if lac.endpointCache.isCoolingDown(harness.ReplicaAddresses[0]) {
 		t.Fatalf("expected routed address %q cooldown to remain expired after cooldown-window re-entry", harness.ReplicaAddresses[0])
 	}
-	if _, ok := lac.endpointCooldowns.entries[harness.ReplicaAddresses[0]]; !ok {
+	if _, ok := endpointRoutingStateEntries(lac.endpointCache)[harness.ReplicaAddresses[0]]; !ok {
 		t.Fatalf("expected routed address %q failure state to remain tracked until quiet-window reset", harness.ReplicaAddresses[0])
 	}
 
@@ -2546,9 +2534,7 @@ func TestLocationAwareRead_ReroutesToNextReplicaAndMarksCooldownScopes(t *testin
 		t.Fatalf("session client type = %T, want *locationAwareSpannerClient", sh.getClient())
 	}
 	clock := newLifecycleTestClock(time.Unix(100, 0))
-	lac.endpointCooldowns = newEndpointOverloadCooldownTrackerWithOptions(time.Minute, time.Minute, 10*time.Minute, clock.Now, func(n int64) int64 {
-		return n - 1
-	})
+	setEndpointRoutingConfigForTest(t, lac.endpointCache, clock.Now)
 
 	callOpts := testCallOptionsWithRequestID("1.proc.1.1.56.1")
 	resp, err := lac.Read(context.Background(), req, callOpts...)
@@ -2575,7 +2561,7 @@ func TestLocationAwareRead_ReroutesToNextReplicaAndMarksCooldownScopes(t *testin
 		t.Fatalf("replica A session = %q, want %q", got, want)
 	}
 
-	if !lac.endpointCooldowns.isCoolingDown(harness.ReplicaAddresses[0]) {
+	if !lac.endpointCache.isCoolingDown(harness.ReplicaAddresses[0]) {
 		t.Fatalf("expected routed address %q to enter overload cooldown after RESOURCE_EXHAUSTED", harness.ReplicaAddresses[0])
 	}
 }
@@ -2647,9 +2633,7 @@ func TestLocationAwareBeginTransaction_ReroutesToNextReplicaAndMarksCooldownScop
 		t.Fatalf("session client type = %T, want *locationAwareSpannerClient", sh.getClient())
 	}
 	clock := newLifecycleTestClock(time.Unix(100, 0))
-	lac.endpointCooldowns = newEndpointOverloadCooldownTrackerWithOptions(time.Minute, time.Minute, 10*time.Minute, clock.Now, func(n int64) int64 {
-		return n - 1
-	})
+	setEndpointRoutingConfigForTest(t, lac.endpointCache, clock.Now)
 
 	callOpts := testCallOptionsWithRequestID("1.proc.1.1.57.1")
 	resp, err := lac.BeginTransaction(context.Background(), req, callOpts...)
@@ -2679,7 +2663,7 @@ func TestLocationAwareBeginTransaction_ReroutesToNextReplicaAndMarksCooldownScop
 		t.Fatalf("replica A session = %q, want %q", got, want)
 	}
 
-	if !lac.endpointCooldowns.isCoolingDown(harness.ReplicaAddresses[0]) {
+	if !lac.endpointCache.isCoolingDown(harness.ReplicaAddresses[0]) {
 		t.Fatalf("expected routed address %q to enter overload cooldown after RESOURCE_EXHAUSTED", harness.ReplicaAddresses[0])
 	}
 }
