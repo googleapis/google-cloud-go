@@ -61,6 +61,8 @@ export GCLOUD_TESTS_BIGTABLE_KEYRING=projects/dulcet-port-762/locations/us-centr
 export GCLOUD_TESTS_BIGTABLE_CLUSTER="gc-bt-it-cluster"
 export GCLOUD_TESTS_BIGTABLE_PRI_PROJ_SEC_CLUSTER="gc-bt-it-cluster-02"
 export GCLOUD_TESTS_BIGTABLE_INSTANCE="gc-bt-it-instance"
+export GCLOUD_TESTS_BIGTABLE_TAG_KEY="tagKeys/281478013645949"
+export GCLOUD_TESTS_BIGTABLE_TAG_VALUE="tagValues/281477875131149"
 
 # Universe domain variables. Tests will be skipped if TEST_UNIVERSE_DOMAIN is removed.
 export TEST_UNIVERSE_DOMAIN=$(cat ${KOKORO_GFILE_DIR}/secret_manager/client-library-test-universe-domain)

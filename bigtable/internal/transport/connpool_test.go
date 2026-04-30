@@ -828,7 +828,6 @@ func TestSelectLeastLoadedRandomOfTwo(t *testing.T) {
 }
 
 func TestCachingStreamDecrement(t *testing.T) {
-	t.Skip("skipped as impacting generation https://github.com/googleapis/google-cloud-go/issues/13383")
 	ctx := context.Background()
 	poolSize := 1
 	fake := &fakeService{}
@@ -847,7 +846,7 @@ func TestCachingStreamDecrement(t *testing.T) {
 		defer func() { fake.serverErr = nil }()
 		entry.streamingLoad.Store(0)
 
-		stream, err := pool.NewStream(context.Background(), &grpc.StreamDesc{StreamName: "StreamingCall"}, "/grpc.testing.BenchmarkService/StreamingCall")
+		stream, err := pool.NewStream(context.Background(), &grpc.StreamDesc{StreamName: "StreamingCall", ServerStreams: true, ClientStreams: true}, "/grpc.testing.BenchmarkService/StreamingCall")
 		if err != nil {
 			t.Fatalf("NewStream failed: %v", err)
 		}
@@ -867,7 +866,7 @@ func TestCachingStreamDecrement(t *testing.T) {
 		entry.streamingLoad.Store(0)
 		fake.serverErr = nil
 
-		stream, err := pool.NewStream(context.Background(), &grpc.StreamDesc{StreamName: "StreamingCall", ServerStreams: true, ClientStreams: false}, "/grpc.testing.BenchmarkService/StreamingCall")
+		stream, err := pool.NewStream(context.Background(), &grpc.StreamDesc{StreamName: "StreamingCall", ServerStreams: true, ClientStreams: true}, "/grpc.testing.BenchmarkService/StreamingCall")
 		if err != nil {
 			t.Fatalf("NewStream failed: %v", err)
 		}
@@ -903,7 +902,7 @@ func TestCachingStreamDecrement(t *testing.T) {
 		fake.serverErr = nil
 		fake.streamSema = make(chan struct{})
 
-		stream, err := pool.NewStream(context.Background(), &grpc.StreamDesc{StreamName: "StreamingCall"}, "/grpc.testing.BenchmarkService/StreamingCall")
+		stream, err := pool.NewStream(context.Background(), &grpc.StreamDesc{StreamName: "StreamingCall", ServerStreams: true, ClientStreams: true}, "/grpc.testing.BenchmarkService/StreamingCall")
 		if err != nil {
 			t.Fatalf("NewStream failed: %v", err)
 		}
