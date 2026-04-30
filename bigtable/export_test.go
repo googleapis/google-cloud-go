@@ -386,7 +386,7 @@ func (e *ProdEnv) newProdClient(config ClientConfig) (*Client, error) {
 func adminUnaryRetryInterceptor() grpc.UnaryClientInterceptor {
 	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 		var err error
-		for i := 0; i < 5; i++ {
+		for i := 0; i < 10; i++ {
 			err = invoker(ctx, method, req, reply, cc, opts...)
 			if err == nil {
 				return nil
@@ -397,7 +397,11 @@ func adminUnaryRetryInterceptor() grpc.UnaryClientInterceptor {
 			}
 			code := s.Code()
 			if code == codes.Unavailable || code == codes.Aborted || code == codes.Internal || code == codes.Unknown || code == codes.ResourceExhausted {
-				time.Sleep(time.Duration(1<<i) * 500 * time.Millisecond)
+				select {
+				case <-time.After(time.Duration(1<<i) * 500 * time.Millisecond):
+				case <-ctx.Done():
+					return ctx.Err()
+				}
 				continue
 			}
 			return err

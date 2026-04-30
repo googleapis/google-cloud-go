@@ -4139,14 +4139,14 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	// Add more testcases if instanceToCreate is non-empty string
 	if instanceToCreate != "" {
 		diffInstance, diffCluster, err := createRandomInstance(ctx, iAdminClient)
+		if err != nil {
+			t.Fatalf("CreateInstance: %v", err)
+		}
 		t.Cleanup(func() {
 			if err := deleteInstance(context.Background(), iAdminClient, diffInstance); err != nil {
 				t.Logf("Cleanup deleteInstance failed: %v", err)
 			}
 		})
-		if err != nil {
-			t.Fatalf("CreateInstance: %v", err)
-		}
 
 		// Restore backup to different instance
 		restoreTableName := tblConf.TableID + "-diff-restored"
