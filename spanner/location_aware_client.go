@@ -290,8 +290,8 @@ type routeDecision struct {
 }
 
 func executeRoutedUnary[T any](
-	c *locationAwareSpannerClient,
 	ctx context.Context,
+	c *locationAwareSpannerClient,
 	opts []gax.CallOption,
 	decide func() routeDecision,
 	invoke func(spannerClient, []gax.CallOption) (T, error),
@@ -447,8 +447,8 @@ func (c *locationAwareSpannerClient) StreamingRead(ctx context.Context, req *spa
 
 func (c *locationAwareSpannerClient) Read(ctx context.Context, req *spannerpb.ReadRequest, opts ...gax.CallOption) (*spannerpb.ResultSet, error) {
 	return executeRoutedUnary(
-		c,
 		ctx,
+		c,
 		opts,
 		func() routeDecision {
 			return routeDecision{
@@ -499,8 +499,8 @@ func (c *locationAwareSpannerClient) ExecuteStreamingSql(ctx context.Context, re
 
 func (c *locationAwareSpannerClient) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (*spannerpb.ResultSet, error) {
 	return executeRoutedUnary(
-		c,
 		ctx,
+		c,
 		opts,
 		func() routeDecision {
 			return routeDecision{
@@ -520,8 +520,8 @@ func (c *locationAwareSpannerClient) ExecuteSql(ctx context.Context, req *spanne
 
 func (c *locationAwareSpannerClient) BeginTransaction(ctx context.Context, req *spannerpb.BeginTransactionRequest, opts ...gax.CallOption) (*spannerpb.Transaction, error) {
 	return executeRoutedUnary(
-		c,
 		ctx,
+		c,
 		opts,
 		func() routeDecision {
 			return routeDecision{
