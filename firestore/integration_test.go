@@ -187,6 +187,10 @@ func initIntegrationTest() {
 // deleteCollection recursively deletes the documents in the specified collection
 func deleteCollection(ctx context.Context, coll *CollectionRef) error {
 	bulkwriter := iClient.BulkWriter(ctx)
+	defer func() {
+		bulkwriter.End()
+		bulkwriter.Flush()
+	}()
 
 	// Get  documents
 	iter := coll.DocumentRefs(ctx)
@@ -208,9 +212,6 @@ func deleteCollection(ctx context.Context, coll *CollectionRef) error {
 			return err
 		}
 	}
-
-	bulkwriter.End()
-	bulkwriter.Flush()
 
 	return nil
 }
@@ -3106,6 +3107,8 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	for _, tc := range testcases {
 		t.Run(tc.desc, func(t *testing.T) {
 			testutil.Retry(t, 5, 5*time.Second, func(r *testutil.R) {
+				ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+				defer cancel()
 				var gotResult AggregationResult
 				var err error
 				if tc.runInTransaction {
