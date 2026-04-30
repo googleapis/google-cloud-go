@@ -592,7 +592,7 @@ func TestBulkWriterBackpressureThrottling(t *testing.T) {
 	select {
 	case <-doneChan:
 		t.Fatal("Create() unblocked before Flush(), expected it to block due to backpressure")
-	case <-time.After(50 * time.Millisecond):
+	case <-time.After(200 * time.Millisecond):
 		// Good, it's blocked as expected.
 	}
 
@@ -614,5 +614,3 @@ func TestBulkWriterBackpressureThrottling(t *testing.T) {
 		t.Fatal("Second Create() returned nil BulkWriterJob")
 	}
 }
-
-
