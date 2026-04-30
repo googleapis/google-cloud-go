@@ -2,6 +2,8 @@
 
 
 
+## [1.7.0](https://github.com/googleapis/google-cloud-go/releases/tag/edgenetwork%2Fv1.7.0) (2026-04-30)
+
 ## [1.6.0](https://github.com/googleapis/google-cloud-go/releases/tag/edgenetwork%2Fv1.6.0) (2026-04-13)
 
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/releases/tag/edgenetwork%2Fv1.5.0) (2026-04-09)
