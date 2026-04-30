@@ -27,6 +27,7 @@ import (
 	"google.golang.org/api/support/bundler"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 )
 
 const (
@@ -297,7 +298,6 @@ func (bw *BulkWriter) checkWriteConditions(doc *DocumentRef) error {
 
 // write packages up write requests into bulkWriterJob objects.
 func (bw *BulkWriter) write(w *pb.Write) (*BulkWriterJob, error) {
-
 	j := &BulkWriterJob{
 		resultChan: make(chan bulkWriterResult, 1),
 		write:      w,
@@ -307,8 +307,9 @@ func (bw *BulkWriter) write(w *pb.Write) (*BulkWriterJob, error) {
 	if err := bw.limiter.Wait(bw.ctx); err != nil {
 		return nil, err
 	}
-	err := bw.bundler.Add(j, 0)
-	if err != nil {
+
+	estimatedSize := proto.Size(w)
+	if err := bw.bundler.AddWait(bw.ctx, j, estimatedSize); err != nil {
 		return nil, err
 	}
 
