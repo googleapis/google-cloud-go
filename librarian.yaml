@@ -2467,6 +2467,7 @@ libraries:
     keep:
       - README.md
       - internal/version.go
+    skip_release: true
   - name: video
     version: 1.30.0
     apis:
