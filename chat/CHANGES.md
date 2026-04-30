@@ -1,5 +1,7 @@
 # Changes
 
+## [0.22.0](https://github.com/googleapis/google-cloud-go/releases/tag/chat%2Fv0.22.0) (2026-04-30)
+
 ## [0.21.0](https://github.com/googleapis/google-cloud-go/releases/tag/chat%2Fv0.21.0) (2026-04-13)
 
 ## [0.20.0](https://github.com/googleapis/google-cloud-go/releases/tag/chat%2Fv0.20.0) (2026-04-09)

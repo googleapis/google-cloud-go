@@ -1,5 +1,7 @@
 # Changes
 
+## [1.34.0](https://github.com/googleapis/google-cloud-go/releases/tag/speech%2Fv1.34.0) (2026-04-30)
+
 ## [1.33.0](https://github.com/googleapis/google-cloud-go/releases/tag/speech%2Fv1.33.0) (2026-04-13)
 
 ## [1.32.0](https://github.com/googleapis/google-cloud-go/releases/tag/speech%2Fv1.32.0) (2026-04-09)

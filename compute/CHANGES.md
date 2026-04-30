@@ -1,5 +1,7 @@
 # Changes
 
+## [1.61.0](https://github.com/googleapis/google-cloud-go/releases/tag/compute%2Fv1.61.0) (2026-04-30)
+
 ## [1.60.0](https://github.com/googleapis/google-cloud-go/releases/tag/compute%2Fv1.60.0) (2026-04-13)
 
 ## [1.59.0](https://github.com/googleapis/google-cloud-go/releases/tag/compute%2Fv1.59.0) (2026-04-08)

@@ -2,6 +2,8 @@
 
 
 
+## [1.28.0](https://github.com/googleapis/google-cloud-go/releases/tag/discoveryengine%2Fv1.28.0) (2026-04-30)
+
 ## [1.27.0](https://github.com/googleapis/google-cloud-go/releases/tag/discoveryengine%2Fv1.27.0) (2026-04-13)
 
 ## [1.26.0](https://github.com/googleapis/google-cloud-go/releases/tag/discoveryengine%2Fv1.26.0) (2026-04-09)
