@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 language: go
-version: v0.11.0
+version: v0.11.1-0.20260501200433-0f1be61ebfb5
 repo: googleapis/google-cloud-go
 sources:
   googleapis:

@@ -34,7 +34,7 @@ func ExampleClient_ListBackupCollections_all() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := memorystore.NewRESTClient(ctx)
+	c, err := memorystore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -60,7 +60,7 @@ func ExampleClient_ListBackups_all() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := memorystore.NewRESTClient(ctx)
+	c, err := memorystore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -86,7 +86,7 @@ func ExampleClient_ListInstances_all() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := memorystore.NewRESTClient(ctx)
+	c, err := memorystore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -112,7 +112,7 @@ func ExampleClient_ListLocations_all() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := memorystore.NewRESTClient(ctx)
+	c, err := memorystore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -138,7 +138,7 @@ func ExampleClient_ListOperations_all() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := memorystore.NewRESTClient(ctx)
+	c, err := memorystore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
