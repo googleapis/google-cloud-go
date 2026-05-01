@@ -206,15 +206,16 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %w", err)
 	}
-	// 2. Initialize the raw service using the Base Constructor to avoid double-validation
-	rawService, err := raw.New(hc)
+	// RawService should be created with the chosen endpoint to take account of user override.
+	// Preserve other user-supplied options as well.
+	opts = append(opts,
+		option.WithEndpoint(ep),
+		option.WithHTTPClient(hc),
+		internaloption.SkipDialSettingsValidation(),
+	)
+	rawService, err := raw.NewService(ctx, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("storage client: %w", err)
-	}
-
-	// 3. Manually apply the endpoint discovered/provided in step 1
-	if ep != "" {
-		rawService.BasePath = ep
 	}
 	// Update xmlHost and scheme with the chosen endpoint.
 	u, err := url.Parse(ep)

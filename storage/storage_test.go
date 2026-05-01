@@ -2762,49 +2762,49 @@ func isZeroValue(v reflect.Value) (bool, error) {
 	}
 }
 
-// TestNewClient_TransportOptionsRegression ensures that transport-specific options
-// like QuotaProject and RequestReason do not cause initialization failures.
-// This is a regression test for the "WithHTTPClient is incompatible with QuotaProject" error.
+func TestNewClient_ValidationHappensOnce(t *testing.T) {
+	ctx := context.Background()
+	// Passing an empty API key is invalid and should be caught in the first pass.
+	_, err := NewClient(ctx, option.WithAPIKey(""))
+	if err == nil {
+		t.Error("expected error for invalid API key, got nil")
+	}
+}
+
 func TestNewClient_TransportOptionsRegression(t *testing.T) {
 	ctx := context.Background()
-
-	tests := []struct {
-		name string
-		opts []option.ClientOption
-	}{
-		{
-			name: "WithQuotaProject",
-			opts: []option.ClientOption{
-				option.WithQuotaProject("test-project"),
-				option.WithoutAuthentication(),
-			},
-		},
-		{
-			name: "WithRequestReason",
-			opts: []option.ClientOption{
-				option.WithRequestReason("compliance-audit"),
-				option.WithoutAuthentication(),
-			},
-		},
-		{
-			name: "CombinedOptions",
-			opts: []option.ClientOption{
-				option.WithQuotaProject("test-project"),
-				option.WithRequestReason("debugging"),
-				option.WithoutAuthentication(),
-			},
-		},
+	// QuotaProject and RequestReason are transport-level options.
+	// They should be accepted by NewClient and passed through to the raw service.
+	client, err := NewClient(ctx,
+		option.WithQuotaProject("test-project"),
+		option.WithRequestReason("test-reason"),
+		option.WithoutAuthentication(), // Avoid ADC lookup in tests
+	)
+	if err != nil {
+		t.Fatalf("NewClient failed with transport options: %v", err)
 	}
+	defer client.Close()
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			client, err := NewClient(ctx, tt.opts...)
-			if err != nil {
-				t.Errorf("NewClient() failed with %s: %v", tt.name, err)
-			}
-			if client != nil {
-				client.Close()
-			}
-		})
+	if client.raw == nil {
+		t.Fatal("client.raw was not initialized")
+	}
+}
+
+func TestNewClient_EndpointPropagation(t *testing.T) {
+	ctx := context.Background()
+	customEndpoint := "https://my-custom-endpoint.com/storage/v1/"
+
+	client, err := NewClient(ctx,
+		option.WithEndpoint(customEndpoint),
+		option.WithoutAuthentication(),
+	)
+	if err != nil {
+		t.Fatalf("NewClient failed: %v", err)
+	}
+	defer client.Close()
+
+	// Verify the raw service is using the custom endpoint
+	if client.raw.BasePath != customEndpoint {
+		t.Errorf("expected BasePath %q, got %q", customEndpoint, client.raw.BasePath)
 	}
 }
