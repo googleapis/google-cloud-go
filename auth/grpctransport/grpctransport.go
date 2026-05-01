@@ -417,7 +417,7 @@ func (c *grpcCredentialsProvider) GetRequestMetadata(ctx context.Context, uri ..
 		}
 	}
 	metadata := make(map[string]string, len(c.metadata)+1)
-	headers.SetAuthMetadata(token, c.endpoint, metadata)
+	headers.SetAuthMetadata(ctx, token, c.endpoint, metadata)
 	for k, v := range c.metadata {
 		metadata[k] = v
 	}

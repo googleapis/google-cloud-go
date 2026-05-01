@@ -47,7 +47,7 @@ func SetAuthHeader(token *auth.Token, req *http.Request) {
 // SetAuthMetadata uses the provided token to set the Authorization and regional
 // access boundary metadata. If the token.Type is empty, the type is assumed to be
 // Bearer.
-func SetAuthMetadata(token *auth.Token, reqURL string, m map[string]string) {
+func SetAuthMetadata(ctx context.Context, token *auth.Token, reqURL string, m map[string]string) {
 	typ := token.Type
 	if typ == "" {
 		typ = internal.TokenTypeBearer
@@ -55,7 +55,7 @@ func SetAuthMetadata(token *auth.Token, reqURL string, m map[string]string) {
 	m["authorization"] = typ + " " + token.Value
 
 	if provider, ok := token.Metadata[regionalaccessboundary.ProviderKey].(regionalAccessBoundaryProvider); ok {
-		if headerVal := provider.GetHeaderValue(context.Background(), reqURL, token); headerVal != "" {
+		if headerVal := provider.GetHeaderValue(ctx, reqURL, token); headerVal != "" {
 			m["x-allowed-locations"] = headerVal
 		}
 	}

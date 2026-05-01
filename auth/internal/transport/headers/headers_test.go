@@ -25,10 +25,12 @@ import (
 )
 
 type mockProvider struct {
-	val string
+	val    string
+	gotCtx context.Context
 }
 
 func (m *mockProvider) GetHeaderValue(ctx context.Context, reqURL string, token *auth.Token) string {
+	m.gotCtx = ctx
 	return m.val
 }
 
@@ -94,9 +96,17 @@ func TestSetAuth(t *testing.T) {
 
 			// Test gRPC
 			gotMeta := make(map[string]string)
-			SetAuthMetadata(token, "https://example.com/v1", gotMeta)
+			type testKeyType struct{}
+			var testKey testKeyType
+			testCtx := context.WithValue(context.Background(), testKey, "testVal")
+			SetAuthMetadata(testCtx, token, "https://example.com/v1", gotMeta)
 			if diff := cmp.Diff(tt.wantGRPCMeta, gotMeta); diff != "" {
 				t.Errorf("gRPC metadata mismatch (-want +got):\n%s", diff)
+			}
+			if tt.provider != nil {
+				if v := tt.provider.gotCtx.Value(testKey); v != "testVal" {
+					t.Errorf("SetAuthMetadata did not pass context to provider, got value %v", v)
+				}
 			}
 		})
 	}

@@ -580,6 +580,51 @@ func TestGCEConfigProvider_CachesResults(t *testing.T) {
 	}
 }
 
+func TestGCEConfigProvider_TransientFailure(t *testing.T) {
+	var failMDS bool = true
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if failMDS {
+			http.Error(w, "metadata server down", http.StatusInternalServerError)
+			return
+		}
+		switch r.URL.Path {
+		case "/computeMetadata/v1/instance/service-accounts/default/email":
+			w.Write([]byte("test-sa@example.com"))
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer server.Close()
+
+	parsedURL, _ := url.Parse(server.URL)
+	t.Setenv("GCE_METADATA_HOST", parsedURL.Host)
+	mdClient := metadata.NewClient(server.Client())
+	udp := &internal.ComputeUniverseDomainProvider{MetadataClient: mdClient}
+	provider := NewGCEConfigProvider(udp)
+
+	ctx := context.Background()
+
+	// First call should fail (MDS down)
+	_, err := provider.GetRegionalAccessBoundaryEndpoint(ctx)
+	if err == nil {
+		t.Fatal("GetRegionalAccessBoundaryEndpoint() expected error on first call, got nil")
+	}
+
+	// Enable success for the next call
+	failMDS = false
+
+	// Second call should succeed (MDS up)
+	endpoint, err := provider.GetRegionalAccessBoundaryEndpoint(ctx)
+	if err != nil {
+		t.Fatalf("GetRegionalAccessBoundaryEndpoint() unexpected error on second call: %v", err)
+	}
+
+	want := fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, "test-sa@example.com")
+	if endpoint != want {
+		t.Errorf("GetRegionalAccessBoundaryEndpoint() = %q, want %q", endpoint, want)
+	}
+}
+
 type mockConfigProvider struct {
 	mu                  sync.Mutex
 	endpointCallCount   int
@@ -628,7 +673,12 @@ func (m *mockTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 
 func TestDataProvider_Token(t *testing.T) {
 	ctx := context.Background()
-	baseToken := &auth.Token{Value: "base-token"}
+	baseToken := &auth.Token{
+		Value: "base-token",
+		Metadata: map[string]interface{}{
+			"pre-existing-key": "pre-existing-value",
+		},
+	}
 	baseProvider := &mockTokenProvider{TokenToReturn: baseToken}
 
 	provider, err := NewProvider(http.DefaultClient, &mockConfigProvider{}, nil, baseProvider)
@@ -647,6 +697,22 @@ func TestDataProvider_Token(t *testing.T) {
 
 	if p, ok := token.Metadata[ProviderKey]; !ok || p != provider {
 		t.Errorf("provider.Token() metadata missing ProviderKey or incorrect provider reference")
+	}
+
+	// Assert that the original token metadata was not mutated.
+	if _, ok := baseToken.Metadata[ProviderKey]; ok {
+		t.Errorf("provider.Token() mutated the base token's metadata")
+	}
+
+	// Assert that existing metadata entries are preserved.
+	if v, ok := token.Metadata["pre-existing-key"]; !ok || v != "pre-existing-value" {
+		t.Errorf("provider.Token() did not preserve existing metadata entries")
+	}
+
+	// Assert that the returned metadata map is not the same map instance as baseToken.Metadata.
+	token.Metadata["test_mutation"] = true
+	if _, ok := baseToken.Metadata["test_mutation"]; ok {
+		t.Errorf("provider.Token() returned a metadata map that shares state with the base token")
 	}
 }
 

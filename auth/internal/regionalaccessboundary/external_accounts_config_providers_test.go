@@ -30,7 +30,7 @@ func TestNewExternalAccountConfigProvider(t *testing.T) {
 	}{
 		{
 			name:           "workload identity pool with matching explicit universe domain",
-			audience:       "//iam.googleapis.com/projects/12345/locations/global/workloadIdentityPools/my-pool",
+			audience:       "//iam.googleapis.com/projects/12345/locations/global/workloadIdentityPools/my-pool/providers/my-provider",
 			universeDomain: "googleapis.com",
 			wantProvider: &workloadIdentityPoolConfigProvider{
 				projectNumber:  "12345",
@@ -40,7 +40,7 @@ func TestNewExternalAccountConfigProvider(t *testing.T) {
 		},
 		{
 			name:           "workload identity pool with universe domain from audience",
-			audience:       "//iam.custom.com/projects/12345/locations/global/workloadIdentityPools/my-pool",
+			audience:       "//iam.custom.com/projects/12345/locations/global/workloadIdentityPools/my-pool/providers/my-provider",
 			universeDomain: "",
 			wantProvider: &workloadIdentityPoolConfigProvider{
 				projectNumber:  "12345",
@@ -50,13 +50,13 @@ func TestNewExternalAccountConfigProvider(t *testing.T) {
 		},
 		{
 			name:           "workload identity pool with non-matching universe domain",
-			audience:       "//iam.custom.com/projects/12345/locations/global/workloadIdentityPools/my-pool",
+			audience:       "//iam.custom.com/projects/12345/locations/global/workloadIdentityPools/my-pool/providers/my-provider",
 			universeDomain: "example.com",
 			wantErr:        "provided universe domain (\"example.com\") does not match domain in audience",
 		},
 		{
 			name:           "workforce pool with matching explicit universe domain",
-			audience:       "//iam.googleapis.com/locations/global/workforcePools/my-pool",
+			audience:       "//iam.googleapis.com/locations/global/workforcePools/my-pool/providers/my-provider",
 			universeDomain: "googleapis.com",
 			wantProvider: &workforcePoolConfigProvider{
 				poolID:         "my-pool",
@@ -65,7 +65,7 @@ func TestNewExternalAccountConfigProvider(t *testing.T) {
 		},
 		{
 			name:           "workforce pool with universe domain from audience",
-			audience:       "//iam.custom.com/locations/global/workforcePools/my-pool",
+			audience:       "//iam.custom.com/locations/global/workforcePools/my-pool/providers/my-provider",
 			universeDomain: "",
 			wantProvider: &workforcePoolConfigProvider{
 				poolID:         "my-pool",
@@ -74,7 +74,7 @@ func TestNewExternalAccountConfigProvider(t *testing.T) {
 		},
 		{
 			name:           "workforce pool with non-matching universe domain",
-			audience:       "//iam.custom.com/locations/global/workforcePools/my-pool",
+			audience:       "//iam.custom.com/locations/global/workforcePools/my-pool/providers/my-provider",
 			universeDomain: "example.com",
 			wantErr:        "provided universe domain (\"example.com\") does not match domain in audience",
 		},
@@ -86,13 +86,13 @@ func TestNewExternalAccountConfigProvider(t *testing.T) {
 		},
 		{
 			name:           "prefix partial match failure for workload identity pool",
-			audience:       "prefix-//iam.googleapis.com/projects/12345/locations/global/workloadIdentityPools/my-pool",
+			audience:       "prefix-//iam.googleapis.com/projects/12345/locations/global/workloadIdentityPools/my-pool/providers/my-provider",
 			universeDomain: "",
 			wantErr:        "unknown audience format",
 		},
 		{
 			name:           "suffix partial match failure for workload identity pool",
-			audience:       "//iam.googleapis.com/projects/12345/locations/global/workloadIdentityPools/my-pool/suffix",
+			audience:       "//iam.googleapis.com/projects/12345/locations/global/workloadIdentityPools/my-pool/providers/my-provider/suffix",
 			universeDomain: "",
 			wantErr:        "unknown audience format",
 		},

@@ -26,8 +26,8 @@ const (
 )
 
 var (
-	workforceAudiencePattern = regexp.MustCompile(`^//iam\.([^/]+)/locations/global/workforcePools/([^/]+)$`)
-	workloadAudiencePattern  = regexp.MustCompile(`^//iam\.([^/]+)/projects/([^/]+)/locations/global/workloadIdentityPools/([^/]+)$`)
+	workforceAudiencePattern = regexp.MustCompile(`^//iam\.([^/]+)/locations/([^/]+)/workforcePools/([^/]+)/providers/[^/]+$`)
+	workloadAudiencePattern  = regexp.MustCompile(`^//iam\.([^/]+)/projects/([^/]+)/locations/([^/]+)/workloadIdentityPools/([^/]+)/providers/[^/]+$`)
 )
 
 // NewExternalAccountConfigProvider creates a new ConfigProvider for external accounts.
@@ -36,16 +36,16 @@ func NewExternalAccountConfigProvider(audience, inputUniverseDomain string) (Con
 	var isWorkload bool
 
 	matches := workloadAudiencePattern.FindStringSubmatch(audience)
-	if len(matches) == 4 { // Expecting full match, domain, projectNumber, poolID
+	if len(matches) == 5 { // Expecting full match, domain, projectNumber, location, poolID
 		audienceDomain = matches[1]
 		projectNumber = matches[2]
-		poolID = matches[3]
+		poolID = matches[4]
 		isWorkload = true
 	} else {
 		matches = workforceAudiencePattern.FindStringSubmatch(audience)
-		if len(matches) == 3 { // Expecting full match, domain, poolID
+		if len(matches) == 4 { // Expecting full match, domain, location, poolID
 			audienceDomain = matches[1]
-			poolID = matches[2]
+			poolID = matches[3]
 			isWorkload = false
 		} else {
 			return nil, fmt.Errorf("regionalaccessboundary: unknown audience format: %q", audience)

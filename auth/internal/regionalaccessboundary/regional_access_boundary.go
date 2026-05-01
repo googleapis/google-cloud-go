@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"maps"
 	"math/rand"
 	"net"
 	"net/http"
@@ -237,18 +238,20 @@ func (p *DataProvider) Token(ctx context.Context) (*auth.Token, error) {
 		return nil, err
 	}
 
-	if token.Metadata == nil {
-		token.Metadata = make(map[string]interface{})
+	// Clone the token and its metadata to avoid mutating shared/cached state.
+	newToken := *token
+	newToken.Metadata = maps.Clone(token.Metadata)
+	if newToken.Metadata == nil {
+		newToken.Metadata = make(map[string]interface{})
 	}
+	newToken.Metadata[ProviderKey] = p
 
-	token.Metadata[ProviderKey] = p
-	return token, nil
+	return &newToken, nil
 }
 
 // GetHeaderValue immediately returns a valid header if it's cached, or kicks off a background fetch
 // if it is unpopulated or expired.
 func (p *DataProvider) GetHeaderValue(ctx context.Context, reqURL string, accessToken *auth.Token) string {
-	// Skip lookup for regional endpoints.
 	if !strings.Contains(reqURL, "://") {
 		reqURL = "https://" + reqURL
 	}
@@ -257,15 +260,25 @@ func (p *DataProvider) GetHeaderValue(ctx context.Context, reqURL string, access
 		if h, _, err := net.SplitHostPort(host); err == nil {
 			host = h
 		}
+		// Skip lookup for regional endpoints.
 		if host == "rep.googleapis.com" || strings.HasSuffix(host, ".rep.googleapis.com") ||
 			host == "rep.sandbox.googleapis.com" || strings.HasSuffix(host, ".rep.sandbox.googleapis.com") {
+			return ""
+		}
+		// Skip lookup for IAM and STS endpoints as they do not require RAB headers.
+		if host == "iam.googleapis.com" || host == "iamcredentials.googleapis.com" ||
+			host == "sts.googleapis.com" {
 			return ""
 		}
 	}
 
 	// Skip lookup for non-default universe domains.
 	uniDomain, err := p.configProvider.GetUniverseDomain(ctx)
-	if err == nil && uniDomain != "" && uniDomain != internal.DefaultUniverseDomain {
+	if err != nil {
+		p.logger.WarnContext(ctx, "regionalaccessboundary: error getting universe domain", "error", err)
+		return ""
+	}
+	if uniDomain != "" && uniDomain != internal.DefaultUniverseDomain {
 		return ""
 	}
 
@@ -319,7 +332,7 @@ func (p *DataProvider) fetchAsync(ctx context.Context, accessToken *auth.Token) 
 
 	url, err := p.configProvider.GetRegionalAccessBoundaryEndpoint(ctx)
 	if err != nil {
-		p.logger.ErrorContext(ctx, "regionalaccessboundary: error getting the lookup endpoint", "error", err)
+		p.logger.WarnContext(ctx, "regionalaccessboundary: error getting the lookup endpoint", "error", err)
 		p.handleFetchFailure(ctx)
 		return
 	}
@@ -327,7 +340,7 @@ func (p *DataProvider) fetchAsync(ctx context.Context, accessToken *auth.Token) 
 	newData, fetchErr := fetchRegionalAccessBoundaryData(ctx, p.client, url, accessToken, p.logger)
 
 	if fetchErr != nil {
-		p.logger.ErrorContext(ctx, "regionalaccessboundary: async fetch failed", "error", fetchErr)
+		p.logger.WarnContext(ctx, "regionalaccessboundary: async fetch failed", "error", fetchErr)
 		p.handleFetchFailure(ctx)
 		return
 	}
@@ -402,9 +415,8 @@ type GCEConfigProvider struct {
 	universeDomainProvider *internal.ComputeUniverseDomainProvider
 
 	// Caching for service account email
-	saOnce     sync.Once
+	saMu       sync.Mutex
 	saEmail    string
-	saEmailErr error
 
 	// Caching for universe domain
 	udOnce sync.Once
@@ -422,18 +434,16 @@ func NewGCEConfigProvider(gceUDP *internal.ComputeUniverseDomainProvider) *GCECo
 	}
 }
 
-func (g *GCEConfigProvider) fetchSA(ctx context.Context) {
+func (g *GCEConfigProvider) fetchSA(ctx context.Context) (string, error) {
 	if g.universeDomainProvider == nil || g.universeDomainProvider.MetadataClient == nil {
-		g.saEmailErr = errors.New("regionalaccessboundary: GCEConfigProvider not properly initialized (missing ComputeUniverseDomainProvider or MetadataClient)")
-		return
+		return "", errors.New("regionalaccessboundary: GCEConfigProvider not properly initialized (missing ComputeUniverseDomainProvider or MetadataClient)")
 	}
 	mdClient := g.universeDomainProvider.MetadataClient
 	saEmail, err := mdClient.EmailWithContext(ctx, "default")
 	if err != nil {
-		g.saEmailErr = fmt.Errorf("regionalaccessboundary: GCE config: failed to get service account email: %w", err)
-		return
+		return "", fmt.Errorf("regionalaccessboundary: GCE config: failed to get service account email: %w", err)
 	}
-	g.saEmail = saEmail
+	return saEmail, nil
 }
 
 func (g *GCEConfigProvider) fetchUD(ctx context.Context) {
@@ -455,11 +465,28 @@ func (g *GCEConfigProvider) fetchUD(ctx context.Context) {
 // GetRegionalAccessBoundaryEndpoint constructs the Regional Access Boundary lookup URL for a GCE environment.
 // It uses cached service account email after the first call.
 func (g *GCEConfigProvider) GetRegionalAccessBoundaryEndpoint(ctx context.Context) (string, error) {
-	g.saOnce.Do(func() { g.fetchSA(ctx) })
-	if g.saEmailErr != nil {
-		return "", g.saEmailErr
+	// Check if we already have a cached service account email.
+	g.saMu.Lock()
+	if g.saEmail != "" {
+		email := g.saEmail
+		g.saMu.Unlock()
+		return fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, email), nil
 	}
-	return fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, g.saEmail), nil
+	g.saMu.Unlock()
+
+	// Fetch the email from the metadata server. We do not hold the lock
+	// during this I/O operation to avoid blocking other goroutines.
+	email, err := g.fetchSA(ctx)
+	if err != nil {
+		return "", err
+	}
+
+	// Cache the successful result.
+	g.saMu.Lock()
+	g.saEmail = email
+	g.saMu.Unlock()
+
+	return fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, email), nil
 }
 
 // GetUniverseDomain retrieves the universe domain from the GCE metadata server.
