@@ -2764,10 +2764,10 @@ func isZeroValue(v reflect.Value) (bool, error) {
 
 func TestNewClient_ValidationHappensOnce(t *testing.T) {
 	ctx := context.Background()
-	// Passing an empty API key is invalid and should be caught in the first pass.
-	_, err := NewClient(ctx, option.WithAPIKey(""))
+	// Passing incompatible options should be caught in the first pass (e.g., WithoutAuthentication + WithAPIKey).
+	_, err := NewClient(ctx, option.WithoutAuthentication(), option.WithAPIKey("fake-api-key"))
 	if err == nil {
-		t.Error("expected error for invalid API key, got nil")
+		t.Error("expected error for incompatible options, got nil")
 	}
 }
 
