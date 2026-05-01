@@ -28,7 +28,6 @@ tools:
       version: v1.3.0
     - name: google.golang.org/protobuf/cmd/protoc-gen-go
       version: v1.36.11
-release: {}
 default:
   tag_format: '{name}/v{version}'
 libraries:
@@ -83,10 +82,10 @@ libraries:
           path: google/ai/generativelanguage/v1alpha
   - name: aiplatform
     version: 1.124.0
-    skip_generate: true
     apis:
       - path: google/cloud/aiplatform/v1
       - path: google/cloud/aiplatform/v1beta1
+    skip_generate: true
     go:
       go_apis:
         - enabled_generator_features:
