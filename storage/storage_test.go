@@ -2761,3 +2761,50 @@ func isZeroValue(v reflect.Value) (bool, error) {
 		return false, fmt.Errorf("unable to check kind %s", v.Kind())
 	}
 }
+
+// TestNewClient_TransportOptionsRegression ensures that transport-specific options
+// like QuotaProject and RequestReason do not cause initialization failures.
+// This is a regression test for the "WithHTTPClient is incompatible with QuotaProject" error.
+func TestNewClient_TransportOptionsRegression(t *testing.T) {
+	ctx := context.Background()
+
+	tests := []struct {
+		name string
+		opts []option.ClientOption
+	}{
+		{
+			name: "WithQuotaProject",
+			opts: []option.ClientOption{
+				option.WithQuotaProject("test-project"),
+				option.WithoutAuthentication(),
+			},
+		},
+		{
+			name: "WithRequestReason",
+			opts: []option.ClientOption{
+				option.WithRequestReason("compliance-audit"),
+				option.WithoutAuthentication(),
+			},
+		},
+		{
+			name: "CombinedOptions",
+			opts: []option.ClientOption{
+				option.WithQuotaProject("test-project"),
+				option.WithRequestReason("debugging"),
+				option.WithoutAuthentication(),
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			client, err := NewClient(ctx, tt.opts...)
+			if err != nil {
+				t.Errorf("NewClient() failed with %s: %v", tt.name, err)
+			}
+			if client != nil {
+				client.Close()
+			}
+		})
+	}
+}
