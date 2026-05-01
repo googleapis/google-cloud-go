@@ -801,7 +801,7 @@ func (c *topicAdminGRPCClient) ListTopics(ctx context.Context, req *pubsubpb.Lis
 	}
 	opts = append((*c.CallOptions).ListTopics[0:len((*c.CallOptions).ListTopics):len((*c.CallOptions).ListTopics)], opts...)
 	it := &TopicIterator{}
-	req = proto.Clone(req).(*pubsubpb.ListTopicsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*pubsubpb.Topic, string, error) {
 		resp := &pubsubpb.ListTopicsResponse{}
 		if pageToken != "" {
@@ -853,7 +853,7 @@ func (c *topicAdminGRPCClient) ListTopicSubscriptions(ctx context.Context, req *
 	}
 	opts = append((*c.CallOptions).ListTopicSubscriptions[0:len((*c.CallOptions).ListTopicSubscriptions):len((*c.CallOptions).ListTopicSubscriptions)], opts...)
 	it := &StringIterator{}
-	req = proto.Clone(req).(*pubsubpb.ListTopicSubscriptionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
 		resp := &pubsubpb.ListTopicSubscriptionsResponse{}
 		if pageToken != "" {
@@ -905,7 +905,7 @@ func (c *topicAdminGRPCClient) ListTopicSnapshots(ctx context.Context, req *pubs
 	}
 	opts = append((*c.CallOptions).ListTopicSnapshots[0:len((*c.CallOptions).ListTopicSnapshots):len((*c.CallOptions).ListTopicSnapshots)], opts...)
 	it := &StringIterator{}
-	req = proto.Clone(req).(*pubsubpb.ListTopicSnapshotsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
 		resp := &pubsubpb.ListTopicSnapshotsResponse{}
 		if pageToken != "" {
@@ -1309,7 +1309,7 @@ func (c *topicAdminRESTClient) GetTopic(ctx context.Context, req *pubsubpb.GetTo
 // ListTopics lists matching topics.
 func (c *topicAdminRESTClient) ListTopics(ctx context.Context, req *pubsubpb.ListTopicsRequest, opts ...gax.CallOption) *TopicIterator {
 	it := &TopicIterator{}
-	req = proto.Clone(req).(*pubsubpb.ListTopicsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*pubsubpb.Topic, string, error) {
 		resp := &pubsubpb.ListTopicsResponse{}
@@ -1387,7 +1387,7 @@ func (c *topicAdminRESTClient) ListTopics(ctx context.Context, req *pubsubpb.Lis
 // ListTopicSubscriptions lists the names of the attached subscriptions on this topic.
 func (c *topicAdminRESTClient) ListTopicSubscriptions(ctx context.Context, req *pubsubpb.ListTopicSubscriptionsRequest, opts ...gax.CallOption) *StringIterator {
 	it := &StringIterator{}
-	req = proto.Clone(req).(*pubsubpb.ListTopicSubscriptionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
 		resp := &pubsubpb.ListTopicSubscriptionsResponse{}
@@ -1469,7 +1469,7 @@ func (c *topicAdminRESTClient) ListTopicSubscriptions(ctx context.Context, req *
 // state captured by a snapshot.
 func (c *topicAdminRESTClient) ListTopicSnapshots(ctx context.Context, req *pubsubpb.ListTopicSnapshotsRequest, opts ...gax.CallOption) *StringIterator {
 	it := &StringIterator{}
-	req = proto.Clone(req).(*pubsubpb.ListTopicSnapshotsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
 		resp := &pubsubpb.ListTopicSnapshotsResponse{}

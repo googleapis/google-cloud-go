@@ -27,6 +27,7 @@ import (
 	"google.golang.org/api/support/bundler"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 )
 
 const (
@@ -297,7 +298,6 @@ func (bw *BulkWriter) checkWriteConditions(doc *DocumentRef) error {
 
 // write packages up write requests into bulkWriterJob objects.
 func (bw *BulkWriter) write(w *pb.Write) (*BulkWriterJob, error) {
-
 	j := &BulkWriterJob{
 		resultChan: make(chan bulkWriterResult, 1),
 		write:      w,
@@ -307,8 +307,9 @@ func (bw *BulkWriter) write(w *pb.Write) (*BulkWriterJob, error) {
 	if err := bw.limiter.Wait(bw.ctx); err != nil {
 		return nil, err
 	}
-	err := bw.bundler.Add(j, 0)
-	if err != nil {
+
+	estimatedSize := proto.Size(w)
+	if err := bw.bundler.AddWait(bw.ctx, j, estimatedSize); err != nil {
 		return nil, err
 	}
 
@@ -360,7 +361,16 @@ func (bw *BulkWriter) send(i interface{}) {
 				// Do we need separate retry bundler?
 				_, isRetryable := batchWriteRetryCodes[codes.Code(s.Code)]
 				if j.attempts < maxRetryAttempts && isRetryable {
-					err := bw.bundler.Add(j, 0)
+					// Re-queue the job for retry. We use a size of 0 here for two reasons:
+					// 1. Consistency: Since the BulkWriter uses AddWait for backpressure,
+					//    we must continue using AddWait to avoid a "mixed methods" error from
+					//    the bundler.
+					// 2. Deadlock Prevention: The send() function runs within the bundler's
+					//    handler. The memory for this job was already accounted for during the
+					//    initial write() and will not be released until this handler returns.
+					//    Attempting to acquire additional weight here could cause a deadlock
+					//    if the buffer is full.
+					err := bw.bundler.AddWait(bw.ctx, j, 0)
 					if err != nil {
 						j.setError(fmt.Errorf("firestore: bulk write retry failed %w original error %v", err, status.Error(codes.Code(s.Code), s.Message)))
 					}

@@ -1,5 +1,7 @@
 # Changes
 
+## [1.29.0](https://github.com/googleapis/google-cloud-go/releases/tag/cloudbuild%2Fv1.29.0) (2026-04-30)
+
 ## [1.28.0](https://github.com/googleapis/google-cloud-go/releases/tag/cloudbuild%2Fv1.28.0) (2026-04-13)
 
 ## [1.27.0](https://github.com/googleapis/google-cloud-go/releases/tag/cloudbuild%2Fv1.27.0) (2026-04-09)

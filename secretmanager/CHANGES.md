@@ -2,6 +2,8 @@
 
 
 
+## [1.20.0](https://github.com/googleapis/google-cloud-go/releases/tag/secretmanager%2Fv1.20.0) (2026-04-30)
+
 ## [1.19.0](https://github.com/googleapis/google-cloud-go/releases/tag/secretmanager%2Fv1.19.0) (2026-04-13)
 
 ## [1.18.0](https://github.com/googleapis/google-cloud-go/releases/tag/secretmanager%2Fv1.18.0) (2026-04-08)

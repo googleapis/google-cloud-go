@@ -867,7 +867,7 @@ func (c *adminGRPCClient) ListTopics(ctx context.Context, req *pubsublitepb.List
 	}
 	opts = append((*c.CallOptions).ListTopics[0:len((*c.CallOptions).ListTopics):len((*c.CallOptions).ListTopics)], opts...)
 	it := &TopicIterator{}
-	req = proto.Clone(req).(*pubsublitepb.ListTopicsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*pubsublitepb.Topic, string, error) {
 		resp := &pubsublitepb.ListTopicsResponse{}
 		if pageToken != "" {
@@ -960,7 +960,7 @@ func (c *adminGRPCClient) ListTopicSubscriptions(ctx context.Context, req *pubsu
 	}
 	opts = append((*c.CallOptions).ListTopicSubscriptions[0:len((*c.CallOptions).ListTopicSubscriptions):len((*c.CallOptions).ListTopicSubscriptions)], opts...)
 	it := &StringIterator{}
-	req = proto.Clone(req).(*pubsublitepb.ListTopicSubscriptionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
 		resp := &pubsublitepb.ListTopicSubscriptionsResponse{}
 		if pageToken != "" {
@@ -1060,7 +1060,7 @@ func (c *adminGRPCClient) ListSubscriptions(ctx context.Context, req *pubsublite
 	}
 	opts = append((*c.CallOptions).ListSubscriptions[0:len((*c.CallOptions).ListSubscriptions):len((*c.CallOptions).ListSubscriptions)], opts...)
 	it := &SubscriptionIterator{}
-	req = proto.Clone(req).(*pubsublitepb.ListSubscriptionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*pubsublitepb.Subscription, string, error) {
 		resp := &pubsublitepb.ListSubscriptionsResponse{}
 		if pageToken != "" {
@@ -1227,7 +1227,7 @@ func (c *adminGRPCClient) ListReservations(ctx context.Context, req *pubsublitep
 	}
 	opts = append((*c.CallOptions).ListReservations[0:len((*c.CallOptions).ListReservations):len((*c.CallOptions).ListReservations)], opts...)
 	it := &ReservationIterator{}
-	req = proto.Clone(req).(*pubsublitepb.ListReservationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*pubsublitepb.Reservation, string, error) {
 		resp := &pubsublitepb.ListReservationsResponse{}
 		if pageToken != "" {
@@ -1320,7 +1320,7 @@ func (c *adminGRPCClient) ListReservationTopics(ctx context.Context, req *pubsub
 	}
 	opts = append((*c.CallOptions).ListReservationTopics[0:len((*c.CallOptions).ListReservationTopics):len((*c.CallOptions).ListReservationTopics)], opts...)
 	it := &StringIterator{}
-	req = proto.Clone(req).(*pubsublitepb.ListReservationTopicsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
 		resp := &pubsublitepb.ListReservationTopicsResponse{}
 		if pageToken != "" {
@@ -1424,7 +1424,7 @@ func (c *adminGRPCClient) ListOperations(ctx context.Context, req *longrunningpb
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {

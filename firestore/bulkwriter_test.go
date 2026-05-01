@@ -19,11 +19,13 @@ import (
 	"fmt"
 	"sync"
 	"testing"
+	"time"
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc/codes"
 	grpcstatus "google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 )
 
 type bulkwriterTestCase struct {
@@ -511,5 +513,104 @@ func TestBulkWriterSendCancelled(t *testing.T) {
 	}
 	if err != context.Canceled {
 		t.Errorf("want context.Canceled, got %v", err)
+	}
+}
+
+func TestBulkWriterBackpressure(t *testing.T) {
+	c, _, cleanup := newMock(t)
+	defer cleanup()
+
+	ctx := context.Background()
+	ctxTimeout, cancel := context.WithTimeout(ctx, 200*time.Millisecond)
+	defer cancel()
+
+	bw := c.BulkWriter(ctxTimeout)
+
+	w, err := c.Doc("C/a").newCreateWrites(testData)
+	if err != nil {
+		t.Fatalf("newCreateWrites failed: %v", err)
+	}
+	// Set the limit to exactly the size of the first write request.
+	bw.bundler.BufferedByteLimit = proto.Size(w[0])
+
+	// First write adds successfully as the buffer is initially empty.
+	_, err = bw.Create(c.Doc("C/a"), testData)
+	if err != nil {
+		t.Fatalf("Create failed: %v", err)
+	}
+
+	// Second write blocks because the limit is exceeded, eventually timing out.
+	_, err = bw.Create(c.Doc("C/b"), testData)
+	if err == nil {
+		t.Error("wanted error due to timeout from backpressure, got nil")
+	}
+	if err != context.DeadlineExceeded {
+		t.Errorf("wanted context.DeadlineExceeded, got %v", err)
+	}
+}
+
+func TestBulkWriterBackpressureThrottling(t *testing.T) {
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	// Use wildcard RPC matching so that Flush works correctly
+	srv.reset()
+	for i := 0; i < 2; i++ {
+		srv.addRPC(nil, &pb.BatchWriteResponse{
+			WriteResults: []*pb.WriteResult{{UpdateTime: aTimestamp}},
+			Status:       []*status.Status{{Code: int32(codes.OK)}},
+		})
+	}
+
+	ctx := context.Background()
+	bw := c.BulkWriter(ctx)
+
+	w, err := c.Doc("C/a").newCreateWrites(testData)
+	if err != nil {
+		t.Fatalf("newCreateWrites failed: %v", err)
+	}
+	// Set the limit to exactly the size of the first write request.
+	bw.bundler.BufferedByteLimit = proto.Size(w[0])
+
+	// First write adds successfully as the buffer is initially empty.
+	_, err = bw.Create(c.Doc("C/a"), testData)
+	if err != nil {
+		t.Fatalf("Create failed: %v", err)
+	}
+
+	// The second write will block since the buffer is already at limit.
+	doneChan := make(chan struct{})
+	var secondJob *BulkWriterJob
+	var secondErr error
+
+	go func() {
+		secondJob, secondErr = bw.Create(c.Doc("C/b"), testData)
+		close(doneChan)
+	}()
+
+	// Wait for a short duration to let the goroutine run and block
+	select {
+	case <-doneChan:
+		t.Fatal("Create() unblocked before Flush(), expected it to block due to backpressure")
+	case <-time.After(200 * time.Millisecond):
+		// Good, it's blocked as expected.
+	}
+
+	// Now Flush the first write so that the buffer empties and makes room.
+	bw.Flush()
+
+	// The second Create() should unblock immediately and finish successfully.
+	select {
+	case <-doneChan:
+		// Success, it unblocked!
+	case <-time.After(1 * time.Second):
+		t.Fatal("Create() timed out after Flush, expected it to unblock")
+	}
+
+	if secondErr != nil {
+		t.Fatalf("Second Create() returned error: %v", secondErr)
+	}
+	if secondJob == nil {
+		t.Fatal("Second Create() returned nil BulkWriterJob")
 	}
 }
