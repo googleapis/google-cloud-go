@@ -55,6 +55,15 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/advisorynotifications/
     tag_format: '{id}/v{version}'
+  - id: agentplatform
+    version: 0.0.0
+    last_generated_commit: ""
+    apis: []
+    source_roots:
+      - agentplatform
+    preserve_regex: []
+    remove_regex: []
+    tag_format: '{id}/v{version}'
   - id: ai
     version: 0.19.0
     last_generated_commit: ""

@@ -59,6 +59,10 @@ libraries:
         - enabled_generator_features:
             - F_open_telemetry_attributes
           path: google/cloud/advisorynotifications/v1
+  - name: agentplatform
+    version: 0.0.0
+    skip_generate: true
+    skip_release: true
   - name: ai
     version: 0.19.0
     apis:
