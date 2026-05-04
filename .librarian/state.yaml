@@ -355,7 +355,7 @@ libraries:
       - internal/generated/snippets/auditmanager/
     tag_format: '{id}/v{version}'
   - id: auth
-    version: 0.20.0
+    version: 0.21.0
     last_generated_commit: ""
     apis: []
     source_roots:

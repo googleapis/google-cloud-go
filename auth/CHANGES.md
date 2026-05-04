@@ -1,5 +1,7 @@
 # Changes
 
+## [0.21.0](https://github.com/googleapis/google-cloud-go/releases/tag/auth%2Fv0.21.0) (2026-05-04)
+
 ## [0.20.0](https://github.com/googleapis/google-cloud-go/releases/tag/auth%2Fv0.20.0) (2026-04-06)
 
 ## [0.19.0](https://github.com/googleapis/google-cloud-go/releases/tag/auth%2Fv0.19.0) (2026-03-23)

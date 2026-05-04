@@ -313,7 +313,7 @@ libraries:
             - F_open_telemetry_attributes
           path: google/cloud/auditmanager/v1
   - name: auth
-    version: 0.20.0
+    version: 0.21.0
     keep:
       - README.md
       - internal/version.go
