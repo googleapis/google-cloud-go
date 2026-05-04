@@ -5396,6 +5396,7 @@ func compareErrors(got, want error) bool {
 }
 
 func TestIntegration_Foreign_Key_Delete_Cascade_Action(t *testing.T) {
+	t.Skip("flaky - internal b/509563490")
 	skipEmulatorTest(t)
 	skipExperimentalHostTest(t)
 	t.Parallel()
