@@ -405,7 +405,7 @@ libraries:
             - F_open_telemetry_attributes
           path: google/cloud/biglake/hive/v1beta
   - name: bigquery
-    version: 1.76.0
+    version: 1.77.0
     apis:
       - path: google/cloud/bigquery/migration/v2
       - path: google/cloud/bigquery/datapolicies/v2
